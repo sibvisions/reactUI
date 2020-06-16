@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import "./Menu.css"
-import {Menubar} from 'primereact/menubar';
+import {SlideMenu} from 'primereact/slidemenu';
 import { Dialog } from 'primereact/dialog';
 import {InputText} from 'primereact/inputtext';
 import {ShowDialog, OnHide, RenderFooter, HandleChange} from "./AddItems";
@@ -17,17 +17,21 @@ class MenuComponent extends Component {
         }
         this.items = [
             {
-                icon: "pi pi-ellipsis-v",
-                pull: "left",
+                label: "Home",
+                icon: "pi pi-home"
+            },
+            {
+                label: "Elemen",
+                icon: "pi pi-list",
                 items: [ 
                     {
-                        label: 'Neues Feature',
+                        label: 'Features',
                         command: () => {
                             ShowDialog('feature', this);
                         }
                     },
                     {
-                        label: 'Neuer Customscreen',
+                        label: 'Customscreens',
                         command: () => {
                             ShowDialog('customscreen', this)
                         }
@@ -41,35 +45,12 @@ class MenuComponent extends Component {
         return (
             <div className="menu">
                 <div className="topBar">
-                    <Menubar model={this.items}> Menu
-                    </Menubar>
+                    TEST
                 </div>
-                <div className="grid-wrapper">
-                    Features
-                    <div id="featureContainer" className="grid-container">
-                        <div className="grid-item">Feature 1</div>
-                        <div className="grid-item">Feature 2</div>
-                        <div className="grid-item">Feature 3</div>
-                        <div className="grid-item">Feature 4</div>
-                        <div className="grid-item">Feature 5</div>
-                        <div className="grid-item">Feature 6</div>
-                    </div>
+                <div className="slidemenu-container">
+                    <SlideMenu model={this.items}>
+                    </SlideMenu>
                 </div>
-                <div className="grid-wrapper">
-                    Customscreens
-                    <div id="customscreenContainer" className="grid-container">
-                        <div className="grid-item">Customscreen 1</div>
-                        <div className="grid-item">Customscreen 2</div>
-                        <div className="grid-item">Customscreen 3</div>
-                        <div className="grid-item">Customscreen 4</div>
-                    </div>
-                </div>
-                <Dialog header="neues Feature hinzufügen" visible={this.state.showAddFeature} onHide={() => OnHide(this)} footer={RenderFooter(this)}>
-                    <InputText placeholder="Name für neues Feature" type="text" value={this.state.featureName} onChange={(e) => HandleChange(e, this)}></InputText>
-                </Dialog>
-                <Dialog header="neuen Customscreen hinzufügen" visible={this.state.showAddCustom} onHide={() => OnHide(this)} footer={RenderFooter(this)}>
-                    <InputText placeholder="Name" type="text" value={this.state.customscreenName} onChange={(e) => HandleChange(e, this)}></InputText>
-                </Dialog>
             </div> 
         )
     }
