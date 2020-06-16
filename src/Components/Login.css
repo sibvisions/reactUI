@@ -1,0 +1,47 @@
+html, body, #root, .Login {
+    height: 100%;
+  }
+
+.background {
+    background-image: url(imgs/loginbackground.png);
+    background-repeat: no-repeat;
+    height: 100%;
+    padding: 7%
+}
+
+.background, .upperMask {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: wrap;
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
+}
+
+h3 {
+  width:100%;
+  text-align: center;
+  margin-top: 0;
+}
+
+.loginmask {
+  background-color: white;
+  opacity: 0.9;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-bottom: 2%;
+  padding-top: 2%;
+  border-radius: 1%;
+  min-width: 25%;
+}
+
+#username, .p-button, #password {
+  width: 100%;
+}
+
+.p-float-label, #password, .checkStay{
+  margin-bottom: 5%;
+}
