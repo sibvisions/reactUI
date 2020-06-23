@@ -1,0 +1,50 @@
+html, body, #root {
+    height: 100%;
+  }
+
+.content-sidemenu {
+  padding-top: 80px;
+  margin-left: 200px;
+  height: 100%;
+  overflow: auto;
+  transition:0.3s;
+    -webkit-transition:0.3s;
+    -moz-transition:0.3s;
+  transition-delay: .2s;
+  min-height: 100%;
+  
+}
+
+.stretched {
+  margin-left: 0px;
+  transition:0.3s;
+    -webkit-transition:0.3s;
+    -moz-transition:0.3s;
+  transition-delay: .3s;
+}
+
+.p-grid {
+  margin-right: 0;
+}
+
+.zahlungen {
+  padding: 15px;
+  font-weight: bold;
+}
+
+.p-col-6 {
+  padding: 1em;
+  padding-top: 0;
+}
+
+.p-card-title {
+  overflow-wrap: break-word;
+}
+
+.incomingPay {
+  color: green;
+}
+
+.outgoingPay {
+  color: red;
+}

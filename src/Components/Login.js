@@ -46,7 +46,7 @@ class LoginComponent extends Component {
             <div className="background">
                 <div className="loginmask">
                     <div className="upperMask">
-                        <img src={logo}/>
+                        <img src={logo} alt="firmenlogo"/>
                         <h3>Projektname</h3>
                     </div>
                     <span className="p-float-label">
