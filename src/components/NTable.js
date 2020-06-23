@@ -6,7 +6,6 @@ import {Column} from 'primereact/column';
 
 
 class NTable extends Base {
-    state = { content: [] };
     content = [];
     dataColumns = [];
 
@@ -15,6 +14,7 @@ class NTable extends Base {
         LASTNAME: "Nachname"
     }]
 
+    
     constructor(props){
         super(props);
         this.buildColumns(this.props.columnLabels, this.props.columnNames);

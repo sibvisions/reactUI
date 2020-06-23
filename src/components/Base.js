@@ -2,10 +2,8 @@ import { Component } from 'react';
 import { register, handler } from "../handling/TowerV2";
 
 class Base extends Component {
-    state = { content: [] }
-    contentToAdd = []
-    
 
+    tempChanges = [];
     /**
      * registers Component and builds child components
      */
@@ -13,9 +11,20 @@ class Base extends Component {
         register(this);
         if(this.props.content !== undefined){  
             this.props.content.forEach(e => {
-                handler(e);       
-            }); this.setState({content: this.contentToAdd})
-        }
+                handler(e);
+            });
+            let oldState = [...this.state.content]
+            this.tempChanges.forEach(e => {
+                oldState.push(e)
+            });
+            this.setState({content: oldState})
+            console.log("-----------------------------------------------------------------")
+            console.log("props"); console.log(this.props);
+            console.log("this"); console.log(this);
+            console.log("tempChanges"); console.log(this.tempChanges);
+            console.log("-----------------------------------------------------------------")
+            this.tempChanges = [];
+        }   
     }
 
     /**
@@ -23,7 +32,7 @@ class Base extends Component {
      * @param {any} toAdd element to add
      */
     addElement(toAdd){
-        this.contentToAdd.push(toAdd);
+        this.tempChanges.push(toAdd);
     }
 }
  

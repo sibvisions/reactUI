@@ -3,6 +3,8 @@ import Base from './Base';
 
 class NPanel extends Base {
 
+    state= {content: []};
+    
     render() { 
         return ( 
         <div style={{marginLeft: "10px"}}>

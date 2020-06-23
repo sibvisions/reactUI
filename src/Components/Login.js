@@ -7,6 +7,8 @@ import {Checkbox} from 'primereact/checkbox';
 import { Redirect } from 'react-router-dom';
 import logo from './imgs/sibvisionslogo.png'
 
+import { logIn } from "../handling/TowerV2";
+
 class LoginComponent extends Component {
     constructor(props) {
         super(props)
@@ -30,17 +32,15 @@ class LoginComponent extends Component {
     }
 
     handleClick() {
-        if(this.state.username === 'admin' && this.state.password === 'admin') {
-            this.setState({loggedIn: true})
-        }
-        else {
-            alert("falscher Benutzername oder Passwort")
-        }
+        logIn(this.state.username, this.state.password);
+        this.setState({loggedIn:true})
+        console.log(this.state)
+        
     }
 
     render() {
         if(this.state.loggedIn === true) {
-            return <Redirect to='/' />
+            return <Redirect to='/content' />
         }
         return (
             <div className="background">

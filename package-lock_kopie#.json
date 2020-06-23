@@ -8057,7 +8057,7 @@
       "requires": {
         "map-or-similar": "^1.5.0"
       }
-    },
+    }
     "memory-fs": {
       "version": "0.4.1",
       "resolved": "https://registry.npmjs.org/memory-fs/-/memory-fs-0.4.1.tgz",

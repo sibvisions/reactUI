@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {responseMaper} from './responeMaper'
-import NPanel from '../components/NPanel'
+import NPanel from '../Components/NPanel'
 
 //prime imports
 import {Button} from 'primereact/button'
-import {PanelMenu} from 'primereact/panelmenu';
-import NTable from '../components/NTable';
+import NTable from '../Components/NTable';
 
 let superParent;
 /**
@@ -25,10 +24,10 @@ export function sender(endpoint, body){
         body: JSON.stringify(body),
         credentials:"include"
     };
-    console.log("send")
+    //console.log("send")
     fetch(BaseUrl+endpoint,reqOpt)
         .then(res => res.json())
-        .then(jRes => {console.log(jRes)  ;jRes.forEach(e => handler(e))})
+        .then(jRes => {jRes.forEach(e => handler(e))})
 }
 
 export function handler(request){
@@ -54,7 +53,7 @@ function buttonClicked(e){
  * @param {string} username 
  * @param {string} password 
  */
-function logIn(username,password){
+export function logIn(username,password){
   let info = {
       clientId: localStorage.getItem("clientId"),
       loginData: {
@@ -72,6 +71,7 @@ function logIn(username,password){
         }
       }
     }
+  console.log("logging in")
   sender("/api/login",info)
 }
 
@@ -115,7 +115,7 @@ function setSuperParentContent(newContent){
  * @param {ReactObject} newContent Element to add
  */
 function addSuperParentContent(newContent){
-  let content = superParent.state.content;
+  let content = [...superParent.state.content];
   content.push(newContent);
   superParent.setState({content: content});
 }
@@ -179,7 +179,7 @@ export function menu(props){
           }
       });
   });
-  superParent.setState({menu: <PanelMenu key="menu" model={groups} style={{width:'300px'}} />})
+  superParent.setState({menu: groups})
 }
 
 export function generic(props){

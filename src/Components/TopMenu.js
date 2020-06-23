@@ -11,7 +11,7 @@ import { Redirect } from "react-router-dom";
 const ProfileOptions = () => (
     <ul className="profile-options">
         <li className="profile-options-item">
-            <a className="profile-options-link" href="#">
+            <a className="profile-options-link"  href="/#">
                 <span>
                     <i className="pi pi-user" style={{fontSize: '1em'}}/>
                 </span>
@@ -27,7 +27,7 @@ const ProfileOptions = () => (
             </a>
         </li>
         <li className="profile-options-item">
-            <a className="profile-options-link" href="#">
+            <a className="profile-options-link" href="/#">
             <span>
                     <i className="pi pi-power-off" style={{fontSize: '1em'}}/>
                 </span>
@@ -163,7 +163,7 @@ class TopMenuComponent extends Component {
                     <div className="button-topmenu p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
             	        <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
                     </div>
-                    <Menubar model={this.items} className="p-col"/>
+                    <Menubar model={this.props.menu}  className="p-col"/>
                     <div className="searchbar-topmenu p-col-fixed">
                         <div className="p-inputgroup">
                             <span className="p-inputgroup-addon">
@@ -181,7 +181,7 @@ class TopMenuComponent extends Component {
                     </div>
                 </div>
                 <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
-                    <TieredMenu className="sidebar-menu" model={this.items}/>
+                    <TieredMenu className="sidebar-menu" model={this.props.menu}/>
                 </Sidebar>
             </React.Fragment>
         )
