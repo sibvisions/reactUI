@@ -1,32 +1,43 @@
 import React, { Component } from 'react';
-import {sender, setSuperParent} from './handling/TowerV2';
-
-
-//prime
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
 
-class App extends Component {
-    state = { content: [] }
+import "./App.css"
+import LoginComponent from "./Components/Login.js"
+import {Route, Switch} from 'react-router-dom';
+import ContentComponent from './Components/Content.js'
+import TopMenuComponent from './Components/TopMenu.js'
+import SettingsComponent from './Components/Settings';
 
-    componentDidMount() {
-        setSuperParent(this);
-        let info = {
-            "layoutMode" : "generic",
-            "appMode" : "full",
-            "applicationName" : "demo"
-          }; sender("/api/startup", info, this);
+class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      menuTop: true
     }
-    
-    render() { 
-        return ( 
-        <div className="p-grid">
-            <div className="p-col-8">{this.state.content}</div>
-            <div className="p-col-4">{this.state.menu}</div>
-        </div> );
+    this.changeMenuValue = this.changeMenuValue.bind(this);
+  }
+
+  changeMenuValue() {
+    this.state.menuTop ? this.setState({menuTop: false}) : this.setState({menuTop: true});
     }
+
+  render() {
+    return (
+      <main>
+        <Switch>
+          <Route path="/login" component={LoginComponent} />
+          <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} />
+          <Route path="/topmenu" component={TopMenuComponent} />
+          <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} changeMenuValue={this.changeMenuValue} />} />
+        </Switch>
+      </main>
+    )
+  }
 }
- 
+  
+
 export default App;
