@@ -24,10 +24,10 @@ export function sender(endpoint, body){
         body: JSON.stringify(body),
         credentials:"include"
     };
-    //console.log("send")
+    console.log("send")
     fetch(BaseUrl+endpoint,reqOpt)
         .then(res => res.json())
-        .then(jRes => {jRes.forEach(e => handler(e))})
+        .then(jRes => {console.log(jRes); jRes.forEach(e => handler(e))})
 }
 
 export function handler(request){
@@ -135,21 +135,21 @@ function addToParentContent(toAdd){
 
 //respone type handlers
 export function login(){
-  let LogInMask = 
-    <div key="LoginMask">
-      <Button label="Log in Admin" key="admin" onClick={() => logIn("admin","admin")}/>
-      <Button label="Log in Show" key="show" onClick={() => logIn("show","show")}/>
-      <Button label="Log in feature" key="featues" onClick={() => logIn("features","features")}/>
-    </div>
-  setSuperParentContent(LogInMask)
+  // let LogInMask = 
+  //   <div key="LoginMask">
+  //     <Button label="Log in Admin" key="admin" onClick={() => logIn("admin","admin")}/>
+  //     <Button label="Log in Show" key="show" onClick={() => logIn("show","show")}/>
+  //     <Button label="Log in feature" key="featues" onClick={() => logIn("features","features")}/>
+  //   </div>
+  // setSuperParentContent(LogInMask)
 }
 
 export function userData(input){
-setSuperParentContent(
-    <div key="UserData">
-      <h1>{input.displayName}</h1>
-      <Button label="Logout" onClick={() => logOut()} />
-    </div>)
+// setSuperParentContent(
+//     <div key="UserData">
+//       <h1>{input.displayName}</h1>
+//       <Button label="Logout" onClick={() => logOut()} />
+//     </div>)
 }
 
 export function applicationMetaData(metaData){

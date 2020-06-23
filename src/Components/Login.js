@@ -7,7 +7,7 @@ import {Checkbox} from 'primereact/checkbox';
 import { Redirect } from 'react-router-dom';
 import logo from './imgs/sibvisionslogo.png'
 
-import { logIn } from "../handling/TowerV2";
+import { logIn, sender } from "../handling/TowerV2";
 
 class LoginComponent extends Component {
     constructor(props) {
@@ -31,11 +31,17 @@ class LoginComponent extends Component {
         })
     }
 
+    componentDidMount() {
+        let info = {
+            "layoutMode" : "generic",
+            "appMode" : "full",
+            "applicationName" : "demo"
+        }; sender("/api/startup", info, this);
+    }
+
     handleClick() {
         logIn(this.state.username, this.state.password);
         this.setState({loggedIn:true})
-        console.log(this.state)
-        
     }
 
     render() {

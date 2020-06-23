@@ -13,16 +13,7 @@ class Base extends Component {
             this.props.content.forEach(e => {
                 handler(e);
             });
-            let oldState = [...this.state.content]
-            this.tempChanges.forEach(e => {
-                oldState.push(e)
-            });
-            this.setState({content: oldState})
-            console.log("-----------------------------------------------------------------")
-            console.log("props"); console.log(this.props);
-            console.log("this"); console.log(this);
-            console.log("tempChanges"); console.log(this.tempChanges);
-            console.log("-----------------------------------------------------------------")
+            this.setState({content: this.tempChanges});
             this.tempChanges = [];
         }   
     }

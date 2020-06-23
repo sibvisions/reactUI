@@ -5,31 +5,38 @@ import MenuComponent from "./Menu";
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import {Card} from 'primereact/card';
+import { sender, setSuperParent } from "../handling/TowerV2";
 
 class ContentComponent extends Component {
+
+    state = {
+        menu: [],
+        content: []
+    }
 
     componentDidMount() {
         if(!this.props.menuTop) {
             stretch('content-sidemenu');
         }
+        setSuperParent(this);
     }
 
     render() {
         if(this.props.menuTop) {
             return (
                 <React.Fragment>
-                    <TopMenuComponent menu={this.props.menu}/> 
+                    <TopMenuComponent menu={this.state.menu}/> 
                     <div className="content-topmenu">
                         <div className="p-grid">
                            <div className="p-col-6">
                                 <Card>
-                                    {this.props.content}
+                                    {this.state.content}
                                 </Card>
                              </div>
                             <div className="p-col-6">
                             </div>
                         </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-topmenu"/>
+                        {/* <FooterComponent divToCheck="content-topmenu"/> */}
                     </div>
                 </React.Fragment>
             )
@@ -53,7 +60,7 @@ class ContentComponent extends Component {
                                 </Card>
                             </div>
                         </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/>
+                        {/* <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/> */}
                     </div>
                 </React.Fragment>
             )
