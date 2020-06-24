@@ -125,8 +125,8 @@ body .p-menubar .p-menuitem-link:hover, body .p-menubar .p-menuitem-link:hover .
 }
 
 /*looks clickable*/
-body .p-menubar .p-menuitem-link:hover {
-    border-bottom: 2px solid white;
+body .p-menubar .p-menuitem:hover {
+    border-bottom: 4px solid rgba(255, 255, 255, 0.42);
 }
 
 /*no border as above for menuitems in list*/
@@ -163,12 +163,4 @@ body .p-sidebar {
 body .sidebar-menu {
     border: none;
     margin-top: 25px;
-}
-
-.seperator {
-    background-color: white;
-    height: 1px;
-    width: 100%;
-    margin-left: 50px;
-    margin-right: 50px;
 }

@@ -40,7 +40,6 @@ class TopMenuComponent extends Component {
                             <Menubar model={this.props.profileMenu} />
                         </div>
                     </div>
-                    <div className="seperator" />
                 </div>
                 <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
                     <TieredMenu className="sidebar-menu" model={this.props.menu}/>
