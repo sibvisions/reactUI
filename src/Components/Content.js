@@ -4,7 +4,6 @@ import TopMenuComponent from "./TopMenu";
 import MenuComponent from "./Menu";
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
-import {Card} from 'primereact/card';
 import { setSuperParent } from "../handling/TowerV2";
 
 class ContentComponent extends Component {
@@ -49,15 +48,7 @@ class ContentComponent extends Component {
     }
 
     render() {
-        var cardList = []
         if(this.props.menuTop) {
-            if(this.state.content.length !== 0) {
-                this.state.content.forEach(e => {
-                    var cards = <div className="p-col-4"><Card>{e}</Card></div>;
-                    cardList.push(cards);
-                    console.log(cardList)
-                })
-            }
             return (
                 <React.Fragment>
                     <TopMenuComponent menu={this.state.menu} profileMenu={this.sendProfileOptions()}/> 
@@ -76,7 +67,7 @@ class ContentComponent extends Component {
                     <MenuComponent menu={this.state.menu}/>
                     <div className="content-sidemenu">
                         <div className="p-grid">
-                            {cardList}
+                            {this.state.content}
                         </div>
                         <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/>
                     </div>
