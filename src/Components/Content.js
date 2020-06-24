@@ -5,6 +5,7 @@ import MenuComponent from "./Menu";
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import { setSuperParent } from "../handling/TowerV2";
+import { withRouter } from "react-router-dom";
 
 class ContentComponent extends Component {
 
@@ -27,7 +28,7 @@ class ContentComponent extends Component {
                     {
                         label: 'Einstellungen',
                         icon: "pi pi-cog",
-                        command: () => this.props.history.push('/settings', {menu: this.props.menu})
+                        command: () => this.props.history.push('/settings')
                     },
                     {
                         label: 'Logout',
@@ -77,4 +78,4 @@ class ContentComponent extends Component {
     }
 }
 
-export default ContentComponent;
+export default withRouter(ContentComponent);
