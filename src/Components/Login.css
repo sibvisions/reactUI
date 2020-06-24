@@ -2,10 +2,13 @@ html, body, #root {
     height: 100%;
   }
 
+body {
+  margin: 0;
+}
+
 .background {
     background-image: url(imgs/loginbackground.png);
-    background-repeat: no-repeat;
-    height: 100%;
+    height: 100vh;
     padding: 7%
 }
 
@@ -17,8 +20,7 @@ html, body, #root {
 }
 
 img {
-  width: 100%;
-  object-fit: cover;
+  width: 100vh;
 }
 
 h3 {

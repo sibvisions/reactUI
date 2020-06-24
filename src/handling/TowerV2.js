@@ -133,6 +133,7 @@ function addToParentContent(toAdd){
   }
 }
 
+
 //respone type handlers
 export function login(){
   // let LogInMask = 
@@ -145,11 +146,7 @@ export function login(){
 }
 
 export function userData(input){
-// setSuperParentContent(
-//     <div key="UserData">
-//       <h1>{input.displayName}</h1>
-//       <Button label="Logout" onClick={() => logOut()} />
-//     </div>)
+  superParent.setState({username: input.displayName})
 }
 
 export function applicationMetaData(metaData){

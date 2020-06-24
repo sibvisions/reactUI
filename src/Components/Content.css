@@ -23,7 +23,14 @@ html, body, #root {
   transition-delay: .3s;
 }
 
-.p-grid {
+.content-topmenu .p-grid {
+  margin-top: -70px;
+  margin-left: 34px;
+  margin-right: 34px;
+}
+
+.content-sidemenu .p-grid {
+  padding-top: 25px;
   margin-right: 0;
 }
 
@@ -32,19 +39,19 @@ html, body, #root {
   font-weight: bold;
 }
 
-.p-col-6 {
+.p-col-4 {
   padding: 1em;
   padding-top: 0;
 }
 
-.p-card-title {
-  overflow-wrap: break-word;
+@media only screen and (max-width: 1575px) {
+  .p-grid {
+      margin-top: -50px;
+  }
 }
 
-.incomingPay {
-  color: green;
-}
-
-.outgoingPay {
-  color: red;
+@media only screen and (max-width: 1207px) {
+  .p-grid {
+      margin-top: -25px;
+  }
 }

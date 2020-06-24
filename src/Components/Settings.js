@@ -6,6 +6,7 @@ import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
 import FooterComponent from "./Footer"
+import { withRouter } from "react-router-dom";
 
 class SettingsComponent extends Component {
 
@@ -13,6 +14,7 @@ class SettingsComponent extends Component {
         if(!this.props.menuTop) {
             stretch("settings-content-side")
         }
+        console.log(this.props.location)
     }
     render() {
         if(this.props.menuTop) {
@@ -24,8 +26,8 @@ class SettingsComponent extends Component {
                             Menü oben
                             <InputSwitch checked={this.props.menuTop} onChange={this.props.changeMenuValue} />
                         </Card>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-top"/>
                     </div>
+                    <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-top"/>
                 </div>
             )
         }
@@ -40,10 +42,11 @@ class SettingsComponent extends Component {
                         </Card>
                         <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-side"/>
                     </div>
+                    
                 </div>
             )
         }
     }
 }
 
-export default SettingsComponent
+export default withRouter(SettingsComponent)

@@ -16,25 +16,6 @@ class MenuComponent extends Component {
                 command: () => this.props.history.push("/content")
             },
             {
-                label: "John Doe",
-                icon: "pi avatar-icon",
-                items: [
-                    {
-                        label: 'Profil',
-                        icon: "pi pi-user"
-                    },
-                    {
-                        label: 'Einstellungen',
-                        icon: "pi pi-cog",
-                        command: () => this.props.history.push("/settings")
-                    },
-                    {
-                        label: 'Logout',
-                        icon: "pi pi-power-off"
-                    }
-                ]
-            },
-            {
                 label: "Zahlungen",
                 icon: "pi pi-dollar",
                 items: [ 
@@ -120,6 +101,27 @@ class MenuComponent extends Component {
                 ]
             }
         ]
+        this.profileOptions = [
+            {
+                label: "John Doe",
+                icon: "pi avatar-icon",
+                items: [
+                    {
+                        label: 'Profil',
+                        icon: "pi pi-user"
+                    },
+                    {
+                        label: 'Einstellungen',
+                        icon: "pi pi-cog",
+                        command: () => this.props.history.push("/settings")
+                    },
+                    {
+                        label: 'Logout',
+                        icon: "pi pi-power-off"
+                    }
+                ]
+            },
+        ]
     }
     
     render() {
@@ -170,7 +172,8 @@ class MenuComponent extends Component {
                     </div>
                 </div>
                 <div className={"menu-container"} ref={el => this.menu = el} onChange={(e) => this.onMenuChange}>
-                    <TieredMenu model={this.items}/>
+                    <TieredMenu model={this.profileOptions} />
+                    <TieredMenu model={this.props.menu}/>
                 </div>
             </React.Fragment>
                 

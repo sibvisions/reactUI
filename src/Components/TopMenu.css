@@ -1,6 +1,7 @@
+/*Design and dimensions for bar at the very top of the screen */
 .topMenuBar {
     height: 80px;
-    padding-bottom: 125px;
+    padding-bottom: 175px;
     background-color:#4f5965;
     display: flex;
     width: 100%;
@@ -9,6 +10,12 @@
     box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
 }
 
+/*no margin fpr topbar*/
+.topMenuBar.p-grid {
+    margin: 0;
+}
+
+/*aligns the logo and the searchbar to the middle of the topbar */
 .logo-topmenu, .searchbar-topmenu {
     padding-top: 30px;
     display: flex;
@@ -16,26 +23,26 @@
     align-items: center;
 }
 
+/*moving the logo a little bit to the right */
 .logo-topmenu {
     padding-left: 50px
 }
 
-body .p-menubar {
-    height: 100%;
-}
-
+/*Button, which gets displayed at a certain  min-width gets hidden while the page is wide + position if it is displayed */
 .button-topmenu {
     display: none;
     padding-top: 27px;
 }
 
-.button-topmenu, .profile {
+/*color + makes it look like its clickable */
+.button-topmenu {
     color: white;
     cursor: pointer;
 }
 
+/*Positioning of the userprofile + text of the div is not selectable*/
 .profile {
-    padding-top: 13px;
+    margin-top: -12px;
     padding-right: 50px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -45,82 +52,31 @@ body .p-menubar {
     user-select: none;
 }
 
-.profile-content:hover {
-    border-bottom: 2px solid white;
-}
-
-.profile-content {
-    display: flex;
-    align-items: center;
-    padding-right: 5px;
-}
-
-.profile-options {
-    position: fixed;
-    margin: 0;
-    margin-top: 5px;
-    padding: 0;
-    overflow: auto;
-    list-style: none;
-    border: 1px solid #c8c8c8;
-    box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
-}
-
-.profile-options-item {
-    background-color: white;
-    padding: 0.714em 0.857em;
-}
-
-.profile-options-item:hover {
-    background-color: #eaeaea;
-}
-
-.profile-options-link, .profile-options-link:hover {
-    display: block;
-    color:black;
-    background-color: inherit;
-}
-
-.profile-options-text {
-    margin-left: 10px;
-}
-
-.avatar {
-    width: 35px !important;
-    height: 35px !important;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
+/*button which gets displayed at certain width has a hover to black so it looks more clickable*/
 .button-topmenu:hover {
     color: black;
 }
 
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
 @media only screen and (max-width: 1575px) {
     .topMenuBar {
-        padding-bottom: 150px;
+        padding-bottom: 190px;
     }
 }
 
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
 @media only screen and (max-width: 1207px) {
     .topMenuBar {
-        padding-bottom: 175px;
+        padding-bottom: 200px;
     }
 }
 
-@media only screen and (min-width: 1075px) {
-    body .p-menubar {
-        padding-top: 8px;
-        padding-left: 130px;
-    }
+/*menu in middle */
+body .p-menubar {
+    padding-top: 8px;
 }
 
-@media only screen and (max-width: 1075px) {
-    body .p-menubar {
-        padding-top: 8px;
-    }
-}
-
+/*adjust height of topbar, hide the menu and show the button mentioned earlier, logo, searchbar and profile moved*/
 @media only screen and (max-width: 945px) {
     .topMenuBar {
         padding-bottom: 125px;
@@ -143,57 +99,76 @@ body .p-menubar {
     }
 }
 
+/*hide button*/
 @media only screen and (max-width: 705px) {
     .logo-topmenu {
         display: none;
     }
 }
 
-.p-grid{
-    margin: 0;
-}
-
-.p-col {
-    flex-grow: 1
-}
-
+/*menu inherits border and backgound color from topbar*/
 body .p-menubar {
     background-color: inherit;
     border: inherit;
 }
 
-body .p-menubar .p-menuitem-link .p-menuitem-text,  body .p-menubar .p-menuitem-link .p-menuitem-icon, body .p-menubar .p-menuitem-link .p-submenu-icon {
-    color: white
+/*menuitem and subicon stay white*/
+body .p-menubar .p-menuitem-link, body .p-menubar .p-menuitem-link .p-menuitem-text, body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text,
+body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link .p-submenu-icon {
+    color: white;
 }
 
-body .p-menubar .submenu .p-menuitem-link .p-menuitem-text, body .p-menubar .submenu .p-menuitem-link .p-menuitem-icon, body .p-menubar .submenu .p-menuitem-link .p-submenu-icon {
-    color: black;
-}
-
-body .p-menubar .p-menuitem-link:hover, body .p-menubar .p-menuitem-link:hover .p-menuitem-text, body .p-menubar .p-menuitem-link:hover .p-menuitem-icon {
+/*stays the same when hovoring over menuitem*/
+body .p-menubar .p-menuitem-link:hover, body .p-menubar .p-menuitem-link:hover .p-menuitem-text, body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link {
     background-color: #4f5965;
     color: white;
 }
 
+/*looks clickable*/
 body .p-menubar .p-menuitem-link:hover {
     border-bottom: 2px solid white;
 }
 
-body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link {
+/*no border as above for menuitems in list*/
+body .p-menubar .p-menuitem .p-menuitem-active > .p-menuitem-link {
     border-bottom: none;
 }
 
-body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text, body .p-menubar .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-icon {
+/*submenu items' backgrounds are white*/
+body .p-menubar .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link {
     background-color: inherit;
 }
 
+/*hovering effect*/
+body .p-menubar .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link:hover {
+    background-color: #eaeaea
+}
 
+/*color for submenutext if not set they aren't visible because they get set white above*/
+body .p-menubar .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link .p-menuitem-text {
+    color: black
+}
 
+/*text-background doesn't get changed*/
+body .p-menubar .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link:hover .p-menuitem-text {
+    background-color: inherit
+}
+
+/*design for sidebar*/
 body .p-sidebar {
     background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgba(246,246,246,1) 74%, rgba(233,233,233,1) 91%);;
 }
 
+/*move menu in sidebar down so it doesn't overlap with the close button*/
 body .sidebar-menu {
     border: none;
     margin-top: 25px;
+}
+
+.seperator {
+    background-color: white;
+    height: 1px;
+    width: 100%;
+    margin-left: 50px;
+    margin-right: 50px;
 }

@@ -5,13 +5,40 @@ import MenuComponent from "./Menu";
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import {Card} from 'primereact/card';
-import { sender, setSuperParent } from "../handling/TowerV2";
+import { setSuperParent } from "../handling/TowerV2";
 
 class ContentComponent extends Component {
 
     state = {
         menu: [],
-        content: []
+        content: [],
+        username: ""
+    }
+
+    sendProfileOptions() {
+        let profileOptions = [
+            {
+                label: this.state.username,
+                icon: "pi avatar-icon",
+                items: [
+                    {
+                        label: 'Profil',
+                        icon: "pi pi-user"
+                    },
+                    {
+                        label: 'Einstellungen',
+                        icon: "pi pi-cog",
+                        command: () => this.props.history.push('/settings', {menu: this.props.menu})
+                    },
+                    {
+                        label: 'Logout',
+                        icon: "pi pi-power-off"
+                    }
+                ]
+            },
+        ]
+
+        return profileOptions
     }
 
     componentDidMount() {
@@ -22,21 +49,23 @@ class ContentComponent extends Component {
     }
 
     render() {
+        var cardList = []
         if(this.props.menuTop) {
+            if(this.state.content.length !== 0) {
+                this.state.content.forEach(e => {
+                    var cards = <div className="p-col-4"><Card>{e}</Card></div>;
+                    cardList.push(cards);
+                    console.log(cardList)
+                })
+            }
             return (
                 <React.Fragment>
-                    <TopMenuComponent menu={this.state.menu}/> 
+                    <TopMenuComponent menu={this.state.menu} profileMenu={this.sendProfileOptions()}/> 
                     <div className="content-topmenu">
                         <div className="p-grid">
-                           <div className="p-col-6">
-                                <Card>
-                                    {this.state.content}
-                                </Card>
-                             </div>
-                            <div className="p-col-6">
-                            </div>
+                           {this.state.content}
                         </div>
-                        {/* <FooterComponent divToCheck="content-topmenu"/> */}
+                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-topmenu"/>
                     </div>
                 </React.Fragment>
             )
@@ -44,23 +73,12 @@ class ContentComponent extends Component {
         else {
             return (
                 <React.Fragment>
-                    <MenuComponent/>
+                    <MenuComponent menu={this.state.menu}/>
                     <div className="content-sidemenu">
                         <div className="p-grid">
-                            <div className="p-col-6">
-                            <Card>
-                                {console.log(this.props.content)}
-                                {this.props.content}
-                            </Card>
-                            </div>
-                            <div className="p-col-6">
-                                <Card title="Ausgänge">
-                                    <p>50 Zahlungsausgänge</p>
-                                    <p>30.000€</p>
-                                </Card>
-                            </div>
+                            {cardList}
                         </div>
-                        {/* <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/> */}
+                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/>
                     </div>
                 </React.Fragment>
             )

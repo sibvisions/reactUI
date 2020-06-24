@@ -6,7 +6,7 @@ import "primeflex/primeflex.css";
 
 import "./App.css"
 import LoginComponent from "./Components/Login.js"
-import {Route, Switch} from 'react-router-dom';
+import {Route, Switch,Redirect} from 'react-router-dom';
 import ContentComponent from './Components/Content'
 import SettingsComponent from './Components/Settings';
 
@@ -37,6 +37,7 @@ class App extends Component {
           <Route path="/login" component={LoginComponent} />
           <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} />
           <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} changeMenuValue={this.changeMenuValue} />} />
+          <Redirect exact from="/" to="login" />
         </Switch>
       </main>
     )
