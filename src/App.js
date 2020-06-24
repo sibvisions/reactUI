@@ -10,6 +10,7 @@ import {Route, Switch,Redirect} from 'react-router-dom';
 import ContentComponent from './components/Content'
 import SettingsComponent from './components/Settings';
 
+import { lazyLogin, logOut } from "./handling/TowerV2";
 
 
 class App extends Component {
@@ -33,6 +34,7 @@ class App extends Component {
   render() {
     return (
       <main>
+        <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
         <Switch>
           <Route path="/login" component={LoginComponent} />
           <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} />

@@ -78,7 +78,7 @@ export function logIn(username,password){
 /**
  * calls "/api/logout" with clientId stored in localStorage
  */
-function logOut(){
+export function logOut(){
   console.log("logged out")
   cleanSlate();
   sender("/api/logout", {clientId: localStorage.getItem("clientId")});
@@ -100,15 +100,9 @@ export function register(it){
  * Deletes all content and sets logIn mask
  */
 function cleanSlate(){
-  superParent.setState({content: [], menu: []})
+  superParent.setState({content: [], menu: [], username:""})
 }
 
-/**
- * Overrides SuperParents state.content
- */
-function setSuperParentContent(newContent){
-  superParent.setState( {content: [newContent]} )
-}
 
 /**
  * Appends a new Object to the superParents state.content
@@ -133,6 +127,9 @@ function addToParentContent(toAdd){
   }
 }
 
+export function lazyLogin(){
+  logIn("features", "features")
+}
 
 //respone type handlers
 export function login(){
