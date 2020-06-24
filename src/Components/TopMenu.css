@@ -79,7 +79,7 @@ body .p-menubar {
 /*adjust height of topbar, hide the menu and show the button mentioned earlier, logo, searchbar and profile moved*/
 @media only screen and (max-width: 945px) {
     .topMenuBar {
-        padding-bottom: 125px;
+        padding-bottom: 110px;
     }
     
     body .p-menubar {
@@ -100,7 +100,7 @@ body .p-menubar {
 }
 
 /*hide button*/
-@media only screen and (max-width: 705px) {
+@media only screen and (max-width: 733px) {
     .logo-topmenu {
         display: none;
     }

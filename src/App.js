@@ -5,10 +5,10 @@ import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
 
 import "./App.css"
-import LoginComponent from "./Components/Login.js"
+import LoginComponent from "./components/Login.js"
 import {Route, Switch,Redirect} from 'react-router-dom';
-import ContentComponent from './Components/Content'
-import SettingsComponent from './Components/Settings';
+import ContentComponent from './components/Content'
+import SettingsComponent from './components/Settings';
 
 
 

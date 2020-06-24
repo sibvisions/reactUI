@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {responseMaper} from './responeMaper'
-import NPanel from '../Components/NPanel'
+import NPanel from '../components/NPanel'
 
 //prime imports
 import {Button} from 'primereact/button'
-import NTable from '../Components/NTable';
+import NTable from '../components/NTable';
 
 let superParent;
 /**
