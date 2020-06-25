@@ -26,9 +26,7 @@ class TopMenuComponent extends Component {
         return (
             <React.Fragment>
                 <div className="topMenuBar p-grid">
-                    <div className="logo-topmenu p-col-fixed">
-                        <img src={logo} alt="firmenlogo"/>
-                    </div>
+                    
                     <div className="button-topmenu p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
             	        <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
                     </div>

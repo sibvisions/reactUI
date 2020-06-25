@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { register, handler } from "../../handling/TowerV2";
+import { register, handler } from "../../handling/TowerV3";
 
 class Base extends Component {
 

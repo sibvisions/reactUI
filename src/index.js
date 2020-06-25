@@ -5,19 +5,21 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 
-import { sender } from "./handling/TowerV2";
+import { sender } from "./handling/TowerV3";
 
-function startup(){
-  let info = {
-    "layoutMode" : "generic",
-    "appMode" : "full",
-    "applicationName" : "demo"
-}; sender("/api/startup", info, this);
+function start(){
+  if(localStorage.getItem("clientId") === null){
+    let info = {
+      "layoutMode" : "generic",
+      "appMode" : "full",
+      "applicationName" : "demo"
+    }; sender("/api/startup", info, this);
+  }
 }
 
 ReactDOM.render(
   <BrowserRouter>
-  {startup()}
+  {start()}
     <App />
   </BrowserRouter>,
   document.getElementById('root')

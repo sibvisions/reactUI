@@ -1,4 +1,4 @@
-import {login, userData, applicationMetaData, menu, generic, panel, button, closeScreen, table} from './TowerV2'
+import {login, userData, applicationMetaData, menu, generic, panel, button, closeScreen, table} from './TowerV3'
 
 export const responseMaper = [{
     name:"applicationMetaData",

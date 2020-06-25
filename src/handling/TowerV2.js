@@ -18,6 +18,13 @@ let MPC = []
  * Registerd Menu change Functions
  */
 let RMF = []
+
+
+/**
+ * full Content on display
+ */
+let superContent = [];
+
 const BaseUrl= "http://localhost:8080/JVx.mobile/services/mobile"
 
 //Handler
@@ -109,7 +116,6 @@ export function register(it){
 function cleanSlate(){
   superParent.setState({content: [], menu: [], username:""})
 }
-
 
 /**
  * Appends a new Object to the superParents state.content
@@ -229,7 +235,7 @@ export function generic(props){
           if(parent.pid !== undefined) again = true 
       });
       //if hierachy has finished building set build hierachy
-      if(again){ buildHierachy(step) } else { step.forEach(e => handler(e))}
+      if(again){ buildHierachy(step) } else { superContent.push(step); step.forEach(e => handler(e))}
   }
 }
 
@@ -250,6 +256,9 @@ export function button(input){
     label={input.elem.text} 
     componentid={input.name} 
     onClick={() => buttonClicked(input.elem.name)}/>);
+
+
+
 }
 
 export function closeScreen(toClose){
