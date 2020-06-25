@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import "./Content.css"
-import TopMenuComponent from "./TopMenu";
-import MenuComponent from "./Menu";
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import { setSuperParent } from "../handling/TowerV2";
@@ -52,7 +50,6 @@ class ContentComponent extends Component {
         if(this.props.menuTop) {
             return (
                 <React.Fragment>
-                    <TopMenuComponent menu={this.state.menu} profileMenu={this.sendProfileOptions()}/> 
                     <div className="content-topmenu">
                         <div className="p-grid">
                            {this.state.content}
@@ -65,7 +62,6 @@ class ContentComponent extends Component {
         else {
             return (
                 <React.Fragment>
-                    <MenuComponent menu={this.state.menu}/>
                     <div className="content-sidemenu">
                         <div className="p-grid">
                             {this.state.content}
