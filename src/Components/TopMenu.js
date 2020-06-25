@@ -13,9 +13,20 @@ class TopMenuComponent extends Component {
         super(props)
         this.state = {
             sideBarVisible: false,
-            profileOptionsVisible: false
+            subIconFlip: false
         }
     }
+
+    componentDidUpdate() {
+        var elems = document.getElementsByClassName("pi-caret-down");
+        console.log(elems[0])
+        for(let e of elems) {
+            e.classList.remove("pi-caret-down");
+            e.classList.add("pi-angle-down")
+            e.style.fontSize = "0.75em"
+        };
+    }
+
     render() {
         return (
             <React.Fragment>

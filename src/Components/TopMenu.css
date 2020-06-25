@@ -130,7 +130,7 @@ body .p-menubar .p-menuitem:hover {
 }
 
 /*no border as above for menuitems in list*/
-body .p-menubar .p-menuitem .p-menuitem-active > .p-menuitem-link {
+body .p-menubar .p-menuitem-active .p-submenu-list .p-menuitem:hover {
     border-bottom: none;
 }
 
