@@ -9,6 +9,12 @@ import { withRouter } from "react-router-dom";
 
 class TopMenuComponent extends Component {
 
+    state = {
+        menu: [],
+        content: [],
+        username: ""
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -37,9 +43,12 @@ class TopMenuComponent extends Component {
                     </div>
                     <div className="profile p-col-fixed">
                         <div className="profile-content">
+                            <button onClick={() => this.props.history.push("/settings")}> settings</button>
+                            <button onClick={() => this.props.history.push("/content")}> settings</button>
                             <Menubar model={this.props.profileMenu} />
                         </div>
                     </div>
+                    <div className="seperator" />
                 </div>
                 <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
                     <TieredMenu className="sidebar-menu" model={this.props.menu}/>

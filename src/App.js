@@ -11,6 +11,7 @@ import ContentComponent from './components/Content'
 import SettingsComponent from './components/Settings';
 
 import { lazyLogin, logOut } from "./handling/TowerV2";
+import MenuHolder from "./components/MenuHolder";
 
 
 class App extends Component {
@@ -29,15 +30,20 @@ class App extends Component {
 
   changeMenuValue() {
     this.state.menuTop ? this.setState({menuTop: false}) : this.setState({menuTop: true});
-    }
+  }
+
+  menuChanged(){
+    
+  }
 
   render() {
     return (
       <main>
         <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
+        <MenuHolder />
         <Switch>
           <Route path="/login" component={LoginComponent} />
-          <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} />
+          <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} menuChanged={this.menuChanged} />
           <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} changeMenuValue={this.changeMenuValue} />} />
           <Redirect exact from="/" to="login" />
         </Switch>

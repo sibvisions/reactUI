@@ -1,17 +1,23 @@
 import React from 'react';
 
-import {responseMaper} from './responeMaper'
-import NPanel from '../components/NPanel'
+import {responseMaper} from './responeMaper';
+import NPanel from '../components/responseObj/NPanel';
+import NTable from '../components/responseObj/NTable';
 
 //prime imports
 import {Button} from 'primereact/button'
-import NTable from '../components/NTable';
+
 
 let superParent;
 /**
  * Mounted Parent Components
  */
 let MPC = []
+
+/**
+ * Registerd Menu change Functions
+ */
+let RMF = []
 const BaseUrl= "http://localhost:8080/JVx.mobile/services/mobile"
 
 //Handler
@@ -81,6 +87,7 @@ export function logIn(username,password){
 export function logOut(){
   console.log("logged out")
   cleanSlate();
+  sendMenuChanges([])
   sender("/api/logout", {clientId: localStorage.getItem("clientId")});
   
 }
@@ -131,6 +138,20 @@ export function lazyLogin(){
   logIn("features", "features")
 }
 
+export function registerToMenuChanges(toBeCalled){
+  RMF.push(toBeCalled);
+}
+
+export function unregisterFromMenuChanges(ToBeCalled){
+  RMF.splice(RMF.indexOf(ToBeCalled), 1)
+}
+
+function sendMenuChanges(newMenuItems){
+  RMF.forEach(e => {
+    e(newMenuItems)
+  });
+}
+
 //respone type handlers
 export function login(){
   // let LogInMask = 
@@ -173,6 +194,7 @@ export function menu(props){
           }
       });
   });
+  sendMenuChanges(groups);
   superParent.setState({menu: groups})
 }
 
