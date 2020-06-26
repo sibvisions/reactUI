@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { setSuperParent, registerToContentChange, startUp } from '../handling/TowerV3';
 
-
 class Test extends Component {
     state = { 
         content: []

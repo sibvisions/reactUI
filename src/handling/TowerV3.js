@@ -89,19 +89,11 @@ export function setSuperParent(context){
     superParent = context
 }
 
-/**
- * Appends a new Object to the superParents state.content
- * @param {ReactObject} newContent Element to add
- */
+
 function addSuperParentContent(newContent){
     sendContent(newContent)
 }
 
-/**
- * Trys to find the elements parent Obj in MPC and appends {toAdd} to its state.content
- * if non is found at to superParents state.content instead.
- * @param {ReactElement} toAdd 
- */
 function addToParentContent(toAdd){
     if(toAdd.props.pid === undefined) addSuperParentContent(toAdd)
     else {
@@ -192,10 +184,6 @@ function sendContent(newContent){
 export function getAllSavedContent(){
     return localStorage.getItem("content");
 }
-
-
-
-
 
 // response types ---------
 
