@@ -50,7 +50,7 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
             }
             /*menuitem and subicon stay the same color - dark*/
             .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
                     color: $menuColorDark;
                 }
                 /*stays the same when hovoring over menuitem - dark*/
@@ -88,7 +88,7 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
             }
             /*menuitem and subicon stay the same color - light*/
             .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
                     color: $menuColorLight;
                 }
                 /*stays the same when hovoring over menuitem - light*/
@@ -125,7 +125,7 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
             }
             /*menuitem and subicon stay the same color - light*/
             .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
                     color: $menuColorBlue;
                 }
                 /*stays the same when hovoring over menuitem - blue*/
@@ -183,7 +183,6 @@ body {
             >.p-menuitem.p-menuitem-active {
                 >.p-menuitem-link {
                     background-color: inherit;
-                    color: black;
                 }
                 >.p-menuitem-link:hover {
                     background-color: #eaeaea
@@ -204,15 +203,6 @@ body {
                 }
             }
         }  
-    }
-}
-
-/*color for submenutext if not set they aren't visible because they get set white above*/
-body {
-    .p-menubar {
-        .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link .p-menuitem-text {
-            color: black
-        }
     }
 }
 
@@ -255,10 +245,13 @@ body {
 
 /*aligns the logo and the searchbar to the middle of the topbar */
 .logo-topmenu, .searchbar-topmenu {
-    padding-top: 30px;
     display: flex;
     height: 100%;
     align-items: center;
+}
+
+.searchbar-topmenu {
+    padding-top: 30px;
 }
 
 /*logo styling*/
@@ -271,7 +264,8 @@ img {
 
 /*moving the logo a little bit to the right */
 .logo-topmenu {
-    padding-left: 50px
+    padding-top: 35px;
+    padding-left: 50px;
 }
 
 /*Button, which gets displayed at a certain  min-width gets hidden while the page is wide + position if it is displayed */

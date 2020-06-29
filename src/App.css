@@ -2,3 +2,7 @@ main {
     min-height: 100%;
     background-color: #eeeeee;
 }
+
+html, body, #root {
+    height: 100%;
+}

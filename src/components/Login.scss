@@ -1,17 +1,16 @@
-html, body, #root {
-    height: 100%;
-}
-
+//body margin to 0
 body {
   margin: 0;
 }
 
+//background design
 .background {
     background-image: url(imgs/loginbackground.png);
     height: 100vh;
     padding: 7%
 }
 
+//items in background and upper part of the login mask are central
 .background, .upperMask {
   display:flex;
   align-items: center;
@@ -19,10 +18,7 @@ body {
   flex-flow: wrap;
 }
 
-img {
-  width: 100vh;
-}
-
+//login mask design and positioning
 .loginmask {
   background-color: white;
   opacity: 0.9;
@@ -34,10 +30,12 @@ img {
   min-width: 25%;
 }
 
+//width of user inputs
 #username, .p-button, #password {
   width: 100%;
 }
 
+//margins in mask
 img, .p-float-label, #password, .checkStay{
   margin-bottom: 6%;
 }

@@ -16,32 +16,59 @@ import MenuHolder from "./components/MenuHolder";
 
 class App extends Component {
 
+  /**
+   * constructor with state variables and method bindings
+   * @param {*} props default for constructor
+   */
   constructor(props) {
     super(props);
     this.state = {
       menuTop: true,
       theme: 'dark',
+      loggedIn: false,
       username: ''
     }
     this.changeMenuValue = this.changeMenuValue.bind(this);
     this.changeThemeValue = this.changeThemeValue.bind(this);
     this.setUsername = this.setUsername.bind(this);
+    this.setLoggedIn = this.setLoggedIn.bind(this);
   }
 
+  /**
+   * If the Inputswitch value in Settings component gets changed this function gets called and the state will be set.
+   */
   changeMenuValue() {
     this.state.menuTop ? this.setState({menuTop: false}) : this.setState({menuTop: true});
   }
 
+  /**
+   * If the Theme Radiobutton value in Settings component gets changed this function gets called and the state will be set.
+   */
   changeThemeValue(input) {
     this.setState({theme: input.value});
   }
 
+  /**
+   * If the user logs in, this methodgets called to set the state.
+   */
+  setLoggedIn() {
+    this.setState({loggedIn: true});
+  }
+
+  /**
+   * Profileoptions are set here with the username of the user. These get sent to the components whichneed to show the users profile
+   */
   sendProfileOptions() {
     let profileOptions = [
         {
             label: this.state.username,
             icon: "pi avatar-icon",
             items: [
+                {
+                  label: 'Home',
+                  icon: "pi pi-home",
+                  command: () => this.props.history.push('/content')
+                },
                 {
                     label: 'Profil',
                     icon: "pi pi-user"
@@ -62,17 +89,24 @@ class App extends Component {
     return profileOptions
   }
 
+  /**
+   * Because the superparent is set in content the username gets set in the Content. This function gets called when the username is set in Content and sets the state in App so it can be used later on.
+   * @param {string} input the username which is sent by the Content component.
+   */
   setUsername(input) {
     this.setState({username: input})
   }
 
+  /**
+   * theme gets set, if the user is not logged in the menu will not be rendered. Basic routing for different components and functions are set as props.
+   */
   render() {
     return (
       <main className={this.state.theme}>
         <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
-        <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/>
+        {this.state.loggedIn ? <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/> : null}
         <Switch>
-          <Route path="/login" component={LoginComponent} />
+          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>} />
           <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
           <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
           <Redirect exact from="/" to="login" />

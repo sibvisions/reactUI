@@ -1,17 +1,121 @@
-$topBgdDark: #4f5965;
-$topColorDark: white;
-$shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
+/*Variables*/
+/*Variables for dark theme*/
+$bgdDark: #4f5965;
+$btnDark: white;
 $btnHovDark: black;
+$searchDark: #5a6673;
+$searchIconDark: white;
+/*Variables for light theme*/
+$bgdLight: #f4f4f4;
+$btnLight: #c5c5c5;
+$btnHovLight: black;
+$searchLight: #e7e7e7;
+$searchIconLight: black;
+/*Variables for blue theme*/
+$bgdBlue: #457fca;
+$btnBlue: white;
+$btnHovBlue: black;
+$searchBlue: #2f6fd4;
+$searchIconBlue: white;
+/*other*/
+$shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
 
-html, body, #root {
-    height: 100%;
+/*Styling*/
+/*mixin for themes*/
+@mixin theme-colors($dark, $light, $blue) {
+    @if $dark {
+        & .topBar {
+            background-color:$bgdDark;
+            .p-inputgroup {
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchDark;
+                    border: 1px transparent;
+                }
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconDark;
+                }
+            }
+            .button-sidemenu {
+                color: $btnDark;
+                :hover {
+                    color: $btnHovDark;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    @else if $light {
+        & .topBar {
+            background-color:$bgdLight;
+            .p-inputgroup {
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchLight;
+                    border: 1px transparent;
+                }
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconLight;
+                }
+            }
+            .button-sidemenu {
+                color: $btnLight;
+                :hover {
+                    color: $btnHovLight;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    @else if $blue {
+        & .topBar {
+            background-color:$bgdBlue;
+            .p-inputgroup {
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchBlue;
+                    border: 1px transparent;
+                }
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconBlue;
+                }
+            }
+            .button-sidemenu {
+                color: $btnBlue;
+                :hover {
+                    color: $btnHovBlue;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 }
-  
+
+/*use the mixin in main*/
+main {
+    &.dark {
+        @include theme-colors($dark: true,$light: false ,$blue: false);
+    }
+    &.light {
+        @include theme-colors($dark: false,$light: true ,$blue: false);
+    }
+    &.blue {
+        @include theme-colors($dark: false,$light: false ,$blue: true);
+    }
+}
+
+/*custom avatar icon for profile*/
+.avatar-icon::before{
+    background-image: url(imgs/avatar.jfif);
+    background-size: 30px 30px;
+    display: inline-block;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50%;
+    content:"";
+}
+
+/*Positioning*/
 .topBar {
     position: fixed;
     top:0;
-    background-color:$topBgdDark;
-    color: $topColorDark;
     height: 80px;
     display: flex;
     width: 100%;
@@ -22,54 +126,23 @@ html, body, #root {
     box-shadow: $shadow;
 }
 
-.logo-sidemenu, .button-sidemenu, .projecttitle, .searchbar-sidemenu  {
+.logo-sidemenu, .button-sidemenu, .searchbar-sidemenu  {
     display: flex;
     height: 100%;
     align-items: center;
 }
 
-.projecttitle {
-    margin: 0 auto;
-    font-size: x-large;
-    font-weight: bold;
+.logo-sidemenu {
+    padding-top: 10px;
 }
 
 .searchbar-sidemenu {
     margin-left: auto;
-    border: 2px;
 }
 
 .button-sidemenu {
     margin-left: 20px;
 }
-
-.button-sidemenu:hover {
-    cursor: pointer;
-    color: $btnHovDark;
-}
-
-body {
-    .p-inputgroup {
-        .p-inputgroup-addon, .p-inputtext {
-            background-color: #5a6673;
-            border: 1px transparent;
-        }
-    } 
-}
-
-body {
-    .p-inputgroup {
-        .p-inputgroup-addon, .p-inputtext::placeholder {
-            color: white;
-        }
-    }
-}
-
-.p-inputgroup {
-    .p-inputgroup-addon {
-        border-right: none;
-    }
-} 
 
 .p-inputgroup {
     .p-inputtext {
@@ -94,6 +167,15 @@ img {
     z-index: 1;
 }
 
+body {
+    .p-tieredmenu {
+        width: 100%;
+        border-radius: 0;
+        border: none;
+    }    
+}
+
+/*Animation*/
 @keyframes hide{
     0% { transform: translate(0);}
     20% { transform: translate(5px);}
@@ -114,37 +196,3 @@ img {
   .show {
     animation: show 0.5s forwards ease-in-out;
   }
-
-.p-tieredmenu {
-    width: 100%;
-    border: none;
-}
-
-body {
-    .p-tieredmenu {
-        border-radius: 0;
-        border: none;
-    }    
-}
-
-.avatar-icon::before{
-    background-image: url(imgs/avatar.jfif);
-    background-size: 30px 30px;
-    display: inline-block;
-    width: 30px !important;
-    height: 30px !important;
-    border-radius: 50%;
-    content:"";
-}
-
-body {
-    .p-tieredmenu {
-        .p-menuitem {
-            .p-menuitem-link {
-                .p-submenu-icon {
-                    font-size: 1em;
-                }
-            }
-        }
-    }
-}    

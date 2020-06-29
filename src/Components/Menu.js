@@ -7,124 +7,40 @@ import { withRouter } from "react-router-dom";
 
 class MenuComponent extends Component {
 
-    constructor(props) {
-        super(props)
-        this.items = [
-            {
-                label: "Home",
-                icon: "pi pi-home",
-                command: () => this.props.history.push("/content")
-            },
-            {
-                label: "Zahlungen",
-                icon: "pi pi-dollar",
-                items: [ 
-                    {
-                        label: 'Übersicht',
-                        icon: 'pi pi-align-justify'
-                    },
-                    {
-                        label: 'Eingänge',
-                        icon: 'pi pi-angle-double-down'
-                    },
-                    {
-                        label: 'Ausgänge',
-                        icon: 'pi pi-angle-double-up'
-                    }
-                ]
-            },
-            {
-                label: "Projekte",
-                icon: "pi pi-globe",
-                items: [ 
-                    {
-                        label: 'Projekt A',
-                        icon: 'pi pi-angle-right'
-                    },
-                    {
-                        label: 'Projekt B',
-                        icon: 'pi pi-angle-right'
-                    }
-                ]
-            },
-            {
-                label: "Grafiken",
-                icon: "pi pi-chart-bar",
-                items: [ 
-                    {
-                        label: 'Übersicht',
-                        icon: 'pi pi-align-justify'
+    /**
+     * When the menu component gets mounted, change the submenu icon
+     */
+    componentDidMount() {
+        var elems = document.getElementsByClassName("pi-caret-right");
+        while(elems.length > 0) {
+            for(let e of elems) {
+                e.classList.remove("pi-caret-right");
+                e.classList.add("pi-angle-right")
+                e.style.fontSize = "1em"
+            };
+        }
+    }
 
-                    },
-                    {
-                        label: 'Grafik A',
-                        icon: 'pi pi-angle-right'
-                    },
-                    {
-                        label: 'Grafik B',
-                        icon: 'pi pi-angle-right'
-                    }
-                ]
-            },
-            {
-                label: "Dokumente",
-                icon: "pi pi-file-pdf",
-                items: [ 
-                    {
-                        label: 'Dokument A',
-                        icon: 'pi pi-angle-right'
-                    },
-                    {
-                        label: 'Dokument B',
-                        icon: 'pi pi-angle-right'
-                    },
-                    {
-                        label: 'Dokument C',
-                        icon: 'pi pi-angle-right'
-                    },
-                    {
-                        label: 'Dokument D',
-                        icon: 'pi pi-angle-right'
-                    }
-                ]
-            },
-            {
-                label: "Weiteres",
-                icon: "pi pi-list",
-                items: [ 
-                    {
-                        label: 'Weiteres Submenu 1',
-                    },
-                    {
-                        label: 'Weiteres Submenu 2',
-                    }
-                ]
-            }
-        ]
-        this.profileOptions = [
-            {
-                label: "John Doe",
-                icon: "pi avatar-icon",
-                items: [
-                    {
-                        label: 'Profil',
-                        icon: "pi pi-user"
-                    },
-                    {
-                        label: 'Einstellungen',
-                        icon: "pi pi-cog",
-                        command: () => this.props.history.push("/settings")
-                    },
-                    {
-                        label: 'Logout',
-                        icon: "pi pi-power-off"
-                    }
-                ]
-            },
-        ]
+    /**
+     * When the menu component gets mounted, change the submenu icon
+     * (In Future version maybe not needed)
+     */
+    componentDidUpdate() {
+        var elems = document.getElementsByClassName("pi-caret-right");
+        while(elems.length > 0) {
+            for(let e of elems) {
+                e.classList.remove("pi-caret-right");
+                e.classList.add("pi-angle-right")
+                e.style.fontSize = "1em"
+            };
+        }
     }
     
+    //rendering of menu component
     render() {
+            /**
+             * If the window width is below a certain point hide the menu, if the classList if the div already contains show or hide, remove it and add their counterpart
+             */
             window.onresize = () => {
                 if(this.menu != null) {
                     if(window.innerWidth <= 600 && this.menu.classList.contains("show")){
@@ -142,10 +58,13 @@ class MenuComponent extends Component {
             }
         return (
             <React.Fragment>
-                <div className={"topBar "  + this.props.theme}>
+                <div className="topBar">
                     <div className="logo-sidemenu">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
+                    {/**
+                     * When the div/button is clicked, add hide or show respectively on which value is in the classList
+                     */}
                     <div className="button-sidemenu" onClick={() => {
                         if(!this.menu.classList.contains("hide")) {
                             if(this.menu.classList.contains("show")) {
@@ -171,7 +90,7 @@ class MenuComponent extends Component {
                     </div>
                 </div>
                 <div className={"menu-container"} ref={el => this.menu = el} onChange={(e) => this.onMenuChange}>
-                    <TieredMenu model={this.profileOptions} />
+                    <TieredMenu model={this.props.profileMenu} />
                     <TieredMenu model={this.props.menu}/>
                 </div>
             </React.Fragment>

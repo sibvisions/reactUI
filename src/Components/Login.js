@@ -10,19 +10,25 @@ import logo from './imgs/sibvisionslogo.png'
 import { logIn, sender } from "../handling/TowerV2";
 
 class LoginComponent extends Component {
+    /**
+     * Constructor with state variables and bindings
+     * @param {*} props default contructor with props
+     */
     constructor(props) {
         super(props)
         this.state = {
             username: '',
             password: '',
-            staySignedIn: false,
-            loggedIn: false,
-            displaySettings: false
+            staySignedIn: false
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
+    /**
+     * Dynamically changes the state values so you can see them on screen
+     * @param {*} event "onChange" event
+     */
     handleChange(event) {
         const target = event.target;
         const id = target.id
@@ -31,21 +37,32 @@ class LoginComponent extends Component {
         })
     }
 
+    /**
+     * When the login component gets mounted, check if there is a client id in the localstorage. If there isn't send startup
+     */
     componentDidMount() {
-        let info = {
-            "layoutMode" : "generic",
-            "appMode" : "full",
-            "applicationName" : "demo"
-        }; sender("/api/startup", info, this);
+        if(!localStorage.getItem('clientId')) {
+            let info = {
+                "layoutMode" : "generic",
+                "appMode" : "full",
+                "applicationName" : "demo"
+            }; sender("/api/startup", info, this);
+        }
     }
 
+    /**
+     * call login method on button click, loggedIn state gets set in App
+     */
     handleClick() {
         logIn(this.state.username, this.state.password);
-        this.setState({loggedIn:true})
+        this.props.setLoggedIn();
     }
 
+    /**
+     * Renders the login component, if loggedIn in App is true, redirect to the content page
+     */
     render() {
-        if(this.state.loggedIn === true) {
+        if(this.props.loggedIn === true) {
             return <Redirect to='/content' />
         }
         return (
