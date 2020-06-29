@@ -5,7 +5,7 @@ import NPanel from '../components/responseObj/NPanel';
 import NTable from '../components/responseObj/NTable';
 
 //prime imports
-import {Button} from 'primereact/button'
+import { FButton } from '../components/responseObj/FButton';
 
 
 let superParent;
@@ -46,7 +46,7 @@ export function handler(request){
  * Takes ComponentId of Button and
  * calls "/api/v2/pressButton"
  */
-function buttonClicked(e){
+export function buttonClicked(e){
   let body = {
       clientId: localStorage.getItem("clientId"),
       componentId: e
@@ -243,13 +243,7 @@ export function panel(input){
 }
 
 export function button(input){
-  addToParentContent(<Button 
-    key={input.id} 
-    id={input.id} 
-    pid={input.pid} 
-    label={input.elem.text} 
-    componentid={input.name} 
-    onClick={() => buttonClicked(input.elem.name)}/>);
+  addToParentContent(FButton(input));
 }
 
 export function closeScreen(toClose){

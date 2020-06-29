@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import "./Menu.css"
+import "./Menu.scss"
 import {TieredMenu} from 'primereact/tieredmenu';
 import logo from './imgs/sibvisionslogo.png'
 import {InputText} from 'primereact/inputtext';
@@ -142,7 +142,7 @@ class MenuComponent extends Component {
             }
         return (
             <React.Fragment>
-                <div className="topBar">
+                <div className={"topBar "  + this.props.theme}>
                     <div className="logo-sidemenu">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
@@ -161,7 +161,6 @@ class MenuComponent extends Component {
                     }>
             	        <i className="pi pi-bars" style={{fontSize: '1.5em', fontWeight:'bold'}}/>
                     </div>
-                    <span className="projecttitle">Projektname</span>
                     <div className="searchbar-sidemenu">
                         <div className="p-inputgroup">
                             <span className="p-inputgroup-addon">

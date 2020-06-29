@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
-import "./Login.css"
+import "./Login.scss"
 import { Button } from 'primereact/button';
 import {Checkbox} from 'primereact/checkbox';
 import { Redirect } from 'react-router-dom';
@@ -53,7 +53,6 @@ class LoginComponent extends Component {
                 <div className="loginmask">
                     <div className="upperMask">
                         <img src={logo} alt="firmenlogo"/>
-                        <h3>Projektname</h3>
                     </div>
                     <span className="p-float-label">
                         <InputText id="username" type="text" value={this.state.username} onChange={this.handleChange} />

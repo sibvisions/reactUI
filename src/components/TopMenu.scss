@@ -1,0 +1,355 @@
+/*Variables*/
+/*Variables for dark theme*/
+$bgdDark: #4f5965;
+$topBtnDark: white;
+$topBtnHover: black;
+$searchDark: #5a6673;
+$searchIconDark: white;
+$menuColorDark: white;
+$borderDark: 4px solid rgba(255, 255, 255, 0.42);
+/*Variables for light theme*/
+$bgdLight: #f4f4f4;
+$topBtnLight: #c5c5c5;
+$searchLight: #e7e7e7;
+$searchIconLight: black;
+$menuColorLight: black;
+$borderLight: 4px solid rgba(0, 0, 0, 0.42);
+/*Variables for blue theme*/
+$bgdBlue: #457fca;
+$topBtnBlue: white;
+$searchBlue: #2f6fd4;
+$searchIconBlue: white;
+$menuColorBlue: white;
+$borderBlue: 4px solid rgba(255, 255, 255, 0.42);
+/*other*/
+$shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
+
+/*Styling*/
+/*mixin for themes*/
+@mixin theme-colors($dark, $light, $blue) {
+    @if $dark {
+        & .topMenuBar {
+            background-color: $bgdDark;
+            .p-inputgroup {
+                /*searchbar styling - dark*/
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchDark;
+                    border: 1px transparent;
+                }
+                /*searchbar text and icon styling - dark*/
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconDark;
+                }
+            }
+            /*button styling - dark*/
+            .button-topmenu {
+                color: $topBtnDark;
+                :hover {
+                    color: $topBtnHover
+                }
+            }
+            /*menuitem and subicon stay the same color - dark*/
+            .p-menubar {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                    color: $menuColorDark;
+                }
+                /*stays the same when hovoring over menuitem - dark*/
+                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                    background-color: $bgdDark;
+                    color: $menuColorDark;
+                }
+                /*looks clickable*/
+                .p-menuitem:hover {
+                    border-bottom: $borderDark;
+                }
+            }
+          }
+        }
+        @else if $light {
+        & .topMenuBar{
+            background-color: $bgdLight;
+            .p-inputgroup {
+                /*searchbar styling - light*/
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchLight;
+                    border: 1px transparent;
+                }
+                /*searchbar text and icon styling - light*/
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconLight;
+                }
+            }
+            /*button styling - light*/
+            .button-topmenu {
+                color: $topBtnLight;
+                :hover {
+                    color: $topBtnHover
+                }
+            }
+            /*menuitem and subicon stay the same color - light*/
+            .p-menubar {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                    color: $menuColorLight;
+                }
+                /*stays the same when hovoring over menuitem - light*/
+                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                    background-color: $bgdLight;
+                    color: $menuColorLight;
+                }
+                /*looks clickable*/
+                .p-menuitem:hover {
+                    border-bottom: $borderLight;
+                }
+            }
+        }
+    } @else if $blue {
+        & .topMenuBar{
+            background-color: $bgdBlue;
+            .p-inputgroup {
+                /*searchbar styling - blue*/
+                .p-inputgroup-addon, .p-inputtext {
+                    background-color: $searchBlue;
+                    border: 1px transparent;
+                }
+                /*searchbar text and icon styling - blue*/
+                .p-inputgroup-addon, .p-inputtext::placeholder {
+                    color: $searchIconBlue;
+                }
+            }
+            /*button styling - blue*/
+            .button-topmenu {
+                color: $topBtnBlue;
+                :hover {
+                    color: $topBtnHover
+                }
+            }
+            /*menuitem and subicon stay the same color - light*/
+            .p-menubar {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                    color: $menuColorBlue;
+                }
+                /*stays the same when hovoring over menuitem - blue*/
+                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                    background-color: $bgdBlue;
+                    color: $menuColorBlue;
+                }
+                /*looks clickable*/
+                .p-menuitem:hover {
+                    border-bottom: $borderBlue;
+                }
+            }
+        }
+    }
+}
+
+/*Design and dimensions for bar at the very top of the screen */
+main {
+    &.dark {
+        @include theme-colors($dark: true,$light: false ,$blue: false);
+    }
+    &.light {
+        @include theme-colors($dark: false,$light: true ,$blue: false);
+    }
+    &.blue {
+        @include theme-colors($dark: false,$light: false ,$blue: true);
+    }
+}
+
+/*menu inherits border and backgound color from topbar*/
+body .p-menubar {
+    background-color: inherit;
+    border: inherit;
+}
+
+/*submenu items' backgrounds are white*/
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            .p-menuitem-link {
+                background-color: inherit;
+                >.p-menuitem-text {
+                    color: black
+                }
+            }
+         } 
+    }
+}
+
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            >.p-menuitem.p-menuitem-active {
+                >.p-menuitem-link {
+                    background-color: inherit;
+                    color: black;
+                }
+                >.p-menuitem-link:hover {
+                    background-color: #eaeaea
+                }
+            }
+         } 
+    }
+}
+
+/*text-background doesn't get changed*/
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            .p-menuitem-link:hover {
+                .p-menuitem-text{
+                    background-color: inherit
+                }
+            }
+        }  
+    }
+}
+
+/*color for submenutext if not set they aren't visible because they get set white above*/
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem-link .p-menuitem-text {
+            color: black
+        }
+    }
+}
+
+/*no border as above for menuitems in list*/
+body {
+    .p-menubar {
+        .p-menuitem-active {
+            .p-submenu-list {
+                .p-menuitem:hover {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+}
+
+/*design for sidebar*/
+body {
+    .p-sidebar {
+        background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgba(246,246,246,1) 74%, rgba(233,233,233,1) 91%);;
+    }
+}
+
+/*Positioning*/
+/*Topbar positioning*/
+.topMenuBar {
+    height: 80px;
+    padding-bottom: 175px;
+    display: flex;
+    width: 100%;
+    -webkit-box-shadow: $shadow;
+    -moz-box-shadow: $shadow;
+    box-shadow: $shadow;
+}
+
+/*no margin for topbar*/
+.topMenuBar.p-grid {
+    margin: 0;
+}
+
+/*aligns the logo and the searchbar to the middle of the topbar */
+.logo-topmenu, .searchbar-topmenu {
+    padding-top: 30px;
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+/*logo styling*/
+img {
+    width: 190px;
+    height: 40px;
+    border-radius: 5%;
+    margin-left: 5px;
+  }
+
+/*moving the logo a little bit to the right */
+.logo-topmenu {
+    padding-left: 50px
+}
+
+/*Button, which gets displayed at a certain  min-width gets hidden while the page is wide + position if it is displayed */
+.button-topmenu {
+    display: none;
+    padding-top: 27px;
+    cursor: pointer;
+}
+
+/*Positioning of the userprofile + text of the div is not selectable*/
+.profile {
+    margin-top: -12px;
+    padding-right: 50px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
+@media only screen and (max-width: 1575px) {
+    .topMenuBar {
+        padding-bottom: 190px;
+    }
+}
+
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
+@media only screen and (max-width: 1207px) {
+    .topMenuBar {
+        padding-bottom: 200px;
+    }
+}
+
+/*menu in middle */
+body {
+    .p-menubar {
+        padding-top: 8px;
+    }
+} 
+
+/*adjust height of topbar, hide the menu and show the button mentioned earlier, logo, searchbar and profile moved*/
+@media only screen and (max-width: 945px) {
+    .topMenuBar {
+        padding-bottom: 110px;
+    }
+    
+    body {
+        .p-menubar {
+            display: none;
+        }
+    } 
+
+    .button-topmenu {
+        display: flex;
+    }
+
+    .logo-topmenu, .searchbar-topmenu {
+        padding-top: 45px;
+    }
+
+    .profile {
+        padding-top: 26px;
+    }
+}
+
+/*hide button*/
+@media only screen and (max-width: 733px) {
+    .logo-topmenu {
+        display: none;
+    }
+}
+
+/*move menu in sidebar down so it doesn't overlap with the close button*/
+body {
+    .sidebar-menu {
+        border: none;
+        margin-top: 25px;
+    }
+} 

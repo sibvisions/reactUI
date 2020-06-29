@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./TopMenu.css"
+import "./TopMenu.scss"
 import {Menubar} from 'primereact/menubar';
 import logo from './imgs/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
@@ -25,7 +25,6 @@ class TopMenuComponent extends Component {
 
     componentDidUpdate() {
         var elems = document.getElementsByClassName("pi-caret-down");
-        console.log(elems[0])
         for(let e of elems) {
             e.classList.remove("pi-caret-down");
             e.classList.add("pi-angle-down")
@@ -34,9 +33,10 @@ class TopMenuComponent extends Component {
     }
 
     render() {
+        console.log(this.props.profileMenu)
         return (
             <React.Fragment>
-                <div className="topMenuBar p-grid">
+                <div className={"topMenuBar p-grid "}>
                     <div className="logo-topmenu p-col-fixed">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
@@ -55,7 +55,7 @@ class TopMenuComponent extends Component {
                     <div className="profile p-col-fixed">
                         <div className="profile-content">
                             <button onClick={() => this.props.history.push("/settings")}> settings</button>
-                            <button onClick={() => this.props.history.push("/content")}> settings</button>
+                            <button onClick={() => this.props.history.push("/content")}>content</button>
                             <Menubar model={this.props.profileMenu} />
                         </div>
                     </div>

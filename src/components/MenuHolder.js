@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TopMenuComponent from "./TopMenu";
+import MenuComponent from "./Menu";
 import { registerToMenuChanges, unregisterFromMenuChanges } from '../handling/TowerV2';
 
 class MenuHolder extends Component {
@@ -27,8 +28,10 @@ class MenuHolder extends Component {
     }
 
     render() {
-        return (  
-            <TopMenuComponent menu={this.state.items}/> 
+        return (
+            this.props.menuTop ? <TopMenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu}/>
+            : 
+            <MenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu} />
         );
     }
 }

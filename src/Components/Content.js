@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./Content.css"
+import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import { setSuperParent } from "../handling/TowerV2";
@@ -13,32 +13,6 @@ class ContentComponent extends Component {
         username: ""
     }
 
-    sendProfileOptions() {
-        let profileOptions = [
-            {
-                label: this.state.username,
-                icon: "pi avatar-icon",
-                items: [
-                    {
-                        label: 'Profil',
-                        icon: "pi pi-user"
-                    },
-                    {
-                        label: 'Einstellungen',
-                        icon: "pi pi-cog",
-                        command: () => this.props.history.push('/settings')
-                    },
-                    {
-                        label: 'Logout',
-                        icon: "pi pi-power-off"
-                    }
-                ]
-            },
-        ]
-
-        return profileOptions
-    }
-
     componentDidMount() {
         if(!this.props.menuTop) {
             stretch('content-sidemenu');
@@ -46,7 +20,12 @@ class ContentComponent extends Component {
         setSuperParent(this);
     }
 
+    sendUsername() {
+        return this.state.username ? this.props.setUsername(this.state.username) : null
+    }
+
     render() {
+        this.sendUsername();
         if(this.props.menuTop) {
             return (
                 <React.Fragment>

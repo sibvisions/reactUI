@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./Footer.css"
+import "./Footer.scss"
 import { CheckFooterSide, CheckFooterTop } from "./CheckFooter";
 
 class FooterComponent extends Component {

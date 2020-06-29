@@ -1,6 +1,6 @@
 html, body, #root {
     height: 100%;
-  }
+}
 
 body {
   margin: 0;
@@ -23,12 +23,6 @@ img {
   width: 100vh;
 }
 
-h3 {
-  width:100%;
-  text-align: center;
-  margin-top: 0;
-}
-
 .loginmask {
   background-color: white;
   opacity: 0.9;
@@ -44,6 +38,6 @@ h3 {
   width: 100%;
 }
 
-.p-float-label, #password, .checkStay{
-  margin-bottom: 5%;
+img, .p-float-label, #password, .checkStay{
+  margin-bottom: 6%;
 }
