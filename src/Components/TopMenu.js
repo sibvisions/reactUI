@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./TopMenu.css"
 import {Menubar} from 'primereact/menubar';
-import logo from './imgs/sibvisionslogo.png';
+// import logo from './imgs/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
 import {Sidebar} from 'primereact/sidebar';
 import {TieredMenu} from 'primereact/tieredmenu';
@@ -41,8 +41,6 @@ class TopMenuComponent extends Component {
                     </div>
                     <div className="profile p-col-fixed">
                         <div className="profile-content">
-                            <button onClick={() => this.props.history.push("/settings")}> settings</button>
-                            <button onClick={() => this.props.history.push("/content")}> settings</button>
                             <Menubar model={this.props.profileMenu} />
                         </div>
                     </div>

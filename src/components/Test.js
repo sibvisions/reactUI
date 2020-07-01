@@ -1,37 +1,25 @@
-import React, { Component } from 'react';
-import { setSuperParent, registerToContentChange, startUp } from '../handling/TowerV3';
+import React from 'react';
+import BScreen from './responseObj/BScreen';
+import { Switch, Route } from 'react-router-dom';
 
-class Test extends Component {
-    state = { 
-        content: []
-    }
 
-    currentContent= [];
+class Test extends BScreen {
 
-    constructor(props){
-        super(props)
-        this.updateContent = this.updateContent.bind(this)
-    }
-
-    updateContent(toUpdate){
-        if(Array.isArray(toUpdate)){ this.setState({content: toUpdate}); this.currentContent=toUpdate; console.log("Array Update")}
-        else {
-            console.log("Single Update")
-            this.currentContent.push(toUpdate)
-            this.setState({content: this.currentContent})
-        }
-    }
-    
-    componentDidMount(){
-        setSuperParent(this);
-        registerToContentChange(this.updateContent)
-        if(localStorage.getItem("content") !== null) startUp();
+    makeRoutes(ref){
+        let routes = []
+        ref.state.content.forEach(e => {
+            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => e} />)
+        });
+        return routes;
     }
 
     render(){ 
         return ( 
             <div>
-                {this.state.content}
+                <Switch>
+                    {this.makeRoutes(this)}
+                </Switch>
+                {this.state.route}
             </div>
          );
     }

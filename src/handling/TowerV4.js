@@ -1,4 +1,7 @@
-import { responseMaper } from "./responeMaper";
+import React, { forwardRef } from 'react';
+import NPanel from "../components/responseObj/NPanelV2";
+import { Button } from 'primereact/button';
+import { Redirect } from 'react-router-dom';
 
 const BaseUrl= "http://localhost:8080/JVx.mobile/services/mobile"
 const functionMapper = [{
@@ -8,10 +11,33 @@ const functionMapper = [{
 {
     name: "menu",
     func: menuBuilder
+},
+{
+    name: "screen.generic",
+    func: generic
+},
+{
+    name:"userData",
+    func: userData
+},
+{
+    name:"Panel",
+    func: panel
+},
+{
+    name:"Button",
+    func: button
+},
+{
+    name:"closeScreen",
+    func: closeWindow
 }]
 
 let user = {};
-let topLvlContent = []
+
+let Screen;
+let Containers = [];
+let RegMenuFunc = [];
 
 /**
  * Sends the request to the endpoint and calls handler with response
@@ -26,26 +52,133 @@ export function sendRequest(endpoint, body){
     };
     fetch(BaseUrl+endpoint, reqOpt)
         .then(res => res.json())
-        .then(jRes => handler(jRes));
+        .then(jRes =>  {console.log(jRes); handler(jRes);});
 }
 
 /**
  * Iterares through the answerArray and calls the mapped function mapped
  * by the functionMapper
- * @param {Array} answerArray an Array of anwser Objects
+ * @param {Array} answerArray an Array of ResponseObjects
  */
 export function handler(answerArray){
     answerArray.forEach(answer => {
-        functionMapper.find(func => func.name === answer.name).func(answer);
+        let temp = functionMapper.find(func => func.name === answer.name);
+        if(temp !== undefined) temp.func(answer);
+        
     });
+}
+
+/**
+ * calls sender("/api/login") with login info as object
+ * @param {string} username 
+ * @param {string} password 
+ */
+export function logIn(username,password){
+    let info = {
+        clientId: localStorage.getItem("clientId"),
+        loginData: {
+          userName: {
+            componentId: "UserName",
+            text: username
+          },
+          password: {
+            componentId: "Password",
+            text: password
+          },
+          action : {
+            componentId: "OK",
+            label: "Anmelden"
+          }
+        }
+      }
+    console.log("logging in")
+    sendRequest("/api/login",info)
+}
+
+export function lazyLogin(){
+    logIn("features", "features")
+}
+
+// Registration
+
+export function registerContainer(classReference){
+    Containers.push(classReference)
+}
+
+export function registerMenuChange(toDo){
+    RegMenuFunc.push(toDo);
+}
+
+/**
+ * Register Reference to Main Content Screen
+ * sets Screen
+ */ 
+export function registerScreen(classReference){
+    Screen = classReference
+}
+
+export function unRegisterContainer(classRefernece) {
+    Containers.splice(Containers.indexOf(classRefernece),1);
+}
+
+// Export Helper
+
+/**
+ * Returns currently logged in User
+ */
+export function getCurrentUser() {
+    return user
+}
+
+export function logOut(){
+    if(Screen !== undefined){
+        Screen.removeAll();
+    }
+    pushMenuUpdate([])
+    startUp();
+}
+
+// Helper
+
+/**
+ * Takes ComponentId of Button and
+ * calls "/api/v2/pressButton"
+ */
+function buttonClicked(e){
+    let body = {
+        clientId: localStorage.getItem("clientId"),
+        componentId: e
+    }
+  
+    sendRequest("/api/v2/pressButton", body);
+}
+
+function startUp(){
+    let info = {
+        "layoutMode" : "generic",
+        "appMode" : "full",
+        "applicationName" : "demo"
+      }; sendRequest("/api/startup", info, this);
+}
+
+// "Event" pusher
+
+function pushMenuUpdate(rawMenu){
+    RegMenuFunc.forEach(e => {
+        e(rawMenu);
+    });
+}
+
+function openNewWindow(newWindow){
+    Screen.addWindow(newWindow)
+}
+
+function addToParrentContainerById(toAdd){
+    Containers.find(a => a.props.id === toAdd.props.pid).addContent(toAdd);
 }
 
 // Respone types
 
-/**
- * Builds the hierachy of the menu and ...
- * @param {Array} allMenuItems an unsorted list of all menu elemnts
- */
 function menuBuilder(allMenuItems){
     let groupsString= [];
     let groups = [];
@@ -64,46 +197,97 @@ function menuBuilder(allMenuItems){
             if(e.label===subMenu.group) {
                 e.items.push({label: subMenu.action.label,
                     componentId:subMenu.action.componentId,
-                    
+                    command: () => buttonClicked(subMenu.action.componentId),
                     key:subMenu.action.label})
             }
         });
     });
+    pushMenuUpdate(groups);
 }
 
-/**
- * sets user
- * @param {Object} userInfo userInfo
- */
-function userData(userInfo) {
+function userData(userInfo){
     user = userInfo
 }
 
-/**
- * Returns currently logged in User
- */
-export function getCurrentUser() {
-    return user
-}
-
-/**
- * Saves the clientId to localStorage with key "clientId"
- * @param {Object} metaData 
- */
-function applicationMetaData(metaData) {
+function applicationMetaData(metaData){
     localStorage.setItem("clientId", metaData.clientId);
 }
 
-function generic(gen) {
+function generic(gen){
     let standard = []
 
     if(gen.changedComponents !== undefined && gen.changedComponents.length > 0){
         gen.changedComponents.forEach(e => {
-            standard.push({id: e.id, pid: e.parent, name: e.name, elem: e})
+            standard.push({id: e.id, pid: e.parent, name: e.className, elem: e, children: []})
         });
+        containerCreateOrUpdate(gen.name, standard);
+    }
 
+    if(!gen.update){
+       Screen.routeToScreen(gen.componentId); 
+    }
+
+
+
+    function containerCreateOrUpdate(windowName, updatedElements) {
+        let toUpdate = Containers.find(e => e.props.componentid === windowName)
+        if(toUpdate === undefined){
+            let newContainer = buildHierachy(updatedElements);
+            handler([newContainer]);
+            return true;
+        } 
+        handler(updatedElements)
+    
+        function buildHierachy(children){
+            let uberParent = children.find(a => a.pid === undefined);
+            children.forEach(child => {
+                if(child.pid === uberParent.id){
+                    uberParent.children.push(child);
+                }
+                children.forEach(GC => {
+                    if(GC.pid !== undefined && GC.id === child.pid){
+                        GC.children.push(child);
+                    }
+                })
+            })
+            return uberParent;
+        }
     }
 }
+
+function panel(panelData){
+
+    let toAdd = <NPanel 
+        id={panelData.id} 
+        pid={panelData.pid} 
+        children={panelData.children} 
+        key={panelData.id}
+        componentid={panelData.elem.name} />
+
+    if(panelData.pid === undefined){
+        openNewWindow(toAdd);
+    }else{
+        addToParrentContainerById(toAdd);
+    }
+}
+
+function button(buttonData){
+    let toAdd = <Button 
+        key={buttonData.id}
+        id={buttonData.id} 
+        pid={buttonData.pid} 
+        label={buttonData.elem.text}
+        onClick={() => buttonClicked(buttonData.elem.name)}
+        componentid={buttonData.name} />
+
+    addToParrentContainerById(toAdd);
+}
+
+function closeWindow(windowData){
+    Screen.removeWindow(windowData.componentId)
+}
+
+
 
 
 

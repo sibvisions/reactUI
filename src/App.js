@@ -11,8 +11,9 @@ import "./App.css"
 // import SettingsComponent from './components/Settings';
 import MenuHolder from "./components/MenuHolder";
 
-import { lazyLogin, logOut } from "./handling/TowerV3";
+import { lazyLogin, logOut } from "./handling/TowerV4";
 import Test from "./components/Test";
+import { Link } from "react-router-dom";
 
 class App extends Component {
 
@@ -35,7 +36,8 @@ class App extends Component {
   render() {
     return (
       <main>
-        <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
+        <button onClick={() => lazyLogin()}>log in lazy</button><button onClick={() => logOut()}>log out</button>
+        <Link to="/Fir-N7">Home</Link> <Link to="/Sec-BL">Home</Link>
         <MenuHolder />
         <Test />
         {/* <MenuHolder />

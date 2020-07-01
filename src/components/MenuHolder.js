@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import TopMenuComponent from "./TopMenu";
-import { registerToMenuChanges, unregisterFromMenuChanges } from '../handling/TowerV3';
+import { registerMenuChange, handler } from '../handling/TowerV4';
 
 class MenuHolder extends Component {
-    state = { 
-        show: true,
-        items: []
-    }
+
+    state= {content : [], items: []}
 
     constructor(props){
         super(props);
         this.reloadMenu = this.reloadMenu.bind(this)
+
+        
     }
 
     reloadMenu(newMenuItems){
@@ -18,13 +18,9 @@ class MenuHolder extends Component {
     }
 
     componentDidMount() {
-        registerToMenuChanges(this.reloadMenu)
+        registerMenuChange(this.reloadMenu)
     }
-
-    componentWillUnmount(){
-        unregisterFromMenuChanges(this.reloadMenu)
-    }
-
+    
     render() {
         return (  
             <TopMenuComponent menu={this.state.items}/> 

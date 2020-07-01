@@ -1,16 +1,14 @@
 import React from 'react';
-import Base from './Base';
 import {Card} from 'primereact/card';
+import BaseV2 from './BaseV2';
 
-class NPanel extends Base {
+class NPanel extends BaseV2 {
 
-    state= {content: []};
-    
     render() { 
         return (
         <div className="p-col-4">
             <Card>
-                <h1>NPanel</h1>
+                <h1>{this.props.id}</h1>
                 {this.state.content}
             </Card>
         </div> 
