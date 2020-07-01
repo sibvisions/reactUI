@@ -5,8 +5,8 @@ import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
 import FooterComponent from "./Footer"
 import { withRouter, Redirect } from "react-router-dom";
-import { setSuperParent } from "../handling/TowerV2";
 import {RadioButton} from 'primereact/radiobutton';
+import BScreen from "./responseObj/BScreen";
 
 class SettingsComponent extends Component {
     //state variabls
@@ -24,7 +24,6 @@ class SettingsComponent extends Component {
         if(!this.props.menuTop) {
             stretch("settings-content-side")
         }
-        setSuperParent(this)
     }
 
     /**

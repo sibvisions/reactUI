@@ -10,7 +10,6 @@ import {Route, Switch,Redirect} from 'react-router-dom';
 import ContentComponent from './components/Content'
 import SettingsComponent from './components/Settings';
 import { withRouter } from "react-router-dom";
-import { lazyLogin, logOut } from "./handling/TowerV2";
 import MenuHolder from "./components/MenuHolder";
 
 import { lazyLogin, logOut } from "./handling/TowerV4";
@@ -26,7 +25,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menuTop: false,
+      menuTop: true,
       theme: 'dark',
       loggedIn: false,
       username: ''
@@ -56,6 +55,7 @@ class App extends Component {
    */
   setLoggedIn() {
     this.setState({loggedIn: true, loggedOut: false});
+    this.props.history.push('/')
   }
 
   /**
@@ -70,7 +70,10 @@ class App extends Component {
                 {
                   label: 'Home',
                   icon: "pi pi-home",
-                  command: () => this.props.history.push('/content')
+                  command: () => {
+                    this.props.history.push('/');
+                    this.setState({flip: true});
+                  }
                 },
                 {
                     label: 'Profil',
@@ -116,12 +119,17 @@ class App extends Component {
         {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
         <Growl ref={(el) => this.growl = el} position="topright" />
         {this.state.loggedIn ? <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/> : null}
-        <Switch>
+        {/* <Switch>
           <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
           <Route path="/content" component={() => <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
           <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
           <Redirect exact from="/" to="login" />
+        </Switch> */}
+        <Switch>
+          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
+          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
         </Switch>
+        <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>
       </main>
     )
   }

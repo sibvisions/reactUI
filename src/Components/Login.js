@@ -4,10 +4,10 @@ import { Button } from 'primereact/button';
 import {Checkbox} from 'primereact/checkbox';
 import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import logo from './imgs/sibvisionslogo.png'
 
-import { logIn, sender } from "../handling/TowerV2";
+import { logIn, sendRequest } from "../handling/TowerV4";
 
 class LoginComponent extends Component {
     /**
@@ -46,7 +46,7 @@ class LoginComponent extends Component {
                 "layoutMode" : "generic",
                 "appMode" : "full",
                 "applicationName" : "demo"
-            }; sender("/api/startup", info, this);
+            }; sendRequest("/api/startup", info, this);
         }
     }
 
@@ -62,9 +62,9 @@ class LoginComponent extends Component {
      * Renders the login component, if loggedIn in App is true, redirect to the content page
      */
     render() {
-        if(this.props.loggedIn === true) {
-            return <Redirect to='/content' />
-        }
+        // if(this.props.loggedIn === true) {
+        //     return <Redirect to='/content' />
+        // }
         return (
             <div className="background">
                 <div className="loginmask">
@@ -86,4 +86,4 @@ class LoginComponent extends Component {
         )
     }
 }
-export default LoginComponent;
+export default withRouter(LoginComponent);

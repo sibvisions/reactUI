@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./TopMenu.scss"
 import {Menubar} from 'primereact/menubar';
-// import logo from './imgs/sibvisionslogo.png';
+import logo from './imgs/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
 import {Sidebar} from 'primereact/sidebar';
 import {TieredMenu} from 'primereact/tieredmenu';
