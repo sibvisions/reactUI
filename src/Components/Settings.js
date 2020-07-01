@@ -4,7 +4,7 @@ import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
 import FooterComponent from "./Footer"
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import { setSuperParent } from "../handling/TowerV2";
 import {RadioButton} from 'primereact/radiobutton';
 
@@ -32,6 +32,9 @@ class SettingsComponent extends Component {
      * There are 3 selectable themes, dark, light and blue
      */
     render() {
+        // if(!this.props.loggedIn) {
+        // return <Redirect to='/login' />
+        // } 
         if(this.props.menuTop) {
             return (
                 <div className="settings-content-top">
@@ -42,11 +45,11 @@ class SettingsComponent extends Component {
                         </Card>
                         <Card className="p-col-3" style={{marginRight: '10px'}} title="Theme" subTitle="Hier kann eingestellt werden, welches Theme angezeigt werden soll.">
                             <RadioButton checked={this.props.theme === 'dark'} inputId="rb1" name="theme" value="dark" onChange={this.props.changeThemeValue}/>
-                            <label htmlFor="rb1" className="p-radiobutton-label" style={{marginRight: '5px'}}>Dark</label>
+                            <label htmlFor="rb1" className="p-radiobutton-label">Dark</label>
                             <RadioButton checked={this.props.theme === 'light'} inputId="rb2" name="theme" value="light" onChange={this.props.changeThemeValue}  />
-                            <label htmlFor="rb2" className="p-radiobutton-label" style={{marginRight: '5px'}}>Light</label>
+                            <label htmlFor="rb2" className="p-radiobutton-label">Light</label>
                             <RadioButton checked={this.props.theme === 'blue'} inputId="rb3" name="theme" value="blue" onChange={this.props.changeThemeValue}  />
-                            <label htmlFor="rb3" className="p-radiobutton-label" style={{marginRight: '5px'}}>Blue</label>
+                            <label htmlFor="rb3" className="p-radiobutton-label">Blue</label>
                         </Card>
                     </div>
                     <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-top"/>
@@ -68,10 +71,9 @@ class SettingsComponent extends Component {
                             <label htmlFor="rb2" className="p-radiobutton-label">Light</label>
                             <RadioButton checked={this.props.theme === 'blue'} inputId="rb3" name="theme" value="blue" onChange={this.props.changeThemeValue}  />
                             <label htmlFor="rb3" className="p-radiobutton-label">Blue</label>
-                        </Card>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-side"/>
+                        </Card>        
                     </div>
-                    
+                    <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-side"/>
                 </div>
             )
         }

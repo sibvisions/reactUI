@@ -3,7 +3,7 @@ import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import { setSuperParent } from "../handling/TowerV2";
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 
 class ContentComponent extends Component {
 
@@ -35,6 +35,9 @@ class ContentComponent extends Component {
     //Renders the content of the page.
     render() {
         this.sendUsername();
+        // if(!this.props.loggedIn) {
+        //     return <Redirect to='/login' />
+        // } 
         if(this.props.menuTop) {
             return (
                 <React.Fragment>

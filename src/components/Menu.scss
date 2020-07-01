@@ -1,4 +1,7 @@
 /*Variables*/
+@import 'theme-dark';
+@import 'theme-light';
+@import 'theme-blue';
 /*Variables for dark theme*/
 $bgdDark: #4f5965;
 $btnDark: white;
@@ -18,88 +21,43 @@ $btnHovBlue: black;
 $searchBlue: #2f6fd4;
 $searchIconBlue: white;
 /*other*/
-$shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
+$shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
 /*Styling*/
 /*mixin for themes*/
-@mixin theme-colors($dark, $light, $blue) {
-    @if $dark {
-        & .topBar {
-            background-color:$bgdDark;
-            .p-inputgroup {
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchDark;
+@mixin themable($theme-name, $theme-map) {
+    main {
+        &.#{$theme-name} {
+            .topBar {
+                background-color: map-get($theme-map, "topBar");
+                .hideBtn {
+                    color: map-get($theme-map, "fgdColor");
+                    margin-left: 20px;
+                    display: flex;
+                    height: 100%;
+                    align-items: center;
+                    :hover {
+                        color: map-get($theme-map, "hover");
+                        cursor: pointer;
+                    }
+                }
+                .p-inputtext {
+                    background-color: map-get($theme-map, "srch");
                     border: 1px transparent;
                 }
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconDark;
-                }
-            }
-            .button-sidemenu {
-                color: $btnDark;
-                :hover {
-                    color: $btnHovDark;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-    @else if $light {
-        & .topBar {
-            background-color:$bgdLight;
-            .p-inputgroup {
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchLight;
+                .p-inputtext::placeholder, .p-inputgroup-addon {
+                    background-color: map-get($theme-map, "srch");;
+                    color: map-get($theme-map, "fgdColor");
                     border: 1px transparent;
-                }
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconLight;
-                }
-            }
-            .button-sidemenu {
-                color: $btnLight;
-                :hover {
-                    color: $btnHovLight;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-    @else if $blue {
-        & .topBar {
-            background-color:$bgdBlue;
-            .p-inputgroup {
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchBlue;
-                    border: 1px transparent;
-                }
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconBlue;
-                }
-            }
-            .button-sidemenu {
-                color: $btnBlue;
-                :hover {
-                    color: $btnHovBlue;
-                    cursor: pointer;
                 }
             }
         }
     }
 }
 
-/*use the mixin in main*/
-main {
-    &.dark {
-        @include theme-colors($dark: true,$light: false ,$blue: false);
-    }
-    &.light {
-        @include theme-colors($dark: false,$light: true ,$blue: false);
-    }
-    &.blue {
-        @include theme-colors($dark: false,$light: false ,$blue: true);
-    }
-}
+@include themable('dark', $theme-dark);
+@include themable('light', $theme-light);
+@include themable('blue', $theme-blue);
 
 /*custom avatar icon for profile*/
 .avatar-icon::before{
@@ -120,7 +78,7 @@ main {
     display: flex;
     width: 100%;
     padding-right: 10px;
-    z-index: 2;
+    z-index: 10;
     -webkit-box-shadow: $shadow ;
     -moz-box-shadow: $shadow;
     box-shadow: $shadow;
@@ -164,7 +122,10 @@ img {
     height: 100%;
     left: 0;
     background-color: white;
-    z-index: 1;
+    z-index: 5;
+    box-shadow: $shadow;
+        -webkit-box-shadow: $shadow;
+        -moz-box-shadow: $shadow;
 }
 
 body {

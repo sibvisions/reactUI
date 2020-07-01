@@ -2,10 +2,16 @@
 .settings-content-side {
     padding-top: 100px;
     margin-left: 200px;
-    transition:0.3s;
-      -webkit-transition:0.3s;
-      -moz-transition:0.3s;
-      transition-delay: .2s;
+    transition: 0.3s;
+      -webkit-transition: 0.3s;
+      -moz-transition: 0.3s;
+      transition-delay: 0.2s;
+    .p-grid {
+        margin-left: 10px;
+        .p-col-3 {
+            margin-right: 10px;
+        }
+    }
 }
 
 //grid positioning
@@ -21,6 +27,13 @@
         margin-top: -70px;
     }
 }
+
+body {
+    .p-radiobutton-label {
+        margin-right: 5px;
+        margin-left: 0;
+    }
+} 
 
 //if the screen is smaller than 1575px move content lower
 @media only screen and (max-width: 1575px) {

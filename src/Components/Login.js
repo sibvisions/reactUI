@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {InputText} from 'primereact/inputtext';
-import {Password} from 'primereact/password';
 import "./Login.scss"
 import { Button } from 'primereact/button';
 import {Checkbox} from 'primereact/checkbox';
+import {InputText} from 'primereact/inputtext';
+import {Password} from 'primereact/password';
 import { Redirect } from 'react-router-dom';
 import logo from './imgs/sibvisionslogo.png'
 

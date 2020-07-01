@@ -56,7 +56,7 @@ class TopMenuComponent extends Component {
                     <div className="logo-topmenu p-col-fixed">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
-                    <div className="button-topmenu p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
+                    <div className="hideBtn p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
             	        <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
                     </div>
                     <Menubar model={this.props.menu}  className="p-col"/>

@@ -3,7 +3,7 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-
+import {Growl} from 'primereact/growl';
 import "./App.css"
 import LoginComponent from "./components/Login.js"
 import {Route, Switch,Redirect} from 'react-router-dom';
@@ -23,7 +23,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menuTop: true,
+      menuTop: false,
       theme: 'dark',
       loggedIn: false,
       username: ''
@@ -52,7 +52,7 @@ class App extends Component {
    * If the user logs in, this methodgets called to set the state.
    */
   setLoggedIn() {
-    this.setState({loggedIn: true});
+    this.setState({loggedIn: true, loggedOut: false});
   }
 
   /**
@@ -80,7 +80,14 @@ class App extends Component {
                 },
                 {
                     label: 'Logout',
-                    icon: "pi pi-power-off"
+                    icon: "pi pi-power-off",
+                    command: () => {
+                      logOut();
+                      this.setState({loggedIn: false});
+                      this.props.history.push('/login');
+                      this.growl.show({severity: 'info', summary: 'Logged out successfully', detail: 'You\'ve been logged out'});
+                    }
+
                 }
             ]
         },
@@ -103,18 +110,18 @@ class App extends Component {
   render() {
     return (
       <main className={this.state.theme}>
-        <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
+        {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
+        <Growl ref={(el) => this.growl = el} position="topright" />
         {this.state.loggedIn ? <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/> : null}
         <Switch>
-          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>} />
-          <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
-          <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
+          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
+          <Route path="/content" component={() => <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
+          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
           <Redirect exact from="/" to="login" />
         </Switch>
       </main>
     )
   }
 }
-  
 
 export default withRouter(App);
