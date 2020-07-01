@@ -1,0 +1,43 @@
+//Content does not overlap with the menu/topbar if menu is on the side
+.content-sidemenu {
+    padding-top: 80px;
+    margin-left: 200px;
+    height: 100%;
+    overflow: auto;
+    transition:0.3s;
+      -webkit-transition:0.3s;
+      -moz-transition:0.3s;
+    transition-delay: .2s;
+    min-height: 100%;
+    .p-grid {
+      margin-left: 10px;
+      margin-right: 10px;
+  }
+}
+
+//Positioning of the content if menu is on top so it does not overlap
+.content-topmenu {
+  .p-grid {
+    margin-top: -80px;
+    margin-left: 34px;
+    margin-right: 34px;
+  }
+}
+
+//stretch animation and stretching of content
+.stretched {
+  margin-left: 0px;
+  transition:0.3s;
+    -webkit-transition:0.3s;
+    -moz-transition:0.3s;
+    transition-delay: .3s;
+}
+
+//if the window is below 945px the grid will be moved down
+@media only screen and (max-width: 945px) {
+  .content-topmenu {
+    .p-grid {
+      margin-top: -30px;
+    }
+  }
+}

@@ -1,12 +1,14 @@
 {
   "name": "webclientreact",
   "version": "0.1.0",
+  "homepage": "http://localhost:8081/reactui",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "classnames": "^2.2.6",
+    "node-sass": "^4.14.1",
     "primeflex": "^1.1.1",
     "primeicons": "^4.0.0-rc.2",
     "primereact": "^4.2.2",

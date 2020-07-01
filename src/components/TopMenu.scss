@@ -1,0 +1,247 @@
+/*import themes*/
+@import 'theme-dark';
+@import 'theme-light';
+@import 'theme-blue';
+/*Variables*/
+$shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
+
+/*Styling*/
+/*mixin for themes*/
+@mixin themable($theme-name, $theme-map) {
+    .#{$theme-name} {
+        .topMenuBar {
+            background-color: map-get($theme-map, "topBar");
+            .menuBtnTop {
+                color: map-get($theme-map, "fgdColor");
+                :hover {
+                    color: map-get($theme-map, "hover");
+                    cursor: pointer;
+                }
+            }
+            .p-inputtext {
+                background-color: map-get($theme-map, "srch");
+                border: 1px transparent;
+            }
+            .p-inputtext::placeholder, .p-inputgroup-addon {
+                background-color: map-get($theme-map, "srch");;
+                color: map-get($theme-map, "fgdColor");
+                border: 1px transparent;
+            }
+            .p-menubar {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text,
+                .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                    color: map-get($theme-map, "fgdColor");
+                }
+                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                    background-color: map-get($theme-map, "topBar");
+                    color: map-get($theme-map, "fgdColor");
+                }
+                .p-menuitem:hover {
+                    border-bottom: map-get($theme-map, "border");
+                }
+            }
+        }
+    }
+}
+
+@include themable('dark', $theme-dark);
+@include themable('light', $theme-light);
+@include themable('blue', $theme-blue);
+
+/*menu inherits border and backgound color from topbar*/
+body .p-menubar {
+    background-color: inherit;
+    border: inherit;
+}
+
+/*submenu items' backgrounds are white*/
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            >.p-menuitem {
+                >.p-menuitem-link {
+                    background-color: inherit;
+                    >.p-menuitem-text {
+                        color: black
+                    }
+                }
+            }
+            
+         } 
+    }
+}
+
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            >.p-menuitem.p-menuitem-active {
+                >.p-menuitem-link {
+                    background-color: inherit;
+                }
+                >.p-menuitem-link:hover {
+                    background-color: #eaeaea
+                }
+            }
+         } 
+    }
+}
+
+/*text-background doesn't get changed*/
+body {
+    .p-menubar {
+        .p-menuitem.p-menuitem-active
+        > .p-submenu-list {
+            .p-menuitem-link:hover {
+                .p-menuitem-text{
+                    background-color: inherit
+                }
+            }
+        }  
+    }
+}
+
+/*no border as above for menuitems in list*/
+body {
+    .p-menubar {
+        .p-menuitem-active {
+            .p-submenu-list {
+                .p-menuitem:hover {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+}
+
+/*design for sidebar*/
+body {
+    .p-sidebar {
+        background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgba(246,246,246,1) 74%, rgba(233,233,233,1) 91%);;
+    }
+}
+
+/*Positioning*/
+/*Topbar positioning*/
+.topMenuBar {
+    height: 80px;
+    padding-bottom: 175px;
+    display: flex;
+    width: 100%;
+    -webkit-box-shadow: $shadow;
+    -moz-box-shadow: $shadow;
+    box-shadow: $shadow;
+}
+
+/*no margin for topbar*/
+.topMenuBar.p-grid {
+    margin: 0;
+}
+
+/*aligns the logo and the searchbar to the middle of the topbar */
+.logo-topmenu, .searchbar-topmenu {
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+.searchbar-topmenu {
+    padding-top: 30px;
+}
+
+/*logo styling*/
+img {
+    width: 190px;
+    height: 40px;
+    border-radius: 5%;
+    margin-left: 5px;
+  }
+
+/*moving the logo a little bit to the right */
+.logo-topmenu {
+    padding-top: 35px;
+    padding-left: 50px;
+}
+
+/*Button, which gets displayed at a certain  min-width gets hidden while the page is wide + position if it is displayed */
+.menuBtnTop {
+    display: none;
+    padding-top: 27px;
+    cursor: pointer;
+}
+
+/*Positioning of the userprofile + text of the div is not selectable*/
+.profile {
+    margin-top: -12px;
+    padding-right: 50px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
+@media only screen and (max-width: 1575px) {
+    .topMenuBar {
+        padding-bottom: 190px;
+    }
+}
+
+/*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/
+@media only screen and (max-width: 1207px) {
+    .topMenuBar {
+        padding-bottom: 200px;
+    }
+}
+
+/*menu in middle */
+body {
+    .p-menubar {
+        padding-top: 8px;
+    }
+} 
+
+/*adjust height of topbar, hide the menu and show the button mentioned earlier, logo, searchbar and profile moved*/
+@media only screen and (max-width: 945px) {
+    .topMenuBar {
+        padding-bottom: 110px;
+    }
+    
+    body {
+        .p-menubar {
+            display: none;
+        }
+    } 
+
+    .menuBtnTop {
+        display: flex;
+    }
+
+    .logo-topmenu, .searchbar-topmenu {
+        padding-top: 45px;
+    }
+
+    .profile {
+        padding-top: 26px;
+    }
+}
+
+/*hide button*/
+@media only screen and (max-width: 733px) {
+    .logo-topmenu {
+        display: none;
+    }
+}
+
+/*move menu in sidebar down so it doesn't overlap with the close button*/
+body {
+    .sidebar-menu {
+        border: none;
+        margin-top: 25px;
+    }
+} 

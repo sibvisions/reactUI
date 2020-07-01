@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./TopMenu.css"
+import "./TopMenu.scss"
 import {Menubar} from 'primereact/menubar';
 import logo from './imgs/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
@@ -9,27 +9,54 @@ import { withRouter } from "react-router-dom";
 
 class TopMenuComponent extends Component {
 
+    //state variables
     state = {
         menu: [],
         content: [],
-        username: ""
+        username: "",
+        sideBarVisible: false
     }
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            sideBarVisible: false,
-            profileOptionsVisible: false
+    /**
+     * When the menu component gets mounted, change the submenu icon
+     */
+    componentDidMount() {
+        var elems = document.getElementsByClassName("pi-caret-down");
+        while(elems.length > 0) {
+            for(let e of elems) {
+                e.classList.remove("pi-caret-down");
+                e.classList.add("pi-angle-down")
+                e.style.fontSize = "1em"
+            };
         }
     }
+
+    /**
+     * When the menu component gets mounted, change the submenu icon
+     * (In Future version maybe not needed)
+     */
+    componentDidUpdate() {
+        var elems = document.getElementsByClassName("pi-caret-down");
+        while(elems.length > 0) {
+            for(let e of elems) {
+                e.classList.remove("pi-caret-down");
+                e.classList.add("pi-angle-down")
+                e.style.fontSize = "1em"
+            };
+        }
+    }
+
+    /**
+     * renders the Topmenu component, Sidebar is visible when the button gets clicked
+     */
     render() {
         return (
             <React.Fragment>
-                <div className="topMenuBar p-grid">
+                <div className={"topMenuBar p-grid "}>
                     <div className="logo-topmenu p-col-fixed">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
-                    <div className="button-topmenu p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
+                    <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
             	        <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
                     </div>
                     <Menubar model={this.props.menu}  className="p-col"/>
@@ -43,12 +70,9 @@ class TopMenuComponent extends Component {
                     </div>
                     <div className="profile p-col-fixed">
                         <div className="profile-content">
-                            <button onClick={() => this.props.history.push("/settings")}> settings</button>
-                            <button onClick={() => this.props.history.push("/content")}> settings</button>
                             <Menubar model={this.props.profileMenu} />
                         </div>
                     </div>
-                    <div className="seperator" />
                 </div>
                 <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
                     <TieredMenu className="sidebar-menu" model={this.props.menu}/>

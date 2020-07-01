@@ -1,0 +1,64 @@
+//settings content positioning if the menu is on the side
+.settings-content-side {
+    padding-top: 100px;
+    margin-left: 200px;
+    transition: 0.3s;
+      -webkit-transition: 0.3s;
+      -moz-transition: 0.3s;
+      transition-delay: 0.2s;
+    .p-grid {
+        margin-left: 10px;
+        .p-col-3 {
+            margin-right: 10px;
+        }
+    }
+}
+
+//grid positioning
+.p-grid {
+    margin-right: 0;
+}
+
+//settings content positioning if the menu is on top
+.settings-content-top {
+    .p-grid {
+        margin-left: 50px;
+        margin-right: 50px;
+        margin-top: -70px;
+    }
+}
+
+body {
+    .p-radiobutton-label {
+        margin-right: 5px;
+        margin-left: 0;
+    }
+} 
+
+//if the screen is smaller than 1575px move content lower
+@media only screen and (max-width: 1575px) {
+    .settings-content-top {
+        margin-top: -50px;
+    }
+}
+
+//if the screen is smaller than 1207px move content lower
+@media only screen and (max-width: 1207px) {
+    .settings-content-top {
+        margin-top: -25px;
+    }
+}
+
+//Animation if settings-content gets stretched
+.stretched {
+      margin-left: 0px;
+      transition:0.3s;
+        -webkit-transition:0.3s;
+        -moz-transition:0.3s;
+      transition-delay: .3s;
+}
+
+//the cardtitle doesn't exceed the card
+.p-card-title {
+      overflow-wrap: break-word;
+}

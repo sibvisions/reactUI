@@ -3,54 +3,125 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-
+import {Growl} from 'primereact/growl';
 import "./App.css"
 import LoginComponent from "./components/Login.js"
 import {Route, Switch,Redirect} from 'react-router-dom';
 import ContentComponent from './components/Content'
 import SettingsComponent from './components/Settings';
-
+import { withRouter } from "react-router-dom";
 import { lazyLogin, logOut } from "./handling/TowerV2";
 import MenuHolder from "./components/MenuHolder";
 
 
 class App extends Component {
 
+  /**
+   * constructor with state variables and method bindings
+   * @param {*} props default for constructor
+   */
   constructor(props) {
     super(props);
     this.state = {
-      menuTop: true
+      menuTop: false,
+      theme: 'dark',
+      loggedIn: false,
+      username: ''
     }
     this.changeMenuValue = this.changeMenuValue.bind(this);
+    this.changeThemeValue = this.changeThemeValue.bind(this);
+    this.setUsername = this.setUsername.bind(this);
+    this.setLoggedIn = this.setLoggedIn.bind(this);
   }
 
-  componentDidMount() {
-    
-  }
-
+  /**
+   * If the Inputswitch value in Settings component gets changed this function gets called and the state will be set.
+   */
   changeMenuValue() {
     this.state.menuTop ? this.setState({menuTop: false}) : this.setState({menuTop: true});
   }
 
-  menuChanged(){
-    
+  /**
+   * If the Theme Radiobutton value in Settings component gets changed this function gets called and the state will be set.
+   */
+  changeThemeValue(input) {
+    this.setState({theme: input.value});
   }
 
+  /**
+   * If the user logs in, this methodgets called to set the state.
+   */
+  setLoggedIn() {
+    this.setState({loggedIn: true, loggedOut: false});
+  }
+
+  /**
+   * Profileoptions are set here with the username of the user. These get sent to the components whichneed to show the users profile
+   */
+  sendProfileOptions() {
+    let profileOptions = [
+        {
+            label: this.state.username,
+            icon: "pi avatar-icon",
+            items: [
+                {
+                  label: 'Home',
+                  icon: "pi pi-home",
+                  command: () => this.props.history.push('/content')
+                },
+                {
+                    label: 'Profil',
+                    icon: "pi pi-user"
+                },
+                {
+                    label: 'Einstellungen',
+                    icon: "pi pi-cog",
+                    command: () => this.props.history.push('/settings')
+                },
+                {
+                    label: 'Logout',
+                    icon: "pi pi-power-off",
+                    command: () => {
+                      logOut();
+                      this.setState({loggedIn: false});
+                      this.props.history.push('/login');
+                      this.growl.show({severity: 'info', summary: 'Logged out successfully', detail: 'You\'ve been logged out'});
+                    }
+
+                }
+            ]
+        },
+    ]
+
+    return profileOptions
+  }
+
+  /**
+   * Because the superparent is set in content the username gets set in the Content. This function gets called when the username is set in Content and sets the state in App so it can be used later on.
+   * @param {string} input the username which is sent by the Content component.
+   */
+  setUsername(input) {
+    this.setState({username: input})
+  }
+
+  /**
+   * theme gets set, if the user is not logged in the menu will not be rendered. Basic routing for different components and functions are set as props.
+   */
   render() {
     return (
-      <main>
-        <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button>
-        <MenuHolder />
+      <main className={this.state.theme}>
+        {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
+        <Growl ref={(el) => this.growl = el} position="topright" />
+        {this.state.loggedIn ? <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/> : null}
         <Switch>
-          <Route path="/login" component={LoginComponent} />
-          <Route path="/content" component={() => <ContentComponent menuTop={this.state.menuTop}/>} menuChanged={this.menuChanged} />
-          <Route path="/settings" component={() => <SettingsComponent menuTop={this.state.menuTop} changeMenuValue={this.changeMenuValue} />} />
+          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
+          <Route path="/content" component={() => <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
+          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
           <Redirect exact from="/" to="login" />
         </Switch>
       </main>
     )
   }
 }
-  
 
-export default App;
+export default withRouter(App);
