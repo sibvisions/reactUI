@@ -13,6 +13,9 @@ import { withRouter } from "react-router-dom";
 import { lazyLogin, logOut } from "./handling/TowerV2";
 import MenuHolder from "./components/MenuHolder";
 
+import { lazyLogin, logOut } from "./handling/TowerV4";
+import Test from "./components/Test";
+import { Link } from "react-router-dom";
 
 class App extends Component {
 
