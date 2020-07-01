@@ -1,55 +1,35 @@
-/*Variables*/
+/*import themes*/
 @import 'theme-dark';
 @import 'theme-light';
 @import 'theme-blue';
-/*Variables for dark theme*/
-$bgdDark: #4f5965;
-$btnDark: white;
-$btnHovDark: black;
-$searchDark: #5a6673;
-$searchIconDark: white;
-/*Variables for light theme*/
-$bgdLight: #f4f4f4;
-$btnLight: #c5c5c5;
-$btnHovLight: black;
-$searchLight: #e7e7e7;
-$searchIconLight: black;
-/*Variables for blue theme*/
-$bgdBlue: #457fca;
-$btnBlue: white;
-$btnHovBlue: black;
-$searchBlue: #2f6fd4;
-$searchIconBlue: white;
-/*other*/
+/*Variables*/
 $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
 /*Styling*/
 /*mixin for themes*/
 @mixin themable($theme-name, $theme-map) {
-    main {
-        &.#{$theme-name} {
-            .topBar {
-                background-color: map-get($theme-map, "topBar");
-                .hideBtn {
-                    color: map-get($theme-map, "fgdColor");
-                    margin-left: 20px;
-                    display: flex;
-                    height: 100%;
-                    align-items: center;
-                    :hover {
-                        color: map-get($theme-map, "hover");
-                        cursor: pointer;
-                    }
+    .#{$theme-name} {
+        .topBar {
+            background-color: map-get($theme-map, "topBar");
+            .menuBtnSide {
+                color: map-get($theme-map, "fgdColor");
+                margin-left: 20px;
+                display: flex;
+                height: 100%;
+                align-items: center;
+                :hover {
+                    color: map-get($theme-map, "hover");
+                    cursor: pointer;
                 }
-                .p-inputtext {
-                    background-color: map-get($theme-map, "srch");
-                    border: 1px transparent;
-                }
-                .p-inputtext::placeholder, .p-inputgroup-addon {
-                    background-color: map-get($theme-map, "srch");;
-                    color: map-get($theme-map, "fgdColor");
-                    border: 1px transparent;
-                }
+            }
+            .p-inputtext {
+                background-color: map-get($theme-map, "srch");
+                border: 1px transparent;
+            }
+            .p-inputtext::placeholder, .p-inputgroup-addon {
+                background-color: map-get($theme-map, "srch");;
+                color: map-get($theme-map, "fgdColor");
+                border: 1px transparent;
             }
         }
     }
@@ -84,7 +64,7 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
     box-shadow: $shadow;
 }
 
-.logo-sidemenu, .button-sidemenu, .searchbar-sidemenu  {
+.logo-sidemenu, .menuBtnSide, .searchbar-sidemenu  {
     display: flex;
     height: 100%;
     align-items: center;

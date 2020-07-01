@@ -16,7 +16,7 @@ function startup(){
 }
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename={'/reactui'}>
   {startup()}
     <App />
   </BrowserRouter>,

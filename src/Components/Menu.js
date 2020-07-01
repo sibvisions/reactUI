@@ -65,7 +65,7 @@ class MenuComponent extends Component {
                     {/**
                      * When the div/button is clicked, add hide or show respectively on which value is in the classList
                      */}
-                    <div className="hideBtn" onClick={() => {
+                    <div className="menuBtnSide" onClick={() => {
                         if(!this.menu.classList.contains("hide")) {
                             if(this.menu.classList.contains("show")) {
                                 this.menu.classList.remove("show");

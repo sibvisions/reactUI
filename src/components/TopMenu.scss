@@ -1,159 +1,54 @@
+/*import themes*/
+@import 'theme-dark';
+@import 'theme-light';
+@import 'theme-blue';
 /*Variables*/
-/*Variables for dark theme*/
-$bgdDark: #4f5965;
-$topBtnDark: white;
-$topBtnHover: black;
-$searchDark: #5a6673;
-$searchIconDark: white;
-$menuColorDark: white;
-$borderDark: 4px solid rgba(255, 255, 255, 0.42);
-/*Variables for light theme*/
-$bgdLight: #f4f4f4;
-$topBtnLight: #c5c5c5;
-$searchLight: #e7e7e7;
-$searchIconLight: black;
-$menuColorLight: black;
-$borderLight: 4px solid rgba(0, 0, 0, 0.42);
-/*Variables for blue theme*/
-$bgdBlue: #457fca;
-$topBtnBlue: white;
-$searchBlue: #2f6fd4;
-$searchIconBlue: white;
-$menuColorBlue: white;
-$borderBlue: 4px solid rgba(255, 255, 255, 0.42);
-/*other*/
 $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
 
 /*Styling*/
 /*mixin for themes*/
-@mixin theme-colors($dark, $light, $blue) {
-    @if $dark {
-        & .topMenuBar {
-            background-color: $bgdDark;
-            .p-inputgroup {
-                /*searchbar styling - dark*/
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchDark;
-                    border: 1px transparent;
-                }
-                /*searchbar text and icon styling - dark*/
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconDark;
-                }
-            }
-            /*button styling - dark*/
-            .button-topmenu {
-                color: $topBtnDark;
+@mixin themable($theme-name, $theme-map) {
+    .#{$theme-name} {
+        .topMenuBar {
+            background-color: map-get($theme-map, "topBar");
+            .menuBtnTop {
+                color: map-get($theme-map, "fgdColor");
                 :hover {
-                    color: $topBtnHover
+                    color: map-get($theme-map, "hover");
+                    cursor: pointer;
                 }
             }
-            /*menuitem and subicon stay the same color - dark*/
+            .p-inputtext {
+                background-color: map-get($theme-map, "srch");
+                border: 1px transparent;
+            }
+            .p-inputtext::placeholder, .p-inputgroup-addon {
+                background-color: map-get($theme-map, "srch");;
+                color: map-get($theme-map, "fgdColor");
+                border: 1px transparent;
+            }
             .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
-                    color: $menuColorDark;
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text,
+                .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                    color: map-get($theme-map, "fgdColor");
                 }
-                /*stays the same when hovoring over menuitem - dark*/
-                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
-                    background-color: $bgdDark;
-                    color: $menuColorDark;
+                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                    background-color: map-get($theme-map, "topBar");
+                    color: map-get($theme-map, "fgdColor");
                 }
-                /*looks clickable*/
                 .p-menuitem:hover {
-                    border-bottom: $borderDark;
-                }
-            }
-          }
-        }
-        @else if $light {
-        & .topMenuBar{
-            background-color: $bgdLight;
-            .p-inputgroup {
-                /*searchbar styling - light*/
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchLight;
-                    border: 1px transparent;
-                }
-                /*searchbar text and icon styling - light*/
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconLight;
-                }
-            }
-            /*button styling - light*/
-            .button-topmenu {
-                color: $topBtnLight;
-                :hover {
-                    color: $topBtnHover
-                }
-            }
-            /*menuitem and subicon stay the same color - light*/
-            .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active > .p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
-                    color: $menuColorLight;
-                }
-                /*stays the same when hovoring over menuitem - light*/
-                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
-                    background-color: $bgdLight;
-                    color: $menuColorLight;
-                }
-                /*looks clickable*/
-                .p-menuitem:hover {
-                    border-bottom: $borderLight;
-                }
-            }
-        }
-    } @else if $blue {
-        & .topMenuBar{
-            background-color: $bgdBlue;
-            .p-inputgroup {
-                /*searchbar styling - blue*/
-                .p-inputgroup-addon, .p-inputtext {
-                    background-color: $searchBlue;
-                    border: 1px transparent;
-                }
-                /*searchbar text and icon styling - blue*/
-                .p-inputgroup-addon, .p-inputtext::placeholder {
-                    color: $searchIconBlue;
-                }
-            }
-            /*button styling - blue*/
-            .button-topmenu {
-                color: $topBtnBlue;
-                :hover {
-                    color: $topBtnHover
-                }
-            }
-            /*menuitem and subicon stay the same color - light*/
-            .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, >.p-menuitem.p-menuitem-active >.p-menuitem-link >.p-menuitem-text, .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
-                    color: $menuColorBlue;
-                }
-                /*stays the same when hovoring over menuitem - blue*/
-                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text, .p-menuitem.p-menuitem-active > .p-menuitem-link {
-                    background-color: $bgdBlue;
-                    color: $menuColorBlue;
-                }
-                /*looks clickable*/
-                .p-menuitem:hover {
-                    border-bottom: $borderBlue;
+                    border-bottom: map-get($theme-map, "border");
                 }
             }
         }
     }
 }
 
-/*Design and dimensions for bar at the very top of the screen */
-main {
-    &.dark {
-        @include theme-colors($dark: true,$light: false ,$blue: false);
-    }
-    &.light {
-        @include theme-colors($dark: false,$light: true ,$blue: false);
-    }
-    &.blue {
-        @include theme-colors($dark: false,$light: false ,$blue: true);
-    }
-}
+@include themable('dark', $theme-dark);
+@include themable('light', $theme-light);
+@include themable('blue', $theme-blue);
 
 /*menu inherits border and backgound color from topbar*/
 body .p-menubar {
@@ -166,12 +61,15 @@ body {
     .p-menubar {
         .p-menuitem.p-menuitem-active
         > .p-submenu-list {
-            .p-menuitem-link {
-                background-color: inherit;
-                >.p-menuitem-text {
-                    color: black
+            >.p-menuitem {
+                >.p-menuitem-link {
+                    background-color: inherit;
+                    >.p-menuitem-text {
+                        color: black
+                    }
                 }
             }
+            
          } 
     }
 }
@@ -269,7 +167,7 @@ img {
 }
 
 /*Button, which gets displayed at a certain  min-width gets hidden while the page is wide + position if it is displayed */
-.button-topmenu {
+.menuBtnTop {
     display: none;
     padding-top: 27px;
     cursor: pointer;
@@ -320,7 +218,7 @@ body {
         }
     } 
 
-    .button-topmenu {
+    .menuBtnTop {
         display: flex;
     }
 
