@@ -25,7 +25,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menuTop: true,
+      menuTop: false,
       theme: 'dark',
       loggedIn: false,
       username: ''
@@ -107,7 +107,9 @@ class App extends Component {
    * @param {string} input the username which is sent by the Content component.
    */
   setUsername(input) {
-    this.setState({username: input})
+    if(this.state.username === '') {
+      this.setState({username: input})  
+    }
   }
 
   /**

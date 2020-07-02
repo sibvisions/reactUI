@@ -1,67 +1,29 @@
-/*Variables*/
-/*Variables for dark theme*/
-$bgdDark: #383736;
-$colorDark: white;
-/*Variables for light theme*/
-$bgdLight: #98989e;
-$colorLight: black;
-/*Variables for blue theme*/
-$bgdBlue: #2f2cdd;
-$colorBlue: white;
+/*import themes*/
+@import 'theme-dark';
+@import 'theme-light';
+@import 'theme-blue';
 
 /*Styling*/
 /*mixin for themes*/
-@mixin theme-colors($dark, $light, $blue) {
-  @if $dark {
+@mixin themable($theme-name, $theme-map) {
+  .#{$theme-name} {
     .footer-sidemenu {
-      background-color: $bgdDark;
-      color: $colorDark;
+      background-color: map-get($theme-map, "footer");
+      color: map-get($theme-map, "fgdColor");
       padding: 20px;
     }
     .footer-topmenu {
-      background-color: $bgdDark;
-      color: $colorDark;
+      background-color: map-get($theme-map, "footer");
+      color: map-get($theme-map, "fgdColor");
       padding: 20px;
     }
-  }
-  @else if $light {
-    .footer-sidemenu {
-      background-color: $bgdLight;
-      color: $colorLight;
-      padding: 20px;
-    }
-    .footer-topmenu {
-      background-color: $bgdLight;
-      color: $colorLight;
-      padding: 20px;
-    }
-  }
-  @else if $blue {
-    .footer-sidemenu {
-      background-color: $bgdBlue;
-      color: $colorBlue;
-      padding: 20px;
-    }
-    .footer-topmenu {
-      background-color: $bgdBlue;
-      color: $colorBlue;
-      padding: 20px;
-    }
-  }
+  } 
 }
 
 //usage of the mixin based on theme
-main {
-  &.dark {
-      @include theme-colors($dark: true,$light: false ,$blue: false);
-  }
-  &.light {
-      @include theme-colors($dark: false,$light: true ,$blue: false);
-  }
-  &.blue {
-      @include theme-colors($dark: false,$light: false ,$blue: true);
-  }
-}
+@include themable('dark', $theme-dark);
+@include themable('light', $theme-light);
+@include themable('blue', $theme-blue);
 
 
 /*Animation*/

@@ -16,10 +16,9 @@ class ContentComponent extends BScreen {
 
     /**
      * When the component gets mounted, start the stretch method onto the sidemenu, if sidemenu is selected. For more details visit stretch doc.
-     * Content is set as superparent --SOON TO BE DELETED--
      */
-    componentDidMount() {
-        if(!this.props.menuTop) {
+    componentDidUpdate() {
+        if(!this.props.menuTop && this.props.loggedIn) {
             stretch('content-sidemenu');
         }
     }
@@ -45,6 +44,7 @@ class ContentComponent extends BScreen {
 
     //Renders the content of the page.
     render() {
+        console.log(this.state.username)
         this.sendUsername();
         if(!this.props.loggedIn) {
             return <Redirect to='/login' />

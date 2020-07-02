@@ -21,7 +21,7 @@ class SettingsComponent extends Component {
      * Content is set as superparent --SOON TO BE DELETED--
      */
     componentDidMount() {
-        if(!this.props.menuTop) {
+        if(!this.props.menuTop && this.props.loggedIn) {
             stretch("settings-content-side")
         }
     }
@@ -51,7 +51,6 @@ class SettingsComponent extends Component {
                             <label htmlFor="rb3" className="p-radiobutton-label">Blue</label>
                         </Card>
                     </div>
-                    <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-top"/>
                 </div>
             )
         }
@@ -72,7 +71,6 @@ class SettingsComponent extends Component {
                             <label htmlFor="rb3" className="p-radiobutton-label">Blue</label>
                         </Card>        
                     </div>
-                    <FooterComponent menuTop={this.props.menuTop} divToCheck="settings-content-side"/>
                 </div>
             )
         }

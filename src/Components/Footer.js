@@ -11,6 +11,10 @@ class FooterComponent extends Component {
         this.props.menuTop ? CheckFooterTop(this.props.divToCheck) : CheckFooterSide(this.props.divToCheck)
     }
 
+    componentDidUpdate() {
+        this.props.menuTop ? CheckFooterTop(this.props.divToCheck) : CheckFooterSide(this.props.divToCheck)
+    }
+
     /**
      * Footer gets rendered based on menu
      */

@@ -116,6 +116,13 @@ body {
     }    
 }
 
+.p-tieredmenu {
+    .p-submenu-list {
+        min-width: 12.5em;
+        width: auto;
+    }
+}
+
 /*Animation*/
 @keyframes hide{
     0% { transform: translate(0);}

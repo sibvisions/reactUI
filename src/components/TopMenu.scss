@@ -183,6 +183,9 @@ img {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    .p-submenu-list {
+        right: 0;
+    }
 }
 
 /*if width below x amount px make the topbar "bigger" looks better if a lot of menupoints which get in next line when resizing*/

@@ -39,6 +39,9 @@ body {
 @media only screen and (max-width: 1575px) {
     .settings-content-top {
         margin-top: -50px;
+        .p-grid {
+            margin-top: -50px
+        }
     }
 }
 
@@ -46,6 +49,9 @@ body {
 @media only screen and (max-width: 1207px) {
     .settings-content-top {
         margin-top: -25px;
+        .p-grid {
+            margin-top: -25px
+        }
     }
 }
 

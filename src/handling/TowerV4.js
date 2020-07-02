@@ -256,6 +256,7 @@ function menuBuilder(allMenuItems){
  */
 function userData(userInfo){
     user = userInfo
+    Screen.addUser(user.displayName);
 }
 
 /**

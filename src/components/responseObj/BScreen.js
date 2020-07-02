@@ -26,6 +26,15 @@ class BScreen extends Component {
     }
 
     /**
+     * Calls {setState} to set {state.username} to display the Username
+     * in the Content Component
+     * @param {string} user 
+     */
+    addUser(user) {
+        this.setState({username: user})
+    }
+
+    /**
      * Adds (toAdd) to {state.content} and calls {setState}
      * with updated content  
      * @param {BaseV2} toAdd initalised container element
