@@ -95,28 +95,43 @@ export function logIn(username,password){
     sendRequest("/api/login",info)
 }
 
+/**
+ * Calls {logIn} with user: "features", pass: "features"
+ */
 export function lazyLogin(){
     logIn("features", "features")
 }
 
 // Registration
 
+/**
+ * Adds classRefence to {Containers} array
+ * @param {class} classReference Reference to Container Object
+ */
 export function registerContainer(classReference){
     Containers.push(classReference)
 }
 
+/**
+ * Adds funtion reference to {RegMenuFunc} array
+ * @param {function} toDo function to be called when the Menu Changes
+ */
 export function registerMenuChange(toDo){
     RegMenuFunc.push(toDo);
 }
 
 /**
- * Register Reference to Main Content Screen
- * sets Screen
- */ 
+ * Sets {Screen}
+ * @param {class} classReference class Refernce to Screen
+ */
 export function registerScreen(classReference){
     Screen = classReference
 }
 
+/**
+ * Removes reference from {Containers}
+ * @param {class} classRefernece class Refernce to Container Obj
+ */
 export function unRegisterContainer(classRefernece) {
     Containers.splice(Containers.indexOf(classRefernece),1);
 }
@@ -130,19 +145,27 @@ export function getCurrentUser() {
     return user
 }
 
+/**
+ * Calls {sendRequest} at "/api/logout" with clientId
+ * Calls {Screen.removeAll} to close(delete) open windows
+ * Calls {pushMenuUpdate} with an empty array to delete all menu entries
+ */
 export function logOut(){
     if(Screen !== undefined){
         Screen.removeAll();
     }
-    pushMenuUpdate([])
-    startUp();
+    pushMenuUpdate([]);
+    let info = {
+        "clientId": localStorage.getItem("clientId")
+    }
+    sendRequest("/api/logout", info)
 }
 
 // Helper
 
 /**
- * Takes ComponentId of Button and
- * calls "/api/v2/pressButton"
+ * Takes componentId of button and
+ * calls {sendRequest} at "/api/v2/pressButton"
  */
 function buttonClicked(e){
     let body = {
@@ -153,32 +176,52 @@ function buttonClicked(e){
     sendRequest("/api/v2/pressButton", body);
 }
 
+/**
+ * Calls {sendRequest} at "/api/startup"
+ */
 function startUp(){
     let info = {
         "layoutMode" : "generic",
         "appMode" : "full",
         "applicationName" : "demo"
-      }; sendRequest("/api/startup", info, this);
+      }; sendRequest("/api/startup", info);
 }
 
 // "Event" pusher
 
+/**
+ * Calls every registered Function-listen function 
+ * @param {any} rawMenu MenuItems in raw-Array form
+ */
 function pushMenuUpdate(rawMenu){
     RegMenuFunc.forEach(e => {
         e(rawMenu);
     });
 }
 
+/**
+ * calls Screen.addWindow, adds new Route in content and redirects to it
+ * @param {react.element} newWindow a container element with no pId
+ */
 function openNewWindow(newWindow){
     Screen.addWindow(newWindow)
 }
 
+/**
+ * Adds react element to its parent container, 
+ * looks through all registerd Containers 
+ * @param {react.element} toAdd React Element to add
+ */
 function addToParrentContainerById(toAdd){
     Containers.find(a => a.props.id === toAdd.props.pid).addContent(toAdd);
 }
 
 // Respone types
 
+/**
+ * Builds Menu and calls {pushMenuUpdate} when finished
+ * @param {any} allMenuItems "menu" respone Object
+ */
 function menuBuilder(allMenuItems){
     let groupsString= [];
     let groups = [];
@@ -202,21 +245,39 @@ function menuBuilder(allMenuItems){
             }
         });
     });
+
+    //Push new menu to all listeners
     pushMenuUpdate(groups);
 }
 
+/**
+ * Sets the currently logged in User
+ * @param {any} userInfo UserData respone Object
+ */
 function userData(userInfo){
     user = userInfo
 }
 
+/**
+ * Saves the clientId to local storage with key "clientId"
+ * @param {any} metaData "metaData" respone Object
+ */
 function applicationMetaData(metaData){
     localStorage.setItem("clientId", metaData.clientId);
 }
 
+
+/**
+ * Either builds new Window if new Object is transmitted or
+ * updates current 
+ * @param {any} gen "generic.screen" response Object
+ */
 function generic(gen){
     let standard = []
 
+    //check if they are any changed Componenents
     if(gen.changedComponents !== undefined && gen.changedComponents.length > 0){
+        //change their format to standard
         gen.changedComponents.forEach(e => {
             standard.push({id: e.id, pid: e.parent, name: e.className, elem: e, children: []})
         });
@@ -227,8 +288,13 @@ function generic(gen){
        Screen.routeToScreen(gen.componentId); 
     }
 
-
-
+    /**
+     * If a component with windowName is present calls {handler} with
+     * updated components, if none is present builds hierachy and
+     * then calls {handler} with newly build hierachy
+     * @param {string} windowName componentName
+     * @param {any[]} updatedElements changed components in standard format
+     */
     function containerCreateOrUpdate(windowName, updatedElements) {
         let toUpdate = Containers.find(e => e.props.componentid === windowName)
         if(toUpdate === undefined){
@@ -238,6 +304,11 @@ function generic(gen){
         } 
         handler(updatedElements)
     
+        /**
+         * Establishes parent - child relationships
+         * returns highest object
+         * @param {any[]} children all elemtents in standard form
+         */
         function buildHierachy(children){
             let uberParent = children.find(a => a.pid === undefined);
             children.forEach(child => {
@@ -255,6 +326,11 @@ function generic(gen){
     }
 }
 
+/**
+ * Checks if panel has a pid if so, calls {addToParrentContainerById}
+ * if none is found calls {openNewWindow} with an initalized Panel
+ * @param {any} panelData standard format panel
+ */
 function panel(panelData){
 
     let toAdd = <NPanel 
@@ -271,6 +347,10 @@ function panel(panelData){
     }
 }
 
+/**
+ * Calls {addToParrentContainerById} with initalised Button
+ * @param {any} buttonData standard format button
+ */
 function button(buttonData){
     let toAdd = <Button 
         key={buttonData.id}
@@ -283,6 +363,11 @@ function button(buttonData){
     addToParrentContainerById(toAdd);
 }
 
+
+/**
+ * Calls {Screen.removeWindow} with componentId to close(delete) window
+ * @param {any} windowData "close.screen" respone Object
+ */
 function closeWindow(windowData){
     Screen.removeWindow(windowData.componentId)
 }

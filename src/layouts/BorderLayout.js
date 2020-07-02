@@ -5,22 +5,21 @@ class BorderLayout extends Component {
         return (
         <div className="p-grid p-nogutter " style={{height:"100%", "flexFlow":"column"}}>
             <div className="p-col-12" style={{textAlign:"center"}}>
-                {this.props.north}a
+                {this.props.north}
             </div>
             <div className="p-grid p-align-center" style={{height:"100%"}}>
                 <span className="p-col-fixed" style={{textAlign:"center", width:"auto"}}>
-                    {this.props.west}b
+                    {this.props.west}
                 </span>
                 <span className="p-col" style={{textAlign:"center"}}>
                     {this.props.center}
-                    {this.props.content}
                 </span>
                 <span className="p-col-fixed" style={{textAlign:"center", width:"auto"}}>
-                    {this.props.east}d
+                    {this.props.east}
                 </span>
             </div>
             <div className="p-col-12" style={{textAlign:"center"}}>
-                {this.props.south}e
+                {this.props.south}
             </div>
         </div>);
     }
