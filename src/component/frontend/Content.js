@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
-import BScreen from "./responseObj/BScreen"
+import BScreen from "../responseObj/BScreen"
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 
 class ContentComponent extends BScreen {
@@ -44,7 +44,6 @@ class ContentComponent extends BScreen {
 
     //Renders the content of the page.
     render() {
-        console.log(this.state.username)
         this.sendUsername();
         if(!this.props.loggedIn) {
             return <Redirect to='/login' />

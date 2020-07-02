@@ -1,9 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
-import { registerScreen } from '../../handling/TowerV4';
-import { Redirect, withRouter } from 'react-router-dom';
-import BaseV2 from './BaseV2';
-
+import { registerScreen } from '../../handling/Tower';
+import { Redirect } from 'react-router-dom';
 
 class BScreen extends Component {
 

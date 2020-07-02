@@ -1,8 +1,8 @@
 import React from 'react';
 import {Card} from 'primereact/card';
-import BaseV2 from './BaseV2';
+import Base from './Base';
 
-class NPanel extends BaseV2 {
+class NPanel extends Base {
 
     render() { 
         return (

@@ -3,10 +3,8 @@ import "./Settings.scss"
 import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
-import FooterComponent from "./Footer"
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import {RadioButton} from 'primereact/radiobutton';
-import BScreen from "./responseObj/BScreen";
 
 class SettingsComponent extends Component {
     //state variabls
@@ -56,7 +54,7 @@ class SettingsComponent extends Component {
         }
         else {
             return (
-                <div className="settings-content-side">
+                <div className={"settings-content-side"}>
                     <div className="p-grid">
                         <Card className="menucard p-col-3" title="Menüeinstellung" subTitle="Hier kann eingestellt werden, ob das Menü links oder oben angezeigt werden soll.">
                             Menü oben

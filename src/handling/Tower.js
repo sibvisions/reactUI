@@ -1,7 +1,5 @@
-import React, { forwardRef } from 'react';
-import NPanel from "../components/responseObj/NPanelV2";
-import { Button } from 'primereact/button';
-import { Redirect } from 'react-router-dom';
+
+import { createButton, createPanel} from "../component/factories/CFactory";
 
 const BaseUrl= "http://localhost:8080/JVx.mobile/services/mobile"
 const functionMapper = [{
@@ -176,17 +174,6 @@ function buttonClicked(e){
     sendRequest("/api/v2/pressButton", body);
 }
 
-/**
- * Calls {sendRequest} at "/api/startup"
- */
-function startUp(){
-    let info = {
-        "layoutMode" : "generic",
-        "appMode" : "full",
-        "applicationName" : "demo"
-      }; sendRequest("/api/startup", info);
-}
-
 // "Event" pusher
 
 /**
@@ -334,12 +321,12 @@ function generic(gen){
  */
 function panel(panelData){
 
-    let toAdd = <NPanel 
-        id={panelData.id} 
-        pid={panelData.pid} 
-        children={panelData.children} 
-        key={panelData.id}
-        componentid={panelData.elem.name} />
+    let toAdd = createPanel(
+        panelData.id,
+        panelData.pid,
+        panelData.elem.name,
+        panelData.children
+    )
 
     if(panelData.pid === undefined){
         openNewWindow(toAdd);
@@ -353,13 +340,21 @@ function panel(panelData){
  * @param {any} buttonData standard format button
  */
 function button(buttonData){
-    let toAdd = <Button 
-        key={buttonData.id}
-        id={buttonData.id} 
-        pid={buttonData.pid} 
-        label={buttonData.elem.text}
-        onClick={() => buttonClicked(buttonData.elem.name)}
-        componentid={buttonData.name} />
+    // let toAdd = <Button 
+    //     key={buttonData.id}
+    //     id={buttonData.id} 
+    //     pid={buttonData.pid} 
+    //     label={buttonData.elem.text}
+    //     onClick={() => buttonClicked(buttonData.elem.name)}
+    //     componentid={buttonData.name} />
+
+    let toAdd = createButton(
+        buttonData.pid, 
+        buttonData.id, 
+        buttonData.elem.text,
+        buttonData.name,
+        () => buttonClicked(buttonData.elem.name)
+        )
 
     addToParrentContainerById(toAdd);
 }

@@ -3,18 +3,16 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-import {Growl} from 'primereact/growl';
+import { Growl } from 'primereact/growl';
 import "./App.css"
-import LoginComponent from "./components/Login.js"
-import {Route, Switch,Redirect} from 'react-router-dom';
-import ContentComponent from './components/Content'
-import SettingsComponent from './components/Settings';
+import LoginComponent from "./component/frontend/Login.js"
+import { Route, Switch } from 'react-router-dom';
+import ContentComponent from './component/frontend/Content'
+import SettingsComponent from './component/frontend/Settings';
 import { withRouter } from "react-router-dom";
-import MenuHolder from "./components/MenuHolder";
+import MenuHolder from "./component/frontend/MenuHolder";
 
-import { lazyLogin, logOut } from "./handling/TowerV4";
-import Test from "./components/Test";
-import { Link } from "react-router-dom";
+import { logOut } from "./handling/Tower";
 
 class App extends Component {
 

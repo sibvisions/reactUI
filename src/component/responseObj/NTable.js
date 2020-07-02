@@ -1,11 +1,11 @@
 import React from 'react';
-import BaseV2 from './BaseV2';
+import Base from './Base';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 
 
-class NTable extends BaseV2 {
+class NTable extends Base {
     content = [];
     dataColumns = [];
 

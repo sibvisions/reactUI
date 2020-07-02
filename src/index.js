@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 
-import { sendRequest } from "./handling/TowerV4";
+import { sendRequest } from "./handling/Tower";
 
 function start(){
     let info = {

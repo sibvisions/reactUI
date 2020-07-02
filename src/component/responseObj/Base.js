@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import { registerContainer, handler, unRegisterContainer } from '../../handling/TowerV4';
+import { registerContainer, handler, unRegisterContainer } from '../../handling/Tower';
 
 
-class BaseV2 extends Component {
+class Base extends Component {
 
     state = {content: []}
     tempChanges = []
@@ -74,4 +74,4 @@ class BaseV2 extends Component {
 
     
 }
-export default BaseV2;
+export default Base;

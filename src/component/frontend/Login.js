@@ -4,10 +4,10 @@ import { Button } from 'primereact/button';
 import {Checkbox} from 'primereact/checkbox';
 import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import logo from './imgs/sibvisionslogo.png'
 
-import { logIn, sendRequest } from "../handling/TowerV4";
+import { logIn, sendRequest } from "../../handling/Tower";
 
 class LoginComponent extends Component {
     /**

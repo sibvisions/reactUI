@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TopMenuComponent from "./TopMenu";
-import { registerMenuChange, handler } from '../handling/TowerV4';
+import { registerMenuChange } from '../../handling/Tower';
 import MenuComponent from "./Menu"
 
 class MenuHolder extends Component {
