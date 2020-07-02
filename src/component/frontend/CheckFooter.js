@@ -5,12 +5,14 @@ import { stretch } from "./Stretch";
  * @param {*} divToCheck the div to be checked if it is higher than the screen
  */
 export function CheckFooterSide(divToCheck) {
-    const elemContent = document.getElementsByClassName(divToCheck)[0];
-    const elemFooter = document.getElementsByClassName("footer-sidemenu")[0]
-    if(elemContent.clientHeight < window.innerHeight) {
+    const computedStyle = getComputedStyle(document.getElementsByClassName(divToCheck)[0]);
+    var elemHeight = document.getElementsByClassName(divToCheck)[0].clientHeight;
+    elemHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+    const elemFooter = document.getElementsByClassName("footer-sidemenu")[0];
+    if(elemHeight < window.innerHeight) {
         elemFooter.classList.add("fixedPos");
     }
-    else if(elemContent.clientHeight > window.innerHeight && elemFooter.classList.contains("fixedPos")) {
+    else if(elemHeight > window.innerHeight && elemFooter.classList.contains("fixedPos")) {
         elemFooter.classList.remove("fixedPos");
     }
     stretch('footer-sidemenu');
@@ -22,12 +24,14 @@ export function CheckFooterSide(divToCheck) {
  * @param divToCheck the div to be checked if it is higher than the screen.
  */
 export function CheckFooterTop(divToCheck) {
-    const elemContent = document.getElementsByClassName(divToCheck)[0];
+    const computedStyle = getComputedStyle(document.getElementsByClassName(divToCheck)[0]);
+    var elemHeight = document.getElementsByClassName(divToCheck)[0].clientHeight;
+    elemHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
     const elemFooter = document.getElementsByClassName("footer-topmenu")[0]
-    if(elemContent.clientHeight < window.innerHeight) {
+    if(elemHeight < window.innerHeight) {
         elemFooter.classList.add("fixedPos");
     }
-    else if(elemContent.clientHeight > window.innerHeight && elemFooter.classList.contains("fixedPos")) {
+    else if(elemHeight > window.innerHeight && elemFooter.classList.contains("fixedPos")) {
         elemFooter.classList.remove("fixedPos");
     }
 }

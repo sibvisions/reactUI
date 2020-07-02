@@ -3,7 +3,7 @@ import "./Settings.scss"
 import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
-import { withRouter } from "react-router-dom";
+import { withRouter} from "react-router-dom";
 import {RadioButton} from 'primereact/radiobutton';
 
 class SettingsComponent extends Component {
@@ -16,7 +16,6 @@ class SettingsComponent extends Component {
 
     /**
      * When the component gets mounted, start the stretch method onto the sidemenu, if sidemenu is selected. For more details visit stretch doc.
-     * Content is set as superparent --SOON TO BE DELETED--
      */
     componentDidMount() {
         if(!this.props.menuTop && this.props.loggedIn) {
@@ -54,7 +53,7 @@ class SettingsComponent extends Component {
         }
         else {
             return (
-                <div className={"settings-content-side"}>
+                <div className="settings-content-side">
                     <div className="p-grid">
                         <Card className="menucard p-col-3" title="Menüeinstellung" subTitle="Hier kann eingestellt werden, ob das Menü links oder oben angezeigt werden soll.">
                             Menü oben

@@ -7,33 +7,36 @@
       -moz-transition: 0.3s;
       transition-delay: 0.2s;
     .p-grid {
+        margin-right: 0;
         margin-left: 10px;
         .p-col-3 {
             margin-right: 10px;
+            .p-radiobutton-label {
+                margin-right: 5px;
+                margin-left: 0;
+            }
         }
     }
-}
-
-//grid positioning
-.p-grid {
-    margin-right: 0;
 }
 
 //settings content positioning if the menu is on top
 .settings-content-top {
     .p-grid {
+        margin-right: 0;
         margin-left: 50px;
         margin-right: 50px;
         margin-top: -70px;
+        .p-radiobutton-label {
+            margin-right: 5px;
+            margin-left: 0;
+        }
     }
 }
 
-body {
-    .p-radiobutton-label {
-        margin-right: 5px;
-        margin-left: 0;
-    }
-} 
+//the cardtitle doesn't exceed the card
+.p-card-title {
+    overflow-wrap: break-word;
+}
 
 //if the screen is smaller than 1575px move content lower
 @media only screen and (max-width: 1575px) {
@@ -62,9 +65,4 @@ body {
         -webkit-transition:0.3s;
         -moz-transition:0.3s;
       transition-delay: .3s;
-}
-
-//the cardtitle doesn't exceed the card
-.p-card-title {
-      overflow-wrap: break-word;
 }

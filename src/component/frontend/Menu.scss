@@ -41,7 +41,7 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
 /*custom avatar icon for profile*/
 .avatar-icon::before{
-    background-image: url(./imgs/avatar.jfif);
+    background-image: url(imgs/avatar.jfif);
     background-size: 30px 30px;
     display: inline-block;
     width: 30px !important;
@@ -62,38 +62,32 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
     -webkit-box-shadow: $shadow ;
     -moz-box-shadow: $shadow;
     box-shadow: $shadow;
-}
-
-.logo-sidemenu, .menuBtnSide, .searchbar-sidemenu  {
-    display: flex;
-    height: 100%;
-    align-items: center;
-}
-
-.logo-sidemenu {
-    padding-top: 10px;
-}
-
-.searchbar-sidemenu {
-    margin-left: auto;
-}
-
-.button-sidemenu {
-    margin-left: 20px;
-}
-
-.p-inputgroup {
-    .p-inputtext {
-        padding-left: 2px;
+    .logo-sidemenu, .menuBtnSide, .searchbar-sidemenu  {
+        display: flex;
+        height: 100%;
+        align-items: center;
     }
-} 
-
-img {
-    width: 190px;
-    height: 40px;
-    border-radius: 5%;
-    margin-left: 5px;
-  }
+    .logo-sidemenu {
+        padding-top: 10px;
+    }
+    .searchbar-sidemenu {
+        margin-left: auto;
+    }
+    .menuBtnSide {
+        margin-left: 20px;
+    }
+    .p-inputgroup {
+        .p-inputtext {
+            padding-left: 2px;
+        }
+    }
+    img {
+        width: 190px;
+        height: 40px;
+        border-radius: 5%;
+        margin-left: 5px;
+    }
+}
 
 .menu-container  {
     position: fixed;
@@ -106,21 +100,15 @@ img {
     box-shadow: $shadow;
         -webkit-box-shadow: $shadow;
         -moz-box-shadow: $shadow;
-}
-
-body {
     .p-tieredmenu {
         width: 100%;
         border-radius: 0;
         border: none;
+        .p-submenu-list {
+            min-width: 12.5em;
+            width: auto;
+        }
     }    
-}
-
-.p-tieredmenu {
-    .p-submenu-list {
-        min-width: 12.5em;
-        width: auto;
-    }
 }
 
 /*Animation*/

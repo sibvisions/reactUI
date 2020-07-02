@@ -18,6 +18,7 @@ class ContentComponent extends BScreen {
      * When the component gets mounted, start the stretch method onto the sidemenu, if sidemenu is selected. For more details visit stretch doc.
      */
     componentDidUpdate() {
+        this.sendUsername();
         if(!this.props.menuTop && this.props.loggedIn) {
             stretch('content-sidemenu');
         }
@@ -44,11 +45,14 @@ class ContentComponent extends BScreen {
 
     //Renders the content of the page.
     render() {
-        this.sendUsername();
         if(!this.props.loggedIn) {
             return <Redirect to='/login' />
         }
-        if(this.props.menuTop) {
+        console.log(this.props.settingsActive)
+        if(this.props.settingsActive) {
+            return null
+        }
+        else if(this.props.menuTop) {
             return (
                 <React.Fragment>
                     <div className="content-topmenu">

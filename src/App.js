@@ -3,10 +3,10 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-import { Growl } from 'primereact/growl';
+import {Growl} from 'primereact/growl';
 import "./App.css"
 import LoginComponent from "./component/frontend/Login.js"
-import { Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import ContentComponent from './component/frontend/Content'
 import SettingsComponent from './component/frontend/Settings';
 import { withRouter } from "react-router-dom";
@@ -23,15 +23,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menuTop: false,
+      menuTop: true,
       theme: 'dark',
       loggedIn: false,
+      settingsActive: false,
       username: ''
     }
     this.changeMenuValue = this.changeMenuValue.bind(this);
     this.changeThemeValue = this.changeThemeValue.bind(this);
     this.setUsername = this.setUsername.bind(this);
     this.setLoggedIn = this.setLoggedIn.bind(this);
+    this.settingsFlip = this.settingsFlip.bind(this);
   }
 
   /**
@@ -53,7 +55,11 @@ class App extends Component {
    */
   setLoggedIn() {
     this.setState({loggedIn: true, loggedOut: false});
-    this.props.history.push('/')
+    this.props.history.replace('/');
+  }
+
+  settingsFlip() {
+    this.setState({settingsActive: !this.state.settingsActive});
   }
 
   /**
@@ -70,7 +76,6 @@ class App extends Component {
                   icon: "pi pi-home",
                   command: () => {
                     this.props.history.push('/');
-                    this.setState({flip: true});
                   }
                 },
                 {
@@ -80,7 +85,10 @@ class App extends Component {
                 {
                     label: 'Einstellungen',
                     icon: "pi pi-cog",
-                    command: () => this.props.history.push('/settings')
+                    command: () => {
+                      this.props.history.push('/settings');
+                      this.settingsFlip();
+                    }
                 },
                 {
                     label: 'Logout',
@@ -110,6 +118,8 @@ class App extends Component {
     }
   }
 
+  
+
   /**
    * theme gets set, if the user is not logged in the menu will not be rendered. Basic routing for different components and functions are set as props.
    */
@@ -127,9 +137,10 @@ class App extends Component {
         </Switch> */}
         <Switch>
           <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
-          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
+          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme}
+                                                    changeMenuValue={this.changeMenuValue} settingsFlip={this.settingsFlip} changeThemeValue={this.changeThemeValue} />} />
         </Switch>
-        <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>
+        <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername} settingsActive={this.state.settingsActive}/>
       </main>
     )
   }

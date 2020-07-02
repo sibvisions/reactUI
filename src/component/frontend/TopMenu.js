@@ -52,7 +52,7 @@ class TopMenuComponent extends Component {
     render() {
         return (
             <React.Fragment>
-                <div className={"topMenuBar p-grid "}>
+                <div className="topMenuBar p-grid ">
                     <div className="logo-topmenu p-col-fixed">
                         <img src={logo} alt="firmenlogo"/>
                     </div>
