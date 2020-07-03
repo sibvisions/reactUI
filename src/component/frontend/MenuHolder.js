@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {AppContext} from '../../App'
 import TopMenuComponent from "./TopMenu";
 import { registerMenuChange } from '../../handling/Tower';
 import MenuComponent from "./Menu"
@@ -35,9 +36,15 @@ class MenuHolder extends Component {
     
     render() {
         return (
-            this.props.menuTop ? <TopMenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu}/>
-            : 
-            <MenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu} />
+            <AppContext.Consumer>
+                {({state}) => (
+                    state.menuTop ? <TopMenuComponent menu={this.state.items}/>
+                    : 
+                    <MenuComponent menu={this.state.items} />
+                )}
+            
+            </AppContext.Consumer>
+            
         );
     }
 }

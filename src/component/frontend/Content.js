@@ -48,10 +48,10 @@ class ContentComponent extends BScreen {
         if(!this.props.loggedIn) {
             return <Redirect to='/login' />
         }
-        console.log(this.props.settingsActive)
-        if(this.props.settingsActive) {
-            return null
-        }
+        // console.log(this.props.settingsActive)
+        // if(this.props.settingsActive) {
+        //     return null
+        // }
         else if(this.props.menuTop) {
             return (
                 <React.Fragment>

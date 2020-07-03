@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import "./Menu.scss"
 import {TieredMenu} from 'primereact/tieredmenu';
-import logo from './imgs/sibvisionslogo.png'
+import logo from './assets/sibvisionslogo.png'
 import {InputText} from 'primereact/inputtext';
 import { withRouter } from "react-router-dom";
 

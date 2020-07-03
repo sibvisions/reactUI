@@ -5,7 +5,7 @@ import {Checkbox} from 'primereact/checkbox';
 import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
 import { withRouter } from 'react-router-dom';
-import logo from './imgs/sibvisionslogo.png'
+import logo from './assets/sibvisionslogo.png'
 
 import { logIn, sendRequest } from "../../handling/Tower";
 
