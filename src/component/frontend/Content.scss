@@ -12,15 +12,28 @@
       -webkit-transition:0.3s;
       -moz-transition:0.3s;
     transition-delay: .2s;
-    .p-grid {
+    //grid positioning
+    .parent-grid {
+      height: 100%;
       margin-left: 10px;
       margin-right: 10px;
-  }
+      margin-top: 5px;
+    }
+    //if there is a content-sidemenu set margin to 0 (in footer.scss set to 200px)
+    .footer-sidemenu {
+      margin-left: 0 !important;
+    }
 }
 
-//Positioning of the content if menu is on top so it does not overlap
+//Positioning of the content if menu is on top so it does not overlap, height calc: TopMenu padding-bottom 175px p-grid margin top -80 footer +61px = 156px
 .content-topmenu {
-  .p-grid {
+  width: 100%;
+  height: -moz-calc(100% - 156px);
+    height: -webkit-calc(100% - 156px);
+    height: -o-calc(100% - 156px);
+    height: calc(100% - 156px);
+  .parent-grid {
+    height: 100%;
     margin-top: -80px;
     margin-left: 34px;
     margin-right: 34px;
@@ -36,9 +49,31 @@
     transition-delay: .3s;
 }
 
+@media only screen and (max-width: 1575px) {
+  .content-topmenu {
+    height: -moz-calc(100% - 171px);
+    height: -webkit-calc(100% - 171px);
+    height: -o-calc(100% - 171px);
+    height: calc(100% - 171px);
+  }
+}
+
+@media only screen and (max-width: 1207px) {
+  .content-topmenu {
+    height: -moz-calc(100% - 181px);
+    height: -webkit-calc(100% - 181px);
+    height: -o-calc(100% - 181px);
+    height: calc(100% - 181px);
+  }
+}
+
 //if the window is below 945px the grid will be moved down
 @media only screen and (max-width: 945px) {
   .content-topmenu {
+    height: -moz-calc(100% - 141px);
+    height: -webkit-calc(100% - 141px);
+    height: -o-calc(100% - 141px);
+    height: calc(100% - 141px);
     .p-grid {
       margin-top: -30px;
     }

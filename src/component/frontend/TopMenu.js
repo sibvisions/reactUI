@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import "./TopMenu.scss"
-import {AppContext} from '../../App'
+import { AppConsumer } from './AppContext';
 import {Menubar} from 'primereact/menubar';
-import logo from './assets/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
 import {Sidebar} from 'primereact/sidebar';
 import {TieredMenu} from 'primereact/tieredmenu';
@@ -52,12 +51,12 @@ class TopMenuComponent extends Component {
      */
     render() {
         return (
-            <AppContext.Consumer>
+            <AppConsumer>
                 {({sendProfileOptions}) => (
                     <React.Fragment>
                     <div className="topMenuBar p-grid ">
                         <div className="logo-topmenu p-col-fixed">
-                            <img src={logo} alt="firmenlogo"/>
+                            <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
                         </div>
                         <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
             	            <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
@@ -83,7 +82,7 @@ class TopMenuComponent extends Component {
                 </React.Fragment>
                 )}
                 
-            </AppContext.Consumer>
+            </AppConsumer>
         )
     }
 }

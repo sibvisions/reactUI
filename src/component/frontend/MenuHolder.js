@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import {AppContext} from '../../App'
 import TopMenuComponent from "./TopMenu";
 import { registerMenuChange } from '../../handling/Tower';
 import MenuComponent from "./Menu"
+import { AppConsumer } from './AppContext';
 
 class MenuHolder extends Component {
 
@@ -36,17 +36,16 @@ class MenuHolder extends Component {
     
     render() {
         return (
-            <AppContext.Consumer>
+            <AppConsumer>
                 {({state}) => (
                     state.menuTop ? <TopMenuComponent menu={this.state.items}/>
                     : 
                     <MenuComponent menu={this.state.items} />
                 )}
             
-            </AppContext.Consumer>
+            </AppConsumer>
             
         );
     }
 }
- 
 export default MenuHolder;

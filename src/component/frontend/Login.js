@@ -5,9 +5,9 @@ import {Checkbox} from 'primereact/checkbox';
 import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
 import { withRouter } from 'react-router-dom';
-import logo from './assets/sibvisionslogo.png'
 
 import { logIn, sendRequest } from "../../handling/Tower";
+import AppContext from "./AppContext";
 
 class LoginComponent extends Component {
     /**
@@ -55,21 +55,18 @@ class LoginComponent extends Component {
      */
     handleClick() {
         logIn(this.state.username, this.state.password);
-        this.props.setLoggedIn();
+        this.context.setLoggedIn();
     }
 
     /**
      * Renders the login component, if loggedIn in App is true, redirect to the content page
      */
     render() {
-        // if(this.props.loggedIn === true) {
-        //     return <Redirect to='/content' />
-        // }
         return (
             <div className="background">
                 <div className="loginmask">
                     <div className="upperMask">
-                        <img src={logo} alt="firmenlogo"/>
+                        <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
                     </div>
                     <span className="p-float-label">
                         <InputText id="username" type="text" value={this.state.username} onChange={this.handleChange} />
@@ -86,4 +83,5 @@ class LoginComponent extends Component {
         )
     }
 }
+LoginComponent.contextType = AppContext;
 export default withRouter(LoginComponent);

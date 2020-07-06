@@ -41,7 +41,7 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
 /*custom avatar icon for profile*/
 .avatar-icon::before{
-    background-image: url(assets/avatar.jfif);
+    background-image: url("../../../public/assets/avatar.jfif");
     background-size: 30px 30px;
     display: inline-block;
     width: 30px !important;

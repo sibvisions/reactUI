@@ -4,6 +4,8 @@ import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
 import BScreen from "../responseObj/BScreen"
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
+import AppContext from "./AppContext";
+import BorderLayout from "../../layouts/BorderLayout";
 
 class ContentComponent extends BScreen {
 
@@ -19,7 +21,7 @@ class ContentComponent extends BScreen {
      */
     componentDidUpdate() {
         this.sendUsername();
-        if(!this.props.menuTop && this.props.loggedIn) {
+        if(!this.context.state.menuTop && this.props.location.pathname !== '/settings' && this.context.state.loggedIn) {
             stretch('content-sidemenu');
         }
     }
@@ -28,7 +30,24 @@ class ContentComponent extends BScreen {
      * Sends the username which gets set here (because of superparent) to the "App" so it can be used when switching sites
      */
     sendUsername() {
-        return this.state.username ? this.props.setUsername(this.state.username) : null
+        return this.state.username ? this.context.setUsername(this.state.username) : null
+    }
+
+    contentBuilder(menuLocation) {
+        return (
+            <React.Fragment>
+                <div className={"content-" + menuLocation + "menu"}>
+                    <div className="p-grid parent-grid">
+                        <Switch>
+                            {this.makeRoutes(this)}
+                        </Switch>
+                        {this.state.route}
+                        <BorderLayout north="north" west="west" east="east" center="center" south="south"/>
+                    </div>
+                    <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"content-" + menuLocation + "menu"} />
+                </div>
+            </React.Fragment>
+        )
     }
 
     routeToScreen(navigateTo){
@@ -45,44 +64,24 @@ class ContentComponent extends BScreen {
 
     //Renders the content of the page.
     render() {
-        if(!this.props.loggedIn) {
+        if (!this.context.state.loggedIn) {
             return <Redirect to='/login' />
         }
-        // console.log(this.props.settingsActive)
-        // if(this.props.settingsActive) {
-        //     return null
-        // }
-        else if(this.props.menuTop) {
-            return (
-                <React.Fragment>
-                    <div className="content-topmenu">
-                        <div className="p-grid">
-                            <Switch>
-                                {this.makeRoutes(this)}
-                            </Switch>
-                            {this.state.route}
-                        </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-topmenu"/>
-                    </div>
-                </React.Fragment>
-            )
+        if(this.props.location.pathname === '/settings') {
+            if(this.context.state.menuTop) {
+                return <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"settings-content-top"} />
+            }
+            else {
+                return <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"settings-content-side"} />
+            }
+        }
+        else if (this.context.state.menuTop) {
+            return this.contentBuilder('top')
         }
         else {
-            return (
-                <React.Fragment>
-                    <div className="content-sidemenu">
-                        <div className="p-grid">
-                            <Switch>
-                                {this.makeRoutes(this)}
-                            </Switch>
-                            {this.state.route}
-                        </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/>
-                    </div>
-                </React.Fragment>
-            )
+            return this.contentBuilder('side')
         }
     }
 }
-
+ContentComponent.contextType = AppContext
 export default withRouter(ContentComponent);

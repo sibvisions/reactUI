@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import "./Menu.scss"
 import {TieredMenu} from 'primereact/tieredmenu';
-import logo from './assets/sibvisionslogo.png'
 import {InputText} from 'primereact/inputtext';
 import { withRouter } from "react-router-dom";
+import { AppConsumer } from './AppContext';
 
 class MenuComponent extends Component {
 
@@ -57,44 +57,47 @@ class MenuComponent extends Component {
                 }
             }
         return (
-            <React.Fragment>
-                <div className="topBar">
-                    <div className="logo-sidemenu">
-                        <img src={logo} alt="firmenlogo"/>
-                    </div>
-                    {/**
-                     * When the div/button is clicked, add hide or show respectively on which value is in the classList
-                     */}
-                    <div className="menuBtnSide" onClick={() => {
-                        if(!this.menu.classList.contains("hide")) {
-                            if(this.menu.classList.contains("show")) {
-                                this.menu.classList.remove("show");
+            <AppConsumer>
+                {({sendProfileOptions}) => (
+                    <React.Fragment>
+                    <div className="topBar">
+                        <div className="logo-sidemenu">
+                            <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
+                        </div>
+                        {/**
+                        * When the div/button is clicked, add hide or show respectively on which value is in the classList
+                        */}
+                        <div className="menuBtnSide" onClick={() => {
+                            if(!this.menu.classList.contains("hide")) {
+                                if(this.menu.classList.contains("show")) {
+                                    this.menu.classList.remove("show");
+                                }
+                                this.menu.classList.add("hide");
                             }
-                            this.menu.classList.add("hide");
+                            else {
+                                this.menu.classList.remove("hide");
+                                this.menu.classList.add("show");
+                            }
                         }
-                        else {
-                            this.menu.classList.remove("hide");
-                            this.menu.classList.add("show");
-                        }
-                    }
-                    }>
-            	        <i className="pi pi-bars" style={{fontSize: '1.5em', fontWeight:'bold'}}/>
-                    </div>
-                    <div className="searchbar-sidemenu">
-                        <div className="p-inputgroup">
-                            <span className="p-inputgroup-addon">
-                                <i className="pi pi-search" style={{fontSize: "1em"}}></i>
-                            </span>
-                            <InputText placeholder="Suchen..." />
+                        }>
+            	            <i className="pi pi-bars" style={{fontSize: '1.5em', fontWeight:'bold'}}/>
+                        </div>
+                        <div className="searchbar-sidemenu">
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <i className="pi pi-search" style={{fontSize: "1em"}}></i>
+                                </span>
+                                <InputText placeholder="Suchen..." />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className={"menu-container"} ref={el => this.menu = el} onChange={(e) => this.onMenuChange}>
-                    <TieredMenu model={this.props.profileMenu} />
-                    <TieredMenu model={this.props.menu}/>
-                </div>
-            </React.Fragment>
-                
+                    <div className={"menu-container"} ref={el => this.menu = el} onChange={(e) => this.onMenuChange}>
+                        <TieredMenu model={sendProfileOptions()} />
+                        <TieredMenu model={this.props.menu}/>
+                    </div>
+                </React.Fragment>
+                )}
+            </AppConsumer>    
         )
     }
 }

@@ -13,16 +13,7 @@ import { withRouter } from "react-router-dom";
 import MenuHolder from "./component/frontend/MenuHolder";
 
 import { logOut } from "./handling/Tower";
-
-const contextValues = {
-  menuTop: true,
-  theme: 'dark',
-  loggedIn: false,
-  settingsActive: false,
-  username: ''
-}
-
-export const AppContext = React.createContext(contextValues)
+import { AppProvider } from './component/frontend/AppContext';
 
 class App extends Component {
 
@@ -135,12 +126,15 @@ class App extends Component {
    * theme gets set, if the user is not logged in the menu will not be rendered. Basic routing for different components and functions are set as props.
    */
   render() {
-    console.log(this.state)
     return (
-      <AppContext.Provider 
+      <AppProvider
         value={{
           state: this.state,
-          sendProfileOptions: this.sendProfileOptions
+          sendProfileOptions: this.sendProfileOptions,
+          setLoggedIn: this.setLoggedIn,
+          changeMenuValue: this.changeMenuValue,
+          changeThemeValue: this.changeThemeValue,
+          setUsername: this.setUsername
           }}>
         <main className={this.state.theme}>
           {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
@@ -153,14 +147,12 @@ class App extends Component {
             <Redirect exact from="/" to="login" />
           </Switch> */}
           <Switch>
-            <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
-            <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme}
-                                                    changeMenuValue={this.changeMenuValue} settingsFlip={this.settingsFlip} changeThemeValue={this.changeThemeValue} />} />
+            <Route path="/login" component={() => <LoginComponent/>}/>
+            <Route path="/settings" component={() => <SettingsComponent/>} />
           </Switch>
-          <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername} settingsActive={this.state.settingsActive}/>
+          <ContentComponent/>
         </main>
-      </AppContext.Provider>
-      
+      </AppProvider>
     )
   }
 }
