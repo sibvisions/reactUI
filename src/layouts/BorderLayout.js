@@ -11,7 +11,7 @@ class BorderLayout extends Component {
                 <span className="p-col-fixed west" style={{textAlign:"center", width:"auto"}}>
                     {this.props.west}
                 </span>
-                <span className="p-col center" style={{textAlign:"center"}}>
+                <span className="p-col center" style={{textAlign:"center", height:"100%"}}>
                     {this.props.center}
                 </span>
                 <span className="p-col-fixed east" style={{textAlign:"center", width:"auto"}}>

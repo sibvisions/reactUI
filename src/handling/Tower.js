@@ -199,7 +199,7 @@ function openNewWindow(newWindow){
  * looks through all registerd Containers 
  * @param {react.element} toAdd React Element to add
  */
-function addToParrentContainerById(toAdd){
+function addToParentContainerById(toAdd){
     Containers.find(a => a.props.id === toAdd.props.pid).addContent(toAdd);
 }
 
@@ -315,28 +315,35 @@ function generic(gen){
 }
 
 /**
- * Checks if panel has a pid if so, calls {addToParrentContainerById}
+ * Checks if panel has a pid if so, calls {addToParentContainerById}
  * if none is found calls {openNewWindow} with an initalized Panel
  * @param {any} panelData standard format panel
  */
 function panel(panelData){
-
+    let result = {...panelData.elem}
+    Object.keys(result).map((key) => {
+        if(key === "screen.title") {
+            result.screenTitle = result[key]
+            delete result[key]
+        }
+    });
     let toAdd = createPanel(
         panelData.id,
         panelData.pid,
         panelData.elem.name,
-        panelData.children
+        panelData.children,
+        result.screenTitle
     )
 
     if(panelData.pid === undefined){
         openNewWindow(toAdd);
     }else{
-        addToParrentContainerById(toAdd);
+        addToParentContainerById(toAdd);
     }
 }
 
 /**
- * Calls {addToParrentContainerById} with initalised Button
+ * Calls {addToParentContainerById} with initalised Button
  * @param {any} buttonData standard format button
  */
 function button(buttonData){
@@ -347,7 +354,6 @@ function button(buttonData){
     //     label={buttonData.elem.text}
     //     onClick={() => buttonClicked(buttonData.elem.name)}
     //     componentid={buttonData.name} />
-
     let toAdd = createButton(
         buttonData.pid, 
         buttonData.id, 
@@ -356,7 +362,7 @@ function button(buttonData){
         () => buttonClicked(buttonData.elem.name)
         )
 
-    addToParrentContainerById(toAdd);
+    addToParentContainerById(toAdd);
 }
 
 

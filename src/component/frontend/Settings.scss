@@ -1,5 +1,9 @@
 //settings content positioning if the menu is on the side
 .settings-content-side {
+    height: -moz-calc(100% - 62px);
+    height: -webkit-calc(100% - 62px);
+    height: -o-calc(100% - 62px);
+    height: calc(100% - 62px);
     padding-top: 100px;
     margin-left: 200px;
     transition: 0.3s;
@@ -21,11 +25,15 @@
 
 //settings content positioning if the menu is on top
 .settings-content-top {
+    height: -moz-calc(100% - 157px);
+    height: -webkit-calc(100% - 157px);
+    height: -o-calc(100% - 157px);
+    height: calc(100% - 157px);
     .p-grid {
         margin-right: 0;
         margin-left: 50px;
         margin-right: 50px;
-        margin-top: -70px;
+        margin-top: -80px;
         .p-radiobutton-label {
             margin-right: 5px;
             margin-left: 0;

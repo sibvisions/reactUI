@@ -9,7 +9,6 @@ export function CheckFooterSide(divToCheck) {
     var elemHeight = document.getElementsByClassName(divToCheck)[0].clientHeight;
     elemHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
     const elemFooter = document.getElementsByClassName("footer-sidemenu")[0];
-    console.log(window.innerHeight - elemFooter.scrollHeight)
     if(elemHeight < (window.innerHeight - elemFooter.scrollHeight)) {
         elemFooter.classList.add("fixedPos");
     }
@@ -29,7 +28,6 @@ export function CheckFooterTop(divToCheck) {
     var elemHeight = document.getElementsByClassName(divToCheck)[0].clientHeight;
     elemHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
     const elemFooter = document.getElementsByClassName("footer-topmenu")[0]
-    console.log(window.innerHeight - elemFooter.scrollHeight)
     if(elemHeight < (window.innerHeight - elemFooter.scrollHeight)) {
         elemFooter.classList.add("fixedPos");
     }

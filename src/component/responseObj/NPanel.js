@@ -6,9 +6,9 @@ class NPanel extends Base {
 
     render() { 
         return (
-        <div className="p-col-4">
-            <Card>
-                <h1>{this.props.id}</h1>
+        <div className="p-col-12" style={{height: '100%'}}>
+            <Card style={{height: '100%'}}>
+                <h1>{this.props.screenTitle}</h1>
                 {this.state.content}
             </Card>
         </div> 

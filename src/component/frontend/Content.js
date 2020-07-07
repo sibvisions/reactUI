@@ -42,10 +42,9 @@ class ContentComponent extends BScreen {
                             {this.makeRoutes(this)}
                         </Switch>
                         {this.state.route}
-                        <BorderLayout north="north" west="west" east="east" center="center" south="south"/>
                     </div>
-                    <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"content-" + menuLocation + "menu"} />
                 </div>
+                <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"content-" + menuLocation + "menu"}*/ />
             </React.Fragment>
         )
     }
@@ -57,7 +56,7 @@ class ContentComponent extends BScreen {
     makeRoutes(ref){
         let routes = []
         ref.state.content.forEach(e => {
-            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => e} />)
+            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout center={e} />} />)
         });
         return routes;
     }
@@ -69,10 +68,10 @@ class ContentComponent extends BScreen {
         }
         if(this.props.location.pathname === '/settings') {
             if(this.context.state.menuTop) {
-                return <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"settings-content-top"} />
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-top"}*/ />
             }
             else {
-                return <FooterComponent menuTop={this.context.state.menuTop} divToCheck={"settings-content-side"} />
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
             }
         }
         else if (this.context.state.menuTop) {
