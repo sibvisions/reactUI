@@ -332,7 +332,9 @@ function panel(panelData){
         panelData.pid,
         panelData.elem.name,
         panelData.children,
-        result.screenTitle
+        result.screenTitle,
+        panelData.elem.layout,
+        panelData.elem.layoutData
     )
 
     if(panelData.pid === undefined){

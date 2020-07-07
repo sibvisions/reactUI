@@ -13,12 +13,14 @@ export function createButton(pid, id, label, componentId, onClick){
         onClick={onClick} />
 }
 
-export function createPanel(id, pid, componentId, children, screenTitle){
+export function createPanel(id, pid, componentId, children, screenTitle, layout, layoutData){
     return  <NPanel 
         key={id}
         id={id}
         pid={pid}
         componentid={componentId}
         children={children}
-        screenTitle={screenTitle}/>
+        screenTitle={screenTitle}
+        layout={layout}
+        layoutData={layoutData}/>
 }

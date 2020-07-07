@@ -23,4 +23,5 @@ class BorderLayout extends Component {
             </div>
         </div>);
     }
-} export default BorderLayout;
+} 
+export default BorderLayout;
