@@ -27,9 +27,9 @@ class SettingsComponent extends Component {
     settingsBuilder(menuLocation) {
         return (
             <div className={"settings-content-" + menuLocation}>
-                <div className="p-grid">
-                    <Card className="p-col-3" style={{ marginRight: '10px' }} title="Menüeinstellung" subTitle="Hier kann eingestellt werden, ob das Menü links oder oben angezeigt werden soll.">
-                        Menü oben
+                <div className="p-grid settings-grid">
+                    <Card className="p-col-3" title="Menüeinstellung" subTitle="Hier kann eingestellt werden, ob das Menü links oder oben angezeigt werden soll.">
+                        <span className="inputswitch-text">Menü oben</span>
                         <InputSwitch checked={this.context.state.menuTop} onChange={this.context.changeMenuValue} />
                     </Card>
                     <Card className="p-col-3" style={{ marginRight: '10px' }} title="Theme" subTitle="Hier kann eingestellt werden, welches Theme angezeigt werden soll.">

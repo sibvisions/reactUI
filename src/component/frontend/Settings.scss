@@ -1,20 +1,21 @@
 //settings content positioning if the menu is on the side
 .settings-content-side {
-    height: -moz-calc(100% - 62px);
-    height: -webkit-calc(100% - 62px);
-    height: -o-calc(100% - 62px);
-    height: calc(100% - 62px);
+    height: -moz-calc(100% - 61.5px);
+    height: -webkit-calc(100% - 61.5px);
+    height: -o-calc(100% - 61.5px);
+    height: calc(100% - 61.5px);
     padding-top: 100px;
     margin-left: 200px;
     transition: 0.3s;
       -webkit-transition: 0.3s;
       -moz-transition: 0.3s;
       transition-delay: 0.2s;
-    .p-grid {
+    .settings-grid {
+        margin-top: -10px;
         margin-right: 0;
-        margin-left: 10px;
-        .p-col-3 {
-            margin-right: 10px;
+        margin-left: 0;
+        .p-card {
+            margin-left: 40px;
             .p-radiobutton-label {
                 margin-right: 5px;
                 margin-left: 0;
@@ -29,11 +30,14 @@
     height: -webkit-calc(100% - 157px);
     height: -o-calc(100% - 157px);
     height: calc(100% - 157px);
-    .p-grid {
+    .settings-grid {
         margin-right: 0;
         margin-left: 50px;
         margin-right: 50px;
         margin-top: -80px;
+        .p-card {
+            margin-right: 40px;
+        }
         .p-radiobutton-label {
             margin-right: 5px;
             margin-left: 0;
@@ -46,22 +50,43 @@
     overflow-wrap: break-word;
 }
 
+.settings-grid .p-card-content {
+    display: flex;
+    align-items: center;
+    .p-inputswitch {
+        margin-left: 5px;
+    }
+}
+
 //if the screen is smaller than 1575px move content lower
 @media only screen and (max-width: 1575px) {
     .settings-content-top {
-        margin-top: -50px;
-        .p-grid {
-            margin-top: -50px
-        }
+        height: -moz-calc(100% - 172px);
+        height: -webkit-calc(100% - 172px);
+        height: -o-calc(100% - 172px);
+        height: calc(100% - 172px);
     }
 }
 
 //if the screen is smaller than 1207px move content lower
 @media only screen and (max-width: 1207px) {
     .settings-content-top {
-        margin-top: -25px;
+        height: -moz-calc(100% - 182px);
+        height: -webkit-calc(100% - 182px);
+        height: -o-calc(100% - 182px);
+        height: calc(100% - 182px);
+    }
+}
+
+//if the screen is smaller than 945px move content lower
+@media only screen and (max-width: 945px) {
+    .settings-content-top {
+        height: -moz-calc(100% - 142px);
+        height: -webkit-calc(100% - 142px);
+        height: -o-calc(100% - 142px);
+        height: calc(100% - 142px);
         .p-grid {
-            margin-top: -25px
+            margin-top: -30px;
         }
     }
 }
@@ -72,5 +97,5 @@
       transition:0.3s;
         -webkit-transition:0.3s;
         -moz-transition:0.3s;
-      transition-delay: .3s;
+      transition-delay: .2s;
 }

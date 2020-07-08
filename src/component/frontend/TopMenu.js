@@ -21,14 +21,7 @@ class TopMenuComponent extends Component {
      * When the menu component gets mounted, change the submenu icon
      */
     componentDidMount() {
-        var elems = document.getElementsByClassName("pi-caret-down");
-        while(elems.length > 0) {
-            for(let e of elems) {
-                e.classList.remove("pi-caret-down");
-                e.classList.add("pi-angle-down")
-                e.style.fontSize = "1em"
-            };
-        }
+        this.replaceSubIcon('down');
     }
 
     /**
@@ -36,11 +29,15 @@ class TopMenuComponent extends Component {
      * (In Future version maybe not needed)
      */
     componentDidUpdate() {
-        var elems = document.getElementsByClassName("pi-caret-down");
+        this.replaceSubIcon('down');
+    }
+
+    replaceSubIcon(direction) {
+        var elems = document.getElementsByClassName("pi-caret-" + direction);
         while(elems.length > 0) {
             for(let e of elems) {
-                e.classList.remove("pi-caret-down");
-                e.classList.add("pi-angle-down")
+                e.classList.remove("pi-caret-" + direction);
+                e.classList.add("pi-angle-" + direction)
                 e.style.fontSize = "1em"
             };
         }
