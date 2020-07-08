@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card } from 'primereact/card';
 import Base from './Base';
-import FlowLayout from '../../layouts/FlowLayout'
+import FormLayout from '../../layouts/FormLayout'
 
 class NPanel extends Base {
 
     insertLayout() {
         switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
-            case "FormLayout": return <FlowLayout layout={this.props.layout} layoutData={this.props.layoutData}/>;
+            case "FormLayout": return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData}/>;
             default: return null;
         }
     }
