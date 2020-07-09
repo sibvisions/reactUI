@@ -17,7 +17,8 @@
     "react-mutation-observer": "^1.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "react-transition-group": "^4.4.1"
+    "react-transition-group": "^4.4.1",
+    "recompose": "^0.30.0"
   },
   "scripts": {
     "start": "react-app-rewired start",

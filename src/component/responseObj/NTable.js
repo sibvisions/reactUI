@@ -1,11 +1,10 @@
-import React from 'react';
-import Base from './Base';
+import React, { Component } from 'react';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 
 
-class NTable extends Base {
+class NTable extends Component {
     content = [];
     dataColumns = [];
 
@@ -63,4 +62,4 @@ class NTable extends Base {
     }
 }
  
-export default NTable;
+export default withContentChanges(NTable);

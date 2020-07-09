@@ -1,19 +1,21 @@
-import React from "react";
+import React, { Component } from "react";
 import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
-import BScreen from "../responseObj/BScreen"
+import {withScreenChanges} from "../responseObj/withScreenChanges"
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import AppContext from "./AppContext";
 import BorderLayout from "../../layouts/BorderLayout";
+import { compose } from "recompose";
 
-class ContentComponent extends BScreen {
+class ContentComponent extends Component {
 
-    //state variables
-    state = {
-        menu: [],
-        content: [],
-        username: ""
+    componentDidMount() {
+        console.log('mounted')
+    }
+
+    componentWillUnmount() {
+        console.log('unmounted')
     }
 
     /**
@@ -30,7 +32,7 @@ class ContentComponent extends BScreen {
      * Sends the username which gets set here (because of superparent) to the "App" so it can be used when switching sites
      */
     sendUsername() {
-        return this.state.username ? this.context.setUsername(this.state.username) : null
+        return this.props.username ? this.context.setUsername(this.props.username) : null
     }
 
     contentBuilder(menuLocation) {
@@ -41,7 +43,7 @@ class ContentComponent extends BScreen {
                         <Switch>
                             {this.makeRoutes(this)}
                         </Switch>
-                        {this.state.route}
+                        {this.props.route}
                     </div>
                 </div>
                 <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"content-" + menuLocation + "menu"}*/ />
@@ -55,7 +57,7 @@ class ContentComponent extends BScreen {
 
     makeRoutes(ref){
         let routes = []
-        ref.state.content.forEach(e => {
+        ref.props.content.forEach(e => {
             routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout center={e} />} />)
         });
         return routes;
@@ -68,7 +70,7 @@ class ContentComponent extends BScreen {
         }
         if(this.props.location.pathname === '/settings') {
             if(this.context.state.menuTop) {
-                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-top"}*/ />
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
             }
             else {
                 return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
@@ -83,4 +85,4 @@ class ContentComponent extends BScreen {
     }
 }
 ContentComponent.contextType = AppContext
-export default withRouter(ContentComponent);
+export default compose(withRouter, withScreenChanges)(ContentComponent);

@@ -11,9 +11,6 @@ class TopMenuComponent extends Component {
 
     //state variables
     state = {
-        menu: [],
-        content: [],
-        username: "",
         sideBarVisible: false
     }
 
