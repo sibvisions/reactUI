@@ -49,7 +49,6 @@ export function withScreenChanges(WrappedComponent) {
             let con = [...this.state.content];
             con.push(toAdd)
             this.setState({content: con});
-            console.log(this.state)
         }
     
         /**
