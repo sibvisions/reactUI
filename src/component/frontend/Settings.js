@@ -3,12 +3,9 @@ import "./Settings.scss"
 import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
 import { stretch } from "./Stretch";
-import { withRouter, Redirect} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import {RadioButton} from 'primereact/radiobutton';
 import AppContext from "./AppContext";
-import { withScreenChanges } from "../responseObj/withScreenChanges";
-import ContentComponent from "./Content";
-import {compose} from 'recompose'
 
 class SettingsComponent extends Component {
     //state variabls
@@ -25,11 +22,6 @@ class SettingsComponent extends Component {
         if(!this.context.state.menuTop && this.context.state.loggedIn) {
             stretch("settings-content-side")
         }
-    }
-
-    componentWillUnmount() {
-        console.log('unmounted')
-        return <Redirect to="/"/>
     }
 
     settingsBuilder(menuLocation) {
@@ -71,4 +63,4 @@ class SettingsComponent extends Component {
     }
 }
 SettingsComponent.contextType = AppContext;
-export default compose(withRouter, withScreenChanges)(SettingsComponent)
+export default withRouter(SettingsComponent)

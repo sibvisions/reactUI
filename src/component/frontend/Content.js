@@ -2,13 +2,18 @@ import React, { Component } from "react";
 import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
-import {withScreenChanges} from "../responseObj/withScreenChanges"
+import BScreen from "../responseObj/BScreen"
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import AppContext from "./AppContext";
 import BorderLayout from "../../layouts/BorderLayout";
-import { compose } from "recompose";
 
-class ContentComponent extends Component {
+class ContentComponent extends BScreen {
+
+    state = {
+        menu: [],
+        content: [],
+        username: ""
+    }
 
     componentDidMount() {
         console.log('mounted')
@@ -32,7 +37,7 @@ class ContentComponent extends Component {
      * Sends the username which gets set here (because of superparent) to the "App" so it can be used when switching sites
      */
     sendUsername() {
-        return this.props.username ? this.context.setUsername(this.props.username) : null
+        return this.state.username ? this.context.setUsername(this.state.username) : null
     }
 
     contentBuilder(menuLocation) {
@@ -43,7 +48,7 @@ class ContentComponent extends Component {
                         <Switch>
                             {this.makeRoutes(this)}
                         </Switch>
-                        {this.props.route}
+                        {this.state.route}
                     </div>
                 </div>
                 <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"content-" + menuLocation + "menu"}*/ />
@@ -57,7 +62,7 @@ class ContentComponent extends Component {
 
     makeRoutes(ref){
         let routes = []
-        ref.props.content.forEach(e => {
+        ref.state.content.forEach(e => {
             routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout center={e} />} />)
         });
         return routes;
@@ -85,4 +90,4 @@ class ContentComponent extends Component {
     }
 }
 ContentComponent.contextType = AppContext
-export default compose(withRouter, withScreenChanges)(ContentComponent);
+export default withRouter(ContentComponent);
