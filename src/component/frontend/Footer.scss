@@ -11,6 +11,7 @@
       background-color: map-get($theme-map, "footer");
       color: map-get($theme-map, "fgdColor");
       padding: 20px;
+      margin-left: 200px;
     }
     .footer-topmenu {
       background-color: map-get($theme-map, "footer");
@@ -27,20 +28,11 @@
 
 
 /*Animation*/
-.footer-sidemenu {
-  transition:0.3s;
-      -webkit-transition:0.3s;
-      -moz-transition:0.3s;
-      transition-delay: .2s;
-}
-
-/*Stretch to the left of screen*/
-.stretched {
-  margin-left: 0;
+.footer-sidemenu, .footer-topmenu {
   transition:0.3s;
     -webkit-transition:0.3s;
     -moz-transition:0.3s;
-  transition-delay: .3s;
+    transition-delay: .2s;
 }
 
 /*fixed position to bottom*/
@@ -48,4 +40,13 @@
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+/*Stretch to the left of screen*/
+.stretched {
+  margin-left: 0 !important;
+  transition:0.3s;
+    -webkit-transition:0.3s;
+    -moz-transition:0.3s;
+  transition-delay: .2s;
 }

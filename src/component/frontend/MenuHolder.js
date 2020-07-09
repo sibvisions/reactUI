@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TopMenuComponent from "./TopMenu";
 import { registerMenuChange } from '../../handling/Tower';
 import MenuComponent from "./Menu"
+import { AppConsumer } from './AppContext';
 
 class MenuHolder extends Component {
 
@@ -35,11 +36,16 @@ class MenuHolder extends Component {
     
     render() {
         return (
-            this.props.menuTop ? <TopMenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu}/>
-            : 
-            <MenuComponent menu={this.state.items} theme={this.props.theme} profileMenu={this.props.profileMenu} />
+            <AppConsumer>
+                {({state}) => (
+                    state.menuTop ? <TopMenuComponent menu={this.state.items}/>
+                    : 
+                    <MenuComponent menu={this.state.items} />
+                )}
+            
+            </AppConsumer>
+            
         );
     }
 }
- 
 export default MenuHolder;

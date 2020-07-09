@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./TopMenu.scss"
+import { AppConsumer } from './AppContext';
 import {Menubar} from 'primereact/menubar';
-import logo from './imgs/sibvisionslogo.png';
 import {InputText} from 'primereact/inputtext';
 import {Sidebar} from 'primereact/sidebar';
 import {TieredMenu} from 'primereact/tieredmenu';
@@ -11,9 +11,6 @@ class TopMenuComponent extends Component {
 
     //state variables
     state = {
-        menu: [],
-        content: [],
-        username: "",
         sideBarVisible: false
     }
 
@@ -21,14 +18,7 @@ class TopMenuComponent extends Component {
      * When the menu component gets mounted, change the submenu icon
      */
     componentDidMount() {
-        var elems = document.getElementsByClassName("pi-caret-down");
-        while(elems.length > 0) {
-            for(let e of elems) {
-                e.classList.remove("pi-caret-down");
-                e.classList.add("pi-angle-down")
-                e.style.fontSize = "1em"
-            };
-        }
+        this.replaceSubIcon('down');
     }
 
     /**
@@ -36,11 +26,15 @@ class TopMenuComponent extends Component {
      * (In Future version maybe not needed)
      */
     componentDidUpdate() {
-        var elems = document.getElementsByClassName("pi-caret-down");
+        this.replaceSubIcon('down');
+    }
+
+    replaceSubIcon(direction) {
+        var elems = document.getElementsByClassName("pi-caret-" + direction);
         while(elems.length > 0) {
             for(let e of elems) {
-                e.classList.remove("pi-caret-down");
-                e.classList.add("pi-angle-down")
+                e.classList.remove("pi-caret-" + direction);
+                e.classList.add("pi-angle-" + direction)
                 e.style.fontSize = "1em"
             };
         }
@@ -51,33 +45,38 @@ class TopMenuComponent extends Component {
      */
     render() {
         return (
-            <React.Fragment>
-                <div className={"topMenuBar p-grid "}>
-                    <div className="logo-topmenu p-col-fixed">
-                        <img src={logo} alt="firmenlogo"/>
-                    </div>
-                    <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
-            	        <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
-                    </div>
-                    <Menubar model={this.props.menu}  className="p-col"/>
-                    <div className="searchbar-topmenu p-col-fixed">
-                        <div className="p-inputgroup">
-                            <span className="p-inputgroup-addon">
-                                <i className="pi pi-search" style={{fontSize: "1em"}}></i>
-                            </span>
-                            <InputText placeholder="Suchen..." />
+            <AppConsumer>
+                {({sendProfileOptions}) => (
+                    <React.Fragment>
+                    <div className="topMenuBar p-grid ">
+                        <div className="logo-topmenu p-col-fixed">
+                            <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
+                        </div>
+                        <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
+            	            <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
+                        </div>
+                        <Menubar model={this.props.menu}  className="p-col"/>
+                        <div className="searchbar-topmenu p-col-fixed">
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <i className="pi pi-search" style={{fontSize: "1em"}}></i>
+                                </span>
+                                <InputText placeholder="Suchen..." />
+                            </div>
+                        </div>
+                        <div className="profile p-col-fixed">
+                            <div className="profile-content">
+                                <Menubar model={sendProfileOptions()} />
+                            </div>
                         </div>
                     </div>
-                    <div className="profile p-col-fixed">
-                        <div className="profile-content">
-                            <Menubar model={this.props.profileMenu} />
-                        </div>
-                    </div>
-                </div>
-                <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
-                    <TieredMenu className="sidebar-menu" model={this.props.menu}/>
-                </Sidebar>
-            </React.Fragment>
+                    <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
+                        <TieredMenu className="sidebar-menu" model={this.props.menu}/>
+                    </Sidebar>
+                </React.Fragment>
+                )}
+                
+            </AppConsumer>
         )
     }
 }

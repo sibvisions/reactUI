@@ -3,16 +3,17 @@ import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-import { Growl } from 'primereact/growl';
+import {Growl} from 'primereact/growl';
 import "./App.css"
 import LoginComponent from "./component/frontend/Login.js"
-import { Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import ContentComponent from './component/frontend/Content'
 import SettingsComponent from './component/frontend/Settings';
 import { withRouter } from "react-router-dom";
 import MenuHolder from "./component/frontend/MenuHolder";
 
 import { logOut } from "./handling/Tower";
+import { AppProvider } from './component/frontend/AppContext';
 
 class App extends Component {
 
@@ -22,16 +23,19 @@ class App extends Component {
    */
   constructor(props) {
     super(props);
+    
     this.state = {
-      menuTop: false,
+      menuTop: true,
       theme: 'dark',
       loggedIn: false,
+      settingsActive: false,
       username: ''
     }
     this.changeMenuValue = this.changeMenuValue.bind(this);
     this.changeThemeValue = this.changeThemeValue.bind(this);
     this.setUsername = this.setUsername.bind(this);
     this.setLoggedIn = this.setLoggedIn.bind(this);
+    this.settingsFlip = this.settingsFlip.bind(this);
   }
 
   /**
@@ -52,52 +56,58 @@ class App extends Component {
    * If the user logs in, this methodgets called to set the state.
    */
   setLoggedIn() {
-    this.setState({loggedIn: true, loggedOut: false});
-    this.props.history.push('/')
+    this.setState({loggedIn: true});
+    this.props.history.replace('/');
+  }
+
+  settingsFlip() {
+    this.setState({settingsActive: !this.state.settingsActive});
   }
 
   /**
    * Profileoptions are set here with the username of the user. These get sent to the components whichneed to show the users profile
    */
-  sendProfileOptions() {
-    let profileOptions = [
+  sendProfileOptions = () => {
+    if(this.state !== undefined && this.state.username !== "") {
+      return [
         {
-            label: this.state.username,
-            icon: "pi avatar-icon",
-            items: [
-                {
-                  label: 'Home',
-                  icon: "pi pi-home",
-                  command: () => {
-                    this.props.history.push('/');
-                    this.setState({flip: true});
-                  }
-                },
-                {
-                    label: 'Profil',
-                    icon: "pi pi-user"
-                },
-                {
-                    label: 'Einstellungen',
-                    icon: "pi pi-cog",
-                    command: () => this.props.history.push('/settings')
-                },
-                {
-                    label: 'Logout',
-                    icon: "pi pi-power-off",
-                    command: () => {
-                      logOut();
-                      this.setState({loggedIn: false});
-                      this.props.history.push('/login');
-                      this.growl.show({severity: 'info', summary: 'Logged out successfully', detail: 'You\'ve been logged out'});
-                    }
-
+          label: this.state.username,
+          icon: "pi avatar-icon",
+          items: [
+              {
+                label: 'Home',
+                icon: "pi pi-home",
+                command: () => {
+                  this.props.history.push('/');
                 }
-            ]
-        },
-    ]
+              },
+              {
+                  label: 'Profil',
+                  icon: "pi pi-user"
+              },
+              {
+                  label: 'Einstellungen',
+                  icon: "pi pi-cog",
+                  command: () => {
+                    this.props.history.push('/settings');
+                    this.settingsFlip();
+                  }
+              },
+              {
+                  label: 'Logout',
+                  icon: "pi pi-power-off",
+                  command: () => {
+                    logOut();
+                    this.setState({loggedIn: false});
+                    this.props.history.push('/login');
+                    this.growl.show({severity: 'info', summary: 'Logged out successfully', detail: 'You\'ve been logged out'});
+                  }
 
-    return profileOptions
+              }
+          ]
+        },
+      ]
+    }
   }
 
   /**
@@ -110,27 +120,39 @@ class App extends Component {
     }
   }
 
+  
+
   /**
    * theme gets set, if the user is not logged in the menu will not be rendered. Basic routing for different components and functions are set as props.
    */
   render() {
     return (
-      <main className={this.state.theme}>
-        {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
-        <Growl ref={(el) => this.growl = el} position="topright" />
-        {this.state.loggedIn ? <MenuHolder menuTop={this.state.menuTop} theme={this.state.theme} profileMenu={this.sendProfileOptions()}/> : null}
-        {/* <Switch>
-          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
-          <Route path="/content" component={() => <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
-          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
-          <Redirect exact from="/" to="login" />
-        </Switch> */}
-        <Switch>
-          <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
-          <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
-        </Switch>
-        <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>
-      </main>
+      <AppProvider
+        value={{
+          state: this.state,
+          sendProfileOptions: this.sendProfileOptions,
+          setLoggedIn: this.setLoggedIn,
+          changeMenuValue: this.changeMenuValue,
+          changeThemeValue: this.changeThemeValue,
+          setUsername: this.setUsername
+          }}>
+        <main className={this.state.theme}>
+          {/* <button onClick={() => lazyLogin()}>log in lazy</button> <button onClick={() => logOut()}>log out</button> */}
+          <Growl ref={(el) => this.growl = el} position="topright" />
+          {this.state.loggedIn ? <MenuHolder/> : null}
+          {/* <Switch>
+            <Route path="/login" component={() => <LoginComponent loggedIn={this.state.loggedIn} setLoggedIn={this.setLoggedIn}/>}/>
+            <Route path="/content" component={() => <ContentComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} setUsername={this.setUsername}/>}/>
+            <Route path="/settings" component={() => <SettingsComponent loggedIn={this.state.loggedIn} menuTop={this.state.menuTop} theme={this.state.theme} changeMenuValue={this.changeMenuValue} changeThemeValue={this.changeThemeValue} />} />
+            <Redirect exact from="/" to="login" />
+          </Switch> */}
+          <Switch>
+            <Route path="/login" component={() => <LoginComponent/>}/>
+            <Route path="/settings" component={() => <SettingsComponent/>} />
+          </Switch>
+          <ContentComponent/>
+        </main>
+      </AppProvider>
     )
   }
 }

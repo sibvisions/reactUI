@@ -1,18 +1,22 @@
 import React, { Component } from "react";
 import "./Footer.scss"
-import { CheckFooterSide, CheckFooterTop } from "./CheckFooter";
+import { stretch } from "./Stretch";
 
 class FooterComponent extends Component {
 
     /**
-     * When the footer gets mounted, check which menu is active and call the respective function
+     * When the footer gets mounted or updated, if the sidemenu is active, call th stretch functions
      */
     componentDidMount() {
-        this.props.menuTop ? CheckFooterTop(this.props.divToCheck) : CheckFooterSide(this.props.divToCheck)
+        if(!this.props.menuTop) {
+            stretch('footer-sidemenu')
+        };
     }
 
     componentDidUpdate() {
-        this.props.menuTop ? CheckFooterTop(this.props.divToCheck) : CheckFooterSide(this.props.divToCheck)
+        if(!this.props.menuTop) {
+            stretch('footer-sidemenu')
+        };
     }
 
     /**

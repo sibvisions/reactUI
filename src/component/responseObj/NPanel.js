@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Card} from 'primereact/card';
-import Base from './Base';
+import {withContentChanges} from './withContentChanges'
 
-class NPanel extends Base {
+class NPanel extends Component {
 
-    render() { 
+    render() {
+        console.log(this.props)
         return (
-        <div className="p-col-4">
-            <Card>
-                <h1>{this.props.id}</h1>
-                {this.state.content}
+        <div className="p-col-12" style={{height: '100%', padding: '0'}}>
+            <Card style={{height: '100%'}}>
+                <h1>{this.props.screenTitle}</h1>
+                {this.props.content}
             </Card>
         </div> 
          );
     }
 }
  
-export default NPanel;
+export default withContentChanges(NPanel);

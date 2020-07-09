@@ -1,24 +1,29 @@
-import React from "react";
+import React, { Component } from "react";
 import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
-import BScreen from "../responseObj/BScreen"
+import {withScreenChanges} from "../responseObj/withScreenChanges"
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
+import AppContext from "./AppContext";
+import BorderLayout from "../../layouts/BorderLayout";
+import { compose } from "recompose";
 
-class ContentComponent extends BScreen {
+class ContentComponent extends Component {
 
-    //state variables
-    state = {
-        menu: [],
-        content: [],
-        username: ""
+    componentDidMount() {
+        console.log('mounted')
+    }
+
+    componentWillUnmount() {
+        console.log('unmounted')
     }
 
     /**
      * When the component gets mounted, start the stretch method onto the sidemenu, if sidemenu is selected. For more details visit stretch doc.
      */
     componentDidUpdate() {
-        if(!this.props.menuTop && this.props.loggedIn) {
+        this.sendUsername();
+        if(!this.context.state.menuTop && this.props.location.pathname !== '/settings' && this.context.state.loggedIn) {
             stretch('content-sidemenu');
         }
     }
@@ -27,7 +32,23 @@ class ContentComponent extends BScreen {
      * Sends the username which gets set here (because of superparent) to the "App" so it can be used when switching sites
      */
     sendUsername() {
-        return this.state.username ? this.props.setUsername(this.state.username) : null
+        return this.props.username ? this.context.setUsername(this.props.username) : null
+    }
+
+    contentBuilder(menuLocation) {
+        return (
+            <React.Fragment>
+                <div className={"content-" + menuLocation + "menu"}>
+                    <div className="p-grid parent-grid">
+                        <Switch>
+                            {this.makeRoutes(this)}
+                        </Switch>
+                        {this.props.route}
+                    </div>
+                </div>
+                <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"content-" + menuLocation + "menu"}*/ />
+            </React.Fragment>
+        )
     }
 
     routeToScreen(navigateTo){
@@ -36,49 +57,32 @@ class ContentComponent extends BScreen {
 
     makeRoutes(ref){
         let routes = []
-        ref.state.content.forEach(e => {
-            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => e} />)
+        ref.props.content.forEach(e => {
+            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout center={e} />} />)
         });
         return routes;
     }
 
     //Renders the content of the page.
     render() {
-        this.sendUsername();
-        if(!this.props.loggedIn) {
+        if (!this.context.state.loggedIn) {
             return <Redirect to='/login' />
         }
-        if(this.props.menuTop) {
-            return (
-                <React.Fragment>
-                    <div className="content-topmenu">
-                        <div className="p-grid">
-                            <Switch>
-                                {this.makeRoutes(this)}
-                            </Switch>
-                            {this.state.route}
-                        </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-topmenu"/>
-                    </div>
-                </React.Fragment>
-            )
+        if(this.props.location.pathname === '/settings') {
+            if(this.context.state.menuTop) {
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
+            }
+            else {
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
+            }
+        }
+        else if (this.context.state.menuTop) {
+            return this.contentBuilder('top')
         }
         else {
-            return (
-                <React.Fragment>
-                    <div className="content-sidemenu">
-                        <div className="p-grid">
-                            <Switch>
-                                {this.makeRoutes(this)}
-                            </Switch>
-                            {this.state.route}
-                        </div>
-                        <FooterComponent menuTop={this.props.menuTop} divToCheck="content-sidemenu"/>
-                    </div>
-                </React.Fragment>
-            )
+            return this.contentBuilder('side')
         }
     }
 }
-
-export default withRouter(ContentComponent);
+ContentComponent.contextType = AppContext
+export default compose(withRouter, withScreenChanges)(ContentComponent);
