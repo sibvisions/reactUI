@@ -11,9 +11,10 @@ import Main from './Main';
 import { RefContext } from "./Context";
 
 //Handling Imports
-import ServerCommunicator from '../../handling/ServerCommunicator';
-import UiBuilder from '../../handling/UiBuilder';
-import ResponseHandler from '../../handling/ResponseHandler';
+import ServerCommunicator from '../ServerCommunicator';
+import UiBuilder from '../UiBuilder';
+import ResponseHandler from '../ResponseHandler';
+import Menu from './Menu';
 
 
 
@@ -42,11 +43,14 @@ class App extends Component {
     render() { 
         return ( 
             <RefContext.Provider value={this.providerValue}>
+                <Route path="/main**" component={() => <Menu/>} />
                 <Switch>
-                    <Route path="/login" component={() => <Login />}  />
-                    <Route path="/main" component={() => <Main />} />
+                    <Route path="/login" exact={true} component={() => <Login />}  />
+                    <Route path="/main/:compId" component={() => <Main />} />
+                    <Route path="/main" component={() => <Main/>} />
                     <Redirect from="*" to="/login" />
                 </Switch>
+                
             </RefContext.Provider>
         );
     }

@@ -5,6 +5,7 @@ class ServerCommunicator {
         this.responseHandler = responseHandler;
     }
     BaseUrl = "http://localhost:8080/JVx.mobile/services/mobile";
+    
     sendRequest(endpoint, body){
         let reqOpt = {
             method: 'POST',
@@ -39,6 +40,7 @@ class ServerCommunicator {
             "clientId": localStorage.getItem("clientId")
         }; this.sendRequest("/api/logout", info);
     }
+
     pressButton(componentId){
         let body = {
             clientId: localStorage.getItem("clientId"),

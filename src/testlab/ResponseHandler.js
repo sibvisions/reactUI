@@ -19,6 +19,10 @@ class ResponseHandler{
         {
             name: "userData",
             methodToExecute: this.userData
+        },
+        {
+            name: "screen.generic",
+            methodToExecute: this.generic
         }
     ]
 
@@ -45,7 +49,12 @@ class ResponseHandler{
     }
 
     userData(userData, thisRef){
+        thisRef.uiBuilder.routeFromActiveScreen("/main")
         thisRef.uiBuilder.loggedInUser(userData);
+    }
+
+    generic(screenData, thisRef){
+        thisRef.uiBuilder.genericHandler(screenData)
     }
 }
 

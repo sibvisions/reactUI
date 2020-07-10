@@ -15,11 +15,11 @@ class Menu extends Component {
     menuItems = []
 
     componentDidMount(){
-        this.context.uiBuilder.subscribeToMenu(this.gotMenuItems);
+        this.menuSub = this.context.uiBuilder.menuSubject.subscribe(m => this.gotMenuItems(m));
     }
 
     componentWillUnmount(){
-        this.context.uiBuilder.unsubscribeFromMenu(this.gotMenuItems);
+        this.menuSub.unsubscribe();
     }
 
     gotMenuItems(menuItems){
