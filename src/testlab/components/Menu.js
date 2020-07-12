@@ -12,8 +12,6 @@ class Menu extends Component {
         this.gotMenuItems = this.gotMenuItems.bind(this)
     }
 
-    menuItems = []
-
     componentDidMount(){
         this.menuSub = this.context.uiBuilder.menuSubject.subscribe(m => this.gotMenuItems(m));
     }
@@ -26,16 +24,9 @@ class Menu extends Component {
         this.setState({menu: menuItems});
     }
 
-    pressButton(componentId){
-        let body = {
-            clientId: localStorage.getItem("clientId"),
-            componentId: componentId
-        }; this.sendRequest("/api/v2/pressButton", body);
-    }
-
     render() { 
-        return ( 
-            <Menubar model={this.state.menu ? this.state.menu : []} />
+        return (
+            <Menubar model={this.state.menu ? this.state.menu : this.props.model} />
         );
     }
 }

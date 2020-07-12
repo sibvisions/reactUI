@@ -1,16 +1,26 @@
 import { Subject } from "rxjs";
+import ContentSafe from "./ContentSafe";
+import React from "react";
+import UIPanel from "./components/dynamic/UIPanel";
+import { Button } from "primereact/button";
+
 class UiBuilder{
     activeWindow = {};
     btnPressedClass = {};
 
     menuSubject = new Subject();
     contentEvent = new Subject();
+    contentSafe = new ContentSafe();
 
     genericComponentMapper = 
     [
         {
             name:"Panel",
             method: this.panel
+        },
+        {
+            name:"Button",
+            method: this.button
         }
     ]
 
@@ -24,7 +34,7 @@ class UiBuilder{
     }
 
     emitContentChanges(updatedContent){
-        this.contentEvent.next(updatedContent);
+        this.contentSafe.updateContent(updatedContent)
     }
 
     // Setters
@@ -41,32 +51,6 @@ class UiBuilder{
         this.activeWindow.props.history.push(route);
     }
 
-    
-    // Generic Handler
-    genericHandler(genericResponse){
-
-        if(genericResponse.changedComponents !== undefined && genericResponse.changedComponents.length > 0){
-            let sortetComponents = [];
-            genericResponse.changedComponents.forEach(parent => {
-                parent.descendants = [];
-                let isParent = false;
-                genericResponse.changedComponents.forEach(child => {
-                    if(parent.id === child.parent) {
-                        isParent = true
-                        parent.descendants.push(child)
-                    }
-                });
-                if(isParent) sortetComponents.push(parent)
-            });
-            this.emitContentChanges(sortetComponents)
-        }
-    }
-
-    compontenthandler(component){
-
-    }
-
-    // UI building
     loggedInUser(userData){
         
     }
@@ -93,14 +77,45 @@ class UiBuilder{
                 }
             });
         });
+        this.contentSafe.menuItems = groups;
         this.emitMenuChange(groups)
     }
 
+    // Generic Handler
+    genericHandler(genericResponse, activeWindow){
+        if(genericResponse.changedComponents !== undefined && genericResponse.changedComponents.length > 0){
+            let sortetComponents = [];
+            let foundChildren = []
+            genericResponse.changedComponents.forEach(parent => {
+                parent.subjects = [];
+                genericResponse.changedComponents.forEach(child => {
+                    if(parent.id === child.parent) {
+                        parent.subjects.push(child)
+                        foundChildren.push(child)
+                    }
+                });
+                if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
+            });
+            this.emitContentChanges(sortetComponents)
+        }
+        if(!genericResponse.update){
+            this.routeFromActiveScreen("/main/"+genericResponse.componentId)
+        }
+    }
+    
+    // Component Handling
+    compontentHandler(component){
+        let toExecute =this.genericComponentMapper.find(mapper => mapper.name === component.className)
+        if(toExecute) {return toExecute.method(component, this)} else {console.log(component); return undefined}
+    }
 
     // Components
     panel(panelData){
-        console.log(panelData);
+        return <UIPanel subjects={panelData.subjects} id={panelData.id}/>
+    }
+
+    button(buttonData, thisRef){
+        return <Button label={buttonData.text} onClick={() => thisRef.btnPressedClass.pressButton(buttonData.name)} />
     }
 }
-
 export default UiBuilder

@@ -6,10 +6,6 @@ import { withRouter } from 'react-router-dom';
 class Login extends Component {
     state = {  }
 
-    componentDidMount() {
-        this.context.uiBuilder.setActiveWindow(this);
-    }
-
 
     render() { 
         return (

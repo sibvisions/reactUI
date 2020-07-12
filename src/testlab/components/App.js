@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -27,12 +27,10 @@ class App extends Component {
         this.responseHandler = new ResponseHandler(this.uiBuilder);
         this.serverComm = new ServerCommunicator(this.responseHandler);
 
-        this.uiBuilder.setBtnPressClass(this.serverComm)
-
-
         this.serverComm.startUp();
-        console.log("App Constructor")
+        this.uiBuilder.setBtnPressClass(this.serverComm);
 
+        this.props.history.push("/login")
         this.providerValue = {
             uiBuilder: this.uiBuilder,
             responseHandler: this.responseHandler,
@@ -40,10 +38,15 @@ class App extends Component {
         };
     }
 
+
+    componentDidMount(){
+
+    }
+
     render() { 
         return ( 
             <RefContext.Provider value={this.providerValue}>
-                <Route path="/main**" component={() => <Menu/>} />
+                <Route path="/main**" component={() => <Menu model={this.uiBuilder.contentSafe.menuItems}/>} />
                 <Switch>
                     <Route path="/login" exact={true} component={() => <Login />}  />
                     <Route path="/main/:compId" component={() => <Main />} />
@@ -56,4 +59,4 @@ class App extends Component {
     }
 }
  
-export default App;
+export default withRouter(App);

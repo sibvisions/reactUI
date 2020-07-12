@@ -36,7 +36,7 @@ class ResponseHandler{
     handler(responseArray){
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
-            toExecute ? toExecute.methodToExecute(res, this) : console.log("no mapping found")
+            toExecute ? toExecute.methodToExecute(res, this) : toExecute = "yikes"
         });
     }
 

@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
-import Menu from './Menu';
 import { RefContext } from './Context';
-import { withRouter, Switch, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 class Main extends Component {
 
     state = {}
 
-    constructor(props){
-        super(props);
-    }
-
     componentDidMount() {
+        let windowData = this.context.uiBuilder.contentSafe.getWindow(this.props.match.params.compId);
         this.context.uiBuilder.setActiveWindow(this);
-        this.contentSub = this.context.uiBuilder.contentEvent.subscribe(x => console.log(x))
+
+        if(windowData){
+            let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
+            console.log(mainPanel)
+            this.setState({content: mainPanel})
+        }
     }
 
     componentWillUnmount() {
-        this.contentSub.unsubscribe();
-    }
 
+    }
     render() { 
         return ( 
             <div>
+                {this.state.content}
+                {this.props.match.params.compId}
                 <h1>MAIN</h1>
             </div>
         );

@@ -6,8 +6,6 @@ import App from "./testlab/components/App";
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 
-import { sendRequest } from "./handling/Tower";
-
 ReactDOM.render(
   <BrowserRouter basename={'/reactui'}>
     <App />
