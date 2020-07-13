@@ -334,7 +334,8 @@ function panel(panelData){
         panelData.children,
         result.screenTitle,
         panelData.elem.layout,
-        panelData.elem.layoutData
+        panelData.elem.layoutData,
+        panelData.children
     )
 
     if(panelData.pid === undefined){

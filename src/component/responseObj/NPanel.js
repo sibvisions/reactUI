@@ -7,7 +7,7 @@ class NPanel extends Base {
 
     insertLayout() {
         switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
-            case "FormLayout": return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData}/>;
+            case "FormLayout": return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData} childComponents={this.props.childComponents}/>;
             default: return null;
         }
     }

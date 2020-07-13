@@ -1,12 +1,13 @@
 export class Anchor{
 
-    name
-    anchorData
-    relatedAnchor
-    autoSize
-    relative
-    position
-    orientation
+    name;
+    anchorData;
+    relatedAnchor;
+    autoSize;
+    autoSizeCalculated;
+    relative;
+    position;
+    orientation;
 
     constructor(pAnchorData, pRelatedAnchor, pPosition, pOrientation, pLayout) {
         if(pAnchorData !== undefined && pRelatedAnchor === undefined && pPosition === undefined 
@@ -20,7 +21,10 @@ export class Anchor{
             this.orientation = this.relatedAnchor.orientation;
         }
         else if(pAnchorData === undefined && pRelatedAnchor === undefined && pPosition === undefined && pOrientation !== undefined) {
-            this.orientation = pOrientation
+            this.orientation = pOrientation;
+            this.relatedAnchor = null;
+            this.autoSize = false;
+            this.position = 0
         }
         else {
             console.log("Anchor was not given the right arguments")
@@ -30,13 +34,17 @@ export class Anchor{
         }
     }
 
+    setAnchorData(pAnchorData) {
+        this.anchorData = pAnchorData;
+    }
+
     parseAnchorData() {
         if(this.anchorData !== undefined) {
             let splittedData = this.anchorData.split(',');
             this.name = splittedData[0]
             let relatedAnchorName = splittedData[1];
             if(relatedAnchorName !== '-') {
-                this.relatedAnchor = this.layout.anchors.find(e => e.name === relatedAnchorName)
+                this.relatedAnchor = this.layout.anchors.get(relatedAnchorName)
             }
             else {
                 this.relatedAnchor = null
@@ -68,7 +76,7 @@ export class Anchor{
 
     getBorderAnchor() {
         var borderAnchor = this;
-        while(borderAnchor.relatedAnchor != null) {
+        while(borderAnchor.relatedAnchor !== null) {
             borderAnchor = borderAnchor.relatedAnchor
         }
         return borderAnchor;
@@ -76,7 +84,7 @@ export class Anchor{
 
     getRelatedAnchor() {
         var relativeAnchor = this;
-        while(relativeAnchor != null && !relativeAnchor.relative) {
+        while(relativeAnchor !== null && !relativeAnchor.relative) {
             relativeAnchor = relativeAnchor.relatedAnchor;
         }
         return relativeAnchor;
