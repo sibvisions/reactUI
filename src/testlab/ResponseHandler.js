@@ -1,11 +1,29 @@
-
-
 class ResponseHandler{
 
-    constructor(uiBuilder){
-        this.uiBuilder = uiBuilder;
+    // Setter
+
+    setContentSafe(contentSafe){
+        this.contentSafe = contentSafe;
     }
 
+    setServerCommunicator(serverCommunicator){
+        this.serverCommunicator = serverCommunicator;
+    }
+    
+    setMainScreen(screenRef){
+        this.mainScreen = screenRef;
+    }
+
+    // Misc.
+    updateContent(updatedContent){
+        this.contentSafe.updateContent(updatedContent)
+    }
+
+    routeTo(route){
+        this.mainScreen.routeTo(route);
+    }
+
+    //Response handling
     responseMapper= 
     [
         {
@@ -23,6 +41,10 @@ class ResponseHandler{
         {
             name: "screen.generic",
             methodToExecute: this.generic
+        },
+        {
+            name: "closeScreen",
+            methodToExecute: this.closeScreen
         }
     ]
 
@@ -44,17 +66,60 @@ class ResponseHandler{
         localStorage.setItem("clientId", metaData.clientId);
     }
 
-    menu(menuItems, thisRef){
-        thisRef.uiBuilder.buildMenu(menuItems);
+    menu(unSortedMenuItems, thisRef){
+        let groupsString= [];
+        let groups = [];
+        //Make out distinct groups
+        unSortedMenuItems.items.forEach(parent => {
+            if(groupsString.indexOf(parent.group) === -1) {
+                groupsString.push(parent.group)
+                groups.push({label: parent.group, items: [], key: parent.group})
+            }
+        });
+        //Add SubMenus to parents
+        groups.forEach(e => {
+            unSortedMenuItems.items.forEach(subMenu => {
+                if(e.label===subMenu.group) {
+                    e.items.push({
+                        label: subMenu.action.label,
+                        componentId:subMenu.action.componentId,
+                        command: () => thisRef.serverCommunicator.pressButton(subMenu.action.componentId),
+                        key:subMenu.action.label})
+                }
+            });
+        });
+        thisRef.contentSafe.menuItems = groups;
+        thisRef.routeTo("/main")
     }
 
     userData(userData, thisRef){
-        thisRef.uiBuilder.routeFromActiveScreen("/main")
-        thisRef.uiBuilder.loggedInUser(userData);
     }
 
-    generic(screenData, thisRef){
-        thisRef.uiBuilder.genericHandler(screenData)
+    generic(genericResponse, thisRef){
+        if(genericResponse.changedComponents && genericResponse.changedComponents.length > 0){
+            let sortetComponents = [];
+            let foundChildren = []
+            genericResponse.changedComponents.forEach(parent => {
+                parent.subjects = [];
+                genericResponse.changedComponents.forEach(child => {
+                    if(parent.id === child.parent) {
+                        parent.subjects.push(child)
+                        foundChildren.push(child)
+                    }
+                });
+                if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
+            });
+            thisRef.updateContent(sortetComponents)
+        }
+        if(!genericResponse.update){
+            thisRef.routeTo("/main/"+genericResponse.componentId)
+        }
+    }
+
+    closeScreen(screenToClose, thisRef){
+        let windowToDelete = thisRef.contentSafe.findWindow(screenToClose.componentId);
+        thisRef.contentSafe.deleteWindow(windowToDelete.id)
+        thisRef.routeTo("/main");
     }
 }
 

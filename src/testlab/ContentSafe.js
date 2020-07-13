@@ -9,14 +9,17 @@ class ContentSafe{
     updateContent(updatedContent){
         updatedContent.forEach(newComponent => {
             if(!this.findYou(newComponent)){
-                if(!newComponent.parent) this.allContent.push(newComponent);
+                if(!newComponent.parent && newComponent.className) this.allContent.push(newComponent);
                 else {
                     let parnetComp = this.findYou({id: newComponent.parent})
                     //TO DO
-                    //Tell parent to update Content
                     //Update Info in allContent Array
-                    console.log(parnetComp)
+                    console.log(newComponent)
                 }
+            }
+            else
+            {
+                
             }
         });
     }
@@ -41,6 +44,21 @@ class ContentSafe{
             return false;
         })
         return foundObj;
+    }
+
+    findParent(child){
+        let fullObj = this.findYou(child);
+        let parent = this.findYou({id: fullObj.parent})
+
+        return parent;
+    }
+
+    findWindow(windowID){
+        return this.allContent.find(window => window.name === windowID)
+    }
+
+    deleteWindow(windowID){
+        this.allContent.splice(this.allContent.findIndex(x => x.id === windowID),1);
     }
 }
 export default ContentSafe

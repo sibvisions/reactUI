@@ -9,12 +9,14 @@ import "primeflex/primeflex.css";
 import Login from './Login';
 import Main from './Main';
 import { RefContext } from "./Context";
+import ContentSafe from "../ContentSafe";
 
 //Handling Imports
 import ServerCommunicator from '../ServerCommunicator';
 import UiBuilder from '../UiBuilder';
 import ResponseHandler from '../ResponseHandler';
 import Menu from './Menu';
+import Settings from './Settings';
 
 
 
@@ -23,37 +25,44 @@ class App extends Component {
     constructor(props){
         super(props);
 
-        this.uiBuilder = new UiBuilder(this);
-        this.responseHandler = new ResponseHandler(this.uiBuilder);
-        this.serverComm = new ServerCommunicator(this.responseHandler);
+        this.uiBuilder = new UiBuilder();
+        this.responseHandler = new ResponseHandler();
+        this.serverComm = new ServerCommunicator();
+        this.contentSafe = new ContentSafe();
+
+        this.responseHandler.setServerCommunicator(this.serverComm);
+        this.responseHandler.setContentSafe(this.contentSafe);
+        this.responseHandler.setMainScreen(this);
+
+        this.serverComm.setResponseHandler(this.responseHandler);
+        
+        this.uiBuilder.setContentSafe(this.contentSafe);
+        this.uiBuilder.setServerCommunicator(this.serverComm);
 
         this.serverComm.startUp();
-        this.uiBuilder.setBtnPressClass(this.serverComm);
 
-        this.props.history.push("/login")
+        this.routeTo("/login");
         this.providerValue = {
             uiBuilder: this.uiBuilder,
-            responseHandler: this.responseHandler,
-            serverComm: this.serverComm
+            contentSafe: this.contentSafe
         };
     }
 
-
-    componentDidMount(){
-
+    routeTo(route){
+        this.props.history.push(route)
     }
 
     render() { 
         return ( 
             <RefContext.Provider value={this.providerValue}>
-                <Route path="/main**" component={() => <Menu model={this.uiBuilder.contentSafe.menuItems}/>} />
+                <Route path="/main**" component={() => <Menu/>} />
                 <Switch>
                     <Route path="/login" exact={true} component={() => <Login />}  />
+                    <Route path="/main/settings" component={() => <Settings/>} />
                     <Route path="/main/:compId" component={() => <Main />} />
                     <Route path="/main" component={() => <Main/>} />
                     <Redirect from="*" to="/login" />
                 </Switch>
-                
             </RefContext.Provider>
         );
     }

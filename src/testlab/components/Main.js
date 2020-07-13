@@ -7,19 +7,14 @@ class Main extends Component {
     state = {}
 
     componentDidMount() {
-        let windowData = this.context.uiBuilder.contentSafe.getWindow(this.props.match.params.compId);
-        this.context.uiBuilder.setActiveWindow(this);
+        let windowData = this.context.contentSafe.getWindow(this.props.match.params.compId);
 
         if(windowData){
             let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
-            console.log(mainPanel)
             this.setState({content: mainPanel})
         }
     }
 
-    componentWillUnmount() {
-
-    }
     render() { 
         return ( 
             <div>

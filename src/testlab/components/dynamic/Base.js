@@ -14,6 +14,7 @@ class Base extends Component {
         });
         this.setState({content: content});
     }
+
 }
 Base.contextType = RefContext
 export default Base;
