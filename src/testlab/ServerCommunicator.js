@@ -1,10 +1,12 @@
 
 
 class ServerCommunicator {
-    constructor(responseHandler) {
+    BaseUrl = "http://localhost:8080/JVx.mobile/services/mobile";
+    responseHandler = {};
+
+    setResponseHandler(responseHandler){
         this.responseHandler = responseHandler;
     }
-    BaseUrl = "http://localhost:8080/JVx.mobile/services/mobile";
     
     sendRequest(endpoint, body){
         let reqOpt = {
@@ -12,7 +14,28 @@ class ServerCommunicator {
             body: JSON.stringify(body),
             credentials:"include"
         };
-        this.responseHandler.getResponse(fetch(this.BaseUrl+endpoint, reqOpt));
+        
+        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), 200)
+
+
+        this.responseHandler.getResponse(r);
+    }
+
+    timeoutRequest(promise, ms){
+        return new Promise((resolve, reject) => {
+            let timeoutId= setTimeout(() => {
+                reject(new Error("timeOut"))
+            }, ms);
+            promise
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    resolve(res);
+                },
+                err => {
+                    clearTimeout(timeoutId);
+                    reject(err);
+                });
+        });
     }
 
     logIn(username, password){
@@ -53,7 +76,7 @@ class ServerCommunicator {
             "layoutMode" : "generic",
             "appMode" : "full",
             "applicationName" : "demo"
-          }; this.sendRequest("/api/startup", info, this);
+          }; this.sendRequest("/api/startup", info);
     }
 
 
