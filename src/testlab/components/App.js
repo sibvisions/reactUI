@@ -36,7 +36,6 @@ class App extends Component {
 
         this.serverComm.setResponseHandler(this.responseHandler);
         
-        this.uiBuilder.setContentSafe(this.contentSafe);
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
         this.serverComm.startUp();

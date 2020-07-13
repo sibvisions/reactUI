@@ -21,11 +21,7 @@ class UiBuilder{
     setServerCommunicator(serverComnicator){
         this.serverCommunicator = serverComnicator
     }
-
-    setContentSafe(contentSafe){
-        this.contentSafe = contentSafe
-    }
-
+    
     // Component Handling
     compontentHandler(component){
         let toExecute =this.genericComponentMapper.find(mapper => mapper.name === component.className)
