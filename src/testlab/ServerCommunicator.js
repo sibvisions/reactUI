@@ -14,10 +14,7 @@ class ServerCommunicator {
             body: JSON.stringify(body),
             credentials:"include"
         };
-        
-        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), 200)
-
-
+        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), 2000)
         this.responseHandler.getResponse(r);
     }
 
