@@ -42,6 +42,7 @@ class App extends Component {
 
         this.routeTo("/login");
         this.providerValue = {
+            serverComm: this.serverComm,
             uiBuilder: this.uiBuilder,
             contentSafe: this.contentSafe
         };

@@ -28,23 +28,32 @@ class ResponseHandler{
     [
         {
             name:"applicationMetaData",
-            methodToExecute: this.applicationMetaData
+            methodToExecute: this.applicationMetaData.bind(this)
         },
         {
             name:"menu",
-            methodToExecute: this.menu
+            methodToExecute: this.menu.bind(this)
         },
         {
             name: "userData",
-            methodToExecute: this.userData
+            methodToExecute: this.userData.bind(this)
         },
         {
             name: "screen.generic",
-            methodToExecute: this.generic
+            methodToExecute: this.generic.bind(this)
         },
         {
             name: "closeScreen",
-            methodToExecute: this.closeScreen
+            methodToExecute: this.closeScreen.bind(this)
+        },
+        {
+            name: "message.error",
+            methodToExecute: this.errorMessage.bind(this)
+        },
+        {
+            name: "message.sessionexpired",
+            methodToExecute: this.sessionExpiredMessage.bind(this)
+
         }
     ]
 
@@ -56,6 +65,7 @@ class ResponseHandler{
     }
 
     handler(responseArray){
+        console.log(responseArray)
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = "yikes"
@@ -66,14 +76,14 @@ class ResponseHandler{
         localStorage.setItem("clientId", metaData.clientId);
     }
 
-    menu(unSortedMenuItems, thisRef){
+    menu(unSortedMenuItems){
         let groupsString= [];
         let groups = [];
         //Make out distinct groups
         unSortedMenuItems.items.forEach(parent => {
             if(groupsString.indexOf(parent.group) === -1) {
                 groupsString.push(parent.group)
-                groups.push({label: parent.group, items: [], key: parent.group})
+                groups.push({label: parent.group, items: [], key: parent.group, icon: "pi pi-google"})
             }
         });
         //Add SubMenus to parents
@@ -83,19 +93,19 @@ class ResponseHandler{
                     e.items.push({
                         label: subMenu.action.label,
                         componentId:subMenu.action.componentId,
-                        command: () => thisRef.serverCommunicator.pressButton(subMenu.action.componentId),
+                        command: () => this.serverCommunicator.pressButton(subMenu.action.componentId),
                         key:subMenu.action.label})
                 }
             });
         });
-        thisRef.contentSafe.menuItems = groups;
-        thisRef.routeTo("/main")
+        this.contentSafe.menuItems = groups;
+        this.routeTo("/main")
     }
 
-    userData(userData, thisRef){
+    userData(userData){
     }
 
-    generic(genericResponse, thisRef){
+    generic(genericResponse){
         if(genericResponse.changedComponents && genericResponse.changedComponents.length > 0){
             let sortetComponents = [];
             let foundChildren = []
@@ -109,17 +119,26 @@ class ResponseHandler{
                 });
                 if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
             });
-            thisRef.updateContent(sortetComponents)
+            this.updateContent(sortetComponents)
         }
         if(!genericResponse.update){
-            thisRef.routeTo("/main/"+genericResponse.componentId)
+            this.routeTo("/main/"+genericResponse.componentId)
         }
     }
 
-    closeScreen(screenToClose, thisRef){
-        let windowToDelete = thisRef.contentSafe.findWindow(screenToClose.componentId);
-        thisRef.contentSafe.deleteWindow(windowToDelete.id)
-        thisRef.routeTo("/main");
+    closeScreen(screenToClose){
+        let windowToDelete = this.contentSafe.findWindow(screenToClose.componentId);
+        this.contentSafe.deleteWindow(windowToDelete.id)
+        this.routeTo("/main");
+    }
+
+    errorMessage(error){
+        throw new Error(error.message)
+    }
+    
+    sessionExpiredMessage(message){
+        this.routeTo("/login");
+        throw new Error(message.title);
     }
 }
 

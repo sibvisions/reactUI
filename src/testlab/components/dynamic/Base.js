@@ -9,10 +9,12 @@ class Base extends Component {
         let content = [];
         content.length = 0
 
-        this.props.subjects.forEach(subjcet => {
+        if(this.props.subjects){
+            this.props.subjects.forEach(subjcet => {
             content.push(this.context.uiBuilder.compontentHandler(subjcet));
-        });
-        this.setState({content: content});
+            });
+            this.setState({content: content});
+        }
     }
 
 }

@@ -19,8 +19,6 @@ class Main extends Component {
         return ( 
             <div>
                 {this.state.content}
-                {this.props.match.params.compId}
-                <h1>MAIN</h1>
             </div>
         );
     }

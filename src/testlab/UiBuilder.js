@@ -1,6 +1,9 @@
 import React from "react";
 import UIPanel from "./components/dynamic/UIPanel";
+import UILabel from "./components/dynamic/UILabel";
 import { Button } from "primereact/button";
+import UIEditor from "./components/dynamic/UIEditor";
+import UISplitPanel from "./components/dynamic/UISplitPanel";
 
 class UiBuilder{
     serverCommunicater = {};
@@ -9,11 +12,23 @@ class UiBuilder{
     [
         {
             name:"Panel",
-            method: this.panel
+            method: this.panel.bind(this)
         },
         {
             name:"Button",
-            method: this.button
+            method: this.button.bind(this)
+        },
+        {
+            name:"Label",
+            method: this.label.bind(this)
+        },
+        {
+            name:"Editor",
+            method: this.editor.bind(this)
+        },
+        {
+            name:"SplitPanel",
+            method: this.splitPanel.bind(this)
         }
     ]
 
@@ -25,16 +40,28 @@ class UiBuilder{
     // Component Handling
     compontentHandler(component){
         let toExecute =this.genericComponentMapper.find(mapper => mapper.name === component.className)
-        if(toExecute) {return toExecute.method(component, this)} else {console.log(component); return undefined}
+        if(toExecute) {return toExecute.method(component)} else {console.log(component); return undefined}
     }
 
     // Components
     panel(panelData){
-        return <UIPanel subjects={panelData.subjects} id={panelData.id}/>
+        return <UIPanel key={panelData.id} subjects={panelData.subjects} id={panelData.id}/>
     }
 
-    button(buttonData, thisRef){
-        return <Button label={buttonData.text} onClick={() => thisRef.serverCommunicator.pressButton(buttonData.name)} />
+    button(buttonData){
+        return <Button key={buttonData.id} label={buttonData.text} onClick={() => this.serverCommunicator.pressButton(buttonData.name)} />
+    }
+
+    label(labelData){
+        return <UILabel text={labelData.text} />
+    }
+
+    editor(editorData){
+        return <UIEditor />
+    }
+
+    splitPanel(splitPanelData){
+        return <UISplitPanel />
     }
 }
 export default UiBuilder
