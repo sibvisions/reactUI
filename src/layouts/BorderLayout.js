@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 class BorderLayout extends Component {
     render() {
+        console.log(this.props)
         return (
         <div className="p-grid p-nogutter borderlayout" style={{height:"100%", "flexFlow":"column", width:"100%"}}>
             <div className="p-col-12 north" style={{textAlign:"center"}}>

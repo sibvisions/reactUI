@@ -3,17 +3,17 @@ import Base from './Base';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import { Size } from '../frontend/helper/Size';
 
 
 class NTable extends Base {
     content = [];
     dataColumns = [];
 
-    testData= [{
-        SALU_SALUTATION: "Herr",
-        LASTNAME: "Nachname"
-    }]
-
+    state = {
+        testData: []
+    }
+    maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
     constructor(props){
         super(props);
@@ -32,34 +32,36 @@ class NTable extends Base {
         for (let index = 0; index < labels.length; index++){
             const column = <Column 
             field={names[index]} 
-            header={names[index]}
+            header={labels[index]}
             style={{width: "200px"}}
-            key={labels[index]}/>;
+            key={names[index]}/>;
             this.dataColumns.push(column);
         }
     }
 
     buildData(data){
+        let tempArray = []
         data[0].records.forEach(set => {
-            console.log(set)
+            let personData = {}
+            for (let index = 0; index <= data[0].columnNames.length; index++){
+                personData[data[0].columnNames[index]] = set[index]
+            }
+            tempArray.push(personData);
         });
+        this.setState({testData: tempArray})
     }
 
-    render() { 
+    render() {
         return ( 
-        <div style={{marginLeft: "10px"}}>
-            <h1>Table</h1>
             <DataTable 
-                value={this.testData} 
+                value={this.state.testData} 
                 scrollable={true} 
                 valueable={true} 
                 scrollHeight="100px" 
-                style={{width:"100%"}} 
+                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight()}} 
                 header="Table">
-
                 {this.dataColumns}
-            </DataTable>
-        </div> );
+            </DataTable>);
     }
 }
  

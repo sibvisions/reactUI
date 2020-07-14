@@ -67,7 +67,7 @@ class FormLayout extends Component {
         splittedRawAnchors.forEach(anchorData => {
             this.getAnchor(anchorData)
         });
-        this.props.childComponents.forEach(childComponent => {
+        this.props.children.forEach(childComponent => {
             let constraints = new Constraints(this, childComponent.elem.constraints);
             this.componentConstraints.set(childComponent, constraints);
         })
@@ -128,7 +128,7 @@ class FormLayout extends Component {
     }
 
     calculateAutoSizeAnchors(pAutoSizeCount) {
-        this.props.childComponents.forEach(childComponent => {
+        this.props.children.forEach(childComponent => {
             //let preferredSize;
             let constraint = this.componentConstraints.get(childComponent);
             if ((!constraint.rightAnchor.autoSize && constraint.rightAnchor.relatedAnchor !== null && constraint.leftAnchor.position === constraint.rightAnchor.relatedAnchor.position)
@@ -148,7 +148,7 @@ class FormLayout extends Component {
         let bottomHeight = 0;
         let rightWidth = 0;
 
-        this.props.childComponents.forEach(childComponent => {
+        this.props.children.forEach(childComponent => {
             let constraint = this.componentConstraints.get(childComponent)
             //let preferredSize;
             //let minimumSize;
