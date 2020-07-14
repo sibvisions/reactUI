@@ -1,3 +1,4 @@
+import { componentFromStream } from "recompose";
 
 
 class ContentSafe{
@@ -8,13 +9,26 @@ class ContentSafe{
 
     updateContent(updatedContent){
         updatedContent.forEach(newComponent => {
-            if(!this.findYou(newComponent)){
-                if(!newComponent.parent && newComponent.className) this.allContent.push(newComponent);
+            let loadedComponent = this.findYou(newComponent)
+            if(!loadedComponent){
+                if(!newComponent.parent && newComponent.className) {
+                    this.allContent.push(newComponent);
+                }
                 else {
-                    let parnetComp = this.findYou({id: newComponent.parent})
-                    //TO DO
-                    //Update Info in allContent Array
-                    console.log(newComponent)
+                    for(let newProp in newComponent){
+                        for(let oldProp in loadedComponent){
+                            // update property to new value
+                            if(newProp === oldProp){
+                                loadedComponent[oldProp] = newComponent[newProp];
+                                break;
+                            }
+                            // add new property
+                            else if(!loadedComponent[newProp]){
+                                loadedComponent.newProp = newComponent[newProp];
+                            }
+                        }
+                    }
+                    
                 }
             }
             else
