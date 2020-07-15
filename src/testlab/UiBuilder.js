@@ -40,12 +40,12 @@ class UiBuilder{
     // Component Handling
     compontentHandler(component){
         let toExecute =this.genericComponentMapper.find(mapper => mapper.name === component.className)
-        if(toExecute) {return toExecute.method(component)} else {console.log(component); return undefined}
+        if(toExecute) {return toExecute.method(component)} else {return undefined}
     }
 
     // Components
     panel(panelData){
-        return <UIPanel key={panelData.id} subjects={panelData.subjects} id={panelData.id}/>
+        return <UIPanel key={panelData.id} constraints={panelData.constraints} subjects={panelData.subjects} id={panelData.id}/>
     }
 
     button(buttonData){
@@ -61,7 +61,7 @@ class UiBuilder{
     }
 
     splitPanel(splitPanelData){
-        return <UISplitPanel />
+        return <UISplitPanel subjects={splitPanelData.subjects}/>
     }
 }
 export default UiBuilder

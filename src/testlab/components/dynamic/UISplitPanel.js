@@ -1,28 +1,65 @@
-import React, { Component } from 'react';
-import Split from 'react-split/'
+import React from 'react';
+import Split from 'react-split'
 import Base from './Base';
+import "./UISplitPanel.css";
 
 class UISplitPanel extends Base {
-    state = {  }
-    render() { 
-        console.log(<Split />)
-        return ( 
+
+    getleftComponents(){
+        let leftComp = [];
+
+        if(this.state.content){
+            this.state.content.forEach(x => {
+                if(x.props.constraints === "SECOND_COMPONENT"){
+                    leftComp.push(x);
+                }
+            });
+        }
+        return leftComp;
+    }
+
+    getRightComponent(){
+        let rightComp = [];
+        if(this.state.content){
+            this.state.content.forEach(x => {
+                if(x.constraints === "FIRST_COMPONENT"){
+                    rightComp.push(x);
+                } 
+            });
+            rightComp.push(<h1>DO</h1>)
+        }
+        return rightComp;
+    }
+
+    finSized(){
+        console.log("si")
+    }
+
+    render() {
+        console.log(this)
+        return (
             <Split 
-            sizes={[25, 75]}
-            minSize={[2000, 2000]}
+            sizes={[75, 25]}
+            minSize={100}
             expandToMin={true}
-            gutterSize={10}
+            gutterSize={30}
             gutterAlign="center"
-            snapOffset={30}
-            dragInterval={1}
+            dragInterval={2}
             direction="horizontal"
             cursor="col-resize"
-            style= {{height: "100%"}}>
-            
-            <h1>adasd</h1>
-            <h1>dasdas</h1>
-               
-            </Split>    
+            onDragEnd={() => this.finSized()}
+            >
+                <div class="split" >
+                    {this.getleftComponents()}
+                    here
+                </div>
+                <div class="split" >
+                    here
+                    {this.getRightComponent()}
+                </div>
+            </Split>
+
+
         );
     }
 }

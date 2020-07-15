@@ -11,7 +11,8 @@ class Base extends Component {
 
         if(this.props.subjects){
             this.props.subjects.forEach(subjcet => {
-            content.push(this.context.uiBuilder.compontentHandler(subjcet));
+                let temp = this.context.uiBuilder.compontentHandler(subjcet);
+                temp ? content.push(temp) : console.log();
             });
             this.setState({content: content});
         }
