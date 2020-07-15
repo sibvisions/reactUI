@@ -33,10 +33,6 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
             }
             .profile-content {
                 .p-menubar {
-                    transition:0.3s;
-                    -webkit-transition:0.3s;
-                    -moz-transition:0.3s;
-                    transition-delay: .2s;
                     background-color: map-get($theme-map, "topBar");
                     .p-menuitem-link, .p-menuitem-link .p-menuitem-text,
                     .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text,
@@ -166,14 +162,6 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
             width: auto;
         }
     }    
-}
-
-.topBar, .topBar .p-inputtext, .p-inputtext::placeholder, 
-.p-inputgroup-addon, .menuBtnSide {
-    transition:0.3s;
-    -webkit-transition:0.3s;
-    -moz-transition:0.3s;
-    transition-delay: .2s;
 }
 
 @media only screen and (max-width: 610px) {

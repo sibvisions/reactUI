@@ -5,6 +5,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
 import {Growl} from 'primereact/growl';
+import './App.css'
 
 //Component Imports
 import Login from './component/frontend/Login';
@@ -58,7 +59,6 @@ class App extends Component {
     }
 
     changeTheme(theme){
-        console.log(this)
         this.setState({theme: theme})
     }
 
@@ -68,7 +68,7 @@ class App extends Component {
 
     render() { 
         return ( 
-            <span className={this.state.theme}>
+            <main className={this.state.theme}>
                 <RefContext.Provider value={this.state}>
                     <Growl ref={(el) => this.growl = el} position="topright" />
                     <Route path="/main**" component={() => <Menu/>} />
@@ -80,7 +80,7 @@ class App extends Component {
                         <Redirect from="*" to="/login" />
                     </Switch>
                 </RefContext.Provider>
-            </span>
+            </main>
         );
     }
 }

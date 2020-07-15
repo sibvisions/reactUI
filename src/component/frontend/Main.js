@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { RefContext } from '../helper/Context';
 import { withRouter } from 'react-router-dom';
-import { stretch } from "./Stretch";
+import { stretch } from "./Stretch"; 
+import FooterComponent from "./Footer"
 
 import "./Main.scss";
 
@@ -12,7 +13,10 @@ class Main extends Component {
 
     componentDidMount() {
         let windowData = this.context.contentSafe.getWindow(this.props.match.params.compId);
-        stretch('content-sidemenu');
+        if(this.context.menuLocation === "side") {
+            stretch('content-sidemenu');
+        }
+        
 
         if(windowData){
             let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
@@ -22,11 +26,15 @@ class Main extends Component {
 
     render() { 
         return (
-            <div className={"content-" + this.context.menuLocation + "menu"}>
-                <div className="p-grid parent-grid">
-                    {this.state.content}
+            <React.Fragment>
+                <div className={"content-" + this.context.menuLocation + "menu"}>
+                    <div className="p-grid parent-grid">
+                        {this.state.content}
+                    </div>
                 </div>
-            </div>
+                <FooterComponent menuLocation={this.context.menuLocation} />
+            </React.Fragment>
+            
         );
     }
 }

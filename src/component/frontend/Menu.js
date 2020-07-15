@@ -18,6 +18,23 @@ class Menu extends Component {
     state = {
         sideBarVisible: false
     }
+
+    componentDidMount() {
+        this.replaceSubIcon('right');
+        this.replaceSubIcon('down');
+    }
+
+    replaceSubIcon(direction) {
+        var elems = document.getElementsByClassName("pi-caret-" + direction);
+        while (elems.length > 0) {
+            for (let e of elems) {
+                e.classList.remove("pi-caret-" + direction);
+                e.classList.add("pi-angle-" + direction)
+                e.style.fontSize = "1em"
+            };
+        }
+    }
+
     getProfileMenu(){
         let profileMenu = [
             {
