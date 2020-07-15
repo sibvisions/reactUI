@@ -6,62 +6,15 @@ import {InputText} from 'primereact/inputtext';
 import {Password} from 'primereact/password';
 import { withRouter } from 'react-router-dom';
 
-import { logIn, sendRequest } from "../../handling/Tower";
-import AppContext from "./AppContext";
+import { RefContext } from "../helper/Context";
 
-class LoginComponent extends Component {
-    /**
-     * Constructor with state variables and bindings
-     * @param {*} props default contructor with props
-     */
-    constructor(props) {
-        super(props)
-        this.state = {
-            username: '',
-            password: '',
-            staySignedIn: false
-        };
-        this.handleClick = this.handleClick.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-    }
 
-    /**
-     * Dynamically changes the state values so you can see them on screen
-     * @param {*} event "onChange" event
-     */
-    handleChange(event) {
-        const target = event.target;
-        const id = target.id
-        this.setState({
-            [id]: target.value
-        })
-    }
 
-    /**
-     * When the login component gets mounted, check if there is a client id in the localstorage. If there isn't send startup
-     */
-    componentDidMount() {
-        if(!localStorage.getItem('clientId')) {
-            let info = {
-                "layoutMode" : "generic",
-                "appMode" : "full",
-                "applicationName" : "demo"
-            }; sendRequest("/api/startup", info, this);
-        }
-    }
+class Login extends Component {
+    state = {  }
 
-    /**
-     * call login method on button click, loggedIn state gets set in App
-     */
-    handleClick() {
-        logIn(this.state.username, this.state.password);
-        this.context.setLoggedIn();
-    }
 
-    /**
-     * Renders the login component, if loggedIn in App is true, redirect to the content page
-     */
-    render() {
+    render() { 
         return (
             <div className="background">
                 <div className="loginmask">
@@ -73,15 +26,11 @@ class LoginComponent extends Component {
                         <label htmlFor="username">Benutzername:</label>
                     </span>
                     <Password id="password" placeholder="Passwort:" type="text" feedback={false} value={this.state.password} onChange={this.handleChange}/>
-                    <div className="checkStay">
-                        <Checkbox checked={this.state.staySignedIn} onChange={e => this.setState({staySignedIn: e.checked})}></Checkbox>
-                        <label className="p-checkbox-label">Angemeldet bleiben?</label>
-                    </div>
-                    <Button id="loginbtn" label="ANMELDEN" className="p-button-raised" onClick={this.handleClick} />
+                    <Button id="loginbtn" label="ANMELDEN" className="p-button-raised" onClick={() => this.context.serverComm.logIn("features", "features")} />
                 </div>
             </div>
-        )
+        );
     }
 }
-LoginComponent.contextType = AppContext;
-export default withRouter(LoginComponent);
+Login.contextType = RefContext;
+export default withRouter(Login);

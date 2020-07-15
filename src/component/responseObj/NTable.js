@@ -64,4 +64,4 @@ class NTable extends Component {
     }
 }
  
-export default withContentChanges(NTable);
+export default NTable;

@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import {Menubar} from 'primereact/menubar';
 import { RefContext } from './Context';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class Menu extends Component {
+
+    
+
+
     render() { 
         return (
             <RefContext.Consumer>
@@ -16,4 +20,4 @@ class Menu extends Component {
         );
     }
 }
-export default Menu;
+export default withRouter(Menu);

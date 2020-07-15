@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import TopMenuComponent from "./TopMenu";
 import { registerMenuChange } from '../../handling/Tower';
-import MenuComponent from "./Menu"
+import MenuComponent from "./Menu_old"
 import { AppConsumer } from './AppContext';
 
 class MenuHolder extends Component {
@@ -15,8 +15,6 @@ class MenuHolder extends Component {
     constructor(props){
         super(props);
         this.reloadMenu = this.reloadMenu.bind(this)
-
-        
     }
 
     /**
@@ -42,7 +40,6 @@ class MenuHolder extends Component {
                     : 
                     <MenuComponent menu={this.state.items} />
                 )}
-            
             </AppConsumer>
             
         );

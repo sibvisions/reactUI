@@ -44,7 +44,8 @@ class App extends Component {
         this.providerValue = {
             serverComm: this.serverComm,
             uiBuilder: this.uiBuilder,
-            contentSafe: this.contentSafe
+            contentSafe: this.contentSafe,
+            menuTop: true
         };
     }
 

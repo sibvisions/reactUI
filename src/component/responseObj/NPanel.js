@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { Panel } from 'primereact/panel';
-import Base from './Base';
 import './NPanel.scss'
 import FormLayout from '../../layouts/FormLayout'
 import BorderLayout from '../../layouts/BorderLayout'
