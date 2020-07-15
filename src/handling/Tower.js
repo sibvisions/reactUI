@@ -1,5 +1,5 @@
 
-import { createButton, createPanel} from "../component/factories/CFactory";
+import { createButton, createPanel, createTable} from "../component/factories/CFactory";
 
 const BaseUrl= "http://localhost:8080/JVx.mobile/services/mobile"
 const functionMapper = [{
@@ -21,6 +21,10 @@ const functionMapper = [{
 {
     name:"Panel",
     func: panel
+},
+{
+    name:"Table",
+    func: table
 },
 {
     name:"Button",
@@ -332,13 +336,34 @@ function panel(panelData){
         panelData.pid,
         panelData.elem.name,
         panelData.children,
-        result.screenTitle
+        result.screenTitle,
+        panelData.elem.layout,
+        panelData.elem.layoutData,
+        panelData.elem.constraints
     )
 
     if(panelData.pid === undefined){
         openNewWindow(toAdd);
     }else{
         addToParentContainerById(toAdd);
+    }
+}
+
+function table(tableData){
+    let toAdd = createTable(
+        tableData.id,
+        tableData.pid,
+        tableData.elem.columnLabels,
+        tableData.elem.columnNames,
+        tableData.elem.dataProvider,
+        tableData.elem.maximumSize
+    );
+
+    if(tableData.pid === undefined){
+        openNewWindow(toAdd);
+    }
+    else{
+        addToParentContainerById(toAdd)
     }
 }
 
