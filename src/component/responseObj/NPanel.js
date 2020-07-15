@@ -6,7 +6,7 @@ import FormLayout from '../../layouts/FormLayout'
 import BorderLayout from '../../layouts/BorderLayout'
 import {createTable} from "../factories/CFactory";
 
-class NPanel extends Base {
+class NPanel extends Component {
 
     insertLayout() {
         switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {

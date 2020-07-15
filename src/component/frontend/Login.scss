@@ -24,6 +24,9 @@ body {
     padding-top: 2%;
     border-radius: 1%;
     min-width: 25%;
+    -webkit-box-shadow: 10px 8px 25px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 10px 8px 25px 0px rgba(0,0,0,0.5);
+    box-shadow: 10px 8px 25px 0px rgba(0,0,0,0.5);
   }
   //width of user inputs
   #username, .p-button, #password {

@@ -4,7 +4,6 @@ import { registerScreen } from '../../handling/Tower';
 import { Redirect } from 'react-router-dom';
 
 class BScreen extends Component {
-
     constructor(props) {
         super(props);
 
@@ -14,13 +13,17 @@ class BScreen extends Component {
         this.removeWindow = this.removeWindow.bind(this);
     }
 
+    componentDidMount() {
+        console.log(this.props)
+    }
+
     /**
      * Calls {setState} to set {state.route} with a Redirect Component
      * which will redirect to the window once rendered. 
      * @param {string} navigateTo componentId to route to
      */
-    routeToScreen(navigateTo){
-        this.setState({route: <Redirect to={"/"+navigateTo}/>})
+    routeToScreen(navigateTo) {
+        this.setState({ route: <Redirect to={"/" + navigateTo} /> })
     }
 
     /**
@@ -29,7 +32,7 @@ class BScreen extends Component {
      * @param {string} user 
      */
     addUser(user) {
-        this.setState({username: user})
+        this.setState({ username: user })
     }
 
     /**
@@ -37,10 +40,10 @@ class BScreen extends Component {
      * with updated content  
      * @param {BaseV2} toAdd initalised container element
      */
-    addWindow(toAdd){
+    addWindow(toAdd) {
         let con = [...this.state.content];
         con.push(toAdd)
-        this.setState({content: con});
+        this.setState({ content: con });
     }
 
     /**
@@ -48,21 +51,20 @@ class BScreen extends Component {
      * calls {setState} with updated content
      * @param {string} id componentId of top element
      */
-    removeWindow(id){
+    removeWindow(id) {
         let con = [...this.state.content];
         let toDelete = con.find(e => e.props.componentid === id);
         let indexToDelete = con.indexOf(toDelete);
-        con.splice(indexToDelete,1);
-        this.setState({content: con});
+        con.splice(indexToDelete, 1);
+        this.setState({ content: con });
     }
 
     /**
      * Calls {setState} and sets the content to an empty array
      * deleting all open windows
      */
-    removeAll(){
-        this.setState({content: []});
+    removeAll() {
+        this.setState({ content: [] });
     }
 }
- 
 export default BScreen;

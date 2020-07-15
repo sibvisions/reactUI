@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import "./Menu.scss"
+import {Menubar} from 'primereact/menubar';
 import {TieredMenu} from 'primereact/tieredmenu';
 import {InputText} from 'primereact/inputtext';
 import { withRouter } from "react-router-dom";
@@ -11,14 +12,8 @@ class MenuComponent extends Component {
      * When the menu component gets mounted, change the submenu icon
      */
     componentDidMount() {
-        var elems = document.getElementsByClassName("pi-caret-right");
-        while(elems.length > 0) {
-            for(let e of elems) {
-                e.classList.remove("pi-caret-right");
-                e.classList.add("pi-angle-right")
-                e.style.fontSize = "1em"
-            };
-        }
+        this.replaceSubIcon('right');
+        this.replaceSubIcon('down');
     }
 
     /**
@@ -26,11 +21,16 @@ class MenuComponent extends Component {
      * (In Future version maybe not needed)
      */
     componentDidUpdate() {
-        var elems = document.getElementsByClassName("pi-caret-right");
+        this.replaceSubIcon('right');
+        this.replaceSubIcon('down');
+    }
+
+    replaceSubIcon(direction) {
+        var elems = document.getElementsByClassName("pi-caret-" + direction);
         while(elems.length > 0) {
             for(let e of elems) {
-                e.classList.remove("pi-caret-right");
-                e.classList.add("pi-angle-right")
+                e.classList.remove("pi-caret-" + direction);
+                e.classList.add("pi-angle-" + direction)
                 e.style.fontSize = "1em"
             };
         }
@@ -90,9 +90,11 @@ class MenuComponent extends Component {
                                 <InputText placeholder="Suchen..." />
                             </div>
                         </div>
+                        <div className="profile-content">
+                                <Menubar model={sendProfileOptions()} />
+                        </div>
                     </div>
                     <div className={"menu-container"} ref={el => this.menu = el} onChange={(e) => this.onMenuChange}>
-                        <TieredMenu model={sendProfileOptions()} />
                         <TieredMenu model={this.props.menu}/>
                     </div>
                 </React.Fragment>

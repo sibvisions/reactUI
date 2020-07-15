@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import "./Content.scss"
 import FooterComponent from "./Footer"
 import { stretch } from "./Stretch";
@@ -9,11 +9,18 @@ import BorderLayout from "../../layouts/BorderLayout";
 
 class ContentComponent extends BScreen {
 
-    //state variables
     state = {
         menu: [],
         content: [],
         username: ""
+    }
+
+    componentDidMount() {
+        console.log('mounted')
+    }
+
+    componentWillUnmount() {
+        console.log('unmounted')
     }
 
     /**
@@ -68,7 +75,7 @@ class ContentComponent extends BScreen {
         }
         if(this.props.location.pathname === '/settings') {
             if(this.context.state.menuTop) {
-                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-top"}*/ />
+                return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
             }
             else {
                 return <FooterComponent menuTop={this.context.state.menuTop} /*divToCheck={"settings-content-side"}*/ />
