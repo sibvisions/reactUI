@@ -63,7 +63,7 @@ class ContentComponent extends BScreen {
     makeRoutes(ref){
         let routes = []
         ref.state.content.forEach(e => {
-            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout center={e} />} />)
+            routes.push(<Route key={e.props.componentid} path={"/" + e.props.componentid} component={() => <BorderLayout component={e} />} />)
         });
         return routes;
     }
