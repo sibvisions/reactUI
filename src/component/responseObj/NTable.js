@@ -3,13 +3,13 @@ import Base from './Base';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import { Size } from '../frontend/helper/Size';
+import { Size } from '../helper/Size';
+import './NTable.scss'
 
 
 class NTable extends Base {
     content = [];
     dataColumns = [];
-
     state = {
         testData: []
     }
@@ -57,8 +57,8 @@ class NTable extends Base {
                 value={this.state.testData} 
                 scrollable={true} 
                 valueable={true} 
-                scrollHeight="100px" 
-                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight()}} 
+                scrollHeight="100%" 
+                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight(), width: '100%', height: '100%'}} 
                 header="Table">
                 {this.dataColumns}
             </DataTable>);
