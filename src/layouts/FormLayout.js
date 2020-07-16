@@ -67,8 +67,8 @@ class FormLayout extends Component {
         splittedRawAnchors.forEach(anchorData => {
             this.getAnchor(anchorData)
         });
-        this.props.children.forEach(childComponent => {
-            let constraints = new Constraints(this, childComponent.elem.constraints);
+        this.props.subjects.forEach(childComponent => {
+            let constraints = new Constraints(this, childComponent.props.constraints);
             this.componentConstraints.set(childComponent, constraints);
         })
 
@@ -189,7 +189,7 @@ class FormLayout extends Component {
 
     render() {
         return (
-            <div>yo</div>
+        <div>{this.props.subjects}</div>
         )
     }
 }
