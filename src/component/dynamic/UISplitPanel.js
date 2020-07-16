@@ -26,35 +26,33 @@ class UISplitPanel extends Base {
                     rightComp.push(x);
                 } 
             });
-            rightComp.push(<h1>DO</h1>)
+            rightComp.push(<h1 key="do">DO</h1>)
         }
         return rightComp;
     }
 
     finSized(){
-        console.log("si")
+        console.log(this.split)
     }
 
     render() {
         console.log(this)
         return (
-            <Split 
+            <Split className= "splitHolder"
             sizes={[75, 25]}
-            minSize={100}
-            expandToMin={true}
+            minSize={220}
             gutterSize={30}
             gutterAlign="center"
             dragInterval={2}
             direction="horizontal"
             cursor="col-resize"
             onDragEnd={() => this.finSized()}
+            ref={(x) => this.split = x}
             >
-                <div class="split" >
+                <div className="split">
                     {this.getleftComponents()}
-                    here
                 </div>
-                <div class="split" >
-                    here
+                <div className="split" >
                     {this.getRightComponent()}
                 </div>
             </Split>

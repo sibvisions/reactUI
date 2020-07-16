@@ -1,7 +1,15 @@
 .split, .gutter.gutter-horizontal {
-    display: inline-block;
+    display: inline-flex;
+    height: 100%;
 }
 .gutter.gutter-horizontal {
     cursor: ew-resize;
-    display: inline-block;
+    display: inline-flex;
+}
+
+.splitHolder {
+    height: 400px;
+    display: flex;
+    flex-direction: row;
+    overflow: scroll;
 }
