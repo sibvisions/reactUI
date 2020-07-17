@@ -1,19 +1,28 @@
 import React from "react";
-import UIPanel from "../component/dynamic/UIPanel";
 import UILabel from "../component/dynamic/UILabel";
 import UIEditor from "../component/dynamic/UIEditor";
 import UISplitPanel from "../component/dynamic/UISplitPanel";
 
 import { Button } from "primereact/button";
+import { createPanel,
+         createTable, 
+         createButton, 
+         createLabel, 
+         createEditor, 
+         createSplitPanel } from "../component/factories/CFactory";
 
 class UiBuilder{
-    serverCommunicater = {};
+    serverCommunicator = {};
 
     genericComponentMapper = 
     [
         {
             name:"Panel",
             method: this.panel.bind(this)
+        },
+        {
+            name:"Table",
+            method: this.table.bind(this)
         },
         {
             name:"Button",
@@ -46,23 +55,34 @@ class UiBuilder{
 
     // Components
     panel(panelData){
-        return <UIPanel key={panelData.id} constraints={panelData.constraints} subjects={panelData.subjects} id={panelData.id}/>
+        let result = { ...panelData };
+        Object.keys(result).map((key) => {
+            if (key === "screen.title") {
+                result.screenTitle = result[key];
+                delete result[key];
+            }
+        });
+        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints);
+    }
+
+    table(tableData){
+        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.maximumSize);
     }
 
     button(buttonData){
-        return <Button key={buttonData.id} label={buttonData.text} onClick={() => this.serverCommunicator.pressButton(buttonData.name)} />
+        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.name, this.serverCommunicator)
     }
 
     label(labelData){
-        return <UILabel key={labelData.id} text={labelData.text} />
+        return createLabel(labelData.id, labelData.text, labelData.constraints)
     }
 
     editor(editorData){
-        return <UIEditor key={editorData.id} />
+        return createEditor(editorData.id, editorData.constraints)
     }
 
     splitPanel(splitPanelData){
-        return <UISplitPanel key={splitPanelData.id} subjects={splitPanelData.subjects}/>
-    }
+        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
+
 }
 export default UiBuilder
