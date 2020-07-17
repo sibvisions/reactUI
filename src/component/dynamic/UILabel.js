@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Base from './Base';
 
 class UILabel extends Base {

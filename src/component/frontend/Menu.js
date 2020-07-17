@@ -106,8 +106,10 @@ class Menu extends Component {
                             <InputText placeholder="Suchen..." />
                         </div>
                     </div>
-                    <div className="profile-content">
-                        <Menubar model={this.getProfileMenu()} />
+                    <div className="profile p-col-fixed">
+                        <div className="profile-content">
+                            <Menubar model={this.getProfileMenu()} />
+                        </div>
                     </div>
             </div>
             <div className={"menu-container"} ref={el => this.menu = el}>

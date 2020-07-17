@@ -1,11 +1,10 @@
 //Content does not overlap with the menu/topbar if menu is on the side
 .content-sidemenu {
-    padding-top: 80px;
     margin-left: 200px;
     height: -moz-calc(100% -  61.5px);
     height: -webkit-calc(100% - 61.5px);
     height: -o-calc(100% - 61.5px);
-    height: calc(100% - 61.5px);
+    height: calc(100% - 61.5px - 80.5px);
     width: -moz-calc(100% - 200px);
     width: -webkit-calc(100% - 200px);
     width: -o-calc(100% - 200px);

@@ -83,6 +83,6 @@ class UiBuilder{
 
     splitPanel(splitPanelData){
         return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
-    }
+
 }
 export default UiBuilder

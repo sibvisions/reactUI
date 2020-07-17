@@ -1,5 +1,3 @@
-
-
 class ServerCommunicator {
     BaseUrl = "http://localhost:8080/JVx.mobile/services/mobile";
     responseHandler = {};

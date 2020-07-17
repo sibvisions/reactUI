@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { InputText } from "primereact/inputtext";
 import Base from './Base';
 
