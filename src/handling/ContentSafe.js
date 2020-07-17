@@ -1,6 +1,3 @@
-import { componentFromStream } from "recompose";
-
-
 class ContentSafe{
 
     allContent = [];

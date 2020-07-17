@@ -1,9 +1,13 @@
-html, body, #root {
+html {
     height: 100vh;
 }
 
 main {
     height: 100%;
     background-color: #eeeeee;
+}
+
+#root, body {
+    height: 100%;    
 }
 

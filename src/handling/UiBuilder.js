@@ -54,15 +54,15 @@ class UiBuilder{
     }
 
     label(labelData){
-        return <UILabel text={labelData.text} />
+        return <UILabel key={labelData.id} text={labelData.text} />
     }
 
     editor(editorData){
-        return <UIEditor />
+        return <UIEditor key={editorData.id} />
     }
 
     splitPanel(splitPanelData){
-        return <UISplitPanel subjects={splitPanelData.subjects}/>
+        return <UISplitPanel key={splitPanelData.id} subjects={splitPanelData.subjects}/>
     }
 }
 export default UiBuilder
