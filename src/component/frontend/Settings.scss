@@ -1,16 +1,17 @@
 //settings content positioning if the menu is on the side
 .settings-content-side {
+    
     height: -moz-calc(100% - 61.5px);
     height: -webkit-calc(100% - 61.5px);
     height: -o-calc(100% - 61.5px);
-    height: calc(100% - 61.5px);
-    padding-top: 100px;
+    height: calc(100% - 61.5px - 70.5px);
     margin-left: 200px;
     transition: 0.3s;
       -webkit-transition: 0.3s;
       -moz-transition: 0.3s;
       transition-delay: 0.2s;
     .settings-grid {
+        padding-top: 30px;
         margin-top: -10px;
         margin-right: 0;
         margin-left: 0;
@@ -26,10 +27,11 @@
 
 //settings content positioning if the menu is on top
 .settings-content-top {
+    
     height: -moz-calc(100% - 157px);
     height: -webkit-calc(100% - 157px);
     height: -o-calc(100% - 157px);
-    height: calc(100% - 157px);
+    height: calc(100% - 157px - 80.5px);
     .settings-grid {
         margin-right: 0;
         margin-left: 50px;
