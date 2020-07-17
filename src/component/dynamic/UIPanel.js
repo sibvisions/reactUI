@@ -26,12 +26,16 @@ class UIPanel extends Base {
 
     render() {
         return (
-        <div className="p-col-12" style={{ height: '100%' }}>
-            <Panel header={this.props.screenTitle} style={{textAlign: "center", height: '100%'}}>
-                <div>
-                    {this.insertLayout()}
-                </div>
-            </Panel>
+        // <div className="p-col-12" style={{ height: '100%' }}>
+        //     <Panel header={this.props.screenTitle} style={{textAlign: "center", height: '100%',}}>
+        //         <div style={{height: "100%"}}>
+        //             {this.insertLayout()}
+        //         </div>
+        //     </Panel>
+        // </div>
+
+        <div style={{ height: '100%', width: '100%', textAlign: "center" }}>
+            {this.insertLayout()}
         </div>
         );
     }

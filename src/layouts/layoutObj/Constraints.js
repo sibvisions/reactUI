@@ -21,7 +21,6 @@ export class Constraints {
                 this.rightAnchor = pRightAnchor;
         }
         else {
-            console.log("Constraint was not given the right arguments")
         }
     }
 }

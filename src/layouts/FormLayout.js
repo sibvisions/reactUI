@@ -75,8 +75,6 @@ class FormLayout extends Component {
         for (var anchor of this.anchors.values()) {
             anchor.parseAnchorData();
         }
-        console.log(this.anchors);
-        console.log(this.componentConstraints);
     }
 
     calculateAnchors() {

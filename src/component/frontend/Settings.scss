@@ -1,10 +1,10 @@
 //settings content positioning if the menu is on the side
 .settings-content-side {
     
-    height: -moz-calc(100% - 61.5px);
-    height: -webkit-calc(100% - 61.5px);
-    height: -o-calc(100% - 61.5px);
-    height: calc(100% - 61.5px - 70.5px);
+    height: -moz-calc(100% - 61.5px - 70px);
+    height: -webkit-calc(100% - 61.5px - 70px);
+    height: -o-calc(100% - 61.5px - 70px);
+    height: calc(100% - 61.5px - 70px);
     margin-left: 200px;
     transition: 0.3s;
       -webkit-transition: 0.3s;
@@ -28,10 +28,10 @@
 //settings content positioning if the menu is on top
 .settings-content-top {
     
-    height: -moz-calc(100% - 157px);
-    height: -webkit-calc(100% - 157px);
-    height: -o-calc(100% - 157px);
-    height: calc(100% - 157px - 80.5px);
+    height: -moz-calc(100% - 156.5px);
+    height: -webkit-calc(100% - 156.5px);
+    height: -o-calc(100% - 156.5px);
+    height: calc(100% - 156.5px);
     .settings-grid {
         margin-right: 0;
         margin-left: 50px;
@@ -63,30 +63,30 @@
 //if the screen is smaller than 1575px move content lower
 @media only screen and (max-width: 1575px) {
     .settings-content-top {
-        height: -moz-calc(100% - 172px);
-        height: -webkit-calc(100% - 172px);
-        height: -o-calc(100% - 172px);
-        height: calc(100% - 172px);
+        height: -moz-calc(100% - 171.5px);
+        height: -webkit-calc(100% - 171.5px);
+        height: -o-calc(100% - 171.5px);
+        height: calc(100% - 171.5px);
     }
 }
 
 //if the screen is smaller than 1207px move content lower
 @media only screen and (max-width: 1207px) {
     .settings-content-top {
-        height: -moz-calc(100% - 182px);
-        height: -webkit-calc(100% - 182px);
-        height: -o-calc(100% - 182px);
-        height: calc(100% - 182px);
+        height: -moz-calc(100% - 181.5px);
+        height: -webkit-calc(100% - 181.5px);
+        height: -o-calc(100% - 181.5px);
+        height: calc(100% - 181.5px);
     }
 }
 
 //if the screen is smaller than 945px move content lower
 @media only screen and (max-width: 945px) {
     .settings-content-top {
-        height: -moz-calc(100% - 142px);
-        height: -webkit-calc(100% - 142px);
-        height: -o-calc(100% - 142px);
-        height: calc(100% - 142px);
+        height: -moz-calc(100% - 141.5px);
+        height: -webkit-calc(100% - 141.5px);
+        height: -o-calc(100% - 141.5px);
+        height: calc(100% - 141.5px);
         .p-grid {
             margin-top: -30px;
         }

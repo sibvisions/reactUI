@@ -42,8 +42,8 @@ class BorderLayout extends Component {
         this.setSubjectsToArea()
         return (
         <div className="p-grid p-nogutter borderlayout" style={{height:"100%", "flexFlow":"column", width:"100%", padding: '0', 
-                                                                marginTop: this.toPx(this.props.margins[0]), marginLeft: this.toPx(this.props.margins[1]),
-                                                                marginBottom: this.toPx(this.props.margins[2]), marginRight: this.toPx(this.props.margins[3])}}>
+                                                                paddingTop: this.toPx(this.props.margins[0]), paddingLeft: this.toPx(this.props.margins[1]),
+                                                                paddingBottom: this.toPx(this.props.margins[2]), paddingRight: this.toPx(this.props.margins[3])}}>
             <div className="p-col-12 north" style={{textAlign:"center", padding: '0', marginBottom: this.toPx(this.props.gaps[1])}}>
                 {this.elemNorth}
             </div>
