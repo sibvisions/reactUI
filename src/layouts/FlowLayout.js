@@ -6,6 +6,7 @@ class FlowLayout extends Component {
         <Button style={{width: '300px'}} label="Button"/>,
         <Button style={{width: '300px'}} label="Button"/>,
         <Button style={{width: '300px'}} label="Button"/>,
+        <Button style={{width: '300px'}} label="Button"/>,
         <Button style={{width: '300px'}} label="Button"/>
     ]
 
