@@ -9,7 +9,7 @@ import FlowLayout from './layouts/FlowLayout';
 
 ReactDOM.render(
   <BrowserRouter basename={'/reactui'}>
-    <FlowLayout />
+    <App />
   </BrowserRouter>,
   document.getElementById('root')
 );
