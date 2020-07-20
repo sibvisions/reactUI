@@ -1,8 +1,11 @@
+import { Subject } from "rxjs";
+
 class ContentSafe{
 
     allContent = [];
     menuItems = [];
 
+    metaDataSubject = new Subject();
 
     updateContent(updatedContent){
         updatedContent.forEach(newComponent => {
@@ -29,6 +32,14 @@ class ContentSafe{
                 }
             }
         });
+    }
+
+    updateMetaDataOfContent(){
+        
+    }
+
+    emitMetaDataRecievedEvent(metaDataArray){
+        this.metaDataSubject.next(metaDataArray);
     }
 
     getWindow(componentId){

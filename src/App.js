@@ -21,7 +21,6 @@ import Menu from './component/frontend/Menu';
 import Settings from './component/frontend/Settings';
 
 
-
 class App extends Component {
 
     constructor(props){
@@ -50,8 +49,13 @@ class App extends Component {
             menuLocation: 'side',
             theme: "dark",
             changeMenuPositon: this.changeMenuPositon.bind(this),
-            changeTheme: this.changeTheme.bind(this)
+            changeTheme: this.changeTheme.bind(this),
+            growl: this.showGrowlMessage.bind(this)
         }
+    }
+
+    showGrowlMessage(messageObj){
+        this.growl.show(messageObj)
     }
 
     changeMenuPositon(){
@@ -66,7 +70,7 @@ class App extends Component {
         this.props.history.push(route)
     }
 
-    render() { 
+    render() {
         return ( 
             <main className={this.state.theme}>
                 <RefContext.Provider value={this.state}>

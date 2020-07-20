@@ -68,8 +68,11 @@ class ResponseHandler{
         console.log(responseArray)
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
-            toExecute ? toExecute.methodToExecute(res, this) : toExecute = "yikes"
+            toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
         });
+
+        let metaData = responseArray.filter(el => el.name === "dal.metaData")
+        this.contentSafe.emitMetaDataRecievedEvent(metaData);
     }
 
     applicationMetaData(metaData){

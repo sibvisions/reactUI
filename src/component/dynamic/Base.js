@@ -4,8 +4,8 @@ import { RefContext } from '../helper/Context';
 class Base extends Component {
 
     state = {  }
-    
-    componentDidMount() {
+
+    startUp(){
         let content = [];
         content.length = 0
 
@@ -16,6 +16,10 @@ class Base extends Component {
             });
             this.setState({content: content});
         }
+    }
+    
+    componentDidMount() {
+        this.startUp();
     }
 
 }

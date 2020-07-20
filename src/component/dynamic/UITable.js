@@ -4,6 +4,7 @@ import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import { Size } from '../helper/Size';
 import './UITable.scss'
+import { RefContext } from '../helper/Context';
 
 
 class UITable extends Component {
@@ -22,9 +23,27 @@ class UITable extends Component {
             body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: this.props.dataProvider}),
             credentials:"include"
         };
-        fetch("http://localhost:8080/JVx.mobile/services/mobile/api/dal/fetch", reqOpt)
+    }
+
+    componentDidMount() {
+        this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
             .then(res => res.json())
             .then(jres => {console.log(jres); this.buildData(jres)})
+
+        this.metaDataSub = this.context.contentSafe.metaDataSubject.subscribe(x => {
+            let relevantMetaData = x.find(metaData => {
+                if(metaData.dataProvider.endsWith(this.props.dataProvider)) return true;
+            })
+            console.log(relevantMetaData)
+        });
+    }
+
+    componentWillUnmount() {
+        this.metaDataSub.unsubscribe();
+    }
+
+    RecievedMetaData(metaData){
+        
     }
 
     buildColumns(labels, names){
@@ -57,11 +76,14 @@ class UITable extends Component {
                 scrollable={true} 
                 valueable={true} 
                 scrollHeight="100%" 
-                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight(), width: '100%', height: '100%'}} 
+                style={{
+                    maxWidth: this.maximumSize.getWidth(), 
+                    maxHeight: this.maximumSize.getHeight(),
+                    width: '100%', height: '100%'}} 
                 header="Table">
                 {this.dataColumns}
             </DataTable>);
     }
 }
- 
+UITable.contextType = RefContext;
 export default UITable;

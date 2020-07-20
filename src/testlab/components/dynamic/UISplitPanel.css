@@ -1,8 +1,0 @@
-.split, .gutter.gutter-horizontal {
-    display: inline-block;
-}
-.gutter.gutter-horizontal {
-    cursor: ew-resize;
-    display: inline-block;
-    height: 100vmax;
-}

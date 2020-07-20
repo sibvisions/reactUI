@@ -74,6 +74,16 @@ class ServerCommunicator {
           }; this.sendRequest("/api/startup", info);
     }
 
+    fetchDataFromProvider(dataProvider, timeout){
+        let reqOpt = {
+            method: 'POST',
+            body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: dataProvider}),
+            credentials:"include"
+        };
+
+        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), 2000);
+    }
+
 
 
 
