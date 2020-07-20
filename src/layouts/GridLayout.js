@@ -64,10 +64,7 @@ class GridLayout extends Component {
 
     calculateSizes(fieldSize, subjects) {
         let tempContent = [];
-
         subjects.forEach(subject => {
-            let addLeft = 0;
-            let addTop = 0;
             
             if (subject.width === undefined) {
                 subject.width = 1;
@@ -76,10 +73,16 @@ class GridLayout extends Component {
                 subject.height = 1;
             }
 
-            let x = <div style={{position: "absolute", top: subject.row * fieldSize.getHeight(), left: (subject.column * (fieldSize.getWidth()-this.gaps.horizontal)) + (this.gaps.horizontal*subject.column),
-                                 width: (subject.width * fieldSize.getWidth()) - this.gaps.horizontal/this.gridSize.columns, height: (subject.height * fieldSize.getHeight()) - this.gaps.vertical,
-                                 backgroundColor: subject.bgc}}/>;
-            tempContent.push(x);
+            let calculatedWidth = subject.width * (fieldSize.getWidth() - (this.gaps.horizontal/subject.width - this.gaps.horizontal/this.gridSize.columns))
+            let calculatedHeight = subject.height * (fieldSize.getHeight() - (this.gaps.vertical/subject.height - this.gaps.vertical/this.gridSize.rows))
+            let gridElement = <div style={{
+                        position: "absolute",
+                        height: calculatedHeight,
+                        top: (calculatedHeight + this.gaps.vertical)*subject.row,
+                        width: calculatedWidth,
+                        left: (calculatedWidth + this.gaps.horizontal)*subject.column,
+                        backgroundColor: subject.bgc}}/>;
+            tempContent.push(gridElement);
         });
         this.setState({content: tempContent});
     }
