@@ -64,27 +64,27 @@ class UiBuilder {
                 delete result[key];
             }
         });
-        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints);
+        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints, panelData.preferredSize);
     }
 
     table(tableData) {
-        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.maximumSize);
+        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.preferredSize, tableData.maximumSize);
     }
 
     button(buttonData) {
-        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.name, this.serverCommunicator)
+        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.preferredSize, buttonData.name, this.serverCommunicator)
     }
 
     label(labelData) {
-        return createLabel(labelData.id, labelData.text, labelData.constraints)
+        return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize)
     }
 
     editor(editorData) {
-        return createEditor(editorData.id, editorData.constraints)
+        return createEditor(editorData.id, editorData.constraints, editorData.preferredSize)
     }
 
     splitPanel(splitPanelData) {
-        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
+        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects, splitPanelData.preferredSize)
 
     }
 }
