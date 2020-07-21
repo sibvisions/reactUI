@@ -33,6 +33,14 @@ class UiBuilder{
         {
             name:"SplitPanel",
             method: this.splitPanel.bind(this)
+        },
+        {
+            name:"GroupPanel",
+            method: this.panel.bind(this)
+        },
+        {
+            name:"ScrollPanel",
+            method: this.panel.bind(this)
         }
     ]
 

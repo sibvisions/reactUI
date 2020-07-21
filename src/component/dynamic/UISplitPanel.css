@@ -7,9 +7,13 @@
     display: inline-flex;
 }
 
+.split{
+    overflow: hidden;
+}
+
 .splitHolder {
     height: 400px;
     display: flex;
     flex-direction: row;
-    overflow: scroll;
+    overflow: hidden;
 }

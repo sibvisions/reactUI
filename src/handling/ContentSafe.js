@@ -1,52 +1,45 @@
-import { Subject } from "rxjs";
-
 class ContentSafe{
 
-    allContent = [];
+    flatContent= [];
+    hierachyContent = [];
+
+
     menuItems = [];
 
-    metaDataSubject = new Subject();
-
     updateContent(updatedContent){
-        updatedContent.forEach(newComponent => {
-            let loadedComponent = this.findYou(newComponent)
-            if(!loadedComponent){
-                if(!newComponent.parent && newComponent.className) {
-                    this.allContent.push(newComponent);
+        updatedContent.forEach(newEl => {
+            let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
+            if(existingComp){
+                //ToDo manage delete
+                for(let newProp in newEl){
+                    existingComp[newProp] = newEl[newProp]
                 }
-            }
-            else
-            {
-                for(let newProp in newComponent){
-                    for(let oldProp in loadedComponent){
-                        // update property to new value
-                        if(newProp === oldProp){
-                            loadedComponent[oldProp] = newComponent[newProp];
-                            break;
-                        }
-                        // add new property
-                        else if(!loadedComponent[newProp]){
-                            loadedComponent.newProp = newComponent[newProp];
-                        }
-                    }
-                }
-            }
+            } else this.flatContent.push(newEl);
         });
+        this.buildHierachy([...this.flatContent]);
     }
 
-    updateMetaDataOfContent(){
-        
-    }
-
-    emitMetaDataRecievedEvent(metaDataArray){
-        this.metaDataSubject.next(metaDataArray);
+    buildHierachy(allComponents){
+        let sortetComponents = [];
+        let foundChildren = []
+        allComponents.forEach(parent => {
+            parent.subjects = [];
+            allComponents.forEach(child => {
+                if(parent.id === child.parent) {
+                    parent.subjects.push(child)
+                    foundChildren.push(child)
+                }
+            });
+            if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
+        });
+        this.hierachyContent = sortetComponents;
     }
 
     getWindow(componentId){
-        return this.allContent.find(window => window.name === componentId);
+        return this.hierachyContent.find(window => window.name === componentId);
     }
 
-    findYou(toFind, currnetObj=this.allContent){
+    findYou(toFind, currnetObj=this.hierachyContent){
         let foundObj;
         currnetObj.some(comp => {
             if(comp.id === toFind.id){
@@ -72,11 +65,29 @@ class ContentSafe{
     }
 
     findWindow(windowID){
-        return this.allContent.find(window => window.name === windowID)
+        return this.hierachyContent.find(window => window.name === windowID)
     }
 
     deleteWindow(windowID){
-        this.allContent.splice(this.allContent.findIndex(x => x.id === windowID),1);
+        let fullWindowToDelete =  this.hierachyContent.find(window => window.name === windowID.componentId)
+
+        if(fullWindowToDelete){
+            let all = []
+            all = this.getAllSubjects(fullWindowToDelete, [fullWindowToDelete])
+            console.log(all)
+            let updatedContent = this.flatContent.filter(x => !all.includes(x));
+            this.flatContent = updatedContent
+        }
+
+        
+    }
+
+    getAllSubjects(parent, toReturn ){
+        parent.subjects.forEach(sub => {
+            toReturn.push(sub);
+            if(sub.subjects.length > 0)this.getAllSubjects(sub, toReturn);
+        });
+        return toReturn
     }
 }
 export default ContentSafe

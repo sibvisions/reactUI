@@ -66,12 +66,12 @@ class ServerCommunicator {
         }; this.sendRequest("/api/v2/pressButton", body);
     }
 
-    startUp(){
+    startUp(screenHeight=600, screenWidth=800){
         let info = {
-            "layoutMode" : "generic",
-            "appMode" : "full",
-            "applicationName" : "demo"
-          }; this.sendRequest("/api/startup", info);
+            layoutMode : "generic",
+            appMode : "full",
+            applicationName : "demo",
+        }; this.sendRequest("/api/startup", info);
     }
 
     fetchDataFromProvider(dataProvider, timeout){
@@ -82,6 +82,14 @@ class ServerCommunicator {
         };
 
         return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), 2000);
+    }
+
+    deviceStatus(screenHeight=600, screenWidth=800){
+        let reqOpt= {
+            screenWidth: screenHeight,
+            screenHeight: screenWidth,
+            clientId: localStorage.getItem("clientId")
+        }; this.sendRequest("/api/deviceStatus", reqOpt);   
     }
 
 

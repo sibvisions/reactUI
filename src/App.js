@@ -39,8 +39,8 @@ class App extends Component {
         
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
-        this.serverComm.startUp();
-
+        this.serverComm.startUp(window.innerHeight, window.innerWidth);
+        
         this.routeTo("/login");
         this.state={
             serverComm: this.serverComm,
@@ -68,6 +68,29 @@ class App extends Component {
 
     routeTo(route){
         this.props.history.push(route)
+    }
+
+    handleResize(){
+        this.serverComm.deviceStatus(window.innerHeight, window.innerWidth)
+    }
+
+    resizeEventLimiter(fn, ms){
+        let timer;
+        return () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                    timer = null;
+                    fn.apply(this, arguments);
+            }, ms)
+        };
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this))
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this));
     }
 
     render() {

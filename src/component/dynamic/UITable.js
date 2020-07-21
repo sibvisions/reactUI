@@ -28,18 +28,7 @@ class UITable extends Component {
     componentDidMount() {
         this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
             .then(res => res.json())
-            .then(jres => {console.log(jres); this.buildData(jres)})
-
-        this.metaDataSub = this.context.contentSafe.metaDataSubject.subscribe(x => {
-            let relevantMetaData = x.find(metaData => {
-                if(metaData.dataProvider.endsWith(this.props.dataProvider)) return true;
-            })
-            console.log(relevantMetaData)
-        });
-    }
-
-    componentWillUnmount() {
-        this.metaDataSub.unsubscribe();
+            .then(jres => this.buildData(jres))
     }
 
     RecievedMetaData(metaData){
@@ -51,7 +40,7 @@ class UITable extends Component {
             const column = <Column 
             field={names[index]} 
             header={labels[index]}
-            style={{width: "200px"}}
+            style={{width: "100%"}}
             key={names[index]}/>;
             this.dataColumns.push(column);
         }
@@ -74,12 +63,11 @@ class UITable extends Component {
             <DataTable 
                 value={this.state.testData} 
                 scrollable={true} 
-                valueable={true} 
+                valueable={true}
                 scrollHeight="100%" 
                 style={{
-                    maxWidth: this.maximumSize.getWidth(), 
-                    maxHeight: this.maximumSize.getHeight(),
-                    width: '100%', height: '100%'}} 
+                    overflow:"hidden",
+                    height: '100%'}} 
                 header="Table">
                 {this.dataColumns}
             </DataTable>);

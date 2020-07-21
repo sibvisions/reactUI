@@ -65,14 +65,11 @@ class ResponseHandler{
     }
 
     handler(responseArray){
-        console.log(responseArray)
+        //console.log(responseArray)
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
         });
-
-        let metaData = responseArray.filter(el => el.name === "dal.metaData")
-        this.contentSafe.emitMetaDataRecievedEvent(metaData);
     }
 
     applicationMetaData(metaData){
@@ -109,20 +106,9 @@ class ResponseHandler{
     }
 
     generic(genericResponse){
+
         if(genericResponse.changedComponents && genericResponse.changedComponents.length > 0){
-            let sortetComponents = [];
-            let foundChildren = []
-            genericResponse.changedComponents.forEach(parent => {
-                parent.subjects = [];
-                genericResponse.changedComponents.forEach(child => {
-                    if(parent.id === child.parent) {
-                        parent.subjects.push(child)
-                        foundChildren.push(child)
-                    }
-                });
-                if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
-            });
-            this.updateContent(sortetComponents)
+            this.updateContent(genericResponse.changedComponents)
         }
         if(!genericResponse.update){
             this.routeTo("/main/"+genericResponse.componentId)
@@ -130,8 +116,7 @@ class ResponseHandler{
     }
 
     closeScreen(screenToClose){
-        let windowToDelete = this.contentSafe.findWindow(screenToClose.componentId);
-        this.contentSafe.deleteWindow(windowToDelete.id)
+        this.contentSafe.deleteWindow(screenToClose)
         this.routeTo("/main");
     }
 
