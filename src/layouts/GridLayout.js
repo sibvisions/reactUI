@@ -22,16 +22,17 @@ class GridLayout extends Component {
     calculateSizes(fieldSize, subjects) {
         let tempContent = [];
         subjects.forEach(subject => {
-            console.log(subject)
             let subjectConstraints = new CellConstraints(subject.props.constraints)
             let calculatedWidth = subjectConstraints.gridWidth * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap()/subjectConstraints.gridWidth - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()))
+            let calculatedLeft = subjectConstraints.gridX * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap() - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()) + this.props.gaps.getHorizontalGap())
             let calculatedHeight = subjectConstraints.gridHeight * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap()/subjectConstraints.gridHeight - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()))
+            let calculatedTop =  subjectConstraints.gridY * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap() - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()) + this.props.gaps.getVerticalGap())
             let gridElement =   <div style={{
                                         position: "absolute",
-                                        height: calculatedHeight,
-                                        top: (calculatedHeight + this.props.gaps.getVerticalGap())*subjectConstraints.gridY,
-                                        width: calculatedWidth,
-                                        left: (calculatedWidth + this.props.gaps.getHorizontalGap())*subjectConstraints.gridX}}>
+                                        height:  calculatedHeight,
+                                        top: calculatedTop,
+                                        width:  calculatedWidth,
+                                        left: calculatedLeft}}>
                                     {subject}
                                 </div>
                         
@@ -41,12 +42,11 @@ class GridLayout extends Component {
     }
 
     render() {
-        console.log(this.props.gaps.getVerticalGap())
         window.onresize = () => {
             this.calculateSizes(this.fieldSize(this.props.gridSize.getColumns(), this.props.gridSize.getRows()), this.props.subjects)
         }
         return (
-            <div className="gridlayout" style={{position: "relative", width: '100%', height: '100%'}}>
+            <div className="gridlayout" style={{position: "relative", height: '100%'}}>
                 {this.state.content}
             </div>
         )

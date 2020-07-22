@@ -39,7 +39,7 @@ class UIPanel extends Base {
 
     render() {
         return (
-        <div className="p-col-12" style={{ height: '100%' }}>
+        <div ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
             <Panel header={this.props.screenTitle} style={{textAlign: "center", height: '100%'}}>
                     {this.insertLayout()}
             </Panel>

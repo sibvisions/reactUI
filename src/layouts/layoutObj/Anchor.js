@@ -1,3 +1,5 @@
+import { Orientation } from "./Orientation";
+
 export class Anchor{
 
     name;
@@ -5,6 +7,7 @@ export class Anchor{
     relatedAnchor;
     autoSize;
     autoSizeCalculated;
+    firstCalculation;
     relative;
     position;
     orientation;
@@ -12,7 +15,7 @@ export class Anchor{
     constructor(pAnchorData, pRelatedAnchor, pPosition, pOrientation, pLayout) {
         if(pAnchorData !== undefined && pRelatedAnchor === undefined && pPosition === undefined 
             && pOrientation === undefined) {
-            this.anchorData = pAnchorData;
+            this.setAnchorData(pAnchorData)
         }
         else if(pAnchorData === undefined && pRelatedAnchor !== undefined && pPosition !== undefined && pOrientation === undefined) {
             this.relatedAnchor = pRelatedAnchor;
@@ -21,7 +24,7 @@ export class Anchor{
             this.orientation = this.relatedAnchor.orientation;
         }
         else if(pAnchorData === undefined && pRelatedAnchor === undefined && pPosition === undefined && pOrientation !== undefined) {
-            this.orientation = pOrientation;
+            this.orientation = new Orientation(pOrientation);
             this.relatedAnchor = null;
             this.autoSize = false;
             this.position = 0

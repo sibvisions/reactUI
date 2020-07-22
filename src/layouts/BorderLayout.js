@@ -35,7 +35,6 @@ class BorderLayout extends Component {
     }
 
     render() {
-        console.log(this.props)
         this.setSubjectsToArea()
         return (
         <div className="p-grid p-nogutter borderlayout" style={{height:"100%", "flexFlow":"column", width:"100%", padding: '0', 

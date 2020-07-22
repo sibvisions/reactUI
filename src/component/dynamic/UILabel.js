@@ -2,10 +2,9 @@ import React from 'react';
 import Base from './Base';
 
 class UILabel extends Base {
-    state = {  }
     render() { 
         return ( 
-           <span>{this.props.text}: </span>    
+           <span ref={ref => this.compRef = ref} >{this.props.text}: </span> 
         );
     }
 }

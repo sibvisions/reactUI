@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from "primereact/button";
+import UIButton from "../dynamic/UIButton";
 import UIPanel from "../dynamic/UIPanel";
 import UITable from '../dynamic/UITable';
 import UILabel from '../dynamic/UILabel';
@@ -11,24 +11,21 @@ import { toPx } from '../helper/ToPx';
 
 export function createButton(id, label, constraints, pPreferredSize, name, serverCommunicator){
 
-    let btn = <Button 
-    key={id} 
-    id={id} 
-    label={label}
-    constraints={constraints}
-    preferredSize={pPreferredSize}
-    onClick={() => serverCommunicator.pressButton(name)}
-    style={{}}/>
+    let btn = <UIButton
+        key={id}
+        id={id}
+        label={label}
+        constraints={constraints}
+        preferredSize={pPreferredSize}
+        onClick={() => serverCommunicator.pressButton(name)}
+        style={{}}
+    />
 
     let preferredSize
     if(pPreferredSize !== undefined) {
         preferredSize = new Size(undefined, undefined, pPreferredSize)
         btn.props.style.width = toPx(preferredSize.getWidth())
         btn.props.style.height = toPx(preferredSize.getHeight())
-    }
-    else {
-        btn.props.style.width = '100%'
-        btn.props.style.height = '100%'
     }
     return btn
 }

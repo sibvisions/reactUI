@@ -1,9 +1,3 @@
-import React from "react";
-import UILabel from "../component/dynamic/UILabel";
-import UIEditor from "../component/dynamic/UIEditor";
-import UISplitPanel from "../component/dynamic/UISplitPanel";
-
-import { Button } from "primereact/button";
 import {
     createPanel,
     createTable,

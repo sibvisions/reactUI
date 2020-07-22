@@ -36,6 +36,7 @@ class FlowLayout extends Component {
                 flexDirection: this.orientation,
                 justifyContent: this.props.alignments.getHAlignment(),
                 alignContent: this.props.alignments.getVAlignment(),
+                height: '100%',
                 marginTop: toPx(this.props.margins.getMarginTop()),
                 marginLeft: toPx(this.props.margins.getMarginLeft()),
                 marginBottom: toPx(this.props.margins.getMarginBottom()),

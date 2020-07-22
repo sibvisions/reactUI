@@ -31,106 +31,89 @@ class FormLayout extends Component {
     }
 
     componentDidMount() {
-        this.updateFromState()
         this.calculateAutoSize(this.anchors.get("l"), this.anchors.get("lm"))
     }
 
-    getAnchor(pAnchorData) {
-        let name = pAnchorData.substring(0, pAnchorData.indexOf(','));
+    getAnchor(anchorData) {
+        let name = anchorData.substring(0, anchorData.indexOf(','));
         if (name === '-') {
             return null;
         }
         let anchor = this.anchors.get(name)
         if (anchor === undefined) {
-            anchor = new Anchor(pAnchorData, undefined, undefined, undefined, this)
+            anchor = new Anchor(anchorData, undefined, undefined, undefined, this)
             this.anchors.set(name, anchor)
         }
         else {
-            anchor.setAnchorData(pAnchorData)
+            anchor.setAnchorData(anchorData)
         }
         return anchor
     }
 
-    updateFromState() {
-        this.anchors.clear();
-
-        this.anchors.set("t", this.borderAnchors.topAnchor);
-        this.anchors.set("l", this.borderAnchors.leftAnchor);
-        this.anchors.set("b", this.borderAnchors.bottomAnchor);
-        this.anchors.set("r", this.borderAnchors.rightAnchor);
-        this.anchors.set("tm", this.marginAnchors.topAnchor);
-        this.anchors.set("lm", this.marginAnchors.leftAnchor);
-        this.anchors.set("bm", this.marginAnchors.bottomAnchor);
-        this.anchors.set("rm", this.marginAnchors.rightAnchor);
-
-        var splittedRawAnchors = this.props.layoutData.split(';');
-        splittedRawAnchors.forEach(anchorData => {
-            this.getAnchor(anchorData)
-        });
-        this.props.subjects.forEach(childComponent => {
-            let constraints = new Constraints(this, childComponent.props.constraints);
-            this.componentConstraints.set(childComponent, constraints);
-        })
-
-        for (var anchor of this.anchors.values()) {
-            anchor.parseAnchorData();
+    clearAutoSize(anchorList, anchor) {
+        while (anchor !== null && anchorList.includes(anchor)) {
+            anchorList.push(anchor);
+            anchor.relative = anchor.autoSize;
+            anchor.autoSizeCalculated = false;
+            anchor.firstCalculation = true
         }
-        console.log(this.anchors);
-        console.log(this.componentConstraints);
     }
 
-    calculateAnchors() {
-        this.borderAnchors.topAnchor.position = 0;
-        this.borderAnchors.leftAnchor.position = 0;
-        this.borderAnchors.bottomAnchor.position = 0;
-        this.borderAnchors.rightAnchor.position = 0;
+    calculateAutoSize(leftTopAnchor, rightBottomAnchor, preferredSize, autoSizeCount) {
 
-        this.preferredWidth = 0;
-        this.preferredHeight = 0;
+        let autoSizeAnchors = this.getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor)
+        let size = autoSizeAnchors.length;
 
-        this.minimumWidth = 0;
-        this.minimumHeight = 0;
-
-        // clearAutoSizeAnchors();
-        // initAutoSizeAnchors();
-        // calculateAutoSizeAnchors();
-        // calculateSizes();
-    }
-
-    calculateAutoSize(pLeftTopAnchor, pRightBottomAnchor, pPreferredSize, pAutoSizeCount) {
-        let anchors = this.getAutoSizeAnchorsBetween(pLeftTopAnchor, pRightBottomAnchor)
-        let size = anchors.length;
-
-        if (size === pAutoSizeCount) {
-            let fixedSize = pRightBottomAnchor.getAbsolutePosition() - pLeftTopAnchor.getAbsolutePosition();
-            anchors.forEach(anchor => {
+        if (size === autoSizeCount) {
+            let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
+            autoSizeAnchors.forEach(anchor => {
                 fixedSize += anchor.position
             })
-            console.log(fixedSize)
+
+            let diffSize = (preferredSize - fixedSize + size -1) / size;
+            autoSizeAnchors.forEach(anchor => {
+                if (diffSize > -anchor.position) {
+                    anchor.position = -diffSize;
+                }
+            });
+        }
+
+        autoSizeAnchors = this.getAutoSizeAnchorsBetween(rightBottomAnchor, leftTopAnchor)
+        size = autoSizeAnchors.length;
+
+        if (size === autoSizeCount) {
+            let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
+            autoSizeAnchors.forEach(anchor => {
+                fixedSize -= anchor.position;
+            });
+
+            let diffSize = (preferredSize - fixedSize + size - 1) / size;
+            autoSizeAnchors.forEach(anchor => {
+                if (diffSize > anchor.position) {
+                    anchor.position = diffSize
+                }
+            })
         }
     }
 
-    getAutoSizeAnchorsBetween(pStartAnchor, pEndAnchor) {
+    getAutoSizeAnchorsBetween(startAnchor, endAnchor) {
         let autoSizeAnchors = [];
-        let nextRelatedAnchor = pStartAnchor;
-        while (nextRelatedAnchor !== null && nextRelatedAnchor !== pEndAnchor) {
-            if (nextRelatedAnchor.autoSize && !nextRelatedAnchor.autoSizeCalculated) {
-                autoSizeAnchors.push(nextRelatedAnchor);
+        while (startAnchor !== null && startAnchor !== endAnchor) {
+            if (startAnchor.autoSize && !startAnchor.autoSizeCalculated) {
+                autoSizeAnchors.push(startAnchor);
             }
-            nextRelatedAnchor = nextRelatedAnchor.relatedAnchor;
+            startAnchor = startAnchor.relatedAnchor;
         }
-
-        if (nextRelatedAnchor === undefined) {
+        if (startAnchor === undefined) {
             autoSizeAnchors = [];
         }
-
         return autoSizeAnchors;
     }
 
-    calculateAutoSizeAnchors(pAutoSizeCount) {
-        this.props.children.forEach(childComponent => {
+    calculateAutoSizeAnchors(autoSizeCount) {
+        this.props.subjects.forEach(subject => {
             //let preferredSize;
-            let constraint = this.componentConstraints.get(childComponent);
+            let constraint = this.componentConstraints.get(subject);
             if ((!constraint.rightAnchor.autoSize && constraint.rightAnchor.relatedAnchor !== null && constraint.leftAnchor.position === constraint.rightAnchor.relatedAnchor.position)
                 || (!constraint.leftAnchor.autoSize && constraint.leftAnchor.relatedAnchor !== null && constraint.rightAnchor.position === constraint.leftAnchor.relatedAnchor.position)) {
             }
@@ -148,8 +131,8 @@ class FormLayout extends Component {
         let bottomHeight = 0;
         let rightWidth = 0;
 
-        this.props.children.forEach(childComponent => {
-            let constraint = this.componentConstraints.get(childComponent)
+        this.props.subjects.forEach(subject => {
+            let constraint = this.componentConstraints.get(subject)
             //let preferredSize;
             //let minimumSize;
             if (constraint.bottomAnchor.getBorderAnchor() === this.borderAnchors.topAnchor) {

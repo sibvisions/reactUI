@@ -4,9 +4,10 @@ import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import { Size } from '../helper/Size';
 import './UITable.scss'
+import Base from './Base';
 
 
-class UITable extends Component {
+class UITable extends Base {
     content = [];
     dataColumns = [];
     state = {
@@ -32,8 +33,8 @@ class UITable extends Component {
             const column = <Column 
             field={names[index]} 
             header={labels[index]}
-            style={{width: "200px"}}
-            key={names[index]}/>;
+            key={names[index]}
+            ref={ref => column.columnRef = ref}/>;
             this.dataColumns.push(column);
         }
     }
@@ -50,6 +51,10 @@ class UITable extends Component {
         this.setState({testData: tempArray})
     }
 
+    getPrefferedSize() {
+        console.log(this.maximumSize)
+    }
+
     render() {
         return ( 
             <DataTable 
@@ -57,7 +62,8 @@ class UITable extends Component {
                 scrollable={true} 
                 valueable={true} 
                 scrollHeight="100%" 
-                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight(), width: '100%', height: '100%'}} 
+                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight(), width: '100%', height: '100%'}}
+                ref={ref => this.compRef = ref} 
                 header="Table">
                 {this.dataColumns}
             </DataTable>);
