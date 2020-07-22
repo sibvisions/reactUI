@@ -1,8 +1,8 @@
+import { componentFromStream } from "recompose";
+
 class ContentSafe{
 
     flatContent= [];
-    hierachyContent = [];
-
 
     menuItems = [];
 
@@ -10,20 +10,24 @@ class ContentSafe{
         updatedContent.forEach(newEl => {
             let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
             if(existingComp){
-                //ToDo manage delete
-                for(let newProp in newEl){
-                    existingComp[newProp] = newEl[newProp]
-                }
-            } else this.flatContent.push(newEl);
+                if(newEl["~destroy"]){
+                    let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
+                    if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
+                } else {
+                    for(let newProp in newEl){
+                        existingComp[newProp] = newEl[newProp]
+                    }
+                }   
+            } else this.flatContent.push(newEl)
         });
-        this.buildHierachy([...this.flatContent]);
+        this.buildHierachy(this.flatContent);
     }
 
     buildHierachy(allComponents){
         let sortetComponents = [];
-        let foundChildren = []
+        let foundChildren = [];
         allComponents.forEach(parent => {
-            parent.subjects = [];
+            parent.subjects = []; parent.subjects.length = 0;
             allComponents.forEach(child => {
                 if(parent.id === child.parent) {
                     parent.subjects.push(child)
@@ -32,62 +36,35 @@ class ContentSafe{
             });
             if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
         });
-        this.hierachyContent = sortetComponents;
     }
 
     getWindow(componentId){
-        return this.hierachyContent.find(window => window.name === componentId);
-    }
-
-    findYou(toFind, currnetObj=this.hierachyContent){
-        let foundObj;
-        currnetObj.some(comp => {
-            if(comp.id === toFind.id){
-                foundObj = comp;
-                return true;
-            } else if (comp.subjects.length > 0){
-                let f =  this.findYou(toFind, comp.subjects);
-                if(f){
-                    foundObj = f; 
-                    return true;
-                }
+        return this.flatContent.find(window => {
+            if(!window.parent){
+                return window.name === componentId;
             }
-            return false;
-        })
-        return foundObj;
-    }
-
-    findParent(child){
-        let fullObj = this.findYou(child);
-        let parent = this.findYou({id: fullObj.parent})
-
-        return parent;
-    }
-
-    findWindow(windowID){
-        return this.hierachyContent.find(window => window.name === windowID)
-    }
-
-    deleteWindow(windowID){
-        let fullWindowToDelete =  this.hierachyContent.find(window => window.name === windowID.componentId)
-
-        if(fullWindowToDelete){
-            let all = []
-            all = this.getAllSubjects(fullWindowToDelete, [fullWindowToDelete])
-            console.log(all)
-            let updatedContent = this.flatContent.filter(x => !all.includes(x));
-            this.flatContent = updatedContent
-        }
-
-        
-    }
-
-    getAllSubjects(parent, toReturn ){
-        parent.subjects.forEach(sub => {
-            toReturn.push(sub);
-            if(sub.subjects.length > 0)this.getAllSubjects(sub, toReturn);
         });
-        return toReturn
+    }
+
+    deleteWindow(window){
+        let toDelete = this.getWindow(window.componentId)
+        let allSubs = this.getAllBelow(toDelete);
+        allSubs.forEach(el => {
+            let toDeleteId = this.flatContent.findIndex(x => x.id === el.id);
+            this.flatContent.splice(toDeleteId, 1);
+        });
+        this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
+    }
+
+    getAllBelow(parent){
+        let subs = []
+        parent.subjects.forEach(element => {
+            subs.push(element);
+            if(element.subjects.length > 0){
+                subs.concat(this.getAllBelow(element));
+            }
+        });
+        return subs;
     }
 }
 export default ContentSafe

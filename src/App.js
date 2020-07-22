@@ -46,7 +46,7 @@ class App extends Component {
             serverComm: this.serverComm,
             uiBuilder: this.uiBuilder,
             contentSafe: this.contentSafe,
-            menuLocation: 'side',
+            menuLocation: 'top',
             theme: "dark",
             changeMenuPositon: this.changeMenuPositon.bind(this),
             changeTheme: this.changeTheme.bind(this),
@@ -93,8 +93,13 @@ class App extends Component {
         window.removeEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this));
     }
 
+    
+    reRender(){
+        this.setState({flip: !this.state.flip});
+    }
+
     render() {
-        return ( 
+        return (
             <main className={this.state.theme}>
                 <RefContext.Provider value={this.state}>
                     <Growl ref={(el) => this.growl = el} position="topright" />

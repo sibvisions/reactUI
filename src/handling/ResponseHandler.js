@@ -65,10 +65,17 @@ class ResponseHandler{
     }
 
     handler(responseArray){
-        //console.log(responseArray)
+        let reRender = true
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
+
+            if(res.name === "screen.generic" && res.changedComponents && !res.update){
+                reRender = false
+            }
+            if(reRender){
+                this.mainScreen.reRender();
+            }
         });
     }
 
@@ -106,7 +113,6 @@ class ResponseHandler{
     }
 
     generic(genericResponse){
-
         if(genericResponse.changedComponents && genericResponse.changedComponents.length > 0){
             this.updateContent(genericResponse.changedComponents)
         }

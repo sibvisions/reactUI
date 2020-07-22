@@ -86,8 +86,8 @@ class ServerCommunicator {
 
     deviceStatus(screenHeight=600, screenWidth=800){
         let reqOpt= {
-            screenWidth: screenHeight,
-            screenHeight: screenWidth,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
             clientId: localStorage.getItem("clientId")
         }; this.sendRequest("/api/deviceStatus", reqOpt);   
     }

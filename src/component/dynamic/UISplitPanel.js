@@ -24,7 +24,6 @@ class UISplitPanel extends Base {
             this.state.content.forEach(x => {
                 if(x.props.constraints === "FIRST_COMPONENT"){
                     rightComp.push(x);
-                    console.log("right")
                 } 
             });
             //rightComp.push(<h1 key="do">DO</h1>)

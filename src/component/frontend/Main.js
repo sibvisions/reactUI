@@ -9,20 +9,19 @@ import "./Main.scss";
 
 class Main extends Component {
 
-    state = {}
+    state = { flip : false}
 
     componentDidMount() {
         let windowData = this.context.contentSafe.getWindow(this.props.match.params.compId);
         if(this.context.menuLocation === "side") {
             stretch('content-sidemenu');
         }
-        
-
         if(windowData){
             let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
             this.setState({content: mainPanel})
-        }
+        }   
     }
+
 
     render() { 
         return (
