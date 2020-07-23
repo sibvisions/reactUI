@@ -21,7 +21,7 @@ class UIPanel extends Base {
             let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(4, 6))
             switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                 case "FormLayout":
-                        return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData} subjects={this.state.content} margins={margins} gaps={gaps}/>;      
+                        return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData} subjects={this.state.content} margins={margins} gaps={gaps} getPreferredSize={this.getPreferredSize}/>;      
                 case "BorderLayout":
                         return <BorderLayout subjects={this.state.content} margins={margins} gaps={gaps}/>;
                 case "FlowLayout":
@@ -40,7 +40,7 @@ class UIPanel extends Base {
     render() {
         return (
         <div ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
-            <Panel header={this.props.screenTitle} style={{textAlign: "center", height: '100%'}}>
+            <Panel id={this.props.id} header={this.props.screenTitle} style={{textAlign: "center", height: '100%'}}>
                     {this.insertLayout()}
             </Panel>
         </div>

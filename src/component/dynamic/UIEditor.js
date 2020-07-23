@@ -3,9 +3,10 @@ import { InputText } from "primereact/inputtext";
 import Base from './Base';
 
 class UIEditor extends Base {
-    render() { 
+
+    render() {
         return ( 
-            <InputText /> 
+            <InputText id={this.props.id} ref={ref => this.compRef = ref} /> 
          );
     }
 }

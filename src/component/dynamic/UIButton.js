@@ -5,11 +5,6 @@ import { Size } from '../helper/Size';
 
 class UIButton extends Base {
 
-    getPreferredSize() {
-        let preferredSize = new Size(this.compRef.element.offsetWidth, this.compRef.element.offsetHeight, undefined)
-        console.log(preferredSize)
-    }
-
     render() {
         return (
             <Button

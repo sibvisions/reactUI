@@ -59,12 +59,6 @@ export class Anchor{
                 this.autoSize = false
             }
             this.position = parseInt(splittedData[4])
-            if(splittedData[0].substring(0, 1) === 'l' || splittedData[0].substring(0, 1) === 'r') {
-                this.orientation = 'vertical'
-            }
-            else {
-                this.orientation = 'horizontal'
-            }
         }
     }
 

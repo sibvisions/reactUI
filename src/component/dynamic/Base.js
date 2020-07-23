@@ -9,8 +9,7 @@ class Base extends Component {
     componentDidMount() {
         let content = [];
         content.length = 0
-        this.getPreferredSize()
-        if (this.props.subjects){
+        if (this.props.subjects) {
             this.props.subjects.forEach(subject => {
                 let temp = this.context.uiBuilder.compontentHandler(subject);
                 temp ? content.push(temp) : console.log();
@@ -20,18 +19,18 @@ class Base extends Component {
         }
     }
 
-    getPreferredSize() {
+    getPreferredSize(comp) {
         let compSize;
-        if (this.compRef) {
-            if (this.props.preferredSize) {
-                compSize = this.props.preferredSize
+        if (comp) {
+            if (comp.props.preferredSize) {
+                compSize = new Size(undefined, undefined, comp.props.preferredSize)
             }
             else {
-                compSize = new Size(this.compRef.offsetWidth, this.compRef.offsetHeight, undefined)
+                    let x = document.getElementById(comp.props.id);
+                    compSize = new Size(x.offsetWidth, x.offsetHeight, undefined)
             }
             return compSize
         }
-        
     }
 
 }
