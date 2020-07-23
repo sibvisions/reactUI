@@ -9,6 +9,7 @@
 
 .split{
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 .splitHolder {

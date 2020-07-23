@@ -5,14 +5,13 @@ import {Column} from 'primereact/column';
 import { Size } from '../helper/Size';
 import './UITable.scss'
 import { RefContext } from '../helper/Context';
+import Base from './Base';
 
 
-class UITable extends Component {
+class UITable extends Base {
     content = [];
     dataColumns = [];
-    state = {
-        testData: []
-    }
+    state = {  }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
     constructor(props){
@@ -26,13 +25,17 @@ class UITable extends Component {
     }
 
     componentDidMount() {
-        this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
-            .then(res => res.json())
-            .then(jres => this.buildData(jres))
+        this.startUp()
+
+        if(!this.state.Data){
+            this.getData()
+        }
     }
 
-    RecievedMetaData(metaData){
-        
+    getData(){
+        this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
+        .then(res => res.json())
+        .then(jres => this.buildData(jres))
     }
 
     buildColumns(labels, names){
@@ -55,20 +58,21 @@ class UITable extends Component {
             }
             tempArray.push(tableData);
         });
-        this.setState({testData: tempArray})
+        this.setState({Data: tempArray})
     }
 
     render() {
         return ( 
             <DataTable 
-                value={this.state.testData} 
+                value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
                 valueable={true}
                 scrollHeight="100%" 
                 style={{
                     overflow:"hidden",
                     height: '100%'}} 
-                header="Table">
+                header="Table"
+                selectionMode="single">
                 {this.dataColumns}
             </DataTable>);
     }

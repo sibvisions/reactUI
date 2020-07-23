@@ -71,6 +71,9 @@ class ServerCommunicator {
             layoutMode : "generic",
             appMode : "full",
             applicationName : "demo",
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+
         }; this.sendRequest("/api/startup", info);
     }
 
@@ -80,7 +83,6 @@ class ServerCommunicator {
             body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: dataProvider}),
             credentials:"include"
         };
-
         return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), 2000);
     }
 

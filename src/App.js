@@ -93,11 +93,6 @@ class App extends Component {
         window.removeEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this));
     }
 
-    
-    reRender(){
-        this.setState({flip: !this.state.flip});
-    }
-
     render() {
         return (
             <main className={this.state.theme}>

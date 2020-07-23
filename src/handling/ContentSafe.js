@@ -1,10 +1,9 @@
-import { componentFromStream } from "recompose";
 
 class ContentSafe{
 
     flatContent= [];
-
     menuItems = [];
+    meteData = new Map();
 
     updateContent(updatedContent){
         updatedContent.forEach(newEl => {
@@ -21,6 +20,16 @@ class ContentSafe{
             } else this.flatContent.push(newEl)
         });
         this.buildHierachy(this.flatContent);
+    }
+
+    updateMetaData(updatedMetaData){
+        updatedMetaData.forEach(md => {
+            this.meteData.set(md.dataProvider, md)
+        });
+    }
+
+    getMetaData(provider){
+
     }
 
     buildHierachy(allComponents){
