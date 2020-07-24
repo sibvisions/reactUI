@@ -17,11 +17,6 @@ class UITable extends Base {
     constructor(props){
         super(props);
         this.buildColumns(this.props.columnLabels, this.props.columnNames);
-        let reqOpt = {
-            method: 'POST',
-            body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: this.props.dataProvider}),
-            credentials:"include"
-        };
     }
 
     componentDidMount() {
@@ -61,6 +56,11 @@ class UITable extends Base {
         this.setState({Data: tempArray})
     }
 
+    onSelectChange(event){
+        let value = event.value
+        this.context.contentSafe.changeSelectedRowOfTable(this.props.id, value)
+    }
+
     render() {
         return ( 
             <DataTable 
@@ -69,10 +69,11 @@ class UITable extends Base {
                 valueable={true}
                 scrollHeight="100%" 
                 style={{
-                    overflow:"hidden",
+                    overflow:"auto",
                     height: '100%'}} 
                 header="Table"
-                selectionMode="single">
+                selectionMode="single"
+                onSelectionChange={this.onSelectChange.bind(this)}>
                 {this.dataColumns}
             </DataTable>);
     }

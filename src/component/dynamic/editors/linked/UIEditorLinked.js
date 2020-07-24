@@ -7,8 +7,20 @@ import { RefContext } from "../../../helper/Context";
 class UIEditorLinked extends Base {
 
     componentDidMount() {
-        this.startUp();
+        this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
         this.getData();
+    }
+
+    componentWillUnmount() {
+        this.sub.unsubscribe();
+    }
+
+    setContent(content){
+        if(content[this.props.data.columnName]){
+            console.log(content)
+            console.log(this.props.data)            //this.setState({text: content[this.props.data.columnName]});
+        }
+        //this.setState({selected: })
     }
 
     setDropDownOpt(options){
@@ -31,7 +43,7 @@ class UIEditorLinked extends Base {
             value= {this.state.selected ? this.state.selected : {}}
             options= {this.state.options ? this.state.options : [] }
             onChange= {x => this.setState({selected : x.value})}
-            placeholder= "Select "
+            placeholder= "Select"
             />
             );
     }

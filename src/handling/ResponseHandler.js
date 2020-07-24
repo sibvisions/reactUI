@@ -95,7 +95,7 @@ class ResponseHandler{
                     e.items.push({
                         label: subMenu.action.label,
                         componentId:subMenu.action.componentId,
-                        command: () => this.serverCommunicator.pressButton(subMenu.action.componentId),
+                        command: () => this.serverCommunicator.openScreen(subMenu.action.componentId),
                         key:subMenu.action.label})
                 }
             });

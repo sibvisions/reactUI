@@ -9,12 +9,12 @@
 
 .split{
     overflow: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .splitHolder {
     height: 400px;
     display: flex;
     flex-direction: row;
-    overflow: hidden;
+    overflow: auto;
 }

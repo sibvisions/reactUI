@@ -1,9 +1,22 @@
+import { Subject } from "rxjs";
 
 class ContentSafe{
 
     flatContent= [];
     menuItems = [];
+
     meteData = new Map();
+    selectedDataRow = new Map();
+    selectedDataRowChange = new Subject();
+
+    changeSelectedRowOfTable(tableID ,selectedRow){
+        this.selectedDataRow.set(tableID, selectedRow);
+        this.emitChangeOfSelectedRow(selectedRow)
+    }
+
+    emitChangeOfSelectedRow(newSelection){
+        this.selectedDataRowChange.next(newSelection);
+    }
 
     updateContent(updatedContent){
         updatedContent.forEach(newEl => {
