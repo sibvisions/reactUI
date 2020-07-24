@@ -17,33 +17,23 @@ class FormLayout extends Component {
     topMarginAnchor = new Anchor(undefined, this.topBorderAnchor, 10, undefined, this);
     bottomMarginAnchor = new Anchor(undefined, this.bottomBorderAnchor, -10, undefined, this);
 
+    components = this.props.subjects;
+
+    leftBorderUsed = false;
+    rightBorderUsed = false;
+    topBorderUsed = false;
+    bottomBorderUsed = false;
+
     preferredWidth;
     preferredHeight;
     minimumWidth;
     minimumHeight;
 
     componentDidMount() {
-        this.getAnchorsAndConstraints();
-        this.clearAutoSize();
-        console.log(this.anchors.values())
-        this.anchors.forEach(anchor => {
-            this.initAutoSize(anchor)
-        })
-        this.props.subjects.forEach(subject => {
-            let constraint = this.componentConstraints.get(subject)
-            let preferredSize = this.props.getPreferredSize(subject)
-            // console.log(preferredSize)
-            // console.log(constraint.leftAnchor)
-            // console.log(constraint.rightAnchor)
-            console.log(subject)
-            this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), 1)
-            this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), 1)
-        })
+        this.calculateAnchors()
     }
 
     getAnchorsAndConstraints() {
-        this.anchors.clear()
-
         this.anchors.set("t", this.topBorderAnchor);
         this.anchors.set("l", this.leftBorderAnchor);
         this.anchors.set("b", this.bottomBorderAnchor);
@@ -83,9 +73,9 @@ class FormLayout extends Component {
     }
 
     getConstraints() {
-        this.props.subjects.forEach(subject => {
-            let constraint = new Constraints(this, subject.props.constraints, undefined, undefined, undefined, undefined)
-            this.componentConstraints.set(subject, constraint);
+        this.components.forEach(component => {
+            let constraint = new Constraints(this, component.props.constraints, undefined, undefined, undefined, undefined)
+            this.componentConstraints.set(component, constraint);
         })
     }
 
@@ -109,7 +99,7 @@ class FormLayout extends Component {
         }
     }
 
-    initAutoSize2(startAnchor, endAnchor) {
+    initAutoSizeRelative(startAnchor, endAnchor) {
         let autoSizeAnchors = this.getAutoSizeAnchorsBetween(startAnchor, endAnchor);
         for (let i = 0; i < autoSizeAnchors.length; i++) {
             let anchor = autoSizeAnchors[i];
@@ -147,7 +137,7 @@ class FormLayout extends Component {
                 if (diffSize > -anchor.position) {
                     anchor.position = -diffSize;
                 }
-                console.log(anchor.position)
+                anchor.firstCalculation = false;
             });
         }
 
@@ -162,77 +152,138 @@ class FormLayout extends Component {
             let diffSize = (preferredSize - fixedSize + size - 1) / size;
             autoSizeAnchors.forEach(anchor => {
                 if (diffSize > anchor.position) {
-                    console.log('pos changed')
                     anchor.position = diffSize;
                 }
-                console.log(anchor.position)
+                anchor.firstCalculation = false;
             });
         }
     }
 
-    calculateAutoSizeAnchors(autoSizeCount) {
-        this.props.subjects.forEach(subject => {
-            //let preferredSize;
-            let constraint = this.componentConstraints.get(subject);
-            if ((!constraint.rightAnchor.autoSize && constraint.rightAnchor.relatedAnchor !== null && constraint.leftAnchor.position === constraint.rightAnchor.relatedAnchor.position)
-                || (!constraint.leftAnchor.autoSize && constraint.leftAnchor.relatedAnchor !== null && constraint.rightAnchor.position === constraint.leftAnchor.relatedAnchor.position)) {
+    finishAutoSizeCalculation(leftTopAnchor, rightBottomAnchor) {
+        let autoSizeAnchors = this.getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
+        let count = autoSizeAnchors.length
+        for(var i = 0; i < autoSizeAnchors.length; i++) {
+            let anchor = autoSizeAnchors[i];
+            console.log(anchor)
+            if(!anchor.firstCalculation) {
+                anchor.autoSizeCalculated = true;
+                count--;
             }
-        })
+        }
+        return count
     }
 
-    calculateSizes() {
-        let topBorderUsed = false;
-        let leftBorderUsed = false;
-        let bottomBorderUsed = false;
-        let rightBorderUsed = false;
+    calculateAnchors() {
+        this.topBorderAnchor.position = 0;
+        this.leftBorderAnchor.position = 0;
+        this.rightBorderAnchor.position = 0;
+        this.bottomBorderAnchor.position = 0;
 
-        let topHeight = 0;
-        let leftWidth = 0;
-        let bottomHeight = 0;
-        let rightWidth = 0;
+        this.preferredWidth = 0;
+        this.preferredHeight = 0;
 
-        this.props.subjects.forEach(subject => {
-            let constraint = this.componentConstraints.get(subject)
-            //let preferredSize;
-            //let minimumSize;
-            if (constraint.bottomAnchor.getBorderAnchor() === this.borderAnchors.topAnchor) {
-                let h = constraint.bottomAnchor.getAbsolutePosition();
-                if (h > topHeight) {
-                    topHeight = h;
+        this.minimumWidth = 0;
+        this.minimumHeight = 0;
+        
+        this.anchors.clear();
+        this.componentConstraints.clear();
+
+        this.getAnchorsAndConstraints();
+        this.clearAutoSize();
+        this.anchors.forEach(anchor => {
+            this.initAutoSize(anchor)
+        })
+        
+        this.components.forEach(component => {
+            let constraint = this.componentConstraints.get(component)
+
+            this.initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
+            this.initAutoSizeRelative(constraint.rightAnchor, constraint.leftAnchor);
+            this.initAutoSizeRelative(constraint.topAnchor, constraint.bottomAnchor);
+            this.initAutoSizeRelative(constraint.bottomAnchor, constraint.topAnchor);
+        })
+
+        let autoSizeCount = 1
+        do {
+            this.components.forEach(component => {
+                let constraint = this.componentConstraints.get(component)
+                let preferredSize = this.props.getPreferredSize(component)
+
+                this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
+                this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
+            });
+            autoSizeCount = Math.pow(2, 31) - 1
+            this.components.forEach(component => {
+                let constraint = this.componentConstraints.get(component)
+                let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
+                if(count > 0 && count < autoSizeCount) {
+                    autoSizeCount = count;
                 }
-                topBorderUsed = true
-            }
+                count = this.finishAutoSizeCalculation(constraint.rightAnchor, constraint.leftAnchor)
+                if(count > 0 && count < autoSizeCount) {
+                    autoSizeCount = count;
+                }
+                count = this.finishAutoSizeCalculation(constraint.topAnchor, constraint.bottomAnchor)
+                if(count > 0 && count < autoSizeCount) {
+                    autoSizeCount = count;
+                }
+                count = this.finishAutoSizeCalculation(constraint.bottomAnchor, constraint.topAnchor)
+                if(count > 0 && count < autoSizeCount) {
+                    autoSizeCount = count;
+                }
+            })
+        } while (autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1);
 
-            if (constraint.rightAnchor.getBorderAnchor() === this.borderAnchors.leftAnchor) {
+        this.leftBorderUsed = false;
+        this.rightBorderUsed = false;
+        this.topBorderUsed = false;
+        this.bottomBorderUsed = false;
+        
+        let leftWidth = 0;
+        let rightWidth = 0;
+        let topHeight = 0;
+        let bottomHeight = 0;
+
+        this.components.forEach(component => {
+            let constraint = this.componentConstraints.get(component);
+            let preferredSize = this.props.getPreferredSize(component);
+            let minimumSize = this.props.getMinimumSize(component);
+
+            if (constraint.rightAnchor.getBorderAnchor() === this.leftBorderAnchor) {
                 let w = constraint.rightAnchor.getAbsolutePosition();
                 if (w > leftWidth) {
                     leftWidth = w;
                 }
-                leftBorderUsed = true
+                this.leftBorderUsed = true;
             }
-
-            if (constraint.topAnchor.getBorderAnchor() === this.borderAnchors.bottomAnchor) {
-                let h = constraint.topAnchor.getAbsolutePosition();
-                if (h > bottomHeight) {
-                    bottomHeight = h;
-                }
-                bottomBorderUsed = true
-            }
-
-            if (constraint.leftAnchor.getBorderAnchor() === this.borderAnchors.rightAnchor) {
-                let w = constraint.leftAnchor.getAbsolutePosition();
+            if (constraint.leftAnchor.getBorderAnchor() === this.rightBorderAnchor) {
+                let w = -constraint.leftAnchor.getAbsolutePosition();
                 if (w > rightWidth) {
                     rightWidth = w;
                 }
-                rightBorderUsed = true
+                this.rightBorderUsed = true;
             }
-
+            if (constraint.bottomAnchor.getBorderAnchor() === this.topBorderAnchor) {
+                let h = constraint.bottomAnchor.getAbsolutePosition();
+                if (h > topHeight) {
+                    topHeight = h
+                }
+                this.topBorderUsed = true;
+            }
+            if (constraint.topAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
+                let h = -constraint.topAnchor.getAbsolutePosition();
+                if (h > bottomHeight) {
+                    bottomHeight = h;
+                }
+                this.bottomBorderUsed = true
+            }
         })
+
     }
 
     render() {
         return (
-        <div>{this.props.subjects}</div>
+        <div>{this.components}</div>
         )
     }
 }

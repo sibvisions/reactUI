@@ -21,7 +21,14 @@ class UIPanel extends Base {
             let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(4, 6))
             switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                 case "FormLayout":
-                        return <FormLayout layout={this.props.layout} layoutData={this.props.layoutData} subjects={this.state.content} margins={margins} gaps={gaps} getPreferredSize={this.getPreferredSize}/>;      
+                        return <FormLayout 
+                                    layout={this.props.layout} 
+                                    layoutData={this.props.layoutData} 
+                                    subjects={this.state.content} 
+                                    margins={margins} 
+                                    gaps={gaps}
+                                    getPreferredSize={this.getPreferredSize}
+                                    getMinimumSize={this.getMinimumSize}/>;      
                 case "BorderLayout":
                         return <BorderLayout subjects={this.state.content} margins={margins} gaps={gaps}/>;
                 case "FlowLayout":

@@ -58,27 +58,27 @@ class UiBuilder {
                 delete result[key];
             }
         });
-        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints, panelData.preferredSize);
+        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints, panelData.preferredSize, panelData.minimumSize, panelData.maximumSize);
     }
 
     table(tableData) {
-        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.preferredSize, tableData.maximumSize);
+        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.preferredSize, tableData.minimumSize, tableData.maximumSize);
     }
 
     button(buttonData) {
-        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.preferredSize, buttonData.name, this.serverCommunicator)
+        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.preferredSize, buttonData.minimumSize, buttonData.maximumSize, buttonData.name, this.serverCommunicator)
     }
 
     label(labelData) {
-        return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize)
+        return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize, labelData.minimumSize, labelData.maximumSize)
     }
 
     editor(editorData) {
-        return createEditor(editorData.id, editorData.constraints, editorData.preferredSize)
+        return createEditor(editorData.id, editorData.constraints, editorData.preferredSize, editorData.minimumSize, editorData.maximumSize)
     }
 
     splitPanel(splitPanelData) {
-        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects, splitPanelData.preferredSize)
+        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects, splitPanelData.preferredSize, splitPanelData.minimumSize, splitPanelData.maximumSize)
 
     }
 }

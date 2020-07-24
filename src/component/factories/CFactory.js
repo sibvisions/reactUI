@@ -9,28 +9,31 @@ import { Size } from '../helper/Size';
 import { toPx } from '../helper/ToPx';
 
 
-export function createButton(id, label, constraints, pPreferredSize, name, serverCommunicator){
+export function createButton(id, label, constraints, preferredSize, minimumSize, maximumSize, name, serverCommunicator){
 
     let btn = <UIButton
         key={id}
         id={id}
         label={label}
         constraints={constraints}
-        preferredSize={pPreferredSize}
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}
         onClick={() => serverCommunicator.pressButton(name)}
         style={{}}
     />
 
-    let preferredSize
-    if(pPreferredSize !== undefined) {
-        preferredSize = new Size(undefined, undefined, pPreferredSize)
+    //ToDo getPreferredSize etc in all Layouts for components
+    let newPreferredSize
+    if(preferredSize !== undefined) {
+        newPreferredSize = new Size(undefined, undefined, preferredSize)
         btn.props.style.width = toPx(preferredSize.getWidth())
         btn.props.style.height = toPx(preferredSize.getHeight())
     }
     return btn
 }
 
-export function createPanel(id, subjects, screenTitle, layout, layoutData, constraints, preferredSize){
+export function createPanel(id, subjects, screenTitle, layout, layoutData, constraints, preferredSize, minimumSize, maximumSize){
     return  <UIPanel 
         key={id}
         id={id}
@@ -39,10 +42,12 @@ export function createPanel(id, subjects, screenTitle, layout, layoutData, const
         layout={layout}
         layoutData={layoutData}
         constraints={constraints}
-        preferredSize={preferredSize}/>
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
 
-export function createTable(id, columnLabels, columnNames, constraints, dataProvider, preferredSize, maximumSize) {
+export function createTable(id, columnLabels, columnNames, constraints, dataProvider, preferredSize, minimumSize, maximumSize) {
     return <UITable 
         key={id} 
         id={id}
@@ -51,31 +56,38 @@ export function createTable(id, columnLabels, columnNames, constraints, dataProv
         constraints={constraints}
         dataProvider={dataProvider}
         preferredSize={preferredSize}
+        minimumSize={minimumSize}
         maximumSize={maximumSize}/>
 }
 
-export function createLabel(id, text, constraints, preferredSize) {
+export function createLabel(id, text, constraints, preferredSize, minimumSize, maximumSize) {
     return <UILabel
         key={id}
         id={id}
         text={text}
         constraints={constraints}
-        preferredSize={preferredSize}/>
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
 
-export function createEditor(id, constraints, preferredSize) {
+export function createEditor(id, constraints, preferredSize, minimumSize, maximumSize) {
     return <UIEditor
         key={id}
         id={id}
         constraints={constraints}
-        preferredSize={preferredSize}/>
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
 
-export function createSplitPanel(id, constraints, subjects, preferredSize) {
+export function createSplitPanel(id, constraints, subjects, preferredSize, minimumSize, maximumSize) {
     return <UISplitPanel
         key={id}
         id={id}
         constraints={constraints}
         subjects={subjects}
-        preferredSize={preferredSize}/>
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }

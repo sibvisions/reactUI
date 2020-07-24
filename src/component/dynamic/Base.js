@@ -20,16 +20,56 @@ class Base extends Component {
     }
 
     getPreferredSize(comp) {
-        let compSize;
+        let prefSize;
         if (comp) {
             if (comp.props.preferredSize) {
-                compSize = new Size(undefined, undefined, comp.props.preferredSize)
+                prefSize = new Size(undefined, undefined, comp.props.preferredSize)
             }
             else {
                     let x = document.getElementById(comp.props.id);
-                    compSize = new Size(x.offsetWidth, x.offsetHeight, undefined)
+                    prefSize = new Size(x.offsetWidth, x.offsetHeight, undefined)
             }
-            return compSize
+
+            if (comp.props.minimumSize) {
+                let minSize = new Size(undefined, undefined, comp.props.minimumSize)
+                if (prefSize.getWidth() < minSize.getWidth()) {
+                    prefSize.setWidth(minSize.getWidth());
+                }
+                if (prefSize.getHeight() < minSize.getHeight()) {
+                    prefSize.setHeight(minSize.getHeight());
+                }
+            }
+
+            if(comp.props.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+                if (maxSize.getWidth() < prefSize.getWidth) {
+                    prefSize.setWidth(maxSize.getWidth());
+                }
+                if (maxSize.getHeight() < prefSize.getHeight()) {
+                    prefSize.setHeight(maxSize.getHeight());
+                }
+            }
+            return prefSize
+        }
+    }
+
+    getMinimumSize(comp) {
+        let minSize;
+        if (comp.props.minimumSize) {
+            minSize = new Size(undefined, undefined, comp.props.minimumSize);
+        }
+        else {
+            minSize = this.getPreferredSize(comp);
+        }
+
+        if (comp.props.maximumSize) {
+            let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (maxSize.getWidth() < minSize.getWidth) {
+                minSize.setWidth(maxSize.getWidth());
+            }
+            if (maxSize.getHeight() < minSize.getHeight()) {
+                minSize.setHeight(maxSize.getHeight());
+            }
         }
     }
 
