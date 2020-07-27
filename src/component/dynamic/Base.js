@@ -55,24 +55,39 @@ class Base extends Component {
 
     getMinimumSize(comp) {
         let minSize;
-        if (comp.props.minimumSize) {
-            minSize = new Size(undefined, undefined, comp.props.minimumSize);
-        }
-        else {
-            minSize = this.getPreferredSize(comp);
-        }
-
-        if (comp.props.maximumSize) {
-            let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
-            if (maxSize.getWidth() < minSize.getWidth) {
-                minSize.setWidth(maxSize.getWidth());
+        if (comp) {
+            if (comp.props.minimumSize) {
+                minSize = new Size(undefined, undefined, comp.props.minimumSize);
             }
-            if (maxSize.getHeight() < minSize.getHeight()) {
-                minSize.setHeight(maxSize.getHeight());
+            else {
+                minSize = this.getPreferredSize(comp);
             }
+    
+            if (comp.props.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+                if (maxSize.getWidth() < minSize.getWidth) {
+                    minSize.setWidth(maxSize.getWidth());
+                }
+                if (maxSize.getHeight() < minSize.getHeight()) {
+                    minSize.setHeight(maxSize.getHeight());
+                }
+            }
+            return minSize
         }
     }
 
+    getMaximumSize(comp) {
+        let maxSize;
+        if (comp) {
+            if (comp.props.maximumSize) {
+                maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            }
+            else {
+                maxSize = this.getPreferredSize(comp);
+            }
+            return maxSize;
+        }
+    }
 }
 Base.contextType = RefContext
 export default Base;

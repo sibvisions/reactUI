@@ -37,18 +37,18 @@ export class Margins {
     }
 
     setMarginTop(marginTop) {
-        this.marginTop = marginTop;
+        this.marginTop = parseInt(marginTop);
     }
 
     setMarginLeft(marginLeft) {
-        this.marginLeft = marginLeft;
+        this.marginLeft = parseInt(marginLeft);
     }
 
     setMarginBottom(marginBottom) {
-        this.marginBottom = marginBottom;
+        this.marginBottom = parseInt(marginBottom);
     }
 
     setMarginRight(marginRight) {
-        this.marginRight = marginRight;
+        this.marginRight = parseInt(marginRight);
     }
 }

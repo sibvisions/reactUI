@@ -19,21 +19,21 @@ class GridLayout extends Component {
         return fieldSize;
     }
 
-    calculateSizes(fieldSize, subjects) {
+    calculateSizes(fieldSize, components) {
         let tempContent = [];
-        subjects.forEach(subject => {
-            let subjectConstraints = new CellConstraints(subject.props.constraints)
-            let calculatedWidth = subjectConstraints.gridWidth * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap()/subjectConstraints.gridWidth - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()))
-            let calculatedLeft = subjectConstraints.gridX * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap() - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()) + this.props.gaps.getHorizontalGap())
-            let calculatedHeight = subjectConstraints.gridHeight * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap()/subjectConstraints.gridHeight - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()))
-            let calculatedTop =  subjectConstraints.gridY * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap() - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()) + this.props.gaps.getVerticalGap())
+        components.forEach(component => {
+            let componentConstraints = new CellConstraints(component.props.constraints)
+            let calculatedWidth = componentConstraints.gridWidth * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap()/componentConstraints.gridWidth - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()))
+            let calculatedLeft = componentConstraints.gridX * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap() - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()) + this.props.gaps.getHorizontalGap())
+            let calculatedHeight = componentConstraints.gridHeight * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap()/componentConstraints.gridHeight - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()))
+            let calculatedTop =  componentConstraints.gridY * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap() - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()) + this.props.gaps.getVerticalGap())
             let gridElement =   <div style={{
-                                        position: "absolute",
-                                        height:  calculatedHeight,
-                                        top: calculatedTop,
-                                        width:  calculatedWidth,
-                                        left: calculatedLeft}}>
-                                    {subject}
+                                    position: "absolute",
+                                    height:  calculatedHeight,
+                                    width:  calculatedWidth,
+                                    top: calculatedTop,
+                                    left: calculatedLeft}}>
+                                    {component}
                                 </div>
                         
             tempContent.push(gridElement);

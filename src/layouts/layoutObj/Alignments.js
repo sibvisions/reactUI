@@ -4,8 +4,8 @@ export class Alignments {
     vAlignment;
     cAlignment;
 
-    constructor(alignmentString) {
-        this.setAlignments(alignmentString)
+    constructor(alignmentString, layoutType) {
+        this.setAlignments(alignmentString, layoutType)
     }
 
     getHAlignment() {
@@ -20,24 +20,40 @@ export class Alignments {
         return this.cAlignment
     }
 
-    setAlignments(alignments) {
+    setAlignments(alignments, layoutType) {
         let field;
-
         for(var i = 0; i < alignments.length; i++) {
             if (alignments[i] === '0') {
-                field = 'flex-start';
+                if (layoutType === 'flow') {
+                    field = 'flex-start';
+                }
+                else if (layoutType === 'form') {
+                    if (i === 0) {
+                        field = 'left';
+                    }
+                    else if(i === 1) {
+                        field = 'top';
+                    }
+                }
             }
             else if (alignments[i] === '1') {
                 field = 'center';
             }
             else if (alignments[i] === '2') {
-                field = 'flex-end'
+                if (layoutType === 'flow') {
+                    field = 'flex-end'
+                }
+                else if (layoutType === 'form') {
+                    if (i === 0) {
+                        field = 'right'
+                    }
+                    else if (i === 1) {
+                        field = 'bottom'
+                    }
+                }
             }
             else if (alignments[i] === '3') {
                 field = 'stretch';
-            }
-            else {
-                field = 'flex-start';
             }
             if (i === 0) {
                 this.hAlignment = field

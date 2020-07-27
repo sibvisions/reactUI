@@ -21,19 +21,25 @@ class UIPanel extends Base {
             let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(4, 6))
             switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                 case "FormLayout":
+                        let alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8), 'form')
                         return <FormLayout 
                                     layout={this.props.layout} 
                                     layoutData={this.props.layoutData} 
                                     subjects={this.state.content} 
                                     margins={margins} 
                                     gaps={gaps}
+                                    alignments={alignments}
+                                    preferredSize={this.props.preferredSize}
+                                    minimumSize={this.props.minimumSize}
+                                    maximumSize={this.props.maximumSize}
                                     getPreferredSize={this.getPreferredSize}
-                                    getMinimumSize={this.getMinimumSize}/>;      
+                                    getMinimumSize={this.getMinimumSize}
+                                    getMaximumSize={this.getMaximumSize}/>;      
                 case "BorderLayout":
                         return <BorderLayout subjects={this.state.content} margins={margins} gaps={gaps}/>;
                 case "FlowLayout":
                         let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 7));
-                        let alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(7, 10));
+                        alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(7, 10), 'flow');
                         return <FlowLayout subjects={this.state.content} margins={margins} gaps={gaps} orientation={orientation} alignments={alignments}/>;
                 case "GridLayout":
                         let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8));

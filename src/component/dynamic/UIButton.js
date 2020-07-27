@@ -1,7 +1,6 @@
 import React from 'react';
 import Base from './Base';
 import { Button } from "primereact/button";
-import { Size } from '../helper/Size';
 
 class UIButton extends Base {
 
