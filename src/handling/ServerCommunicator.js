@@ -97,15 +97,32 @@ class ServerCommunicator {
         }; this.sendRequest("/api/v2/openScreen", reqOpt);   
     }
 
-    //---TableData------
+    //---FetchData------
 
-    fetchDataFromProvider(dataProvider, timeout){
+    fetchDataFromProvider(dataProvider, timeout=2000){
         let reqOpt = {
             method: 'POST',
-            body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: dataProvider}),
+            body: JSON.stringify({
+                clientId: localStorage.getItem("clientId"), 
+                dataProvider: dataProvider,
+            }),
             credentials:"include"
         };
-        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), 2000);
+        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), timeout);
+    }
+
+    fetchFilterdData(dataProvider, filterString, editorComponentId, timeout=2000){
+        let reqOpt = {
+            method: 'POST',
+            body: JSON.stringify({
+                clientId: localStorage.getItem("clientId"),
+                dataProvider: dataProvider,
+                editorComponentId: editorComponentId,
+                value: filterString
+            }),
+            credentials:"include"
+        }
+        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/filter", reqOpt), timeout)
     }
 }
  
