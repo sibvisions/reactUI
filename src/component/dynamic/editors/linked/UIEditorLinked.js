@@ -6,45 +6,18 @@ import { RefContext } from "../../../helper/Context";
 
 class UIEditorLinked extends Base {
 
+    state = {
+        suggestions: [],
+        options: []
+    }
+
     constructor(props){
         super(props)
-
         this.data = this.props.data
-        console.log(this.data)
     }
 
-    componentDidMount(){
-        this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
-    }
-
-    componentWillUnmount(){
-        this.sub.unsubscribe();
-    }
-
-    setContent(content){
-        let newSelection = {}
-        
-        this.data.cellEditor.clearColumns.forEach(columName => {
-            if(content[columName]){
-                newSelection[columName] = content[columName];
-            }
-        });
-        console.log(newSelection);
-        this.setState({
-            options: [newSelection],
-        })
-    }
-
-    getOptions(){
-        
-            this.context.serverComm.fetchDataFromProvider(this.props.data.cellEditor.linkReference.dataProvider)
-                .then(x => x.json())
-                .then(this.setOptions.bind(this))       
-        
-    }
-
-    setOptions(response){
-        let fetchedData = response[0];
+    formatFetchRequest(fetchResponse){
+        let fetchedData = fetchResponse.find(x => x.name === "dal.fetch")
         let buildOptions = []
         fetchedData.records.forEach(record => {
             let element = {};
@@ -53,24 +26,57 @@ class UIEditorLinked extends Base {
             });
             buildOptions.push(element);
         });
-        this.setState({
-            suggestions: buildOptions
+        return buildOptions
+    }
+
+    async fetchBaseData(){
+        return this.context.serverComm.fetchDataFromProvider(this.data.cellEditor.linkReference.dataProvider)
+        .then(response => response.json())
+        .then(fetchResponse => {
+            return this.formatFetchRequest(fetchResponse);
         })
-        console.log(this.data)
-        console.log(buildOptions)
+    }
+
+    async fetchFilterdData(filterString){
+        this.context.serverComm.fetchFilterdData( this.data.cellEditor.linkReference.dataProvider, filterString, this.data.name)
+        .then(response => response.json())
+        .then(fetchResponse => {
+            return this.formatFetchRequest(fetchResponse)
+        });
+    }
+
+    setOptions(event){
+        let filterdSuggestions = this.state.options.filter(opt => {
+            if(event.query.length === 0) return true
+            return opt[this.data.columnName].toLowerCase().includes(event.query.toLowerCase());
+        })
+
+        if(filterdSuggestions.length === 0){
+            if(this.state.options.length === 0){
+                this.fetchBaseData()
+                    .then(baseOptions => {
+                        this.setState({options: baseOptions,suggestions: baseOptions});
+                    });
+            } else {
+                this.fetchFilterdData(event.query)
+                    .then(filterdOptions => {
+                        console.log(filterdOptions)
+                    });
+            }
+        } else {
+            this.setState({suggestions: filterdSuggestions})
+        }
     }
 
     render(){ 
         return ( 
-            <AutoComplete 
+            <AutoComplete
                 dropdown={true}
-                completeMethod={this.getOptions.bind(this)}
-                field={this.data.columnName}
-                value={this.state.selected}
-                suggestions={this.state.suggestions}
-                onChange={x => this.setState({selected: x.value})}
-                readonly={true}
-
+                completeMethod={this.setOptions.bind(this)}
+                field={this.data.columnName}    
+                value={this.state.selectedObject}
+                suggestions={this.state.suggestions ? this.state.suggestions : []}
+                onChange={x => this.setState({selectedObject: x.target.value})}
             />
         )
     }
