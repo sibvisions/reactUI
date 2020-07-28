@@ -26,10 +26,14 @@ class Base extends Component {
                 prefSize = new Size(undefined, undefined, comp.props.preferredSize)
             }
             else {
-                    let x = document.getElementById(comp.props.id);
+                let x = document.getElementById(comp.props.id);
+                if (x.getBoundingClientRect()) {
+                    prefSize = new Size(Math.ceil(x.getBoundingClientRect().width), Math.ceil(x.getBoundingClientRect().height), undefined)
+                }
+                else {
                     prefSize = new Size(x.offsetWidth, x.offsetHeight, undefined)
+                }
             }
-
             if (comp.props.minimumSize) {
                 let minSize = new Size(undefined, undefined, comp.props.minimumSize)
                 if (prefSize.getWidth() < minSize.getWidth()) {
@@ -40,7 +44,7 @@ class Base extends Component {
                 }
             }
 
-            if(comp.props.maximumSize) {
+            if (comp.props.maximumSize) {
                 let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
                 if (maxSize.getWidth() < prefSize.getWidth) {
                     prefSize.setWidth(maxSize.getWidth());
@@ -48,6 +52,16 @@ class Base extends Component {
                 if (maxSize.getHeight() < prefSize.getHeight()) {
                     prefSize.setHeight(maxSize.getHeight());
                 }
+            }
+
+            if (comp.props.id.substring(0, 1) === 'P') {
+                if (comp.props.screenTitle) {
+                    prefSize.height = prefSize.height - 55;
+                }
+                else {
+                    prefSize.height = prefSize.height - 16;
+                }
+                prefSize.width = prefSize.width - 28;
             }
             return prefSize
         }

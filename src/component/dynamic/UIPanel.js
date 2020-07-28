@@ -29,7 +29,7 @@ class UIPanel extends Base {
                                     margins={margins} 
                                     gaps={gaps}
                                     alignments={alignments}
-                                    preferredSize={this.props.preferredSize}
+                                    preferredSize={this.getPreferredSize(this)}
                                     minimumSize={this.props.minimumSize}
                                     maximumSize={this.props.maximumSize}
                                     getPreferredSize={this.getPreferredSize}

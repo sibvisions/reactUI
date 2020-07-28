@@ -79,7 +79,7 @@ export class Anchor{
         return borderAnchor;
     }
 
-    getRelatedAnchor() {
+    getRelativeAnchor() {
         var relativeAnchor = this;
         while(relativeAnchor !== null && !relativeAnchor.relative) {
             relativeAnchor = relativeAnchor.relatedAnchor;

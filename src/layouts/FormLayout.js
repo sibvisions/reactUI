@@ -171,6 +171,8 @@ class FormLayout extends Component {
 
             let diffSize = (preferredSize - fixedSize + size -1) / size;
             autoSizeAnchors.forEach(anchor => {
+                console.log(anchor)
+                console.log(diffSize)
                 if (diffSize > -anchor.position) {
                     anchor.position = -diffSize;
                 }
@@ -188,6 +190,8 @@ class FormLayout extends Component {
             });
             let diffSize = (preferredSize - fixedSize + size - 1) / size;
             autoSizeAnchors.forEach(anchor => {
+                console.log(anchor)
+                console.log(diffSize)
                 if (diffSize > anchor.position) {
                     anchor.position = diffSize;
                 }
@@ -207,6 +211,61 @@ class FormLayout extends Component {
             }
         }
         return count
+    }
+
+    calculateRelativeAnchor(leftTopAnchor, rightBottomAnchor, preferredSize) {
+        if (leftTopAnchor.relative) {
+            console.log(leftTopAnchor)
+            let rightBottom = rightBottomAnchor.getRelativeAnchor();
+            console.log(rightBottom)
+            if (rightBottom !== null && rightBottom !== leftTopAnchor) {
+                let pref = rightBottom.getAbsolutePosition() - rightBottomAnchor.getAbsolutePosition() + preferredSize;
+                let size = rightBottom.relatedAnchor.getAbsolutePosition() - leftTopAnchor.relatedAnchor.getAbsolutePosition();
+                let pos = pref - size;
+
+                if (pos < 0) {
+                    pos /= 2;
+                }
+                else {
+                    pos -= pos / 2;
+                }
+                if (rightBottom.firstCalculation || pos > rightBottom.position) {
+                    rightBottom.firstCalculation = false;
+                    rightBottom.position = pos;
+                }
+                pos = pref - size - pos;
+                if (leftTopAnchor.firstCalculation || pos > -leftTopAnchor.position) {
+                    leftTopAnchor.firstCalculation = false;
+                    leftTopAnchor.position = -pos;
+                }
+            }
+        }
+        else if (rightBottomAnchor.relative) {
+            console.log(rightBottomAnchor)
+            let leftTop = leftTopAnchor.getRelativeAnchor();
+            console.log(leftTop)
+            if (leftTop !== null && leftTop !== rightBottomAnchor) {
+                let pref = leftTopAnchor.getAbsolutePosition() - leftTop.getAbsolutePosition() + preferredSize;
+                let size = rightBottomAnchor.relatedAnchor.getAbsolutePosition() - leftTop.relatedAnchor.getAbsolutePosition();
+                let pos = pref - size;
+
+                if (pos < 0) {
+                    pos -= pos / 2;
+                }
+                else {
+                    pos /= 2;
+                }
+                if (leftTop.firstCalculation || pos < leftTop.position) {
+                    leftTop.firstCalculation = false;
+                    leftTop.position = pos;
+                }
+                pos = pref - size - pos;
+                if (rightBottomAnchor.firstCalculation || pos > -rightBottomAnchor.position) {
+                    rightBottomAnchor.firstCalculation = false;
+                    rightBottomAnchor.position = -pos;
+                }
+            }
+        }
     }
 
     calculateAnchors() {
@@ -316,7 +375,6 @@ class FormLayout extends Component {
                 }
                 if (constraint.leftAnchor.getBorderAnchor() === this.leftBorderAnchor && constraint.rightAnchor.getBorderAnchor() === this.rightBorderAnchor) {
                     let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.getWidth();
-                    console.log(w)
                     if (w > this.preferredWidth) {
                         this.preferredWidth = w;
                     }
@@ -349,7 +407,7 @@ class FormLayout extends Component {
                     this.minimumWidth = w;
                 }
             }
-            else if (leftWidth != 0) {
+            else if (leftWidth !== 0) {
                 let w = leftWidth - this.rightMarginAnchor.position;
                 if (w > this.preferredWidth) {
                     this.preferredWidth = w;
@@ -367,7 +425,7 @@ class FormLayout extends Component {
                     this.minimumWidth = w;
                 }
             }
-            if (topHeight != 0 && bottomHeight != 0) {
+            if (topHeight !== 0 && bottomHeight !== 0) {
                 let h = topHeight + bottomHeight + this.props.gaps.getVerticalGap();
                 if (h > this.preferredHeight) {
                     this.preferredHeight = h;
@@ -376,7 +434,7 @@ class FormLayout extends Component {
                     this.minimumHeight = h;
                 }
             }
-            else if (topHeight != 0) {
+            else if (topHeight !== 0) {
                 let h = topHeight - this.bottomMarginAnchor.position;
                 if (h > this.preferredHeight) {
                     this.preferredHeight = h;
@@ -411,9 +469,102 @@ class FormLayout extends Component {
 
     calculateTargetDependentAnchors() {
         if (this.vCalculateTargetDependentAnchors) {
-            let size = new Size(this.preferredWidth, this.preferredHeight, undefined);
+            let size = this.props.preferredSize;
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
+
+            if (this.horizontalAlignment === 'stretch' || (this.leftBorderUsed && this.rightBorderUsed)) {
+                if (minSize.getWidth() > size.getWidth()) {
+                    this.leftBorderAnchor.position = 0;
+                    this.rightBorderAnchor.position = minSize.getWidth();
+                }
+                else if (maxSize.getWidth() < size.getWidth()) {
+                    switch (this.horizontalAlignment) {
+                        case 'left':
+                            this.leftBorderAnchor.position = 0;
+                            break;
+                        case 'right':
+                            this.leftBorderAnchor.position = size.getWidth() - maxSize.getWidth();
+                            break;
+                        default:
+                            this.leftBorderAnchor.position = (size.getWidth() - maxSize.getWidth()) / 2;
+                    }
+                    this.rightBorderAnchor.position = this.leftBorderAnchor + maxSize.getWidth();
+                }
+                else {
+                    this.leftBorderAnchor.position = 0;
+                    this.rightBorderAnchor.position = size.getWidth();
+                }
+            }
+            else {
+                if (this.preferredWidth > size.getWidth()) {
+                    this.leftBorderAnchor.position = 0;
+                }
+                else {
+                    switch (this.horizontalAlignment) {
+                        case 'left':
+                            this.leftBorderAnchor.position = 0;
+                            break;
+                        case 'right':
+                            this.leftBorderAnchor.position = size.getWidth() - this.preferredWidth;
+                            break;
+                        default:
+                            this.leftBorderAnchor.position = (size.getWidth() - this.preferredWidth) / 2;
+                    }
+                }
+                this.rightBorderAnchor.position = this.leftBorderAnchor + this.preferredWidth
+            }
+            if (this.verticalAlignment === 'stretch' || (this.topBorderUsed && this.bottomBorderUsed)) {
+                if (minSize.getHeight() > size.getHeight()) {
+                    this.topBorderAnchor.position = 0;
+                    this.bottomBorderAnchor.position = minSize.getHeight();
+                }
+                else if (maxSize.getHeight() < size.getHeight()) {
+                    switch (this.verticalAlignment) {
+                        case 'top':
+                            this.topBorderAnchor.position = 0;
+                            break;
+                        case 'bottom':
+                            this.topBorderAnchor.position = size.getHeight() - maxSize.getHeight();
+                            break;
+                        default:
+                            this.topBorderAnchor.position = (size.getHeight() - maxSize.getHeight()) / 2;
+                    }
+                    this.bottomBorderAnchor.position = this.topBorderAnchor.position + maxSize.getHeight();
+                }
+                else {
+                    this.topBorderAnchor.position = 0;
+                    this.bottomBorderAnchor.position = size.getHeight();
+                }
+            }
+            else {
+                if (this.preferredHeight > size.getHeight()) {
+                    this.topBorderAnchor.position = 0;
+                }
+                else {
+                    switch (this.verticalAlignment) {
+                        case 'top':
+                            this.topBorderAnchor.position = 0;
+                            break;
+                        case 'bottom':
+                            this.topBorderAnchor.position = size.getHeight() - this.preferredHeight;
+                            break;
+                        default:
+                            this.topBorderAnchor.position = (size.getHeight() - this.preferredHeight) / 2;
+                    }
+                }
+                this.bottomBorderAnchor.position = this.topBorderAnchor.position + this.preferredHeight;
+            }
+            //INSETS??
+
+            this.components.forEach(component => {
+                let constraint = this.componentConstraints.get(component);
+                let preferredSize = this.props.getPreferredSize(component);
+
+                this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth());
+                this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight());
+            });
+            this.vCalculateTargetDependentAnchors = false;
         }
     }
 
