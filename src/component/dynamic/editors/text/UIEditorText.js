@@ -23,7 +23,6 @@ class UIEditorText extends Base {
         return ( 
             <InputText 
                 value={this.state.text ? this.state.text : ""}
-                onBlur={_ => console.log(this.props.data)}
                 onChange={x => this.setState({text: x.target.value})}
             /> 
         );

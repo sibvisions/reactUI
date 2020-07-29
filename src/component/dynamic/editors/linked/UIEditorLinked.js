@@ -16,6 +16,31 @@ class UIEditorLinked extends Base {
         this.data = this.props.data
     }
 
+    componentDidMount() {
+        this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.newSelection.bind(this))
+    }
+
+    componentWillUnmount() {
+        this.sub.unsubscribe();
+    }
+
+    newSelection(newSelection){
+        if(newSelection[this.data.columnName] !== null){
+            this.setState({selectedObject: newSelection});
+        } else {
+            this.setState({selectedObject: undefined})
+        }
+
+        
+    }
+
+    async doesElementExist(toCheck){
+        let foundObj = this.state.options.find(currentOpt => {
+            return currentOpt[this.data.cellEditor.clearColumns[0]] === toCheck[this.data.cellEditor.clearColumns[0]]
+        });
+        return foundObj ? foundObj : toCheck
+    }
+
     formatFetchRequest(fetchResponse){
         let fetchedData = fetchResponse.find(x => x.name === "dal.fetch")
         let buildOptions = []
@@ -29,50 +54,41 @@ class UIEditorLinked extends Base {
         return buildOptions
     }
 
-    async fetchBaseData(){
-        return this.context.serverComm.fetchDataFromProvider(this.data.cellEditor.linkReference.dataProvider)
-        .then(response => response.json())
-        .then(fetchResponse => {
-            return this.formatFetchRequest(fetchResponse);
-        })
-    }
-
-    async fetchFilterdData(filterString){
-        this.context.serverComm.fetchFilterdData( this.data.cellEditor.linkReference.dataProvider, filterString, this.data.name)
-        .then(response => response.json())
-        .then(fetchResponse => {
-            return this.formatFetchRequest(fetchResponse)
-        });
-    }
-
-    setOptions(event){
-        let filterdSuggestions = this.state.options.filter(opt => {
-            if(event.query.length === 0) return true
-            return opt[this.data.columnName].toLowerCase().includes(event.query.toLowerCase());
-        })
-
-        if(filterdSuggestions.length === 0){
-            if(this.state.options.length === 0){
-                this.fetchBaseData()
-                    .then(baseOptions => {
-                        this.setState({options: baseOptions,suggestions: baseOptions});
-                    });
-            } else {
-                this.fetchFilterdData(event.query)
-                    .then(filterdOptions => {
-                        console.log(filterdOptions)
-                    });
-            }
+    fetchData(filter){
+        let fetchPromise;
+        if(filter){
+            fetchPromise =  this.context.serverComm.fetchFilterdData(
+                this.data.cellEditor.linkReference.dataProvider, 
+                filter, this.data.name)
         } else {
-            this.setState({suggestions: filterdSuggestions})
+            fetchPromise =  this.context.serverComm.fetchDataFromProvider(
+                this.data.cellEditor.linkReference.dataProvider)
         }
+        return fetchPromise
+            .then(response => response.json())
+            .then(this.formatFetchRequest.bind(this));
+    }
+
+    autoComplete(event){
+        this.fetchData(event.query)
+            .then(fetchedData => {
+                this.setState({options: fetchedData, suggestions: fetchedData})
+            });
+            let elem = this.autoC.panel.element;
+            this.autoC.panel.element.addEventListener("scroll", () => {
+
+                if((elem.scrollHeight - elem.scrollTop - elem.clientHeight) <= 0){
+                    console.log("end reached")
+                } 
+            })
     }
 
     render(){ 
-        return ( 
+        return (
             <AutoComplete
+            ref= {r => this.autoC = r}
                 dropdown={true}
-                completeMethod={this.setOptions.bind(this)}
+                completeMethod={this.autoComplete.bind(this)}
                 field={this.data.columnName}    
                 value={this.state.selectedObject}
                 suggestions={this.state.suggestions ? this.state.suggestions : []}
