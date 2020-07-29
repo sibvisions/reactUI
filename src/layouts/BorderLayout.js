@@ -9,7 +9,16 @@ class BorderLayout extends Component {
     elemEast;
     elemSouth;
 
-    setSubjectsToArea(){
+    componentDidMount() {
+        console.log(this.elemNorth)
+        // if(this.elemNorth) {
+        //     this.props.subjects.forEach(subject => {
+        //         console.log(this.props.getPreferredSize(subject))
+        //     })
+        // }
+    }
+
+    setSubjectsToArea() {
         this.props.subjects.forEach(subject => {
             if (subject.props.constraints) {
                 switch(subject.props.constraints) {
@@ -40,7 +49,9 @@ class BorderLayout extends Component {
         <div className="p-grid p-nogutter borderlayout" style={{height:"100%", "flexFlow":"column", width:"100%", padding: '0', 
                                                                 marginTop: toPx(this.props.margins.getMarginTop()), marginLeft: toPx(this.props.margins.getMarginLeft()),
                                                                 marginBottom: toPx(this.props.margins.getMarginBottom()), marginRight: toPx(this.props.margins.getMarginRight())}}>
-            <div className="p-col-12 north" style={{textAlign:"center", padding: '0', marginBottom: toPx(this.props.gaps.getVerticalGap())}}>
+            <div className="p-col-12 north" style={{textAlign:"center",
+                                                    padding: '0',
+                                                    marginBottom: toPx(this.props.gaps.getVerticalGap())}}>
                 {this.elemNorth}
             </div>
             <div className="p-grid p-nogutter p-align-center" style={{height:"100%"}}>

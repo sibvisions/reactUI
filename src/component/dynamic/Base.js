@@ -7,6 +7,10 @@ class Base extends Component {
     state = {  }
     
     componentDidMount() {
+        let style = {
+            width: '100%',
+            height: '100%'
+        }
         let content = [];
         content.length = 0
         if (this.props.subjects) {
@@ -15,8 +19,8 @@ class Base extends Component {
                 temp ? content.push(temp) : console.log();
             });
             this.setState({content: content});
-            
         }
+        this.setState({style: style})
     }
 
     getPreferredSize(comp) {
@@ -26,12 +30,12 @@ class Base extends Component {
                 prefSize = new Size(undefined, undefined, comp.props.preferredSize)
             }
             else {
-                let x = document.getElementById(comp.props.id);
-                if (x.getBoundingClientRect()) {
-                    prefSize = new Size(Math.ceil(x.getBoundingClientRect().width), Math.ceil(x.getBoundingClientRect().height), undefined)
+                let element = document.getElementById(comp.props.id);
+                if (element.getBoundingClientRect()) {
+                    prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
                 }
                 else {
-                    prefSize = new Size(x.offsetWidth, x.offsetHeight, undefined)
+                    prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)
                 }
             }
             if (comp.props.minimumSize) {
@@ -55,12 +59,15 @@ class Base extends Component {
             }
 
             if (comp.props.id.substring(0, 1) === 'P') {
+                console.log(comp)
+                console.log(prefSize)
                 if (comp.props.screenTitle) {
-                    prefSize.height = prefSize.height - 55;
+                    prefSize.height -= 55;
                 }
                 else {
-                    prefSize.height = prefSize.height - 16;
+                    prefSize.height -= 16;
                 }
+                console.log(prefSize)
                 prefSize.width = prefSize.width - 28;
             }
             return prefSize
@@ -97,7 +104,7 @@ class Base extends Component {
                 maxSize = new Size(undefined, undefined, comp.props.maximumSize);
             }
             else {
-                maxSize = this.getPreferredSize(comp);
+                maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)
             }
             return maxSize;
         }

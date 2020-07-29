@@ -24,11 +24,10 @@ export function createButton(id, label, constraints, preferredSize, minimumSize,
     />
 
     //ToDo getPreferredSize etc in all Layouts for components
-    let newPreferredSize
     if(preferredSize !== undefined) {
-        newPreferredSize = new Size(undefined, undefined, preferredSize)
-        btn.props.style.width = toPx(preferredSize.getWidth())
-        btn.props.style.height = toPx(preferredSize.getHeight())
+        let extrPreferredSize = new Size(undefined, undefined, preferredSize)
+        btn.props.style.width = toPx(extrPreferredSize.getWidth())
+        btn.props.style.height = toPx(extrPreferredSize.getHeight())
     }
     return btn
 }

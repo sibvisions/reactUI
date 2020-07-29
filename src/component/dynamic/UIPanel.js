@@ -22,7 +22,8 @@ class UIPanel extends Base {
             switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                 case "FormLayout":
                         let alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8), 'form')
-                        return <FormLayout 
+                        return <FormLayout
+                                    component={this}
                                     layout={this.props.layout} 
                                     layoutData={this.props.layoutData} 
                                     subjects={this.state.content} 
@@ -36,7 +37,17 @@ class UIPanel extends Base {
                                     getMinimumSize={this.getMinimumSize}
                                     getMaximumSize={this.getMaximumSize}/>;      
                 case "BorderLayout":
-                        return <BorderLayout subjects={this.state.content} margins={margins} gaps={gaps}/>;
+                        return <BorderLayout 
+                                    component={this} 
+                                    subjects={this.state.content} 
+                                    margins={margins} 
+                                    gaps={gaps}
+                                    preferredSize={this.getPreferredSize(this)}
+                                    minimumSize={this.props.minimumSize}
+                                    maximumSize={this.props.maximumSize}
+                                    getPreferredSize={this.getPreferredSize}
+                                    getMinimumSize={this.getMinimumSize}
+                                    getMaximumSize={this.getMaximumSize}/>;
                 case "FlowLayout":
                         let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 7));
                         alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(7, 10), 'flow');
@@ -52,10 +63,8 @@ class UIPanel extends Base {
 
     render() {
         return (
-        <div ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
-            <Panel id={this.props.id} header={this.props.screenTitle} style={{textAlign: "center", height: '100%'}}>
+        <div id={this.props.id} ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
                     {this.insertLayout()}
-            </Panel>
         </div>
         );
     }

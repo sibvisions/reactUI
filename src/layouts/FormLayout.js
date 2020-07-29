@@ -41,10 +41,20 @@ class FormLayout extends Component {
     }
 
     componentDidMount() {
-        this.calculateAnchors()
-        this.calculateTargetDependentAnchors()
-        this.buildComponents(this.props.subjects)
-        console.log(this)
+        console.log('form mounted')
+        this.layoutContainer()
+        const mutationObserver = new MutationObserver(mutationsList => {
+            mutationsList.forEach(mutation => {
+                if (mutation.attributeName === 'class') {
+                    setTimeout(() => this.layoutContainer(), 400)
+                    
+                }
+            })
+        })
+        mutationObserver.observe(
+            document.getElementsByClassName('menu-container')[0],
+            { attributes: true }
+        )
     }
 
     getAnchorsAndConstraints() {
@@ -171,8 +181,6 @@ class FormLayout extends Component {
 
             let diffSize = (preferredSize - fixedSize + size -1) / size;
             autoSizeAnchors.forEach(anchor => {
-                console.log(anchor)
-                console.log(diffSize)
                 if (diffSize > -anchor.position) {
                     anchor.position = -diffSize;
                 }
@@ -188,10 +196,8 @@ class FormLayout extends Component {
             autoSizeAnchors.forEach(anchor => {
                 fixedSize -= anchor.position;
             });
-            let diffSize = (preferredSize - fixedSize + size - 1) / size;
+            let diffSize = (preferredSize - fixedSize + size - 1) 
             autoSizeAnchors.forEach(anchor => {
-                console.log(anchor)
-                console.log(diffSize)
                 if (diffSize > anchor.position) {
                     anchor.position = diffSize;
                 }
@@ -215,9 +221,7 @@ class FormLayout extends Component {
 
     calculateRelativeAnchor(leftTopAnchor, rightBottomAnchor, preferredSize) {
         if (leftTopAnchor.relative) {
-            console.log(leftTopAnchor)
             let rightBottom = rightBottomAnchor.getRelativeAnchor();
-            console.log(rightBottom)
             if (rightBottom !== null && rightBottom !== leftTopAnchor) {
                 let pref = rightBottom.getAbsolutePosition() - rightBottomAnchor.getAbsolutePosition() + preferredSize;
                 let size = rightBottom.relatedAnchor.getAbsolutePosition() - leftTopAnchor.relatedAnchor.getAbsolutePosition();
@@ -241,9 +245,7 @@ class FormLayout extends Component {
             }
         }
         else if (rightBottomAnchor.relative) {
-            console.log(rightBottomAnchor)
             let leftTop = leftTopAnchor.getRelativeAnchor();
-            console.log(leftTop)
             if (leftTop !== null && leftTop !== rightBottomAnchor) {
                 let pref = leftTopAnchor.getAbsolutePosition() - leftTop.getAbsolutePosition() + preferredSize;
                 let size = rightBottomAnchor.relatedAnchor.getAbsolutePosition() - leftTop.relatedAnchor.getAbsolutePosition();
@@ -304,7 +306,6 @@ class FormLayout extends Component {
                 this.components.forEach(component => {
                     let constraint = this.componentConstraints.get(component)
                     let preferredSize = this.props.getPreferredSize(component)
-    
                     this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
                     this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
                 });
@@ -469,7 +470,7 @@ class FormLayout extends Component {
 
     calculateTargetDependentAnchors() {
         if (this.vCalculateTargetDependentAnchors) {
-            let size = this.props.preferredSize;
+            let size = this.props.getPreferredSize(this.props.component);
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
 
@@ -570,15 +571,14 @@ class FormLayout extends Component {
 
     buildComponents(components) {
         let tempContent = []
-        components.forEach(component => {
+        components.forEach(component => {    
             let constraint = this.componentConstraints.get(component);
-            let preferredSize = this.props.getPreferredSize(component);
             let minimumSize = this.props.getMinimumSize(component);
             let maximumSize = this.props.getMaximumSize(component);
             let formElement = <div style={{
                                     position: 'absolute',
-                                    height: preferredSize.getHeight(),
-                                    width: preferredSize.getWidth(),
+                                    height: constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition(),
+                                    width: constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition(),
                                     left: constraint.leftAnchor.getAbsolutePosition(),
                                     right: constraint.rightAnchor.getAbsolutePosition(),
                                     top: constraint.topAnchor.getAbsolutePosition(),
@@ -593,11 +593,24 @@ class FormLayout extends Component {
         this.setState({content: tempContent})
     }
 
+    layoutContainer() {
+        this.valid = false;
+        this.calculateAnchors()
+        this.calculateTargetDependentAnchors()
+        this.buildComponents(this.props.subjects)
+    }
+
     render() {
+        window.onresize = () => {
+            this.layoutContainer()
+        }
         return (
-            <div className="formlayout" style={{position: 'relative', width: this.preferredWidth, height: this.preferredHeight}}>
-                {this.state.content}
-            </div>
+            <div className="formlayout" style={{
+                                        position: 'relative',
+                                        width: this.props.getPreferredSize(this.props.component).getWidth() + 20, 
+                                        height: this.props.getPreferredSize(this.props.component).getHeight() + 20,
+                                        overflow: 'hidden'
+                                        }}>{this.state.content}</div>
         )
     }
 }

@@ -12,7 +12,7 @@ class UIButton extends Base {
             label={this.props.label}
             constraints={this.props.constraints}
             onClick={this.props.onClick}
-            style={this.props.style}
+            style={this.state.style}
             ref={ref => this.compRef = ref}/>
         )
     }
