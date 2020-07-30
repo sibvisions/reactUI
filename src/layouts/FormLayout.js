@@ -41,7 +41,6 @@ class FormLayout extends Component {
     }
 
     componentDidMount() {
-        console.log('form mounted')
         this.layoutContainer()
         const mutationObserver = new MutationObserver(mutationsList => {
             mutationsList.forEach(mutation => {
@@ -607,9 +606,8 @@ class FormLayout extends Component {
         return (
             <div className="formlayout" style={{
                                         position: 'relative',
-                                        width: this.props.getPreferredSize(this.props.component).getWidth() + 20, 
-                                        height: this.props.getPreferredSize(this.props.component).getHeight() + 20,
-                                        overflow: 'hidden'
+                                        width: this.preferredWidth, 
+                                        height: this.preferredHeight
                                         }}>{this.state.content}</div>
         )
     }

@@ -21,13 +21,13 @@ class UIPanel extends Base {
             let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(4, 6))
             switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                 case "FormLayout":
-                        let alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8), 'form')
+                    var alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8), 'form')
                         return <FormLayout
                                     component={this}
-                                    layout={this.props.layout} 
-                                    layoutData={this.props.layoutData} 
-                                    subjects={this.state.content} 
-                                    margins={margins} 
+                                    layout={this.props.layout}
+                                    layoutData={this.props.layoutData}
+                                    subjects={this.state.content}
+                                    margins={margins}
                                     gaps={gaps}
                                     alignments={alignments}
                                     preferredSize={this.getPreferredSize(this)}
@@ -38,9 +38,9 @@ class UIPanel extends Base {
                                     getMaximumSize={this.getMaximumSize}/>;      
                 case "BorderLayout":
                         return <BorderLayout 
-                                    component={this} 
-                                    subjects={this.state.content} 
-                                    margins={margins} 
+                                    component={this}
+                                    subjects={this.state.content}
+                                    margins={margins}
                                     gaps={gaps}
                                     preferredSize={this.getPreferredSize(this)}
                                     minimumSize={this.props.minimumSize}
@@ -51,7 +51,20 @@ class UIPanel extends Base {
                 case "FlowLayout":
                         let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 7));
                         alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(7, 10), 'flow');
-                        return <FlowLayout subjects={this.state.content} margins={margins} gaps={gaps} orientation={orientation} alignments={alignments}/>;
+                        return <FlowLayout 
+                                    component={this}
+                                    subjects={this.state.content}
+                                    margins={margins}
+                                    gaps={gaps}
+                                    orientation={orientation}
+                                    alignments={alignments}
+                                    preferredSize={this.getPreferredSize(this)}
+                                    minimumSize={this.props.minimumSize}
+                                    maximumSize={this.props.maximumSize}
+                                    getPreferredSize={this.getPreferredSize}
+                                    getMinimumSize={this.getMinimumSize}
+                                    getMaximumSize={this.getMaximumSize}
+                                    />;
                 case "GridLayout":
                         let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8));
                         return <GridLayout subjects={this.state.content} margins={margins} gaps={gaps} gridSize={gridSize}/>
@@ -64,7 +77,7 @@ class UIPanel extends Base {
     render() {
         return (
         <div id={this.props.id} ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
-                    {this.insertLayout()}
+            {this.insertLayout()}
         </div>
         );
     }

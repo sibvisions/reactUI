@@ -9,16 +9,16 @@ class BorderLayout extends Component {
     elemEast;
     elemSouth;
 
-    componentDidMount() {
-        console.log(this.elemNorth)
-        // if(this.elemNorth) {
-        //     this.props.subjects.forEach(subject => {
-        //         console.log(this.props.getPreferredSize(subject))
-        //     })
-        // }
+    state = {
+        preferredWidth: 0,
+        preferredHeight: 0
     }
 
-    setSubjectsToArea() {
+    componentDidMount() {
+        this.calculateSizes()
+    }
+
+    addLayoutComponents() {
         this.props.subjects.forEach(subject => {
             if (subject.props.constraints) {
                 switch(subject.props.constraints) {
@@ -43,10 +43,17 @@ class BorderLayout extends Component {
         });
     }
 
+    calculateSizes() {
+        let size = this.props.getPreferredSize(this.props.component);
+        let preferredWidth = size.getWidth() - this.props.margins.getMarginLeft() - this.props.margins.getMarginRight();
+        let preferredHeight = size.getHeight() - this.props.margins.getMarginTop() - this.props.margins.getMarginLeft();
+        this.setState({preferredWidth: preferredWidth, preferredHeight: preferredHeight})
+    }
+
     render() {
-        this.setSubjectsToArea()
+        this.addLayoutComponents()
         return (
-        <div className="p-grid p-nogutter borderlayout" style={{height:"100%", "flexFlow":"column", width:"100%", padding: '0', 
+        <div className="p-grid p-nogutter borderlayout" style={{height: this.state.preferredHeight, "flexFlow":"column", width: this.state.preferredWidth, padding: '0', 
                                                                 marginTop: toPx(this.props.margins.getMarginTop()), marginLeft: toPx(this.props.margins.getMarginLeft()),
                                                                 marginBottom: toPx(this.props.margins.getMarginBottom()), marginRight: toPx(this.props.margins.getMarginRight())}}>
             <div className="p-col-12 north" style={{textAlign:"center",

@@ -59,16 +59,8 @@ class Base extends Component {
             }
 
             if (comp.props.id.substring(0, 1) === 'P') {
-                console.log(comp)
-                console.log(prefSize)
-                if (comp.props.screenTitle) {
-                    prefSize.height -= 55;
-                }
-                else {
-                    prefSize.height -= 16;
-                }
-                console.log(prefSize)
-                prefSize.width = prefSize.width - 28;
+                prefSize.height -= 16;
+                prefSize.width = prefSize.width - 16;
             }
             return prefSize
         }

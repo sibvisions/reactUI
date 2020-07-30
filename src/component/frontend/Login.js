@@ -25,7 +25,7 @@ class Login extends Component {
                         <label htmlFor="username">Benutzername:</label>
                     </span>
                     <Password id="password" placeholder="Passwort:" type="text" feedback={false} value={this.state.password} onChange={this.handleChange}/>
-                    <Button id="loginbtn" label="ANMELDEN" className="p-button-raised" onClick={() => this.context.serverComm.logIn("features", "features")} />
+                    <Button id="loginbtn" label="ANMELDEN" className="p-button-raised" onClick={() => this.context.serverComm.logIn("layout", "layout")} />
                 </div>
             </div>
         );
