@@ -5,7 +5,7 @@ import "./UISplitPanel.css";
 
 class UISplitPanel extends Base {
 
-    getleftComponents(){
+    getLeftComponents(){
         let leftComp = [];
 
         if(this.state.content){
@@ -18,42 +18,36 @@ class UISplitPanel extends Base {
         return leftComp;
     }
 
-    getRightComponent(){
+    getRightComponents(){
         let rightComp = [];
         if(this.state.content){
             this.state.content.forEach(x => {
-                if(x.constraints === "FIRST_COMPONENT"){
+                if(x.props.constraints === "FIRST_COMPONENT"){
                     rightComp.push(x);
                 } 
             });
-            rightComp.push(<h1 key="do">DO</h1>)
+            //rightComp.push(<h1 key="do">DO</h1>)
         }
         return rightComp;
     }
 
-    finSized(){
-        console.log(this.split)
-    }
-
     render() {
-        console.log(this)
         return (
             <Split className= "splitHolder"
             sizes={[75, 25]}
-            minSize={220}
+            minSize={0}
             gutterSize={30}
             gutterAlign="center"
             dragInterval={2}
             direction="horizontal"
             cursor="col-resize"
-            onDragEnd={() => this.finSized()}
             ref={(x) => this.split = x}
             >
                 <div className="split">
-                    {this.getleftComponents()}
+                    {this.getRightComponents()}
                 </div>
                 <div className="split" >
-                    {this.getRightComponent()}
+                    {this.getLeftComponents()}
                 </div>
             </Split>
 

@@ -4,6 +4,8 @@ body {
   //background design
   .background {
     background-image: url("../../../public/assets/loginbackground.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     height: 100vh;
     padding: 7%
   }

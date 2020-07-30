@@ -3,10 +3,13 @@ import UIButton from "../dynamic/UIButton";
 import UIPanel from "../dynamic/UIPanel";
 import UITable from '../dynamic/UITable';
 import UILabel from '../dynamic/UILabel';
-import UIEditor from '../dynamic/UIEditor';
 import UISplitPanel from '../dynamic/UISplitPanel';
 import { Size } from '../helper/Size';
 import { toPx } from '../helper/ToPx';
+import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
+import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
+import UIEditorText from '../dynamic/editors/text/UIEditorText';
+import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 
 
 export function createButton(id, label, constraints, preferredSize, minimumSize, maximumSize, name, serverCommunicator){
@@ -70,14 +73,16 @@ export function createLabel(id, text, constraints, preferredSize, minimumSize, m
         maximumSize={maximumSize}/>
 }
 
-export function createEditor(id, constraints, preferredSize, minimumSize, maximumSize) {
-    return <UIEditor
-        key={id}
-        id={id}
-        constraints={constraints}
-        preferredSize={preferredSize}
-        minimumSize={minimumSize}
-        maximumSize={maximumSize}/>
+export function createEditor(editorData) {
+    if(editorData.cellEditor.className === "CheckBoxCellEditor"){
+        return <UIEditorCheckbox data={editorData}/>
+    } else if(editorData.cellEditor.className === "NumberCellEditor"){
+        return <UIEditorNumber data={editorData} />
+    } else if(editorData.cellEditor.className === "TextCellEditor"){
+        return <UIEditorText data={editorData}/>
+    } else if(editorData.cellEditor.className === "LinkedCellEditor"){
+        return <UIEditorLinked data={editorData}/>
+    }
 }
 
 export function createSplitPanel(id, constraints, subjects, preferredSize, minimumSize, maximumSize) {

@@ -1,42 +1,48 @@
-import {
-    createPanel,
-    createTable,
-    createButton,
-    createLabel,
-    createEditor,
-    createSplitPanel
-} from "../component/factories/CFactory";
+import { createPanel,
+         createTable, 
+         createButton, 
+         createLabel, 
+         createEditor, 
+         createSplitPanel } from "../component/factories/CFactory";
 
-class UiBuilder {
+class UiBuilder{
     serverCommunicator = {};
 
-    genericComponentMapper =
-        [
-            {
-                name: "Panel",
-                method: this.panel.bind(this)
-            },
-            {
-                name: "Table",
-                method: this.table.bind(this)
-            },
-            {
-                name: "Button",
-                method: this.button.bind(this)
-            },
-            {
-                name: "Label",
-                method: this.label.bind(this)
-            },
-            {
-                name: "Editor",
-                method: this.editor.bind(this)
-            },
-            {
-                name: "SplitPanel",
-                method: this.splitPanel.bind(this)
-            }
-        ]
+    genericComponentMapper = 
+    [
+        {
+            name:"Panel",
+            method: this.panel.bind(this)
+        },
+        {
+            name:"Table",
+            method: this.table.bind(this)
+        },
+        {
+            name:"Button",
+            method: this.button.bind(this)
+        },
+        {
+            name:"Label",
+            method: this.label.bind(this)
+        },
+        {
+            name:"Editor",
+            method: this.editor.bind(this)
+        },
+        {
+            name:"SplitPanel",
+            method: this.splitPanel.bind(this)
+        },
+        {
+            name:"GroupPanel",
+            method: this.panel.bind(this)
+        },
+        {
+            name:"ScrollPanel",
+            method: this.panel.bind(this)
+        }
+    ]
 
     // Setters
     setServerCommunicator(serverComnicator) {
@@ -73,13 +79,14 @@ class UiBuilder {
         return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize, labelData.minimumSize, labelData.maximumSize)
     }
 
-    editor(editorData) {
-        return createEditor(editorData.id, editorData.constraints, editorData.preferredSize, editorData.minimumSize, editorData.maximumSize)
+    editor(editorData){
+        return createEditor(editorData)
     }
 
-    splitPanel(splitPanelData) {
-        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects, splitPanelData.preferredSize, splitPanelData.minimumSize, splitPanelData.maximumSize)
-
+    splitPanel(splitPanelData){
+        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
     }
+
+    
 }
 export default UiBuilder

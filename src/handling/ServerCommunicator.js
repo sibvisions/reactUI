@@ -33,6 +33,30 @@ class ServerCommunicator {
         });
     }
 
+
+    // Requests
+
+    startUp(screenHeight=600, screenWidth=800){
+        let info = {
+            layoutMode : "generic",
+            appMode : "full",
+            applicationName : "demo",
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+
+        }; this.sendRequest("/api/startup", info);
+    }
+
+    deviceStatus(screenHeight=600, screenWidth=800){
+        let reqOpt= {
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            clientId: localStorage.getItem("clientId")
+        }; this.sendRequest("/api/deviceStatus", reqOpt);   
+    }
+
+    //---Actions------
+
     logIn(username, password){
         let info = {
             clientId: localStorage.getItem("clientId"),
@@ -66,17 +90,40 @@ class ServerCommunicator {
         }; this.sendRequest("/api/v2/pressButton", body);
     }
 
-    startUp(){
-        let info = {
-            "layoutMode" : "generic",
-            "appMode" : "full",
-            "applicationName" : "demo"
-          }; this.sendRequest("/api/startup", info);
+    openScreen(componentId){
+        let reqOpt = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+        }; this.sendRequest("/api/v2/openScreen", reqOpt);   
     }
 
+    //---FetchData------
 
+    fetchDataFromProvider(dataProvider, timeout=2000){
+        let reqOpt = {
+            method: 'POST',
+            body: JSON.stringify({
+                clientId: localStorage.getItem("clientId"), 
+                dataProvider: dataProvider,
+            }),
+            credentials:"include"
+        };
+        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), timeout);
+    }
 
-
+    fetchFilterdData(dataProvider, filterString, editorComponentId, timeout=2000){
+        let reqOpt = {
+            method: 'POST',
+            body: JSON.stringify({
+                clientId: localStorage.getItem("clientId"),
+                dataProvider: dataProvider,
+                editorComponentId: editorComponentId,
+                value: filterString
+            }),
+            credentials:"include"
+        }
+        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/filter", reqOpt), timeout)
+    }
 }
  
 export default ServerCommunicator;

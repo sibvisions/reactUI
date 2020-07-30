@@ -5,8 +5,8 @@ import { Size } from '../helper/Size';
 class Base extends Component {
 
     state = {  }
-    
-    componentDidMount() {
+
+    startUp(){
         let style = {
             width: '100%',
             height: '100%'
@@ -21,6 +21,7 @@ class Base extends Component {
             this.setState({content: content});
         }
         this.setState({style: style})
+
     }
 
     getPreferredSize(comp) {
@@ -64,6 +65,11 @@ class Base extends Component {
             }
             return prefSize
         }
+    }
+    
+    componentDidMount() {
+
+        this.startUp();
     }
 
     getMinimumSize(comp) {

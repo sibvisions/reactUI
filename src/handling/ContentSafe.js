@@ -1,71 +1,92 @@
+import { Subject } from "rxjs";
+
 class ContentSafe{
 
-    allContent = [];
+    flatContent= [];
     menuItems = [];
 
+    meteData = new Map();
+    selectedDataRow = new Map();
+    selectedDataRowChange = new Subject();
+
+    changeSelectedRowOfTable(tableID ,selectedRow){
+        this.selectedDataRow.set(tableID, selectedRow);
+        this.emitChangeOfSelectedRow(selectedRow)
+    }
+
+    emitChangeOfSelectedRow(newSelection){
+        this.selectedDataRowChange.next(newSelection);
+    }
 
     updateContent(updatedContent){
-        updatedContent.forEach(newComponent => {
-            let loadedComponent = this.findYou(newComponent)
-            if(!loadedComponent){
-                if(!newComponent.parent && newComponent.className) {
-                    this.allContent.push(newComponent);
-                }
-            }
-            else
-            {
-                for(let newProp in newComponent){
-                    for(let oldProp in loadedComponent){
-                        // update property to new value
-                        if(newProp === oldProp){
-                            loadedComponent[oldProp] = newComponent[newProp];
-                            break;
-                        }
-                        // add new property
-                        else if(!loadedComponent[newProp]){
-                            loadedComponent.newProp = newComponent[newProp];
-                        }
+        updatedContent.forEach(newEl => {
+            let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
+            if(existingComp){
+                if(newEl["~destroy"]){
+                    let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
+                    if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
+                } else {
+                    for(let newProp in newEl){
+                        existingComp[newProp] = newEl[newProp]
                     }
+                }   
+            } else this.flatContent.push(newEl)
+        });
+        this.buildHierachy(this.flatContent);
+    }
+
+    updateMetaData(updatedMetaData){
+        updatedMetaData.forEach(md => {
+            this.meteData.set(md.dataProvider, md)
+        });
+    }
+
+    getMetaData(provider){
+
+    }
+
+    buildHierachy(allComponents){
+        let sortetComponents = [];
+        let foundChildren = [];
+        allComponents.forEach(parent => {
+            parent.subjects = []; parent.subjects.length = 0;
+            allComponents.forEach(child => {
+                if(parent.id === child.parent) {
+                    parent.subjects.push(child)
+                    foundChildren.push(child)
                 }
-            }
+            });
+            if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
         });
     }
 
     getWindow(componentId){
-        return this.allContent.find(window => window.name === componentId);
-    }
-
-    findYou(toFind, currnetObj=this.allContent){
-        let foundObj;
-        currnetObj.some(comp => {
-            if(comp.id === toFind.id){
-                foundObj = comp;
-                return true;
-            } else if (comp.subjects.length > 0){
-                let f =  this.findYou(toFind, comp.subjects);
-                if(f){
-                    foundObj = f; 
-                    return true;
-                }
+        return this.flatContent.find(window => {
+            if(!window.parent){
+                return window.name === componentId;
             }
-            return false;
-        })
-        return foundObj;
+        });
     }
 
-    findParent(child){
-        let fullObj = this.findYou(child);
-        let parent = this.findYou({id: fullObj.parent})
-
-        return parent;
+    deleteWindow(window){
+        let toDelete = this.getWindow(window.componentId)
+        let allSubs = this.getAllBelow(toDelete);
+        allSubs.forEach(el => {
+            let toDeleteId = this.flatContent.findIndex(x => x.id === el.id);
+            this.flatContent.splice(toDeleteId, 1);
+        });
+        this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
     }
 
-    findWindow(windowID){
-        return this.allContent.find(window => window.name === windowID)
-    }
-
-    deleteWindow(windowID){
-        this.allContent.splice(this.allContent.findIndex(x => x.id === windowID),1);
+    getAllBelow(parent){
+        let subs = []
+        parent.subjects.forEach(element => {
+            subs.push(element);
+            if(element.subjects.length > 0){
+                subs.concat(this.getAllBelow(element));
+            }
+        });
+        return subs;
     }
 }
 export default ContentSafe

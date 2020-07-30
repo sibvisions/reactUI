@@ -9,26 +9,25 @@ import "./Main.scss";
 
 class Main extends Component {
 
-    state = {}
+    state = { flip : false}
 
     componentDidMount() {
         let windowData = this.context.contentSafe.getWindow(this.props.match.params.compId);
         if(this.context.menuLocation === "side") {
             stretch('content-sidemenu');
         }
-        
-
         if(windowData){
             let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
             this.setState({content: mainPanel})
-        }
+        }   
     }
+
 
     render() { 
         return (
             <React.Fragment>
                 <div className={"content-" + this.context.menuLocation + "menu"}>
-                    <div className="p-grid parent-grid">
+                    <div className="p-grid parent-grid" style={{backgroundColor:"#C8C8C8"}}>
                         {this.state.content}
                     </div>
                 </div>
