@@ -1,9 +1,14 @@
 import React from 'react';
 import { InputText } from "primereact/inputtext";
-import Base from '../../Base';
 import { RefContext } from '../../../helper/Context';
+import Base from '../../Base';
+
 
 class UIEditorText extends Base {
+
+    state= {
+        selection: ""
+    }
 
     componentDidMount() {
         this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
@@ -15,15 +20,15 @@ class UIEditorText extends Base {
 
     setContent(content){
         if(content[this.props.data.columnName]){
-            this.setState({text: content[this.props.data.columnName]});
+            this.setState({selection: content[this.props.data.columnName]});
         }
     }
 
     render() { 
         return ( 
             <InputText 
-                value={this.state.text ? this.state.text : ""}
-                onChange={x => this.setState({text: x.target.value})}
+                value={this.state.selection}
+                onChange={x => this.setState({selection: x.target.value})}
             /> 
         );
     }
