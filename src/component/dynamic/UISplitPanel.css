@@ -13,7 +13,7 @@
 }
 
 .splitHolder {
-    height: 400px;
+    height: 100%;
     display: flex;
     flex-direction: row;
     overflow: auto;
