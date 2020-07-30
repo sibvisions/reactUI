@@ -1,9 +1,3 @@
-import React from "react";
-import UILabel from "../component/dynamic/UILabel";
-import UIEditor from "../component/dynamic/UIEditor";
-import UISplitPanel from "../component/dynamic/UISplitPanel";
-
-import { Button } from "primereact/button";
 import { createPanel,
          createTable, 
          createButton, 
@@ -39,6 +33,14 @@ class UiBuilder{
         {
             name:"SplitPanel",
             method: this.splitPanel.bind(this)
+        },
+        {
+            name:"GroupPanel",
+            method: this.panel.bind(this)
+        },
+        {
+            name:"ScrollPanel",
+            method: this.panel.bind(this)
         }
     ]
 
@@ -78,7 +80,7 @@ class UiBuilder{
     }
 
     editor(editorData){
-        return createEditor(editorData.id, editorData.constraints)
+        return createEditor(editorData)
     }
 
     splitPanel(splitPanelData){

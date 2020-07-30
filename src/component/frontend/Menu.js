@@ -63,8 +63,9 @@ class Menu extends Component {
                       label: 'Logout',
                       icon: "pi pi-power-off",
                       command: () => {
-                          //ToDo Logout
+                        this.context.serverComm.logOut();
                         this.props.history.push('/login');
+                        this.context.growl({severity: 'success', summary:"Logged out successfully", detail:"logged out"})
                       }
                   }
               ]

@@ -4,27 +4,33 @@ import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import { Size } from '../helper/Size';
 import './UITable.scss'
+import { RefContext } from '../helper/Context';
+import Base from './Base';
 
 
-class UITable extends Component {
+class UITable extends Base {
     content = [];
     dataColumns = [];
-    state = {
-        testData: []
-    }
+    state = {  }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
     constructor(props){
         super(props);
         this.buildColumns(this.props.columnLabels, this.props.columnNames);
-        let reqOpt = {
-            method: 'POST',
-            body: JSON.stringify({clientId: localStorage.getItem("clientId"), dataProvider: this.props.dataProvider}),
-            credentials:"include"
-        };
-        fetch("http://localhost:8080/JVx.mobile/services/mobile/api/dal/fetch", reqOpt)
-            .then(res => res.json())
-            .then(jres => {console.log(jres); this.buildData(jres)})
+    }
+
+    componentDidMount() {
+        this.startUp()
+
+        if(!this.state.Data){
+            this.getData()
+        }
+    }
+
+    getData(){
+        this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
+        .then(res => res.json())
+        .then(jres => this.buildData(jres))
     }
 
     buildColumns(labels, names){
@@ -32,7 +38,7 @@ class UITable extends Component {
             const column = <Column 
             field={names[index]} 
             header={labels[index]}
-            style={{width: "200px"}}
+            style={{width: "100%"}}
             key={names[index]}/>;
             this.dataColumns.push(column);
         }
@@ -47,21 +53,30 @@ class UITable extends Component {
             }
             tempArray.push(tableData);
         });
-        this.setState({testData: tempArray})
+        this.setState({Data: tempArray})
+    }
+
+    onSelectChange(event){
+        let value = event.value
+        this.context.contentSafe.changeSelectedRowOfTable(this.props.id, value)
     }
 
     render() {
         return ( 
             <DataTable 
-                value={this.state.testData} 
+                value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
-                valueable={true} 
+                valueable={true}
                 scrollHeight="100%" 
-                style={{maxWidth: this.maximumSize.getWidth(), maxHeight: this.maximumSize.getHeight(), width: '100%', height: '100%'}} 
-                header="Table">
+                style={{
+                    overflow:"auto",
+                    height: '100%'}} 
+                header="Table"
+                selectionMode="single"
+                onSelectionChange={this.onSelectChange.bind(this)}>
                 {this.dataColumns}
             </DataTable>);
     }
 }
- 
+UITable.contextType = RefContext;
 export default UITable;

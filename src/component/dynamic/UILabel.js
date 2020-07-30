@@ -5,7 +5,7 @@ class UILabel extends Base {
     state = {  }
     render() { 
         return ( 
-           <span>{this.props.text}: </span>    
+           <h3>{this.props.text}: </h3>    
         );
     }
 }
