@@ -24,7 +24,8 @@ class UIEditorNumber extends Base{
 
     render(){
         return(
-            <InputNumber 
+            <InputNumber
+                id={this.props.data.id}
                 value={this.state.selection}
                 onChange={x => this.setState({selection: x.target.value})}/>
         )

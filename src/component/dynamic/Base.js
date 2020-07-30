@@ -19,8 +19,8 @@ class Base extends Component {
                 temp ? content.push(temp) : console.log();
             });
             this.setState({content: content});
-        }
-        this.setState({style: style})
+        } else {}
+        
 
     }
 

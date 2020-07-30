@@ -20,7 +20,7 @@ class UITable extends Base {
     }
 
     componentDidMount() {
-        this.startUp()
+        //this.startUp()
 
         if(!this.state.Data){
             this.getData()
@@ -68,9 +68,10 @@ class UITable extends Base {
     render() {
         return ( 
             <DataTable
+                id={this.props.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
-                valueable={true}
+                valueable={true}    
                 scrollHeight="100%" 
                 style={{
                     overflow:"auto",

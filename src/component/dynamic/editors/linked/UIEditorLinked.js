@@ -72,6 +72,7 @@ class UIEditorLinked extends Base {
     render(){ 
         return (
             <AutoComplete
+                id={this.props.data.id}
                 ref= {r => this.autoC = r}
                 dropdown={true}
                 completeMethod={this.autoComplete.bind(this)}

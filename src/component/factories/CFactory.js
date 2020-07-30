@@ -26,12 +26,6 @@ export function createButton(id, label, constraints, preferredSize, minimumSize,
         style={{}}
     />
 
-    //ToDo getPreferredSize etc in all Layouts for components
-    if(preferredSize !== undefined) {
-        let extrPreferredSize = new Size(undefined, undefined, preferredSize)
-        btn.props.style.width = toPx(extrPreferredSize.getWidth())
-        btn.props.style.height = toPx(extrPreferredSize.getHeight())
-    }
     return btn
 }
 
@@ -75,13 +69,13 @@ export function createLabel(id, text, constraints, preferredSize, minimumSize, m
 
 export function createEditor(editorData) {
     if(editorData.cellEditor.className === "CheckBoxCellEditor"){
-        return <UIEditorCheckbox data={editorData}/>
+        return <UIEditorCheckbox id={editorData.id} constraints={editorData.constraints} data={editorData}/>
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
-        return <UIEditorNumber data={editorData} />
+        return <UIEditorNumber id={editorData.id} constraints={editorData.constraints} data={editorData} />
     } else if(editorData.cellEditor.className === "TextCellEditor"){
-        return <UIEditorText data={editorData}/>
+        return <UIEditorText id={editorData.id} constraints={editorData.constraints} data={editorData}/>
     } else if(editorData.cellEditor.className === "LinkedCellEditor"){
-        return <UIEditorLinked data={editorData}/>
+        return <UIEditorLinked id={editorData.id} constraints={editorData.constraints} data={editorData}/>
     }
 }
 

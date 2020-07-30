@@ -26,7 +26,7 @@ class UISplitPanel extends Base {
                     rightComp.push(x);
                 } 
             });
-            //rightComp.push(<h1 key="do">DO</h1>)
+            console.log(rightComp)
         }
         return rightComp;
     }

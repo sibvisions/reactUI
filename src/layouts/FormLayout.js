@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Anchor } from "./layoutObj/Anchor";
 import { Constraints } from "./layoutObj/Constraints";
 import { Size } from '../component/helper/Size';
+import { RefContext } from '../component/helper/Context';
 
 class FormLayout extends Component {
 
@@ -42,18 +43,23 @@ class FormLayout extends Component {
 
     componentDidMount() {
         this.layoutContainer()
-        const mutationObserver = new MutationObserver(mutationsList => {
-            mutationsList.forEach(mutation => {
-                if (mutation.attributeName === 'class') {
-                    setTimeout(() => this.layoutContainer(), 400)
-                    
-                }
+        if (this.context.menuLocation === 'side') {
+            const mutationObserver = new MutationObserver(mutationsList => {
+                mutationsList.forEach(mutation => {
+                    if (mutation.attributeName === 'class') {
+                        setTimeout(() => this.layoutContainer(), 400)
+                    }
+                })
             })
-        })
-        mutationObserver.observe(
-            document.getElementsByClassName('menu-container')[0],
-            { attributes: true }
-        )
+            mutationObserver.observe(
+                document.getElementsByClassName('menu-container')[0],
+                { attributes: true }
+            )
+        }
+    }
+
+    componentWillUnmount() {
+        console.log("unmount form")
     }
 
     getAnchorsAndConstraints() {
@@ -612,6 +618,7 @@ class FormLayout extends Component {
         )
     }
 }
+FormLayout.contextType = RefContext
 export default FormLayout;
 
 
