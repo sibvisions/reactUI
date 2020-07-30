@@ -45,18 +45,18 @@ class UiBuilder{
     ]
 
     // Setters
-    setServerCommunicator(serverComnicator){
+    setServerCommunicator(serverComnicator) {
         this.serverCommunicator = serverComnicator
     }
-    
+
     // Component Handling
-    compontentHandler(component){
-        let toExecute =this.genericComponentMapper.find(mapper => mapper.name === component.className)
-        if(toExecute) {return toExecute.method(component)} else {return undefined}
+    compontentHandler(component) {
+        let toExecute = this.genericComponentMapper.find(mapper => mapper.name === component.className)
+        if (toExecute) { return toExecute.method(component) } else { return undefined }
     }
 
     // Components
-    panel(panelData){
+    panel(panelData) {
         let result = { ...panelData };
         Object.keys(result).map((key) => {
             if (key === "screen.title") {
@@ -64,19 +64,19 @@ class UiBuilder{
                 delete result[key];
             }
         });
-        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints);
+        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints, panelData.preferredSize, panelData.minimumSize, panelData.maximumSize);
     }
 
-    table(tableData){
-        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.maximumSize);
+    table(tableData) {
+        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.preferredSize, tableData.minimumSize, tableData.maximumSize);
     }
 
-    button(buttonData){
-        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.name, this.serverCommunicator)
+    button(buttonData) {
+        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.preferredSize, buttonData.minimumSize, buttonData.maximumSize, buttonData.name, this.serverCommunicator)
     }
 
-    label(labelData){
-        return createLabel(labelData.id, labelData.text, labelData.constraints)
+    label(labelData) {
+        return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize, labelData.minimumSize, labelData.maximumSize)
     }
 
     editor(editorData){
@@ -87,5 +87,6 @@ class UiBuilder{
         return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
     }
 
+    
 }
 export default UiBuilder

@@ -38,8 +38,8 @@ class UITable extends Base {
             const column = <Column 
             field={names[index]} 
             header={labels[index]}
-            style={{width: "100%"}}
-            key={names[index]}/>;
+            key={names[index]}
+            ref={ref => column.columnRef = ref}/>;
             this.dataColumns.push(column);
         }
     }
@@ -61,9 +61,13 @@ class UITable extends Base {
         this.context.contentSafe.changeSelectedRowOfTable(this.props.id, value)
     }
 
+    getPrefferedSize() {
+        console.log(this.maximumSize)
+    }
+
     render() {
         return ( 
-            <DataTable 
+            <DataTable
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
                 valueable={true}

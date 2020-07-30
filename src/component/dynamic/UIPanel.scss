@@ -1,4 +1,17 @@
-.borderlayout {
+.parent-grid {
+    .p-col-12 {
+        .p-panel {
+            .p-toggleable-content {
+                height: calc(100% - 39px);
+                .p-panel-content {
+                    height: 100%;
+                }
+            }
+        }
+    }
+}
+
+.borderlayout, .formlayout {
     .p-grid {
         margin-top: 0;
         .p-col {

@@ -1,3 +1,5 @@
+import { Orientation } from "./Orientation";
+
 export class Anchor{
 
     name;
@@ -5,6 +7,7 @@ export class Anchor{
     relatedAnchor;
     autoSize;
     autoSizeCalculated;
+    firstCalculation;
     relative;
     position;
     orientation;
@@ -12,7 +15,7 @@ export class Anchor{
     constructor(pAnchorData, pRelatedAnchor, pPosition, pOrientation, pLayout) {
         if(pAnchorData !== undefined && pRelatedAnchor === undefined && pPosition === undefined 
             && pOrientation === undefined) {
-            this.anchorData = pAnchorData;
+            this.setAnchorData(pAnchorData)
         }
         else if(pAnchorData === undefined && pRelatedAnchor !== undefined && pPosition !== undefined && pOrientation === undefined) {
             this.relatedAnchor = pRelatedAnchor;
@@ -21,7 +24,7 @@ export class Anchor{
             this.orientation = this.relatedAnchor.orientation;
         }
         else if(pAnchorData === undefined && pRelatedAnchor === undefined && pPosition === undefined && pOrientation !== undefined) {
-            this.orientation = pOrientation;
+            this.orientation = new Orientation(pOrientation);
             this.relatedAnchor = null;
             this.autoSize = false;
             this.position = 0
@@ -56,12 +59,6 @@ export class Anchor{
                 this.autoSize = false
             }
             this.position = parseInt(splittedData[4])
-            if(splittedData[0].substring(0, 1) === 'l' || splittedData[0].substring(0, 1) === 'r') {
-                this.orientation = 'vertical'
-            }
-            else {
-                this.orientation = 'horizontal'
-            }
         }
     }
 
@@ -82,7 +79,7 @@ export class Anchor{
         return borderAnchor;
     }
 
-    getRelatedAnchor() {
+    getRelativeAnchor() {
         var relativeAnchor = this;
         while(relativeAnchor !== null && !relativeAnchor.relative) {
             relativeAnchor = relativeAnchor.relatedAnchor;

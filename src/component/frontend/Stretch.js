@@ -10,7 +10,7 @@ export function stretch(divToStretch) {
     if(document.getElementsByClassName('menu-container')[0].classList.contains("hide")) {
         elem.classList.add("stretched")
     }
-    const mutationObserver = new MutationObserver((mutationsList) => {
+    const mutationObserver = new MutationObserver(mutationsList => {
         mutationsList.forEach(mutation => {
             if (mutation.attributeName === 'class') {
                 if(mutation.target.classList.contains("hide")) {

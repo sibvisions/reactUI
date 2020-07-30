@@ -1,25 +1,41 @@
 import React from 'react';
-import { Button } from "primereact/button";
+import UIButton from "../dynamic/UIButton";
 import UIPanel from "../dynamic/UIPanel";
 import UITable from '../dynamic/UITable';
 import UILabel from '../dynamic/UILabel';
 import UISplitPanel from '../dynamic/UISplitPanel';
+import { Size } from '../helper/Size';
+import { toPx } from '../helper/ToPx';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIEditorText from '../dynamic/editors/text/UIEditorText';
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 
 
-export function createButton(id, label, constraints, name, serverCommunicator){
-    return <Button 
-        key={id} 
-        id={id} 
+export function createButton(id, label, constraints, preferredSize, minimumSize, maximumSize, name, serverCommunicator){
+
+    let btn = <UIButton
+        key={id}
+        id={id}
         label={label}
         constraints={constraints}
-        onClick={() => serverCommunicator.pressButton(name)} />
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}
+        onClick={() => serverCommunicator.pressButton(name)}
+        style={{}}
+    />
+
+    //ToDo getPreferredSize etc in all Layouts for components
+    if(preferredSize !== undefined) {
+        let extrPreferredSize = new Size(undefined, undefined, preferredSize)
+        btn.props.style.width = toPx(extrPreferredSize.getWidth())
+        btn.props.style.height = toPx(extrPreferredSize.getHeight())
+    }
+    return btn
 }
 
-export function createPanel(id, subjects, screenTitle, layout, layoutData, constraints){
+export function createPanel(id, subjects, screenTitle, layout, layoutData, constraints, preferredSize, minimumSize, maximumSize){
     return  <UIPanel 
         key={id}
         id={id}
@@ -27,10 +43,13 @@ export function createPanel(id, subjects, screenTitle, layout, layoutData, const
         screenTitle={screenTitle}
         layout={layout}
         layoutData={layoutData}
-        constraints={constraints}/>
+        constraints={constraints}
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
 
-export function createTable(id, columnLabels, columnNames, constraints, dataProvider, maximumSize) {
+export function createTable(id, columnLabels, columnNames, constraints, dataProvider, preferredSize, minimumSize, maximumSize) {
     return <UITable 
         key={id} 
         id={id}
@@ -38,15 +57,20 @@ export function createTable(id, columnLabels, columnNames, constraints, dataProv
         columnNames={columnNames} 
         constraints={constraints}
         dataProvider={dataProvider}
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
         maximumSize={maximumSize}/>
 }
 
-export function createLabel(id, text, constraints) {
+export function createLabel(id, text, constraints, preferredSize, minimumSize, maximumSize) {
     return <UILabel
         key={id}
         id={id}
         text={text}
-        constraints={constraints}/>
+        constraints={constraints}
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
 
 export function createEditor(editorData) {
@@ -61,10 +85,13 @@ export function createEditor(editorData) {
     }
 }
 
-export function createSplitPanel(id, constraints, subjects) {
+export function createSplitPanel(id, constraints, subjects, preferredSize, minimumSize, maximumSize) {
     return <UISplitPanel
         key={id}
         id={id}
         constraints={constraints}
-        subjects={subjects}/>
+        subjects={subjects}
+        preferredSize={preferredSize}
+        minimumSize={minimumSize}
+        maximumSize={maximumSize}/>
 }
