@@ -57,26 +57,19 @@ class UiBuilder{
 
     // Components
     panel(panelData) {
-        let result = { ...panelData };
-        Object.keys(result).map((key) => {
-            if (key === "screen.title") {
-                result.screenTitle = result[key];
-                delete result[key];
-            }
-        });
-        return createPanel(panelData.id, panelData.subjects, result.screenTitle, panelData.layout, panelData.layoutData, panelData.constraints, panelData.preferredSize, panelData.minimumSize, panelData.maximumSize);
+        return createPanel(panelData);
     }
 
     table(tableData) {
-        return createTable(tableData.id, tableData.columnLabels, tableData.columnNames, tableData.constraints, tableData.dataProvider, tableData.preferredSize, tableData.minimumSize, tableData.maximumSize);
+        return createTable(tableData);
     }
 
     button(buttonData) {
-        return createButton(buttonData.id, buttonData.text, buttonData.constraints, buttonData.preferredSize, buttonData.minimumSize, buttonData.maximumSize, buttonData.name, this.serverCommunicator)
+        return createButton(buttonData)
     }
 
     label(labelData) {
-        return createLabel(labelData.id, labelData.text, labelData.constraints, labelData.preferredSize, labelData.minimumSize, labelData.maximumSize)
+        return createLabel(labelData)
     }
 
     editor(editorData){
@@ -84,7 +77,7 @@ class UiBuilder{
     }
 
     splitPanel(splitPanelData){
-        return createSplitPanel(splitPanelData.id, splitPanelData.constraints, splitPanelData.subjects)
+        return createSplitPanel(splitPanelData)
     }
 
     

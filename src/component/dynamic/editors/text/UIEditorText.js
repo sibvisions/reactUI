@@ -6,11 +6,10 @@ import Base from '../../Base';
 
 class UIEditorText extends Base {
 
-    state= {
-        selection: ""
-    }
+
 
     componentDidMount() {
+        this.startUp()
         this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
     }
 
@@ -24,9 +23,11 @@ class UIEditorText extends Base {
         }
     }
 
-    render() { 
+    render() {
+        
         return ( 
             <InputText
+                
                 id={this.props.data.id}
                 value={this.state.selection}
                 onChange={x => this.setState({selection: x.target.value})}

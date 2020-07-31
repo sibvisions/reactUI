@@ -1,7 +1,6 @@
 import React from 'react';
 import Base from './Base';
 import './UIPanel.scss'
-import { Panel } from 'primereact/panel';
 import FormLayout from '../../layouts/FormLayout'
 import BorderLayout from '../../layouts/BorderLayout'
 import FlowLayout from '../../layouts/FlowLayout';
@@ -14,25 +13,24 @@ import { GridSize } from '../../layouts/layoutObj/GridSize';
 
 
 class UIPanel extends Base {
-
     insertLayout() {
         if (this.state.content !== undefined) {
-            let margins = new Margins(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(0, 4))
-            let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(4, 6))
-            switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
+            let margins = new Margins(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(0, 4))
+            let gaps = new Gaps(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(4, 6))
+            switch (this.props.data.layout.substring(0, this.props.data.layout.indexOf(','))) {
                 case "FormLayout":
-                    var alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8), 'form')
+                    var alignments = new Alignments(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(6, 8), 'form')
                         return <FormLayout
                                     component={this}
-                                    layout={this.props.layout}
-                                    layoutData={this.props.layoutData}
+                                    layout={this.props.data.layout}
+                                    layoutData={this.props.data.layoutData}
                                     subjects={this.state.content}
                                     margins={margins}
                                     gaps={gaps}
                                     alignments={alignments}
                                     preferredSize={this.getPreferredSize(this)}
-                                    minimumSize={this.props.minimumSize}
-                                    maximumSize={this.props.maximumSize}
+                                    minimumSize={this.props.data.minimumSize}
+                                    maximumSize={this.props.data.maximumSize}
                                     getPreferredSize={this.getPreferredSize}
                                     getMinimumSize={this.getMinimumSize}
                                     getMaximumSize={this.getMaximumSize}/>;      
@@ -43,14 +41,14 @@ class UIPanel extends Base {
                                     margins={margins}
                                     gaps={gaps}
                                     preferredSize={this.getPreferredSize(this)}
-                                    minimumSize={this.props.minimumSize}
-                                    maximumSize={this.props.maximumSize}
+                                    minimumSize={this.props.data.minimumSize}
+                                    maximumSize={this.props.data.maximumSize}
                                     getPreferredSize={this.getPreferredSize}
                                     getMinimumSize={this.getMinimumSize}
                                     getMaximumSize={this.getMaximumSize}/>;
                 case "FlowLayout":
-                        let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 7));
-                        alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(7, 10), 'flow');
+                        let orientation = new Orientation(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(6, 7));
+                        alignments = new Alignments(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(7, 10), 'flow');
                         return <FlowLayout 
                                     component={this}
                                     subjects={this.state.content}
@@ -59,14 +57,14 @@ class UIPanel extends Base {
                                     orientation={orientation}
                                     alignments={alignments}
                                     preferredSize={this.getPreferredSize(this)}
-                                    minimumSize={this.props.minimumSize}
-                                    maximumSize={this.props.maximumSize}
+                                    minimumSize={this.props.data.minimumSize}
+                                    maximumSize={this.props.data.maximumSize}
                                     getPreferredSize={this.getPreferredSize}
                                     getMinimumSize={this.getMinimumSize}
                                     getMaximumSize={this.getMaximumSize}
                                     />;
                 case "GridLayout":
-                        let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',')+1, this.props.layout.length).split(',').slice(6, 8));
+                        let gridSize = new GridSize(this.props.data.layout.substring(this.props.data.layout.indexOf(',')+1, this.props.data.layout.length).split(',').slice(6, 8));
                         return <GridLayout subjects={this.state.content} margins={margins} gaps={gaps} gridSize={gridSize}/>
                 default: return null;
             }
@@ -76,7 +74,7 @@ class UIPanel extends Base {
 
     render() {
         return (
-        <div id={this.props.id} ref={ref => this.compRef = ref} className="p-col-12" style={{ height: '100%' }}>
+        <div id={this.props.data.id} className="p-col-12" style={{ height: '100%' }}>
             {this.insertLayout()}
         </div>
         );

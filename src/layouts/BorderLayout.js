@@ -20,8 +20,9 @@ class BorderLayout extends Component {
 
     addLayoutComponents() {
         this.props.subjects.forEach(subject => {
-            if (subject.props.constraints) {
-                switch(subject.props.constraints) {
+            if (subject.props.data.constraints) {
+                console.log(subject.props.data.constraints)
+                switch(subject.props.data.constraints) {
                     case 'North':
                         this.elemNorth = subject;
                         break;

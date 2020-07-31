@@ -16,11 +16,10 @@ class UITable extends Base {
     
     constructor(props){
         super(props);
-        this.buildColumns(this.props.columnLabels, this.props.columnNames);
+        this.buildColumns(this.props.data.columnLabels, this.props.data.columnNames);
     }
 
     componentDidMount() {
-        //this.startUp()
 
         if(!this.state.Data){
             this.getData()
@@ -28,7 +27,7 @@ class UITable extends Base {
     }
 
     getData(){
-        this.context.serverComm.fetchDataFromProvider(this.props.dataProvider)
+        this.context.serverComm.fetchDataFromProvider(this.props.data.dataProvider)
         .then(res => res.json())
         .then(jres => this.buildData(jres))
     }
@@ -38,8 +37,7 @@ class UITable extends Base {
             const column = <Column 
             field={names[index]} 
             header={labels[index]}
-            key={names[index]}
-            ref={ref => column.columnRef = ref}/>;
+            key={names[index]}/>;
             this.dataColumns.push(column);
         }
     }
@@ -61,21 +59,15 @@ class UITable extends Base {
         this.context.contentSafe.changeSelectedRowOfTable(this.props.id, value)
     }
 
-    getPrefferedSize() {
-        console.log(this.maximumSize)
-    }
-
     render() {
         return ( 
             <DataTable
-                id={this.props.id}
+                id={this.props.data.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
                 valueable={true}    
                 scrollHeight="100%" 
-                style={{
-                    overflow:"auto",
-                    height: '100%'}} 
+                style={this.state.style} 
                 header="Table"
                 selectionMode="single"
                 onSelectionChange={this.onSelectChange.bind(this)}>

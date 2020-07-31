@@ -103,7 +103,7 @@ class FormLayout extends Component {
 
     getConstraints() {
         this.components.forEach(component => {
-            let constraint = new Constraints(this, component.props.constraints, undefined, undefined, undefined, undefined)
+            let constraint = new Constraints(this, component.props.data.constraints, undefined, undefined, undefined, undefined)
             this.componentConstraints.set(component, constraint);
         })
     }

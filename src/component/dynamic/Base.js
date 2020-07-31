@@ -4,22 +4,25 @@ import { Size } from '../helper/Size';
 
 class Base extends Component {
 
-    state = {  }
+    state = { 
+        
+    }
 
     startUp(){
+
         let style = {
             width: '100%',
             height: '100%'
-        }
+        } 
         let content = [];
         content.length = 0
-        if (this.props.subjects) {
-            this.props.subjects.forEach(subject => {
+        if (this.props.data.subjects) {
+            this.props.data.subjects.forEach(subject => {
                 let temp = this.context.uiBuilder.compontentHandler(subject);
-                temp ? content.push(temp) : console.log();
+                if(temp) content.push(temp)
             });
-            this.setState({content: content});
-        } else {}
+            this.setState({content: content, style: style});
+        }else {this.setState({style:style})}
         
 
     }
@@ -27,11 +30,11 @@ class Base extends Component {
     getPreferredSize(comp) {
         let prefSize;
         if (comp) {
-            if (comp.props.preferredSize) {
-                prefSize = new Size(undefined, undefined, comp.props.preferredSize)
+            if (comp.props.data.preferredSize) {
+                prefSize = new Size(undefined, undefined, comp.props.data.preferredSize)
             }
             else {
-                let element = document.getElementById(comp.props.id);
+                let element = document.getElementById(comp.props.data.id);
                 if (element.getBoundingClientRect()) {
                     prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
                 }
@@ -39,8 +42,8 @@ class Base extends Component {
                     prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)
                 }
             }
-            if (comp.props.minimumSize) {
-                let minSize = new Size(undefined, undefined, comp.props.minimumSize)
+            if (comp.props.data.minimumSize) {
+                let minSize = new Size(undefined, undefined, comp.props.data.minimumSize)
                 if (prefSize.getWidth() < minSize.getWidth()) {
                     prefSize.setWidth(minSize.getWidth());
                 }
@@ -49,8 +52,8 @@ class Base extends Component {
                 }
             }
 
-            if (comp.props.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (comp.props.data.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
                 if (maxSize.getWidth() < prefSize.getWidth) {
                     prefSize.setWidth(maxSize.getWidth());
                 }
@@ -59,7 +62,7 @@ class Base extends Component {
                 }
             }
 
-            if (comp.props.id.substring(0, 1) === 'P') {
+            if (comp.props.data.id.substring(0, 1) === 'P') {
                 prefSize.height -= 16;
                 prefSize.width = prefSize.width - 16;
             }
@@ -68,22 +71,21 @@ class Base extends Component {
     }
     
     componentDidMount() {
-
         this.startUp();
     }
 
     getMinimumSize(comp) {
         let minSize;
         if (comp) {
-            if (comp.props.minimumSize) {
-                minSize = new Size(undefined, undefined, comp.props.minimumSize);
+            if (comp.props.data.minimumSize) {
+                minSize = new Size(undefined, undefined, comp.props.data.minimumSize);
             }
             else {
                 minSize = this.getPreferredSize(comp);
             }
     
-            if (comp.props.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (comp.props.data.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
                 if (maxSize.getWidth() < minSize.getWidth) {
                     minSize.setWidth(maxSize.getWidth());
                 }
@@ -98,8 +100,8 @@ class Base extends Component {
     getMaximumSize(comp) {
         let maxSize;
         if (comp) {
-            if (comp.props.maximumSize) {
-                maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (comp.props.data.maximumSize) {
+                maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
             }
             else {
                 maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)

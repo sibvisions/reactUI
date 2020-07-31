@@ -17,6 +17,7 @@ class UIEditorLinked extends Base {
     }
 
     componentDidMount(){
+        this.startUp()
         this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.newSelection.bind(this))
         this.elem = this.autoC.panel.element;
         this.elem.addEventListener("scroll", this.handleScroll.bind(this));
