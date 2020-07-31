@@ -29,6 +29,7 @@ class FormLayout extends Component {
     topBorderUsed = false;
     bottomBorderUsed = false;
 
+    posTop;
     preferredWidth;
     preferredHeight;
     minimumWidth;
@@ -576,11 +577,12 @@ class FormLayout extends Component {
 
     buildComponents(components) {
         let tempContent = []
-        components.forEach(component => {    
+        components.forEach(component => {
             let constraint = this.componentConstraints.get(component);
             let minimumSize = this.props.getMinimumSize(component);
             let maximumSize = this.props.getMaximumSize(component);
-            let formElement = <div style={{
+            let formElement = <div
+                                style={{
                                     position: 'absolute',
                                     height: constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition(),
                                     width: constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition(),
@@ -603,7 +605,20 @@ class FormLayout extends Component {
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
         this.buildComponents(this.props.subjects)
+        this.calculateTop()
     }
+
+    calculateTop() {
+        let el = document.getElementById(this.props.component.props.data.id).parentElement
+        if(el.previousSibling !== null) {
+            if(el.previousSibling.getElementsByClassName("formlayout").length > 0) {
+                this.posTop = window.getComputedStyle(el.previousSibling.getElementsByClassName("formlayout")[0]).height
+                console.log(this.posTop)
+            }
+        }
+        
+    }
+    
 
     render() {
         window.onresize = () => {
