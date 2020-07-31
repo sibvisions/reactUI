@@ -2,6 +2,8 @@ import { Subject } from "rxjs";
 
 class ContentSafe{
 
+    currentUser= {}
+
     flatContent= [];
     menuItems = [];
 
@@ -41,10 +43,6 @@ class ContentSafe{
         });
     }
 
-    getMetaData(provider){
-
-    }
-
     buildHierachy(allComponents){
         let sortetComponents = [];
         let foundChildren = [];
@@ -65,17 +63,8 @@ class ContentSafe{
             if(!window.parent){
                 return window.name === componentId;
             }
+            return false;
         });
-    }
-
-    deleteWindow(window){
-        let toDelete = this.getWindow(window.componentId)
-        let allSubs = this.getAllBelow(toDelete);
-        allSubs.forEach(el => {
-            let toDeleteId = this.flatContent.findIndex(x => x.id === el.id);
-            this.flatContent.splice(toDeleteId, 1);
-        });
-        this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
     }
 
     getAllBelow(parent){
@@ -88,5 +77,25 @@ class ContentSafe{
         });
         return subs;
     }
+
+    deleteWindow(window){
+        let toDelete = this.getWindow(window.componentId)
+        let allSubs = this.getAllBelow(toDelete);
+        allSubs.forEach(el => {
+            let toDeleteId = this.flatContent.findIndex(x => x.id === el.id);
+            this.flatContent.splice(toDeleteId, 1);
+        });
+        this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
+    }
+
+    setCurrentUser(userData){
+        this.currentUser = userData
+    }
+
+    getCurrentUser(){
+        return this.currentUser
+    }
+
+
 }
 export default ContentSafe

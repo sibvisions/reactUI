@@ -54,7 +54,7 @@ class BorderLayout extends Component {
     render() {
         this.addLayoutComponents()
         return (
-        <div className="p-grid p-nogutter borderlayout" style={{height: this.state.preferredHeight, "flexFlow":"column", width: this.state.preferredWidth, padding: '0', 
+        <div className="p-grid p-nogutter borderlayout" style={{height: this.state.preferredHeight, "flexFlow":"column", width: "100%", padding: '0', 
                                                                 marginTop: toPx(this.props.margins.getMarginTop()), marginLeft: toPx(this.props.margins.getMarginLeft()),
                                                                 marginBottom: toPx(this.props.margins.getMarginBottom()), marginRight: toPx(this.props.margins.getMarginRight())}}>
             <div className="p-col-12 north" style={{textAlign:"center",
@@ -66,7 +66,7 @@ class BorderLayout extends Component {
                 <span className="p-col-fixed west" style={{textAlign:"center", width:"auto", padding: '0', marginRight: toPx(this.props.gaps.getHorizontalGap())}}>
                     {this.elemWest}
                 </span>
-                <span className="p-col center" style={{textAlign:"center", height:"100%", padding: '0'}}>
+                <span className="p-col center" style={{textAlign:"center", height:"100%", padding: '0', width:"100%"}}>
                     {this.elemCenter}
                 </span>
                 <span className="p-col-fixed east" style={{textAlign:"center", width:"auto", padding: '0', marginLeft: toPx(this.props.gaps.getHorizontalGap())}}>

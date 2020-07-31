@@ -38,7 +38,7 @@ class Menu extends Component {
     getProfileMenu(){
         let profileMenu = [
             {
-              label: "JoHn DoE", //this.context.contentSafe.getCurrentUser().username,
+              label: this.context.contentSafe.getCurrentUser().displayName,
               icon: "pi avatar-icon",
               items: [
                   {

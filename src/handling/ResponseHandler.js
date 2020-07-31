@@ -105,6 +105,7 @@ class ResponseHandler{
     }
 
     userData(userData){
+        this.contentSafe.setCurrentUser(userData);
     }
 
     generic(genericResponse){
