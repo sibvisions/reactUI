@@ -620,9 +620,9 @@ class FormLayout extends Component {
         if (el.previousSibling !== null)
             if (el.previousSibling.getElementsByClassName("formlayout").length > 0) {
                 let posTop = parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)
-                el.style.top = (parseInt(el.style.top) + parseInt(posTop)) + 'px'
-            }
+                el.style.top = parseInt(posTop) + 'px'
     }
+}
 
     render() {
         window.onresize = () => {
