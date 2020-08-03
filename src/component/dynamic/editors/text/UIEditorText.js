@@ -10,7 +10,7 @@ class UIEditorText extends Base {
 
     componentDidMount() {
         this.startUp()
-        this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
+        this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.setContent.bind(this))
     }
 
     componentWillUnmount() {
