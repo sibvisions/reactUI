@@ -59,10 +59,6 @@ class FormLayout extends Component {
         }
     }
 
-    componentWillUnmount() {
-        console.log("unmount form")
-    }
-
     getAnchorsAndConstraints() {
         this.anchors.set("t", this.topBorderAnchor);
         this.anchors.set("l", this.leftBorderAnchor);
@@ -183,8 +179,7 @@ class FormLayout extends Component {
             let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
             autoSizeAnchors.forEach(anchor => {
                 fixedSize += anchor.position
-            })
-
+            });
             let diffSize = (preferredSize - fixedSize + size -1) / size;
             autoSizeAnchors.forEach(anchor => {
                 if (diffSize > -anchor.position) {
@@ -202,7 +197,7 @@ class FormLayout extends Component {
             autoSizeAnchors.forEach(anchor => {
                 fixedSize -= anchor.position;
             });
-            let diffSize = (preferredSize - fixedSize + size - 1) 
+            let diffSize = (preferredSize - fixedSize + size - 1) / size;
             autoSizeAnchors.forEach(anchor => {
                 if (diffSize > anchor.position) {
                     anchor.position = diffSize;
@@ -581,11 +576,20 @@ class FormLayout extends Component {
             let constraint = this.componentConstraints.get(component);
             let minimumSize = this.props.getMinimumSize(component);
             let maximumSize = this.props.getMaximumSize(component);
+            let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+            if (compHeight > this.preferredHeight) {
+                compHeight = this.preferredHeight;
+            }
+            let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
+            if (compWidth > this.preferredWidth) {
+                compWidth = this.preferredWidth;
+            }
             let formElement = <div
+                                className={"formlayout-component-wrapper"}
                                 style={{
                                     position: 'absolute',
-                                    height: constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition(),
-                                    width: constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition(),
+                                    height: compHeight,
+                                    width: compWidth,
                                     left: constraint.leftAnchor.getAbsolutePosition(),
                                     right: constraint.rightAnchor.getAbsolutePosition(),
                                     top: constraint.topAnchor.getAbsolutePosition(),
@@ -593,7 +597,7 @@ class FormLayout extends Component {
                                     minHeight: minimumSize.getHeight(),
                                     minWidth: minimumSize.getWidth(),
                                     maxHeight: maximumSize.getHeight(),
-                                    maxWidth: maximumSize.getWidth()
+                                    //maxWidth: maximumSize.getWidth()
                                 }}>{component}</div>;
             tempContent.push(formElement)
         });
@@ -610,23 +614,26 @@ class FormLayout extends Component {
 
     calculateTop() {
         let el = document.getElementById(this.props.component.props.data.id).parentElement
-        if(el.previousSibling !== null) {
-            if(el.previousSibling.getElementsByClassName("formlayout").length > 0) {
-                this.posTop = window.getComputedStyle(el.previousSibling.getElementsByClassName("formlayout")[0]).height
-                console.log(this.posTop)
-            }
+        if (el.className === "formlayout-component-wrapper") {
+            el.style.height = this.preferredHeight + 'px';
         }
-        
+
+        if (el.previousSibling !== null)
+            if (el.previousSibling.getElementsByClassName("formlayout").length > 0) {
+                this.posTop = parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)
+
+            }
     }
-    
 
     render() {
         window.onresize = () => {
             this.layoutContainer()
         }
+        this.calculateTop()
         return (
-            <div className="formlayout" style={{
+            <div className={"formlayout " + this.props.component.props.data.id} style={{
                                         position: 'relative',
+                                        top: this.posTop,
                                         width: this.preferredWidth, 
                                         height: this.preferredHeight
                                         }}>{this.state.content}</div>

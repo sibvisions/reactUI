@@ -3,10 +3,11 @@ import Base from '../../Base';
 import { InputNumber } from 'primereact/inputnumber';
 import { RefContext } from '../../../helper/Context';
 
-class UIEditorNumber extends Base{
+class UIEditorNumber extends Base {
 
 
     componentDidMount() {
+        this.startUp()
         this.sub = this.context.contentSafe.selectedDataRowChange.subscribe(this.setContent.bind(this))
     }
 
@@ -27,6 +28,7 @@ class UIEditorNumber extends Base{
             <InputNumber
                 id={this.props.data.id}
                 value={this.state.selection}
+                style={this.state.style}
                 onChange={x => this.setState({selection: x.target.value})}/>
         )
     }
