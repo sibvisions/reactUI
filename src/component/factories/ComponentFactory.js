@@ -9,6 +9,7 @@ import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIEditorText from '../dynamic/editors/text/UIEditorText';
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
+import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
 
 
 export function createButton(buttonData){
@@ -50,4 +51,8 @@ export function createEditor(editorData) {
 
 export function createSplitPanel(splitPanelData) {
     return <UISplitPanel data={splitPanelData} key={splitPanelData.id}/>
+}
+
+export function createCheckBox(checkBoxData){
+    return <UICheckBox data={checkBoxData} key={checkBoxData.id}/>
 }

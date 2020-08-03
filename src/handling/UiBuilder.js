@@ -3,7 +3,8 @@ import { createPanel,
          createButton, 
          createLabel, 
          createEditor, 
-         createSplitPanel } from "../component/factories/ComponentFactory";
+         createSplitPanel, 
+         createCheckBox} from "../component/factories/ComponentFactory";
 
 class UiBuilder{
     serverCommunicator = {};
@@ -41,6 +42,10 @@ class UiBuilder{
         {
             name:"ScrollPanel",
             method: this.panel.bind(this)
+        },
+        {
+            name:"CheckBox",
+            method: this.checkBox.bind(this)
         }
     ]
 
@@ -78,6 +83,10 @@ class UiBuilder{
 
     splitPanel(splitPanelData){
         return createSplitPanel(splitPanelData)
+    }
+
+    checkBox(checkBoxData){
+        return createCheckBox(checkBoxData);
     }
 
     
