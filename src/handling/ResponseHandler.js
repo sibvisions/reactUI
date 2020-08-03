@@ -2,8 +2,8 @@ class ResponseHandler{
 
     // Setter
 
-    setContentSafe(contentSafe){
-        this.contentSafe = contentSafe;
+    setContentStore(contentStore){
+        this.contentStore = contentStore;
     }
 
     setServerCommunicator(serverCommunicator){
@@ -16,7 +16,7 @@ class ResponseHandler{
 
     // Misc.
     updateContent(updatedContent){
-        this.contentSafe.updateContent(updatedContent)
+        this.contentStore.updateContent(updatedContent)
     }
 
     routeTo(route){
@@ -54,6 +54,10 @@ class ResponseHandler{
             name: "message.sessionexpired",
             methodToExecute: this.sessionExpiredMessage.bind(this)
 
+        },
+        {
+            name: "dal.fetch",
+            methodToExecute: this.fetchedData.bind(this)
         }
     ]
 
@@ -65,9 +69,6 @@ class ResponseHandler{
     }
 
     handler(responseArray){
-        let metaData = responseArray.filter(x => x.name === "dal.metaData");
-        if(metaData.length > 0) this.contentSafe.updateMetaData(metaData);
-
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
@@ -100,12 +101,12 @@ class ResponseHandler{
                 }
             });
         });
-        this.contentSafe.menuItems = groups;
+        this.contentStore.menuItems = groups;
         this.routeTo("/main")
     }
 
     userData(userData){
-        this.contentSafe.setCurrentUser(userData);
+        this.contentStore.setCurrentUser(userData);
     }
 
     generic(genericResponse){
@@ -118,7 +119,7 @@ class ResponseHandler{
     }
 
     closeScreen(screenToClose){
-        this.contentSafe.deleteWindow(screenToClose)
+        this.contentStore.deleteWindow(screenToClose)
         this.routeTo("/main");
     }
 
@@ -129,6 +130,10 @@ class ResponseHandler{
     sessionExpiredMessage(message){
         this.routeTo("/login");
         throw new Error(message.title);
+    }
+
+    fetchedData(fetchResponse){
+        this.contentStore.emitFetchSuccess(fetchResponse);
     }
 }
 

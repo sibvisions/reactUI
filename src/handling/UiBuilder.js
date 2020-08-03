@@ -3,7 +3,7 @@ import { createPanel,
          createButton, 
          createLabel, 
          createEditor, 
-         createSplitPanel } from "../component/factories/CFactory";
+         createSplitPanel } from "../component/factories/ComponentFactory";
 
 class UiBuilder{
     serverCommunicator = {};
