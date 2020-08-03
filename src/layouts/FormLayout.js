@@ -29,7 +29,6 @@ class FormLayout extends Component {
     topBorderUsed = false;
     bottomBorderUsed = false;
 
-    posTop;
     preferredWidth;
     preferredHeight;
     minimumWidth;
@@ -620,8 +619,8 @@ class FormLayout extends Component {
 
         if (el.previousSibling !== null)
             if (el.previousSibling.getElementsByClassName("formlayout").length > 0) {
-                this.posTop = parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)
-
+                let posTop = parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)
+                el.style.top = (parseInt(el.style.top) + parseInt(posTop)) + 'px'
             }
     }
 
@@ -629,11 +628,9 @@ class FormLayout extends Component {
         window.onresize = () => {
             this.layoutContainer()
         }
-        this.calculateTop()
         return (
             <div className={"formlayout " + this.props.component.props.data.id} style={{
                                         position: 'relative',
-                                        top: this.posTop,
                                         width: this.preferredWidth, 
                                         height: this.preferredHeight
                                         }}>{this.state.content}</div>

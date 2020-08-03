@@ -1,6 +1,6 @@
 import Base from "../../Base";
 import React from 'react';
-import './UIEditorLinked.scss'
+//import './UIEditorLinked.scss'
 
 import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
