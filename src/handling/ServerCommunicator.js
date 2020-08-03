@@ -34,7 +34,7 @@ class ServerCommunicator {
     }
 
 
-    // Requests
+    //---Automatic Requests------
 
     startUp(screenHeight=600, screenWidth=800){
         let info = {
@@ -55,7 +55,7 @@ class ServerCommunicator {
         }; this.sendRequest("/api/deviceStatus", reqOpt);   
     }
 
-    //---Actions------
+    //---Action Requests------
 
     logIn(username, password){
         let info = {
@@ -97,18 +97,14 @@ class ServerCommunicator {
         }; this.sendRequest("/api/v2/openScreen", reqOpt);   
     }
 
-    //---FetchData------
+    //---Fetch Requests------
 
     fetchDataFromProvider(dataProvider, timeout=2000){
-        let reqOpt = {
-            method: 'POST',
-            body: JSON.stringify({
-                clientId: localStorage.getItem("clientId"), 
-                dataProvider: dataProvider,
-            }),
-            credentials:"include"
-        };
-        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/fetch", reqOpt), timeout);
+        let reqBody = {
+            clientId: localStorage.getItem("clientId"), 
+            dataProvider: dataProvider,
+        }
+        this.sendRequest("/api/dal/fetch" , reqBody);
     }
 
     fetchFilterdData(dataProvider, filterString, editorComponentId, timeout=2000){

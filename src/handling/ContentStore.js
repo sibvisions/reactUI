@@ -1,62 +1,35 @@
-import { Subject } from "rxjs";
+import { Subject, async } from "rxjs";
 
-class ContentSafe{
+class ContentStore{
 
-    currentUser= {}
+    currentUser= {};
 
     flatContent= [];
     menuItems = [];
 
-    meteData = new Map();
-    selectedDataRow = new Map();
+    storedData = new Map();
+
     selectedDataRowChange = new Subject();
+    fetchCompleted = new Subject();
 
-    changeSelectedRowOfTable(tableID ,selectedRow){
-        this.selectedDataRow.set(tableID, selectedRow);
-        this.emitChangeOfSelectedRow(selectedRow)
-    }
-
+    // Event
     emitChangeOfSelectedRow(newSelection){
         this.selectedDataRowChange.next(newSelection);
     }
 
-    updateContent(updatedContent){
-        updatedContent.forEach(newEl => {
-            let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
-            if(existingComp){
-                if(newEl["~destroy"]){
-                    let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
-                    if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
-                } else {
-                    for(let newProp in newEl){
-                        existingComp[newProp] = newEl[newProp]
-                    }
-                }   
-            } else this.flatContent.push(newEl)
-        });
-        this.buildHierachy(this.flatContent);
+    emitFetchSuccess(fetchResponse){
+        if(this.storedData.get(fetchResponse.dataProvider)){
+            let localDataSet = this.storedData.get(fetchResponse.dataProvider);
+            let promiseSet = localDataSet.records.map(async value => {
+                console.log(value);        
+            })
+            Promise.all(promiseSet);
+        }
+        this.storedData.set(fetchResponse.dataProvider, fetchResponse)
+        this.fetchCompleted.next(fetchResponse);
     }
 
-    updateMetaData(updatedMetaData){
-        updatedMetaData.forEach(md => {
-            this.meteData.set(md.dataProvider, md)
-        });
-    }
-
-    buildHierachy(allComponents){
-        let sortetComponents = [];
-        let foundChildren = [];
-        allComponents.forEach(parent => {
-            parent.subjects = []; parent.subjects.length = 0;
-            allComponents.forEach(child => {
-                if(parent.id === child.parent) {
-                    parent.subjects.push(child)
-                    foundChildren.push(child)
-                }
-            });
-            if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
-        });
-    }
+    // Getter
 
     getWindow(componentId){
         return this.flatContent.find(window => {
@@ -78,6 +51,44 @@ class ContentSafe{
         return subs;
     }
 
+    getCurrentUser(){
+        return this.currentUser
+    }
+
+    // Content Management
+
+    updateContent(updatedContent){
+        updatedContent.forEach(newEl => {
+            let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
+            if(existingComp){
+                if(newEl["~destroy"]){
+                    let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
+                    if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
+                } else {
+                    for(let newProp in newEl){
+                        existingComp[newProp] = newEl[newProp]
+                    }
+                }   
+            } else this.flatContent.push(newEl)
+        });
+        this.buildHierachy(this.flatContent);
+    }
+
+    buildHierachy(allComponents){
+        let sortetComponents = [];
+        let foundChildren = [];
+        allComponents.forEach(parent => {
+            parent.subjects = []; parent.subjects.length = 0;
+            allComponents.forEach(child => {
+                if(parent.id === child.parent) {
+                    parent.subjects.push(child)
+                    foundChildren.push(child)
+                }
+            });
+            if(!foundChildren.some(x => x === parent)) sortetComponents.push(parent)
+        });
+    }
+
     deleteWindow(window){
         let toDelete = this.getWindow(window.componentId)
         let allSubs = this.getAllBelow(toDelete);
@@ -88,14 +99,14 @@ class ContentSafe{
         this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
     }
 
+
+    // Misc.
+
     setCurrentUser(userData){
         this.currentUser = userData
     }
 
-    getCurrentUser(){
-        return this.currentUser
-    }
 
 
 }
-export default ContentSafe
+export default ContentStore

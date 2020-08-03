@@ -38,7 +38,7 @@ class Menu extends Component {
     getProfileMenu(){
         let profileMenu = [
             {
-              label: this.context.contentSafe.getCurrentUser().displayName,
+              label: this.context.contentStore.getCurrentUser().displayName,
               icon: "pi avatar-icon",
               items: [
                   {
@@ -114,7 +114,7 @@ class Menu extends Component {
                     </div>
             </div>
             <div className={"menu-container"} ref={el => this.menu = el}>
-                <TieredMenu model={value.contentSafe.menuItems}/>
+                <TieredMenu model={value.contentStore.menuItems}/>
             </div>
             </React.Fragment>
         );
@@ -130,7 +130,7 @@ class Menu extends Component {
                     <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
                         <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
                     </div>
-                    <Menubar model={value.contentSafe.menuItems}  className="p-col"/>
+                    <Menubar model={value.contentStore.menuItems}  className="p-col"/>
                     <div className="searchbar-topmenu p-col-fixed">
                         <div className="p-inputgroup">
                             <span className="p-inputgroup-addon">
@@ -146,7 +146,7 @@ class Menu extends Component {
                     </div>
                 </div>
                 <Sidebar visible={this.state.sideBarVisible} position="left" onHide={() => this.setState({sideBarVisible:false})}>
-                    <TieredMenu className="sidebar-menu" model={value.contentSafe.menuItems}/>
+                    <TieredMenu className="sidebar-menu" model={value.contentStore.menuItems}/>
                 </Sidebar>
             </React.Fragment>
         )

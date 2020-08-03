@@ -22,14 +22,18 @@ class UITable extends Base {
     componentDidMount() {
 
         if(!this.state.Data){
-            this.getData()
+            this.context.serverComm.fetchDataFromProvider(this.props.data.dataProvider)
         }
+
+        this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(fetchData => {
+            if(fetchData.dataProvider === this.props.data.dataProvider){
+                this.buildData(fetchData);
+            }
+        })
     }
 
-    getData(){
-        this.context.serverComm.fetchDataFromProvider(this.props.data.dataProvider)
-        .then(res => res.json())
-        .then(jres => this.buildData(jres))
+    componentWillUnmount() {
+        this.fetchSub.unsubscribe();
     }
 
     buildColumns(labels, names){
@@ -44,10 +48,10 @@ class UITable extends Base {
 
     buildData(data){
         let tempArray = []
-        data[0].records.forEach(set => {
+        data.records.forEach(set => {
             let tableData = {}
-            for (let index = 0; index <= data[0].columnNames.length; index++){
-                tableData[data[0].columnNames[index]] = set[index]
+            for (let index = 0; index <= data.columnNames.length; index++){
+                tableData[data.columnNames[index]] = set[index]
             }
             tempArray.push(tableData);
         });
@@ -56,7 +60,7 @@ class UITable extends Base {
 
     onSelectChange(event){
         let value = event.value
-        this.context.contentSafe.changeSelectedRowOfTable(this.props.id, value)
+        this.context.contentStore.emitChangeOfSelectedRow(value)
     }
 
     render() {

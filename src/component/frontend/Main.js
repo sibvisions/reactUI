@@ -12,7 +12,7 @@ class Main extends Component {
     state = { flip : false}
 
     componentDidMount() {
-        let windowData = this.context.contentSafe.getWindow(this.props.match.params.compId);
+        let windowData = this.context.contentStore.getWindow(this.props.match.params.compId);
         if(this.context.menuLocation === "side") {
             stretch('content-sidemenu');
         }

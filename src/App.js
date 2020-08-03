@@ -10,15 +10,16 @@ import './App.css'
 //Component Imports
 import Login from './component/frontend/Login';
 import Main from './component/frontend/Main';
+import Menu from './component/frontend/Menu';
+import Settings from './component/frontend/Settings';
 import { RefContext } from "./component/helper/Context";
-import ContentSafe from "./handling/ContentSafe";
+
 
 //Handling Imports
 import ServerCommunicator from './handling/ServerCommunicator';
 import UiBuilder from './handling/UiBuilder';
 import ResponseHandler from './handling/ResponseHandler';
-import Menu from './component/frontend/Menu';
-import Settings from './component/frontend/Settings';
+import ContentStore from "./handling/ContentStore";
 
 
 class App extends Component {
@@ -29,10 +30,10 @@ class App extends Component {
         this.uiBuilder = new UiBuilder();
         this.responseHandler = new ResponseHandler();
         this.serverComm = new ServerCommunicator();
-        this.contentSafe = new ContentSafe();
+        this.contentStore = new ContentStore();
 
         this.responseHandler.setServerCommunicator(this.serverComm);
-        this.responseHandler.setContentSafe(this.contentSafe);
+        this.responseHandler.setContentStore(this.contentStore);
         this.responseHandler.setMainScreen(this);
 
         this.serverComm.setResponseHandler(this.responseHandler);
@@ -45,7 +46,7 @@ class App extends Component {
         this.state={
             serverComm: this.serverComm,
             uiBuilder: this.uiBuilder,
-            contentSafe: this.contentSafe,
+            contentStore: this.contentStore,
             menuLocation: 'top',
             theme: "dark",
             changeMenuPositon: this.changeMenuPositon.bind(this),
