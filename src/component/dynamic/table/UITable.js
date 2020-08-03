@@ -2,10 +2,10 @@ import React from 'react';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import { Size } from '../helper/Size';
+import { Size } from '../../helper/Size';
 import './UITable.scss'
-import { RefContext } from '../helper/Context';
-import Base from './Base';
+import { RefContext } from '../../helper/Context';
+import Base from '../Base';
 
 
 class UITable extends Base {

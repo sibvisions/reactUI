@@ -8,10 +8,11 @@ import {Growl} from 'primereact/growl';
 import './App.css'
 
 //Component Imports
-import Login from './component/frontend/Login';
-import Main from './component/frontend/Main';
-import Menu from './component/frontend/Menu';
-import Settings from './component/frontend/Settings';
+import Login from './component/frontend/login/Login';
+import Main from './component/frontend/main/Main';
+import Menu from './component/frontend/menu/Menu';
+import Footer from "./component/frontend/footer/Footer";
+import Settings from './component/frontend/settings/Settings';
 import { RefContext } from "./component/helper/Context";
 
 
@@ -107,6 +108,7 @@ class App extends Component {
                         <Route path="/main" component={() => <Main/>} />
                         <Redirect from="*" to="/login" />
                     </Switch>
+                    <Route path="/main**" component={() => <Footer menuLocation={this.state.menuLocation}/>} />
                 </RefContext.Provider>
             </main>
         );

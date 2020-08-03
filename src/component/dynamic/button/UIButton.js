@@ -1,7 +1,7 @@
 import React from 'react';
-import Base from './Base';
+import Base from '../Base';
 import { Button } from "primereact/button";
-import { RefContext } from '../helper/Context';
+import { RefContext } from '../../helper/Context';
 
 class UIButton extends Base {
 

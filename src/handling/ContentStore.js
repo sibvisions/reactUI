@@ -18,13 +18,6 @@ class ContentStore{
     }
 
     emitFetchSuccess(fetchResponse){
-        if(this.storedData.get(fetchResponse.dataProvider)){
-            let localDataSet = this.storedData.get(fetchResponse.dataProvider);
-            let promiseSet = localDataSet.records.map(async value => {
-                console.log(value);        
-            })
-            Promise.all(promiseSet);
-        }
         this.storedData.set(fetchResponse.dataProvider, fetchResponse)
         this.fetchCompleted.next(fetchResponse);
     }

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { RefContext } from '../helper/Context';
+import { RefContext } from '../../helper/Context';
 import { withRouter } from 'react-router-dom';
-import { stretch } from "./Stretch"; 
-import FooterComponent from "./Footer"
+import { stretch } from "../Stretch"; 
 
 import "./Main.scss";
 
@@ -31,7 +30,6 @@ class Main extends Component {
                         {this.state.content}
                     </div>
                 </div>
-                <FooterComponent menuLocation={this.context.menuLocation} />
             </React.Fragment>
             
         );

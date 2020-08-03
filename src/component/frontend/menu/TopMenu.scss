@@ -1,6 +1,6 @@
-@import 'theme-dark';
-@import 'theme-light';
-@import 'theme-blue';
+@import '../themes/theme-dark';
+@import '../themes/theme-light';
+@import '../themes/theme-blue';
 $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
 
 @mixin themable($theme-name, $theme-map) {

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { Anchor } from "./layoutObj/Anchor";
 import { Constraints } from "./layoutObj/Constraints";
-import { Size } from '../component/helper/Size';
-import { RefContext } from '../component/helper/Context';
+import { Size } from '../../component/helper/Size';
+import { RefContext } from '../../component/helper/Context';
 
 class FormLayout extends Component {
 

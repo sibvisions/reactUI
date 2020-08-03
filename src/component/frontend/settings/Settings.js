@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import "./Settings.scss"
 import {Card} from 'primereact/card';
 import {InputSwitch} from 'primereact/inputswitch';
-import { stretch } from "./Stretch";
+import { stretch } from "../Stretch";
 import { withRouter } from "react-router-dom";
 import {RadioButton} from 'primereact/radiobutton';
-import { RefContext } from "../helper/Context";
-import FooterComponent from "./Footer"
+import { RefContext } from "../../helper/Context";
 
 import "./Settings.scss";
 
@@ -43,7 +42,6 @@ class SettingsComponent extends Component {
                         </Card>
                     </div>
                 </div>
-                <FooterComponent menuLocation={this.context.menuLocation} />
             </React.Fragment>
         )
     }

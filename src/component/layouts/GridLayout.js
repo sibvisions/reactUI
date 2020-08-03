@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Size } from '../component/helper/Size';
+import { Size } from '../../component/helper/Size';
 import { CellConstraints } from './layoutObj/CellConstraints';
 
 class GridLayout extends Component {

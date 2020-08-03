@@ -1,7 +1,7 @@
 /*import themes*/
-@import 'theme-dark';
-@import 'theme-light';
-@import 'theme-blue';
+@import '../themes/theme-dark';
+@import '../themes/theme-light';
+@import '../themes/theme-blue.scss';
 /*Variables*/
 $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
@@ -59,7 +59,7 @@ $shadow: 0px 2px 10px 0px rgba(0,0,0,0.42);
 
 /*custom avatar icon for profile*/
 .avatar-icon::before{
-    background-image: url("../../../public/assets/avatar.jfif");
+    background-image: url("../../../../public/assets/avatar.jfif");
     background-size: 30px 30px;
     display: inline-block;
     width: 30px !important;

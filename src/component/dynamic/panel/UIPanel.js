@@ -1,5 +1,5 @@
 import React from 'react';
-import Base from './Base';
+import Base from '../Base';
 import './UIPanel.scss'
 import FormLayout from '../../layouts/FormLayout'
 import BorderLayout from '../../layouts/BorderLayout'

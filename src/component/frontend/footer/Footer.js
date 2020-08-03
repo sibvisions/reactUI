@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./Footer.scss"
-import { stretch } from "./Stretch";
+import { stretch } from "../Stretch";
 
 class FooterComponent extends Component {
 
