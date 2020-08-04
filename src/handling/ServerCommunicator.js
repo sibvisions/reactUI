@@ -41,6 +41,7 @@ class ServerCommunicator {
             layoutMode : "generic",
             appMode : "full",
             applicationName : "demo",
+            technology: "react",
             screenWidth: screenWidth,
             screenHeight: screenHeight,
 
