@@ -71,9 +71,7 @@ class UITable extends Base {
                 scrollable={true} 
                 valueable={true}    
                 scrollHeight="100%" 
-                style={{
-                    overflow: "auto"
-                }}
+                style={ this.props.style, { overflow: "auto" }}
                 header="Table"
                 selectionMode="single"
                 onSelectionChange={this.onSelectChange.bind(this)}>

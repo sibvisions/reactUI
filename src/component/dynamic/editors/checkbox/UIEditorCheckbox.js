@@ -10,7 +10,7 @@ class UIEditorCheckbox extends Component {
 
     render() { 
         return ( 
-        <span id={this.props.data.id}>
+        <span id={this.props.data.id} style={this.props.style}>
             <label htmlFor={this.props.data.id} className="p-checkbox-label">{this.props.data.cellEditor.text} : </label>
             <Checkbox inputId={this.props.data.id} onChange={x => this.setState({checked: x.checked})} checked={this.state.checked}/>
         </span> );

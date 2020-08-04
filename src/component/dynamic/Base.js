@@ -61,11 +61,6 @@ class Base extends Component {
                     prefSize.setHeight(maxSize.getHeight());
                 }
             }
-
-            if (comp.props.data.id.substring(0, 1) === 'P') {
-                prefSize.height -= 16;
-                prefSize.width = prefSize.width - 16;
-            }
             return prefSize
         }
     }

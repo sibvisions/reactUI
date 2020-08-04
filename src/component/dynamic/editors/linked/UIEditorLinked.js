@@ -76,9 +76,10 @@ class UIEditorLinked extends Base {
             <AutoComplete
                 id={this.props.data.id}
                 ref= {r => this.autoC = r}
+                style={this.props.style}
                 dropdown={true}
                 completeMethod={this.autoComplete.bind(this)}
-                field={this.data.columnName}    
+                field={this.data.columnName}
                 value={this.state.selectedObject}
                 suggestions={this.state.suggestions}
                 onChange={x => this.setState({selectedObject: x.target.value})}

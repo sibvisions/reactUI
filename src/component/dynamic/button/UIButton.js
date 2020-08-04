@@ -11,7 +11,7 @@ class UIButton extends Base {
                 id={this.props.data.id}
                 label={this.props.data.text}
                 constraints={this.props.data.constraints}
-                style={this.state.style}
+                style={this.props.style}
                 onClick={() => this.context.serverComm.pressButton(this.props.data.name)}
             />
         )

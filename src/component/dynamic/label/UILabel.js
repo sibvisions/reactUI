@@ -4,12 +4,7 @@ import Base from '../Base';
 class UILabel extends Base {
     render() { 
         return ( 
-           <span 
-                id={this.props.data.id} 
-                style={this.state.style} 
-            >
-                {this.props.data.text}: 
-            </span> 
+           <span id={this.props.data.id} style={this.props.style}>{this.props.data.text}: </span> 
         );
     }
 }

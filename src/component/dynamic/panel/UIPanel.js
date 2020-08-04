@@ -74,7 +74,7 @@ class UIPanel extends Base {
 
     render() {
         return (
-        <div id={this.props.data.id} className="p-col-12" style={{ height: '100%'}}>
+        <div id={this.props.data.id} className="p-col-12" style={ {height: '100%', ...this.props.style} }>
             {this.insertLayout()}
         </div>
         );

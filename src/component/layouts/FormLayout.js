@@ -100,7 +100,7 @@ class FormLayout extends Component {
     getConstraints() {
         this.components.forEach(component => {
             let constraint = new Constraints(this, component.props.data.constraints, undefined, undefined, undefined, undefined)
-            this.componentConstraints.set(component, constraint);
+            this.componentConstraints.set(component.props.data.id, constraint);
         })
     }
 
@@ -293,7 +293,7 @@ class FormLayout extends Component {
             })
             
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component)
+                let constraint = this.componentConstraints.get(component.props.data.id)
     
                 this.initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
                 this.initAutoSizeRelative(constraint.rightAnchor, constraint.leftAnchor);
@@ -301,35 +301,64 @@ class FormLayout extends Component {
                 this.initAutoSizeRelative(constraint.bottomAnchor, constraint.topAnchor);
             })
     
-            let autoSizeCount = 1
-            do {
+            // let autoSizeCount = 1
+            // do {
+            //     this.components.forEach(component => {
+            //         let constraint = this.componentConstraints.get(component.props.data.id)
+            //         let preferredSize = this.props.getPreferredSize(component)
+            //         this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
+            //         this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
+            //     });
+            //     autoSizeCount = Math.pow(2, 31) - 1
+            //     this.components.forEach(component => {
+            //         let constraint = this.componentConstraints.get(component.props.data.id)
+            //         let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
+            //         if(count > 0 && count < autoSizeCount) {
+            //             autoSizeCount = count;
+            //         }
+            //         count = this.finishAutoSizeCalculation(constraint.rightAnchor, constraint.leftAnchor)
+            //         if(count > 0 && count < autoSizeCount) {
+            //             autoSizeCount = count;
+            //         }
+            //         count = this.finishAutoSizeCalculation(constraint.topAnchor, constraint.bottomAnchor)
+            //         if(count > 0 && count < autoSizeCount) {
+            //             autoSizeCount = count;
+            //         }
+            //         count = this.finishAutoSizeCalculation(constraint.bottomAnchor, constraint.topAnchor)
+            //         if(count > 0 && count < autoSizeCount) {
+            //             autoSizeCount = count;
+            //         }
+            //     })
+            // } while (autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1);
+
+            for (let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1;) {
                 this.components.forEach(component => {
-                    let constraint = this.componentConstraints.get(component)
+                    let constraint = this.componentConstraints.get(component.props.data.id)
                     let preferredSize = this.props.getPreferredSize(component)
                     this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
                     this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
                 });
                 autoSizeCount = Math.pow(2, 31) - 1
                 this.components.forEach(component => {
-                    let constraint = this.componentConstraints.get(component)
+                    let constraint = this.componentConstraints.get(component.props.data.id)
                     let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
-                    if(count > 0 && count < autoSizeCount) {
+                    if (count > 0 && count < autoSizeCount) {
                         autoSizeCount = count;
                     }
                     count = this.finishAutoSizeCalculation(constraint.rightAnchor, constraint.leftAnchor)
-                    if(count > 0 && count < autoSizeCount) {
+                    if (count > 0 && count < autoSizeCount) {
                         autoSizeCount = count;
                     }
                     count = this.finishAutoSizeCalculation(constraint.topAnchor, constraint.bottomAnchor)
-                    if(count > 0 && count < autoSizeCount) {
+                    if (count > 0 && count < autoSizeCount) {
                         autoSizeCount = count;
                     }
                     count = this.finishAutoSizeCalculation(constraint.bottomAnchor, constraint.topAnchor)
-                    if(count > 0 && count < autoSizeCount) {
+                    if (count > 0 && count < autoSizeCount) {
                         autoSizeCount = count;
                     }
                 })
-            } while (autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1);
+            }
     
             this.leftBorderUsed = false;
             this.rightBorderUsed = false;
@@ -342,7 +371,7 @@ class FormLayout extends Component {
             let bottomHeight = 0;
     
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component);
+                let constraint = this.componentConstraints.get(component.props.data.id);
                 let preferredSize = this.props.getPreferredSize(component);
                 let minimumSize = this.props.getMinimumSize(component);
     
@@ -559,7 +588,7 @@ class FormLayout extends Component {
             //INSETS??
 
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component);
+                let constraint = this.componentConstraints.get(component.props.data.id);
                 let preferredSize = this.props.getPreferredSize(component);
 
                 this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth());
@@ -570,11 +599,10 @@ class FormLayout extends Component {
     }
 
     buildComponents(components) {
-        let tempContent = []
+        
+        let tempContent = [];
         components.forEach(component => {
-            let constraint = this.componentConstraints.get(component);
-            let minimumSize = this.props.getMinimumSize(component);
-            let maximumSize = this.props.getMaximumSize(component);
+            let constraint = this.componentConstraints.get(component.props.data.id);
             let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
             if (compHeight > this.preferredHeight) {
                 compHeight = this.preferredHeight;
@@ -583,22 +611,15 @@ class FormLayout extends Component {
             if (compWidth > this.preferredWidth) {
                 compWidth = this.preferredWidth;
             }
-            let formElement = <div
-                                className={"formlayout-component-wrapper"}
-                                style={{
-                                    position: 'absolute',
-                                    height: compHeight,
-                                    width: compWidth,
-                                    left: constraint.leftAnchor.getAbsolutePosition(),
-                                    right: constraint.rightAnchor.getAbsolutePosition(),
-                                    top: constraint.topAnchor.getAbsolutePosition(),
-                                    bottom: constraint.bottomAnchor.getAbsolutePosition(),
-                                    minHeight: minimumSize.getHeight(),
-                                    minWidth: minimumSize.getWidth(),
-                                    maxHeight: maximumSize.getHeight(),
-                                    //maxWidth: maximumSize.getWidth()
-                                }}>{component}</div>;
-            tempContent.push(formElement)
+            let style = {
+                position: 'absolute',
+                height: compHeight,
+                width: compWidth,
+                left: constraint.leftAnchor.getAbsolutePosition(),
+                top: constraint.topAnchor.getAbsolutePosition(),
+            }
+            let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+            tempContent.push(clonedComponent)
         });
         this.setState({content: tempContent})
     }
@@ -608,21 +629,22 @@ class FormLayout extends Component {
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
         this.buildComponents(this.props.subjects)
-        this.calculateTop()
+        this.finishSizesAndPos()
     }
 
-    calculateTop() {
-        let el = document.getElementById(this.props.component.props.data.id).parentElement
-        if (el.className === "formlayout-component-wrapper") {
-            el.style.height = this.preferredHeight + 'px';
+    finishSizesAndPos() {
+        let el = document.getElementById(this.props.component.props.data.id)
+        console.log(el);
+        console.log(el.children)
+        if (el !== null) {
+            if (el.style.height !== '100%') {
+                el.style.height = this.preferredHeight + 'px';
+                if (el.previousSibling !== null) {
+                    el.style.top = (parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)) + 'px' //ToDo eigenes Top muss auch noch dazugezählt werden!
+                }
+            }
         }
-
-        if (el.previousSibling !== null)
-            if (el.previousSibling.getElementsByClassName("formlayout").length > 0) {
-                let posTop = parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)
-                el.style.top = parseInt(posTop) + 'px'
     }
-}
 
     render() {
         window.onresize = () => {

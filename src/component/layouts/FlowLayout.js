@@ -13,7 +13,6 @@ class FlowLayout extends Component {
 
     componentDidMount() {
         this.wrapSubjects()
-        this.calculateSizes()
     }
 
     wrapSubjects() {
@@ -35,13 +34,6 @@ class FlowLayout extends Component {
         this.setState({content: tempContent})
     }
 
-    calculateSizes() {
-        let size = this.props.getPreferredSize(this.props.component);
-        let preferredWidth = size.getWidth() - this.props.margins.getMarginLeft() - this.props.margins.getMarginRight();
-        let preferredHeight = size.getHeight() - this.props.margins.getMarginTop() - this.props.margins.getMarginLeft();
-        this.setState({preferredWidth: preferredWidth, preferredHeight: preferredHeight})
-    }
-
     render() {
         if (this.props.orientation.getOrientation() === 'horizontal') {
             this.orientation = 'row'
@@ -56,8 +48,7 @@ class FlowLayout extends Component {
                 flexDirection: this.orientation,
                 justifyContent: this.props.alignments.getHAlignment(),
                 alignContent: this.props.alignments.getVAlignment(),
-                height: this.state.preferredHeight,
-                width: this.state.preferredWidth,
+                height: 'calc(100% - ' + (parseInt(this.props.margins.getMarginTop()) + parseInt(this.props.margins.getMarginBottom())) + 'px)' ,
                 marginTop: toPx(this.props.margins.getMarginTop()),
                 marginLeft: toPx(this.props.margins.getMarginLeft()),
                 marginBottom: toPx(this.props.margins.getMarginBottom()),

@@ -8,7 +8,7 @@ class UICheckBox extends Base {
 
     render() { 
         return ( 
-            <Checkbox id={this.props.data.id} checked={true} />
+            <Checkbox id={this.props.data.id} style={this.props.style} checked={true} />
          );
     }
 }
