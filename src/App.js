@@ -42,7 +42,7 @@ class App extends Component {
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
         this.serverComm.startUp(window.innerHeight, window.innerWidth);
-        
+
         this.routeTo("/login");
         this.state={
             serverComm: this.serverComm,
@@ -55,6 +55,8 @@ class App extends Component {
             growl: this.showGrowlMessage.bind(this)
         }
     }
+
+    
 
     showGrowlMessage(messageObj){
         this.growl.show(messageObj)

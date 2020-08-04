@@ -37,14 +37,24 @@ class ServerCommunicator {
     //---Automatic Requests------
 
     startUp(screenHeight=600, screenWidth=800){
+        const browserInfo = this.getBrowser()
+
         let info = {
             layoutMode : "generic",
             appMode : "full",
             applicationName : "demo",
             technology: "react",
+
+            osName: browserInfo.name,
+            osVersion: browserInfo.version,
+
             screenWidth: screenWidth,
             screenHeight: screenHeight,
 
+            deviceType: "Browser",
+            deviceTypeModel: navigator.userAgent,
+
+            readAheadLimit: 100
         }; this.sendRequest("/api/startup", info);
     }
 
@@ -120,6 +130,31 @@ class ServerCommunicator {
             credentials:"include"
         }
         return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/filter", reqOpt), timeout)
+    }
+
+    // helper
+
+    getBrowser(){
+        const userAgent = navigator.userAgent;
+        let match;
+
+        match = userAgent.match("(Safari)/([^ ]*)");
+        if(match){
+            return {name: "Safari", version: match[2]}
+        }
+        match = userAgent.match("(Edg)/([^ ]*)");
+        if(match){
+            return {name: "Edge", version: match[2]};
+        }
+        match = userAgent.match("(Chrome)/([^ ]*)");
+        if(match){
+            return {name: "Chrome", version: match[2]};
+        }
+        match = userAgent.match("(Firefox)/([^ ]*)");
+        if(match){
+            return {name: "Firefox", version: match[2]};
+        }
+        return {name: "unknown", Version: "unknown" }
     }
 }
  
