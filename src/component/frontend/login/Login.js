@@ -27,7 +27,6 @@ class Login extends Component {
         this.setState({password: event.target.value})
     }
 
-
     render() { 
         return (
             <div className="background">
@@ -37,11 +36,11 @@ class Login extends Component {
                     </div>
                     <form onSubmit={this.submitLogin.bind(this)}>
                         <span className="p-float-label">
-                            <InputText id="username" value={this.state.username} onChange={this.handleUsernameChange.bind(this)} />    
+                            <InputText autoComplete="username" id="username" value={this.state.username} onChange={this.handleUsernameChange.bind(this)} />    
                             <label htmlFor="username">Benutzername: </label>
                         </span>
                         <span className="p-float-label">
-                            <InputText id="password" type="password" value={this.state.password} onChange={this.hanldePasswordChange.bind(this)} style={{margin: 0}}/>
+                            <InputText autoComplete="current-password" id="password" type="password" value={this.state.password} onChange={this.hanldePasswordChange.bind(this)} style={{margin: 0}}/>
                             <label htmlFor="password">Passwort: </label>
                         </span>
                         <Button className="p-button-raised" value="submit" label="ANMELDEN"/>
