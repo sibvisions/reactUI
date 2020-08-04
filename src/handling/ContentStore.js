@@ -1,4 +1,4 @@
-import { Subject, async } from "rxjs";
+import { Subject } from "rxjs";
 
 class ContentStore{
 
