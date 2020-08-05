@@ -3,12 +3,10 @@ import { InputText } from "primereact/inputtext";
 import Base from '../../Base';
 
 class UIEditorDisabled extends Base {
-
-
-    render() { 
+    render() {
         return ( 
             <InputText
-                disabled="true"
+                disabled={true}
                 id={this.props.data.id}
                 contentEditable="false"
                 style={{...this.props.style, backgroundColor:this.props.data.background}}
@@ -16,5 +14,4 @@ class UIEditorDisabled extends Base {
         );
     }
 }
- 
 export default UIEditorDisabled;
