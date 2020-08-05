@@ -33,7 +33,7 @@ class UISplitPanel extends Base {
     render() {
         return (
             <Split className= "splitHolder"
-            sizes={[50, 50]}
+            sizes={[30, 70]}
             minSize={0}
             gutterSize={30}
             gutterAlign="center"

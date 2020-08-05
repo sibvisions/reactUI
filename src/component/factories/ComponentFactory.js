@@ -10,6 +10,7 @@ import UIEditorText from '../dynamic/editors/text/UIEditorText';
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
 import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
+import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 
 
 export function createButton(buttonData){
@@ -32,6 +33,10 @@ export function createEditor(editorData) {
     const props= {
         data: editorData,
         key: editorData.id
+    }
+
+    if(!editorData.cellEditor){
+        return <UIEditorDisabled {...props} />
     }
 
     if(editorData.cellEditor.className === "CheckBoxCellEditor"){
