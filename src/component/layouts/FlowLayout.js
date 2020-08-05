@@ -5,31 +5,30 @@ class FlowLayout extends Component {
 
     state = {
         content: [this.props.subjects],
-        preferredWidth: 0,
-        preferredHeight: 0
-    }
+    };
     orientation;
+    components = this.props.subjects;
     
 
     componentDidMount() {
-        this.wrapSubjects()
+        this.buildComponents()
     }
 
-    wrapSubjects() {
+    buildComponents() {
         let tempContent = [];
-        this.props.subjects.forEach(subject => {
-            let preferredSize = this.props.getPreferredSize(subject)
-            var flowElement =   <div style={{
-                                    height: preferredSize.getHeight(),
-                                    width: preferredSize.getWidth(),
-                                    alignSelf: this.props.alignments.getCAlignment(),
-                                    marginTop: toPx(this.props.gaps.getVerticalGap()/2),
-                                    marginLeft: toPx(this.props.gaps.getHorizontalGap()/2),
-                                    marginBottom: toPx(this.props.gaps.getVerticalGap()/2),
-                                    marginRight: toPx(this.props.gaps.getHorizontalGap()/2)}}>
-                                        {subject}
-                                </div>
-            tempContent.push(flowElement)
+        this.components.forEach(component => {
+            let preferredSize = this.props.getPreferredSize(component)
+            let style={
+                    height: preferredSize.getHeight(),
+                    width: preferredSize.getWidth(),
+                    alignSelf: this.props.alignments.getCAlignment(),
+                    marginTop: this.props.gaps.getVerticalGap()/2,
+                    marginLeft: this.props.gaps.getHorizontalGap()/2,
+                    marginBottom: this.props.gaps.getVerticalGap()/2,
+                    marginRight: this.props.gaps.getHorizontalGap()/2
+                }
+            let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+            tempContent.push(clonedComponent)
         })
         this.setState({content: tempContent})
     }
@@ -48,11 +47,12 @@ class FlowLayout extends Component {
                 flexDirection: this.orientation,
                 justifyContent: this.props.alignments.getHAlignment(),
                 alignContent: this.props.alignments.getVAlignment(),
-                height: 'calc(100% - ' + (parseInt(this.props.margins.getMarginTop()) + parseInt(this.props.margins.getMarginBottom())) + 'px)' ,
-                marginTop: toPx(this.props.margins.getMarginTop()),
-                marginLeft: toPx(this.props.margins.getMarginLeft()),
-                marginBottom: toPx(this.props.margins.getMarginBottom()),
-                marginRight: toPx(this.props.margins.getMarginRight()),
+                height: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginTop()) + parseInt(this.props.margins.getMarginBottom()))) + ')',
+                width: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginLeft()) + parseInt(this.props.margins.getMarginRight()))) + ')',
+                marginTop: this.props.margins.getMarginTop(),
+                marginLeft: this.props.margins.getMarginLeft(),
+                marginBottom: this.props.margins.getMarginBottom(),
+                marginRight: this.props.margins.getMarginRight(),
                 }}>
                     {this.state.content}
             </div>

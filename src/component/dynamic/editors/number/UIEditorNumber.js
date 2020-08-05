@@ -16,7 +16,6 @@ class UIEditorNumber extends Base {
     }
 
     setContent(content){
-        console.log(this)
         if(content[this.props.data.columnName]){
             this.setState({selection: content[this.props.data.columnName]});
         }

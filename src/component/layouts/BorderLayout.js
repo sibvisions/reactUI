@@ -9,6 +9,8 @@ class BorderLayout extends Component {
     elemEast;
     elemSouth;
 
+    components = this.props.subjects;
+
     // state = {
     //     preferredWidth: 0,
     //     preferredHeight: 0
@@ -19,23 +21,23 @@ class BorderLayout extends Component {
     // }
 
     addLayoutComponents() {
-        this.props.subjects.forEach(subject => {
-            if (subject.props.data.constraints) {
-                switch(subject.props.data.constraints) {
+        this.components.forEach(component => {
+            if (component.props.data.constraints) {
+                switch(component.props.data.constraints) {
                     case 'North':
-                        this.elemNorth = subject;
+                        this.elemNorth = component;
                         break;
                     case 'West':
-                        this.elemWest = subject;
+                        this.elemWest = component;
                         break;
                     case 'Center':
-                        this.elemCenter = subject;
+                        this.elemCenter = component;
                         break;
                     case 'East':
-                        this.elemEast = subject;
+                        this.elemEast = component;
                         break;
                     case 'South':
-                        this.elemSouth = subject;
+                        this.elemSouth = component;
                         break;
                     default: return null
                 }
@@ -57,26 +59,47 @@ class BorderLayout extends Component {
         // }
         this.addLayoutComponents()
         return (
-        <div className="p-grid p-nogutter borderlayout" style={{height: '100%', "flexFlow":"column", width: "100%", padding: '0', 
-                                                                marginTop: toPx(this.props.margins.getMarginTop()), marginLeft: toPx(this.props.margins.getMarginLeft()),
-                                                                marginBottom: toPx(this.props.margins.getMarginBottom()), marginRight: toPx(this.props.margins.getMarginRight())}}>
+        <div className="p-grid p-nogutter borderlayout" style={{
+                                                            height: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginTop()) + parseInt(this.props.margins.getMarginBottom()))) + ')',
+                                                            width: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginLeft()) + parseInt(this.props.margins.getMarginRight()))) + ')', 
+                                                            flexFlow: "column", 
+                                                            padding: '0', 
+                                                            marginTop: this.props.margins.getMarginTop(), 
+                                                            marginLeft: this.props.margins.getMarginLeft(),
+                                                            marginBottom: this.props.margins.getMarginBottom(), 
+                                                            marginRight: this.props.margins.getMarginRight()}}>
             <div className="p-col-12 north" style={{textAlign:"center",
                                                     padding: '0',
-                                                    marginBottom: toPx(this.props.gaps.getVerticalGap())}}>
+                                                    marginBottom: this.props.gaps.getVerticalGap()}}>
                 {this.elemNorth}
             </div>
             <div className="p-grid p-nogutter p-align-center" style={{height:"100%"}}>
-                <span className="p-col-fixed west" style={{textAlign:"center", width:"auto", padding: '0', marginRight: toPx(this.props.gaps.getHorizontalGap())}}>
+                <span className="p-col-fixed west" style={{
+                                                        textAlign:"center", 
+                                                        width:"auto", 
+                                                        padding: '0', 
+                                                        marginRight: this.props.gaps.getHorizontalGap()}}>
                     {this.elemWest}
                 </span>
-                <span className="p-col center" style={{textAlign:"center", height:"100%", padding: '0', width:"100%"}}>
+                <span className="p-col center" style={{
+                                                    textAlign:"center", 
+                                                    height:"100%", 
+                                                    padding: '0', 
+                                                    width:"100%"}}>
                     {this.elemCenter}
                 </span>
-                <span className="p-col-fixed east" style={{textAlign:"center", width:"auto", padding: '0', marginLeft: toPx(this.props.gaps.getHorizontalGap())}}>
+                <span className="p-col-fixed east" style={{
+                                                        textAlign:"center", 
+                                                        width:"auto", 
+                                                        padding: '0', 
+                                                        marginLeft: this.props.gaps.getHorizontalGap()}}>
                     {this.elemEast}
                 </span>
             </div>
-            <div className="p-col-12 south" style={{textAlign:"center", padding: '0', marginTop: toPx(this.props.gaps.getVerticalGap())}}>
+            <div className="p-col-12 south" style={{
+                                                textAlign:"center", 
+                                                padding: '0', 
+                                                marginTop: this.props.gaps.getVerticalGap()}}>
                 {this.elemSouth}
             </div>
         </div>);

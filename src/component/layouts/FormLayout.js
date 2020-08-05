@@ -3,6 +3,7 @@ import { Anchor } from "./layoutObj/Anchor";
 import { Constraints } from "./layoutObj/Constraints";
 import { Size } from '../../component/helper/Size';
 import { RefContext } from '../../component/helper/Context';
+import { toPx } from '../helper/ToPx';
 
 class FormLayout extends Component {
 
@@ -34,7 +35,10 @@ class FormLayout extends Component {
     minimumWidth;
     minimumHeight;
 
+    prevTop;
+
     valid = false;
+    firstPosCalc = false;
     vCalculateTargetDependentAnchors = false;
 
     state = {
@@ -483,14 +487,13 @@ class FormLayout extends Component {
                 }
             }
     
-            //INSETS??
-            // let margins = this.props.margins;
+            let margins = this.props.margins;
     
-            // this.preferredWidth += margins.getMarginLeft() + margins.getMarginRight();
-            // this.preferredHeight += margins.getMarginTop() + margins.getMarginBottom();
+            this.preferredWidth -= margins.getMarginLeft() + margins.getMarginRight();
+            this.preferredHeight -= margins.getMarginTop() + margins.getMarginBottom();
     
-            // this.minimumWidth += margins.getMarginLeft() + margins.getMarginRight();
-            // this.minimumHeight += margins.getMarginTop() + margins.getMarginBottom();
+            this.minimumWidth -= margins.getMarginLeft() + margins.getMarginRight();
+            this.minimumHeight -= margins.getMarginTop() + margins.getMarginBottom();
     
             this.vCalculateTargetDependentAnchors = true;
             this.valid = true;
@@ -585,7 +588,11 @@ class FormLayout extends Component {
                 }
                 this.bottomBorderAnchor.position = this.topBorderAnchor.position + this.preferredHeight;
             }
-            //INSETS??
+            
+            this.leftBorderAnchor.position -= this.props.margins.getMarginLeft();
+            this.rightBorderAnchor.position -= this.props.margins.getMarginLeft();
+            this.topBorderAnchor.position -= this.props.margins.getMarginTop();
+            this.bottomBorderAnchor.position -= this.props.margins.getMarginTop();
 
             this.components.forEach(component => {
                 let constraint = this.componentConstraints.get(component.props.data.id);
@@ -602,6 +609,7 @@ class FormLayout extends Component {
         
         let tempContent = [];
         components.forEach(component => {
+            console.log(component)
             let constraint = this.componentConstraints.get(component.props.data.id);
             let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
             if (compHeight > this.preferredHeight) {
@@ -612,14 +620,14 @@ class FormLayout extends Component {
                 compWidth = this.preferredWidth;
             }
             let style = {
-                position: 'absolute',
-                height: compHeight,
-                width: compWidth,
-                left: constraint.leftAnchor.getAbsolutePosition(),
-                top: constraint.topAnchor.getAbsolutePosition(),
-            }
+                    position: 'absolute',
+                    height: compHeight,
+                    width: compWidth,
+                    left: constraint.leftAnchor.getAbsolutePosition(),
+                    top: constraint.topAnchor.getAbsolutePosition()
+                }
             let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
-            tempContent.push(clonedComponent)
+            tempContent.push(clonedComponent);          
         });
         this.setState({content: tempContent})
     }
@@ -628,19 +636,21 @@ class FormLayout extends Component {
         this.valid = false;
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
-        this.buildComponents(this.props.subjects)
+        this.buildComponents(this.components)
         this.finishSizesAndPos()
     }
 
     finishSizesAndPos() {
         let el = document.getElementById(this.props.component.props.data.id)
-        console.log(el);
-        console.log(el.children)
         if (el !== null) {
+            if (!this.firstPosCalc) {
+                this.prevTop = el.style.top
+                this.firstPosCalc = true;
+            }
             if (el.style.height !== '100%') {
-                el.style.height = this.preferredHeight + 'px';
+                el.style.height = toPx((this.preferredHeight + this.props.margins.getMarginTop() + this.props.margins.getMarginBottom()));
                 if (el.previousSibling !== null) {
-                    el.style.top = (parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)) + 'px' //ToDo eigenes Top muss auch noch dazugezählt werden!
+                    el.style.top = toPx((parseInt(this.prevTop) + parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)))
                 }
             }
         }
@@ -654,7 +664,11 @@ class FormLayout extends Component {
             <div className={"formlayout " + this.props.component.props.data.id} style={{
                                         position: 'relative',
                                         width: this.preferredWidth, 
-                                        height: this.preferredHeight
+                                        height: this.preferredHeight,
+                                        marginTop: this.props.margins.getMarginTop(),
+                                        marginLeft: this.props.margins.getMarginLeft(),
+                                        marginBottom: this.props.margins.getMarginBottom(),
+                                        marginRight: this.props.margins.getMarginRight()
                                         }}>{this.state.content}</div>
         )
     }

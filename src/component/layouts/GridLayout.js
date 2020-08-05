@@ -14,29 +14,31 @@ class GridLayout extends Component {
     }
 
     fieldSize(columns, rows){
-        let divSize = new Size(document.getElementsByClassName("gridlayout")[0].clientWidth, document.getElementsByClassName("gridlayout")[0].clientHeight, undefined);
-        let fieldSize = new Size(divSize.getWidth()/columns, divSize.getHeight()/rows);
+        let size = this.props.getPreferredSize(this.props.component);
+        let margins = this.props.margins
+        size.width -= margins.getMarginLeft() + margins.getMarginRight();
+        size.height -= margins.getMarginTop() + margins.getMarginBottom();
+        let fieldSize = new Size(size.getWidth()/columns, size.getHeight()/rows);
         return fieldSize;
     }
 
     calculateSizes(fieldSize, components) {
         let tempContent = [];
         components.forEach(component => {
-            let componentConstraints = new CellConstraints(component.props.constraints)
+            let componentConstraints = new CellConstraints(component.props.data.constraints)
             let calculatedWidth = componentConstraints.gridWidth * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap()/componentConstraints.gridWidth - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()))
             let calculatedLeft = componentConstraints.gridX * (fieldSize.getWidth() - (this.props.gaps.getHorizontalGap() - this.props.gaps.getHorizontalGap()/this.props.gridSize.getColumns()) + this.props.gaps.getHorizontalGap())
             let calculatedHeight = componentConstraints.gridHeight * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap()/componentConstraints.gridHeight - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()))
             let calculatedTop =  componentConstraints.gridY * (fieldSize.getHeight() - (this.props.gaps.getVerticalGap() - this.props.gaps.getVerticalGap()/this.props.gridSize.getRows()) + this.props.gaps.getVerticalGap())
-            let gridElement =   <div style={{
-                                    position: "absolute",
-                                    height:  calculatedHeight,
-                                    width:  calculatedWidth,
-                                    top: calculatedTop,
-                                    left: calculatedLeft}}>
-                                    {component}
-                                </div>
-                        
-            tempContent.push(gridElement);
+            let style = {
+                    position: "absolute",
+                    height:  calculatedHeight,
+                    width:  calculatedWidth,
+                    top: calculatedTop,
+                    left: calculatedLeft
+                }
+            let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+            tempContent.push(clonedComponent);
         });
         this.setState({content: tempContent})
     }
@@ -46,7 +48,7 @@ class GridLayout extends Component {
             this.calculateSizes(this.fieldSize(this.props.gridSize.getColumns(), this.props.gridSize.getRows()), this.props.subjects)
         }
         return (
-            <div className="gridlayout" style={{position: "relative", height: '100%'}}>
+            <div className="gridlayout" style={{position: "relative", height: this.props.getPreferredSize(this.props.component)}}>
                 {this.state.content}
             </div>
         )
