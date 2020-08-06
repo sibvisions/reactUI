@@ -19,13 +19,13 @@ class FlowLayout extends Component {
         this.components.forEach(component => {
             let preferredSize = this.props.getPreferredSize(component)
             let style={
-                    height: preferredSize.getHeight(),
-                    width: preferredSize.getWidth(),
-                    alignSelf: this.props.alignments.getCAlignment(),
-                    marginTop: this.props.gaps.getVerticalGap()/2,
-                    marginLeft: this.props.gaps.getHorizontalGap()/2,
-                    marginBottom: this.props.gaps.getVerticalGap()/2,
-                    marginRight: this.props.gaps.getHorizontalGap()/2
+                    height: preferredSize.height,
+                    width: preferredSize.width,
+                    alignSelf: this.props.alignments.cAlignment,
+                    marginTop: this.props.gaps.verticalGap / 2,
+                    marginLeft: this.props.gaps.horizontalGap / 2,
+                    marginBottom: this.props.gaps.verticalGap / 2,
+                    marginRight: this.props.gaps.horizontalGap / 2
                 }
             let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
             tempContent.push(clonedComponent)
@@ -34,7 +34,7 @@ class FlowLayout extends Component {
     }
 
     render() {
-        if (this.props.orientation.getOrientation() === 'horizontal') {
+        if (this.props.orientation.orientation === 'horizontal') {
             this.orientation = 'row'
         } 
         else {
@@ -45,14 +45,14 @@ class FlowLayout extends Component {
                 display: 'flex',
                 flexWrap: 'wrap',
                 flexDirection: this.orientation,
-                justifyContent: this.props.alignments.getHAlignment(),
-                alignContent: this.props.alignments.getVAlignment(),
-                height: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginTop()) + parseInt(this.props.margins.getMarginBottom()))) + ')',
-                width: 'calc(100% - ' + toPx((parseInt(this.props.margins.getMarginLeft()) + parseInt(this.props.margins.getMarginRight()))) + ')',
-                marginTop: this.props.margins.getMarginTop(),
-                marginLeft: this.props.margins.getMarginLeft(),
-                marginBottom: this.props.margins.getMarginBottom(),
-                marginRight: this.props.margins.getMarginRight(),
+                justifyContent: this.props.alignments.hAlignment,
+                alignContent: this.props.alignments.vAlignment,
+                height: 'calc(100% - ' + toPx((parseInt(this.props.margins.marginTop) + parseInt(this.props.margins.marginBottom))) + ')',
+                width: 'calc(100% - ' + toPx((parseInt(this.props.margins.marginLeft) + parseInt(this.props.margins.marginRight))) + ')',
+                marginTop: this.props.margins.marginTop,
+                marginLeft: this.props.margins.marginLeft,
+                marginBottom: this.props.margins.marginBottom,
+                marginRight: this.props.margins.marginRight,
                 }}>
                     {this.state.content}
             </div>

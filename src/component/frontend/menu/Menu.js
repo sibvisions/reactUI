@@ -24,6 +24,10 @@ class Menu extends Component {
         this.replaceSubIcon('down');
     }
 
+    componentWillUnmount() {
+        window.onresize = null;
+    }
+
     replaceSubIcon(direction) {
         var elems = document.getElementsByClassName("pi-caret-" + direction);
         while (elems.length > 0) {

@@ -7,6 +7,7 @@ import { toPx } from '../helper/ToPx';
 
 class FormLayout extends Component {
 
+    currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.data.id);
     anchors = new Map();
     componentConstraints = new Map();
 
@@ -62,6 +63,10 @@ class FormLayout extends Component {
         }
     }
 
+    componentWillUnmount() {
+        window.onresize = null;
+    }
+
     getAnchorsAndConstraints() {
         this.anchors.set("t", this.topBorderAnchor);
         this.anchors.set("l", this.leftBorderAnchor);
@@ -71,8 +76,8 @@ class FormLayout extends Component {
         this.anchors.set("lm", this.leftMarginAnchor);
         this.anchors.set("bm", this.bottomMarginAnchor);
         this.anchors.set("rm", this.rightMarginAnchor);
-
-        var splittedAnchors = this.props.layoutData.split(';');
+ 
+        var splittedAnchors = this.currentPanelData.layoutData.split(';');
         splittedAnchors.forEach(anchorData => {
             this.getAnchor(anchorData)
         })
@@ -102,9 +107,9 @@ class FormLayout extends Component {
     }
 
     getConstraints() {
-        this.components.forEach(component => {
-            let constraint = new Constraints(this, component.props.data.constraints, undefined, undefined, undefined, undefined)
-            this.componentConstraints.set(component.props.data.id, constraint);
+        this.currentPanelData.subjects.forEach(component => {
+            let constraint = new Constraints(this, component.constraints, undefined, undefined, undefined, undefined)
+            this.componentConstraints.set(component.id, constraint);
         })
     }
 
@@ -298,7 +303,6 @@ class FormLayout extends Component {
             
             this.components.forEach(component => {
                 let constraint = this.componentConstraints.get(component.props.data.id)
-    
                 this.initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
                 this.initAutoSizeRelative(constraint.rightAnchor, constraint.leftAnchor);
                 this.initAutoSizeRelative(constraint.topAnchor, constraint.bottomAnchor);
@@ -339,8 +343,8 @@ class FormLayout extends Component {
                 this.components.forEach(component => {
                     let constraint = this.componentConstraints.get(component.props.data.id)
                     let preferredSize = this.props.getPreferredSize(component)
-                    this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
-                    this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
+                    this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
+                    this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
                 });
                 autoSizeCount = Math.pow(2, 31) - 1
                 this.components.forEach(component => {
@@ -408,11 +412,11 @@ class FormLayout extends Component {
                     this.bottomBorderUsed = true
                 }
                 if (constraint.leftAnchor.getBorderAnchor() === this.leftBorderAnchor && constraint.rightAnchor.getBorderAnchor() === this.rightBorderAnchor) {
-                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.getWidth();
+                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
                     if (w > this.preferredWidth) {
                         this.preferredWidth = w;
                     }
-                    w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + minimumSize.getWidth();
+                    w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + minimumSize.width;
                     if (w > this.minimumWidth) {
                         this.minimumWidth = w;
                     }
@@ -420,11 +424,11 @@ class FormLayout extends Component {
                     this.rightBorderUsed = true;
                 }
                 if (constraint.topAnchor.getBorderAnchor() === this.topBorderAnchor && constraint.bottomAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
-                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.getHeight();
+                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
                     if (h > this.preferredHeight) {
                         this.preferredHeight = h;
                     }
-                    h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + minimumSize.getHeight();
+                    h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + minimumSize.height;
                     if (h > this.minimumHeight) {
                         this.minimumHeight = h;
                     }
@@ -433,7 +437,7 @@ class FormLayout extends Component {
                 }
             });
             if (leftWidth !== 0 && rightWidth !== 0) {
-                let w = leftWidth + rightWidth + this.props.gaps.getHorizontalGap();
+                let w = leftWidth + rightWidth + this.props.gaps.horizontalGap;
                 if (w > this.preferredWidth) {
                     this.preferredWidth = w;
                 }
@@ -460,7 +464,7 @@ class FormLayout extends Component {
                 }
             }
             if (topHeight !== 0 && bottomHeight !== 0) {
-                let h = topHeight + bottomHeight + this.props.gaps.getVerticalGap();
+                let h = topHeight + bottomHeight + this.props.gaps.verticalGap;
                 if (h > this.preferredHeight) {
                     this.preferredHeight = h;
                 }
@@ -489,11 +493,11 @@ class FormLayout extends Component {
     
             let margins = this.props.margins;
     
-            this.preferredWidth -= margins.getMarginLeft() + margins.getMarginRight();
-            this.preferredHeight -= margins.getMarginTop() + margins.getMarginBottom();
+            this.preferredWidth -= margins.marginLeft + margins.marginRight;
+            this.preferredHeight -= margins.marginTop + margins.marginBottom;
     
-            this.minimumWidth -= margins.getMarginLeft() + margins.getMarginRight();
-            this.minimumHeight -= margins.getMarginTop() + margins.getMarginBottom();
+            this.minimumWidth -= margins.marginLeft + margins.marginRight;
+            this.minimumHeight -= margins.marginTop + margins.marginBottom;
     
             this.vCalculateTargetDependentAnchors = true;
             this.valid = true;
@@ -507,30 +511,30 @@ class FormLayout extends Component {
             let maxSize = this.maximumLayoutSize();
 
             if (this.horizontalAlignment === 'stretch' || (this.leftBorderUsed && this.rightBorderUsed)) {
-                if (minSize.getWidth() > size.getWidth()) {
+                if (minSize.width > size.width) {
                     this.leftBorderAnchor.position = 0;
-                    this.rightBorderAnchor.position = minSize.getWidth();
+                    this.rightBorderAnchor.position = minSize.width;
                 }
-                else if (maxSize.getWidth() < size.getWidth()) {
+                else if (maxSize.width < size.width) {
                     switch (this.horizontalAlignment) {
                         case 'left':
                             this.leftBorderAnchor.position = 0;
                             break;
                         case 'right':
-                            this.leftBorderAnchor.position = size.getWidth() - maxSize.getWidth();
+                            this.leftBorderAnchor.position = size.width - maxSize.width;
                             break;
                         default:
-                            this.leftBorderAnchor.position = (size.getWidth() - maxSize.getWidth()) / 2;
+                            this.leftBorderAnchor.position = (size.width - maxSize.width) / 2;
                     }
-                    this.rightBorderAnchor.position = this.leftBorderAnchor + maxSize.getWidth();
+                    this.rightBorderAnchor.position = this.leftBorderAnchor + maxSize.width;
                 }
                 else {
                     this.leftBorderAnchor.position = 0;
-                    this.rightBorderAnchor.position = size.getWidth();
+                    this.rightBorderAnchor.position = size.width;
                 }
             }
             else {
-                if (this.preferredWidth > size.getWidth()) {
+                if (this.preferredWidth > size.width) {
                     this.leftBorderAnchor.position = 0;
                 }
                 else {
@@ -539,39 +543,39 @@ class FormLayout extends Component {
                             this.leftBorderAnchor.position = 0;
                             break;
                         case 'right':
-                            this.leftBorderAnchor.position = size.getWidth() - this.preferredWidth;
+                            this.leftBorderAnchor.position = size.width - this.preferredWidth;
                             break;
                         default:
-                            this.leftBorderAnchor.position = (size.getWidth() - this.preferredWidth) / 2;
+                            this.leftBorderAnchor.position = (size.width - this.preferredWidth) / 2;
                     }
                 }
                 this.rightBorderAnchor.position = this.leftBorderAnchor + this.preferredWidth
             }
             if (this.verticalAlignment === 'stretch' || (this.topBorderUsed && this.bottomBorderUsed)) {
-                if (minSize.getHeight() > size.getHeight()) {
+                if (minSize.height > size.height) {
                     this.topBorderAnchor.position = 0;
-                    this.bottomBorderAnchor.position = minSize.getHeight();
+                    this.bottomBorderAnchor.position = minSize.height;
                 }
-                else if (maxSize.getHeight() < size.getHeight()) {
+                else if (maxSize.height < size.height) {
                     switch (this.verticalAlignment) {
                         case 'top':
                             this.topBorderAnchor.position = 0;
                             break;
                         case 'bottom':
-                            this.topBorderAnchor.position = size.getHeight() - maxSize.getHeight();
+                            this.topBorderAnchor.position = size.height - maxSize.height;
                             break;
                         default:
-                            this.topBorderAnchor.position = (size.getHeight() - maxSize.getHeight()) / 2;
+                            this.topBorderAnchor.position = (size.height - maxSize.height) / 2;
                     }
-                    this.bottomBorderAnchor.position = this.topBorderAnchor.position + maxSize.getHeight();
+                    this.bottomBorderAnchor.position = this.topBorderAnchor.position + maxSize.height;
                 }
                 else {
                     this.topBorderAnchor.position = 0;
-                    this.bottomBorderAnchor.position = size.getHeight();
+                    this.bottomBorderAnchor.position = size.height;
                 }
             }
             else {
-                if (this.preferredHeight > size.getHeight()) {
+                if (this.preferredHeight > size.height) {
                     this.topBorderAnchor.position = 0;
                 }
                 else {
@@ -580,26 +584,26 @@ class FormLayout extends Component {
                             this.topBorderAnchor.position = 0;
                             break;
                         case 'bottom':
-                            this.topBorderAnchor.position = size.getHeight() - this.preferredHeight;
+                            this.topBorderAnchor.position = size.height - this.preferredHeight;
                             break;
                         default:
-                            this.topBorderAnchor.position = (size.getHeight() - this.preferredHeight) / 2;
+                            this.topBorderAnchor.position = (size.height - this.preferredHeight) / 2;
                     }
                 }
                 this.bottomBorderAnchor.position = this.topBorderAnchor.position + this.preferredHeight;
             }
             
-            this.leftBorderAnchor.position -= this.props.margins.getMarginLeft();
-            this.rightBorderAnchor.position -= this.props.margins.getMarginLeft();
-            this.topBorderAnchor.position -= this.props.margins.getMarginTop();
-            this.bottomBorderAnchor.position -= this.props.margins.getMarginTop();
+            this.leftBorderAnchor.position -= this.props.margins.marginLeft;
+            this.rightBorderAnchor.position -= this.props.margins.marginLeft;
+            this.topBorderAnchor.position -= this.props.margins.marginTop;
+            this.bottomBorderAnchor.position -= this.props.margins.marginTop;
 
             this.components.forEach(component => {
                 let constraint = this.componentConstraints.get(component.props.data.id);
                 let preferredSize = this.props.getPreferredSize(component);
 
-                this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth());
-                this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight());
+                this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
+                this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
             });
             this.vCalculateTargetDependentAnchors = false;
         }
@@ -609,7 +613,6 @@ class FormLayout extends Component {
         
         let tempContent = [];
         components.forEach(component => {
-            console.log(component)
             let constraint = this.componentConstraints.get(component.props.data.id);
             let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
             if (compHeight > this.preferredHeight) {
@@ -648,7 +651,7 @@ class FormLayout extends Component {
                 this.firstPosCalc = true;
             }
             if (el.style.height !== '100%') {
-                el.style.height = toPx((this.preferredHeight + this.props.margins.getMarginTop() + this.props.margins.getMarginBottom()));
+                el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom));
                 if (el.previousSibling !== null) {
                     el.style.top = toPx((parseInt(this.prevTop) + parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)))
                 }
@@ -665,10 +668,10 @@ class FormLayout extends Component {
                                         position: 'relative',
                                         width: this.preferredWidth, 
                                         height: this.preferredHeight,
-                                        marginTop: this.props.margins.getMarginTop(),
-                                        marginLeft: this.props.margins.getMarginLeft(),
-                                        marginBottom: this.props.margins.getMarginBottom(),
-                                        marginRight: this.props.margins.getMarginRight()
+                                        marginTop: this.props.margins.marginTop,
+                                        marginLeft: this.props.margins.marginLeft,
+                                        marginBottom: this.props.margins.marginBottom,
+                                        marginRight: this.props.margins.marginRight
                                         }}>{this.state.content}</div>
         )
     }

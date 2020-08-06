@@ -1,6 +1,6 @@
 import { Orientation } from "./Orientation";
 
-export class Anchor{
+export class Anchor {
 
     name;
     anchorData;
@@ -11,6 +11,7 @@ export class Anchor{
     relative;
     position;
     orientation;
+    layout;
 
     constructor(pAnchorData, pRelatedAnchor, pPosition, pOrientation, pLayout) {
         if(pAnchorData !== undefined && pRelatedAnchor === undefined && pPosition === undefined 

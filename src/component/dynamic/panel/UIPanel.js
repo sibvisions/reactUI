@@ -16,7 +16,6 @@ import NullLayout from '../../layouts/NullLayout';
 class UIPanel extends Base {
     insertLayout() {
         if (this.state.content !== undefined) {
-            console.log(this.props)
             if (this.props.data.layout !== null) {
                 let margins = new Margins(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(0, 4))
                 let gaps = new Gaps(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(4, 6))
