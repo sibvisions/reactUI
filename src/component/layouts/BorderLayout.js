@@ -22,22 +22,28 @@ class BorderLayout extends Component {
 
     addLayoutComponents() {
         this.components.forEach(component => {
+            let clonedComponent;
             if (component.props.data.constraints) {
                 switch(component.props.data.constraints) {
                     case 'North':
-                        this.elemNorth = component;
+                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                        this.elemNorth = clonedComponent;
                         break;
                     case 'West':
-                        this.elemWest = component;
+                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                        this.elemWest = clonedComponent;
                         break;
                     case 'Center':
-                        this.elemCenter = component;
+                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                        this.elemCenter = clonedComponent;
                         break;
                     case 'East':
-                        this.elemEast = component;
+                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                        this.elemEast = clonedComponent;
                         break;
                     case 'South':
-                        this.elemSouth = component;
+                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                        this.elemSouth = clonedComponent;
                         break;
                     default: return null
                 }

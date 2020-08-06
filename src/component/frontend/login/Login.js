@@ -43,9 +43,9 @@ class Login extends Component {
                             <InputText autoComplete="current-password" id="password" type="password" value={this.state.password} onChange={this.hanldePasswordChange.bind(this)} style={{margin: 0}}/>
                             <label htmlFor="password">Passwort: </label>
                         </span>
-                        <Button className="p-button-raised" value="submit" label="ANMELDEN"/>
+                        <Button id={'loginbtn'} className="p-button-raised" value="submit" label="ANMELDEN"/>
                     </form>
-                    <Button className="p-buttom-secondary" label="Log in as features" onClick={() => this.context.serverComm.logIn("features","features")} style={{marginTop:"10px"}}/>
+                    <Button className="p-buttom-secondary" id={'featbtn'} label="Log in as features" onClick={() => this.context.serverComm.logIn("features","features")} style={{marginTop:"10px"}}/>
                 </div>
             </div>
         );

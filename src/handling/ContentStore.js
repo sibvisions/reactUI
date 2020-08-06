@@ -64,8 +64,8 @@ class ContentStore{
                     for(let newProp in newEl){
                         existingComp[newProp] = newEl[newProp]
                     }
-                    console.log(existingComp["cellEditor"]["preferredEditorMode"]);
-                    console.log(newEl)
+                    // console.log(existingComp["cellEditor"]["preferredEditorMode"]);
+                    // console.log(newEl)
                 }   
             } else this.flatContent.push(newEl)
         });

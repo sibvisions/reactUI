@@ -52,7 +52,11 @@ class GridLayout extends Component {
             this.calculateSizes(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
         }
         return (
-            <div className="gridlayout" style={{position: "relative", height: this.props.getPreferredSize(this.props.component).height}}>
+            <div className="gridlayout" style={{
+                position: "relative",
+                height: this.props.getPreferredSize(this.props.component).height - (this.props.margins.marginTop + this.props.margins.marginBottom),
+                width: this.props.getPreferredSize(this.props.component).width - (this.props.margins.marginLeft + this.props.margins.marginRight)
+            }}>
                 {this.state.content}
             </div>
         )

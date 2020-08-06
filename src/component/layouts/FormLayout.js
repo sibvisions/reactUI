@@ -636,6 +636,7 @@ class FormLayout extends Component {
     }
 
     layoutContainer() {
+        this.currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.data.id);
         this.valid = false;
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
