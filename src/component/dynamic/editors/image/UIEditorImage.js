@@ -21,7 +21,7 @@ class UIEditorImage extends Base {
 
     render() {
         return ( 
-            <img id={this.props.data.id} style={this.props.style} src={this.state.img ? this.state.img : this.placeHolder}/>
+            <img id={this.props.data.id} alt={this.placeHolder} style={this.props.style} src={this.state.img ? this.state.img : this.placeHolder}/>
         );
     }
 }

@@ -1,6 +1,6 @@
 import Base from "../../Base";
 import React from 'react';
-//import './UIEditorLinked.scss'
+import './UIEditorLinked.scss'
 
 import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
@@ -18,15 +18,17 @@ class UIEditorLinked extends Base {
     }
 
     componentDidMount(){
-        this.startUp()
-        this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this))
+        this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this));
+        this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
+
         this.elem = this.autoC.panel.element;
         this.elem.addEventListener("scroll", this.handleScroll.bind(this));
     }
 
     componentWillUnmount(){
         this.elem.removeEventListener("scroll", this.handleScroll.bind(this));
-        this.sub.unsubscribe();
+        this.selectionSub.unsubscribe();
+        this.fetchSub.unsubscribe();
     }
 
     handleScroll(){
@@ -43,32 +45,30 @@ class UIEditorLinked extends Base {
         }   
     }
 
-    formatFetchRequest(fetchResponse){
-        let fetchedData = fetchResponse.find(x => x.name === "dal.fetch")
-        let buildOptions = []
-        fetchedData.records.forEach(record => {
-            let element = {};
-            record.forEach((data, index) => {
-                if(data !== null) element[this.data.cellEditor.clearColumns[index]] = data
+    formatFetchResponse(fetchedData){
+        if(fetchedData.dataProvider === this.data.cellEditor.linkReference.dataProvider){
+            let buildOptions = []
+            fetchedData.records.forEach(record => {
+                let element = {};
+                record.forEach((data, index) => {
+                    if(data !== null) element[this.data.cellEditor.clearColumns[index]] = data
+                });
+                buildOptions.push(element);
             });
-            buildOptions.push(element);
-        });
-        return buildOptions
+            this.setState({suggestions: buildOptions})
+        }
+        
     }
 
-    fetchData(filter){
+    fetchFilterdData(filterString){
         this.context.serverComm.fetchFilterdData(
-                this.data.cellEditor.linkReference.dataProvider, 
-                filter, this.data.name)
-        .then(response => response.json())
-        .then(this.formatFetchRequest.bind(this))
-        .then(fetchedData => {
-            this.setState({options: fetchedData, suggestions: fetchedData})
-        });
+            this.data.cellEditor.linkReference.dataProvider,
+            filterString,
+            this.data.name);
     }
 
     autoComplete(event){
-        this.fetchData(event.query)
+        this.fetchFilterdData(event.query)
     }
 
     render(){ 

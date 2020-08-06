@@ -1,6 +1,8 @@
-import { Subject } from "rxjs";
+import { Subject, ReplaySubject } from "rxjs";
 
 class ContentStore{
+
+    layoutMode="";
 
     currentUser= {};
 
@@ -9,7 +11,8 @@ class ContentStore{
 
     storedData = new Map();
 
-    selectedDataRowChange = new Subject();
+
+    selectedDataRowChange = new ReplaySubject(1);
     fetchCompleted = new Subject();
 
     // Event
@@ -61,6 +64,8 @@ class ContentStore{
                     for(let newProp in newEl){
                         existingComp[newProp] = newEl[newProp]
                     }
+                    console.log(existingComp["cellEditor"]["preferredEditorMode"]);
+                    console.log(newEl)
                 }   
             } else this.flatContent.push(newEl)
         });
@@ -98,8 +103,5 @@ class ContentStore{
     setCurrentUser(userData){
         this.currentUser = userData
     }
-
-
-
 }
 export default ContentStore

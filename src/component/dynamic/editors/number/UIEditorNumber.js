@@ -18,6 +18,8 @@ class UIEditorNumber extends Base {
     setContent(content){
         if(content[this.props.data.columnName]){
             this.setState({selection: content[this.props.data.columnName]});
+        } else {
+            this.setState({selection: undefined})
         }
     }
 
@@ -25,6 +27,7 @@ class UIEditorNumber extends Base {
     render(){
         return(
             <InputNumber
+                useGrouping={false}
                 id={this.props.data.id}
                 value={this.state.selection}
                 style={this.props.style}

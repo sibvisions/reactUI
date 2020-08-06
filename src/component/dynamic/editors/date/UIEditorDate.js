@@ -15,10 +15,7 @@ class UIEditorDate extends Base {
             } else {
                 this.setState({date : undefined})
             }
-        });
-
-        console.log(this.calender)
-        
+        });        
     }
 
     componentWillUnmount() {
@@ -31,9 +28,9 @@ class UIEditorDate extends Base {
                 ref = {r => this.calender = r}
                 showIcon={true}
                 id={this.props.data.id}
-                style={{...this.props.style, "text-align": "start"}}
+                style={{textAlign: "start",  ...this.props.style}}
                 dateFormat="dd/mm/yy"
-                value={this.state.date ? this.state.date : undefined}
+                value={this.state.date ? this.state.date : 0}
                 onChange= {value => this.setState({date: value.value})}
             />
         );

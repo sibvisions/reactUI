@@ -19,12 +19,7 @@ class UITable extends Base {
         this.buildColumns(this.props.data.columnLabels, this.props.data.columnNames);
     }
 
-    componentDidMount() {
-
-        if(!this.state.Data){
-            this.context.serverComm.fetchDataFromProvider(this.props.data.dataProvider)
-        }
-
+    componentDidMount(){
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(fetchData => {
             if(fetchData.dataProvider === this.props.data.dataProvider){
                 this.buildData(fetchData);
@@ -32,7 +27,7 @@ class UITable extends Base {
         })
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(){
         this.fetchSub.unsubscribe();
     }
 
@@ -61,9 +56,11 @@ class UITable extends Base {
     onSelectChange(event){
         let value = event.value
         this.context.contentStore.emitChangeOfSelectedRow(value)
+        this.context.serverComm.selectRow(this.props.data.name, this.props.data.dataProvider , event.value);
+
     }
 
-    render() {
+    render(){
         return ( 
             <DataTable
                 id={this.props.data.id}
@@ -71,7 +68,7 @@ class UITable extends Base {
                 scrollable={true} 
                 valueable={true}    
                 scrollHeight="100%" 
-                style={this.props.style, {overflow: 'auto'}}
+                style={this.props.style}
                 header="Table"
                 selectionMode="single"
                 onSelectionChange={this.onSelectChange.bind(this)}>

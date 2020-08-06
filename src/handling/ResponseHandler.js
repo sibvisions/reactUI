@@ -23,6 +23,10 @@ class ResponseHandler{
         this.mainScreen.routeTo(route);
     }
 
+    layoutModeChanged(){
+        this.mainScreen.refresh()
+    }
+
     //Response handling
     responseMapper= 
     [
@@ -58,6 +62,10 @@ class ResponseHandler{
         {
             name: "dal.fetch",
             methodToExecute: this.fetchedData.bind(this)
+        },
+        {
+            name: "deviceStatus",
+            methodToExecute: this.deviceStatus.bind(this)
         }
     ]
 
@@ -96,7 +104,7 @@ class ResponseHandler{
                     e.items.push({
                         label: subMenu.action.label,
                         componentId:subMenu.action.componentId,
-                        command: () => this.serverCommunicator.openScreen(subMenu.action.componentId),
+                        command: () => this.serverCommunicator.pressButton(subMenu.action.componentId),
                         key:subMenu.action.label})
                 }
             });
@@ -114,8 +122,9 @@ class ResponseHandler{
             this.updateContent(genericResponse.changedComponents)
         }
         if(!genericResponse.update){
-            this.routeTo("/main/"+genericResponse.componentId)
+            return this.routeTo("/main/"+genericResponse.componentId)
         }
+        //this.routeTo("/main/"+genericResponse.componentId)
     }
 
     closeScreen(screenToClose){
@@ -135,6 +144,13 @@ class ResponseHandler{
     fetchedData(fetchResponse){
         this.contentStore.emitFetchSuccess(fetchResponse);
     }
-}
 
+    deviceStatus(deviceData){
+        if(deviceData.layoutMode !== this.contentStore.layoutMode){
+            console.log("changed")
+            this.contentStore.layoutMode = deviceData.layoutMode
+            this.layoutModeChanged( );
+        }
+    }
+}
 export default ResponseHandler

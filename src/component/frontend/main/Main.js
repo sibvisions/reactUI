@@ -26,7 +26,7 @@ class Main extends Component {
         return (
             <React.Fragment>
                 <div className={"content-" + this.context.menuLocation + "menu"}>
-                    <div className="p-grid parent-grid" style={{backgroundColor:"#C8C8C8"}}>
+                    <div className="p-grid parent-grid" style={{backgroundColor:"#C8C8C8", overflowX:"auto"}}>
                         {this.state.content}
                     </div>
                 </div>

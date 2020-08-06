@@ -28,7 +28,7 @@ class UIEditorText extends Base {
         return ( 
             <InputText
                 id={this.props.data.id}
-                value={this.state.selection}
+                value={this.state.selection ? this.state.selection : ""}
                 style={this.props.style}
                 onChange={x => this.setState({selection: x.target.value})}
             /> 

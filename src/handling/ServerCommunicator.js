@@ -6,13 +6,13 @@ class ServerCommunicator {
         this.responseHandler = responseHandler;
     }
     
-    sendRequest(endpoint, body){
+    sendRequest(endpoint, body, timeout=2000){
         let reqOpt = {
             method: 'POST',
             body: JSON.stringify(body),
             credentials:"include"
         };
-        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), 2000)
+        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), timeout)
         this.responseHandler.getResponse(r);
     }
 
@@ -108,28 +108,34 @@ class ServerCommunicator {
         }; this.sendRequest("/api/v2/openScreen", reqOpt);   
     }
 
+    selectRow(componentId, dataProvider, selected , timeout){
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+            dataProvider: dataProvider,
+            filter: {
+                columnNames: ["ID"],
+                values: [selected["ID"].toString(10)]
+            }
+        }; console.log(reqBody) ;this.sendRequest("/api/dal/selectRecord", reqBody, timeout)
+    }
+
     //---Fetch Requests------
 
     fetchDataFromProvider(dataProvider, timeout=2000){
-        let reqBody = {
-            clientId: localStorage.getItem("clientId"), 
-            dataProvider: dataProvider,
-        }
-        this.sendRequest("/api/dal/fetch" , reqBody);
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            dataProvider: dataProvider, 
+        }; this.sendRequest("/api/dal/fetch" , reqBody, timeout);
     }
 
-    fetchFilterdData(dataProvider, filterString, editorComponentId, timeout=2000){
-        let reqOpt = {
-            method: 'POST',
-            body: JSON.stringify({
-                clientId: localStorage.getItem("clientId"),
-                dataProvider: dataProvider,
-                editorComponentId: editorComponentId,
-                value: filterString
-            }),
-            credentials:"include"
-        }
-        return this.timeoutRequest(fetch(this.BaseUrl+"/api/dal/filter", reqOpt), timeout)
+    fetchFilterdData(dataProvider, filterString="", editorComponentId, timeout=2000){
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            dataProvider: dataProvider,
+            editorComponentId: editorComponentId,
+            value: filterString
+        }; this.sendRequest("/api/dal/filter", reqBody, timeout)
     }
 
     // helper

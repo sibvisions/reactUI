@@ -71,7 +71,16 @@ class App extends Component {
     }
 
     routeTo(route){
-        this.props.history.push(route)
+        if(route !== this.props.location){
+            this.props.history.push(route)
+        } else {
+            this.refresh()
+        }
+        
+    }
+
+    refresh(){
+        this.props.history.replace(this.props.location);
     }
 
     handleResize(){
