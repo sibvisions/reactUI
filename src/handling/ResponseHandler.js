@@ -123,10 +123,8 @@ class ResponseHandler{
         }
         if(genericResponse.update){
             this.mainScreen.refresh();
-        } else {
-            this.routeTo("/main/"+genericResponse.componentId)
-        }
-        
+        } 
+        this.routeTo("/main/"+genericResponse.componentId)
     }
 
     closeScreen(screenToClose){
