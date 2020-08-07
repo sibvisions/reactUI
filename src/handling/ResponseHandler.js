@@ -104,7 +104,7 @@ class ResponseHandler{
                     e.items.push({
                         label: subMenu.action.label,
                         componentId:subMenu.action.componentId,
-                        command: () => this.serverCommunicator.pressButton(subMenu.action.componentId),
+                        command: () => this.serverCommunicator.openScreen(subMenu.action.componentId),
                         key:subMenu.action.label})
                 }
             });
@@ -121,10 +121,12 @@ class ResponseHandler{
         if(genericResponse.changedComponents && genericResponse.changedComponents.length > 0){
             this.updateContent(genericResponse.changedComponents)
         }
-        if(!genericResponse.update){
-            return this.routeTo("/main/"+genericResponse.componentId)
+        if(genericResponse.update){
+            this.mainScreen.refresh();
+        } else {
+            this.routeTo("/main/"+genericResponse.componentId)
         }
-        //this.routeTo("/main/"+genericResponse.componentId)
+        
     }
 
     closeScreen(screenToClose){
@@ -147,7 +149,6 @@ class ResponseHandler{
 
     deviceStatus(deviceData){
         if(deviceData.layoutMode !== this.contentStore.layoutMode){
-            console.log("changed")
             this.contentStore.layoutMode = deviceData.layoutMode
             this.layoutModeChanged( );
         }
