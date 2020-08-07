@@ -54,6 +54,8 @@ class App extends Component {
             changeTheme: this.changeTheme.bind(this),
             growl: this.showGrowlMessage.bind(this)
         }
+
+        this.routeTo = this.routeTo.bind(this)
     }
 
     
@@ -71,12 +73,9 @@ class App extends Component {
     }
 
     routeTo(route){
-        if(route !== this.props.location){
+        if(route !== this.props.location.pathname){
             this.props.history.push(route)
-        } else {
-            this.refresh()
         }
-        
     }
 
     refresh(){
