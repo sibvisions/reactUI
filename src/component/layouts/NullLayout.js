@@ -10,25 +10,26 @@ class NullLayout extends Component {
     components = this.props.subjects
 
     componentDidMount() {
-        this.fillContent(this.components)
+        this.layoutContainer(this.components)
     }
 
-    fillContent(components) {
+    layoutContainer(components) {
         let tempContent = [];
         components.forEach(component => {
-            console.log(component)
-            let splittedBounds = components.props.data.bounds.split(',')
-            let compBounds = new Bounds(splittedBounds);
-            console.log(compBounds.height)
-            let style = {
-                position: "absolute",
-                height: compBounds.height,
-                width: compBounds.width,
-                top: compBounds.top,
-                left: compBounds.left,
+            if (this.props.isVisible(component)) {
+                let splittedBounds = component.props.data.bounds.split(',')
+                let compBounds = new Bounds(splittedBounds);
+                console.log(compBounds.height)
+                let style = {
+                    position: "absolute",
+                    height: compBounds.height,
+                    width: compBounds.width,
+                    top: compBounds.top,
+                    left: compBounds.left,
+                }
+                let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
+                tempContent.push(clonedComponent);
             }
-            let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
-            tempContent.push(clonedComponent);
         })
         this.setState({ content: tempContent })
     }

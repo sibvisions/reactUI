@@ -10,7 +10,7 @@ class GridLayout extends Component {
     
     
     componentDidMount() { 
-        this.calculateSizes(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
+        this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
     }
 
     componentWillUnmount() {
@@ -26,30 +26,33 @@ class GridLayout extends Component {
         return fieldSize;
     }
 
-    calculateSizes(fieldSize, components) {
+    calculateGridComponents(fieldSize, components) {
         let tempContent = [];
         components.forEach(component => {
-            let componentConstraints = new CellConstraints(component.props.data.constraints)
-            let calculatedWidth = componentConstraints.gridWidth * (fieldSize.width - (this.props.gaps.horizontalGap / componentConstraints.gridWidth - this.props.gaps.horizontalGap / this.props.gridSize.columns))
-            let calculatedLeft = componentConstraints.gridX * (fieldSize.width - (this.props.gaps.horizontalGap - this.props.gaps.horizontalGap / this.props.gridSize.columns) + this.props.gaps.horizontalGap)
-            let calculatedHeight = componentConstraints.gridHeight * (fieldSize.height - (this.props.gaps.verticalGap / componentConstraints.gridHeight - this.props.gaps.verticalGap / this.props.gridSize.rows))
-            let calculatedTop = componentConstraints.gridY * (fieldSize.height - (this.props.gaps.verticalGap - this.props.gaps.verticalGap / this.props.gridSize.rows) + this.props.gaps.verticalGap)
-            let style = {
-                position: "absolute",
-                height: calculatedHeight,
-                width: calculatedWidth,
-                top: calculatedTop,
-                left: calculatedLeft
+            if (this.props.isVisible(component)) {
+                let componentConstraints = new CellConstraints(component.props.data.constraints)
+                let calculatedWidth = componentConstraints.gridWidth * (fieldSize.width - (this.props.gaps.horizontalGap / componentConstraints.gridWidth - this.props.gaps.horizontalGap / this.props.gridSize.columns))
+                let calculatedLeft = componentConstraints.gridX * (fieldSize.width - (this.props.gaps.horizontalGap - this.props.gaps.horizontalGap / this.props.gridSize.columns) + this.props.gaps.horizontalGap)
+                let calculatedHeight = componentConstraints.gridHeight * (fieldSize.height - (this.props.gaps.verticalGap / componentConstraints.gridHeight - this.props.gaps.verticalGap / this.props.gridSize.rows))
+                let calculatedTop = componentConstraints.gridY * (fieldSize.height - (this.props.gaps.verticalGap - this.props.gaps.verticalGap / this.props.gridSize.rows) + this.props.gaps.verticalGap)
+                let style = {
+                    position: "absolute",
+                    height: calculatedHeight,
+                    width: calculatedWidth,
+                    top: calculatedTop,
+                    left: calculatedLeft
+                }
+                let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
+                tempContent.push(clonedComponent);
             }
-            let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
-            tempContent.push(clonedComponent);
+            
         });
         this.setState({ content: tempContent })
     }
 
     render() {
         window.onresize = () => {
-            this.calculateSizes(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
+            this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
         }
         return (
             <div className="gridlayout" style={{

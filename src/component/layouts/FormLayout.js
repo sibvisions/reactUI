@@ -341,29 +341,33 @@ class FormLayout extends Component {
 
             for (let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1;) {
                 this.components.forEach(component => {
-                    let constraint = this.componentConstraints.get(component.props.data.id)
-                    let preferredSize = this.props.getPreferredSize(component)
-                    this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
-                    this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
+                    if (this.props.isVisible(component)) {
+                        let constraint = this.componentConstraints.get(component.props.data.id)
+                        let preferredSize = this.props.getPreferredSize(component)
+                        this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
+                        this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
+                    }
                 });
                 autoSizeCount = Math.pow(2, 31) - 1
                 this.components.forEach(component => {
-                    let constraint = this.componentConstraints.get(component.props.data.id)
-                    let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
-                    if (count > 0 && count < autoSizeCount) {
-                        autoSizeCount = count;
-                    }
-                    count = this.finishAutoSizeCalculation(constraint.rightAnchor, constraint.leftAnchor)
-                    if (count > 0 && count < autoSizeCount) {
-                        autoSizeCount = count;
-                    }
-                    count = this.finishAutoSizeCalculation(constraint.topAnchor, constraint.bottomAnchor)
-                    if (count > 0 && count < autoSizeCount) {
-                        autoSizeCount = count;
-                    }
-                    count = this.finishAutoSizeCalculation(constraint.bottomAnchor, constraint.topAnchor)
-                    if (count > 0 && count < autoSizeCount) {
-                        autoSizeCount = count;
+                    if (this.props.isVisible(component)) {
+                        let constraint = this.componentConstraints.get(component.props.data.id)
+                        let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
+                        if (count > 0 && count < autoSizeCount) {
+                            autoSizeCount = count;
+                        }
+                        count = this.finishAutoSizeCalculation(constraint.rightAnchor, constraint.leftAnchor)
+                        if (count > 0 && count < autoSizeCount) {
+                            autoSizeCount = count;
+                        }
+                        count = this.finishAutoSizeCalculation(constraint.topAnchor, constraint.bottomAnchor)
+                        if (count > 0 && count < autoSizeCount) {
+                            autoSizeCount = count;
+                        }
+                        count = this.finishAutoSizeCalculation(constraint.bottomAnchor, constraint.topAnchor)
+                        if (count > 0 && count < autoSizeCount) {
+                            autoSizeCount = count;
+                        }
                     }
                 })
             }
@@ -379,61 +383,63 @@ class FormLayout extends Component {
             let bottomHeight = 0;
     
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component.props.data.id);
-                let preferredSize = this.props.getPreferredSize(component);
-                let minimumSize = this.props.getMinimumSize(component);
-    
-                if (constraint.rightAnchor.getBorderAnchor() === this.leftBorderAnchor) {
-                    let w = constraint.rightAnchor.getAbsolutePosition();
-                    if (w > leftWidth) {
-                        leftWidth = w;
+                if (this.props.isVisible(component)) {
+                    let constraint = this.componentConstraints.get(component.props.data.id);
+                    let preferredSize = this.props.getPreferredSize(component);
+                    let minimumSize = this.props.getMinimumSize(component);
+        
+                    if (constraint.rightAnchor.getBorderAnchor() === this.leftBorderAnchor) {
+                        let w = constraint.rightAnchor.getAbsolutePosition();
+                        if (w > leftWidth) {
+                            leftWidth = w;
+                        }
+                        this.leftBorderUsed = true;
                     }
-                    this.leftBorderUsed = true;
-                }
-                if (constraint.leftAnchor.getBorderAnchor() === this.rightBorderAnchor) {
-                    let w = -constraint.leftAnchor.getAbsolutePosition();
-                    if (w > rightWidth) {
-                        rightWidth = w;
+                    if (constraint.leftAnchor.getBorderAnchor() === this.rightBorderAnchor) {
+                        let w = -constraint.leftAnchor.getAbsolutePosition();
+                        if (w > rightWidth) {
+                            rightWidth = w;
+                        }
+                        this.rightBorderUsed = true;
                     }
-                    this.rightBorderUsed = true;
-                }
-                if (constraint.bottomAnchor.getBorderAnchor() === this.topBorderAnchor) {
-                    let h = constraint.bottomAnchor.getAbsolutePosition();
-                    if (h > topHeight) {
-                        topHeight = h
+                    if (constraint.bottomAnchor.getBorderAnchor() === this.topBorderAnchor) {
+                        let h = constraint.bottomAnchor.getAbsolutePosition();
+                        if (h > topHeight) {
+                            topHeight = h
+                        }
+                        this.topBorderUsed = true;
                     }
-                    this.topBorderUsed = true;
-                }
-                if (constraint.topAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
-                    let h = -constraint.topAnchor.getAbsolutePosition();
-                    if (h > bottomHeight) {
-                        bottomHeight = h;
+                    if (constraint.topAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
+                        let h = -constraint.topAnchor.getAbsolutePosition();
+                        if (h > bottomHeight) {
+                            bottomHeight = h;
+                        }
+                        this.bottomBorderUsed = true
                     }
-                    this.bottomBorderUsed = true
-                }
-                if (constraint.leftAnchor.getBorderAnchor() === this.leftBorderAnchor && constraint.rightAnchor.getBorderAnchor() === this.rightBorderAnchor) {
-                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
-                    if (w > this.preferredWidth) {
-                        this.preferredWidth = w;
+                    if (constraint.leftAnchor.getBorderAnchor() === this.leftBorderAnchor && constraint.rightAnchor.getBorderAnchor() === this.rightBorderAnchor) {
+                        let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
+                        if (w > this.preferredWidth) {
+                            this.preferredWidth = w;
+                        }
+                        w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + minimumSize.width;
+                        if (w > this.minimumWidth) {
+                            this.minimumWidth = w;
+                        }
+                        this.leftBorderUsed = true;
+                        this.rightBorderUsed = true;
                     }
-                    w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + minimumSize.width;
-                    if (w > this.minimumWidth) {
-                        this.minimumWidth = w;
+                    if (constraint.topAnchor.getBorderAnchor() === this.topBorderAnchor && constraint.bottomAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
+                        let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
+                        if (h > this.preferredHeight) {
+                            this.preferredHeight = h;
+                        }
+                        h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + minimumSize.height;
+                        if (h > this.minimumHeight) {
+                            this.minimumHeight = h;
+                        }
+                        this.topBorderUsed = true;
+                        this.bottomBorderUsed = true;
                     }
-                    this.leftBorderUsed = true;
-                    this.rightBorderUsed = true;
-                }
-                if (constraint.topAnchor.getBorderAnchor() === this.topBorderAnchor && constraint.bottomAnchor.getBorderAnchor() === this.bottomBorderAnchor) {
-                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
-                    if (h > this.preferredHeight) {
-                        this.preferredHeight = h;
-                    }
-                    h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + minimumSize.height;
-                    if (h > this.minimumHeight) {
-                        this.minimumHeight = h;
-                    }
-                    this.topBorderUsed = true;
-                    this.bottomBorderUsed = true;
                 }
             });
             if (leftWidth !== 0 && rightWidth !== 0) {
@@ -599,11 +605,13 @@ class FormLayout extends Component {
             this.bottomBorderAnchor.position -= this.props.margins.marginTop;
 
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component.props.data.id);
-                let preferredSize = this.props.getPreferredSize(component);
-
-                this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
-                this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
+                if (this.props.isVisible(component)) {
+                    let constraint = this.componentConstraints.get(component.props.data.id);
+                    let preferredSize = this.props.getPreferredSize(component);
+    
+                    this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
+                    this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
+                }
             });
             this.vCalculateTargetDependentAnchors = false;
         }
@@ -613,24 +621,26 @@ class FormLayout extends Component {
         
         let tempContent = [];
         components.forEach(component => {
-            let constraint = this.componentConstraints.get(component.props.data.id);
-            let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
-            if (compHeight > this.preferredHeight) {
-                compHeight = this.preferredHeight;
-            }
-            let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
-            if (compWidth > this.preferredWidth) {
-                compWidth = this.preferredWidth;
-            }
-            let style = {
-                    position: 'absolute',
-                    height: compHeight,
-                    width: compWidth,
-                    left: constraint.leftAnchor.getAbsolutePosition(),
-                    top: constraint.topAnchor.getAbsolutePosition()
+            if (this.props.isVisible(component)) {
+                let constraint = this.componentConstraints.get(component.props.data.id);
+                let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+                if (compHeight > this.preferredHeight) {
+                    compHeight = this.preferredHeight;
                 }
-            let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
-            tempContent.push(clonedComponent);          
+                let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
+                if (compWidth > this.preferredWidth) {
+                    compWidth = this.preferredWidth;
+                }
+                let style = {
+                        position: 'absolute',
+                        height: compHeight,
+                        width: compWidth,
+                        left: constraint.leftAnchor.getAbsolutePosition(),
+                        top: constraint.topAnchor.getAbsolutePosition()
+                    }
+                let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+                tempContent.push(clonedComponent);     
+            }
         });
         this.setState({content: tempContent})
     }

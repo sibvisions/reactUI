@@ -35,7 +35,8 @@ class UIPanel extends Base {
                             maximumSize={this.props.data.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
-                            getMaximumSize={this.getMaximumSize} />;
+                            getMaximumSize={this.getMaximumSize}
+                            isVisible={this.isVisible} />;
                     case "BorderLayout":
                         return <BorderLayout
                             component={this}
@@ -47,7 +48,8 @@ class UIPanel extends Base {
                             maximumSize={this.props.data.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
-                            getMaximumSize={this.getMaximumSize} />;
+                            getMaximumSize={this.getMaximumSize}
+                            isVisible={this.isVisible} />;
                     case "FlowLayout":
                         let orientation = new Orientation(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(6, 7));
                         alignments = new Alignments(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(7, 10), 'flow');
@@ -56,12 +58,13 @@ class UIPanel extends Base {
                             subjects={this.state.content}
                             margins={margins}
                             gaps={gaps}
-                            orientation={orientation}
+                            orientation={orientation.orientation}
                             alignments={alignments}
                             preferredSize={this.getPreferredSize(this)}
                             minimumSize={this.props.data.minimumSize}
                             maximumSize={this.props.data.maximumSize}
-                            getPreferredSize={this.getPreferredSize} />;
+                            getPreferredSize={this.getPreferredSize}
+                            isVisible={this.isVisible} />;
                     case "GridLayout":
                         let gridSize = new GridSize(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(6, 8));
                         return <GridLayout
@@ -73,18 +76,21 @@ class UIPanel extends Base {
                             preferredSize={this.getPreferredSize(this)}
                             minimumSize={this.props.data.minimumSize}
                             maximumSize={this.props.data.maximumSize}
-                            getPreferredSize={this.getPreferredSize} />;
+                            getPreferredSize={this.getPreferredSize}
+                            isVisible={this.isVisible} />;
                     default: return <NullLayout
                         component={this}
                         subjects={this.state.content}
-                        getPreferredSize={this.getPreferredSize} />;
+                        getPreferredSize={this.getPreferredSize}
+                        isVisible={this.isVisible} />;
                 }
             }
             else {
                 return <NullLayout
                     component={this}
                     subjects={this.state.content}
-                    getPreferredSize={this.getPreferredSize} />;
+                    getPreferredSize={this.getPreferredSize}
+                    isVisible={this.isVisible} />;
             }
         }
         

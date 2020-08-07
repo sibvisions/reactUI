@@ -104,7 +104,7 @@ class ResponseHandler{
                     e.items.push({
                         label: subMenu.action.label,
                         componentId:subMenu.action.componentId,
-                        command: () => this.serverCommunicator.pressButton(subMenu.action.componentId),
+                        command: () => this.serverCommunicator.openScreen(subMenu.action.componentId),
                         key:subMenu.action.label})
                 }
             });
@@ -124,7 +124,7 @@ class ResponseHandler{
         if(!genericResponse.update){
             return this.routeTo("/main/"+genericResponse.componentId)
         }
-        //this.routeTo("/main/"+genericResponse.componentId)
+        this.routeTo("/main/"+genericResponse.componentId)
     }
 
     closeScreen(screenToClose){

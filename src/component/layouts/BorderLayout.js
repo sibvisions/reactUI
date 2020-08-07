@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { toPx } from "../../component/helper/ToPx";
+import { RefContext } from '../helper/Context';
 
 class BorderLayout extends Component {
 
@@ -20,32 +21,34 @@ class BorderLayout extends Component {
     //     this.calculateSizes()
     // }
 
-    addLayoutComponents() {
+    layoutContainer() {
         this.components.forEach(component => {
-            let clonedComponent;
-            if (component.props.data.constraints) {
-                switch(component.props.data.constraints) {
-                    case 'North':
-                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
-                        this.elemNorth = clonedComponent;
-                        break;
-                    case 'West':
-                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
-                        this.elemWest = clonedComponent;
-                        break;
-                    case 'Center':
-                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
-                        this.elemCenter = clonedComponent;
-                        break;
-                    case 'East':
-                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
-                        this.elemEast = clonedComponent;
-                        break;
-                    case 'South':
-                        clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
-                        this.elemSouth = clonedComponent;
-                        break;
-                    default: return null
+            if(this.props.isVisible(component)) {
+                let clonedComponent;
+                if (component.props.data.constraints) {
+                    switch(component.props.data.constraints) {
+                        case 'North':
+                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            this.elemNorth = clonedComponent;
+                            break;
+                        case 'West':
+                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            this.elemWest = clonedComponent;
+                            break;
+                        case 'Center':
+                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            this.elemCenter = clonedComponent;
+                            break;
+                        case 'East':
+                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            this.elemEast = clonedComponent;
+                            break;
+                        case 'South':
+                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            this.elemSouth = clonedComponent;
+                            break;
+                        default: return null
+                    }
                 }
             }
         });
@@ -63,7 +66,7 @@ class BorderLayout extends Component {
         // window.onresize = () => {
         //     this.calculateSizes()
         // }
-        this.addLayoutComponents()
+        this.layoutContainer()
         return (
         <div className="p-grid p-nogutter borderlayout" style={{
                                                             height: 'calc(100% - ' + toPx((parseInt(this.props.margins.marginTop) + parseInt(this.props.margins.marginBottom))) + ')',
@@ -76,7 +79,7 @@ class BorderLayout extends Component {
                                                             marginRight: this.props.margins.marginRight}}>
             <div className="p-col-12 north" style={{textAlign:"center",
                                                     padding: '0',
-                                                    marginBottom: this.props.gaps.verticalGap}}>
+                                                    marginBottom: this.props.isVisible(this.elemNorth) ? this.props.gaps.verticalGap : '0px'}}>
                 {this.elemNorth}
             </div>
             <div className="p-grid p-nogutter p-align-center" style={{height:"100%"}}>
@@ -84,7 +87,7 @@ class BorderLayout extends Component {
                                                         textAlign:"center", 
                                                         width:"auto", 
                                                         padding: '0', 
-                                                        marginRight: this.props.gaps.horizontalGap}}>
+                                                        marginRight: this.props.isVisible(this.elemWest) ? this.props.gaps.horizontalGap : '0px'}}>
                     {this.elemWest}
                 </span>
                 <span className="p-col center" style={{
@@ -98,17 +101,17 @@ class BorderLayout extends Component {
                                                         textAlign:"center", 
                                                         width:"auto", 
                                                         padding: '0', 
-                                                        marginLeft: this.props.gaps.horizontalGap}}>
+                                                        marginLeft: this.props.isVisible(this.elemEast) ? this.props.gaps.horizontalGap : '0px'}}>
                     {this.elemEast}
                 </span>
             </div>
             <div className="p-col-12 south" style={{
                                                 textAlign:"center", 
                                                 padding: '0', 
-                                                marginTop: this.props.gaps.verticalGap}}>
+                                                marginTop: this.props.isVisible(this.elemSouth) ? this.props.gaps.verticalGap : '0px'}}>
                 {this.elemSouth}
             </div>
         </div>);
     }
-} 
+}
 export default BorderLayout;

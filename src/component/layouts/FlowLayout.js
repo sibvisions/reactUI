@@ -11,30 +11,33 @@ class FlowLayout extends Component {
     
 
     componentDidMount() {
-        this.buildComponents()
+        this.layoutContainer()
     }
 
-    buildComponents() {
+    layoutContainer() {
         let tempContent = [];
         this.components.forEach(component => {
-            let preferredSize = this.props.getPreferredSize(component)
-            let style={
-                    height: preferredSize.height,
-                    width: preferredSize.width,
-                    alignSelf: this.props.alignments.cAlignment,
-                    marginTop: this.props.gaps.verticalGap / 2,
-                    marginLeft: this.props.gaps.horizontalGap / 2,
-                    marginBottom: this.props.gaps.verticalGap / 2,
-                    marginRight: this.props.gaps.horizontalGap / 2
-                }
-            let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
-            tempContent.push(clonedComponent)
+            if (this.props.isVisible(component)) {
+                let preferredSize = this.props.getPreferredSize(component)
+                let style={
+                        height: preferredSize.height,
+                        width: preferredSize.width,
+                        alignSelf: this.props.alignments.cAlignment,
+                        marginTop: this.props.gaps.verticalGap / 2,
+                        marginLeft: this.props.gaps.horizontalGap / 2,
+                        marginBottom: this.props.gaps.verticalGap / 2,
+                        marginRight: this.props.gaps.horizontalGap / 2
+                    }
+                let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+                tempContent.push(clonedComponent)
+            }
         })
         this.setState({content: tempContent})
     }
 
     render() {
-        if (this.props.orientation.orientation === 'horizontal') {
+        console.log(this.props)
+        if (this.props.orientation === 'horizontal') {
             this.orientation = 'row'
         } 
         else {

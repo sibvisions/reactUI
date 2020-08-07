@@ -9,11 +9,6 @@ class Base extends Component {
     }
 
     startUp(){
-
-        let style = {
-            width: '100%',
-            height: '100%'
-        } 
         let content = [];
         content.length = 0
         if (this.props.data.subjects) {
@@ -21,10 +16,8 @@ class Base extends Component {
                 let temp = this.context.uiBuilder.compontentHandler(subject);
                 if(temp) content.push(temp)
             });
-            this.setState({content: content, style: style});
-        }else {this.setState({style:style})}
-        
-
+            this.setState({content: content});
+        }
     }
 
     getPreferredSize(comp) {
@@ -102,6 +95,17 @@ class Base extends Component {
                 maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)
             }
             return maxSize;
+        }
+    }
+
+    isVisible(comp) {
+        if (comp) {
+            if (comp.props.data.visible === undefined || comp.props.data.visible) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
     }
 }
