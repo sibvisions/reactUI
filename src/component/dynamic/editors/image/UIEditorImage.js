@@ -20,8 +20,14 @@ class UIEditorImage extends Base {
     }
 
     render() {
-        return ( 
-            <img id={this.props.data.id} alt={this.placeHolder} style={this.props.style} src={this.state.img ? this.state.img : this.placeHolder}/>
+        return (
+            <img
+                id={this.props.data.id}
+                alt={this.placeHolder}
+                style={{...this.props.style, backgroundColor: this.props.data["cellEditor.background"]}}
+                src={this.state.img ? this.state.img : this.placeHolder}
+                disabled={!this.props.data["cellEditor.editable"]}
+            />
         );
     }
 }

@@ -8,6 +8,12 @@ import "./UIEditorDate.scss"
 class UIEditorDate extends Base {
 
     componentDidMount() {
+        let childList = document.getElementById(this.props.data.id).children
+        for (let child of childList) {
+            if (child.tagName === 'INPUT') {
+                child.style.setProperty('background-color', this.props.data["cellEditor.background"])
+            }
+        }
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(selection => {
             if(selection[this.props.data.columnName]){
                 const date = new Date(selection[this.props.data.columnName]);
@@ -32,6 +38,7 @@ class UIEditorDate extends Base {
                 dateFormat="dd/mm/yy"
                 value={this.state.date ? this.state.date : 0}
                 onChange= {value => this.setState({date: value.value})}
+                disabled={!this.props.data["cellEditor.editable"]}
             />
         );
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import Split from 'react-split'
-import Base from '../Base';
+import Base from '../../Base';
 import "./UISplitPanel.css";
 
 class UISplitPanel extends Base {

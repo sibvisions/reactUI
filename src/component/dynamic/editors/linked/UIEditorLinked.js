@@ -18,6 +18,12 @@ class UIEditorLinked extends Base {
     }
 
     componentDidMount(){
+        let childList = document.getElementById(this.props.data.id).children
+        for (let child of childList) {
+            if (child.tagName === 'INPUT') {
+                child.style.setProperty('background-color', this.props.data["cellEditor.background"])
+            }
+        }
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this));
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
 
@@ -83,6 +89,7 @@ class UIEditorLinked extends Base {
                 value={this.state.selectedObject}
                 suggestions={this.state.suggestions}
                 onChange={x => this.setState({selectedObject: x.target.value})}
+                disabled={!this.props.data["cellEditor.editable"]}
             />
         )
     }

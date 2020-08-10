@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { toPx } from "../../component/helper/ToPx";
-import { RefContext } from '../helper/Context';
 
 class BorderLayout extends Component {
 

@@ -7,7 +7,12 @@ class UIEditorNumber extends Base {
 
 
     componentDidMount() {
-        this.startUp()
+        let childList = document.getElementById(this.props.data.id).children
+        for (let child of childList) {
+            if (child.tagName === 'INPUT') {
+                child.style.setProperty('background-color', this.props.data["cellEditor.background"])
+            }
+        }
         this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.setContent.bind(this))
     }
 
@@ -31,7 +36,8 @@ class UIEditorNumber extends Base {
                 id={this.props.data.id}
                 value={this.state.selection}
                 style={this.props.style}
-                onChange={x => this.setState({selection: x.target.value})}/>
+                onChange={x => this.setState({selection: x.target.value})}
+                disabled={!this.props.data["cellEditor.editable"]}/>
         )
     }
 }

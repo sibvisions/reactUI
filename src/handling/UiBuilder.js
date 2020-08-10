@@ -3,6 +3,7 @@ import { createPanel,
          createButton, 
          createLabel, 
          createEditor, 
+         createGroupPanel,
          createSplitPanel, 
          createCheckBox} from "../component/factories/ComponentFactory";
 
@@ -37,7 +38,7 @@ class UiBuilder{
         },
         {
             name:"GroupPanel",
-            method: this.panel.bind(this)
+            method: this.groupPanel.bind(this)
         },
         {
             name:"ScrollPanel",
@@ -63,6 +64,10 @@ class UiBuilder{
     // Components
     panel(panelData) {
         return createPanel(panelData);
+    }
+
+    groupPanel(groupPanelData) {
+        return createGroupPanel(groupPanelData)
     }
 
     table(tableData) {

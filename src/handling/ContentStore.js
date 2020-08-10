@@ -8,6 +8,7 @@ class ContentStore{
 
     flatContent= [];
     menuItems = [];
+    removedContent = [];
 
     storedData = new Map();
 
@@ -55,12 +56,29 @@ class ContentStore{
 
     updateContent(updatedContent){
         updatedContent.forEach(newEl => {
-            let existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
+            let existingComp;
+
+            existingComp = this.removedContent.findIndex(oldEl => oldEl.id === newEl.id)
+            if(existingComp !== -1){
+                let yeet =  this.removedContent.splice(existingComp,1);
+                this.flatContent.push(yeet[0]);
+            }
+
+            existingComp = this.flatContent.find(oldEl => oldEl.id === newEl.id)
+            
             if(existingComp){
                 if(newEl["~destroy"]){
                     let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
                     if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
-                } else {
+                }
+                else if (newEl["~remove"]) {
+                    let indexToRemove = this.flatContent.findIndex(x => x.id === newEl.id);
+                    if(indexToRemove !== -1) {
+                        let removedElem = this.flatContent.splice(indexToRemove, 1);
+                        this.removedContent.push(removedElem[0]);
+                    } 
+                }
+                 else {
                     for(let newProp in newEl){
                         existingComp[newProp] = newEl[newProp]
                     }

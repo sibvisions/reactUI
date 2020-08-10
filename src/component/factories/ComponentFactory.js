@@ -1,9 +1,10 @@
 import React from 'react';
 import UIButton from "../dynamic/button/UIButton";
-import UIPanel from "../dynamic/panel/UIPanel";
+import UIPanel from "../dynamic/panels/panel/UIPanel";
 import UITable from '../dynamic/table/UITable';
 import UILabel from '../dynamic/label/UILabel';
-import UISplitPanel from '../dynamic/splitpane/UISplitPanel';
+import UIGroupPanel from "../dynamic/panels/grouppanel/UIGroupPanel";
+import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIEditorText from '../dynamic/editors/text/UIEditorText';
@@ -53,6 +54,10 @@ export function createEditor(editorData) {
     } else if(editorData.cellEditor.className === "DateCellEditor"){
         return <UIEditorDate {...props}/>
     }
+}
+
+export function createGroupPanel(groupPanelData) {
+    return <UIGroupPanel data={groupPanelData} key={groupPanelData.id}/>
 }
 
 export function createSplitPanel(splitPanelData) {

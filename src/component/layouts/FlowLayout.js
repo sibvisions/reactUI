@@ -36,7 +36,6 @@ class FlowLayout extends Component {
     }
 
     render() {
-        console.log(this.props)
         if (this.props.orientation === 'horizontal') {
             this.orientation = 'row'
         } 
