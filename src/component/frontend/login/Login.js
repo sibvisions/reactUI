@@ -32,7 +32,7 @@ class Login extends Component {
             <div className="background">
                 <div className="loginmask">
                     <div className="upperMask">
-                        <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
+                        <img id={"firmenlogo"} src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
                     </div>
                     <form onSubmit={this.submitLogin.bind(this)}>
                         <span className="p-float-label">

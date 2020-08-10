@@ -5,6 +5,11 @@ class UIEditorImage extends Base {
 
     placeHolder = process.env.PUBLIC_URL + "/assets/" + this.props.data.columnName + ".svg";
 
+    constructor(props) {
+        super(props);
+        this.onload = this.onload.bind(this)
+    }
+
     componentDidMount() {
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(selection => {
             if(selection[this.props.data.columnName]){
@@ -13,6 +18,10 @@ class UIEditorImage extends Base {
                 this.setState({img: process.env.PUBLIC_URL + "/assets/" + this.props.data.columnName + ".svg"})
             }
         })
+    }
+
+    onload({target:img}) {
+        console.log(img.offsetHeight);
     }
 
     componentWillUnmount() {
@@ -26,6 +35,7 @@ class UIEditorImage extends Base {
                 alt={this.placeHolder}
                 style={{...this.props.style, backgroundColor: this.props.data["cellEditor.background"]}}
                 src={this.state.img ? this.state.img : this.placeHolder}
+                onLoad={this.onload}
                 disabled={!this.props.data["cellEditor.editable"]}
             />
         );

@@ -6,12 +6,12 @@ import FormLayout from '../layouts/FormLayout'
 import BorderLayout from '../layouts/BorderLayout'
 import FlowLayout from '../layouts/FlowLayout';
 import GridLayout from "../layouts/GridLayout";
+import NullLayout from '../layouts/NullLayout';
 import { Gaps } from '../layouts/layoutObj/Gaps';
 import { Margins } from '../layouts/layoutObj/Margins';
 import { Orientation } from '../layouts/layoutObj/Orientation';
 import { Alignments } from "../layouts/layoutObj/Alignments";
 import { GridSize } from '../layouts/layoutObj/GridSize';
-import NullLayout from '../layouts/NullLayout';
 
 class Base extends Component {
 
