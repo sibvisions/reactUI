@@ -1,3 +1,5 @@
+import ContentStore from "./ContentStore";
+
 class ResponseHandler{
 
     // Setter
@@ -66,7 +68,16 @@ class ResponseHandler{
         {
             name: "deviceStatus",
             methodToExecute: this.deviceStatus.bind(this)
+        },
+        {
+            name: "dal.dataProviderChanged",
+            methodToExecute: this.dataProviderChange.bind(this)
+        },
+        {
+            name:"dal.metaData",
+            methodToExecute: this.metaData.bind(this)
         }
+
     ]
 
     getResponse(requestPromise){
@@ -141,15 +152,28 @@ class ResponseHandler{
         throw new Error(message.title);
     }
 
-    fetchedData(fetchResponse){
-        this.contentStore.emitFetchSuccess(fetchResponse);
-    }
-
     deviceStatus(deviceData){
         if(deviceData.layoutMode !== this.contentStore.layoutMode){
             this.contentStore.layoutMode = deviceData.layoutMode
             this.layoutModeChanged( );
         }
+    }
+
+
+    //dal
+
+    fetchedData(fetchResponse){
+        this.contentStore.emitFetchSuccess(fetchResponse);
+    }
+
+    dataProviderChange(changeData){
+        if(changeData.reload === -1){
+            this.serverCommunicator.fetchDataFromProvider(changeData.dataProvider);    
+        }
+    }
+
+    metaData(mData){
+        //this.contentStore.metaData.set(mData.dataProvider, mData);
     }
 }
 export default ResponseHandler

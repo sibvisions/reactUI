@@ -11,6 +11,7 @@ import Base from '../Base';
 class UITable extends Base {
     content = [];
     dataColumns = [];
+    metaData;
     state = {  }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
@@ -25,6 +26,17 @@ class UITable extends Base {
                 this.buildData(fetchData);
             }
         })
+
+        let data = this.context.contentStore.storedData.get(this.props.data.dataProvider);
+        if(data){
+            console.log(data)
+            this.buildData(data)
+        }
+        let metaData = this.context.contentStore.storedData.get(this.props.data.dataProvider);
+        if(metaData){
+
+        }
+        
     }
 
     componentWillUnmount(){

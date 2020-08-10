@@ -117,7 +117,7 @@ class ServerCommunicator {
                 columnNames: ["ID"],
                 values: [selected["ID"].toString(10)]
             }
-        }; console.log(reqBody) ;this.sendRequest("/api/dal/selectRecord", reqBody, timeout)
+        };this.sendRequest("/api/dal/selectRecord", reqBody, timeout)
     }
 
     //---Fetch Requests------
