@@ -54,6 +54,12 @@ class Base extends Component {
                 if (prefSize.height < minSize.height) {
                     prefSize.setHeight(minSize.height);
                 }
+                if (prefSize.width === 0) {
+                    prefSize.setHeight(minSize.width);
+                }
+                if (prefSize.height === 0) {
+                    prefSize.setHeight(minSize.height)
+                }
             }
 
             if (comp.props.data.maximumSize) {
@@ -63,6 +69,12 @@ class Base extends Component {
                 }
                 if (maxSize.height < prefSize.height) {
                     prefSize.setHeight(maxSize.height);
+                }
+                if (prefSize.width === 0) {
+                    prefSize.setHeight(maxSize.width);
+                }
+                if (prefSize.height === 0) {
+                    prefSize.setHeight(maxSize.height)
                 }
             }
             return prefSize

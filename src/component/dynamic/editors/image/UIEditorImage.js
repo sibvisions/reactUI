@@ -7,7 +7,7 @@ class UIEditorImage extends Base {
 
     constructor(props) {
         super(props);
-        this.onload = this.onload.bind(this)
+        this.setImgAlignments = this.setImgAlignments.bind(this)
     }
 
     componentDidMount() {
@@ -20,8 +20,120 @@ class UIEditorImage extends Base {
         })
     }
 
-    onload({target:img}) {
-        console.log(img.offsetHeight);
+    checkAlignments() {
+        if (this.props.data["cellEditor.horizontalAlignment"] !== undefined && this.props.data["cellEditor.verticalAlignment"] !== undefined) {
+            return {ha: this.props.data["cellEditor.horizontalAlignment"], va: this.props.data["cellEditor.verticalAlignment"]};
+        }
+        else if (this.props.data["cellEditor.horizontalAlignment"] !== undefined) {
+            return {ha: this.props.data["cellEditor.horizontalAlignment"], va: this.props.data.cellEditor.verticalAlignment};
+        }
+        else if (this.props.data["cellEditor.verticalAlignment"] !== undefined) {
+            return {ha: this.props.data.cellEditor.horizontalAlignment, va: this.props.data["cellEditor.verticalAlignment"]};
+        }
+        else {
+            return {ha: this.props.data.cellEditor.horizontalAlignment, va: this.props.data.cellEditor.verticalAlignment}
+        }
+    }
+
+    setImgAlignments() {
+        let alignments = this.checkAlignments()
+        var address = this.imgRef.getAttribute('href');
+        var y = new Image();
+        y.src = address;
+        if (alignments.ha === 0) {
+            if (alignments.va === 0) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '0%');
+            }
+            else if (alignments.va === 1) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '50%');
+                this.imgRef.setAttribute('transform', 'translate(0,' + -(y.height/2) + ')');
+            }
+            else if (alignments.va === 2) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '100%');
+                this.imgRef.setAttribute('transform', 'translate(0,' + -y.height + ')');
+            }
+            else if (alignments.va === 3) {
+                this.imgRef.setAttribute('height', '100%');
+                this.imgRef.setAttribute('width', y.width);
+            }
+        }
+        else if (alignments.ha === 1) {
+            if (alignments.va === 0) {
+                this.imgRef.setAttribute('x', '50%');
+                this.imgRef.setAttribute('y', '0%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width/2) + ',0)');
+            }
+            else if (alignments.va === 1) {
+                this.imgRef.setAttribute('x', '50%');
+                this.imgRef.setAttribute('y', '50%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width/2) + ',' + -(y.height/2) + ')');
+            }
+            else if (alignments.va === 2) {
+                this.imgRef.setAttribute('x', '50%');
+                this.imgRef.setAttribute('y', '100%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width/2) + ',' + -(y.height) + ')');
+            }
+            else if (alignments.va === 3) {
+                this.imgRef.setAttribute('x', '50%');
+                this.imgRef.setAttribute('y', '0%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width/2) + ',0)');
+                this.imgRef.setAttribute('height', '100%');
+                this.imgRef.setAttribute('width', y.width);
+            }
+        }
+        else if (alignments.ha === 2) {
+            if (alignments.va === 0) {
+                this.imgRef.setAttribute('x', '100%');
+                this.imgRef.setAttribute('y', '0%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width) + ',0)');
+            }
+            else if (alignments.va === 1) {
+                this.imgRef.setAttribute('x', '100%');
+                this.imgRef.setAttribute('y', '50%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width) + ',' + -(y.height/2) + ')');
+            }
+            else if (alignments.va === 2) {
+                this.imgRef.setAttribute('x', '100%');
+                this.imgRef.setAttribute('y', '100%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width) + ',' + -(y.height) + ')');
+            }
+            else if (alignments.va === 3) {
+                this.imgRef.setAttribute('x', '100%');
+                this.imgRef.setAttribute('y', '0%');
+                this.imgRef.setAttribute('transform', 'translate(' + -(y.width) + ',0)');
+                this.imgRef.setAttribute('height', '100%');
+                this.imgRef.setAttribute('width', y.width);
+            }
+        }
+        else if (alignments.ha === 3) {
+            if (alignments.va === 0) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '0%');
+                this.imgRef.setAttribute('width', '100%');
+                this.imgRef.setAttribute('height', y.height);
+            }
+            else if (alignments.va === 1) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '50%');
+                this.imgRef.setAttribute('width', '100%');
+                this.imgRef.setAttribute('height', y.height);
+                this.imgRef.setAttribute('transform', 'translate(0,' + -(y.height/2) + ')');
+            }
+            else if (alignments.va === 2) {
+                this.imgRef.setAttribute('x', '0%');
+                this.imgRef.setAttribute('y', '100%');
+                this.imgRef.setAttribute('width', '100%');
+                this.imgRef.setAttribute('height', y.height);
+                this.imgRef.setAttribute('transform', 'translate(0,' + -(y.height) + ')');
+            }
+            else if (alignments.va === 3) {
+                this.imgRef.setAttribute('width', '100%');
+                this.imgRef.setAttribute('height', '100%');
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -29,15 +141,16 @@ class UIEditorImage extends Base {
     }
 
     render() {
+        console.log(this.props)
         return (
-            <img
-                id={this.props.data.id}
-                alt={this.placeHolder}
-                style={{...this.props.style, backgroundColor: this.props.data["cellEditor.background"]}}
-                src={this.state.img ? this.state.img : this.placeHolder}
-                onLoad={this.onload}
-                disabled={!this.props.data["cellEditor.editable"]}
-            />
+            <svg id={this.props.data.id} style={{ ...this.props.style, backgroundColor: this.props.data["cellEditor.background"] }}>
+                <image
+                    href={this.state.img ? this.state.img : this.placeHolder}
+                    ref={ref => this.imgRef = ref}
+                    onLoad={this.setImgAlignments}
+                    preserveAspectRatio={this.props.data.cellEditor.preserveAspectRatio ? 'xMidYMid meet' : 'none'}
+                />
+            </svg>
         );
     }
 }

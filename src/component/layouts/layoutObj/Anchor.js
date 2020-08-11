@@ -45,7 +45,7 @@ export class Anchor {
     parseAnchorData() {
         if(this.anchorData !== undefined) {
             let splittedData = this.anchorData.split(',');
-            this.name = splittedData[0]
+            this.name = splittedData[0];
             let relatedAnchorName = splittedData[1];
             if(relatedAnchorName !== '-') {
                 this.relatedAnchor = this.layout.anchors.get(relatedAnchorName)
