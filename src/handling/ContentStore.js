@@ -11,6 +11,7 @@ class ContentStore{
     removedContent = [];
 
     storedData = new Map();
+    metaData = new Map();
 
 
     selectedDataRowChange = new ReplaySubject(1);

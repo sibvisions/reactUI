@@ -2,10 +2,13 @@ import React from 'react';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import { Dropdown } from "primereact/dropdown";
 import { Size } from '../../helper/Size';
 import './UITable.scss'
 import { RefContext } from '../../helper/Context';
 import Base from '../Base';
+import TextCellEditor from './cellEditors/TextCellEditor';
+import UIEditorLinked from '../editors/linked/UIEditorLinked';
 
 
 class UITable extends Base {
@@ -15,28 +18,19 @@ class UITable extends Base {
     state = {  }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
-    constructor(props){
-        super(props);
-        this.buildColumns(this.props.data.columnLabels, this.props.data.columnNames);
-    }
-
     componentDidMount(){
+
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(fetchData => {
             if(fetchData.dataProvider === this.props.data.dataProvider){
                 this.buildData(fetchData);
             }
         })
+        this.buildColumns(this.props.data.columnLabels, this.props.data.columnNames);
 
         let data = this.context.contentStore.storedData.get(this.props.data.dataProvider);
         if(data){
-            console.log(data)
             this.buildData(data)
         }
-        let metaData = this.context.contentStore.storedData.get(this.props.data.dataProvider);
-        if(metaData){
-
-        }
-        
     }
 
     componentWillUnmount(){
@@ -45,12 +39,44 @@ class UITable extends Base {
 
     buildColumns(labels, names){
         for (let index = 0; index < labels.length; index++){
-            const column = <Column 
-            field={names[index]} 
-            header={labels[index]}
-            key={names[index]}/>;
-            this.dataColumns.push(column);
+            let props= {
+                field: names[index],
+                header: labels[index],
+                key: names[index],
+                "cellEditor.editable": false
+            }
+            const name = this.props.data.name;
+            let metaData = this.context.contentStore.metaData.get(names[index])
+            if(metaData){
+                if(metaData.cellEditor.className === "TextCellEditor"){
+                    props.editor = (props) => <TextCellEditor selection={props.rowData[names[index]]} />;
+                } else if(metaData.cellEditor.className === "LinkedCellEditor"){
+                    metaData.cellEditor.clearColumns = ["ID", names[index]];
+                    const data= {
+                        "cellEditor.editable": true,
+                        columnName: names[index],
+                        ...metaData,
+                        name: name,
+                    }
+                    props.editor = (props) => <Dropdown options={[1,2,3,4,5,6,7,8,9,10]}/>
+                }
+
+
+
+                let column = <Column {...props}/>
+                this.dataColumns.push(column);
+            }
         }
+    }
+
+    buildCellEditorColumn(field, header, key, cellEditor){
+        let column = <Column 
+        field={field} 
+        header={header}
+        key={key}
+        editor={() => cellEditor}/>;
+
+        return column
     }
 
     buildData(data){
@@ -75,6 +101,8 @@ class UITable extends Base {
     render(){
         return ( 
             <DataTable
+                resizableColumns={true}
+                columnResizeMode={"expand"}
                 id={this.props.data.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 

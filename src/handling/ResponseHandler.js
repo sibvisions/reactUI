@@ -1,5 +1,3 @@
-import ContentStore from "./ContentStore";
-
 class ResponseHandler{
 
     // Setter
@@ -72,22 +70,24 @@ class ResponseHandler{
         {
             name: "dal.dataProviderChanged",
             methodToExecute: this.dataProviderChange.bind(this)
-        },
-        {
-            name:"dal.metaData",
-            methodToExecute: this.metaData.bind(this)
         }
-
     ]
 
     getResponse(requestPromise){
         requestPromise
             .then(response => response.json())
             .then(jResponse => this.handler(jResponse))
-            .catch(error => console.log(error))
+            .catch(error => {throw new Error(error)})
     }
 
     handler(responseArray){
+
+        let metaData = responseArray.filter(response => response.name === "dal.metaData");
+        metaData.forEach(data => {
+            this.metaData(data);
+        })
+
+
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
@@ -173,7 +173,9 @@ class ResponseHandler{
     }
 
     metaData(mData){
-        //this.contentStore.metaData.set(mData.dataProvider, mData);
+        mData["columnView.table"].forEach((column, index) => {
+            this.contentStore.metaData.set(column, mData.columns.find(data => data.name === column));
+        });
     }
 }
 export default ResponseHandler

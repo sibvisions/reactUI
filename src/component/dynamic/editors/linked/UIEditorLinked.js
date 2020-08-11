@@ -18,7 +18,7 @@ class UIEditorLinked extends Base {
     }
 
     componentDidMount(){
-        let childList = document.getElementById(this.props.data.id).children
+        let childList = this.autoC.panel.element.children
         for (let child of childList) {
             if (child.tagName === 'INPUT') {
                 child.style.setProperty('background-color', this.props.data["cellEditor.background"])
@@ -80,7 +80,7 @@ class UIEditorLinked extends Base {
     render(){ 
         return (
             <AutoComplete
-                id={this.props.data.id}
+                id={this.data.id}
                 ref= {r => this.autoC = r}
                 style={this.props.style}
                 dropdown={true}
@@ -89,7 +89,7 @@ class UIEditorLinked extends Base {
                 value={this.state.selectedObject}
                 suggestions={this.state.suggestions}
                 onChange={x => this.setState({selectedObject: x.target.value})}
-                disabled={!this.props.data["cellEditor.editable"]}
+                disabled={!this.data["cellEditor.editable"]}
             />
         )
     }

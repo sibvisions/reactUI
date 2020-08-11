@@ -9,5 +9,6 @@
 }
 
 td, th{
-    overflow-x: auto;
+    overflow: scroll;
+    //white-space: nowrap;
 }
