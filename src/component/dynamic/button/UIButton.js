@@ -5,14 +5,7 @@ import { RefContext } from '../../helper/Context';
 
 class UIButton extends Base {
 
-    constructor(props){
-        super(props);
-
-        console.log(props)
-    }
-
     render() {
-        
         return (
             <Button
                 id={this.props.id}

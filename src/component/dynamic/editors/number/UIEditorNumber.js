@@ -2,15 +2,21 @@ import React from 'react';
 import Base from '../../Base';
 import { InputNumber } from 'primereact/inputnumber';
 import { RefContext } from '../../../helper/Context';
+import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 class UIEditorNumber extends Base {
 
 
     componentDidMount() {
-        let childList = document.getElementById(this.props.id).children
-        for (let child of childList) {
-            if (child.tagName === 'INPUT') {
-                child.style.setProperty('background-color', this.props["cellEditor.background"])
+        console.log(this.props)
+        if (this.number.element !== null) {
+            console.log(this.number)
+            let alignments = checkCellEditorAlignments(this.props)
+            for (let child of this.number.element.children) {
+                if (child.tagName === 'INPUT') {
+                    child.style.setProperty('background-color', this.props["cellEditor.background"])
+                    child.style.setProperty('text-align', alignments.ha)
+                }
             }
         }
         this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.setContent.bind(this))
@@ -34,6 +40,7 @@ class UIEditorNumber extends Base {
             <InputNumber
                 useGrouping={false}
                 id={this.props.id}
+                ref={r => this.number = r}
                 value={this.state.selection}
                 style={this.props.style}
                 onChange={x => this.setState({selection: x.target.value})}

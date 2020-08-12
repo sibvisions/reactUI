@@ -10,8 +10,8 @@ import NullLayout from '../layouts/NullLayout';
 import { Gaps } from '../layouts/layoutObj/Gaps';
 import { Margins } from '../layouts/layoutObj/Margins';
 import { Orientation } from '../layouts/layoutObj/Orientation';
-import { Alignments } from "../layouts/layoutObj/Alignments";
 import { GridSize } from '../layouts/layoutObj/GridSize';
+import { checkFlowAlignments, checkFormAlignments, mapFlex } from '../helper/CheckAlignments';
 
 class Base extends Component {
 
@@ -139,7 +139,7 @@ class Base extends Component {
                 let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(4, 6))
                 switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                     case "FormLayout":
-                        var alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8), 'form')
+                        var alignments = checkFormAlignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8), 'form')
                         return <FormLayout
                             component={this}
                             layout={this.props.layout}
@@ -170,7 +170,7 @@ class Base extends Component {
                             isVisible={this.isVisible} />;
                     case "FlowLayout":
                         let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 7));
-                        alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(7, 10), 'flow');
+                        alignments = mapFlex(checkFlowAlignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(7, 10), 'flow'));
                         return <FlowLayout
                             component={this}
                             subjects={this.state.content}

@@ -1,17 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {Checkbox} from 'primereact/checkbox';
+import Base from '../../Base';
+import { checkCellEditorAlignments, mapFlex } from '../../../helper/CheckAlignments';
 
 
-class UIEditorCheckbox extends Component {
+class UIEditorCheckbox extends Base {
 
     state = {}
 
     render() {
-        console.log(this.props)
+        let alignments = mapFlex(checkCellEditorAlignments(this.props))
         return ( 
-        <span id={this.props.data.id} style={{...this.props.style, backgroundColor: this.props.data["cellEditor.background"]}}>
-            <label htmlFor={this.props.data.id} className="p-checkbox-label">{this.props.data.cellEditor.text} : </label>
-            <Checkbox inputId={this.props.data.id} onChange={x => this.setState({checked: x.checked})} checked={this.state.checked} disabled={!this.props.data["cellEditor.editable"]}/>
+        <span id={this.props.id} style={{...this.props.style, backgroundColor: this.props["cellEditor.background"], display: 'inline-flex', justifyContent: alignments.ha}}>
+            <Checkbox inputId={this.props.id} style={{alignSelf: alignments.va}} onChange={x => this.setState({checked: x.checked})} checked={this.state.checked} disabled={!this.props["cellEditor.editable"]}/>
+            <label htmlFor={this.props.id} style={{alignSelf: alignments.va}} className="p-checkbox-label">{this.props.cellEditor.text}</label>
         </span> );
     }
 }

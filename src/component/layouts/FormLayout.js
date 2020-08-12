@@ -23,8 +23,8 @@ class FormLayout extends Component {
 
     components = this.props.subjects;
 
-    horizontalAlignment = this.props.alignments.hAlignment;
-    verticalAlignment = this.props.alignments.vAlignment;
+    horizontalAlignment = this.props.alignments.ha;
+    verticalAlignment = this.props.alignments.va;
 
     leftBorderUsed = false;
     rightBorderUsed = false;

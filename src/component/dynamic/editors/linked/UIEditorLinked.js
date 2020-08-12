@@ -4,6 +4,7 @@ import './UIEditorLinked.scss'
 
 import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
+import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 
 class UIEditorLinked extends Base {
 
@@ -18,12 +19,16 @@ class UIEditorLinked extends Base {
     }
 
     componentDidMount(){
-        let childList = this.autoC.panel.element.children
-        for (let child of childList) {
-            if (child.tagName === 'INPUT') {
-                child.style.setProperty('background-color', this.props["cellEditor.background"])
+        if (this.autoC.container !== null) {
+            let alignments = checkCellEditorAlignments(this.props);
+            for (let child of this.autoC.container.children) {
+                if (child.tagName === 'INPUT') {
+                    child.style.setProperty('background-color', this.props["cellEditor.background"])
+                    child.style.setProperty('text-align', alignments.ha)
+                }
             }
         }
+        
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this));
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
 
