@@ -30,7 +30,7 @@ class GridLayout extends Component {
         let tempContent = [];
         components.forEach(component => {
             if (this.props.isVisible(component)) {
-                let componentConstraints = new CellConstraints(component.props.data.constraints)
+                let componentConstraints = new CellConstraints(component.props.constraints)
                 let calculatedWidth = componentConstraints.gridWidth * (fieldSize.width - (this.props.gaps.horizontalGap / componentConstraints.gridWidth - this.props.gaps.horizontalGap / this.props.gridSize.columns))
                 let calculatedLeft = componentConstraints.gridX * (fieldSize.width - (this.props.gaps.horizontalGap - this.props.gaps.horizontalGap / this.props.gridSize.columns) + this.props.gaps.horizontalGap)
                 let calculatedHeight = componentConstraints.gridHeight * (fieldSize.height - (this.props.gaps.verticalGap / componentConstraints.gridHeight - this.props.gaps.verticalGap / this.props.gridSize.rows))

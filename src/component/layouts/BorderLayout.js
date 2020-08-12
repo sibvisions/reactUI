@@ -24,8 +24,8 @@ class BorderLayout extends Component {
         this.components.forEach(component => {
             if(this.props.isVisible(component)) {
                 let clonedComponent;
-                if (component.props.data.constraints) {
-                    switch(component.props.data.constraints) {
+                if (component.props.constraints) {
+                    switch(component.props.constraints) {
                         case 'North':
                             clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
                             this.elemNorth = clonedComponent;

@@ -7,9 +7,9 @@ class UIEditorDisabled extends Base {
         return ( 
             <InputText
                 disabled={true}
-                id={this.props.data.id}
+                id={this.props.id}
                 contentEditable="false"
-                style={{...this.props.style, backgroundColor:this.props.data.background}}
+                style={{...this.props.style, backgroundColor:this.props.background}}
             />
         );
     }

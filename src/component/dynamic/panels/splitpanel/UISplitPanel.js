@@ -10,7 +10,7 @@ class UISplitPanel extends Base {
 
         if(this.state.content){
             this.state.content.forEach(x => {
-                if(x.props.data.constraints === "SECOND_COMPONENT"){
+                if(x.props.constraints === "SECOND_COMPONENT"){
                     leftComp.push(x);
                 }
             });
@@ -22,7 +22,7 @@ class UISplitPanel extends Base {
         let rightComp = [];
         if(this.state.content){
             this.state.content.forEach(x => {
-                if(x.props.data.constraints === "FIRST_COMPONENT"){
+                if(x.props.constraints === "FIRST_COMPONENT"){
                     rightComp.push(x);
                 } 
             });

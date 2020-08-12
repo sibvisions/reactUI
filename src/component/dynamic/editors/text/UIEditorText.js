@@ -18,19 +18,19 @@ class UIEditorText extends Base {
     }
 
     setContent(content){
-        if(content[this.props.data.columnName]){
-            this.setState({selection: content[this.props.data.columnName]});
+        if(content[this.props.columnName]){
+            this.setState({selection: content[this.props.columnName]});
         }
     }
 
     render() {
         return ( 
             <InputText
-                id={this.props.data.id}
+                id={this.props.id}
                 value={this.state.selection ? this.state.selection : ""}
-                style={{...this.props.style, backgroundColor: this.props.data["cellEditor.background"]}}
+                style={{...this.props.style, backgroundColor: this.props["cellEditor.background"]}}
                 onChange={x => this.setState({selection: x.target.value})}
-                disabled={!this.props.data["cellEditor.editable"]}
+                disabled={!this.props["cellEditor.editable"]}
             /> 
         );
     }

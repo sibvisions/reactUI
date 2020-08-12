@@ -16,24 +16,24 @@ import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
 
 
 export function createButton(buttonData){
-    return <UIButton data={buttonData} key={buttonData.id} />
+    return <UIButton {...buttonData} key={buttonData.id} />
 }
 
 export function createPanel(panelData){
-    return  <UIPanel data={panelData} key={panelData.id} />
+    return  <UIPanel  {...panelData} key={panelData.id} />
 }
 
 export function createTable(tableData) {
-    return <UITable data={tableData} key={tableData.id} />
+    return <UITable {...tableData} key={tableData.id} />
 }
 
 export function createLabel(labelData) {
-    return <UILabel data={labelData} key={labelData.id} />
+    return <UILabel {...labelData} key={labelData.id} />
 }
 
 export function createEditor(editorData) {
     const props= {
-        data: editorData,
+        ...editorData,
         key: editorData.id
     }
 
@@ -57,13 +57,13 @@ export function createEditor(editorData) {
 }
 
 export function createGroupPanel(groupPanelData) {
-    return <UIGroupPanel data={groupPanelData} key={groupPanelData.id}/>
+    return <UIGroupPanel {...groupPanelData} key={groupPanelData.id}/>
 }
 
 export function createSplitPanel(splitPanelData) {
-    return <UISplitPanel data={splitPanelData} key={splitPanelData.id}/>
+    return <UISplitPanel {...splitPanelData} key={splitPanelData.id}/>
 }
 
 export function createCheckBox(checkBoxData){
-    return <UICheckBox data={checkBoxData} key={checkBoxData.id}/>
+    return <UICheckBox {...checkBoxData} key={checkBoxData.id}/>
 }

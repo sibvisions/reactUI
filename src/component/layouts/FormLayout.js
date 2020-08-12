@@ -7,7 +7,7 @@ import { toPx } from '../helper/ToPx';
 
 class FormLayout extends Component {
 
-    currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.data.id);
+    currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.id);
     anchors = new Map();
     componentConstraints = new Map();
 
@@ -302,7 +302,7 @@ class FormLayout extends Component {
             })
             
             this.components.forEach(component => {
-                let constraint = this.componentConstraints.get(component.props.data.id)
+                let constraint = this.componentConstraints.get(component.props.id)
                 this.initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
                 this.initAutoSizeRelative(constraint.rightAnchor, constraint.leftAnchor);
                 this.initAutoSizeRelative(constraint.topAnchor, constraint.bottomAnchor);
@@ -312,14 +312,14 @@ class FormLayout extends Component {
             // let autoSizeCount = 1
             // do {
             //     this.components.forEach(component => {
-            //         let constraint = this.componentConstraints.get(component.props.data.id)
+            //         let constraint = this.componentConstraints.get(component.props.id)
             //         let preferredSize = this.props.getPreferredSize(component)
             //         this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.getHeight(), autoSizeCount);
             //         this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.getWidth(), autoSizeCount);
             //     });
             //     autoSizeCount = Math.pow(2, 31) - 1
             //     this.components.forEach(component => {
-            //         let constraint = this.componentConstraints.get(component.props.data.id)
+            //         let constraint = this.componentConstraints.get(component.props.id)
             //         let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
             //         if(count > 0 && count < autoSizeCount) {
             //             autoSizeCount = count;
@@ -342,7 +342,7 @@ class FormLayout extends Component {
             for (let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1;) {
                 this.components.forEach(component => {
                     if (this.props.isVisible(component)) {
-                        let constraint = this.componentConstraints.get(component.props.data.id)
+                        let constraint = this.componentConstraints.get(component.props.id)
                         let preferredSize = this.props.getPreferredSize(component)
                         this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
                         this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
@@ -351,7 +351,7 @@ class FormLayout extends Component {
                 autoSizeCount = Math.pow(2, 31) - 1
                 this.components.forEach(component => {
                     if (this.props.isVisible(component)) {
-                        let constraint = this.componentConstraints.get(component.props.data.id)
+                        let constraint = this.componentConstraints.get(component.props.id)
                         let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
                         if (count > 0 && count < autoSizeCount) {
                             autoSizeCount = count;
@@ -384,7 +384,7 @@ class FormLayout extends Component {
     
             this.components.forEach(component => {
                 if (this.props.isVisible(component)) {
-                    let constraint = this.componentConstraints.get(component.props.data.id);
+                    let constraint = this.componentConstraints.get(component.props.id);
                     let preferredSize = this.props.getPreferredSize(component);
                     let minimumSize = this.props.getMinimumSize(component);
         
@@ -606,7 +606,7 @@ class FormLayout extends Component {
 
             this.components.forEach(component => {
                 if (this.props.isVisible(component)) {
-                    let constraint = this.componentConstraints.get(component.props.data.id);
+                    let constraint = this.componentConstraints.get(component.props.id);
                     let preferredSize = this.props.getPreferredSize(component);
     
                     this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
@@ -621,7 +621,7 @@ class FormLayout extends Component {
         let tempContent = [];
         components.forEach(component => {
             if (this.props.isVisible(component)) {
-                let constraint = this.componentConstraints.get(component.props.data.id);
+                let constraint = this.componentConstraints.get(component.props.id);
                 let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
                 if (compHeight > this.preferredHeight) {
                     compHeight = this.preferredHeight;
@@ -653,7 +653,7 @@ class FormLayout extends Component {
     }
 
     finishSizesAndPos() {
-        let el = document.getElementById(this.props.component.props.data.id)
+        let el = document.getElementById(this.props.component.props.id)
         if (el !== null) {
             if (!this.firstPosCalc) {
                 this.prevTop = el.style.top
@@ -673,7 +673,7 @@ class FormLayout extends Component {
             this.layoutContainer()
         }
         return (
-            <div className={"formlayout " + this.props.component.props.data.id} style={{
+            <div className={"formlayout " + this.props.component.props.id} style={{
                                         position: 'relative',
                                         width: this.preferredWidth, 
                                         height: this.preferredHeight,

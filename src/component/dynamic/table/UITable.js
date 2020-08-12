@@ -19,16 +19,15 @@ class UITable extends Base {
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
     componentDidMount(){
-
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(fetchData => {
-            if(fetchData.dataProvider === this.props.data.dataProvider){
+            if(fetchData.dataProvider === this.props.dataProvider){
                 this.buildData(fetchData);
             }
         })
-        this.buildColumns(this.props.data.columnLabels, this.props.data.columnNames);
-
-        let data = this.context.contentStore.storedData.get(this.props.data.dataProvider);
+        this.buildColumns(this.props.columnLabels, this.props.columnNames);
+        let data = this.context.contentStore.storedData.get(this.props.dataProvider);
         if(data){
+            console.log(data)
             this.buildData(data)
         }
     }
@@ -43,26 +42,14 @@ class UITable extends Base {
                 field: names[index],
                 header: labels[index],
                 key: names[index],
-                "cellEditor.editable": false
             }
-            const name = this.props.data.name;
             let metaData = this.context.contentStore.metaData.get(names[index])
             if(metaData){
                 if(metaData.cellEditor.className === "TextCellEditor"){
                     props.editor = (props) => <TextCellEditor selection={props.rowData[names[index]]} />;
                 } else if(metaData.cellEditor.className === "LinkedCellEditor"){
-                    metaData.cellEditor.clearColumns = ["ID", names[index]];
-                    const data= {
-                        "cellEditor.editable": true,
-                        columnName: names[index],
-                        ...metaData,
-                        name: name,
-                    }
                     props.editor = (props) => <Dropdown options={[1,2,3,4,5,6,7,8,9,10]}/>
                 }
-
-
-
                 let column = <Column {...props}/>
                 this.dataColumns.push(column);
             }
@@ -94,7 +81,7 @@ class UITable extends Base {
     onSelectChange(event){
         let value = event.value
         this.context.contentStore.emitChangeOfSelectedRow(value)
-        this.context.serverComm.selectRow(this.props.data.name, this.props.data.dataProvider , event.value);
+        this.context.serverComm.selectRow(this.props.name, this.props.dataProvider , event.value);
 
     }
 
@@ -103,7 +90,7 @@ class UITable extends Base {
             <DataTable
                 resizableColumns={true}
                 columnResizeMode={"expand"}
-                id={this.props.data.id}
+                id={this.props.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
                 //valueable={true}    

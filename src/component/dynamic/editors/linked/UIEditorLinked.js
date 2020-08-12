@@ -14,14 +14,14 @@ class UIEditorLinked extends Base {
 
     constructor(props){
         super(props)
-        this.data = this.props.data
+        this.data = this.props
     }
 
     componentDidMount(){
         let childList = this.autoC.panel.element.children
         for (let child of childList) {
             if (child.tagName === 'INPUT') {
-                child.style.setProperty('background-color', this.props.data["cellEditor.background"])
+                child.style.setProperty('background-color', this.props["cellEditor.background"])
             }
         }
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this));

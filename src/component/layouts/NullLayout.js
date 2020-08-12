@@ -17,7 +17,7 @@ class NullLayout extends Component {
         let tempContent = [];
         components.forEach(component => {
             if (this.props.isVisible(component)) {
-                let splittedBounds = component.props.data.bounds.split(',')
+                let splittedBounds = component.props.bounds.split(',')
                 let compBounds = new Bounds(splittedBounds);
                 console.log(compBounds.height)
                 let style = {

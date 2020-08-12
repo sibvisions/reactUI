@@ -22,8 +22,8 @@ class Base extends Component {
     startUp(){
         let content = [];
         content.length = 0
-        if (this.props.data.subjects) {
-            this.props.data.subjects.forEach(subject => {
+        if (this.props.subjects) {
+            this.props.subjects.forEach(subject => {
                 let temp = this.context.uiBuilder.compontentHandler(subject);
                 if(temp) content.push(temp)
             });
@@ -34,11 +34,11 @@ class Base extends Component {
     getPreferredSize(comp) {
         let prefSize;
         if (comp) {
-            if (comp.props.data.preferredSize) {
-                prefSize = new Size(undefined, undefined, comp.props.data.preferredSize)
+            if (comp.props.preferredSize) {
+                prefSize = new Size(undefined, undefined, comp.props.preferredSize)
             }
             else {
-                let element = document.getElementById(comp.props.data.id);
+                let element = document.getElementById(comp.props.id);
                 if (element.getBoundingClientRect()) {
                     prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
                 }
@@ -46,8 +46,8 @@ class Base extends Component {
                     prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)
                 }
             }
-            if (comp.props.data.minimumSize) {
-                let minSize = new Size(undefined, undefined, comp.props.data.minimumSize)
+            if (comp.props.minimumSize) {
+                let minSize = new Size(undefined, undefined, comp.props.minimumSize)
                 if (prefSize.width < minSize.width) {
                     prefSize.setWidth(minSize.width);
                 }
@@ -62,8 +62,8 @@ class Base extends Component {
                 }
             }
 
-            if (comp.props.data.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
+            if (comp.props.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
                 if (maxSize.width < prefSize.width) {
                     prefSize.setWidth(maxSize.width);
                 }
@@ -88,15 +88,15 @@ class Base extends Component {
     getMinimumSize(comp) {
         let minSize;
         if (comp) {
-            if (comp.props.data.minimumSize) {
-                minSize = new Size(undefined, undefined, comp.props.data.minimumSize);
+            if (comp.props.minimumSize) {
+                minSize = new Size(undefined, undefined, comp.props.minimumSize);
             }
             else {
                 minSize = this.getPreferredSize(comp);
             }
     
-            if (comp.props.data.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
+            if (comp.props.maximumSize) {
+                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
                 if (maxSize.width < minSize.width) {
                     minSize.setWidth(maxSize.width);
                 }
@@ -111,8 +111,8 @@ class Base extends Component {
     getMaximumSize(comp) {
         let maxSize;
         if (comp) {
-            if (comp.props.data.maximumSize) {
-                maxSize = new Size(undefined, undefined, comp.props.data.maximumSize);
+            if (comp.props.maximumSize) {
+                maxSize = new Size(undefined, undefined, comp.props.maximumSize);
             }
             else {
                 maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)
@@ -123,7 +123,7 @@ class Base extends Component {
 
     isVisible(comp) {
         if (comp) {
-            if (comp.props.data.visible === undefined || comp.props.data.visible) {
+            if (comp.props.visible === undefined || comp.props.visible) {
                 return true;
             }
             else {
@@ -134,23 +134,23 @@ class Base extends Component {
 
     insertLayout() {
         if (this.state.content !== undefined) {
-            if (this.props.data.layout !== null) {
-                let margins = new Margins(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(0, 4))
-                let gaps = new Gaps(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(4, 6))
-                switch (this.props.data.layout.substring(0, this.props.data.layout.indexOf(','))) {
+            if (this.props.layout !== null) {
+                let margins = new Margins(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(0, 4))
+                let gaps = new Gaps(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(4, 6))
+                switch (this.props.layout.substring(0, this.props.layout.indexOf(','))) {
                     case "FormLayout":
-                        var alignments = new Alignments(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(6, 8), 'form')
+                        var alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8), 'form')
                         return <FormLayout
                             component={this}
-                            layout={this.props.data.layout}
-                            layoutData={this.props.data.layoutData}
+                            layout={this.props.layout}
+                            layoutData={this.props.layoutData}
                             subjects={this.state.content}
                             margins={margins}
                             gaps={gaps}
                             alignments={alignments}
                             preferredSize={this.getPreferredSize(this)}
-                            minimumSize={this.props.data.minimumSize}
-                            maximumSize={this.props.data.maximumSize}
+                            minimumSize={this.props.minimumSize}
+                            maximumSize={this.props.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
                             getMaximumSize={this.getMaximumSize}
@@ -162,15 +162,15 @@ class Base extends Component {
                             margins={margins}
                             gaps={gaps}
                             preferredSize={this.getPreferredSize(this)}
-                            minimumSize={this.props.data.minimumSize}
-                            maximumSize={this.props.data.maximumSize}
+                            minimumSize={this.props.minimumSize}
+                            maximumSize={this.props.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
                             getMaximumSize={this.getMaximumSize}
                             isVisible={this.isVisible} />;
                     case "FlowLayout":
-                        let orientation = new Orientation(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(6, 7));
-                        alignments = new Alignments(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(7, 10), 'flow');
+                        let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 7));
+                        alignments = new Alignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(7, 10), 'flow');
                         return <FlowLayout
                             component={this}
                             subjects={this.state.content}
@@ -179,12 +179,12 @@ class Base extends Component {
                             orientation={orientation.orientation}
                             alignments={alignments}
                             preferredSize={this.getPreferredSize(this)}
-                            minimumSize={this.props.data.minimumSize}
-                            maximumSize={this.props.data.maximumSize}
+                            minimumSize={this.props.minimumSize}
+                            maximumSize={this.props.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             isVisible={this.isVisible} />;
                     case "GridLayout":
-                        let gridSize = new GridSize(this.props.data.layout.substring(this.props.data.layout.indexOf(',') + 1, this.props.data.layout.length).split(',').slice(6, 8));
+                        let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8));
                         return <GridLayout
                             component={this}
                             subjects={this.state.content}
@@ -192,8 +192,8 @@ class Base extends Component {
                             gaps={gaps}
                             gridSize={gridSize}
                             preferredSize={this.getPreferredSize(this)}
-                            minimumSize={this.props.data.minimumSize}
-                            maximumSize={this.props.data.maximumSize}
+                            minimumSize={this.props.minimumSize}
+                            maximumSize={this.props.maximumSize}
                             getPreferredSize={this.getPreferredSize}
                             isVisible={this.isVisible} />;
                     default: return <NullLayout

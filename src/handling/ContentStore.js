@@ -69,22 +69,20 @@ class ContentStore{
             
             if(existingComp){
                 if(newEl["~destroy"]){
-                    let indexToDelete = this.flatContent.findIndex(x => x.id === newEl.id);
+                    let indexToDelete = this.flatContent.findIndex(component => component.id === newEl.id);
                     if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);              
                 }
                 else if (newEl["~remove"]) {
-                    let indexToRemove = this.flatContent.findIndex(x => x.id === newEl.id);
+                    let indexToRemove = this.flatContent.findIndex(component => component.id === newEl.id);
                     if(indexToRemove !== -1) {
                         let removedElem = this.flatContent.splice(indexToRemove, 1);
                         this.removedContent.push(removedElem[0]);
                     } 
                 }
-                 else {
+                else {
                     for(let newProp in newEl){
                         existingComp[newProp] = newEl[newProp]
                     }
-                    // console.log(existingComp["cellEditor"]["preferredEditorMode"]);
-                    // console.log(newEl)
                 }   
             } else this.flatContent.push(newEl)
         });
