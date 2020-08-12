@@ -9,6 +9,10 @@
 }
 
 td, th{
-    overflow: scroll;
+    overflow: visible;
     //white-space: nowrap;
+}
+
+.p-datatable-resizable .p-datatable-tbody>tr>td{
+    overflow: visible;
 }

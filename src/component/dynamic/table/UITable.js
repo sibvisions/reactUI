@@ -106,7 +106,7 @@ class UITable extends Base {
                 id={this.props.data.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
-                valueable={true}    
+                //valueable={true}    
                 scrollHeight="100%" 
                 style={this.props.style}
                 header="Table"
