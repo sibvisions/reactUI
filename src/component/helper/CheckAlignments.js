@@ -13,6 +13,27 @@ export function checkCellEditorAlignments(props) {
     }
 }
 
+export function checkAlignments(props) {
+    if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined) {
+        return {ha: translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+    }
+    else if (props.horizontalAlignment !== undefined) {
+        return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(0, 'v')};
+    }
+    else if (props.verticalAlignment !== undefined) {
+        return {ha: translateAlignments(0, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+    }
+    else {
+        if (props.className === 'Label') {
+            return {ha: translateAlignments(0, 'h'), va: translateAlignments(0, 'v')}
+        }
+        else if (props.className === 'Button') {
+            return {ha: translateAlignments(1, 'h'), va: translateAlignments(1, 'v')}
+        }
+        
+    }
+}
+
 export function checkFlowAlignments(alignArray) {
     return {ha: translateAlignments(parseInt(alignArray[0]), 'h'), va: translateAlignments(parseInt(alignArray[1]), 'v'), ca: translateAlignments(parseInt(alignArray[2]), 'h')}
 }

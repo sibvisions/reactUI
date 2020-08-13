@@ -3,6 +3,7 @@ import { Anchor } from "./layoutObj/Anchor";
 import { Constraints } from "./layoutObj/Constraints";
 import { Size } from '../../component/helper/Size';
 import { RefContext } from '../../component/helper/Context';
+import { FindReact } from '../../component/helper/FindReact';
 import { toPx } from '../helper/ToPx';
 
 class FormLayout extends Component {
@@ -47,7 +48,20 @@ class FormLayout extends Component {
     }
 
     componentDidMount() {
-        this.layoutContainer()
+        const someElements = document.getElementsByClassName("formlayout")
+        for (const element of someElements) {
+            const myComp = FindReact(element)
+            myComp.layoutContainer();
+        }
+
+        window.addEventListener("resize", () => {
+            const someElements = document.getElementsByClassName("formlayout")
+            for (const element of someElements) {
+                const myComp = FindReact(element)
+                myComp.layoutContainer();
+            }
+        });
+
         if (this.context.menuLocation === 'side') {
             const mutationObserver = new MutationObserver(mutationsList => {
                 mutationsList.forEach(mutation => {
@@ -64,7 +78,13 @@ class FormLayout extends Component {
     }
 
     componentWillUnmount() {
-        window.onresize = null;
+        window.removeEventListener("resize", () => {
+            const someElements = document.getElementsByClassName("formlayout")
+            for (const element of someElements) {
+                const myComp = FindReact(element)
+                myComp.layoutContainer();
+            }
+        });
     }
 
     getAnchorsAndConstraints() {
@@ -513,6 +533,7 @@ class FormLayout extends Component {
     calculateTargetDependentAnchors() {
         if (this.vCalculateTargetDependentAnchors) {
             let size = this.props.getPreferredSize(this.props.component);
+            //console.log(this.props.component.props.id, size.width)
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
 
@@ -669,9 +690,6 @@ class FormLayout extends Component {
     }
 
     render() {
-        window.onresize = () => {
-            this.layoutContainer()
-        }
         return (
             <div className={"formlayout " + this.props.component.props.id} style={{
                                         position: 'relative',

@@ -8,9 +8,7 @@ class UIEditorNumber extends Base {
 
 
     componentDidMount() {
-        console.log(this.props)
         if (this.number.element !== null) {
-            console.log(this.number)
             let alignments = checkCellEditorAlignments(this.props)
             for (let child of this.number.element.children) {
                 if (child.tagName === 'INPUT') {

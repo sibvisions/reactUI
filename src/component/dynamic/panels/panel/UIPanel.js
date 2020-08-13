@@ -13,7 +13,7 @@ class UIPanel extends Base {
             overflowYVal = null
         }
         return (
-        <div id={this.props.id} className="p-col-12" style={ {height: '100%', border: '0.1px solid transparent', overflowY: overflowYVal} }>
+        <div id={this.props.id} className="p-col-12" style={ {height: '100%', border: '0.1px solid transparent', /*overflowY: overflowYVal*/} }>
             {this.insertLayout()}
         </div>
         );

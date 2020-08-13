@@ -15,6 +15,7 @@ import Footer from "./component/frontend/footer/Footer";
 import Settings from './component/frontend/settings/Settings';
 import { RefContext } from "./component/helper/Context";
 
+import { resizeEventLimiter } from "./component/helper/ResizeEventLimiter"
 
 //Handling Imports
 import ServerCommunicator from './handling/ServerCommunicator';
@@ -86,23 +87,12 @@ class App extends Component {
         this.serverComm.deviceStatus(window.innerHeight, window.innerWidth)
     }
 
-    resizeEventLimiter(fn, ms){
-        let timer;
-        return () => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                    timer = null;
-                    fn.apply(this, arguments);
-            }, ms)
-        };
-    }
-
     componentDidMount() {
-        window.addEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this))
+        window.addEventListener("resize", resizeEventLimiter(this.handleResize, 500, this).bind(this))
     }
 
     componentWillUnmount() {
-        window.removeEventListener("resize", this.resizeEventLimiter(this.handleResize, 500).bind(this));
+        window.removeEventListener("resize", resizeEventLimiter(this.handleResize, 500, this).bind(this));
     }
 
     render() {

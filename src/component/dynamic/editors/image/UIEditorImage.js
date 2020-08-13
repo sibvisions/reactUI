@@ -12,6 +12,7 @@ class UIEditorImage extends Base {
     }
 
     componentDidMount() {
+        //console.log(this.props)
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(selection => {
             if(selection[this.props.columnName]){
                 this.setState({img: "data:image/png;base64," + selection[this.props.columnName]});
