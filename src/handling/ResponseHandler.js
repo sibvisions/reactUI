@@ -77,7 +77,7 @@ class ResponseHandler{
         requestPromise
             .then(response => response.json())
             .then(jResponse => this.handler(jResponse))
-            .catch(error => {throw new Error(error)})
+            .catch(error => {console.error(error)})
     }
 
     handler(responseArray){

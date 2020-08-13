@@ -8,7 +8,20 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 class UIEditorDate extends Base {
 
+    constructor(props){
+        super(props);
+
+        this.test = {}
+        if(props.appendToBody){
+            this.test= {
+                appendTo: document.body
+            }
+        }
+        
+    }
+
     componentDidMount() {
+        console.log(this.calender)
         if (this.calender.container !== null) {
             let alignments = checkCellEditorAlignments(this.props)
             for (let child of this.calender.container.children) {
@@ -35,10 +48,11 @@ class UIEditorDate extends Base {
     render() {
         return ( 
             <Calendar
+                {...this.test}
                 ref = {r => this.calender = r}
                 showIcon={true}
                 id={this.props.id}
-                style={{textAlign: 'start',  ...this.props.layoutStyle}}
+                style={{width:"100%", textAlign: 'start',  ...this.props.layoutStyle}}
                 dateFormat="dd/mm/yy"
                 value={this.state.date ? this.state.date : 0}
                 onChange= {value => this.setState({date: value.value})}

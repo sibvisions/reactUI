@@ -7,6 +7,17 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 class UIEditorText extends Base {
 
+
+    constructor(props){
+        super(props);
+        if(props.initialValue){
+            this.state = {
+                selection: props.initialValue[props.columnName]
+            }
+        }
+    }
+
+
     componentDidMount() {
         this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.setContent.bind(this))
     }

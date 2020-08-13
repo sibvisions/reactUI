@@ -13,11 +13,6 @@ class UIEditorLinked extends Base {
         options: [],
     }
 
-    constructor(props){
-        super(props)
-        this.data = this.props
-    }
-
     componentDidMount(){
         if (this.autoC.container !== null) {
             let alignments = checkCellEditorAlignments(this.props);
@@ -49,7 +44,7 @@ class UIEditorLinked extends Base {
     }
 
     newSelection(newSelection){
-        if(newSelection[this.data.columnName] !== null){
+        if(newSelection[this.props.columnName] !== null){
             this.setState({selectedObject: newSelection});
         } else {
             this.setState({selectedObject: undefined})
@@ -57,12 +52,12 @@ class UIEditorLinked extends Base {
     }
 
     formatFetchResponse(fetchedData){
-        if(fetchedData.dataProvider === this.data.cellEditor.linkReference.dataProvider){
+        if(fetchedData.dataProvider === this.props.cellEditor.linkReference.dataProvider){
             let buildOptions = []
             fetchedData.records.forEach(record => {
                 let element = {};
                 record.forEach((data, index) => {
-                    if(data !== null) element[this.data.cellEditor.clearColumns[index]] = data
+                    if(data !== null) element[this.props.cellEditor.clearColumns[index]] = data
                 });
                 buildOptions.push(element);
             });
@@ -73,9 +68,9 @@ class UIEditorLinked extends Base {
 
     fetchFilterdData(filterString){
         this.context.serverComm.fetchFilterdData(
-            this.data.cellEditor.linkReference.dataProvider,
+            this.props.cellEditor.linkReference.dataProvider,
             filterString,
-            this.data.name);
+            this.props.name);
     }
 
     autoComplete(event){
@@ -85,16 +80,16 @@ class UIEditorLinked extends Base {
     render(){ 
         return (
             <AutoComplete
-                id={this.data.id}
+                id={this.props.id}
                 ref= {r => this.autoC = r}
                 style={this.props.layoutStyle}
                 dropdown={true}
                 completeMethod={this.autoComplete.bind(this)}
-                field={this.data.columnName}
+                field={this.props.columnName}
                 value={this.state.selectedObject}
                 suggestions={this.state.suggestions}
                 onChange={x => this.setState({selectedObject: x.target.value})}
-                disabled={!this.data["cellEditor.editable"]}
+                disabled={!this.props["cellEditor.editable"]}
             />
         )
     }

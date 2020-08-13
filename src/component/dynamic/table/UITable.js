@@ -4,6 +4,7 @@ import './UITable.scss'
 
 import { Size } from '../../helper/Size';
 import { RefContext } from '../../helper/Context';
+import { createEditor, createButton } from "../../factories/ComponentFactory";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -12,7 +13,7 @@ import { Dropdown } from "primereact/dropdown";
 class UITable extends Base {
     content = [];
     dataColumns = [];
-    metaData;
+    data;
     state = {  }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
@@ -35,29 +36,39 @@ class UITable extends Base {
 
     buildColumns(labels, names){
         for (let index = 0; index < labels.length; index++){
-            let props= {
+            let columnProps= {
                 field: names[index],
                 header: labels[index],
                 key: names[index],
             }
-            let metaData = this.context.contentStore.metaData.get(names[index])
-            if(metaData){
-                if(metaData.cellEditor.className === "TextCellEditor"){
-                    
-                } else if(metaData.cellEditor.className === "LinkedCellEditor"){
-                    props.body = () => <Dropdown appendTo={document.body} options={[1,2,3,4,5,6,7,8,9,10]}/>
-                }
-                let column = <Column {...props}/>   
-                this.dataColumns.push(column);
-            }
+            let metaData = this.context.contentStore.metaData.get(names[index]);
+            metaData.name = this.props.name;
+            metaData.cellEditor.clearColumns = ["ID", names[index]]
+                columnProps.editor = (props) => this.buildEditor(props, metaData)
+            this.dataColumns.push(<Column {...columnProps}/>);
         }
-
-         labels.map(async (label, index) => {
-
-        })
     }
 
-    buildData(data){
+
+    buildEditor(props, data){
+        if(data){
+            const className = data.cellEditor.className;
+            if(className === "LinkedCellEditor"){
+                data.appendToBody = true
+            } else if(className === "DateCellEditor"){
+                data.appendToBody = true
+            }
+            data["cellEditor.editable"] = true;
+            data.columnName = props.field
+            data.initialValue = props.rowData;
+            return createEditor(data);
+
+        } else {
+            return undefined;
+        }
+    }
+
+    async buildData(data){
         let tempArray = []
         data.records.forEach(set => {
             let tableData = {}
@@ -69,8 +80,8 @@ class UITable extends Base {
         this.setState({Data: tempArray})
     }
 
-    onSelectChange(event){
-        const value = event.value
+    async onSelectChange(event){
+        const value = event.data
         this.context.contentStore.emitChangeOfSelectedRow(value)
         this.context.serverComm.selectRow(this.props.name, this.props.dataProvider , value);
     }
@@ -78,17 +89,20 @@ class UITable extends Base {
     render(){
         return ( 
             <DataTable
+                id={this.props.id}
+                header="Table"
+                value={this.state.Data ? this.state.Data : [] }
+
+                onRowDoubleClick={this.onSelectChange.bind(this)}
+
                 resizableColumns={true}
                 columnResizeMode={"expand"}
-                id={this.props.id}
-                value={this.state.Data ? this.state.Data : [] } 
-                scrollable={true} 
-                header="Table"
+                
+                scrollable={true}
                 style={{...this.props.layoutStyle}}
-                selectionMode={"single"}
-                onSelectionChange={this.onSelectChange.bind(this)}
                 >
                 {this.dataColumns}
+               
             </DataTable>);
     }
 }

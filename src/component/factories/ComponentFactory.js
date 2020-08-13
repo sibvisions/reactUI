@@ -52,6 +52,7 @@ export function createEditor(editorData) {
     } else if(editorData.cellEditor.className === "ImageViewer"){
         return <UIEditorImage {...props}/>
     } else if(editorData.cellEditor.className === "DateCellEditor"){
+        console.log(props)
         return <UIEditorDate {...props}/>
     }
 }
