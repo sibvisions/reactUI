@@ -134,7 +134,7 @@ class ResponseHandler{
         }
         if(genericResponse.update){
             this.mainScreen.refresh();
-        } 
+        }
         this.routeTo("/main/"+genericResponse.componentId)
     }
 

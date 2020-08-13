@@ -11,39 +11,36 @@ class BorderLayout extends Component {
 
     components = this.props.subjects;
 
-    // state = {
-    //     preferredWidth: 0,
-    //     preferredHeight: 0
-    // }
-
-    // componentDidMount() {
-    //     this.calculateSizes()
-    // }
-
     layoutContainer() {
         this.components.forEach(component => {
             if(this.props.isVisible(component)) {
                 let clonedComponent;
                 if (component.props.constraints) {
+                    const props={
+                        layoutStyle: {
+                            height: "100%",
+                            width: "100%"
+                        }                        
+                    }
                     switch(component.props.constraints) {
                         case 'North':
-                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            clonedComponent = React.cloneElement(component, {...props});
                             this.elemNorth = clonedComponent;
                             break;
                         case 'West':
-                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            clonedComponent = React.cloneElement(component, {...props});
                             this.elemWest = clonedComponent;
                             break;
                         case 'Center':
-                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            clonedComponent = React.cloneElement(component, {...props});
                             this.elemCenter = clonedComponent;
                             break;
                         case 'East':
-                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            clonedComponent = React.cloneElement(component, {...props});
                             this.elemEast = clonedComponent;
                             break;
                         case 'South':
-                            clonedComponent = React.cloneElement(component, {style: {...component.props.style, height: '100%', width: '100%'}})
+                            clonedComponent = React.cloneElement(component, {...props});
                             this.elemSouth = clonedComponent;
                             break;
                         default: return null

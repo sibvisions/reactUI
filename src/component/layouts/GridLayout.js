@@ -35,14 +35,14 @@ class GridLayout extends Component {
                 let calculatedLeft = componentConstraints.gridX * (fieldSize.width - (this.props.gaps.horizontalGap - this.props.gaps.horizontalGap / this.props.gridSize.columns) + this.props.gaps.horizontalGap)
                 let calculatedHeight = componentConstraints.gridHeight * (fieldSize.height - (this.props.gaps.verticalGap / componentConstraints.gridHeight - this.props.gaps.verticalGap / this.props.gridSize.rows))
                 let calculatedTop = componentConstraints.gridY * (fieldSize.height - (this.props.gaps.verticalGap - this.props.gaps.verticalGap / this.props.gridSize.rows) + this.props.gaps.verticalGap)
-                let style = {
+                let layoutStyle = {
                     position: "absolute",
                     height: calculatedHeight,
                     width: calculatedWidth,
                     top: calculatedTop,
                     left: calculatedLeft
                 }
-                let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
+                let clonedComponent = React.cloneElement(component, { layoutStyle: { ...layoutStyle } })
                 tempContent.push(clonedComponent);
             }
             

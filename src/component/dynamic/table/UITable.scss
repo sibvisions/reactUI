@@ -1,18 +1,18 @@
-.p-datatable-scrollable-wrapper {
-    //height:calc(100% - 36px);
-    .p-datatable-scrollable-view {
-        height:100%;
-        .p-datatable-scrollable-body {
-            max-height: calc(100% - 36px) !important;
-        }
-    }
-}
+// .p-datatable-scrollable-wrapper {
+//     //height:calc(100% - 36px);
+//     .p-datatable-scrollable-view {
+//         height:100%;
+//         .p-datatable-scrollable-body {
+//             max-height: calc(100% - 36px) !important;
+//         }
+//     }
+// }
 
-td, th{
-    overflow: visible;
-    //white-space: nowrap;
-}
+// td, th{
+//     overflow: visible;
+//     //white-space: nowrap;
+// }
 
-.p-datatable-resizable .p-datatable-tbody>tr>td{
-    overflow: visible;
-}
+// .p-datatable-resizable .p-datatable-tbody>tr>td{
+//     overflow: visible;
+// }

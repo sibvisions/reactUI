@@ -42,7 +42,7 @@ class UIEditorNumber extends Base {
                 id={this.props.id}
                 ref={r => this.number = r}
                 value={this.state.selection}
-                style={this.props.style}
+                style={this.props.layoutStyle}
                 onChange={x => this.setState({selection: x.target.value})}
                 disabled={!this.props["cellEditor.editable"]}/>
         )

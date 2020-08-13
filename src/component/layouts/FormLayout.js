@@ -637,7 +637,7 @@ class FormLayout extends Component {
                         left: constraint.leftAnchor.getAbsolutePosition(),
                         top: constraint.topAnchor.getAbsolutePosition()
                     }
-                let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+                let clonedComponent = React.cloneElement(component, {layoutStyle: style})
                 tempContent.push(clonedComponent);     
             }
         });

@@ -41,7 +41,7 @@ export function createEditor(editorData) {
         return <UIEditorDisabled {...props} />
     }
 
-    if(editorData.cellEditor.className === "CheckBoxCellEditor"){
+    else if(editorData.cellEditor.className === "CheckBoxCellEditor"){
         return <UIEditorCheckbox {...props}/>
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
         return <UIEditorNumber {...props}/>

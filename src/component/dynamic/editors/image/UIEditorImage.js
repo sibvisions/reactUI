@@ -4,7 +4,7 @@ import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 
 class UIEditorImage extends Base {
 
-    placeHolder = process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".svg";
+    placeHolder = process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".png";
 
     constructor(props) {
         super(props);
@@ -16,7 +16,7 @@ class UIEditorImage extends Base {
             if(selection[this.props.columnName]){
                 this.setState({img: "data:image/png;base64," + selection[this.props.columnName]});
             } else {
-                this.setState({img: process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".svg"})
+                this.setState({img: process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".png"})
             }
         })
     }
@@ -128,7 +128,7 @@ class UIEditorImage extends Base {
 
     render() {
         return (
-            <svg id={this.props.id} style={{ ...this.props.style, backgroundColor: this.props["cellEditor.background"] }}>
+            <svg id={this.props.id} style={{ ...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"] }}>
                 <image
                     href={this.state.img ? this.state.img : this.placeHolder}
                     ref={ref => this.imgRef = ref}

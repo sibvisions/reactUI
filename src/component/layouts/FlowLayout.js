@@ -28,7 +28,7 @@ class FlowLayout extends Component {
                         marginBottom: this.props.gaps.verticalGap / 2,
                         marginRight: this.props.gaps.horizontalGap / 2
                     }
-                let clonedComponent = React.cloneElement(component, {style: {...component.props.style, ...style}})
+                let clonedComponent = React.cloneElement(component, {layoutStyle: style});
                 tempContent.push(clonedComponent)
             }
         })

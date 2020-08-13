@@ -1,15 +1,13 @@
 import React from 'react';
-
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { Dropdown } from "primereact/dropdown";
-import { Size } from '../../helper/Size';
-import './UITable.scss'
-import { RefContext } from '../../helper/Context';
 import Base from '../Base';
-import TextCellEditor from './cellEditors/TextCellEditor';
-import UIEditorLinked from '../editors/linked/UIEditorLinked';
+import './UITable.scss'
 
+import { Size } from '../../helper/Size';
+import { RefContext } from '../../helper/Context';
+
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Dropdown } from "primereact/dropdown";
 
 class UITable extends Base {
     content = [];
@@ -27,7 +25,6 @@ class UITable extends Base {
         this.buildColumns(this.props.columnLabels, this.props.columnNames);
         let data = this.context.contentStore.storedData.get(this.props.dataProvider);
         if(data){
-            console.log(data)
             this.buildData(data)
         }
     }
@@ -46,24 +43,18 @@ class UITable extends Base {
             let metaData = this.context.contentStore.metaData.get(names[index])
             if(metaData){
                 if(metaData.cellEditor.className === "TextCellEditor"){
-                    props.editor = (props) => <TextCellEditor selection={props.rowData[names[index]]} />;
+                    
                 } else if(metaData.cellEditor.className === "LinkedCellEditor"){
-                    props.editor = (props) => <Dropdown options={[1,2,3,4,5,6,7,8,9,10]}/>
+                    props.body = () => <Dropdown appendTo={document.body} options={[1,2,3,4,5,6,7,8,9,10]}/>
                 }
-                let column = <Column {...props}/>
+                let column = <Column {...props}/>   
                 this.dataColumns.push(column);
             }
         }
-    }
 
-    buildCellEditorColumn(field, header, key, cellEditor){
-        let column = <Column 
-        field={field} 
-        header={header}
-        key={key}
-        editor={() => cellEditor}/>;
+         labels.map(async (label, index) => {
 
-        return column
+        })
     }
 
     buildData(data){
@@ -79,10 +70,9 @@ class UITable extends Base {
     }
 
     onSelectChange(event){
-        let value = event.value
+        const value = event.value
         this.context.contentStore.emitChangeOfSelectedRow(value)
-        this.context.serverComm.selectRow(this.props.name, this.props.dataProvider , event.value);
-
+        this.context.serverComm.selectRow(this.props.name, this.props.dataProvider , value);
     }
 
     render(){
@@ -93,12 +83,11 @@ class UITable extends Base {
                 id={this.props.id}
                 value={this.state.Data ? this.state.Data : [] } 
                 scrollable={true} 
-                //valueable={true}    
-                scrollHeight="100%" 
-                style={this.props.style}
                 header="Table"
-                selectionMode="single"
-                onSelectionChange={this.onSelectChange.bind(this)}>
+                style={{...this.props.layoutStyle}}
+                selectionMode={"single"}
+                onSelectionChange={this.onSelectChange.bind(this)}
+                >
                 {this.dataColumns}
             </DataTable>);
     }

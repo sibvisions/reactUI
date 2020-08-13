@@ -87,7 +87,7 @@ class UIEditorLinked extends Base {
             <AutoComplete
                 id={this.data.id}
                 ref= {r => this.autoC = r}
-                style={this.props.style}
+                style={this.props.layoutStyle}
                 dropdown={true}
                 completeMethod={this.autoComplete.bind(this)}
                 field={this.data.columnName}

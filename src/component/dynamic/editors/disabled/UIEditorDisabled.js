@@ -9,7 +9,7 @@ class UIEditorDisabled extends Base {
                 disabled={true}
                 id={this.props.id}
                 contentEditable="false"
-                style={{...this.props.style, backgroundColor:this.props.background}}
+                style={{...this.props.layoutStyle, backgroundColor:this.props.background}}
             />
         );
     }

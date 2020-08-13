@@ -28,7 +28,7 @@ class UIEditorText extends Base {
             <InputText
                 id={this.props.id}
                 value={this.state.selection ? this.state.selection : ""}
-                style={{...this.props.style, backgroundColor: this.props["cellEditor.background"]}}
+                style={{...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"]}}
                 onChange={x => this.setState({selection: x.target.value})}
                 disabled={!this.props["cellEditor.editable"]}
             /> 

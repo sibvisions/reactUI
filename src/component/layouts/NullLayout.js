@@ -20,14 +20,14 @@ class NullLayout extends Component {
                 let splittedBounds = component.props.bounds.split(',')
                 let compBounds = new Bounds(splittedBounds);
                 console.log(compBounds.height)
-                let style = {
+                let layoutStyle = {
                     position: "absolute",
                     height: compBounds.height,
                     width: compBounds.width,
                     top: compBounds.top,
                     left: compBounds.left,
                 }
-                let clonedComponent = React.cloneElement(component, { style: { ...component.props.style, ...style } })
+                let clonedComponent = React.cloneElement(component, { layoutStyle: { ...layoutStyle } })
                 tempContent.push(clonedComponent);
             }
         })
