@@ -148,6 +148,7 @@ class ResponseHandler{
     }
     
     sessionExpiredMessage(message){
+        this.serverCommunicator.startUp();
         this.routeTo("/login");
         throw new Error(message.title);
     }

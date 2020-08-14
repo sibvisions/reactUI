@@ -36,9 +36,8 @@ class ServerCommunicator {
 
     //---Automatic Requests------
 
-    startUp(screenHeight=600, screenWidth=800){
+    startUp(){
         const browserInfo = this.getBrowser()
-
         let info = {
             layoutMode : "generic",
             appMode : "full",
@@ -48,8 +47,8 @@ class ServerCommunicator {
             osName: browserInfo.name,
             osVersion: browserInfo.version,
 
-            screenWidth: screenWidth,
-            screenHeight: screenHeight,
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight,
 
             deviceType: "Browser",
             deviceTypeModel: navigator.userAgent,

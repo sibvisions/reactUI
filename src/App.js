@@ -42,7 +42,7 @@ class App extends Component {
         
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
-        this.serverComm.startUp(window.innerHeight, window.innerWidth);
+        this.serverComm.startUp();
 
         this.routeTo("/login");
         this.state={
