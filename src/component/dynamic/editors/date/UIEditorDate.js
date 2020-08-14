@@ -21,7 +21,6 @@ class UIEditorDate extends Base {
     }
 
     componentDidMount() {
-        console.log(this.calender)
         if (this.calender.container !== null) {
             let alignments = checkCellEditorAlignments(this.props)
             for (let child of this.calender.container.children) {

@@ -533,7 +533,6 @@ class FormLayout extends Component {
     calculateTargetDependentAnchors() {
         if (this.vCalculateTargetDependentAnchors) {
             let size = this.props.getPreferredSize(this.props.component);
-            //console.log(this.props.component.props.id, size.width)
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
 
@@ -553,7 +552,7 @@ class FormLayout extends Component {
                         default:
                             this.leftBorderAnchor.position = (size.width - maxSize.width) / 2;
                     }
-                    this.rightBorderAnchor.position = this.leftBorderAnchor + maxSize.width;
+                    this.rightBorderAnchor.position = this.leftBorderAnchor.position + maxSize.width;
                 }
                 else {
                     this.leftBorderAnchor.position = 0;
@@ -576,7 +575,7 @@ class FormLayout extends Component {
                             this.leftBorderAnchor.position = (size.width - this.preferredWidth) / 2;
                     }
                 }
-                this.rightBorderAnchor.position = this.leftBorderAnchor + this.preferredWidth
+                this.rightBorderAnchor.position = this.leftBorderAnchor.position + this.preferredWidth
             }
             if (this.verticalAlignment === 'stretch' || (this.topBorderUsed && this.bottomBorderUsed)) {
                 if (minSize.height > size.height) {
@@ -644,12 +643,14 @@ class FormLayout extends Component {
             if (this.props.isVisible(component)) {
                 let constraint = this.componentConstraints.get(component.props.id);
                 let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
-                if (compHeight > this.preferredHeight) {
-                    compHeight = this.preferredHeight;
-                }
                 let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
-                if (compWidth > this.preferredWidth) {
-                    compWidth = this.preferredWidth;
+                if(component.props.className === "GroupPanel" || component.props.className === "Panel") {
+                    if (compHeight > this.preferredHeight) {
+                        compHeight = this.preferredHeight;
+                    }
+                    if (compWidth > this.preferredWidth) {
+                        compWidth = this.preferredWidth;
+                    }
                 }
                 let style = {
                         position: 'absolute',
@@ -666,6 +667,7 @@ class FormLayout extends Component {
     }
 
     layoutContainer() {
+        this.currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.id);
         this.valid = false;
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
@@ -690,11 +692,18 @@ class FormLayout extends Component {
     }
 
     render() {
+        let formHeight;
+        if (FindReact(document.getElementById(this.props.component.props.id)).props.constraints === 'Center') {
+            formHeight = 'calc(100% - ' + toPx((parseInt(this.props.margins.marginTop) + parseInt(this.props.margins.marginBottom))) + ')'
+        }
+        else {
+            formHeight = this.preferredHeight
+        }
         return (
             <div className={"formlayout " + this.props.component.props.id} style={{
                                         position: 'relative',
                                         width: this.preferredWidth, 
-                                        height: this.preferredHeight,
+                                        height: formHeight,
                                         marginTop: this.props.margins.marginTop,
                                         marginLeft: this.props.margins.marginLeft,
                                         marginBottom: this.props.margins.marginBottom,

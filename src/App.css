@@ -6,3 +6,7 @@ main {
     height: 100%;    
 }
 
+.p-col-12 {
+    padding: 0;
+}
+

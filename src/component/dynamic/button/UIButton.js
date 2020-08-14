@@ -10,7 +10,6 @@ class UIButton extends Base {
 
     componentDidMount() {
         if(this.button.props.style !== undefined) {
-            console.log(this.button)
             let alignments = mapFlex(checkAlignments(this.props))
             this.button.element.style.setProperty('display', 'inline-flex');
             this.button.element.style.setProperty('justify-content', alignments.ha);
