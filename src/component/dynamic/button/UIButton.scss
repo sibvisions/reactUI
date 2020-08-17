@@ -1,0 +1,15 @@
+.p-button-text-icon-left .p-button-icon-left, .p-button-text-icon-right .p-button-icon-right {
+    position: unset;
+    top: unset;
+    margin-top: unset;
+}
+
+.formlayout {
+    >div {
+        >.p-button {
+            .p-button-text {
+                display: unset
+            }
+        } 
+    }
+}
