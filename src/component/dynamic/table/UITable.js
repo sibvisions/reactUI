@@ -34,55 +34,19 @@ class UITable extends Base {
     }
 
     buildColumns(labels, names){
-        let faster = 0;
-        let differnce = 0;
-        let runtime = 0;
-        for(let i= 0; i< 700; i++){
-            const t1 = performance.now()
-            for (let index = 0; index < labels.length; index++){
-                let columnProps= {
-                    field: names[index],
-                    header: labels[index],
-                    key: names[index],
-                }
-                let metaData = this.context.contentStore.metaData.get(names[index]);
-                metaData.name = this.props.name;
-                metaData.cellEditor.clearColumns = ["ID", names[index]]
-                    columnProps.editor = (props) => this.buildEditor(props, metaData)
-                this.dataColumns.push(<Column {...columnProps}/>);
+        for (let index = 0; index < labels.length; index++){
+            let columnProps= {
+                field: names[index],
+                header: labels[index],
+                key: names[index],
             }
-            const t2 = performance.now()
-            const sync = t2 - t1;
-            this.dataColumns.length=0;
-            const t3 = performance.now();
-            
-            for (let index = 0; index < labels.length; index++){
-                this.col(labels[index], names[index]);
-            }
-            const t4 = performance.now();
-            const asyncD = t4 - t3
-            runtime += (sync + asyncD)/2
-            differnce += sync - asyncD
-            if(sync - asyncD > 0){
-                faster++
-            }
-        }
-        console.log("async was: " + ((faster/700)*100) + "% often faster.  Average difference : " + (differnce/700) + " Average Runtime: " + (runtime/700));
-    }
-
-    async col(label, name){
-        let columnProps= {
-            field: name,
-            header: label,
-            key: name,
-        }
-        let metaData = this.context.contentStore.metaData.get(name);
-        metaData.name = this.props.name;
-        metaData.cellEditor.clearColumns = ["ID", name]
+            let metaData = this.context.contentStore.metaData.get(names[index]);
+            metaData.name = this.props.name;
+            metaData.cellEditor.clearColumns = ["ID", names[index]]
             columnProps.editor = (props) => this.buildEditor(props, metaData)
-        this.dataColumns.push(<Column {...columnProps}/>);
+            this.dataColumns.push(<Column {...columnProps}/>);
+        }
     }
-
 
     buildEditor(props, data){
         if(data){

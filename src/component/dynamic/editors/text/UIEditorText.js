@@ -3,41 +3,20 @@ import { InputText } from "primereact/inputtext";
 import { RefContext } from '../../../helper/Context';
 import Base from '../../Base';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
+import withRowSelection from '../withRowSelection';
 
 
 class UIEditorText extends Base {
-
-
-    constructor(props){
-        super(props);
-        if(props.initialValue){
-            this.state = {
-                selection: props.initialValue[props.columnName]
-            }
-        }
-    }
-
-
-    componentDidMount() {
-        this.sub = this.context.contentStore.selectedDataRowChange.subscribe(this.setContent.bind(this))
-    }
-
-    componentWillUnmount() {
-        this.sub.unsubscribe();
-    }
-
-    setContent(content){
-        if(content[this.props.columnName]){
-            this.setState({selection: content[this.props.columnName]});
-        }
-    }
-
     render() {
         let alignment = checkCellEditorAlignments(this.props)
+        let newSelection = ""
+        if(this.props.selection){
+            newSelection = this.props.selection[this.props.columnName];
+        }
         return ( 
             <InputText
                 id={this.props.id}
-                value={this.state.selection ? this.state.selection : ""}
+                value={this.state.selection ? this.state.selection : newSelection}
                 style={{...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"], textAlign: alignment.ha}}
                 onChange={x => this.setState({selection: x.target.value})}
                 disabled={!this.props["cellEditor.editable"]}
@@ -45,5 +24,6 @@ class UIEditorText extends Base {
         );
     }
 }
-UIEditorText.contextType = RefContext
-export default UIEditorText;
+export default withRowSelection(UIEditorText, RefContext);
+
+//export default UIEditorText

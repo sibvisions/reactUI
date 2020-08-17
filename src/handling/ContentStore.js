@@ -38,17 +38,6 @@ class ContentStore{
         });
     }
 
-    getAllBelow(parent){
-        let subs = []
-        parent.subjects.forEach(element => {
-            subs.push(element);
-            if(element.subjects.length > 0){
-                subs.concat(this.getAllBelow(element));
-            }
-        });
-        return subs;
-    }
-
     getCurrentUser(){
         return this.currentUser
     }
@@ -112,6 +101,17 @@ class ContentStore{
             this.flatContent.splice(toDeleteId, 1);
         });
         this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
+    }
+
+    getAllBelow(parent){
+        let subs = []
+        parent.subjects.forEach(element => {
+            subs.push(element);
+            if(element.subjects.length > 0){
+                subs.concat(this.getAllBelow(element));
+            }
+        });
+        return subs;
     }
 
 
