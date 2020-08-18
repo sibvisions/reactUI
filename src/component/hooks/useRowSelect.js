@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
 
 function useRowSelect() {
-    const [selectedRow, rowChange] = useState();
+    const [selectedRow, rowChange] = useState({});
     const con = useContext(RefContext)
 
     function editProperty(value ,propertyName){
