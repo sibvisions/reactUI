@@ -14,7 +14,7 @@ class ContentStore{
     metaData = new Map();
 
 
-    selectedDataRowChange = new ReplaySubject(1);
+    selectedDataRowChange = new Subject();
     fetchCompleted = new Subject();
 
     // Event

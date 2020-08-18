@@ -133,7 +133,7 @@ class ResponseHandler{
             this.updateContent(genericResponse.changedComponents)
         }
         if(genericResponse.update){
-            this.mainScreen.refresh();
+            //this.mainScreen.refresh();
         }
         this.routeTo("/main/"+genericResponse.componentId)
     }

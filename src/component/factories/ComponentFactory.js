@@ -8,6 +8,7 @@ import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIEditorText from '../dynamic/editors/text/UIEditorText';
+import {UIEditorTextHooks} from "../dynamic/editors/text/UIEditorTextHooks";
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
 import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
@@ -46,7 +47,7 @@ export function createEditor(editorData) {
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
         return <UIEditorNumber {...props}/>
     } else if(editorData.cellEditor.className === "TextCellEditor"){
-        return <UIEditorText {...props}/>
+        return <UIEditorTextHooks {...props}/>
     } else if(editorData.cellEditor.className === "LinkedCellEditor"){
         return <UIEditorLinked {...props}/>
     } else if(editorData.cellEditor.className === "ImageViewer"){
