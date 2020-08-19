@@ -1,24 +1,19 @@
 import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
 
-function useRowSelect() {
-    const [selectedRow, rowChange] = useState({});
-    const con = useContext(RefContext)
-
-    function editProperty(value ,propertyName){
-        let rowCopy = {...selectedRow};
-        if(rowCopy[propertyName]){
-            rowCopy[propertyName] = value;
-            rowChange(rowCopy);
-        }
-    }
+function useRowSelect(columnName) {
+    const [selectedColumn, editColumn] = useState();
+    const con = useContext(RefContext);
 
     useEffect(()=> {
-        const sub =  con.contentStore.selectedDataRowChange.subscribe(row => rowChange(row));
+        const sub = con.contentStore.selectedDataRowChange.subscribe(row => {
+            if(row[columnName]) editColumn(row[columnName])
+            else editColumn ("")
+        });
         return function cleanUp(){
             sub.unsubscribe();
         }
-    })
-    return [selectedRow, editProperty];
+    });
+    return [selectedColumn , editColumn];
 }
 export default useRowSelect;

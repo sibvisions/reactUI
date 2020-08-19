@@ -58,7 +58,7 @@ class UITable extends Base {
             }
             data["cellEditor.editable"] = true;
             data.columnName = props.field
-            data.initialValue = props.rowData;
+            data.initialValue = props.rowData[props.field];
             return createEditor(data);
 
         } else {
@@ -87,10 +87,11 @@ class UITable extends Base {
     render(){
         return ( 
             <DataTable
+                on
                 id={this.props.id}
                 header="Table"
                 value={this.state.Data ? this.state.Data : [] }
-
+                
                 onRowDoubleClick={this.onSelectChange.bind(this)}
 
                 resizableColumns={true}
@@ -100,7 +101,6 @@ class UITable extends Base {
                 style={{...this.props.layoutStyle}}
                 >
                 {this.dataColumns}
-               
             </DataTable>);
     }
 }

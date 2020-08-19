@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import useRowSelect from '../../../hooks/useRowSelect';
+import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 
-export function UIEditorTextHooks(props){
-    const [selectedRow, editRow] = useRowSelect();
+function UIEditorTextHooks(props){
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName);
+    const inputRef = useRef()
+
+    useEffect(() => {
+        editColumn(props.initialValue);
+        if(inputRef.current.element){
+            const alignments = checkCellEditorAlignments(props);
+            inputRef.current.element.style['background-color'] = props['cellEditor.background'];
+            inputRef.current.element.style['text-align'] = alignments.ha;
+        }
+    });
+
     return (
         <InputText
+            ref={inputRef}
             id={props.id}
-            value={getValue(selectedRow)}
-            style={{...props.layoutStyle}} 
-            onChange={change => {editRow(change.target.value, props.columnName)}}/>
-    )
-
-    function getValue(row){
-        if(row[props.columnName]){
-            return row[props.columnName]
-        } else if(props.initialValue) {
-            return props.initialValue[props.columnName]
-        }
-    }
+            value={selectedColumn}
+            style={props.layoutStyle}
+            onChange={change => {editColumn(change.target.value, props.columnName)}}
+            disabled={!props["cellEditor.editable"]}
+        />
+    );
 }
+export default UIEditorTextHooks
 
 
 
