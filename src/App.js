@@ -6,6 +6,8 @@ import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
 import {Growl} from 'primereact/growl';
 import './App.css'
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/js/all.js'
 
 //Component Imports
 import Login from './component/frontend/login/Login';

@@ -6,7 +6,7 @@ import {Checkbox} from 'primereact/checkbox';
 
 class UICheckBox extends Base {
 
-    render() { 
+    render() {
         return ( 
             <Checkbox id={this.props.id} style={{...this.props.layoutStyle}} checked={true} />
          );
