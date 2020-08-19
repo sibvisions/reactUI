@@ -6,13 +6,13 @@ import UILabel from '../dynamic/label/UILabel';
 import UIGroupPanel from "../dynamic/panels/grouppanel/UIGroupPanel";
 import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
-import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
-import UIEditorText from '../dynamic/editors/text/UIEditorText';
-import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
+import UIEditorNumberHooks from '../dynamic/editors/number/UIEditorNumberHooks';
+import UIEditorTextHooks from "../dynamic/editors/text/UIEditorTextHooks";
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
 import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
 import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
+import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
 
 
 export function createButton(buttonData){
@@ -44,15 +44,14 @@ export function createEditor(editorData) {
     else if(editorData.cellEditor.className === "CheckBoxCellEditor"){
         return <UIEditorCheckbox {...props}/>
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
-        return <UIEditorNumber {...props}/>
+        return <UIEditorNumberHooks {...props}/>
     } else if(editorData.cellEditor.className === "TextCellEditor"){
-        return <UIEditorText {...props}/>
+        return <UIEditorTextHooks {...props}/>
     } else if(editorData.cellEditor.className === "LinkedCellEditor"){
-        return <UIEditorLinked {...props}/>
+        return <UIEditorLinkedHooks {...props}/>
     } else if(editorData.cellEditor.className === "ImageViewer"){
         return <UIEditorImage {...props}/>
     } else if(editorData.cellEditor.className === "DateCellEditor"){
-        console.log(props)
         return <UIEditorDate {...props}/>
     }
 }

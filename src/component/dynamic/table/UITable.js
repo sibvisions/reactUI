@@ -33,9 +33,9 @@ class UITable extends Base {
         this.fetchSub.unsubscribe();
     }
 
-    buildColumns(labels, names) {
-        for (let index = 0; index < labels.length; index++) {
-            let columnProps = {
+    buildColumns(labels, names){
+        for (let index = 0; index < labels.length; index++){
+            let columnProps= {
                 field: names[index],
                 header: labels[index],
                 key: names[index],
@@ -44,23 +44,9 @@ class UITable extends Base {
             metaData.name = this.props.name;
             metaData.cellEditor.clearColumns = ["ID", names[index]]
             columnProps.editor = (props) => this.buildEditor(props, metaData)
-            this.dataColumns.push(<Column {...columnProps} />);
+            this.dataColumns.push(<Column {...columnProps}/>);
         }
     }
-
-    async col(label, name){
-        let columnProps= {
-            field: name,
-            header: label,
-            key: name,
-        }
-        let metaData = this.context.contentStore.metaData.get(name);
-        metaData.name = this.props.name;
-        metaData.cellEditor.clearColumns = ["ID", name]
-            columnProps.editor = (props) => this.buildEditor(props, metaData)
-        this.dataColumns.push(<Column {...columnProps}/>);
-    }
-
 
     buildEditor(props, data){
         if(data){
@@ -72,7 +58,7 @@ class UITable extends Base {
             }
             data["cellEditor.editable"] = true;
             data.columnName = props.field
-            data.initialValue = props.rowData;
+            data.initialValue = props.rowData[props.field];
             return createEditor(data);
 
         } else {
@@ -101,10 +87,11 @@ class UITable extends Base {
     render(){
         return ( 
             <DataTable
+                on
                 id={this.props.id}
                 header="Table"
                 value={this.state.Data ? this.state.Data : [] }
-
+                
                 onRowDoubleClick={this.onSelectChange.bind(this)}
 
                 resizableColumns={true}
@@ -114,7 +101,6 @@ class UITable extends Base {
                 style={{...this.props.layoutStyle}}
                 >
                 {this.dataColumns}
-               
             </DataTable>);
     }
 }

@@ -5,6 +5,7 @@ import './UIEditorLinked.scss'
 import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
+import withRowSelection from "../withRowSelection";
 
 class UIEditorLinked extends Base {
 
@@ -24,7 +25,6 @@ class UIEditorLinked extends Base {
             }
         }
         
-        this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(this.newSelection.bind(this));
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
 
         this.elem = this.autoC.panel.element;
@@ -33,7 +33,6 @@ class UIEditorLinked extends Base {
 
     componentWillUnmount(){
         this.elem.removeEventListener("scroll", this.handleScroll.bind(this));
-        this.selectionSub.unsubscribe();
         this.fetchSub.unsubscribe();
     }
 
@@ -41,14 +40,6 @@ class UIEditorLinked extends Base {
         if((this.elem.scrollHeight - this.elem.scrollTop - this.elem.clientHeight) <= 0){
             console.log("end reached")
         } 
-    }
-
-    newSelection(newSelection){
-        if(newSelection[this.props.columnName] !== null){
-            this.setState({selectedObject: newSelection});
-        } else {
-            this.setState({selectedObject: undefined})
-        }   
     }
 
     formatFetchResponse(fetchedData){
@@ -79,6 +70,7 @@ class UIEditorLinked extends Base {
 
     render(){ 
         return (
+
             <AutoComplete
                 id={this.props.id}
                 ref= {r => this.autoC = r}
@@ -86,7 +78,7 @@ class UIEditorLinked extends Base {
                 dropdown={true}
                 completeMethod={this.autoComplete.bind(this)}
                 field={this.props.columnName}
-                value={this.state.selectedObject}
+                value={this.state.selection ? this.state.selection : this.props.selection}
                 suggestions={this.state.suggestions}
                 onChange={x => this.setState({selectedObject: x.target.value})}
                 disabled={!this.props["cellEditor.editable"]}
@@ -95,4 +87,4 @@ class UIEditorLinked extends Base {
     }
 }
 UIEditorLinked.contextType = RefContext
-export default UIEditorLinked;
+export default withRowSelection(UIEditorLinked, RefContext);

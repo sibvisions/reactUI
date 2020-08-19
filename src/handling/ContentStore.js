@@ -1,4 +1,4 @@
-import { Subject, ReplaySubject } from "rxjs";
+import { Subject } from "rxjs";
 
 class ContentStore{
 
@@ -14,7 +14,7 @@ class ContentStore{
     metaData = new Map();
 
 
-    selectedDataRowChange = new ReplaySubject(1);
+    selectedDataRowChange = new Subject();
     fetchCompleted = new Subject();
 
     // Event
@@ -36,17 +36,6 @@ class ContentStore{
             }
             return false;
         });
-    }
-
-    getAllBelow(parent){
-        let subs = []
-        parent.subjects.forEach(element => {
-            subs.push(element);
-            if(element.subjects.length > 0){
-                subs.concat(this.getAllBelow(element));
-            }
-        });
-        return subs;
     }
 
     getCurrentUser(){
@@ -112,6 +101,17 @@ class ContentStore{
             this.flatContent.splice(toDeleteId, 1);
         });
         this.flatContent.splice(this.flatContent.findIndex(x => x.id === toDelete.id),1);
+    }
+
+    getAllBelow(parent){
+        let subs = []
+        parent.subjects.forEach(element => {
+            subs.push(element);
+            if(element.subjects.length > 0){
+                subs.concat(this.getAllBelow(element));
+            }
+        });
+        return subs;
     }
 
 
