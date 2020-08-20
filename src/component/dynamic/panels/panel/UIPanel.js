@@ -6,14 +6,16 @@ import { RefContext } from '../../../helper/Context';
 class UIPanel extends Base {
     render() {
         let overflowYVal;
+        let bgdColor = this.getPanelBgdColor();
         if (this.context.contentStore.layoutMode === 'Small' || this.context.contentStore.layoutMode === 'Mini') {
             overflowYVal = 'auto'
         }
         else {
             overflowYVal = null
         }
+        
         return (
-        <div id={this.props.id} className="p-col-12" style={ {...this.props.layoutStyle, borderTop: '1px solid transparent', overflowY: overflowYVal} }>
+        <div id={this.props.id} className="p-col-12" style={ {...this.props.layoutStyle, background: bgdColor, borderTop: '1px solid transparent', overflowY: overflowYVal} }>
             {this.insertLayout()}
         </div>
         );

@@ -8,12 +8,15 @@ import { Size } from '../../helper/Size';
 import { toPx } from '../../helper/ToPx';
 import { Margins } from '../../layouts/layoutObj/Margins';
 import { UIFont } from '../../helper/UIFont';
+import tinycolor from 'tinycolor2';
 
 class UIButton extends Base {
 
     btnIcon;
     btnIconPos;
     btnFont;
+    btnBgd;
+    borderPainted = false;
     iconSize;
     customIcon = false;
 
@@ -40,6 +43,34 @@ class UIButton extends Base {
         let size = new Size(parseInt(this.button.style.width), parseInt(this.button.style.height), undefined);
         btn.style.setProperty('height', toPx(size.height));
         btn.style.setProperty('width', toPx(size.width));
+        let color;
+        if (this.props.background) color = this.props.background;
+        else color = "#007ad9";
+        this.addHoverEffect(btn, color, 5)
+            
+    }
+
+    addHoverEffect(obj, color, dark) {
+        if ((this.props.borderOnMouseEntered && this.borderPainted) || (!this.props.borderOnMouseEntered && this.borderPainted)) {
+            obj.onmouseover = () => {
+                obj.style.setProperty('background', tinycolor(color).darken(dark))
+                obj.style.setProperty('border-color', tinycolor(color).darken(dark))
+            }
+            obj.onmouseout = () => {
+                obj.style.setProperty('background', color)
+                obj.style.setProperty('border-color', color)
+            }
+        }
+        else if (this.props.borderOnMouseEntered && !this.borderPainted) {
+            obj.onmouseover = () => {
+                obj.style.setProperty('background', color)
+                obj.style.setProperty('border-color', color)
+            }
+            obj.onmouseout = () => {
+                obj.style.setProperty('background', this.btnBgd)
+                obj.style.setProperty('border-color', this.btnBgd)
+            }
+        }
     }
 
     styleChildren(btnChildren) {
@@ -59,7 +90,6 @@ class UIButton extends Base {
                         child.style.setProperty('margin-' + gapPos, toPx(this.props.imageTextGap));
                     }
             }
-            child.style.setProperty('background-color', this.props["cellEditor.background"])
             child.style.setProperty('padding', 0)
         }
     }
@@ -152,7 +182,10 @@ class UIButton extends Base {
         else {
             this.btnFont = new UIFont(["Tahoma", '0', '11'])
         }
-        console.log(this.btnFont)
+        this.btnBgd = this.getBtnBgdColor()
+        if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
+            this.borderPainted = true;
+        }
         return (
             <div ref={r => this.button = r} style={this.props.layoutStyle}>
                 <Button
@@ -161,18 +194,19 @@ class UIButton extends Base {
                     constraints={this.props.constraints}
                     onClick={() => this.context.serverComm.pressButton(this.props.name)}
                     style={{
-                        background: this.props.background,
-                        borderColor: this.props.background,
+                        background: this.btnBgd,
+                        color: this.props.foreground,
+                        borderColor: this.btnBgd,
                         paddingTop: margins.marginTop, 
                         paddingLeft: margins.marginLeft, 
                         paddingBottom: margins.marginBottom, 
                         paddingRight: margins.marginRight, 
-                        color: this.props.foreground, 
                         fontFamily: this.btnFont.fontFamily,
                         fontWeight: this.btnFont.fontWeight,
                         fontStyle: this.btnFont.fontStyle,
-                        fontSize: this.btnFont.fontSize
+                        fontSize: this.btnFont.fontSize,
                     }}
+                    tabIndex={this.props.tabIndex}
                     icon={this.btnIcon}
                     iconPos={this.btnIconPos}
                 />

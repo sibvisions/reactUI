@@ -31,6 +31,38 @@ class Base extends Component {
         }
     }
 
+    getPanelBgdColor() {
+        if (document.getElementById(this.props.id) !== null) {
+            if (this.props.background) {
+                return this.props.background
+            }
+            else {
+                if (this.context.contentStore.flatContent.find(elem => elem.id === this.props.parent) === undefined) {
+                    return document.getElementById(this.props.id).parentElement.style.backgroundColor;
+                }
+                else {
+                    return document.getElementById(this.props.parent).style.background;
+                }
+            }
+        }
+    }
+
+    getBtnBgdColor() {
+        if (document.getElementById(this.props.id) !== null) {
+            if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
+                if (this.props.background) {
+                    return this.props.background;
+                }
+                else {
+                    return "#007ad9";
+                }
+            }
+            else {
+                return document.getElementById(this.props.parent).style.background;
+            }
+        }
+    }
+
     getPreferredSize(comp) {
         let prefSize;
         if (comp) {

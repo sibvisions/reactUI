@@ -2,6 +2,12 @@
     --icon: unset;
 }
 
+body {
+    .p-button {
+        transition: all 0.2s
+    }
+}
+
 .p-button-text-icon-left {
     .p-button-icon-left {
         position: unset;

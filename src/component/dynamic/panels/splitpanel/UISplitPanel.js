@@ -31,8 +31,11 @@ class UISplitPanel extends Base {
     }
 
     render() {
+        let bgdColor = this.getPanelBgdColor();
         return (
             <Split className= "splitHolder"
+            id={this.props.id}
+            style={{background: bgdColor}}
             sizes={[30, 70]}
             minSize={0}
             gutterSize={30}
