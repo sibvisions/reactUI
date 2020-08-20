@@ -17,6 +17,9 @@ function UIEditorLinkedHooks(props){
     const autoComRef = useRef()
 
     useEffect(()=> {
+        if(props.initialValue){
+            editColumn(props.initialValue)
+        }
         if(autoComRef.current.inputEl){
             const alignments = checkCellEditorAlignments(props);
             autoComRef.current.inputEl.style['background-color'] = props['cellEditor.background'];
@@ -24,7 +27,7 @@ function UIEditorLinkedHooks(props){
         }
     })
 
-    const buildSuggestions = (response= {records: []}) => {
+    function buildSuggestions(response= {records: []}){
         let suggestions= []
         response.records.forEach(record => {
             let element = {};

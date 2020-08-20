@@ -18,6 +18,7 @@
     "primeflex": "^1.1.1",
     "primeicons": "^4.0.0-rc.2",
     "primereact": "^4.2.2",
+    "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-mutation-observer": "^1.1.0",

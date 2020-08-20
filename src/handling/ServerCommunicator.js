@@ -36,12 +36,12 @@ class ServerCommunicator {
 
     //---Automatic Requests------
 
-    startUp(){
+    startUp(applicationName="demo"){
         const browserInfo = this.getBrowser()
         let info = {
             layoutMode : "generic",
             appMode : "full",
-            applicationName : "demo",
+            applicationName : applicationName,
             technology: "react",
 
             osName: browserInfo.name,

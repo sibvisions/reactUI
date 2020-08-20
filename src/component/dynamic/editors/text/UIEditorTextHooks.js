@@ -9,14 +9,17 @@ function UIEditorTextHooks(props){
     const inputRef = useRef()
 
     useEffect(() => {
-        editColumn(props.initialValue);
+        if(props.initialValue){
+            editColumn(props.initialValue);
+        }
+        
         if(inputRef.current.element){
             const alignments = checkCellEditorAlignments(props);
             inputRef.current.element.style['background-color'] = props['cellEditor.background'];
             inputRef.current.element.style['text-align'] = alignments.ha;
         }
     });
-
+    
     return (
         <InputText
             ref={inputRef}

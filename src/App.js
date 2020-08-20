@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { RefContext } from "./component/helper/Context";
+import { resizeEventLimiter } from "./component/helper/ResizeEventLimiter"
+import { Growl } from 'primereact/growl';
+import queryString from 'query-string'
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
-import {Growl} from 'primereact/growl';
-import './App.css'
-import '@fortawesome/fontawesome-free/css/all.css'
-import '@fortawesome/fontawesome-free/js/all.js'
+
+import './App.css';
+import '@fortawesome/fontawesome-free/js/all.js';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 //Component Imports
 import Login from './component/frontend/login/Login';
@@ -15,9 +19,6 @@ import Main from './component/frontend/main/Main';
 import Menu from './component/frontend/menu/Menu';
 import Footer from "./component/frontend/footer/Footer";
 import Settings from './component/frontend/settings/Settings';
-import { RefContext } from "./component/helper/Context";
-
-import { resizeEventLimiter } from "./component/helper/ResizeEventLimiter"
 
 //Handling Imports
 import ServerCommunicator from './handling/ServerCommunicator';
@@ -25,9 +26,7 @@ import UiBuilder from './handling/UiBuilder';
 import ResponseHandler from './handling/ResponseHandler';
 import ContentStore from "./handling/ContentStore";
 
-
 class App extends Component {
-
     constructor(props){
         super(props);
 
@@ -41,7 +40,7 @@ class App extends Component {
         this.responseHandler.setMainScreen(this);
 
         this.serverComm.setResponseHandler(this.responseHandler);
-        
+
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
         this.serverComm.startUp();
@@ -57,27 +56,26 @@ class App extends Component {
             changeTheme: this.changeTheme.bind(this),
             growl: this.showGrowlMessage.bind(this)
         }
-
-        this.routeTo = this.routeTo.bind(this)
+        this.routeTo = this.routeTo.bind(this);
     }
 
     
 
     showGrowlMessage(messageObj){
-        this.growl.show(messageObj)
+        this.growl.show(messageObj);
     }
 
     changeMenuPositon(){
-        this.state.menuLocation === "top" ? this.setState({menuLocation: "side"}) : this.setState({menuLocation: "top"})
+        this.state.menuLocation === "top" ? this.setState({menuLocation: "side"}) : this.setState({menuLocation: "top"});
     }
 
     changeTheme(theme){
-        this.setState({theme: theme})
+        this.setState({theme: theme});
     }
 
     routeTo(route){
         if(route !== this.props.location.pathname){
-            this.props.history.push(route)
+            this.props.history.push(route);
         }
     }
 
@@ -86,11 +84,11 @@ class App extends Component {
     }
 
     handleResize(){
-        this.serverComm.deviceStatus(window.innerHeight, window.innerWidth)
+        this.serverComm.deviceStatus(window.innerHeight, window.innerWidth);
     }
 
     componentDidMount() {
-        window.addEventListener("resize", resizeEventLimiter(this.handleResize, 500, this).bind(this))
+        window.addEventListener("resize", resizeEventLimiter(this.handleResize, 500, this).bind(this));
     }
 
     componentWillUnmount() {

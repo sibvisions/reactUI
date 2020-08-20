@@ -1,4 +1,4 @@
-import { Subject } from "rxjs";
+import { Subject, ReplaySubject } from "rxjs";
 
 class ContentStore{
 

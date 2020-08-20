@@ -8,18 +8,6 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 class UIEditorDate extends Base {
 
-    constructor(props){
-        super(props);
-
-        this.test = {}
-        if(props.appendToBody){
-            this.test= {
-                appendTo: document.body
-            }
-        }
-        
-    }
-
     componentDidMount() {
         if (this.calender.container !== null) {
             let alignments = checkCellEditorAlignments(this.props)
@@ -47,13 +35,19 @@ class UIEditorDate extends Base {
     render() {
         return ( 
             <Calendar
-                {...this.test}
-                ref = {r => this.calender = r}
-                showIcon={true}
                 id={this.props.id}
-                style={{width:"100%", textAlign: 'start',  ...this.props.layoutStyle}}
-                dateFormat="dd/mm/yy"
+                appendTo={document.body}
+                ref = {r => this.calender = r}
                 value={this.state.date ? this.state.date : 0}
+
+                monthNavigator={true} 
+                yearNavigator={true} 
+                yearRange="1900:2030"
+                dateFormat="dd/mm/yy"
+ 
+                showIcon={true}
+                style={{width:"100%", textAlign: 'start',  ...this.props.layoutStyle}}               
+                
                 onChange= {value => this.setState({date: value.value})}
                 disabled={!this.props["cellEditor.editable"]}
             />
