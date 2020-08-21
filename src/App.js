@@ -43,7 +43,12 @@ class App extends Component {
 
         this.uiBuilder.setServerCommunicator(this.serverComm);
 
-        this.serverComm.startUp();
+        const queryParams = queryString.parse(window.location.search);
+        if(queryParams.baseUrl){
+            this.serverComm.BaseUrl = queryParams.baseUrl
+        }
+        
+        this.serverComm.startUp(queryParams.appName, queryParams.userName, queryParams.password);
 
         this.routeTo("/login");
         this.state={

@@ -51,6 +51,10 @@ class ResponseHandler{
             methodToExecute: this.closeScreen.bind(this)
         },
         {
+            name: "authenticationData",
+            methodToExecute: this.authenticationData.bind(this)
+        },
+        {
             name: "message.error",
             methodToExecute: this.errorMessage.bind(this)
         },
@@ -141,6 +145,10 @@ class ResponseHandler{
     closeScreen(screenToClose){
         this.contentStore.deleteWindow(screenToClose)
         this.routeTo("/main");
+    }
+
+    authenticationData(authData){
+        localStorage.setItem("authKey", authData.authKey);
     }
 
     errorMessage(error){

@@ -12,6 +12,7 @@ class ServerCommunicator {
             body: JSON.stringify(body),
             credentials:"include"
         };
+        console.log(this.BaseUrl)
         let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), timeout)
         this.responseHandler.getResponse(r);
     }
@@ -36,13 +37,17 @@ class ServerCommunicator {
 
     //---Automatic Requests------
 
-    startUp(applicationName="demo"){
+    startUp(applicationName="demo", username, password){
         const browserInfo = this.getBrowser()
         let info = {
             layoutMode : "generic",
             appMode : "full",
             applicationName : applicationName,
             technology: "react",
+
+            userName: username,
+            password: password,
+            authKey: localStorage.getItem("authKey"),
 
             osName: browserInfo.name,
             osVersion: browserInfo.version,
@@ -54,7 +59,7 @@ class ServerCommunicator {
             deviceTypeModel: navigator.userAgent,
 
             readAheadLimit: 100
-        }; this.sendRequest("/api/startup", info);
+        };this.sendRequest("/api/startup", info);
     }
 
     deviceStatus(screenHeight=600, screenWidth=800){
@@ -83,11 +88,13 @@ class ServerCommunicator {
                 componentId: "OK",
                 label: "Anmelden"
               }
-            }
+            },
+            createAuthKey: true
         }; this.sendRequest("/api/login",info);
     }
 
     logOut(){
+        localStorage.removeItem("authKey")
         let info = {
             "clientId": localStorage.getItem("clientId")
         }; this.sendRequest("/api/logout", info);
@@ -143,10 +150,7 @@ class ServerCommunicator {
         const userAgent = navigator.userAgent;
         let match;
 
-        match = userAgent.match("(Safari)/([^ ]*)");
-        if(match){
-            return {name: "Safari", version: match[2]}
-        }
+        // Reinfolge der Abfrage ist wichtig
         match = userAgent.match("(Edg)/([^ ]*)");
         if(match){
             return {name: "Edge", version: match[2]};
@@ -158,6 +162,10 @@ class ServerCommunicator {
         match = userAgent.match("(Firefox)/([^ ]*)");
         if(match){
             return {name: "Firefox", version: match[2]};
+        }
+        match = userAgent.match("(Safari)/([^ ]*)");
+        if(match){
+            return {name: "Safari", version: match[2]}
         }
         return {name: "unknown", Version: "unknown" }
     }
