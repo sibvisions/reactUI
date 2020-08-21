@@ -12,17 +12,38 @@ import tinycolor from 'tinycolor2';
 
 class UIButton extends Base {
 
+    btnMargins;
+    btnAlignments;
+    btnDirection;
+    btnFont;
     btnIcon;
     btnIconPos;
-    btnFont;
-    btnBgd;
-    borderPainted = false;
     iconSize;
     customIcon = false;
+    btnBgd;
+    borderPainted = false;
+    focusable = false;
+
+    constructor(props) {
+        super(props);
+        this.btnMargins = this.getMargins();
+        this.btnAlignments = this.getAlignments();
+        this.setBtnDirection(props.horizontalTextPosition)
+        this.btnFont = this.getFont();
+        this.parseIconData(props.image);
+        this.setIconPos(props.horizontalTextPosition, this.props.verticalTextPosition);
+        this.btnBgd = this.getBtnBgdColor();
+        this.setBorderPainted(props.borderPainted);
+        this.setBtnFocusable(props.focusable);
+    }
 
     componentDidMount() {
         this.styleButton(this.button.children[0]);
         this.styleChildren(this.button.children[0].children)
+        let color;
+        if (this.props.background) color = this.props.background;
+        else color = "#007ad9";
+        this.addHoverEffect(this.button.children[0], color, 5)
     }
 
     styleButton(btn) {
@@ -33,21 +54,30 @@ class UIButton extends Base {
                 }
             }
         }
-        let alignments = mapFlex(checkAlignments(this.props))
-        btn.style.setProperty('display', 'flex');
-        if (this.props.horizontalTextPosition === 1) {
-            btn.style.setProperty('flex-direction', 'column');
-        }
-        btn.style.setProperty('justify-content', alignments.ha);
-        btn.style.setProperty('align-items', alignments.va);
         let size = new Size(parseInt(this.button.style.width), parseInt(this.button.style.height), undefined);
         btn.style.setProperty('height', toPx(size.height));
         btn.style.setProperty('width', toPx(size.width));
-        let color;
-        if (this.props.background) color = this.props.background;
-        else color = "#007ad9";
-        this.addHoverEffect(btn, color, 5)
-            
+    }
+
+    styleChildren(btnChildren) {
+        for (let child of btnChildren) {
+            if (child.classList.contains('fas') || child.classList.contains(this.btnIcon)) {
+                    child.style.setProperty('width', toPx(this.iconSize.width));
+                    child.style.setProperty('height', toPx(this.iconSize.height));
+                    if (this.iconColor !== null) {
+                        child.style.setProperty('color', this.iconColor);
+                    }
+                    if (child.classList.contains(this.btnIcon)) {
+                        child.classList.add("custom-icon");
+                        child.style.setProperty('--icon', 'url(' + this.btnIcon + ')');
+                    }
+                    if (this.props.imageTextGap !== undefined) {
+                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
+                        child.style.setProperty('margin-' + gapPos, toPx(this.props.imageTextGap));
+                    }
+            }
+            child.style.setProperty('padding', 0)
+        }
     }
 
     addHoverEffect(obj, color, dark) {
@@ -73,24 +103,27 @@ class UIButton extends Base {
         }
     }
 
-    styleChildren(btnChildren) {
-        for (let child of btnChildren) {
-            if (child.classList.contains('fas') || child.classList.contains(this.btnIcon)) {
-                    child.style.setProperty('width', toPx(this.iconSize.width));
-                    child.style.setProperty('height', toPx(this.iconSize.height));
-                    if (this.iconColor !== null) {
-                        child.style.setProperty('color', this.iconColor);
-                    }
-                    if (child.classList.contains(this.btnIcon)) {
-                        child.classList.add("custom-icon");
-                        child.style.setProperty('--icon', 'url(' + this.btnIcon + ')');
-                    }
-                    if (this.props.imageTextGap !== undefined) {
-                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                        child.style.setProperty('margin-' + gapPos, toPx(this.props.imageTextGap));
-                    }
-            }
-            child.style.setProperty('padding', 0)
+    getGapPos(hTextPos, vTextPos) {
+        if (hTextPos === 0) {
+            return 'left'
+        }
+        else if (hTextPos === undefined) {
+            return 'right'
+        }
+        else if (hTextPos === 1 && vTextPos === 2) {
+            return 'bottom'
+        }
+        else if (hTextPos === 1 && vTextPos === 0) {
+            return 'top'
+        }
+    }
+
+    setBtnDirection(hTextPos) {
+        if (hTextPos === 1) {
+            this.btnDirection = 'column'
+        }
+        else {
+            this.btnDirection = 'row'
         }
     }
 
@@ -154,38 +187,19 @@ class UIButton extends Base {
         }
     }
 
-    getGapPos(hTextPos, vTextPos) {
-        if (hTextPos === 0) {
-            return 'left'
+    setBorderPainted(borderPainted) {
+        if (borderPainted === undefined || borderPainted === true) {
+            this.borderPainted = true;
         }
-        else if (hTextPos === undefined) {
-            return 'right'
-        }
-        else if (hTextPos === 1 && vTextPos === 2) {
-            return 'bottom'
-        }
-        else if (hTextPos === 1 && vTextPos === 0) {
-            return 'top'
+    }
+
+    setBtnFocusable(focusable) {
+        if (focusable === undefined || focusable === true) {
+            this.focusable = true;
         }
     }
 
     render() {
-        let margins = new Margins([5, 5, 5, 5])
-        if (this.props.margins !== undefined) {
-            margins = new Margins(this.props.margins.split(','))
-        }
-        this.parseIconData(this.props.image);
-        this.setIconPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-        if (this.props.font !== undefined) {
-            this.btnFont = new UIFont(this.props.font.split(','));
-        }
-        else {
-            this.btnFont = new UIFont(["Tahoma", '0', '11'])
-        }
-        this.btnBgd = this.getBtnBgdColor()
-        if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
-            this.borderPainted = true;
-        }
         return (
             <div ref={r => this.button = r} style={this.props.layoutStyle}>
                 <Button
@@ -194,19 +208,23 @@ class UIButton extends Base {
                     constraints={this.props.constraints}
                     onClick={() => this.context.serverComm.pressButton(this.props.name)}
                     style={{
+                        display: 'flex',
+                        flexDirection: this.btnDirection,
+                        justifyContent: this.btnAlignments.ha,
+                        alignItems: this.btnAlignments.va,
                         background: this.btnBgd,
                         color: this.props.foreground,
                         borderColor: this.btnBgd,
-                        paddingTop: margins.marginTop, 
-                        paddingLeft: margins.marginLeft, 
-                        paddingBottom: margins.marginBottom, 
-                        paddingRight: margins.marginRight, 
+                        paddingTop: this.btnMargins.marginTop, 
+                        paddingLeft: this.btnMargins.marginLeft, 
+                        paddingBottom: this.btnMargins.marginBottom, 
+                        paddingRight: this.btnMargins.marginRight, 
                         fontFamily: this.btnFont.fontFamily,
                         fontWeight: this.btnFont.fontWeight,
                         fontStyle: this.btnFont.fontStyle,
                         fontSize: this.btnFont.fontSize,
                     }}
-                    tabIndex={this.props.tabIndex}
+                    tabIndex={this.focusable ? this.props.tabIndex : -1}
                     icon={this.btnIcon}
                     iconPos={this.btnIconPos}
                 />

@@ -11,7 +11,8 @@ import { Gaps } from '../layouts/layoutObj/Gaps';
 import { Margins } from '../layouts/layoutObj/Margins';
 import { Orientation } from '../layouts/layoutObj/Orientation';
 import { GridSize } from '../layouts/layoutObj/GridSize';
-import { checkFlowAlignments, checkFormAlignments, mapFlex } from '../helper/CheckAlignments';
+import { checkFlowAlignments, checkFormAlignments, mapFlex, checkAlignments } from '../helper/CheckAlignments';
+import { UIFont } from '../helper/UIFont';
 
 class Base extends Component {
 
@@ -60,6 +61,38 @@ class Base extends Component {
             else {
                 return document.getElementById(this.props.parent).style.background;
             }
+        }
+    }
+
+    getMargins() {
+        if (this.props.margins) {
+            return new Margins(this.props.margins.split(','));
+        }
+        else {
+            if (this.props.className === "Button") {
+                return new Margins([5, 5, 5, 5]);
+            }
+            else if (this.props.className === "Label") {
+                return new Margins([0, 0, 0, 0]);
+            }
+        }
+    }
+
+    getAlignments() {
+        if (this.props.className === "Button" || this.props.className === "Label") {
+            return mapFlex(checkAlignments(this.props));
+        }
+        else {
+            return checkAlignments(this.props);
+        }
+    }
+
+    getFont() {
+        if (this.props.font) {
+            return new UIFont(this.props.font.split(','));
+        }
+        else {
+            return new UIFont(["Tahoma", 0, 11]);
         }
     }
 
