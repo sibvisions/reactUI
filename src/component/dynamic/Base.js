@@ -13,6 +13,8 @@ import { Orientation } from '../layouts/layoutObj/Orientation';
 import { GridSize } from '../layouts/layoutObj/GridSize';
 import { checkFlowAlignments, checkFormAlignments, mapFlex, checkAlignments } from '../helper/CheckAlignments';
 import { UIFont } from '../helper/UIFont';
+import { FindReact } from '../helper/FindReact';
+import tinycolor from 'tinycolor2';
 
 class Base extends Component {
 
@@ -52,14 +54,14 @@ class Base extends Component {
         if (document.getElementById(this.props.id) !== null) {
             if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
                 if (this.props.background) {
-                    return this.props.background;
+                    return tinycolor(this.props.background);
                 }
                 else {
-                    return "#007ad9";
+                    return tinycolor("#007ad9");
                 }
             }
             else {
-                return document.getElementById(this.props.parent).style.background;
+                return tinycolor(document.getElementById(this.props.parent).style.background);
             }
         }
     }
@@ -96,6 +98,15 @@ class Base extends Component {
         }
     }
 
+    getImageTextGap() {
+        if (this.props.imageTextGap) {
+            return this.props.imageTextGap;
+        }
+        else {
+            return 4;
+        }
+    }
+
     getPreferredSize(comp) {
         let prefSize;
         if (comp) {
@@ -105,7 +116,37 @@ class Base extends Component {
             else {
                 let element = document.getElementById(comp.props.id);
                 if (element.getBoundingClientRect()) {
-                    prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
+                    if (element.classList.contains('p-togglebutton')) {
+                        let toggleBtnWidth = 0;
+                        let widthMargins = 0;
+                        let toggleBtnHeight = 0;
+                        let heightMargins = 0;
+                        let reactObj = FindReact(element)
+                        if (comp.props.horizontalTextPosition !== 1) {
+                            for (let child of element.children) {
+                                toggleBtnWidth += Math.ceil(parseFloat(getComputedStyle(child).width))
+                                widthMargins += Math.ceil(parseFloat(getComputedStyle(child).marginLeft)) + Math.ceil(parseFloat(getComputedStyle(child).marginRight));
+                                if (Math.ceil(parseFloat(getComputedStyle(child).height)) > toggleBtnHeight) {
+                                    toggleBtnHeight = Math.ceil(parseFloat(getComputedStyle(child).height))
+                                }
+                            }
+                        }
+                        else {
+                            for (let child of element.children) {
+                                toggleBtnHeight += Math.ceil(parseFloat(getComputedStyle(child).height))
+                                heightMargins += Math.ceil(parseFloat(getComputedStyle(child).marginTop)) + Math.ceil(parseFloat(getComputedStyle(child).marginBottom));
+                                if (Math.ceil(parseFloat(getComputedStyle(child).width)) > toggleBtnWidth) {
+                                    toggleBtnWidth = Math.ceil(parseFloat(getComputedStyle(child).width))
+                                }
+                            }
+                        }
+                        toggleBtnWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
+                        toggleBtnHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
+                        prefSize = new Size(toggleBtnWidth, toggleBtnHeight, undefined)
+                    }
+                    else {
+                        prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
+                    }
                 }
                 else {
                     prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)

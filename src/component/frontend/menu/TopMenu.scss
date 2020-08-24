@@ -24,13 +24,14 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
                 border: 1px transparent;
             }
             .p-menubar {
-                .p-menuitem-link, .p-menuitem-link .p-menuitem-text,
-                .p-menuitem.p-menuitem-active > .p-menuitem-link .p-menuitem-text,
-                .p-menuitem.p-menuitem-active >.p-menuitem-link >.p-submenu-icon {
+                .p-menuitem-link, .p-menuitem-link .p-menuitem-text, .p-menuitem-link .p-submenu-icon,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) .p-menuitem-text,
+                .p-menuitem.p-menuitem-active >.p-menuitem-link:not(.p-disabled) .p-submenu-icon,
+                .p-menuitem-link:not(.p-disabled):hover .p-submenu-icon {
                     color: map-get($theme-map, "fgdColor");
                 }
-                .p-menuitem-link:hover, .p-menuitem-link:hover .p-menuitem-text,
-                .p-menuitem.p-menuitem-active > .p-menuitem-link {
+                .p-menuitem-link:not(.p-disabled):hover, .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text,
+                .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
                     background-color: map-get($theme-map, "topBar");
                     color: map-get($theme-map, "fgdColor");
                 }

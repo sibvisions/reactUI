@@ -1,6 +1,5 @@
 import React from 'react';
 import Base from '../Base';
-import { checkAlignments, mapFlex } from '../../helper/CheckAlignments';
 
 class UILabel extends Base {
 

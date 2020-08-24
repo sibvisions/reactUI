@@ -25,6 +25,10 @@ class UiBuilder{
             method: this.button.bind(this)
         },
         {
+            name:"ToggleButton",
+            method: this.button.bind(this)
+        },
+        {
             name:"Label",
             method: this.label.bind(this)
         },

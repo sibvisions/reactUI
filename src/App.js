@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { RefContext } from "./component/helper/Context";
 import { resizeEventLimiter } from "./component/helper/ResizeEventLimiter"
-import { Growl } from 'primereact/growl';
+import { Toast } from 'primereact/toast';
 import queryString from 'query-string'
-import 'primereact/resources/themes/nova-light/theme.css';
+import 'primereact/resources/themes/nova/theme.css'
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
@@ -59,15 +59,15 @@ class App extends Component {
             theme: "dark",
             changeMenuPositon: this.changeMenuPositon.bind(this),
             changeTheme: this.changeTheme.bind(this),
-            growl: this.showGrowlMessage.bind(this)
+            toast: this.showToastMessage.bind(this)
         }
         this.routeTo = this.routeTo.bind(this);
     }
 
     
 
-    showGrowlMessage(messageObj){
-        this.growl.show(messageObj);
+    showToastMessage(messageObj){
+        this.toast.show(messageObj);
     }
 
     changeMenuPositon(){
@@ -104,7 +104,7 @@ class App extends Component {
         return (
             <main className={this.state.theme}>
                 <RefContext.Provider value={this.state}>
-                    <Growl ref={(el) => this.growl = el} position="topright" />
+                    <Toast ref={(el) => this.toast = el} position="topright" />
                     <Route path="/main**" component={() => <Menu/>} />
                     <Switch>
                         <Route path="/login" exact={true} component={() => <Login />}  />

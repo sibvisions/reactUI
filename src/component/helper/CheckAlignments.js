@@ -27,7 +27,7 @@ export function checkAlignments(props) {
         if (props.className === 'Label') {
             return {ha: translateAlignments(0, 'h'), va: translateAlignments(0, 'v')}
         }
-        else if (props.className === 'Button') {
+        else if (props.className === 'Button' || props.className === 'ToggleButton') {
             return {ha: translateAlignments(1, 'h'), va: translateAlignments(1, 'v')}
         }
         

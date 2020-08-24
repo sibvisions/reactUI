@@ -8,11 +8,9 @@ body {
     }
 }
 
-.p-button-text-icon-left {
+.p-button {
     .p-button-icon-left {
-        position: unset;
-        top: unset;
-        margin-top: unset;
+        margin-right: unset;
     }
 }
 
@@ -47,8 +45,11 @@ div {
 .formlayout {
     >div {
         >.p-button {
-            .p-button-text {
-                display: inline
+            .p-button-label {
+                flex-grow: unset;
+                flex-shrink: unset;
+                flex-basis: unset;
+
             }
         } 
     }
