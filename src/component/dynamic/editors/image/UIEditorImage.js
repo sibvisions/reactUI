@@ -1,10 +1,9 @@
 import Base from "../../Base";
 import React from 'react';
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
+import placeHolder from "../../../../assets/imgs/IMAGE.png"
 
 class UIEditorImage extends Base {
-
-    placeHolder = process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".png";
 
     constructor(props) {
         super(props);
@@ -17,7 +16,7 @@ class UIEditorImage extends Base {
             if(selection[this.props.columnName]){
                 this.setState({img: "data:image/png;base64," + selection[this.props.columnName]});
             } else {
-                this.setState({img: process.env.PUBLIC_URL + "/assets/" + this.props.columnName + ".png"})
+                this.setState({img : placeHolder})
             }
         })
     }
@@ -131,7 +130,7 @@ class UIEditorImage extends Base {
         return (
             <svg id={this.props.id} style={{ ...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"] }}>
                 <image
-                    href={this.state.img ? this.state.img : this.placeHolder}
+                    href={this.state.img ? this.state.img : placeHolder}
                     ref={ref => this.imgRef = ref}
                     onLoad={this.setImgAlignments}
                     preserveAspectRatio={this.props.cellEditor.preserveAspectRatio ? 'xMidYMid meet' : 'none'}

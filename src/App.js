@@ -47,10 +47,17 @@ class App extends Component {
         if(queryParams.baseUrl){
             this.serverComm.BaseUrl = queryParams.baseUrl
         }
-        
-        this.serverComm.startUp(queryParams.appName, queryParams.userName, queryParams.password);
 
-        this.routeTo("/login");
+        if(queryParams.appName) {
+            this.serverComm.applicationName = queryParams.appName;
+        } else {
+            this.serverComm.applicationName ="demo"
+        }
+
+        
+        this.serverComm.startUp(queryParams.userName, queryParams.password);
+
+
         this.state={
             serverComm: this.serverComm,
             uiBuilder: this.uiBuilder,
@@ -111,7 +118,6 @@ class App extends Component {
                         <Route path="/main/settings" component={() => <Settings/>} />
                         <Route path="/main/:compId" component={() => <Main />} />
                         <Route path="/main" component={() => <Main/>} />
-                        <Redirect from="*" to="/login" />
                     </Switch>
                     <Route path="/main**" component={() => <Footer menuLocation={this.state.menuLocation}/>} />
                 </RefContext.Provider>

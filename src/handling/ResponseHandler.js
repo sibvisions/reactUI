@@ -35,6 +35,10 @@ class ResponseHandler{
             methodToExecute: this.applicationMetaData.bind(this)
         },
         {
+            name:"login",
+            methodToExecute: this.login.bind(this)
+        },
+        {
             name:"menu",
             methodToExecute: this.menu.bind(this)
         },
@@ -96,6 +100,10 @@ class ResponseHandler{
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)
             toExecute ? toExecute.methodToExecute(res, this) : toExecute = undefined
         });
+    }
+
+    login(loginData){
+        this.routeTo("/login");
     }
 
     applicationMetaData(metaData){

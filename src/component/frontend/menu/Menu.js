@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { RefContext } from '../../helper/Context';
+import logo from '../../../assets/imgs/sibvisionslogo.png'
 
 
 //Prime
@@ -97,7 +98,7 @@ class Menu extends Component {
             <React.Fragment>
             <div className="topBar">
                     <div className="logo-sidemenu">
-                        <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
+                        <img src={logo} alt="firmenlogo"/>
                     </div>
                     {/** When the div/button is clicked, add hide or show respectively on which value is in the classList */}
                     <div className="menuBtnSide" onClick={() => this.doScssStuff(this) }>
@@ -129,7 +130,7 @@ class Menu extends Component {
             <React.Fragment>
                 <div className="topMenuBar p-grid ">
                     <div className="logo-topmenu p-col-fixed">
-                        <img src={process.env.PUBLIC_URL + '/assets/sibvisionslogo.png'} alt="firmenlogo"/>
+                        <img src={logo} alt="firmenlogo"/>
                     </div>
                     <div className="menuBtnTop p-col-fixed" onClick={() => this.state.sideBarVisible ? this.setState({sideBarVisible: false}) : this.setState({sideBarVisible: true})}>
                         <i className="pi pi-bars" style={{fontSize: '2em', fontWeight:'bold'}}/>
