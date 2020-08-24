@@ -1,7 +1,7 @@
 {
+  "homepage": ".",
   "name": "webclientreact",
   "version": "0.1.0",
-  "homepage": "http://localhost:8081/reactui",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",

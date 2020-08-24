@@ -1,5 +1,6 @@
 class ServerCommunicator {
     BaseUrl = "http://localhost:8080/JVx.mobile/services/mobile";
+    applicationName = "";
     responseHandler = {};
 
     setResponseHandler(responseHandler){
@@ -12,7 +13,6 @@ class ServerCommunicator {
             body: JSON.stringify(body),
             credentials:"include"
         };
-        console.log(this.BaseUrl)
         let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), timeout)
         this.responseHandler.getResponse(r);
     }
@@ -37,12 +37,12 @@ class ServerCommunicator {
 
     //---Automatic Requests------
 
-    startUp(applicationName="demo", username, password){
+    startUp(username, password){
         const browserInfo = this.getBrowser()
         let info = {
             layoutMode : "generic",
             appMode : "full",
-            applicationName : applicationName,
+            applicationName : this.applicationName,
             technology: "react",
 
             userName: username,
