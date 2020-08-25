@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Switch, Route,  withRouter } from 'react-router-dom';
 import { RefContext } from "./component/helper/Context";
 import { resizeEventLimiter } from "./component/helper/ResizeEventLimiter"
 import { Toast } from 'primereact/toast';

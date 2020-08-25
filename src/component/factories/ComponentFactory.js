@@ -1,5 +1,5 @@
 import React from 'react';
-import UIButton from "../dynamic/button/UIButton";
+import UIButton from "../dynamic/buttons/button/UIButton";
 import UIPanel from "../dynamic/panels/panel/UIPanel";
 import UITable from '../dynamic/table/UITable';
 import UILabel from '../dynamic/label/UILabel';
@@ -13,10 +13,20 @@ import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
 import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
 import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
+import UIMenuButton from '../dynamic/buttons/menubutton/UIMenuButton';
 
 
 export function createButton(buttonData){
-    return <UIButton {...buttonData} key={buttonData.id} />
+    const props= {
+        ...buttonData,
+        key: buttonData.id
+    }
+    if(buttonData.className === "Button" || buttonData.className === "ToggleButton") {
+        return <UIButton {...props} />
+    }
+    else if (buttonData.className === "PopupMenuButton") {
+        return <UIMenuButton {...props} />
+    }
 }
 
 export function createPanel(panelData){

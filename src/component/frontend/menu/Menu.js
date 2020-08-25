@@ -70,7 +70,7 @@ class Menu extends Component {
                       command: () => {
                         this.context.serverComm.logOut();
                         this.props.history.push('/login');
-                        this.context.growl({severity: 'success', summary:"Logged out successfully", detail:"logged out"})
+                        this.context.toast({severity: 'success', summary:"Logged out successfully", detail:"logged out"})
                       }
                   }
               ]

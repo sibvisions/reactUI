@@ -1,11 +1,11 @@
 import React from 'react';
-import Base from '../Base';
+import Base from '../../Base';
 import './UIButton.scss'
 import { Button } from "primereact/button";
 import { ToggleButton } from 'primereact/togglebutton';
-import { RefContext } from '../../helper/Context';
-import { Size } from '../../helper/Size';
-import { toPx } from '../../helper/ToPx';
+import { RefContext } from '../../../helper/Context';
+import { Size } from '../../../helper/Size';
+import { toPx } from '../../../helper/ToPx';
 import tinycolor from 'tinycolor2';
 
 class UIButton extends Base {
@@ -14,10 +14,9 @@ class UIButton extends Base {
     btnAlignments;
     btnDirection;
     btnFont;
-    btnIcon;
+    iconProps = {};
     btnIconPos;
     btnImgTextGap;
-    iconSize;
     customIcon = false;
     btnBgd;
     btnBgdChecked;
@@ -30,7 +29,7 @@ class UIButton extends Base {
         this.btnAlignments = this.getAlignments();
         this.setBtnDirection(props.horizontalTextPosition);
         this.btnFont = this.getFont();
-        this.parseIconData(props.image);
+        this.iconProps = this.parseIconData(props.image);
         this.setIconPos(props.horizontalTextPosition, this.props.verticalTextPosition);
         this.btnImgTextGap = this.getImageTextGap();
         this.btnBgd = this.getBtnBgdColor();
@@ -70,16 +69,14 @@ class UIButton extends Base {
 
     styleChildren(btnChildren) {
         for (let child of btnChildren) {
-            if (this.btnIcon !== undefined) {
-                if (child.classList.contains('fa-' + this.btnIcon.substring(this.btnIcon.indexOf('-') + 1)) || child.classList.contains(this.btnIcon)) {
-                    child.style.setProperty('width', toPx(this.iconSize.width));
-                    child.style.setProperty('height', toPx(this.iconSize.height));
-                    if (this.iconColor !== null) {
-                        child.style.setProperty('color', this.iconColor);
-                    }
-                    if (child.classList.contains(this.btnIcon)) {
+            if (this.iconProps.icon !== undefined) {
+                if (child.classList.contains('fa-' + this.iconProps.icon.substring(this.iconProps.icon.indexOf('-') + 1)) || child.classList.contains(this.iconProps.icon)) {
+                    child.style.setProperty('width', toPx(this.iconProps.size.width));
+                    child.style.setProperty('height', toPx(this.iconProps.size.height));
+                    child.style.setProperty('color', this.iconProps.color);
+                    if (child.classList.contains(this.iconProps.icon)) {
                         child.classList.add("custom-icon");
-                        child.style.setProperty('--icon', 'url(' + this.btnIcon + ')');
+                        child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
                     }
                     let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
                     child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
@@ -143,57 +140,6 @@ class UIButton extends Base {
         }
     }
 
-    parseIconData(iconData) {
-        if (iconData !== undefined) {
-            let splittedIconData;
-            if (iconData.includes("FontAwesome")) {
-                let index = iconData.indexOf(";")
-                if (index < 0) {
-                    let iconString = iconData.slice(iconData.indexOf('.')+1)
-                    splittedIconData = iconString.split(',');
-                    this.btnIcon = "fas fa-" + splittedIconData[0];
-                    this.iconSize = new Size(splittedIconData[1], splittedIconData[2]);
-                }
-                else {
-                    let iconString = iconData.slice(iconData.indexOf('.')+1).split(',');
-                    splittedIconData = iconString[0].split(';');
-                    this.btnIcon = "fas fa-" + splittedIconData[0];
-                    splittedIconData.splice(splittedIconData, 1)
-                    let sizeFound = false;
-                    let colorFound = false;
-                    splittedIconData.forEach(prop => {
-                        if (prop.indexOf("size") >= 0) {
-                            this.iconSize = new Size(prop.substring(prop.indexOf('=')+1), prop.substring(prop.indexOf('=')+1));
-                            sizeFound = true;
-                        }
-                        else if (prop.indexOf("color") >= 0) {
-                            this.iconColor = prop.substring(prop.indexOf('=')+1);
-                            colorFound = true;
-                        }
-                    });
-                    if (!sizeFound) {
-                        this.iconSize = new Size(iconString[1], iconString[2]);
-                    }
-                    if (!colorFound) {
-                        if (this.props.foreground !== undefined) {
-                            this.iconColor = this.props.foreground;
-                        }
-                        else {
-                            this.iconColor = null;
-                        }
-                    }
-                }
-            }
-            else {
-                this.customIcon = true;
-                splittedIconData = iconData.split(',');
-                this.btnIcon = splittedIconData[0];
-                this.iconSize = new Size(splittedIconData[1], splittedIconData[2]);
-                this.iconColor = null;
-            }
-        }
-    }
-
     setIconPos(hTextPos, vTextPos) {
         if (hTextPos === 0 || (hTextPos === 1 && vTextPos === 0)) {
             this.btnIconPos = "right";
@@ -243,8 +189,8 @@ class UIButton extends Base {
                             fontSize: this.btnFont.fontSize,
                         }}
                         tabIndex={this.focusable ? this.props.tabIndex : -1}
-                        offIcon={this.btnIcon}
-                        onIcon={this.btnIcon}
+                        offIcon={this.iconProps.icon}
+                        onIcon={this.iconProps.icon}
                         iconPos={this.btnIconPos}
                         checked={this.state.checked}
                         onChange={(e) => {
@@ -281,7 +227,7 @@ class UIButton extends Base {
                             fontSize: this.btnFont.fontSize,
                         }}
                         tabIndex={this.focusable ? this.props.tabIndex : -1}
-                        icon={this.btnIcon}
+                        icon={this.iconProps.icon}
                         iconPos={this.btnIconPos}
                     />
                 </div>
