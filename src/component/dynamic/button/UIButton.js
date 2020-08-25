@@ -70,7 +70,8 @@ class UIButton extends Base {
 
     styleChildren(btnChildren) {
         for (let child of btnChildren) {
-            if (child.classList.contains('fa-' + this.btnIcon.substring(this.btnIcon.indexOf('-')+1)) || child.classList.contains(this.btnIcon)) {
+            if (this.btnIcon !== undefined) {
+                if (child.classList.contains('fa-' + this.btnIcon.substring(this.btnIcon.indexOf('-') + 1)) || child.classList.contains(this.btnIcon)) {
                     child.style.setProperty('width', toPx(this.iconSize.width));
                     child.style.setProperty('height', toPx(this.iconSize.height));
                     if (this.iconColor !== null) {
@@ -82,6 +83,7 @@ class UIButton extends Base {
                     }
                     let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
                     child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+                }
             }
             child.style.setProperty('padding', 0)
         }
