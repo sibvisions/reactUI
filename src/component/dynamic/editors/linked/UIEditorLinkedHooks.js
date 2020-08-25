@@ -12,7 +12,7 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 function UIEditorLinkedHooks(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "");
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
     const con = useContext(RefContext)
     const autoComRef = useRef()
 

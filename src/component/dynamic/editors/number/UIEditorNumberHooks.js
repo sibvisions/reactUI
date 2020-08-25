@@ -4,7 +4,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 function UIEditorNumberHooks(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id);
     const inputRef = useRef()
 
 
