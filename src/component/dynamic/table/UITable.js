@@ -13,7 +13,7 @@ class UITable extends Base {
     content = [];
     dataColumns = [];
     data;
-    state = {  }
+    state = { }
     maximumSize = new Size(undefined, undefined, this.props.maximumSize)
     
     componentDidMount(){
@@ -41,10 +41,12 @@ class UITable extends Base {
                 key: names[index],
             }
             let metaData = this.context.contentStore.metaData.get(names[index]);
-            metaData.name = this.props.name;
-            metaData.cellEditor.clearColumns = ["ID", names[index]]
-            columnProps.editor = (props) => this.buildEditor(props, metaData)
-            this.dataColumns.push(<Column {...columnProps}/>);
+            if(metaData){
+                metaData.name = this.props.name;
+                metaData.cellEditor.clearColumns = ["ID", names[index]]
+                columnProps.editor = (props) => this.buildEditor(props, metaData)
+            }
+            this.dataColumns.push(<Column on {...columnProps}/>);
         }
     }
 

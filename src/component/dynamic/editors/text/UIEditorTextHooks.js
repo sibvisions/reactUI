@@ -6,7 +6,7 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 
 function UIEditorTextHooks(props){
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "");
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
     const inputRef = useRef()
 
     useEffect(() => {
