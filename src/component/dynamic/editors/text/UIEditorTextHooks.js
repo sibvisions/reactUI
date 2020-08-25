@@ -1,18 +1,15 @@
 import React, { useEffect, useRef } from 'react';
+import "./UIEditorText.scss"
 import { InputText } from 'primereact/inputtext';
 import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 
 function UIEditorTextHooks(props){
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "");
     const inputRef = useRef()
 
     useEffect(() => {
-        if(props.initialValue){
-            editColumn(props.initialValue);
-        }
-        
         if(inputRef.current.element){
             const alignments = checkCellEditorAlignments(props);
             inputRef.current.element.style['background-color'] = props['cellEditor.background'];

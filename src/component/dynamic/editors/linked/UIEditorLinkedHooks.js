@@ -12,14 +12,11 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 function UIEditorLinkedHooks(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "");
     const con = useContext(RefContext)
     const autoComRef = useRef()
 
     useEffect(()=> {
-        if(props.initialValue){
-            editColumn(props.initialValue)
-        }
         if(autoComRef.current.inputEl){
             const alignments = checkCellEditorAlignments(props);
             autoComRef.current.inputEl.style['background-color'] = props['cellEditor.background'];

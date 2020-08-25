@@ -83,7 +83,7 @@ class ResponseHandler{
 
     getResponse(requestPromise){
         requestPromise
-            .then(response => response.json())
+            .then(response => { return response.json()})
             .then(jResponse => this.handler(jResponse))
             .catch(error => {console.error(error)})
     }

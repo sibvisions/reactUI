@@ -54,7 +54,7 @@ class App extends Component {
             this.serverComm.applicationName ="demo"
         }
 
-        
+        this.routeTo("/");
         this.serverComm.startUp(queryParams.userName, queryParams.password);
 
 

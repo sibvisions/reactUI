@@ -1,14 +1,5 @@
- td>.p-inputext {
-    width: 100%;
+td.p-cell-editing{
+    >.p-component{
+        width: 100%;
+    }   
 }
-
-.p-datatable .p-datatable-tbody>tr>td.p-cell-editing>span{
-    >.p-button-icon-only{
-        width: auto ;
-    }
-
-    >.p-inputtext{
-        width: calc(100% - 45px);
-    }
-}
-
