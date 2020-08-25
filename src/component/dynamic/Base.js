@@ -107,6 +107,58 @@ class Base extends Component {
         }
     }
 
+    parseIconData(iconData) {
+        if (iconData !== undefined) {
+            let splittedIconData;
+            let iconName;
+            let iconSize;
+            let iconColor;
+            if (iconData.includes("FontAwesome")) {
+                let iconString = iconData.slice(iconData.indexOf('.') + 1)
+                let index = iconData.indexOf(";")
+                if (index < 0) {
+                    splittedIconData = iconString.split(',');
+                    iconName = "fas fa-" + splittedIconData[0];
+                    iconSize = new Size(splittedIconData[1], splittedIconData[2]);
+                    iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('black');
+                    return {icon: iconName, size: iconSize, color: iconColor};
+                }
+                else {
+                    splittedIconData = iconString.split(';');
+                    iconName = "fas fa-" + splittedIconData[0];
+                    splittedIconData.splice(splittedIconData, 1)
+                    let sizeFound = false;
+                    let colorFound = false;
+                    splittedIconData.forEach(prop => {
+                        if (prop.indexOf("size") >= 0) {
+                            iconSize = new Size(prop.substring(prop.indexOf('=')+1), prop.substring(prop.indexOf('=')+1));
+                            sizeFound = true;
+                        }
+                        else if (prop.indexOf("color") >= 0) {
+                            iconColor = prop.substring(prop.indexOf('=')+1, prop.indexOf(','));
+                            colorFound = true;
+                        }
+                    });
+                    if (!sizeFound) {
+                        iconSize = new Size(iconString[1], iconString[2]);
+                    }
+                    if (!colorFound) {
+                        iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('black');
+                    }
+                    return {icon: iconName, size: iconSize, color: iconColor};
+                }
+            }
+            else {
+                this.customIcon = true;
+                splittedIconData = iconData.split(',');
+                iconName = splittedIconData[0];
+                iconSize = new Size(splittedIconData[1], splittedIconData[2]);
+                iconColor = null;
+                return {icon: iconName, size: iconSize, color: iconColor};
+            }
+        }
+    }
+
     getPreferredSize(comp) {
         let prefSize;
         if (comp) {
