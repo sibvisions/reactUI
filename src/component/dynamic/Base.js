@@ -50,29 +50,15 @@ class Base extends Component {
         }
     }
 
-    getBtnBgdColor() {
-        if (document.getElementById(this.props.id) !== null) {
-            if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
-                if (this.props.background) {
-                    return tinycolor(this.props.background);
-                }
-                else {
-                    return tinycolor("#007ad9");
-                }
-            }
-            else {
-                return tinycolor(document.getElementById(this.props.parent).style.background);
-            }
-        }
-    }
+    
 
     getMargins() {
         if (this.props.margins) {
             return new Margins(this.props.margins.split(','));
         }
         else {
-            if (this.props.className === "Button") {
-                return new Margins([5, 5, 5, 5]);
+            if (this.props.className.includes("Button")) {
+                return new Margins([5, 10, 5, 10]);
             }
             else if (this.props.className === "Label") {
                 return new Margins([0, 0, 0, 0]);
@@ -81,7 +67,7 @@ class Base extends Component {
     }
 
     getAlignments() {
-        if (this.props.className === "Button" || this.props.className === "Label") {
+        if (this.props.className.includes("Button") || this.props.className === "Label") {
             return mapFlex(checkAlignments(this.props));
         }
         else {

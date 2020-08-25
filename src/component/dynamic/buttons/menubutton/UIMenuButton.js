@@ -1,26 +1,18 @@
 import React from 'react';
 import { RefContext } from '../../../helper/Context';
-import Base from '../../Base';
-
 import { Menu } from 'primereact/menu';
 import { Button } from "primereact/button";
+import BaseButton from '../BaseButton';
 
-class UIMenuButton extends Base {
+class UIMenuButton extends BaseButton {
 
     state = {
         items: []
     };
 
-    btnMargins;
-    btnAlignments
-    btnBgd;
-
-    constructor(props) {
-        super(props);
-
-    }
-
     componentDidMount() {
+        this.styleButton(this.button.children[0]);
+        this.styleChildren(this.button.children[0].children);
         this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
     }
 
@@ -41,10 +33,11 @@ class UIMenuButton extends Base {
 
     render() {
         return (
-            <span id={this.props.id} style={this.props.layoutStyle}>
+            <div ref={r => this.button = r} style={this.props.layoutStyle}>
                 <Menu model={this.state.items} popup ref={r => this.menu = r} appendTo={document.body}/>
-                <Button label={this.props.text} onClick={(event) => this.menu.toggle(event)}/>
-            </span>
+                <Button {...this.btnProps} label={this.props.text} onClick={(event) => this.menu.toggle(event)}><i className="pi pi-angle-down"></i> </Button>
+                
+            </div>
         )
     }
 }

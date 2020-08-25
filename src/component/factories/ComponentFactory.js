@@ -14,6 +14,7 @@ import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
 import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
 import UIMenuButton from '../dynamic/buttons/menubutton/UIMenuButton';
+import UIToggleButton from '../dynamic/buttons/togglebutton/UIToggleButton';
 
 
 export function createButton(buttonData){
@@ -21,8 +22,11 @@ export function createButton(buttonData){
         ...buttonData,
         key: buttonData.id
     }
-    if(buttonData.className === "Button" || buttonData.className === "ToggleButton") {
+    if(buttonData.className === "Button") {
         return <UIButton {...props} />
+    }
+    else if (buttonData.className === "ToggleButton") {
+        return <UIToggleButton {...props} />
     }
     else if (buttonData.className === "PopupMenuButton") {
         return <UIMenuButton {...props} />
