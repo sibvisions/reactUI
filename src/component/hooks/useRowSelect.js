@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
 
-function useRowSelect(columnName) {
-    const [selectedColumn, editColumn] = useState();
+function useRowSelect(columnName, init) {
+    const [selectedColumn, editColumn] = useState(init);
     const con = useContext(RefContext);
 
     useEffect(()=> {

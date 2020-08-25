@@ -216,10 +216,6 @@ class UIButton extends Base {
     }
 
     render() {
-        if (this.state.bgd !== undefined) {
-            console.log(this.state.checked, this.state.bgd.toHex(), this.btnBgd.toHex())
-        }
-        
         if (this.props.className === 'ToggleButton') {
             return (
                 <div ref={r => this.button = r} style={this.props.layoutStyle}>
