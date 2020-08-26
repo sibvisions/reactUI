@@ -98,17 +98,20 @@ class BaseButton extends Base {
 
     styleChildren(btnChildren) {
         for (let child of btnChildren) {
-            if (this.iconProps.icon !== undefined) {
-                if (child.classList.contains('fa-' + this.iconProps.icon.substring(this.iconProps.icon.indexOf('-') + 1)) || child.classList.contains(this.iconProps.icon)) {
-                    child.style.setProperty('width', toPx(this.iconProps.size.width));
-                    child.style.setProperty('height', toPx(this.iconProps.size.height));
-                    child.style.setProperty('color', this.iconProps.color);
-                    if (child.classList.contains(this.iconProps.icon)) {
-                        child.classList.add("custom-icon");
-                        child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
+            if (this.iconProps !== undefined) {
+                if (this.iconProps.icon !== undefined) {
+                    if (child.classList.contains('fa-' + this.iconProps.icon.substring(this.iconProps.icon.indexOf('-') + 1)) || child.classList.contains(this.iconProps.icon)) {
+                        child.style.setProperty('width', toPx(this.iconProps.size.width));
+                        child.style.setProperty('height', toPx(this.iconProps.size.height));
+                        child.style.setProperty('color', this.iconProps.color);
+                        console.log(this.iconProps.icon)
+                        if (child.classList.contains(this.iconProps.icon)) {
+                            child.classList.add("custom-icon");
+                            child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
+                        }
+                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
+                        child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
                     }
-                    let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                    child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
                 }
             }
             child.style.setProperty('padding', 0)

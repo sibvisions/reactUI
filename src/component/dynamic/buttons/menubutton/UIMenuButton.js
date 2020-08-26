@@ -1,5 +1,6 @@
 import React from 'react';
 import { RefContext } from '../../../helper/Context';
+import './UIMenuButton.scss'
 import { Menu } from 'primereact/menu';
 import { Button } from "primereact/button";
 import BaseButton from '../BaseButton';
@@ -24,7 +25,10 @@ class UIMenuButton extends BaseButton {
                 label: item.text,
                 icon: iconProps.icon,
                 id: item.id,
-                size: iconProps.size,
+                className: item.id,
+                style: {
+                    color: iconProps.color
+                },
                 color: iconProps.color
             });
         });
@@ -34,9 +38,20 @@ class UIMenuButton extends BaseButton {
     render() {
         return (
             <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                <Menu model={this.state.items} popup ref={r => this.menu = r} appendTo={document.body}/>
-                <Button {...this.btnProps} label={this.props.text} onClick={(event) => this.menu.toggle(event)}><i className="pi pi-angle-down"></i> </Button>
-                
+                <Menu
+                    className="popupmenu"
+                    model={this.state.items}
+                    popup
+                    ref={r => this.menu = r}
+                    appendTo={document.body}
+                />
+                <Button
+                    {...this.btnProps}
+                    label={this.props.text}
+                    icon={this.iconProps.icon}
+                    onClick={(event) => this.menu.toggle(event)}>
+                    <i className="pi pi-angle-down"></i>
+                </Button>
             </div>
         )
     }

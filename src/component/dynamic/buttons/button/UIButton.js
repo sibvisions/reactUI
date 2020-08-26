@@ -43,7 +43,7 @@ class UIButton extends BaseButton {
                 <Button
                     {...this.btnProps}
                     label={this.props.text}
-                    icon={this.iconProps.icon}
+                    icon={this.iconProps ? this.iconProps.icon : null}
                 />
             </div>
         )
