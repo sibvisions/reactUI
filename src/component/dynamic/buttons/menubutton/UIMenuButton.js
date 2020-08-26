@@ -4,6 +4,7 @@ import './UIMenuButton.scss'
 import { Menu } from 'primereact/menu';
 import { Button } from "primereact/button";
 import BaseButton from '../BaseButton';
+import { FindReact } from '../../../helper/FindReact';
 
 class UIMenuButton extends BaseButton {
 
@@ -13,7 +14,7 @@ class UIMenuButton extends BaseButton {
 
     componentDidMount() {
         this.styleButton(this.button.children[0]);
-        this.styleChildren(this.button.children[0].children);
+        this.styleChildren(this.button.children[0].children, FindReact(this.button).props.className);
         this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
     }
 
@@ -29,7 +30,8 @@ class UIMenuButton extends BaseButton {
                 style: {
                     color: iconProps.color
                 },
-                color: iconProps.color
+                color: iconProps.color,
+                command: () => this.context.serverComm.pressButton(item.name)
             });
         });
         this.setState({items: tempItems});

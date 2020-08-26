@@ -34,7 +34,7 @@ div {
 
 .custom-icon::before {
     display: block;
-    background-image: url("../../../../../src/assets/imgs/sibvisionslogo.png");
+    background-image: var(--icon);
     height: inherit;
     width: inherit;
     content:"";

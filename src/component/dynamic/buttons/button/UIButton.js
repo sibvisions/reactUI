@@ -4,12 +4,13 @@ import { Button } from "primereact/button";
 import { RefContext } from '../../../helper/Context';
 import tinycolor from 'tinycolor2';
 import BaseButton from '../BaseButton';
+import { FindReact } from '../../../helper/FindReact';
 
 class UIButton extends BaseButton {
 
     componentDidMount() {
         this.styleButton(this.button.children[0]);
-        this.styleChildren(this.button.children[0].children);
+        this.styleChildren(this.button.children[0].children, FindReact(this.button).props.className);
         this.addHoverEffect(this.button.children[0], this.btnBgd, 5)
     }
 

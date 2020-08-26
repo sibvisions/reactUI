@@ -172,7 +172,7 @@ class ResponseHandler{
     deviceStatus(deviceData){
         if(deviceData.layoutMode !== this.contentStore.layoutMode){
             this.contentStore.layoutMode = deviceData.layoutMode
-            this.layoutModeChanged( );
+            this.layoutModeChanged();
         }
     }
 

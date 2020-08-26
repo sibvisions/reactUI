@@ -14,20 +14,38 @@ export function checkCellEditorAlignments(props) {
 }
 
 export function checkAlignments(props) {
+    let compType;
+    if (props.className.includes('Button')) {
+        compType = 'btn';
+    }
+    else if (props.className.includes('Label')) {
+        compType = 'lbl';
+    }
+    
     if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined) {
         return {ha: translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
     }
     else if (props.horizontalAlignment !== undefined) {
-        return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(0, 'v')};
+        if (compType === 'btn') {
+            return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(1, 'v')};
+        }
+        else if(compType === 'lbl') {
+            return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(0, 'v')};
+        }
     }
     else if (props.verticalAlignment !== undefined) {
-        return {ha: translateAlignments(0, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+        if (compType === 'btn') {
+            return {ha : translateAlignments(1, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+        }
+        else if (compType === 'lbl') {
+            return {ha: translateAlignments(0, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+        }
     }
     else {
-        if (props.className === 'Label') {
+        if (compType === 'lbl') {
             return {ha: translateAlignments(0, 'h'), va: translateAlignments(0, 'v')}
         }
-        else if (props.className === 'Button' || props.className === 'ToggleButton' || props.className === 'PopupMenuButton') {
+        else if (compType === 'btn') {
             return {ha: translateAlignments(1, 'h'), va: translateAlignments(1, 'v')}
         }
         

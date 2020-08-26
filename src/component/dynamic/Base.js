@@ -80,7 +80,7 @@ class Base extends Component {
             return new UIFont(this.props.font.split(','));
         }
         else {
-            return new UIFont(["Tahoma", 0, 11]);
+            return new UIFont([null, null, null]);
         }
     }
 
@@ -94,7 +94,7 @@ class Base extends Component {
     }
 
     parseIconData(iconData) {
-        if (iconData !== undefined) {
+        if (iconData !== undefined && iconData !== null) {
             let splittedIconData;
             let iconName;
             let iconSize;
@@ -142,6 +142,9 @@ class Base extends Component {
                 iconColor = null;
                 return {icon: iconName, size: iconSize, color: iconColor};
             }
+        }
+        else {
+            return null
         }
     }
 
@@ -322,6 +325,7 @@ class Base extends Component {
                             gaps={gaps}
                             orientation={orientation.orientation}
                             alignments={alignments}
+                            autoWrap={true}
                             preferredSize={this.getPreferredSize(this)}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}

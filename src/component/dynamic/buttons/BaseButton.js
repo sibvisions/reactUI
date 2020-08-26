@@ -10,7 +10,7 @@ class BaseButton extends Base {
     btnAlignments;
     btnDirection;
     btnFont;
-    iconProps = {};
+    iconProps;
     btnIconPos;
     btnImgTextGap;
     customIcon = false;
@@ -96,25 +96,41 @@ class BaseButton extends Base {
         btn.style.setProperty('width', toPx(size.width));
     }
 
-    styleChildren(btnChildren) {
+    styleChildren(btnChildren, btnType) {
         for (let child of btnChildren) {
-            if (this.iconProps !== undefined) {
-                if (this.iconProps.icon !== undefined) {
-                    if (child.classList.contains('fa-' + this.iconProps.icon.substring(this.iconProps.icon.indexOf('-') + 1)) || child.classList.contains(this.iconProps.icon)) {
-                        child.style.setProperty('width', toPx(this.iconProps.size.width));
-                        child.style.setProperty('height', toPx(this.iconProps.size.height));
-                        child.style.setProperty('color', this.iconProps.color);
-                        console.log(this.iconProps.icon)
-                        if (child.classList.contains(this.iconProps.icon)) {
-                            child.classList.add("custom-icon");
-                            child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
-                        }
-                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                        child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+            if (this.iconProps) {
+                if (child.classList.value.includes(this.iconProps.icon)) {
+                    child.style.setProperty('width', toPx(this.iconProps.size.width));
+                    child.style.setProperty('height', toPx(this.iconProps.size.height));
+                    child.style.setProperty('color', this.iconProps.color);
+                    if (child.classList.contains(this.iconProps.icon)) {
+                        child.classList.add("custom-icon");
+                        child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
                     }
+                    let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
+                    child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
                 }
             }
-            child.style.setProperty('padding', 0)
+            child.style.setProperty('padding', 0);
+            if (btnType === "PopupMenuButton") {
+                this.menuButtonAlignments(child)
+            }
+        }
+    }
+
+    menuButtonAlignments(elem) {
+        if (elem.classList.value.includes(this.iconProps.icon)) {
+            if (this.btnAlignments.ha === 'center') {
+                elem.style.setProperty('margin-left', 'auto');
+            }
+        }
+        else if (elem.tagName === 'I') {
+            if (this.btnAlignments.ha !== 'right') {
+                elem.style.setProperty('margin-left', 'auto');
+            }
+            if (this.btnAlignments.va !== 'center') {
+                elem.style.setProperty('align-self', 'center');
+            }
         }
     }
 
