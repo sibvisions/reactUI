@@ -7,7 +7,7 @@ class ServerCommunicator {
         this.responseHandler = responseHandler;
     }
     
-    sendRequest(endpoint, body, timeout=2000){
+    sendRequest(endpoint, body, timeout=5000){
         let reqOpt = {
             method: 'POST',
             body: JSON.stringify(body),

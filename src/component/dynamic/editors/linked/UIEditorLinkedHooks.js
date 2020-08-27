@@ -9,12 +9,13 @@ import { AutoComplete } from 'primereact/autocomplete';
 import useFetchListen from "../../../hooks/useFetchListen";
 import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
+import { getHooksPreferredSize } from '../../../helper/GetPreferredSize';
 
 function UIEditorLinkedHooks(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
     const con = useContext(RefContext)
-    const autoComRef = useRef()
+    const autoComRef = useRef();
 
     useEffect(()=> {
         if(autoComRef.current.inputEl){
@@ -22,6 +23,7 @@ function UIEditorLinkedHooks(props){
             autoComRef.current.inputEl.style['background-color'] = props['cellEditor.background'];
             autoComRef.current.inputEl.style['text-align'] = alignments.ha;
         }
+        con.contentStore.emitSizeCalculated({size: getHooksPreferredSize(props), id: props.id, parent: props.parent, firstTime: true});
     })
 
     function buildSuggestions(response= {records: []}){

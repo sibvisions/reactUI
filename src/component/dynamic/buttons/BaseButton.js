@@ -59,18 +59,16 @@ class BaseButton extends Base {
     }
 
     getBgdColor() {
-        if (document.getElementById(this.props.id) !== null) {
-            if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
-                if (this.props.background) {
-                    return tinycolor(this.props.background);
-                }
-                else {
-                    return tinycolor("#007ad9");
-                }
+        if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
+            if (this.props.background) {
+                return tinycolor(this.props.background);
             }
             else {
-                return tinycolor(document.getElementById(this.props.parent).style.background);
+                return tinycolor("#007ad9");
             }
+        }
+        else {
+            return tinycolor(document.getElementById(this.props.parent).style.background);
         }
     }
 
@@ -92,8 +90,8 @@ class BaseButton extends Base {
             }
         }
         let size = new Size(parseInt(this.button.style.width), parseInt(this.button.style.height), undefined);
-        btn.style.setProperty('height', toPx(size.height));
-        btn.style.setProperty('width', toPx(size.width));
+        btn.style.setProperty('height', this.props.constraints === 'Center' ? '100%' : toPx(size.height));
+        btn.style.setProperty('width', this.props.constraints === 'Center' ? '100%' : toPx(size.width));
     }
 
     styleChildren(btnChildren, btnType) {

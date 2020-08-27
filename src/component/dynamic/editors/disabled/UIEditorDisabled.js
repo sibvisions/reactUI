@@ -1,8 +1,15 @@
 import React from 'react';
 import { InputText } from "primereact/inputtext";
 import Base from '../../Base';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { RefContext } from '../../../helper/Context';
 
 class UIEditorDisabled extends Base {
+
+    componentDidMount() {
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
+    }
+
     render() {
         return ( 
             <InputText
@@ -14,4 +21,5 @@ class UIEditorDisabled extends Base {
         );
     }
 }
+UIEditorDisabled.contextType = RefContext;
 export default UIEditorDisabled;

@@ -2,8 +2,15 @@ import React from 'react';
 import Split from 'react-split'
 import Base from '../../Base';
 import "./UISplitPanel.css";
+import { RefContext } from '../../../helper/Context';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
 
 class UISplitPanel extends Base {
+
+    componentDidMount() {
+        this.startUp();
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
+    }
 
     getLeftComponents(){
         let leftComp = [];
@@ -11,7 +18,12 @@ class UISplitPanel extends Base {
         if(this.state.content){
             this.state.content.forEach(x => {
                 if(x.props.constraints === "SECOND_COMPONENT"){
-                    leftComp.push(x);
+                    let style = {
+                        height: '100%',
+                        width: '100%'
+                    }
+                    let clonedComponent = React.cloneElement(x, {layoutStyle: style});
+                    leftComp.push(clonedComponent);
                 }
             });
         }
@@ -56,5 +68,5 @@ class UISplitPanel extends Base {
         );
     }
 }
- 
+UISplitPanel.contextType = RefContext
 export default UISplitPanel;

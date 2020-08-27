@@ -4,6 +4,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { RefContext } from '../../../helper/Context';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import withRowSelection from '../withRowSelection';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
 
 class UIEditorNumber extends Base {
 
@@ -18,6 +19,7 @@ class UIEditorNumber extends Base {
                 }
             }
         }
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     render(){

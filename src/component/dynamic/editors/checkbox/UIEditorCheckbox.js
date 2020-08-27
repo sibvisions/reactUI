@@ -2,11 +2,17 @@ import React from 'react';
 import {Checkbox} from 'primereact/checkbox';
 import Base from '../../Base';
 import { checkCellEditorAlignments, mapFlex } from '../../../helper/CheckAlignments';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { RefContext } from '../../../helper/Context';
 
 
 class UIEditorCheckbox extends Base {
 
     state = {}
+
+    componentDidMount() {
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true})
+    }
 
     render() {
         let alignments = mapFlex(checkCellEditorAlignments(this.props))
@@ -17,5 +23,5 @@ class UIEditorCheckbox extends Base {
         </span> );
     }
 }
- 
+UIEditorCheckbox.contextType = RefContext;
 export default UIEditorCheckbox;

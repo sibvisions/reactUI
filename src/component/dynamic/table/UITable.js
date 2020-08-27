@@ -8,6 +8,7 @@ import { createEditor } from "../../factories/ComponentFactory";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { getPreferredSize } from '../../helper/GetPreferredSize';
 
 class UITable extends Base {
     content = [];
@@ -27,6 +28,7 @@ class UITable extends Base {
         if(data){
             this.buildData(data)
         }
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     componentWillUnmount(){

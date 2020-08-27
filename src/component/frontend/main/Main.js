@@ -27,7 +27,9 @@ class Main extends Component {
             <React.Fragment>
                 <div className={"content-" + this.context.menuLocation + "menu"}>
                     <div className="p-grid parent-grid" style={{backgroundColor:"#C8C8C8", overflowX:"auto"}}>
-                        {this.state.content}
+                        <div className="p-col-12">
+                            {this.state.content}
+                        </div>
                     </div>
                 </div>
             </React.Fragment>

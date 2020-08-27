@@ -13,8 +13,8 @@ import { Orientation } from '../layouts/layoutObj/Orientation';
 import { GridSize } from '../layouts/layoutObj/GridSize';
 import { checkFlowAlignments, checkFormAlignments, mapFlex, checkAlignments } from '../helper/CheckAlignments';
 import { UIFont } from '../helper/UIFont';
-import { FindReact } from '../helper/FindReact';
 import tinycolor from 'tinycolor2';
+import { getPreferredSize } from '../helper/GetPreferredSize';
 
 class Base extends Component {
 
@@ -148,86 +148,6 @@ class Base extends Component {
         }
     }
 
-    getPreferredSize(comp) {
-        let prefSize;
-        if (comp) {
-            if (comp.props.preferredSize) {
-                prefSize = new Size(undefined, undefined, comp.props.preferredSize)
-            }
-            else {
-                let element = document.getElementById(comp.props.id);
-                if (element.getBoundingClientRect()) {
-                    if (element.classList.contains('p-togglebutton')) {
-                        let toggleBtnWidth = 0;
-                        let widthMargins = 0;
-                        let toggleBtnHeight = 0;
-                        let heightMargins = 0;
-                        let reactObj = FindReact(element)
-                        if (comp.props.horizontalTextPosition !== 1) {
-                            for (let child of element.children) {
-                                toggleBtnWidth += Math.ceil(parseFloat(getComputedStyle(child).width))
-                                widthMargins += Math.ceil(parseFloat(getComputedStyle(child).marginLeft)) + Math.ceil(parseFloat(getComputedStyle(child).marginRight));
-                                if (Math.ceil(parseFloat(getComputedStyle(child).height)) > toggleBtnHeight) {
-                                    toggleBtnHeight = Math.ceil(parseFloat(getComputedStyle(child).height))
-                                }
-                            }
-                        }
-                        else {
-                            for (let child of element.children) {
-                                toggleBtnHeight += Math.ceil(parseFloat(getComputedStyle(child).height))
-                                heightMargins += Math.ceil(parseFloat(getComputedStyle(child).marginTop)) + Math.ceil(parseFloat(getComputedStyle(child).marginBottom));
-                                if (Math.ceil(parseFloat(getComputedStyle(child).width)) > toggleBtnWidth) {
-                                    toggleBtnWidth = Math.ceil(parseFloat(getComputedStyle(child).width))
-                                }
-                            }
-                        }
-                        toggleBtnWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
-                        toggleBtnHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
-                        prefSize = new Size(toggleBtnWidth, toggleBtnHeight, undefined)
-                    }
-                    else {
-                        prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
-                    }
-                }
-                else {
-                    prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)
-                }
-            }
-            if (comp.props.minimumSize) {
-                let minSize = new Size(undefined, undefined, comp.props.minimumSize)
-                if (prefSize.width < minSize.width) {
-                    prefSize.setWidth(minSize.width);
-                }
-                if (prefSize.height < minSize.height) {
-                    prefSize.setHeight(minSize.height);
-                }
-                if (prefSize.width === 0) {
-                    prefSize.setHeight(minSize.width);
-                }
-                if (prefSize.height === 0) {
-                    prefSize.setHeight(minSize.height)
-                }
-            }
-
-            if (comp.props.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
-                if (maxSize.width < prefSize.width) {
-                    prefSize.setWidth(maxSize.width);
-                }
-                if (maxSize.height < prefSize.height) {
-                    prefSize.setHeight(maxSize.height);
-                }
-                if (prefSize.width === 0) {
-                    prefSize.setHeight(maxSize.width);
-                }
-                if (prefSize.height === 0) {
-                    prefSize.setHeight(maxSize.height)
-                }
-            }
-            return prefSize
-        }
-    }
-    
     componentDidMount() {
         this.startUp();
     }
@@ -239,7 +159,7 @@ class Base extends Component {
                 minSize = new Size(undefined, undefined, comp.props.minimumSize);
             }
             else {
-                minSize = this.getPreferredSize(comp);
+                minSize = getPreferredSize(comp);
             }
     
             if (comp.props.maximumSize) {
@@ -295,10 +215,9 @@ class Base extends Component {
                             margins={margins}
                             gaps={gaps}
                             alignments={alignments}
-                            preferredSize={this.getPreferredSize(this)}
+                            preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
                             getMaximumSize={this.getMaximumSize}
                             isVisible={this.isVisible} />;
@@ -308,10 +227,9 @@ class Base extends Component {
                             subjects={this.state.content}
                             margins={margins}
                             gaps={gaps}
-                            preferredSize={this.getPreferredSize(this)}
+                            preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getPreferredSize={this.getPreferredSize}
                             getMinimumSize={this.getMinimumSize}
                             getMaximumSize={this.getMaximumSize}
                             isVisible={this.isVisible} />;
@@ -326,10 +244,9 @@ class Base extends Component {
                             orientation={orientation.orientation}
                             alignments={alignments}
                             autoWrap={true}
-                            preferredSize={this.getPreferredSize(this)}
+                            preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getPreferredSize={this.getPreferredSize}
                             isVisible={this.isVisible} />;
                     case "GridLayout":
                         let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8));
@@ -339,15 +256,13 @@ class Base extends Component {
                             margins={margins}
                             gaps={gaps}
                             gridSize={gridSize}
-                            preferredSize={this.getPreferredSize(this)}
+                            preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getPreferredSize={this.getPreferredSize}
                             isVisible={this.isVisible} />;
                     default: return <NullLayout
                         component={this}
                         subjects={this.state.content}
-                        getPreferredSize={this.getPreferredSize}
                         isVisible={this.isVisible} />;
                 }
             }
@@ -355,7 +270,6 @@ class Base extends Component {
                 return <NullLayout
                     component={this}
                     subjects={this.state.content}
-                    getPreferredSize={this.getPreferredSize}
                     isVisible={this.isVisible} />;
             }
         }

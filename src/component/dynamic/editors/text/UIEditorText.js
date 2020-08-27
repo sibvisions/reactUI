@@ -4,9 +4,16 @@ import { RefContext } from '../../../helper/Context';
 import Base from '../../Base';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import withRowSelection from '../withRowSelection';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
 
 
 class UIEditorText extends Base {
+
+    componentDidMount() {
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
+    }
+
+
     render() {
         let alignment = checkCellEditorAlignments(this.props)
         let newSelection = ""
@@ -25,5 +32,4 @@ class UIEditorText extends Base {
     }
 }
 export default withRowSelection(UIEditorText, RefContext);
-
 //export default UIEditorText

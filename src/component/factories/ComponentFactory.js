@@ -15,6 +15,9 @@ import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
 import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
 import UIMenuButton from '../dynamic/buttons/menubutton/UIMenuButton';
 import UIToggleButton from '../dynamic/buttons/togglebutton/UIToggleButton';
+import UIEditorText from '../dynamic/editors/text/UIEditorText';
+import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
+import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 
 
 export function createButton(buttonData){
@@ -58,11 +61,11 @@ export function createEditor(editorData) {
     else if(editorData.cellEditor.className === "CheckBoxCellEditor"){
         return <UIEditorCheckbox {...props}/>
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
-        return <UIEditorNumberHooks {...props}/>
+        return <UIEditorNumber {...props}/>
     } else if(editorData.cellEditor.className === "TextCellEditor"){
-        return <UIEditorTextHooks {...props}/>
+        return <UIEditorText {...props}/>
     } else if(editorData.cellEditor.className === "LinkedCellEditor"){
-        return <UIEditorLinkedHooks {...props}/>
+        return <UIEditorLinked {...props}/>
     } else if(editorData.cellEditor.className === "ImageViewer"){
         return <UIEditorImage {...props}/>
     } else if(editorData.cellEditor.className === "DateCellEditor"){

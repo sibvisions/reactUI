@@ -1,5 +1,7 @@
 import React from 'react';
 import Base from '../Base';
+import { getPreferredSize } from '../../helper/GetPreferredSize';
+import { RefContext } from '../../helper/Context';
 
 class UILabel extends Base {
 
@@ -15,6 +17,10 @@ class UILabel extends Base {
         this.lblAlignments = this.getAlignments();
         this.lblBackground = this.props.background;
         this.lblColor = this.props.foreground;
+    }
+
+    componentDidMount() {
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     render() {
@@ -34,4 +40,5 @@ class UILabel extends Base {
         );
     }
 }
+UILabel.contextType = RefContext;
 export default UILabel;

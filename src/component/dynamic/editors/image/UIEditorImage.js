@@ -2,6 +2,8 @@ import Base from "../../Base";
 import React from 'react';
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 import placeHolder from "../../../../assets/imgs/IMAGE.png"
+import { getPreferredSize } from "../../../helper/GetPreferredSize";
+import { RefContext } from "../../../helper/Context";
 
 class UIEditorImage extends Base {
 
@@ -11,7 +13,6 @@ class UIEditorImage extends Base {
     }
 
     componentDidMount() {
-        //console.log(this.props)
         this.selectionSub = this.context.contentStore.selectedDataRowChange.subscribe(selection => {
             if(selection[this.props.columnName]){
                 this.setState({img: "data:image/png;base64," + selection[this.props.columnName]});
@@ -19,6 +20,7 @@ class UIEditorImage extends Base {
                 this.setState({img : placeHolder})
             }
         })
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     setImgAlignments() {
@@ -139,4 +141,5 @@ class UIEditorImage extends Base {
         );
     }
 }
+UIEditorImage.contextType = RefContext;
 export default UIEditorImage;

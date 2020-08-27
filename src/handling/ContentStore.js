@@ -16,6 +16,7 @@ class ContentStore{
 
     selectedDataRowChange = new Subject();
     fetchCompleted = new Subject();
+    onSizeCalculated = new Subject();
 
     // Event
     emitChangeOfSelectedRow(newSelection){
@@ -25,6 +26,10 @@ class ContentStore{
     emitFetchSuccess(fetchResponse){
         this.storedData.set(fetchResponse.dataProvider, fetchResponse)
         this.fetchCompleted.next(fetchResponse);
+    }
+
+    emitSizeCalculated(calculatedSize) {
+        this.onSizeCalculated.next(calculatedSize);
     }
 
     // Getter

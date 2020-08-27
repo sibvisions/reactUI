@@ -6,6 +6,7 @@ import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 import withRowSelection from "../withRowSelection";
+import { getPreferredSize } from "../../../helper/GetPreferredSize";
 
 class UIEditorLinked extends Base {
 
@@ -27,12 +28,17 @@ class UIEditorLinked extends Base {
         
         this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
 
-        this.elem = this.autoC.panel.element;
-        this.elem.addEventListener("scroll", this.handleScroll.bind(this));
+        if (this.autoC.panel) {
+            this.elem = this.autoC.panel.element;
+            this.elem.addEventListener("scroll", this.handleScroll.bind(this));
+        }
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     componentWillUnmount(){
-        this.elem.removeEventListener("scroll", this.handleScroll.bind(this));
+        if (this.elem) {
+            this.elem.removeEventListener("scroll", this.handleScroll.bind(this));
+        }
         this.fetchSub.unsubscribe();
     }
 

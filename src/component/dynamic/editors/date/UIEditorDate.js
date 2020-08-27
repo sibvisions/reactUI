@@ -5,6 +5,8 @@ import Base from '../../Base';
 
 import "./UIEditorDate.scss"
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
+import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { RefContext } from '../../../helper/Context';
 
 class UIEditorDate extends Base {
 
@@ -25,7 +27,8 @@ class UIEditorDate extends Base {
             } else {
                 this.setState({date : undefined})
             }
-        });        
+        });    
+        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true})    
     }
 
     componentWillUnmount() {
@@ -54,5 +57,5 @@ class UIEditorDate extends Base {
         );
     }
 }
- 
+UIEditorDate.contextType = RefContext;
 export default UIEditorDate;
