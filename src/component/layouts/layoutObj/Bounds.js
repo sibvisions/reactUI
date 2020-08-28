@@ -13,7 +13,7 @@ export class Bounds {
             this.setWidth(boundsArray[3]);
         }
         else {
-            console.log("Bounds was not given the right arguments")
+             
         }
     }
 

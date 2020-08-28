@@ -96,7 +96,9 @@ class FormLayout extends Component {
                 { attributes: true }
             )
         }
-        this.context.contentStore.emitSizeCalculated({size: new Size(this.preferredWidth, this.preferredHeight), id: this.props.component.props.id, parent: this.props.component.props.parent});
+        this.context.contentStore.emitSizeCalculated({size: 
+            new Size(this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight, this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom), 
+            id: this.props.component.props.id, parent: this.props.component.props.parent});
     }
 
     componentWillUnmount() {
@@ -388,7 +390,6 @@ class FormLayout extends Component {
                         let constraint = this.componentConstraints.get(component.props.id)
                         let preferredSize;
                         if (this.compSizes.get(component.props.id) !== undefined) {
-                            console.log('yo')
                             preferredSize = this.compSizes.get(component.props.id)
                         }
                         else {
@@ -474,7 +475,6 @@ class FormLayout extends Component {
                     }
                     if (constraint.leftAnchor.getBorderAnchor() === this.leftBorderAnchor && constraint.rightAnchor.getBorderAnchor() === this.rightBorderAnchor) {
                         let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
-                        //console.log(w, preferredSize.width, component, constraint.leftAnchor.getAbsolutePosition(), constraint.rightAnchor.getAbsolutePosition())
                         if (w > this.preferredWidth) {
                             this.preferredWidth = w;
                         }
@@ -561,8 +561,6 @@ class FormLayout extends Component {
     
             this.minimumWidth -= margins.marginLeft + margins.marginRight;
             this.minimumHeight -= margins.marginTop + margins.marginBottom;
-
-            //console.log(this.props.component.props.id, this.preferredHeight, this.preferredWidth);
     
             this.vCalculateTargetDependentAnchors = true;
             this.valid = true;
@@ -574,6 +572,9 @@ class FormLayout extends Component {
             let size;
             if (this.compSizes.get(this.props.component.props.id) !== undefined) {
                 size = this.compSizes.get(this.props.component.props.id)
+            }
+            else if (this.props.component.props.constraints === 'Center' || this.props.component.props.constraints === undefined) {
+                size = new Size(document.getElementById(this.props.component.props.id).parentElement.clientWidth, document.getElementById(this.props.component.props.id).parentElement.clientHeight)
             }
             else {
                 size = getPreferredSize(this.props.component)
@@ -674,13 +675,11 @@ class FormLayout extends Component {
                     let constraint = this.componentConstraints.get(component.props.id);
                     let preferredSize;
                     if (this.compSizes.get(component.props.id) !== undefined) {
-                        console.log('relative')
                         preferredSize = this.compSizes.get(component.props.id)
                     }
                     else {
                         preferredSize = getPreferredSize(component)
                     }
-                    console.log(preferredSize)
                     this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
                     this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
                 }
@@ -694,10 +693,9 @@ class FormLayout extends Component {
         components.forEach(component => {
             if (this.props.isVisible(component)) {
                 let constraint = this.componentConstraints.get(component.props.id);
-                console.log(constraint.topAnchor.getBorderAnchor())
-                console.log(constraint.leftAnchor, constraint.leftAnchor.getBorderAnchor())
                 let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
                 let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
+                 
                 if(component.props.className === "GroupPanel" || component.props.className === "Panel") {
                     if (compHeight > this.preferredHeight) {
                         compHeight = this.preferredHeight;

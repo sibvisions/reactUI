@@ -34,7 +34,7 @@ class UIEditorNumber extends Base {
                 ref={r => this.number = r}
                 value={this.state.selection ? this.state.selection : newSelection}
                 style={this.props.layoutStyle}
-                onChange={x => this.setState({selection: x.target.value})}
+                onChange={x => this.setState({selection: x.value})}
                 disabled={!this.props["cellEditor.editable"]}/>
         )
     }

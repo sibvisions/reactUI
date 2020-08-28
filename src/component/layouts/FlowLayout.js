@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { toPx } from "../../component/helper/ToPx";
+import { getPreferredSize } from '../helper/GetPreferredSize';
 
 class FlowLayout extends Component {
 
@@ -18,7 +19,7 @@ class FlowLayout extends Component {
         let tempContent = [];
         this.components.forEach(component => {
             if (this.props.isVisible(component)) {
-                let preferredSize = this.props.getPreferredSize(component)
+                let preferredSize = getPreferredSize(component)
                 let style={
                         height: preferredSize.height,
                         width: preferredSize.width,

@@ -74,7 +74,6 @@ class UIToggleButton extends BaseButton {
                     onIcon={this.iconProps.icon}
                     checked={this.state.checked}
                     onChange={(e) => {
-                        console.log((e.value ? this.btnBgdChecked : this.btnBgd).toHex())
                         this.setState({ checked: e.value, bgd: e.value ? this.btnBgdChecked : this.btnBgd })
                     }}
                 />

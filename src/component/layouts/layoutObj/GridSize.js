@@ -9,7 +9,7 @@ export class GridSize {
             this.setColumns(gridString[1]);
         }
         else {
-            console.log("Wrong arguments for GridSize");
+             
         }
     }
 

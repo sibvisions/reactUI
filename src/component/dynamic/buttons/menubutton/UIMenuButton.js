@@ -17,6 +17,7 @@ class UIMenuButton extends BaseButton {
         this.styleButton(this.button.children[0]);
         this.styleChildren(this.button.children[0].children, FindReact(this.button).props.className);
         this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
+        this.addHoverEffect(this.button.children[0], this.btnBgd, 5);
         this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
@@ -26,7 +27,7 @@ class UIMenuButton extends BaseButton {
             let iconProps = this.parseIconData(item.image);
             tempItems.push({
                 label: item.text,
-                icon: iconProps.icon,
+                icon: iconProps ? iconProps.icon : null,
                 id: item.id,
                 className: item.id,
                 style: {
@@ -37,6 +38,27 @@ class UIMenuButton extends BaseButton {
             });
         });
         this.setState({items: tempItems});
+    }
+
+    menuButtonAlignments(elem) {
+        if (elem.tagName === 'I') {
+            if (this.btnAlignments.ha !== 'right') {
+                elem.style.setProperty('margin-left', 'auto');
+            }
+            if (this.btnAlignments.va !== 'center') {
+                elem.style.setProperty('align-self', 'center');
+            }
+        }
+        if (!this.iconProps.icon) {
+            if (elem.classList.value.includes("p-button-label")) {
+                elem.style.setProperty('margin-left', 'auto');
+            }
+        }
+        else if (elem.classList.value.includes(this.iconProps.icon)) {
+            if (this.btnAlignments.ha === 'center') {
+                elem.style.setProperty('margin-left', 'auto');
+            }
+        }
     }
 
     render() {
@@ -52,7 +74,7 @@ class UIMenuButton extends BaseButton {
                 <Button
                     {...this.btnProps}
                     label={this.props.text}
-                    icon={this.iconProps.icon}
+                    icon={this.iconProps ? this.iconProps.icon : null}
                     onClick={(event) => this.menu.toggle(event)}>
                     <i className="pi pi-angle-down"></i>
                 </Button>

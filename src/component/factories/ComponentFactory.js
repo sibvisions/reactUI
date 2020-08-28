@@ -6,19 +6,19 @@ import UILabel from '../dynamic/label/UILabel';
 import UIGroupPanel from "../dynamic/panels/grouppanel/UIGroupPanel";
 import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
-import UIEditorNumberHooks from '../dynamic/editors/number/UIEditorNumberHooks';
-import UIEditorTextHooks from "../dynamic/editors/text/UIEditorTextHooks";
+//import UIEditorNumberHooks from '../dynamic/editors/number/UIEditorNumberHooks';
+//import UIEditorTextHooks from "../dynamic/editors/text/UIEditorTextHooks";
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
 import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
 import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
-import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
+//import UIEditorLinkedHooks from '../dynamic/editors/linked/UIEditorLinkedHooks';
 import UIMenuButton from '../dynamic/buttons/menubutton/UIMenuButton';
 import UIToggleButton from '../dynamic/buttons/togglebutton/UIToggleButton';
 import UIEditorText from '../dynamic/editors/text/UIEditorText';
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
-
+import UIRadioButton from '../dynamic/buttons/radiobutton/UIRadioButton';
 
 export function createButton(buttonData){
     const props= {
@@ -33,6 +33,9 @@ export function createButton(buttonData){
     }
     else if (buttonData.className === "PopupMenuButton") {
         return <UIMenuButton {...props} />
+    }
+    else if (buttonData.className === "RadioButton") {
+        return <UIRadioButton {...props} />
     }
 }
 

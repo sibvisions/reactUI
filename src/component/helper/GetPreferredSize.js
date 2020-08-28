@@ -9,42 +9,45 @@ export function getPreferredSize(comp) {
             }
             else {
                 let element = document.getElementById(comp.props.id);
-                if (element.getBoundingClientRect()) {
-                    //console.log(element.getBoundingClientRect())
-                    if (element.classList.contains('p-togglebutton')) {
-                        let toggleBtnWidth = 0;
+                if (element && element.getBoundingClientRect()) {
+                    if (element.classList.contains('p-togglebutton') || element.classList.contains('p-radiobutton')) {
+                        let calcWidth = 0;
                         let widthMargins = 0;
-                        let toggleBtnHeight = 0;
+                        let calcHeight = 0;
                         let heightMargins = 0;
                         let reactObj = FindReact(element)
                         if (comp.props.horizontalTextPosition !== 1) {
                             for (let child of element.children) {
-                                toggleBtnWidth += Math.ceil(parseFloat(getComputedStyle(child).width))
+                                calcWidth += Math.ceil(parseFloat(getComputedStyle(child).width))
                                 widthMargins += Math.ceil(parseFloat(getComputedStyle(child).marginLeft)) + Math.ceil(parseFloat(getComputedStyle(child).marginRight));
-                                if (Math.ceil(parseFloat(getComputedStyle(child).height)) > toggleBtnHeight) {
-                                    toggleBtnHeight = Math.ceil(parseFloat(getComputedStyle(child).height))
+                                if (Math.ceil(parseFloat(getComputedStyle(child).height)) > calcHeight) {
+                                    calcHeight = Math.ceil(parseFloat(getComputedStyle(child).height))
                                 }
                             }
                         }
                         else {
                             for (let child of element.children) {
-                                toggleBtnHeight += Math.ceil(parseFloat(getComputedStyle(child).height))
+                                calcHeight += Math.ceil(parseFloat(getComputedStyle(child).height))
                                 heightMargins += Math.ceil(parseFloat(getComputedStyle(child).marginTop)) + Math.ceil(parseFloat(getComputedStyle(child).marginBottom));
-                                if (Math.ceil(parseFloat(getComputedStyle(child).width)) > toggleBtnWidth) {
-                                    toggleBtnWidth = Math.ceil(parseFloat(getComputedStyle(child).width))
+                                if (Math.ceil(parseFloat(getComputedStyle(child).width)) > calcWidth) {
+                                    calcWidth = Math.ceil(parseFloat(getComputedStyle(child).width))
                                 }
                             }
                         }
-                        toggleBtnWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
-                        toggleBtnHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
-                        prefSize = new Size(toggleBtnWidth, toggleBtnHeight, undefined)
+                        calcWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
+                        calcHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
+                        prefSize = new Size(calcWidth, calcHeight, undefined)
+                         
                     }
                     else {
                         prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height), undefined)
                     }
                 }
-                else {
+                else if (element) {
                     prefSize = new Size(element.offsetWidth, element.offsetHeight, undefined)
+                }
+                else {
+                    prefSize = null
                 }
             }
             if (comp.props.minimumSize) {

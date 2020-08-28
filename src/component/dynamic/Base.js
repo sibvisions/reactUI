@@ -106,7 +106,7 @@ class Base extends Component {
                     splittedIconData = iconString.split(',');
                     iconName = "fas fa-" + splittedIconData[0];
                     iconSize = new Size(splittedIconData[1], splittedIconData[2]);
-                    iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('black');
+                    iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('white');
                     return {icon: iconName, size: iconSize, color: iconColor};
                 }
                 else {
@@ -129,7 +129,7 @@ class Base extends Component {
                         iconSize = new Size(iconString[1], iconString[2]);
                     }
                     if (!colorFound) {
-                        iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('black');
+                        iconColor = this.props.foreground !== undefined ? this.props.foreground : tinycolor('white');
                     }
                     return {icon: iconName, size: iconSize, color: iconColor};
                 }
@@ -144,7 +144,7 @@ class Base extends Component {
             }
         }
         else {
-            return null
+            return {icon: null, size: null, color: null}
         }
     }
 

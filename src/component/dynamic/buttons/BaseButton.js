@@ -58,6 +58,29 @@ class BaseButton extends Base {
         }
     }
 
+    addHoverEffect(obj, color, dark) {
+        if ((this.props.borderOnMouseEntered && this.borderPainted) || (!this.props.borderOnMouseEntered && this.borderPainted)) {
+            obj.onmouseover = () => {
+                obj.style.setProperty('background', tinycolor(color.getOriginalInput()).darken(dark))
+                obj.style.setProperty('border-color', tinycolor(color.getOriginalInput()).darken(dark))
+            }
+            obj.onmouseout = () => {
+                obj.style.setProperty('background', color.getOriginalInput())
+                obj.style.setProperty('border-color', color.getOriginalInput())  
+            }
+        }
+        else if (this.props.borderOnMouseEntered && !this.borderPainted) {
+            obj.onmouseover = () => {
+                obj.style.setProperty('background', this.props.background !== undefined ? this.props.background : "#007ad9")
+                obj.style.setProperty('border-color', this.props.background !== undefined ? this.props.background : "#007ad9")
+            }
+            obj.onmouseout = () => {
+                obj.style.setProperty('background', this.btnBgd)
+                obj.style.setProperty('border-color', this.btnBgd)
+            }
+        }
+    }
+
     getBgdColor() {
         if (this.props.borderPainted === undefined || this.props.borderPainted === true) {
             if (this.props.background) {
@@ -77,7 +100,7 @@ class BaseButton extends Base {
             return tinycolor(this.props.foreground);
         }
         else {
-            return tinycolor('black');
+            return tinycolor('white');
         }
     }
 
@@ -105,29 +128,15 @@ class BaseButton extends Base {
                         child.classList.add("custom-icon");
                         child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
                     }
-                    let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                    child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+                    if (!child.parentElement.classList.contains("p-button-icon-only")) {
+                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
+                        child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+                    }
                 }
             }
             child.style.setProperty('padding', 0);
             if (btnType === "PopupMenuButton") {
                 this.menuButtonAlignments(child)
-            }
-        }
-    }
-
-    menuButtonAlignments(elem) {
-        if (elem.classList.value.includes(this.iconProps.icon)) {
-            if (this.btnAlignments.ha === 'center') {
-                elem.style.setProperty('margin-left', 'auto');
-            }
-        }
-        else if (elem.tagName === 'I') {
-            if (this.btnAlignments.ha !== 'right') {
-                elem.style.setProperty('margin-left', 'auto');
-            }
-            if (this.btnAlignments.va !== 'center') {
-                elem.style.setProperty('align-self', 'center');
             }
         }
     }

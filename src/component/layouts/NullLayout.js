@@ -19,7 +19,7 @@ class NullLayout extends Component {
             if (this.props.isVisible(component)) {
                 let splittedBounds = component.props.bounds.split(',')
                 let compBounds = new Bounds(splittedBounds);
-                console.log(compBounds.height)
+                 
                 let layoutStyle = {
                     position: "absolute",
                     height: compBounds.height,
@@ -35,7 +35,7 @@ class NullLayout extends Component {
     }
 
     render() {
-        console.log(this.props.getPreferredSize(this.props.component))
+         
         return (
             <div className="nulllayout" style={{position: "relative", height: this.props.getPreferredSize(this.props.component).height, overflow: 'hidden'}}>
                 {this.state.content}

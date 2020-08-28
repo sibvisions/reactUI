@@ -31,7 +31,7 @@ export class Anchor {
             this.position = 0
         }
         else {
-            console.log("Anchor was not given the right arguments")
+             
         }
         if(pLayout !== undefined) {
             this.layout = pLayout
