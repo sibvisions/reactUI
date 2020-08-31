@@ -1,0 +1,535 @@
+import React, {Children, FC, useLayoutEffect, useRef, useState} from "react";
+import {layout} from "./Layout";
+import Anchor from "./models/Anchor";
+import Constraints from "./models/Constraints";
+import Gaps from "./models/Gaps";
+import Margins from "./models/Margins";
+import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
+
+type childWithProps = {
+    props: {
+        id: string,
+        constraints: string
+        isVisible: boolean | undefined
+    }
+}
+
+
+
+const FormLayout: FC<layout> = (props) => {
+
+    const [style, changeStyle] = useState<{height: string, width: string, top?: number, left?: number}>({height: "100%", width: "100%"});
+    const layoutDiv = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(()=> {
+        if(props.preferredSizes){
+            setAnchorsAndConstraints();
+            calculateAnchors();
+            calculateTargetDependentAnchors();
+            buildComponents();
+        }
+    });
+
+    const anchors = new Map<string, Anchor>();
+    const componentConstraints = new Map<string, Constraints>();
+
+    const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4))
+    const gaps = new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6));
+    const alignments = props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(6, 8);
+    const horizontalAlignment =  parseInt(alignments[0]);
+    const verticalAlignment = parseInt(alignments[1]);
+
+    let leftBorderUsed = false;
+    let rightBorderUsed = false;
+    let topBorderUsed = false;
+    let bottomBorderUsed = false;
+
+    let preferredWidth: number = 0;
+    let preferredHeight: number = 0;
+    let minimumHeight: number = 0;
+    let minimumWidth: number = 0;
+
+    let calculatedTargetDependentAnchors = false;
+
+
+
+    const setAnchorsAndConstraints = () => {
+        anchors.clear();
+        //Parse Layout info and set Anchors
+        const splitAnchors = props.layoutData.split(";");
+        splitAnchors.forEach(anchorData => {
+            const name = anchorData.substring(0, anchorData.indexOf(","));
+            if(name !== "-") {
+                let anchor = anchors.get(name);
+                if (!anchor) {
+                    anchor = new Anchor({anchorData: anchorData});
+                    anchors.set(name, anchor);
+                }
+            }
+        });
+        //Establish related Anchors
+        anchors.forEach(value => {
+            if(value.anchorData){
+                const splitData = value.anchorData.split(",");
+                const relatedAnchorName = splitData[1];
+                if(relatedAnchorName !== "-"){
+                    value.relatedAnchor = anchors.get(relatedAnchorName);
+                }
+                value.name = splitData[0];
+                value.autoSize = splitData[3] === "a";
+                value.position = parseInt(splitData[4]);
+            }
+        });
+        //Build Constraints of Children
+        Children.map(props.children, child => {
+            const childWithProps = (child as childWithProps);
+            const anchorNames = childWithProps.props.constraints.split(";")
+            //Get Anchors
+            const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
+            const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+            //Set Constraint
+            if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
+                const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
+                componentConstraints.set(childWithProps.props.id, constraint);
+            } else {
+                console.warn("Constraint Anchors were undefined");
+            }
+        });
+    }
+
+    const calculateAnchors = () => {
+
+        const getAutoSizeAnchorsBetween = (startAnchor: Anchor | undefined, endAnchor: Anchor): Array<Anchor> => {
+            const autoSizeAnchors = Array<Anchor>();
+            while (startAnchor && startAnchor !== endAnchor){
+                if(startAnchor.autoSize && !startAnchor.autoSizeCalculated){
+                    autoSizeAnchors.push(startAnchor)
+                }
+                startAnchor = startAnchor.relatedAnchor;
+            }
+            return autoSizeAnchors;
+        }
+
+        const initAutoSizeRelative = (startAnchor: Anchor, endAnchor: Anchor) => {
+            const autosizeAnchors = getAutoSizeAnchorsBetween(startAnchor, endAnchor);
+            autosizeAnchors.forEach(value => {
+                value.relative = false;
+            });
+        }
+
+        const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
+            let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
+            if(autoSizeAnchors.length === autoSizeCount && preferredSize){
+                let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
+                autoSizeAnchors.forEach(anchor => {
+                    fixedSize += anchor.position;
+                });
+                const diffSize = (preferredSize - fixedSize + autoSizeCount - 1) / autoSizeCount
+                autoSizeAnchors.forEach(anchor => {
+                    if(diffSize > -anchor.position){
+                        anchor.position = -diffSize;
+                    }
+                    anchor.firstCalculation = false;
+                });
+            }
+
+            autoSizeAnchors = getAutoSizeAnchorsBetween(rightBottomAnchor, leftTopAnchor);
+
+            if(autoSizeAnchors.length === autoSizeCount && preferredSize){
+                let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
+                autoSizeAnchors.forEach(anchor => {
+                    fixedSize -= anchor.position;
+                });
+                const diffSize = (preferredSize - fixedSize + autoSizeCount -1) / autoSizeCount;
+                autoSizeAnchors.forEach(anchor => {
+                    if(diffSize > anchor.position){
+                        anchor.position = diffSize;
+                    }
+                    anchor.firstCalculation = false;
+                });
+            }
+        }
+
+        const finishAutoSizeCalculation = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor): number => {
+            const autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
+            let counter = 0;
+            autoSizeAnchors.forEach(anchor => {
+                if(!anchor.firstCalculation){
+                    anchor.autoSizeCalculated = true;
+                    counter++;
+                }
+            })
+            return autoSizeAnchors.length - counter;
+        }
+
+        const clearAutoSize = () => {
+            anchors.forEach(anchor => {
+                anchor.relative = anchor.autoSize;
+                anchor.autoSizeCalculated = false;
+                anchor.firstCalculation = true;
+                if(anchor.autoSize){
+                    anchor.position = 0;
+                }
+            })
+        }
+
+        clearAutoSize();
+
+        //Init autosize Anchor position
+        anchors.forEach(anchor => {
+            if(anchor.relatedAnchor && anchor.relatedAnchor.autoSize){
+                const relatedAutoSizeAnchor = anchor.relatedAnchor;
+                if(relatedAutoSizeAnchor.relatedAnchor && !relatedAutoSizeAnchor.relatedAnchor.autoSize){
+                    relatedAutoSizeAnchor.position= -anchor.position;
+                }
+            }
+        });
+
+        //Init autosize Anchors
+        Children.map(props.children, child => {
+            const childWithProps = (child as childWithProps);
+            const constraint = componentConstraints.get(childWithProps.props.id);
+            if(constraint && constraint.rightAnchor && constraint.leftAnchor && constraint.bottomAnchor && constraint.topAnchor){
+                initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
+                initAutoSizeRelative(constraint.rightAnchor, constraint.leftAnchor);
+                initAutoSizeRelative(constraint.topAnchor, constraint.bottomAnchor);
+                initAutoSizeRelative(constraint.bottomAnchor, constraint.topAnchor);
+            }
+        });
+
+        //AutoSize calculations
+        for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
+            //AutoSizeFirst
+            Children.map(props.children, child => {
+                const childWithProps = (child as childWithProps);
+                if(!childWithProps.props.isVisible){
+                    const constraint: Constraints | undefined = componentConstraints.get(childWithProps.props.id);
+                    if(constraint && props.preferredSizes){
+                        const preferredSizeObj = props.preferredSizes.get(childWithProps.props.id);
+                        if(preferredSizeObj){
+                            calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height, autoSizeCount);
+                            calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width, autoSizeCount);
+                        }
+                    }
+                }
+            });
+            autoSizeCount = 100000;
+            //Finish AutoSize
+            Children.map(props.children, child => {
+                const childWithProps = (child as childWithProps);
+                const constraints = componentConstraints.get(childWithProps.props.id)
+                if(constraints){
+                    let count = 0
+                    count = finishAutoSizeCalculation(constraints.leftAnchor, constraints.rightAnchor);
+                    if(count >= 0 && count < autoSizeCount){
+                        autoSizeCount = count;
+                    }
+                    count = finishAutoSizeCalculation(constraints.rightAnchor, constraints.leftAnchor);
+                    if(count >= 0 && count < autoSizeCount){
+                        autoSizeCount = count;
+                    }
+                    count = finishAutoSizeCalculation(constraints.topAnchor, constraints.bottomAnchor);
+                    if(count >= 0 && count < autoSizeCount){
+                        autoSizeCount = count;
+                    }
+                    count = finishAutoSizeCalculation(constraints.bottomAnchor, constraints.topAnchor);
+                    if(count >= 0 && count < autoSizeCount){
+                        autoSizeCount = count;
+                    }
+                }
+            });
+        }
+
+        let leftWidth = 0;
+        let rightWidth = 0;
+        let topHeight = 0;
+        let bottomHeight = 0;
+
+        // idk
+        Children.map(props.children, child => {
+            const childWithProps = (child as childWithProps);
+            if(!childWithProps.props.isVisible && props.preferredSizes){
+                const constraint = componentConstraints.get(childWithProps.props.id);
+                const preferredSize = props.preferredSizes.get(childWithProps.props.id);
+                if(constraint && preferredSize){
+                    if(constraint.rightAnchor.getBorderAnchor().name === "l"){
+                        let w = constraint.rightAnchor.getAbsolutePosition();
+                        if(w > leftWidth){
+                            leftWidth = w;
+                        }
+                        leftBorderUsed = true;
+                    }
+                    if(constraint.leftAnchor.getBorderAnchor().name === "r"){
+                        let w = constraint.leftAnchor.getAbsolutePosition();
+                        if(w > rightWidth){
+                            rightWidth = w;
+                        }
+                        rightBorderUsed = true;
+                    }
+                    if(constraint.bottomAnchor.getBorderAnchor().name === "t"){
+                        let h = constraint.bottomAnchor.getAbsolutePosition();
+                        if(h > topHeight){
+                            topHeight = h;
+                        }
+                        topBorderUsed = true;
+                    }
+                    if(constraint.topAnchor.getBorderAnchor().name === "b"){
+                        let h = constraint.topAnchor.getAbsolutePosition();
+                        if(h > bottomHeight){
+                            bottomHeight = h;
+                        }
+                        bottomBorderUsed = true;
+                    }
+                    if(constraint.leftAnchor.getBorderAnchor().name === "l" && constraint.rightAnchor.getBorderAnchor().name === "r"){
+                        let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
+                        if(w > preferredWidth){
+                            preferredWidth = w;
+                        }
+                        if(w > minimumWidth){
+                            minimumWidth = w;
+                        }
+                        leftBorderUsed = true;
+                        rightBorderUsed = true;
+                    }
+                    if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
+                        let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
+                        if(h > preferredHeight){
+                            preferredHeight = h;
+                        }
+                        if(h > minimumHeight){
+                            minimumHeight = h;
+                        }
+                        topBorderUsed = true;
+                        bottomBorderUsed = true;
+                    }
+                }
+            }
+        });
+        //Width
+        if(leftWidth !== 0 && rightWidth !== 0){
+            let w = leftWidth + rightWidth + gaps.horizontalGap;
+            if(w > preferredWidth){
+                preferredWidth = w;
+            }
+            if(w > minimumWidth){
+                minimumWidth = w;
+            }
+        } else if(leftWidth !== 0){
+            const rma = anchors.get("rm");
+            if(rma){
+                let w = leftWidth - rma.position;
+                if(w > preferredWidth){
+                    preferredWidth = w;
+                }
+                if(w > minimumWidth){
+                    minimumWidth = w;
+                }
+            }
+        } else {
+            const lma = anchors.get("lm");
+            if(lma){
+                let w = rightWidth + lma.position;
+                if(w > preferredWidth){
+                    preferredWidth = w;
+                }
+                if(w > minimumWidth){
+                    minimumWidth = w;
+                }
+            }
+        }
+        //Height
+        if(topHeight !== 0 && bottomHeight !== 0){
+            let h = topHeight + bottomHeight + gaps.vertical;
+            if(h > preferredHeight){
+                preferredHeight = h;
+            }
+            if(h > minimumHeight){
+                minimumHeight = h;
+            }
+        } else if(topHeight !== 0 ){
+            const bma = anchors.get("bm");
+            if(bma){
+                let h = topHeight - bma.position;
+                if(h > preferredHeight){
+
+                    preferredHeight = h;
+                }
+                if(h > minimumHeight){
+                    minimumHeight = h;
+                }
+            }
+        } else {
+            const tma = anchors.get("tm");
+            if(tma){
+                let h = bottomHeight + tma.position;
+                if(h > preferredHeight){
+                    preferredHeight = h;
+                }
+                if(h > minimumHeight){
+                    minimumHeight = h;
+                }
+            }
+        }
+
+        preferredWidth -= margins.marginLeft + margins.marginRight;
+        preferredHeight -= margins.marginTop + margins.marginBottom;
+
+        minimumWidth -= margins.marginLeft + margins.marginLeft;
+        minimumHeight -= margins.marginTop + margins.marginBottom;
+
+        calculatedTargetDependentAnchors = true
+    }
+
+    const calculateTargetDependentAnchors = () => {
+
+        const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
+
+        }
+
+        //Set from Server
+        const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
+        const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
+        //Div Size
+        let availableSize: {width: number, height: number} | undefined = undefined;
+        if(layoutDiv.current){
+            const size = layoutDiv.current.getClientRects().item(0);
+            if(size) {
+                availableSize = {width: size.width, height: size.height};
+            }
+        }
+
+        const lba = anchors.get("l");
+        const rba = anchors.get("r");
+        const bba = anchors.get("b");
+        const tba = anchors.get("t");
+        if(calculatedTargetDependentAnchors && props.preferredSizes && lba && rba && bba && tba && availableSize){
+            if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)){
+                if(minLayoutSize.width > availableSize.width){
+                    lba.position = 0;
+                    rba.position = minLayoutSize.width;
+                }
+                else if(maxLayoutSize.width < preferredWidth) {
+                    switch (horizontalAlignment) {
+                        case HORIZONTAL_ALIGNMENT.LEFT:
+                            lba.position = 0;
+                            break;
+                        case HORIZONTAL_ALIGNMENT.RIGHT:
+                            lba.position = availableSize.width - maxLayoutSize.width;
+                            break;
+                        default:
+                            lba.position = (availableSize.width - maxLayoutSize.width) / 2;
+                    }
+                    rba.position = lba.position + maxLayoutSize.width;
+                }
+                else {
+                    lba.position = 0;
+                    rba.position = availableSize.width;
+                }
+            }
+            else {
+                if(preferredWidth > availableSize.width){
+                    lba.position = 0;
+                }
+                else {
+                    switch (horizontalAlignment){
+                        case HORIZONTAL_ALIGNMENT.LEFT:
+                            lba.position = 0;
+                            break
+                        case HORIZONTAL_ALIGNMENT.RIGHT:
+                            lba.position = availableSize.width - preferredWidth
+                            break;
+                        default:
+                            lba.position = (availableSize.width - preferredWidth) / 2
+                    }
+                }
+                rba.position = lba.position + preferredWidth;
+            }
+            if(verticalAlignment === VERTICAL_ALIGNMENT.STRETCH || (topBorderUsed && bottomBorderUsed)){
+                if(minLayoutSize.height > availableSize.height){
+                    tba.position = 0;
+                    bba.position = minLayoutSize.height;
+                }
+                else if(maxLayoutSize.height < availableSize.height){
+                    switch (verticalAlignment){
+                        case VERTICAL_ALIGNMENT.TOP:
+                            tba.position = 0;
+                            break;
+                        case VERTICAL_ALIGNMENT.BOTTOM:
+                            tba.position = availableSize.height - maxLayoutSize.height;
+                            break;
+                        default:
+                            tba.position = (availableSize.height - maxLayoutSize.height) / 2;
+                    }
+                    bba.position = tba.position + maxLayoutSize.height;
+                }
+                else{
+                    tba.position = 0;
+                    bba.position = availableSize.height;
+                }
+            }
+            else {
+                if(preferredHeight > availableSize.height){
+                    tba.position = 0;
+                }
+                else {
+                    switch (verticalAlignment){
+                        case VERTICAL_ALIGNMENT.TOP:
+                            tba.position = 0;
+                            break;
+                        case VERTICAL_ALIGNMENT.BOTTOM:
+                            tba.position = availableSize.height - preferredHeight;
+                            break;
+                        default:
+                            tba.position = (availableSize.height - preferredHeight) / 2;
+                    }
+                }
+                bba.position = tba.position + preferredHeight;
+            }
+            lba.position -= margins.marginLeft;
+            rba.position -= margins.marginLeft;
+            tba.position -= margins.marginTop;
+            bba.position -= margins.marginTop;
+
+            Children.map(props.children, child => {
+                const childWithProps = (child as childWithProps);
+                if(childWithProps.props.isVisible && props.preferredSizes){
+                    const constraint = componentConstraints.get(childWithProps.props.id);
+                    const preferredSize = props.preferredSizes.get(childWithProps.props.id);
+                    if(constraint && preferredSize){
+                        calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
+                        calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
+                    }
+
+                }
+            });
+            calculatedTargetDependentAnchors = false;
+        }
+
+    }
+
+    const buildComponents = () => {
+
+        Children.map(props.children, child => {
+            const childWithProps = (child as childWithProps);
+            const constraint = componentConstraints.get(childWithProps.props.id);
+
+            const lbr = anchors.get("l");
+            const tbr = anchors.get("r");
+            if(!style && lbr && tbr) {
+                changeStyle({width: preferredWidth.toString(), height: preferredHeight.toString(), left: lbr.position, top: tbr.position/2})
+            }
+        });
+    }
+
+
+
+
+
+
+    return(
+        <div ref={layoutDiv} style={{...style, position:"relative"}}>
+            {props.children}
+        </div>
+    )
+}
+export default FormLayout

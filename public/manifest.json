@@ -1,7 +1,6 @@
-
 {
-  
-  "name": "JVX ReactUI",
+  "short_name": "React App",
+  "name": "reactUI",
   "icons": [
     {
       "src": "favicon.ico",

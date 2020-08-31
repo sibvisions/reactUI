@@ -1,0 +1,19 @@
+.loginContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("/assets/login.webP");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.loginForm{
+  padding: 50px;
+  background-color: rgba(235,235,235, 0.8);
+  border-radius: 10px;
+}
+
+.logInButton{
+  width: 100%;
+}
