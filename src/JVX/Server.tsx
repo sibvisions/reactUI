@@ -1,7 +1,7 @@
-import {ApplicationMetaData} from "../../../angularUI/src/app/jvx-angular/responses/ApplicationMetaData";
 import {browserHistory} from "../App";
 import ContentStore from "./ContentStore"
 
+import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
 import MenuResponse from "./response/MenuResponse";
 import GenericResponse from "./response/GenericResponse";
