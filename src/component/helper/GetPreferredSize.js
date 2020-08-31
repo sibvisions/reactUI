@@ -10,7 +10,7 @@ export function getPreferredSize(comp) {
             else {
                 let element = document.getElementById(comp.props.id);
                 if (element && element.getBoundingClientRect()) {
-                    if (element.classList.contains('p-togglebutton') || element.classList.contains('p-radiobutton')) {
+                    if (element.classList.contains('p-togglebutton') || element.classList.contains('p-splitbutton')) {
                         let calcWidth = 0;
                         let widthMargins = 0;
                         let calcHeight = 0;
@@ -34,6 +34,7 @@ export function getPreferredSize(comp) {
                                 }
                             }
                         }
+                        console.log(reactObj)
                         calcWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
                         calcHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
                         prefSize = new Size(calcWidth, calcHeight, undefined)

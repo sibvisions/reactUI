@@ -57,10 +57,10 @@ class Base extends Component {
             return new Margins(this.props.margins.split(','));
         }
         else {
-            if (this.props.className.includes("Button")) {
+            if (this.props.className.includes("Button") && this.props.className !== "RadioButton") {
                 return new Margins([5, 10, 5, 10]);
             }
-            else if (this.props.className === "Label") {
+            else {
                 return new Margins([0, 0, 0, 0]);
             }
         }

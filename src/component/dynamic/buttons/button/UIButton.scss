@@ -14,26 +14,6 @@
     }
 }
 
-div {
-    >.p-button-icon-only {
-        .p-button-icon-left {
-            position: unset;
-            top: unset;
-            left: unset;
-            margin-top: unset;
-            margin-left: unset;
-        }
-    }
-}
-
-.custom-icon::before {
-    display: block;
-    background-image: var(--icon);
-    height: inherit;
-    width: inherit;
-    content:"";
-}
-
 .formlayout {
     >div {
         >.p-button {
@@ -41,8 +21,24 @@ div {
                 flex-grow: unset;
                 flex-shrink: unset;
                 flex-basis: unset;
-
             }
         } 
+    }
+}
+
+.formlayout {
+    >div {
+        >div {
+            >.p-button {
+                flex-grow: unset;
+                flex-shrink: unset;
+                flex-basis: unset;
+                .p-button-label {
+                    flex-grow: unset;
+                    flex-shrink: unset;
+                    flex-basis: unset;
+                }
+            }
+        }
     }
 }

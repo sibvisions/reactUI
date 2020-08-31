@@ -39,8 +39,8 @@ class BaseButton extends Base {
             style:{
                 display: 'flex',
                 flexDirection: this.btnDirection,
-                justifyContent: this.btnAlignments.ha,
-                alignItems: this.btnAlignments.va,
+                justifyContent: this.btnDirection === 'row' ? this.btnAlignments.ha : this.btnAlignments.va,
+                alignItems: this.btnDirection === 'row' ? this.btnAlignments.va : this.btnAlignments.ha,
                 background: this.btnBgd,
                 color: this.btnFgd,
                 borderColor: this.btnBgd,
@@ -87,7 +87,8 @@ class BaseButton extends Base {
                 return tinycolor(this.props.background);
             }
             else {
-                return tinycolor("#007ad9");
+                let bgd = this.props.className === 'RadioButton' ? tinycolor(document.getElementById(this.props.parent).style.background) : tinycolor("#007ad9");
+                return bgd;
             }
         }
         else {
@@ -100,7 +101,8 @@ class BaseButton extends Base {
             return tinycolor(this.props.foreground);
         }
         else {
-            return tinycolor('white');
+            let fgd = this.props.className === 'RadioButton' ? tinycolor('black') : tinycolor('white')
+            return fgd;
         }
     }
 
@@ -119,18 +121,17 @@ class BaseButton extends Base {
 
     styleChildren(btnChildren, btnType) {
         for (let child of btnChildren) {
+            if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
+                let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
+                child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+            }
             if (this.iconProps) {
                 if (child.classList.value.includes(this.iconProps.icon)) {
                     child.style.setProperty('width', toPx(this.iconProps.size.width));
                     child.style.setProperty('height', toPx(this.iconProps.size.height));
                     child.style.setProperty('color', this.iconProps.color);
-                    if (child.classList.contains(this.iconProps.icon)) {
-                        child.classList.add("custom-icon");
-                        child.style.setProperty('--icon', 'url(' + this.iconProps.icon + ')');
-                    }
-                    if (!child.parentElement.classList.contains("p-button-icon-only")) {
-                        let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                        child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
+                    if (!child.classList.value.includes('fas')) {
+                        child.style.setProperty('background-image', 'url(http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + this.iconProps.icon + ')');
                     }
                 }
             }

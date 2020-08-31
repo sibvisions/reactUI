@@ -7,22 +7,35 @@ import { RadioButton } from 'primereact/radiobutton';
 class UIRadioButton extends BaseButton {
 
     state = {
-        checked: false
+        checked: this.props.selected ? true : false
     }
 
     componentDidMount() {
+        this.styleButton(this.button.children[0]);
+        this.styleChildren(this.button.children[0].children)
         this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
     render() {
         return (
-            <div ref={r => this.button = r} style={{
-                ...this.props.layoutStyle,
-                ...this.btnProps.style
-            }}>
-                <span id={this.btnProps.id}>
-                    <RadioButton inputId={this.props.id} checked={this.state.checked} onChange={e => this.setState({ checked: e.value })} />
-                    <label htmlFor={this.props.id}>{this.props.text}</label>
+            <div ref={r => this.button = r} style={this.props.layoutStyle}>
+                <span id={this.btnProps.id} style={this.btnProps.style}>
+                    <RadioButton
+                        value={this.props.id}
+                        inputId={this.btnProps.id}
+                        style={{ order: this.btnProps.iconPos === 'left' ? '1' : '2' }}
+                        checked={this.state.checked}
+                        onChange={() => {
+                            this.setState({checked: !this.state.checked})
+                            this.context.serverComm.pressButton(this.props.name)
+                        }}
+                    />
+                    <label
+                        className="p-radiobutton-label"
+                        htmlFor={this.btnProps.id}
+                        style={{ order: this.btnProps.iconPos === 'left' ? '2' : '1' }}>
+                        {this.props.text}
+                    </label>
                 </span>
             </div>
         )
