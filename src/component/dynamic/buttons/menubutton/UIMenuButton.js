@@ -1,12 +1,9 @@
 import React from 'react';
 import { RefContext } from '../../../helper/Context';
 import './UIMenuButton.scss'
-import { Menu } from 'primereact/menu';
-import { Button } from "primereact/button";
 import { SplitButton } from "primereact/splitbutton";
 import BaseButton from '../BaseButton';
-import { FindReact } from '../../../helper/FindReact';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 import { toPx } from '../../../helper/ToPx';
 
 class UIMenuButton extends BaseButton {
@@ -19,7 +16,8 @@ class UIMenuButton extends BaseButton {
         this.styleButton(this.button.children[0]);
         this.styleChildren(this.button.children[0].children);
         this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
-        this.addHoverEffect(this.button.children[0], this.btnBgd, 5);
+        this.addHoverEffect(this.button.children[0].children[0], this.btnBgd, 5);
+        this.addHoverEffect(this.button.children[0].children[1], this.btnBgd, 5);
         this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
     }
 
@@ -27,18 +25,22 @@ class UIMenuButton extends BaseButton {
         for (let btnChild of btnChildren) {
             if (this.props.layoutStyle !== undefined) {
                 btnChild.style.setProperty('height', toPx(this.props.layoutStyle.height));
+                btnChild.style.setProperty('padding-top', toPx(this.btnProps.style.paddingTop));
+                btnChild.style.setProperty('padding-left', toPx(this.btnProps.style.paddingLeft));
+                btnChild.style.setProperty('padding-bottom', toPx(this.btnProps.style.paddingBottom));
+                btnChild.style.setProperty('padding-right', toPx(this.btnProps.style.paddingRight));
                 if (btnChild.classList.contains("p-splitbutton-defaultbutton")) {
-                    btnChild.style.setProperty('width', toPx(this.props.layoutStyle.width*0.8));
+                    btnChild.style.setProperty('width', !(this.props.layoutStyle.width+'').includes('%') ? toPx(this.props.layoutStyle.width-38) : 'calc(100% - 38px)');
                     btnChild.style.setProperty('display', this.btnProps.style.display);
                     btnChild.style.setProperty('flex-direction', this.btnProps.style.flexDirection);
                     btnChild.style.setProperty('justify-content', this.btnProps.style.justifyContent);
                     btnChild.style.setProperty('align-items', this.btnProps.style.alignItems);
                 }
                 else if (btnChild.classList.contains("p-splitbutton-menubutton")) {
-                    btnChild.style.setProperty('width', toPx(this.props.layoutStyle.width*0.2));
+                    btnChild.style.setProperty('width', '38px');
+                    
                 }
             }
-            this.menuButtonAlignments(btnChild)
             for (let child of btnChild.children) {
                 if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
                     let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
@@ -56,7 +58,6 @@ class UIMenuButton extends BaseButton {
                 }
                 child.style.setProperty('padding', 0);
             }
-            btnChild.style.setProperty('padding', 0);
         }
     }
 
@@ -79,27 +80,6 @@ class UIMenuButton extends BaseButton {
         this.setState({items: tempItems});
     }
 
-    menuButtonAlignments(elem) {
-        if (elem.tagName === 'I') {
-            if (this.btnAlignments.ha !== 'right') {
-                elem.style.setProperty('margin-left', 'auto');
-            }
-            if (this.btnAlignments.va !== 'center') {
-                elem.style.setProperty('align-self', 'center');
-            }
-        }
-        if (!this.iconProps.icon) {
-            if (elem.classList.value.includes("p-button-label")) {
-                elem.style.setProperty('margin-left', 'auto');
-            }
-        }
-        else if (elem.classList.value.includes(this.iconProps.icon)) {
-            if (this.btnAlignments.ha === 'center') {
-                elem.style.setProperty('margin-left', 'auto');
-            }
-        }
-    }
-
     onMainButtonClicked() {
         this.menu.show()
     }
@@ -107,28 +87,16 @@ class UIMenuButton extends BaseButton {
     render() {
         return (
             <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                {/* <Menu
-                    className="popupmenu"
-                    model={this.state.items}
-                    popup
-                    ref={r => this.menu = r}
-                    appendTo={document.body}
-                />
-                <Button
-                    {...this.btnProps}
-                    label={this.props.text}
-                    icon={this.iconProps ? this.iconProps.icon : null}
-                    onClick={(event) => this.menu.toggle(event)}>
-                    <i className="pi pi-angle-down"></i>
-                </Button> */}
                 <SplitButton 
                     id={this.btnProps.id}
                     ref={r => this.menu = r}
                     label={this.props.text}
+                    style={{background: this.btnProps.style.background, borderColor: this.btnProps.style.borderColor, borderRadius: '3px'}}
                     btnProps={this.btnProps}
                     icon={this.iconProps ? this.iconProps.icon : null}
                     onClick={() => this.onMainButtonClicked()} 
-                    model={this.state.items} 
+                    model={this.state.items}
+                    tabIndex={this.btnProps.tabIndex}
                 />
             </div>
         )

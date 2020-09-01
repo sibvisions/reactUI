@@ -16,7 +16,7 @@ class NullLayout extends Component {
     layoutContainer(components) {
         let tempContent = [];
         components.forEach(component => {
-            if (this.props.isVisible(component)) {
+            if (component.props.visible === undefined || component.props.visible) {
                 let splittedBounds = component.props.bounds.split(',')
                 let compBounds = new Bounds(splittedBounds);
                  

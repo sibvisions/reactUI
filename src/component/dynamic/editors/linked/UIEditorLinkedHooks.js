@@ -9,7 +9,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import useFetchListen from "../../../hooks/useFetchListen";
 import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import { getHooksPreferredSize } from '../../../helper/GetPreferredSize';
+import { getHooksPreferredSize } from '../../../helper/GetSizes';
 
 function UIEditorLinkedHooks(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);

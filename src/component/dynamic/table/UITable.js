@@ -8,7 +8,7 @@ import { createEditor } from "../../factories/ComponentFactory";
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { getPreferredSize } from '../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../helper/GetSizes';
 
 class UITable extends Base {
     content = [];

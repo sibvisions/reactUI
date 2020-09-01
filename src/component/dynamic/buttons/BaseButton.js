@@ -3,6 +3,7 @@ import { Size } from '../../helper/Size';
 import { toPx } from '../../helper/ToPx';
 import { RefContext } from '../../helper/Context';
 import tinycolor from 'tinycolor2';
+import { getMargins, getAlignments, getFont, getImageTextGap, parseIconData } from '../ComponentProperties';
 
 class BaseButton extends Base {
 
@@ -13,7 +14,6 @@ class BaseButton extends Base {
     iconProps;
     btnIconPos;
     btnImgTextGap;
-    customIcon = false;
     btnBgd;
     btnFgd;
     borderPainted = false;
@@ -22,13 +22,13 @@ class BaseButton extends Base {
 
     constructor(props) {
         super(props);
-        this.btnMargins = this.getMargins();
-        this.btnAlignments = this.getAlignments();
+        this.btnMargins = getMargins(props);
+        this.btnAlignments = getAlignments(props);
         this.setBtnDirection(props.horizontalTextPosition);
-        this.btnFont = this.getFont();
-        this.iconProps = this.parseIconData(props.image);
+        this.btnFont = getFont(props);
+        this.iconProps = parseIconData(props, props.image);
         this.setIconPos(props.horizontalTextPosition, props.verticalTextPosition);
-        this.btnImgTextGap = this.getImageTextGap();
+        this.btnImgTextGap = getImageTextGap(props);
         this.btnBgd = this.getBgdColor();
         this.btnFgd = this.getFgdColor();
         this.setBorderPainted(props.borderPainted);
@@ -53,7 +53,7 @@ class BaseButton extends Base {
                 fontStyle: this.btnFont.fontStyle,
                 fontSize: this.btnFont.fontSize,
             },
-            tabIndex:this.focusable ? this.props.tabIndex : -1,
+            tabIndex:this.focusable ? (this.props.tabIndex ? this.props.tabIndex : 0) : -1,
             iconPos: this.btnIconPos
         }
     }

@@ -6,7 +6,7 @@ import { AutoComplete } from "primereact/autocomplete"
 import { RefContext } from "../../../helper/Context";
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 import withRowSelection from "../withRowSelection";
-import { getPreferredSize } from "../../../helper/GetPreferredSize";
+import { getPreferredSize } from "../../../helper/GetSizes";
 
 class UIEditorLinked extends Base {
 

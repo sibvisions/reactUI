@@ -1,7 +1,7 @@
 import React from 'react';
 import { InputText } from "primereact/inputtext";
 import Base from '../../Base';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
 class UIEditorDisabled extends Base {

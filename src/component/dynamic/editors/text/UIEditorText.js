@@ -4,7 +4,7 @@ import { RefContext } from '../../../helper/Context';
 import Base from '../../Base';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import withRowSelection from '../withRowSelection';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 
 
 class UIEditorText extends Base {

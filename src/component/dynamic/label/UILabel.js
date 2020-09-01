@@ -1,7 +1,8 @@
 import React from 'react';
 import Base from '../Base';
-import { getPreferredSize } from '../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../helper/GetSizes';
 import { RefContext } from '../../helper/Context';
+import { getMargins, getAlignments } from '../ComponentProperties';
 
 class UILabel extends Base {
 
@@ -13,8 +14,8 @@ class UILabel extends Base {
 
     constructor(props) {
         super(props);
-        this.lblMargins = this.getMargins();
-        this.lblAlignments = this.getAlignments();
+        this.lblMargins = getMargins(props);
+        this.lblAlignments = getAlignments(props);
         this.lblBackground = this.props.background;
         this.lblColor = this.props.foreground;
     }

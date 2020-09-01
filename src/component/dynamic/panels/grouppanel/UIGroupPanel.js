@@ -1,7 +1,8 @@
 import React from 'react';
 import Base from '../../Base';
 import { RefContext } from '../../../helper/Context';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
+import { getPanelBgdColor } from '../../ComponentProperties';
 
 class UIGroupPanel extends Base {
 
@@ -11,7 +12,7 @@ class UIGroupPanel extends Base {
     }
 
     render() {
-        let bgdColor = this.getPanelBgdColor();
+        let bgdColor = getPanelBgdColor(this.props, this.context);
         return (
             <span id={this.props.id} style={{height: '100%', background: bgdColor, ...this.props.layoutStyle}}>
                 {this.insertLayout()}

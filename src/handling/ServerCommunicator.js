@@ -8,12 +8,12 @@ class ServerCommunicator {
     }
     
     sendRequest(endpoint, body, timeout=5000){
-        let reqOpt = {
+        const reqBody = {
             method: 'POST',
             body: JSON.stringify(body),
             credentials:"include"
         };
-        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqOpt), timeout)
+        let r = this.timeoutRequest(fetch(this.BaseUrl+endpoint, reqBody), timeout)
         this.responseHandler.getResponse(r);
     }
 
@@ -39,7 +39,7 @@ class ServerCommunicator {
 
     startUp(username, password){
         const browserInfo = this.getBrowser()
-        let info = {
+        const reqBody = {
             layoutMode : "generic",
             appMode : "full",
             applicationName : this.applicationName,
@@ -59,21 +59,21 @@ class ServerCommunicator {
             deviceTypeModel: navigator.userAgent,
 
             readAheadLimit: 100
-        };this.sendRequest("/api/startup", info);
+        };this.sendRequest("/api/startup", reqBody);
     }
 
     deviceStatus(screenHeight=600, screenWidth=800){
-        let reqOpt= {
+        const reqBody= {
             screenWidth: screenWidth,
             screenHeight: screenHeight,
             clientId: localStorage.getItem("clientId")
-        }; this.sendRequest("/api/deviceStatus", reqOpt);   
+        }; this.sendRequest("/api/deviceStatus", reqBody);   
     }
 
     //---Action Requests------
 
     logIn(username, password){
-        let info = {
+        const reqBody = {
             clientId: localStorage.getItem("clientId"),
             loginData: {
               userName: {
@@ -90,28 +90,36 @@ class ServerCommunicator {
               }
             },
             createAuthKey: true
-        }; this.sendRequest("/api/login",info);
+        }; this.sendRequest("/api/login", reqBody);
     }
 
     logOut(){
         localStorage.removeItem("authKey")
-        let info = {
+        const reqBody = {
             "clientId": localStorage.getItem("clientId")
-        }; this.sendRequest("/api/logout", info);
+        }; this.sendRequest("/api/logout", reqBody);
     }
 
     pressButton(componentId){
-        let body = {
+        const reqBody = {
             clientId: localStorage.getItem("clientId"),
             componentId: componentId
-        }; this.sendRequest("/api/v2/pressButton", body);
+        }; this.sendRequest("/api/v2/pressButton", reqBody);
+    }
+
+    setValue(componentId, value){
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+            value: value
+        }; this.sendRequest("/api/comp/setValue", reqBody);
     }
 
     openScreen(componentId){
-        let reqOpt = {
+        const reqBody = {
             clientId: localStorage.getItem("clientId"),
             componentId: componentId,
-        }; this.sendRequest("/api/v2/openScreen", reqOpt);   
+        }; this.sendRequest("/api/v2/openScreen", reqBody);   
     }
 
     selectRow(componentId, dataProvider, selected , timeout){

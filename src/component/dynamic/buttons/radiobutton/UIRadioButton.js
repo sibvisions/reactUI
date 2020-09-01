@@ -1,7 +1,7 @@
 import React from 'react';
 import BaseButton from '../BaseButton';
 import { RefContext } from '../../../helper/Context';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 import { RadioButton } from 'primereact/radiobutton';
 
 class UIRadioButton extends BaseButton {
@@ -19,7 +19,7 @@ class UIRadioButton extends BaseButton {
     render() {
         return (
             <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                <span id={this.btnProps.id} style={this.btnProps.style}>
+                <span id={this.btnProps.id} style={this.btnProps.style} tabIndex={this.btnProps.tabIndex}>
                     <RadioButton
                         value={this.props.id}
                         inputId={this.btnProps.id}

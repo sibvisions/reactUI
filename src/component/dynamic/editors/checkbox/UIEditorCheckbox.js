@@ -2,7 +2,7 @@ import React from 'react';
 import {Checkbox} from 'primereact/checkbox';
 import Base from '../../Base';
 import { checkCellEditorAlignments, mapFlex } from '../../../helper/CheckAlignments';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
 

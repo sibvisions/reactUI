@@ -3,7 +3,8 @@ import Split from 'react-split'
 import Base from '../../Base';
 import "./UISplitPanel.css";
 import { RefContext } from '../../../helper/Context';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
+import { getPanelBgdColor } from '../../ComponentProperties';
 
 class UISplitPanel extends Base {
 
@@ -43,7 +44,7 @@ class UISplitPanel extends Base {
     }
 
     render() {
-        let bgdColor = this.getPanelBgdColor();
+        let bgdColor = getPanelBgdColor(this.props, this.context);
         return (
             <Split className= "splitHolder"
             id={this.props.id}

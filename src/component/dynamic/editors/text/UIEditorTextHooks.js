@@ -3,7 +3,7 @@ import "./UIEditorText.scss"
 import { InputText } from 'primereact/inputtext';
 import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import { getHooksPreferredSize } from '../../../helper/GetPreferredSize';
+import { getHooksPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
 

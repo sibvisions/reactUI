@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { RefContext } from '../../../helper/Context';
 import BaseButton from '../BaseButton';
 import { FindReact } from '../../../helper/FindReact';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 
 class UIButton extends BaseButton {
 

@@ -5,7 +5,7 @@ import Base from '../../Base';
 
 import "./UIEditorDate.scss"
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
 class UIEditorDate extends Base {

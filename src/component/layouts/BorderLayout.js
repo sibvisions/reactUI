@@ -13,7 +13,7 @@ class BorderLayout extends Component {
 
     layoutContainer() {
         this.components.forEach(component => {
-            if(this.props.isVisible(component)) {
+            if(component.props.visible === undefined || component.props.visible) {
                 let clonedComponent;
                 if (component.props.constraints) {
                     const props={
@@ -75,7 +75,7 @@ class BorderLayout extends Component {
                                                             marginRight: this.props.margins.marginRight}}>
             <div className="p-col-12 north" style={{textAlign:"center",
                                                     padding: '0',
-                                                    marginBottom: this.props.isVisible(this.elemNorth) ? this.props.gaps.verticalGap : '0px'}}>
+                                                    marginBottom: this.elemNorth !== undefined ? ((this.elemNorth.props.visible === undefined || this.elemNorth.props.visible) ? this.props.gaps.verticalGap : '0px') : '0px'}}>
                 {this.elemNorth}
             </div>
             <div className="p-grid p-nogutter p-align-center" style={{height:"100%"}}>
@@ -83,7 +83,7 @@ class BorderLayout extends Component {
                                                         textAlign:"center", 
                                                         width:"auto", 
                                                         padding: '0', 
-                                                        marginRight: this.props.isVisible(this.elemWest) ? this.props.gaps.horizontalGap : '0px'}}>
+                                                        marginRight: this.elemWest !== undefined ? ((this.elemWest.props.visible === undefined || this.elemWest.props.visible) ? this.props.gaps.horizontalGap : '0px') : '0px'}}>
                     {this.elemWest}
                 </span>
                 <span className="p-col center" style={{
@@ -97,14 +97,14 @@ class BorderLayout extends Component {
                                                         textAlign:"center", 
                                                         width:"auto", 
                                                         padding: '0', 
-                                                        marginLeft: this.props.isVisible(this.elemEast) ? this.props.gaps.horizontalGap : '0px'}}>
+                                                        marginLeft: this.elemEast !== undefined ? ((this.elemEast.props.visible === undefined || this.elemEast.props.visible) ? this.props.gaps.horizontalGap : '0px') : '0px'}}>
                     {this.elemEast}
                 </span>
             </div>
             <div className="p-col-12 south" style={{
                                                 textAlign:"center", 
                                                 padding: '0', 
-                                                marginTop: this.props.isVisible(this.elemSouth) ? this.props.gaps.verticalGap : '0px'}}>
+                                                marginTop: this.elemSouth !== undefined ? ((this.elemSouth.props.visible === undefined || this.elemSouth.props.visible) ? this.props.gaps.verticalGap : '0px') : '0px'}}>
                 {this.elemSouth}
             </div>
         </div>);

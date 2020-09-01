@@ -4,7 +4,7 @@ import { RefContext } from '../../../helper/Context';
 import tinycolor from 'tinycolor2';
 import BaseButton from '../BaseButton';
 import { FindReact } from '../../../helper/FindReact';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 
 class UIToggleButton extends BaseButton {
 

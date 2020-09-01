@@ -4,7 +4,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { RefContext } from '../../../helper/Context';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import withRowSelection from '../withRowSelection';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
 
 class UIEditorNumber extends Base {
 

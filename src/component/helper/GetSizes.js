@@ -1,5 +1,6 @@
 import { Size } from "./Size";
 import { FindReact } from "./FindReact";
+import { ToggleButton } from "primereact/togglebutton";
 
 export function getPreferredSize(comp) {
     let prefSize;
@@ -34,9 +35,10 @@ export function getPreferredSize(comp) {
                                 }
                             }
                         }
-                        console.log(reactObj)
-                        calcWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
-                        calcHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
+                        if (reactObj instanceof ToggleButton) {
+                            calcWidth += reactObj.props.style.paddingLeft + reactObj.props.style.paddingRight + widthMargins + 2;
+                            calcHeight += reactObj.props.style.paddingTop + reactObj.props.style.paddingBottom + heightMargins + 2;
+                        }
                         prefSize = new Size(calcWidth, calcHeight, undefined)
                          
                     }
@@ -133,5 +135,41 @@ export function getHooksPreferredSize(props) {
             }
         }
         return prefSize
+    }
+}
+
+export function getMinimumSize(comp) {
+    let minSize;
+    if (comp) {
+        if (comp.props.minimumSize) {
+            minSize = new Size (undefined, undefined, comp.props.minimumSize);
+        }
+        else {
+            minSize = getPreferredSize(comp);
+        }
+
+        if (comp.props.maximumSize) {
+            let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (maxSize.width < minSize.width) {
+                minSize.setWidth(maxSize.width);
+            }
+            if (maxSize.height < minSize.height) {
+                minSize.setHeight(maxSize.height);
+            }
+        }
+        return minSize
+    }
+}
+
+export function getMaximumSize(comp) {
+    let maxSize;
+    if (comp) {
+        if (comp.props.maximumSize) {
+            maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+        }
+        else {
+            maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)
+        }
+        return maxSize;
     }
 }

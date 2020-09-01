@@ -5,7 +5,7 @@ import { Size } from '../../component/helper/Size';
 import { RefContext } from '../../component/helper/Context';
 import { FindReact } from '../../component/helper/FindReact';
 import { toPx } from '../helper/ToPx';
-import { getPreferredSize } from '../helper/GetPreferredSize';
+import { getPreferredSize } from '../helper/GetSizes';
 
 class FormLayout extends Component {
 
@@ -40,6 +40,7 @@ class FormLayout extends Component {
 
     compSizes = new Map();
     anzComps = this.props.subjects.length;
+    firstSubRender = true;
 
     prevTop;
 
@@ -55,19 +56,20 @@ class FormLayout extends Component {
         this.anzComps = this.props.subjects.length;
         this.sizeSub = this.context.contentStore.onSizeCalculated.subscribe(sizedComps => {
             if (sizedComps.parent === this.props.component.props.id) {
-                this.compSizes.set(sizedComps.id, sizedComps.size);
-                if (sizedComps.firstTime) {
+                if (this.compSizes.get(sizedComps.id) === undefined) {
                     this.anzComps--;
+                    this.compSizes.set(sizedComps.id, sizedComps.size);
                 }
-                if (this.anzComps === 0) {
+                if (this.anzComps === 0 && this.firstSubRender) {
                     const someElements = document.getElementsByClassName("formlayout")
                     for (const element of someElements) {
                         const myComp = FindReact(element)
                         myComp.layoutContainer();
                     }
+                    this.firstSubRender = false;
                 }
             }
-        })
+        });
 
         const someElements = document.getElementsByClassName("formlayout")
         for (const element of someElements) {
@@ -386,7 +388,7 @@ class FormLayout extends Component {
 
             for (let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < Math.pow(2, 31) - 1;) {
                 this.components.forEach(component => {
-                    if (this.props.isVisible(component)) {
+                    if (component.props.visible === undefined || component.props.visible) {
                         let constraint = this.componentConstraints.get(component.props.id)
                         let preferredSize;
                         if (this.compSizes.get(component.props.id) !== undefined) {
@@ -401,7 +403,7 @@ class FormLayout extends Component {
                 });
                 autoSizeCount = Math.pow(2, 31) - 1
                 this.components.forEach(component => {
-                    if (this.props.isVisible(component)) {
+                    if (component.props.visible === undefined || component.props.visible) {
                         let constraint = this.componentConstraints.get(component.props.id)
                         let count = this.finishAutoSizeCalculation(constraint.leftAnchor, constraint.rightAnchor)
                         if (count > 0 && count < autoSizeCount) {
@@ -434,7 +436,7 @@ class FormLayout extends Component {
             let bottomHeight = 0;
     
             this.components.forEach(component => {
-                if (this.props.isVisible(component)) {
+                if (component.props.visible === undefined || component.props.visible) {
                     let constraint = this.componentConstraints.get(component.props.id);
                     let preferredSize;
                     if (this.compSizes.get(component.props.id) !== undefined) {
@@ -671,7 +673,7 @@ class FormLayout extends Component {
             this.bottomBorderAnchor.position -= this.props.margins.marginTop;
 
             this.components.forEach(component => {
-                if (this.props.isVisible(component)) {
+                if (component.props.visible === undefined || component.props.visible) {
                     let constraint = this.componentConstraints.get(component.props.id);
                     let preferredSize;
                     if (this.compSizes.get(component.props.id) !== undefined) {
@@ -691,7 +693,7 @@ class FormLayout extends Component {
     buildComponents(components) {
         let tempContent = [];
         components.forEach(component => {
-            if (this.props.isVisible(component)) {
+            if (component.props.visible === undefined || component.props.visible) {
                 let constraint = this.componentConstraints.get(component.props.id);
                 let compHeight = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
                 let compWidth = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();

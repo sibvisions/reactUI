@@ -1,8 +1,9 @@
 import React from 'react';
 import Base from '../../Base';
-import './UIPanel.scss'
+import './UIPanel.scss';
 import { RefContext } from '../../../helper/Context';
-import { getPreferredSize } from '../../../helper/GetPreferredSize';
+import { getPreferredSize } from '../../../helper/GetSizes';
+import { getPanelBgdColor } from '../../ComponentProperties';
 
 class UIPanel extends Base {
 
@@ -13,7 +14,7 @@ class UIPanel extends Base {
 
     render() {
         let overflowYVal;
-        let bgdColor = this.getPanelBgdColor();
+        let bgdColor = getPanelBgdColor(this.props, this.context);
         if (this.context.contentStore.layoutMode === 'Small' || this.context.contentStore.layoutMode === 'Mini') {
             overflowYVal = 'auto'
         }

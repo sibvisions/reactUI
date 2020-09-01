@@ -1,22 +1,6 @@
-.popupmenu {
-    .p-menuitem {
-        .p-menuitem-link {
-            color: inherit;
-            .p-menuitem-icon {
-                color: inherit;
-            }
-        }
-        .p-menuitem-link:not(.p-disabled):hover {
-            color: inherit;
-            .p-menuitem-icon {
-                color: inherit;
-            }
-        }
-    }
-}
-
-.p-button {
-    >i {
-        color: black
+.p-splitbutton {
+    .p-button {
+        background: inherit;
+        border-color: inherit;
     }
 }

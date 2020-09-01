@@ -2,7 +2,7 @@ import Base from "../../Base";
 import React from 'react';
 import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
 import placeHolder from "../../../../assets/imgs/IMAGE.png"
-import { getPreferredSize } from "../../../helper/GetPreferredSize";
+import { getPreferredSize } from "../../../helper/GetSizes";
 import { RefContext } from "../../../helper/Context";
 
 class UIEditorImage extends Base {

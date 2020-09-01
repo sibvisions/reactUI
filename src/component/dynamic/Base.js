@@ -11,10 +11,10 @@ import { Gaps } from '../layouts/layoutObj/Gaps';
 import { Margins } from '../layouts/layoutObj/Margins';
 import { Orientation } from '../layouts/layoutObj/Orientation';
 import { GridSize } from '../layouts/layoutObj/GridSize';
-import { checkFlowAlignments, checkFormAlignments, mapFlex, checkAlignments } from '../helper/CheckAlignments';
+import { checkFlowAlignments, checkFormAlignments, mapFlex} from '../helper/CheckAlignments';
 import { UIFont } from '../helper/UIFont';
 import tinycolor from 'tinycolor2';
-import { getPreferredSize } from '../helper/GetPreferredSize';
+import { getMinimumSize, getMaximumSize } from '../helper/GetSizes';
 
 class Base extends Component {
 
@@ -40,38 +40,15 @@ class Base extends Component {
                 return this.props.background
             }
             else {
+                //first panel no parent
                 if (this.context.contentStore.flatContent.find(elem => elem.id === this.props.parent) === undefined) {
                     return document.getElementById(this.props.id).parentElement.style.backgroundColor;
                 }
+                //parent panel
                 else {
                     return document.getElementById(this.props.parent).style.background;
                 }
             }
-        }
-    }
-
-    
-
-    getMargins() {
-        if (this.props.margins) {
-            return new Margins(this.props.margins.split(','));
-        }
-        else {
-            if (this.props.className.includes("Button") && this.props.className !== "RadioButton") {
-                return new Margins([5, 10, 5, 10]);
-            }
-            else {
-                return new Margins([0, 0, 0, 0]);
-            }
-        }
-    }
-
-    getAlignments() {
-        if (this.props.className.includes("Button") || this.props.className === "Label") {
-            return mapFlex(checkAlignments(this.props));
-        }
-        else {
-            return checkAlignments(this.props);
         }
     }
 
@@ -135,7 +112,6 @@ class Base extends Component {
                 }
             }
             else {
-                this.customIcon = true;
                 splittedIconData = iconData.split(',');
                 iconName = splittedIconData[0];
                 iconSize = new Size(splittedIconData[1], splittedIconData[2]);
@@ -150,53 +126,6 @@ class Base extends Component {
 
     componentDidMount() {
         this.startUp();
-    }
-
-    getMinimumSize(comp) {
-        let minSize;
-        if (comp) {
-            if (comp.props.minimumSize) {
-                minSize = new Size(undefined, undefined, comp.props.minimumSize);
-            }
-            else {
-                minSize = getPreferredSize(comp);
-            }
-    
-            if (comp.props.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
-                if (maxSize.width < minSize.width) {
-                    minSize.setWidth(maxSize.width);
-                }
-                if (maxSize.height < minSize.height) {
-                    minSize.setHeight(maxSize.height);
-                }
-            }
-            return minSize
-        }
-    }
-
-    getMaximumSize(comp) {
-        let maxSize;
-        if (comp) {
-            if (comp.props.maximumSize) {
-                maxSize = new Size(undefined, undefined, comp.props.maximumSize);
-            }
-            else {
-                maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)
-            }
-            return maxSize;
-        }
-    }
-
-    isVisible(comp) {
-        if (comp) {
-            if (comp.props.visible === undefined || comp.props.visible) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
     }
 
     insertLayout() {
@@ -218,9 +147,9 @@ class Base extends Component {
                             preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getMinimumSize={this.getMinimumSize}
-                            getMaximumSize={this.getMaximumSize}
-                            isVisible={this.isVisible} />;
+                            getMinimumSize={getMinimumSize}
+                            getMaximumSize={getMaximumSize}
+                            />;
                     case "BorderLayout":
                         return <BorderLayout
                             component={this}
@@ -230,9 +159,9 @@ class Base extends Component {
                             preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            getMinimumSize={this.getMinimumSize}
-                            getMaximumSize={this.getMaximumSize}
-                            isVisible={this.isVisible} />;
+                            getMinimumSize={getMinimumSize}
+                            getMaximumSize={getMaximumSize}
+                            />;
                     case "FlowLayout":
                         let orientation = new Orientation(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 7));
                         alignments = mapFlex(checkFlowAlignments(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(7, 10), 'flow'));
@@ -247,7 +176,7 @@ class Base extends Component {
                             preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            isVisible={this.isVisible} />;
+                            />;
                     case "GridLayout":
                         let gridSize = new GridSize(this.props.layout.substring(this.props.layout.indexOf(',') + 1, this.props.layout.length).split(',').slice(6, 8));
                         return <GridLayout
@@ -259,18 +188,18 @@ class Base extends Component {
                             preferredSize={this.props.preferredSize}
                             minimumSize={this.props.minimumSize}
                             maximumSize={this.props.maximumSize}
-                            isVisible={this.isVisible} />;
+                            />;
                     default: return <NullLayout
                         component={this}
                         subjects={this.state.content}
-                        isVisible={this.isVisible} />;
+                        />;
                 }
             }
             else {
                 return <NullLayout
                     component={this}
                     subjects={this.state.content}
-                    isVisible={this.isVisible} />;
+                    />;
             }
         }
     }
