@@ -5,6 +5,7 @@ import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
 import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
+import "./FormLayout.scss"
 
 type childWithProps = {
     props: {
@@ -18,11 +19,11 @@ type childWithProps = {
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<{height: string, width: string, top?: number, left?: number}>({height: "100%", width: "100%"});
+    const [style, changeStyle] = useState<{height: number, width: number, top?: number, left?: number}>();
     const layoutDiv = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(()=> {
-        if(props.preferredSizes){
+        if(props.preferredSizes && !style){
             setAnchorsAndConstraints();
             calculateAnchors();
             calculateTargetDependentAnchors();
@@ -54,36 +55,21 @@ const FormLayout: FC<layout> = (props) => {
 
 
     const setAnchorsAndConstraints = () => {
-        anchors.clear();
+        anchors.clear(); componentConstraints.clear();
         //Parse Layout info and set Anchors
         const splitAnchors = props.layoutData.split(";");
         splitAnchors.forEach(anchorData => {
             const name = anchorData.substring(0, anchorData.indexOf(","));
-            if(name !== "-") {
-                let anchor = anchors.get(name);
-                if (!anchor) {
-                    anchor = new Anchor({anchorData: anchorData});
-                    anchors.set(name, anchor);
-                }
-            }
+            anchors.set(name, new Anchor(anchorData));
         });
         //Establish related Anchors
         anchors.forEach(value => {
-            if(value.anchorData){
-                const splitData = value.anchorData.split(",");
-                const relatedAnchorName = splitData[1];
-                if(relatedAnchorName !== "-"){
-                    value.relatedAnchor = anchors.get(relatedAnchorName);
-                }
-                value.name = splitData[0];
-                value.autoSize = splitData[3] === "a";
-                value.position = parseInt(splitData[4]);
-            }
+            value.relatedAnchor = anchors.get(value.relatedAnchorName);
         });
         //Build Constraints of Children
         Children.map(props.children, child => {
             const childWithProps = (child as childWithProps);
-            const anchorNames = childWithProps.props.constraints.split(";")
+            const anchorNames = childWithProps.props.constraints.split(";");
             //Get Anchors
             const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
             const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
@@ -99,13 +85,14 @@ const FormLayout: FC<layout> = (props) => {
 
     const calculateAnchors = () => {
 
-        const getAutoSizeAnchorsBetween = (startAnchor: Anchor | undefined, endAnchor: Anchor): Array<Anchor> => {
+        const getAutoSizeAnchorsBetween = (startAnchor: Anchor, endAnchor: Anchor): Array<Anchor> => {
             const autoSizeAnchors = Array<Anchor>();
-            while (startAnchor && startAnchor !== endAnchor){
-                if(startAnchor.autoSize && !startAnchor.autoSizeCalculated){
-                    autoSizeAnchors.push(startAnchor)
+            let startAnchorIntern : Anchor | undefined = startAnchor
+            while (startAnchorIntern && startAnchorIntern !== endAnchor){
+                if(startAnchorIntern.autoSize && !startAnchorIntern.autoSizeCalculated){
+                    autoSizeAnchors.push(startAnchorIntern);
                 }
-                startAnchor = startAnchor.relatedAnchor;
+                startAnchorIntern = startAnchorIntern.relatedAnchor;
             }
             return autoSizeAnchors;
         }
@@ -119,6 +106,8 @@ const FormLayout: FC<layout> = (props) => {
 
         const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
             let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
+            if(autoSizeAnchors.length > 0)
+            console.log(leftTopAnchor, rightBottomAnchor, autoSizeAnchors[0].autoSizeCalculated)
             if(autoSizeAnchors.length === autoSizeCount && preferredSize){
                 let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                 autoSizeAnchors.forEach(anchor => {
@@ -158,8 +147,8 @@ const FormLayout: FC<layout> = (props) => {
                     anchor.autoSizeCalculated = true;
                     counter++;
                 }
-            })
-            return autoSizeAnchors.length - counter;
+            });
+            return autoSizeAnchors.length - counter
         }
 
         const clearAutoSize = () => {
@@ -199,10 +188,10 @@ const FormLayout: FC<layout> = (props) => {
 
         //AutoSize calculations
         for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
-            //AutoSizeFirst
+            //CalculateAutoSize
             Children.map(props.children, child => {
                 const childWithProps = (child as childWithProps);
-                if(!childWithProps.props.isVisible){
+                if(childWithProps.props.isVisible){
                     const constraint: Constraints | undefined = componentConstraints.get(childWithProps.props.id);
                     if(constraint && props.preferredSizes){
                         const preferredSizeObj = props.preferredSizes.get(childWithProps.props.id);
@@ -219,21 +208,21 @@ const FormLayout: FC<layout> = (props) => {
                 const childWithProps = (child as childWithProps);
                 const constraints = componentConstraints.get(childWithProps.props.id)
                 if(constraints){
-                    let count = 0
+                    let count: number
                     count = finishAutoSizeCalculation(constraints.leftAnchor, constraints.rightAnchor);
-                    if(count >= 0 && count < autoSizeCount){
+                    if(count > 0 && count < autoSizeCount){
                         autoSizeCount = count;
                     }
                     count = finishAutoSizeCalculation(constraints.rightAnchor, constraints.leftAnchor);
-                    if(count >= 0 && count < autoSizeCount){
+                    if(count > 0 && count < autoSizeCount){
                         autoSizeCount = count;
                     }
                     count = finishAutoSizeCalculation(constraints.topAnchor, constraints.bottomAnchor);
-                    if(count >= 0 && count < autoSizeCount){
+                    if(count > 0 && count < autoSizeCount){
                         autoSizeCount = count;
                     }
                     count = finishAutoSizeCalculation(constraints.bottomAnchor, constraints.topAnchor);
-                    if(count >= 0 && count < autoSizeCount){
+                    if(count > 0 && count < autoSizeCount){
                         autoSizeCount = count;
                     }
                 }
@@ -245,10 +234,10 @@ const FormLayout: FC<layout> = (props) => {
         let topHeight = 0;
         let bottomHeight = 0;
 
-        // idk
+        //Anchor Positions of Children
         Children.map(props.children, child => {
             const childWithProps = (child as childWithProps);
-            if(!childWithProps.props.isVisible && props.preferredSizes){
+            if(childWithProps.props.isVisible && props.preferredSizes){
                 const constraint = componentConstraints.get(childWithProps.props.id);
                 const preferredSize = props.preferredSizes.get(childWithProps.props.id);
                 if(constraint && preferredSize){
@@ -293,6 +282,7 @@ const FormLayout: FC<layout> = (props) => {
                     }
                     if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
                         let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
+                        console.log(h)
                         if(h > preferredHeight){
                             preferredHeight = h;
                         }
@@ -305,7 +295,8 @@ const FormLayout: FC<layout> = (props) => {
                 }
             }
         });
-        //Width
+
+        //Preferred Width
         if(leftWidth !== 0 && rightWidth !== 0){
             let w = leftWidth + rightWidth + gaps.horizontalGap;
             if(w > preferredWidth){
@@ -314,7 +305,8 @@ const FormLayout: FC<layout> = (props) => {
             if(w > minimumWidth){
                 minimumWidth = w;
             }
-        } else if(leftWidth !== 0){
+        }
+        else if(leftWidth !== 0){
             const rma = anchors.get("rm");
             if(rma){
                 let w = leftWidth - rma.position;
@@ -325,7 +317,8 @@ const FormLayout: FC<layout> = (props) => {
                     minimumWidth = w;
                 }
             }
-        } else {
+        }
+        else {
             const lma = anchors.get("lm");
             if(lma){
                 let w = rightWidth + lma.position;
@@ -337,7 +330,8 @@ const FormLayout: FC<layout> = (props) => {
                 }
             }
         }
-        //Height
+
+        //Preferred Height
         if(topHeight !== 0 && bottomHeight !== 0){
             let h = topHeight + bottomHeight + gaps.vertical;
             if(h > preferredHeight){
@@ -346,19 +340,20 @@ const FormLayout: FC<layout> = (props) => {
             if(h > minimumHeight){
                 minimumHeight = h;
             }
-        } else if(topHeight !== 0 ){
+        }
+        else if(topHeight !== 0 ){
             const bma = anchors.get("bm");
             if(bma){
                 let h = topHeight - bma.position;
                 if(h > preferredHeight){
-
                     preferredHeight = h;
                 }
                 if(h > minimumHeight){
                     minimumHeight = h;
                 }
             }
-        } else {
+        }
+        else {
             const tma = anchors.get("tm");
             if(tma){
                 let h = bottomHeight + tma.position;
@@ -371,6 +366,7 @@ const FormLayout: FC<layout> = (props) => {
             }
         }
 
+
         preferredWidth -= margins.marginLeft + margins.marginRight;
         preferredHeight -= margins.marginTop + margins.marginBottom;
 
@@ -381,9 +377,7 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     const calculateTargetDependentAnchors = () => {
-
         const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
-
         }
 
         //Set from Server
@@ -397,7 +391,6 @@ const FormLayout: FC<layout> = (props) => {
                 availableSize = {width: size.width, height: size.height};
             }
         }
-
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const bba = anchors.get("b");
@@ -508,27 +501,33 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     const buildComponents = () => {
-
         Children.map(props.children, child => {
             const childWithProps = (child as childWithProps);
             const constraint = componentConstraints.get(childWithProps.props.id);
 
-            const lbr = anchors.get("l");
-            const tbr = anchors.get("r");
-            if(!style && lbr && tbr) {
-                changeStyle({width: preferredWidth.toString(), height: preferredHeight.toString(), left: lbr.position, top: tbr.position/2})
+            const lba = anchors.get("l");
+            const rba = anchors.get("r");
+
+            if(lba && rba && constraint) {
+
             }
         });
+
+        const lba = anchors.get("l");
+        const rba = anchors.get("r");
+        const tba = anchors.get("t");
+        const bba = anchors.get("b");
+
+        if(lba && rba && tba && bba) {
+            changeStyle({height: preferredHeight +5, width: preferredWidth +5, left: lba.getAbsolutePosition(), top: tba.getAbsolutePosition()});
+        }
     }
 
-
-
-
-
-
     return(
-        <div ref={layoutDiv} style={{...style, position:"relative"}}>
-            {props.children}
+        <div ref={layoutDiv} className={"default"}>
+            <div style={{...style, position:"relative"}}>
+                {props.children}
+            </div>
         </div>
     )
 }

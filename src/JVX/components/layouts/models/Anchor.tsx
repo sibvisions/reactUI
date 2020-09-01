@@ -1,51 +1,43 @@
 export enum ORIENTATION {
-    HORIZONTAL= "horizontal",
-    VERTICAL= "vertical"
-
-}
-
-type anchorInterface = {
-    name?: string,
-    anchorData?: string,
-    relatedAnchor?: Anchor,
-    autoSize?: boolean;
-    autoSizeCalculated?: boolean,
-    firstCalculation?: boolean,
-    relative?: boolean,
-    position?: number,
-    orientation?: string
+    HORIZONTAL= 0,
+    VERTICAL= 1
 
 }
 
 class Anchor{
-    name = "";
-    anchorData = "";
+    name: string;
+    anchorData: string;
     relatedAnchor?: Anchor
-    autoSize = false;
-    autoSizeCalculated = false;
-    firstCalculation = false;
-    relative = false;
-    position = 0;
-    orientation = "";
+    relatedAnchorName: string
+    autoSize: boolean;
+    autoSizeCalculated: boolean;
+    firstCalculation: boolean;
+    relative: boolean;
+    position: number;
+    orientation: number;
 
-    constructor(values: anchorInterface) {
-        if(values.anchorData && !values.relatedAnchor && !values.position && !values.orientation){
-            this.anchorData = values.anchorData
-        } else if(!values.anchorData && values.relatedAnchor && values.position && !values.orientation){
-            this.relatedAnchor = values.relatedAnchor;
-            this.autoSize = false;
-            this.position = values.position;
-            this.orientation = this.relatedAnchor.orientation;
-        } else if(!values.anchorData && !values.relatedAnchor && !values.position && values.orientation){
-            this.orientation = values.orientation;
-            this.autoSize = false;
-            this.position = 0
-        }
-        else {
-            console.warn("Anchor was not given the right arguments");
-        }
+    constructor(anchorData : string) {
+
+        const splitData  = anchorData.split(",");
+        this.anchorData = anchorData;
+        this.name = splitData[0];
+        this.relatedAnchorName = splitData[1];
+        this.autoSize = splitData[3] === "a";
+
+        this.autoSizeCalculated = false;
+        this.firstCalculation = true;
+        this.relative = false;
+        this.position = parseInt(splitData[4]);
+        this.orientation = this.getOrientationFromData(splitData[0]);
     }
 
+    getOrientationFromData(anchorName: string){
+        if(anchorName.startsWith("l") && anchorName.startsWith("r")){
+            return ORIENTATION.HORIZONTAL;
+        } else {
+            return ORIENTATION.VERTICAL;
+        }
+    }
 
     getAbsolutePosition = (): number => {
         if(this.relatedAnchor){
