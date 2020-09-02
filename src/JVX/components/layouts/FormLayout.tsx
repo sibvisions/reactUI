@@ -17,11 +17,22 @@ type childWithProps = {
     }
 }
 
+type selfStyle = {
+    height: number,
+    width: number,
+    top: number,
+    left: number,
+    marginTop: number,
+    marginBottom: number,
+    marginRight: number,
+    marginLeft: number
+}
+
 
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<{height: number, width: number, top?: number, left?: number}>();
+    const [style, changeStyle] = useState<selfStyle>();
     const layoutDiv = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext)
 
@@ -54,8 +65,6 @@ const FormLayout: FC<layout> = (props) => {
     let minimumWidth: number = 0;
 
     let calculatedTargetDependentAnchors = false;
-
-
 
     const setAnchorsAndConstraints = () => {
         anchors.clear(); componentConstraints.clear();
@@ -505,37 +514,60 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     const buildComponents = () => {
+        //Get Border- and Margin Anchors for calculation
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const tba = anchors.get("t");
         const bba = anchors.get("b");
 
-        const tma = anchors.get("tm")
-        if(lba && rba && tba && bba && tma){
-            Children.map(props.children, child => {
-                const childWithProps = (child as childWithProps);
-                const constraint = componentConstraints.get(childWithProps.props.id);
+        const tma = anchors.get("tm");
+        const bma = anchors.get("bm");
+        const lma = anchors.get("lm");
+        const rma = anchors.get("rm");
 
-                if(constraint) {
-                    const left = constraint.leftAnchor.position;
-                    const top = constraint.topAnchor.getAbsolutePosition() - tma.getAbsolutePosition();
-                    const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition()+5;
-                    const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+        let marginConstraint: Constraints | undefined
+        let borderConstraint: Constraints | undefined;
 
-                    const styleObj: layoutInfo = {
-                        position: "absolute",
-                        id: childWithProps.props.id,
-                        height: height,
-                        left: left,
-                        top: top,
-                        width: width
-                    }
-
-                    context.eventStream.styleEvent.next(styleObj)
-                }
-            });
-        changeStyle({height: preferredHeight, width: preferredWidth +5, left: lba.getAbsolutePosition(), top: tba.getAbsolutePosition()});
+        if(tma && bma && rma && lma){
+            marginConstraint = new Constraints(tma, lma, bma, rma);
         }
+
+        if(lba && rba && tba && bba){
+            borderConstraint = new Constraints(tba, lba, bba, rba);
+        }
+
+        Children.map(props.children, child => {
+            const childWithProps = (child as childWithProps);
+            const constraint = componentConstraints.get(childWithProps.props.id);
+
+            if(constraint && marginConstraint && borderConstraint) {
+                const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition();
+                const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition();
+                const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
+                const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+
+                const styleObj: layoutInfo = {
+                    position: "absolute",
+                    id: childWithProps.props.id,
+                    height: height,
+                    left: left,
+                    top: top,
+                    width: width
+                }
+                context.eventStream.styleEvent.next(styleObj)
+            }
+        });
+        if(borderConstraint && marginConstraint)
+            changeStyle({
+                height: preferredHeight,
+                width: preferredWidth,
+                left: marginConstraint.leftAnchor.getAbsolutePosition(),
+                top: marginConstraint.topAnchor.getAbsolutePosition(),
+                marginBottom: margins.marginBottom,
+                marginLeft: margins.marginLeft,
+                marginRight: margins.marginRight,
+                marginTop: margins.marginTop
+            });
     }
 
     return(

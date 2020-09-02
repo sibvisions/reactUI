@@ -1,6 +1,9 @@
-import React, {Component, FC, useEffect, useRef} from "react";
+import React, {Component, FC, ReactHTMLElement, useContext, useEffect, useRef} from "react";
 import {Button} from "primereact/button";
 import useLayout from "../../zhooks/useLayout";
+import {createPressButtonRequest} from "../../../factories/RequestFactory";
+import {jvxContext} from "../../../jvxProvider";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
 export type buttonProps = {
     accelerator: string,
@@ -18,20 +21,26 @@ export type buttonProps = {
 
 const UIButton: FC<buttonProps> = (props) => {
 
+    const context = useContext(jvxContext)
     const buttonRef = useRef<Component>(null);
     const layoutStyle = useLayout(props.id);
 
     useEffect(()=> {
-        if(buttonRef.current){
+        if(buttonRef.current && !layoutStyle){
             // @ts-ignore
-            props.onLoadCallback({width: buttonRef.current.element.clientWidth, height: buttonRef.current.element.clientHeight, id: props.id});
+            const size = buttonRef.current.element.getBoundingClientRect();
+            props.onLoadCallback({width: size.width, height: size.height, id: props.id});
         }
-
-
     });
 
+    const onButtonPress = () => {
+        const req = createPressButtonRequest();
+        req.componentId = props.name;
+        context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+    }
+
     return(
-        <Button ref={buttonRef} label={props.text} id={props.id} style={layoutStyle}/>
+        <Button ref={buttonRef} label={props.text} id={props.id} style={layoutStyle} onClick={onButtonPress}/>
     )
 }
 export default UIButton;

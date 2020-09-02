@@ -42,31 +42,18 @@ class Server{
         });
     }
 
-    responseMapper: Array<{name: string, method: Function}> =
-    [
-        {
-            name: "applicationMetaData",
-            method: this.applicationMetaData.bind(this)
-        },
-        {
-            name: "userData",
-            method: this.userData.bind(this)
-        },
-        {
-            name: "menu",
-            method: this.menu.bind(this)
-        },
-        {
-            name: "screen.generic",
-            method: this.generic.bind(this)
-        }
-    ]
+    responseMap = new Map<string, Function>()
+        .set("applicationMetaData", this.applicationMetaData.bind(this))
+        .set("userData", this.userData.bind(this))
+        .set("menu", this.menu.bind(this))
+        .set("screen.generic", this.generic.bind(this))
+        .set("closeScreen", this.closeScreen.bind(this));
 
     responseHandler(responses: Array<BaseResponse>){
         responses.forEach((responseObject: BaseResponse) => {
-            const mapper =  this.responseMapper.find(mapper => mapper.name === responseObject.name);
+            const mapper = this.responseMap.get(responseObject.name);
             if(mapper){
-                mapper.method(responseObject);
+                mapper(responseObject);
             }
         });
     }
@@ -92,6 +79,8 @@ class Server{
 
     }
 
+    closeScreen(closeScreenData: any){
 
+    }
 }
 export default Server
