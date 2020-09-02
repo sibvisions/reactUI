@@ -11,7 +11,19 @@ class UIEditorCheckbox extends Base {
     state = {}
 
     componentDidMount() {
-        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true})
+        this.context.contentStore.emitSizeCalculated(
+            {
+                size: getPreferredSize({
+                    id: this.props.id, 
+                    preferredSize: this.props.preferredSize,
+                    horizontalTextPosition: this.props.horizontalTextPosition,
+                    minimumSize: this.props.minimumSize,
+                    maximumSize: this.props.maximumSize
+                }), 
+                id: this.props.id, 
+                parent: this.props.parent
+            }
+        );
     }
 
     render() {

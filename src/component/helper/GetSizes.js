@@ -2,14 +2,14 @@ import { Size } from "./Size";
 import { FindReact } from "./FindReact";
 import { ToggleButton } from "primereact/togglebutton";
 
-export function getPreferredSize(comp) {
+export function getPreferredSize(props) {
     let prefSize;
-        if (comp) {
-            if (comp.props.preferredSize) {
-                prefSize = new Size(undefined, undefined, comp.props.preferredSize)
+        if (props) {
+            if (props.preferredSize) {
+                prefSize = new Size(undefined, undefined, props.preferredSize)
             }
             else {
-                let element = document.getElementById(comp.props.id);
+                let element = document.getElementById(props.id);
                 if (element && element.getBoundingClientRect()) {
                     if (element.classList.contains('p-togglebutton') || element.classList.contains('p-splitbutton')) {
                         let calcWidth = 0;
@@ -17,7 +17,7 @@ export function getPreferredSize(comp) {
                         let calcHeight = 0;
                         let heightMargins = 0;
                         let reactObj = FindReact(element)
-                        if (comp.props.horizontalTextPosition !== 1) {
+                        if (props.horizontalTextPosition !== 1) {
                             for (let child of element.children) {
                                 calcWidth += Math.ceil(parseFloat(getComputedStyle(child).width))
                                 widthMargins += Math.ceil(parseFloat(getComputedStyle(child).marginLeft)) + Math.ceil(parseFloat(getComputedStyle(child).marginRight));
@@ -53,8 +53,8 @@ export function getPreferredSize(comp) {
                     prefSize = null
                 }
             }
-            if (comp.props.minimumSize) {
-                let minSize = new Size(undefined, undefined, comp.props.minimumSize)
+            if (props.minimumSize) {
+                let minSize = new Size(undefined, undefined, props.minimumSize)
                 if (prefSize.width < minSize.width) {
                     prefSize.setWidth(minSize.width);
                 }
@@ -69,8 +69,8 @@ export function getPreferredSize(comp) {
                 }
             }
 
-            if (comp.props.maximumSize) {
-                let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+            if (props.maximumSize) {
+                let maxSize = new Size(undefined, undefined, props.maximumSize);
                 if (maxSize.width < prefSize.width) {
                     prefSize.setWidth(maxSize.width);
                 }
@@ -88,68 +88,18 @@ export function getPreferredSize(comp) {
         }
 }
 
-export function getHooksPreferredSize(props) {
-    let prefSize;
+export function getMinimumSize(props) {
+    let minSize;
     if (props) {
-        if (props.preferredSize) {
-            prefSize = new Size(undefined, undefined, props.preferredSize)
+        if (props.minimumSize) {
+            minSize = new Size (undefined, undefined, props.minimumSize);
         }
         else {
-            let element = document.getElementById(props.id)
-            if (element.getBoundingClientRect()) {
-                prefSize = new Size(Math.ceil(element.getBoundingClientRect().width), Math.ceil(element.getBoundingClientRect().height))
-            }
-            else {
-                prefSize = new Size(element.offsetWidth, element.offsetHeight)
-            }
-        }
-        if (props.minimumSize) {
-            let minSize = new Size(undefined, undefined, props.minimumSize)
-            if (prefSize.width < minSize.width) {
-                prefSize.setWidth(minSize.width);
-            }
-            if (prefSize.height < minSize.height) {
-                prefSize.setHeight(minSize.height);
-            }
-            if (prefSize.width === 0) {
-                prefSize.setHeight(minSize.width);
-            }
-            if (prefSize.height === 0) {
-                prefSize.setHeight(minSize.height)
-            }
+            minSize = getPreferredSize(props);
         }
 
         if (props.maximumSize) {
             let maxSize = new Size(undefined, undefined, props.maximumSize);
-            if (maxSize.width < prefSize.width) {
-                prefSize.setWidth(maxSize.width);
-            }
-            if (maxSize.height < prefSize.height) {
-                prefSize.setHeight(maxSize.height);
-            }
-            if (prefSize.width === 0) {
-                prefSize.setHeight(maxSize.width);
-            }
-            if (prefSize.height === 0) {
-                prefSize.setHeight(maxSize.height)
-            }
-        }
-        return prefSize
-    }
-}
-
-export function getMinimumSize(comp) {
-    let minSize;
-    if (comp) {
-        if (comp.props.minimumSize) {
-            minSize = new Size (undefined, undefined, comp.props.minimumSize);
-        }
-        else {
-            minSize = getPreferredSize(comp);
-        }
-
-        if (comp.props.maximumSize) {
-            let maxSize = new Size(undefined, undefined, comp.props.maximumSize);
             if (maxSize.width < minSize.width) {
                 minSize.setWidth(maxSize.width);
             }
@@ -161,11 +111,11 @@ export function getMinimumSize(comp) {
     }
 }
 
-export function getMaximumSize(comp) {
+export function getMaximumSize(props) {
     let maxSize;
-    if (comp) {
-        if (comp.props.maximumSize) {
-            maxSize = new Size(undefined, undefined, comp.props.maximumSize);
+    if (props) {
+        if (props.maximumSize) {
+            maxSize = new Size(undefined, undefined, props.maximumSize);
         }
         else {
             maxSize = new Size(Math.pow(2, 31) - 1, Math.pow(2, 31) - 1, undefined)

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Bounds } from './layoutObj/Bounds';
+import { getPreferredSize } from '../helper/GetSizes';
 
 class NullLayout extends Component {
 
@@ -37,7 +38,17 @@ class NullLayout extends Component {
     render() {
          
         return (
-            <div className="nulllayout" style={{position: "relative", height: this.props.getPreferredSize(this.props.component).height, overflow: 'hidden'}}>
+            <div className="nulllayout" 
+            style={{
+                position: "relative", 
+                height: getPreferredSize({
+                    id: this.props.id, 
+                    preferredSize: this.props.preferredSize, 
+                    horizontalTextPosition: this.props.horizontalTextPosition,
+                    minimumSize: this.props.minimumSize,
+                    maximumSize: this.props.maximumSize
+                }).height, 
+                overflow: 'hidden'}}>
                 {this.state.content}
             </div>
         )

@@ -16,7 +16,7 @@ class Main extends Component {
             stretch('content-sidemenu');
         }
         if(windowData){
-            let mainPanel = this.context.uiBuilder.compontentHandler(windowData)
+            let mainPanel = this.context.uiBuilder.componentHandler(windowData)
             this.setState({content: mainPanel})
         }   
     }

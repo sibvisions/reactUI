@@ -44,6 +44,7 @@ class ServerCommunicator {
             appMode : "full",
             applicationName : this.applicationName,
             technology: "react",
+            deviceMode: "desktop",
 
             userName: username,
             password: password,

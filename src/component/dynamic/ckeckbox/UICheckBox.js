@@ -2,14 +2,26 @@ import React, { useContext, useEffect } from 'react';
 
 import {Checkbox} from 'primereact/checkbox';
 import { RefContext } from '../../helper/Context';
-import { getHooksPreferredSize } from '../../helper/GetSizes';
+import { getPreferredSize } from '../../helper/GetSizes';
 
 
 function UICheckBox(props) {
     const con = useContext(RefContext)
 
     useEffect(() => {
-        con.contentStore.emitSizeCalculated({size: getHooksPreferredSize(props), id: props.id, parent: props.parent, firstTime: true});
+        con.contentStore.emitSizeCalculated(
+            {
+                size: getPreferredSize({
+                    id: props.id, 
+                    preferredSize: props.preferredSize,
+                    horizontalTextPosition: props.horizontalTextPosition,
+                    minimumSize: props.minimumSize,
+                    maximumSize: props.maximumSize
+                }), 
+                id: props.id, 
+                parent: props.parent
+            }
+        );
     })
 
     return (

@@ -9,7 +9,7 @@ import { getPreferredSize } from '../helper/GetSizes';
 
 class FormLayout extends Component {
 
-    currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.id);
+    currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.id);
     anchors = new Map();
     componentConstraints = new Map();
 
@@ -55,7 +55,7 @@ class FormLayout extends Component {
     componentDidMount() {
         this.anzComps = this.props.subjects.length;
         this.sizeSub = this.context.contentStore.onSizeCalculated.subscribe(sizedComps => {
-            if (sizedComps.parent === this.props.component.props.id) {
+            if (sizedComps.parent === this.props.id) {
                 if (this.compSizes.get(sizedComps.id) === undefined) {
                     this.anzComps--;
                     this.compSizes.set(sizedComps.id, sizedComps.size);
@@ -100,7 +100,7 @@ class FormLayout extends Component {
         }
         this.context.contentStore.emitSizeCalculated({size: 
             new Size(this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight, this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom), 
-            id: this.props.component.props.id, parent: this.props.component.props.parent});
+            id: this.props.id, parent: this.props.parent});
     }
 
     componentWillUnmount() {
@@ -395,7 +395,13 @@ class FormLayout extends Component {
                             preferredSize = this.compSizes.get(component.props.id)
                         }
                         else {
-                            preferredSize = getPreferredSize(component)
+                            preferredSize = getPreferredSize({
+                                id: component.props.id, 
+                                preferredSize: component.props.preferredSize, 
+                                horizontalTextPosition: component.props.horizontalTextPosition,
+                                minimumSize: component.props.minimumSize,
+                                maximumSize: component.props.maximumSize
+                            });
                         }
                         this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
                         this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
@@ -443,9 +449,21 @@ class FormLayout extends Component {
                         preferredSize = this.compSizes.get(component.props.id)
                     }
                     else {
-                        preferredSize = getPreferredSize(component)
+                        preferredSize = getPreferredSize({
+                            id: component.props.id, 
+                            preferredSize: component.props.preferredSize, 
+                            horizontalTextPosition: component.props.horizontalTextPosition,
+                            minimumSize: component.props.minimumSize,
+                            maximumSize: component.props.maximumSize
+                        });
                     }
-                    let minimumSize = this.props.getMinimumSize(component);
+                    let minimumSize = this.props.getMinimumSize({
+                        id: component.props.id, 
+                        preferredSize: component.props.preferredSize, 
+                        horizontalTextPosition: component.props.horizontalTextPosition,
+                        minimumSize: component.props.minimumSize,
+                        maximumSize: component.props.maximumSize
+                    });
         
                     if (constraint.rightAnchor.getBorderAnchor() === this.leftBorderAnchor) {
                         let w = constraint.rightAnchor.getAbsolutePosition();
@@ -572,15 +590,22 @@ class FormLayout extends Component {
     calculateTargetDependentAnchors() {
         if (this.vCalculateTargetDependentAnchors) {
             let size;
-            if (this.compSizes.get(this.props.component.props.id) !== undefined) {
-                size = this.compSizes.get(this.props.component.props.id)
+            if (this.compSizes.get(this.props.id) !== undefined) {
+                size = this.compSizes.get(this.props.id)
             }
-            else if (this.props.component.props.constraints === 'Center' || this.props.component.props.constraints === undefined) {
-                size = new Size(document.getElementById(this.props.component.props.id).parentElement.clientWidth, document.getElementById(this.props.component.props.id).parentElement.clientHeight)
+            else if (this.props.constraints === 'Center' || this.props.constraints === undefined) {
+                size = new Size(document.getElementById(this.props.id).parentElement.clientWidth, document.getElementById(this.props.id).parentElement.clientHeight)
             }
             else {
-                size = getPreferredSize(this.props.component)
+                size = getPreferredSize({
+                    id: this.props.id, 
+                    preferredSize: this.props.preferredSize, 
+                    horizontalTextPosition: this.props.horizontalTextPosition,
+                    minimumSize: this.props.minimumSize,
+                    maximumSize: this.props.maximumSize
+                });
             }
+            console.log(size, this.props.id)
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
 
@@ -680,7 +705,13 @@ class FormLayout extends Component {
                         preferredSize = this.compSizes.get(component.props.id)
                     }
                     else {
-                        preferredSize = getPreferredSize(component)
+                        preferredSize = getPreferredSize({
+                            id: component.props.id, 
+                            preferredSize: component.props.preferredSize, 
+                            horizontalTextPosition: component.props.horizontalTextPosition,
+                            minimumSize: component.props.minimumSize,
+                            maximumSize: component.props.maximumSize
+                        });
                     }
                     this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
                     this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
@@ -721,7 +752,7 @@ class FormLayout extends Component {
     }
 
     layoutContainer() {
-        this.currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.component.props.id);
+        this.currentPanelData = this.context.contentStore.flatContent.find(component => component.id === this.props.id);
         this.valid = false;
         this.calculateAnchors()
         this.calculateTargetDependentAnchors()
@@ -730,13 +761,13 @@ class FormLayout extends Component {
     }
 
     finishSizesAndPos() {
-        let el = document.getElementById(this.props.component.props.id)
+        let el = document.getElementById(this.props.id)
         if (el !== null) {
             if (!this.firstPosCalc) {
                 this.prevTop = el.style.top
                 this.firstPosCalc = true;
             }
-            if (FindReact(document.getElementById(this.props.component.props.id)).props.constraints !== 'Center') {
+            if (this.props.constraints !== 'Center') {
                 el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom));
                 el.style.width = toPx((this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight));
                 if (el.previousSibling !== null) {
@@ -748,14 +779,14 @@ class FormLayout extends Component {
 
     render() {
         let formHeight;
-        if (FindReact(document.getElementById(this.props.component.props.id)).props.constraints === 'Center') {
+        if (FindReact(document.getElementById(this.props.id)).props.constraints === 'Center') {
             formHeight = 'calc(100% - ' + toPx((parseInt(this.props.margins.marginTop) + parseInt(this.props.margins.marginBottom))) + ')'
         }
         else {
             formHeight = this.preferredHeight
         }
         return (
-            <div className={"formlayout " + this.props.component.props.id} style={{
+            <div className={"formlayout " + this.props.id} style={{
                                         position: 'relative',
                                         width: this.preferredWidth, 
                                         height: formHeight,

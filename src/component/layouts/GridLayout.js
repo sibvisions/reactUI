@@ -1,29 +1,76 @@
 import React, { Component } from 'react';
 import { Size } from '../../component/helper/Size';
 import { CellConstraints } from './layoutObj/CellConstraints';
+import { getPreferredSize } from '../helper/GetSizes';
 
 class GridLayout extends Component {
 
+    preferredHeight;
+    preferredWidth;
+    components = this.props.subjects;
+
     state = {
-        content: []
+        content: [this.components]
+    }
+    constructor(props) {
+        super(props)
+        this.handleCalculations = this.handleCalculations.bind(this)
     }
     
-    
-    componentDidMount() { 
-        this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
+    componentDidMount() {
+        console.log('mounted')
+        this.calculateLayoutSize();
+        this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.components);
+        window.addEventListener("resize", this.handleCalculations)
+        
     }
 
     componentWillUnmount() {
-        window.onresize = null;
+        console.log('unmounted')
+        window.removeEventListener("resize", this.handleCalculations);
+    }
+
+    handleCalculations() {
+        this.calculateLayoutSize();
+        this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.components);
+    }
+
+    calculateLayoutSize() {
+        if (this.props.constraints === "Center" || this.props.constraints === undefined) {
+            let margins = this.props.margins
+            this.preferredWidth = document.getElementById(this.props.id).parentElement.clientWidth - (margins.marginLeft + margins.marginRight);
+            this.preferredHeight = document.getElementById(this.props.id).parentElement.clientHeight - (margins.marginTop + margins.marginBottom);
+        }
+        else {
+            let widest = 0;
+            let highest = 0;
+            this.components.forEach(component => {
+                let componentConstraints = new CellConstraints(component.props.constraints)
+                let prefSize = getPreferredSize({
+                    id: component.props.id, 
+                    preferredSize: component.props.preferredSize, 
+                    horizontalTextPosition: component.props.horizontalTextPosition,
+                    minimumSize: component.props.minimumSize,
+                    maximumSize: component.props.maximumSize
+                });
+                let widthOneField = Math.ceil(prefSize.width / componentConstraints.gridWidth)
+                let heightOneField = Math.ceil(prefSize.height / componentConstraints.gridHeight)
+                if (widthOneField > widest) {
+                    widest = widthOneField;
+                }
+                if (heightOneField > highest) {
+                    highest = heightOneField
+                }
+            });
+            let margins = this.props.margins
+            this.preferredWidth = widest * this.props.gridSize.columns - (margins.marginLeft + margins.marginRight);
+            this.preferredHeight = highest * this.props.gridSize.rows - (margins.marginTop + margins.marginBottom);
+        }
+        //console.log(this.preferredWidth, this.preferredHeight);
     }
 
     fieldSize(columns, rows){
-        let size = this.props.getPreferredSize(this.props.component);
-        let margins = this.props.margins
-        size.width -= margins.marginLeft + margins.marginRight;
-        size.height -= margins.marginTop + margins.marginBottom;
-        let fieldSize = new Size(size.width/columns, size.height/rows);
-        return fieldSize;
+        return new Size(this.preferredWidth/columns, this.preferredHeight/rows);
     }
 
     calculateGridComponents(fieldSize, components) {
@@ -51,14 +98,15 @@ class GridLayout extends Component {
     }
 
     render() {
-        window.onresize = () => {
-            this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.props.subjects)
-        }
         return (
             <div className="gridlayout" style={{
                 position: "relative",
-                height: this.props.getPreferredSize(this.props.component).height - (this.props.margins.marginTop + this.props.margins.marginBottom),
-                width: this.props.getPreferredSize(this.props.component).width - (this.props.margins.marginLeft + this.props.margins.marginRight)
+                height: this.preferredHeight,
+                width: this.preferredWidth,
+                marginTop: this.props.margins.marginTop,
+                marginLeft: this.props.margins.marginLeft,
+                //marginBottom: this.props.margins.marginBottom,
+                //marginRight: this.props.margins.marginRight
             }}>
                 {this.state.content}
             </div>

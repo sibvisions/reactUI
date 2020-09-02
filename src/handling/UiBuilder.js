@@ -68,7 +68,7 @@ class UiBuilder{
     }
 
     // Component Handling
-    compontentHandler(component) {
+    componentHandler(component) {
         let toExecute = this.genericComponentMapper.find(mapper => mapper.name === component.className)
         if (toExecute) { return toExecute.method(component) } else { return undefined }
     }

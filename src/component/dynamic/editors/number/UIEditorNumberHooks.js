@@ -2,7 +2,7 @@ import useRowSelect from "../../../hooks/useRowSelect";
 import React, { useRef, useEffect, useContext } from 'react';
 import { InputNumber } from "primereact/inputnumber";
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import { getHooksPreferredSize } from "../../../helper/GetSizes";
+import { getPreferredSize } from "../../../helper/GetSizes";
 import { RefContext } from "../../../helper/Context";
 
 function UIEditorNumberHooks(props) {
@@ -17,7 +17,19 @@ function UIEditorNumberHooks(props) {
             inputRef.current.inputEl.style['background-color'] = props['cellEditor.background'];
             inputRef.current.inputEl.style['text-align'] = alignments.ha;
         }
-        con.contentStore.emitSizeCalculated({size: getHooksPreferredSize(props), id: props.id, parent: props.parent, firstTime: true});
+        con.contentStore.emitSizeCalculated(
+            {
+                size: getPreferredSize({
+                    id: props.id, 
+                    preferredSize: props.preferredSize,
+                    horizontalTextPosition: props.horizontalTextPosition,
+                    minimumSize: props.minimumSize,
+                    maximumSize: props.maximumSize
+                }), 
+                id: props.id, 
+                parent: props.parent
+            }
+        );
     });
 
     return(

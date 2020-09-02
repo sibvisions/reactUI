@@ -5,6 +5,7 @@ import { SplitButton } from "primereact/splitbutton";
 import BaseButton from '../BaseButton';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { toPx } from '../../../helper/ToPx';
+import { parseIconData } from '../../ComponentProperties';
 
 class UIMenuButton extends BaseButton {
 
@@ -18,7 +19,20 @@ class UIMenuButton extends BaseButton {
         this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
         this.addHoverEffect(this.button.children[0].children[0], this.btnBgd, 5);
         this.addHoverEffect(this.button.children[0].children[1], this.btnBgd, 5);
-        this.context.contentStore.emitSizeCalculated({size: getPreferredSize(this), id: this.props.id, parent: this.props.parent, firstTime: true});
+
+        this.context.contentStore.emitSizeCalculated(
+            {
+                size: getPreferredSize({
+                    id: this.props.id, 
+                    preferredSize: this.props.preferredSize,
+                    horizontalTextPosition: this.props.horizontalTextPosition,
+                    minimumSize: this.props.minimumSize,
+                    maximumSize: this.props.maximumSize
+                }), 
+                id: this.props.id, 
+                parent: this.props.parent
+            }
+        );
     }
 
     styleChildren(btnChildren) {
@@ -64,7 +78,7 @@ class UIMenuButton extends BaseButton {
     buildMenu(foundItems) {
         let tempItems = [];
         foundItems.forEach(item => {
-            let iconProps = this.parseIconData(item.image);
+            let iconProps = parseIconData(item.props, item.image);
             tempItems.push({
                 label: item.text,
                 icon: iconProps ? iconProps.icon : null,
