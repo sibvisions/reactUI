@@ -1,4 +1,4 @@
-import React, {Children, FC, useLayoutEffect, useRef, useState} from "react";
+import React, {Children, FC, useContext, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -6,6 +6,8 @@ import Gaps from "./models/Gaps";
 import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import "./FormLayout.scss"
+import {jvxContext} from "../../jvxProvider";
+import {layoutInfo} from "../../EventStream";
 
 type childWithProps = {
     props: {
@@ -21,6 +23,7 @@ const FormLayout: FC<layout> = (props) => {
 
     const [style, changeStyle] = useState<{height: number, width: number, top?: number, left?: number}>();
     const layoutDiv = useRef<HTMLDivElement>(null);
+    const context = useContext(jvxContext)
 
     useLayoutEffect(()=> {
         if(props.preferredSizes && !style){
@@ -94,6 +97,10 @@ const FormLayout: FC<layout> = (props) => {
                 }
                 startAnchorIntern = startAnchorIntern.relatedAnchor;
             }
+            //If the anchors are not dependent on each other return an empty array!!
+            if(!startAnchorIntern){
+                autoSizeAnchors.length = 0;
+            }
             return autoSizeAnchors;
         }
 
@@ -106,8 +113,6 @@ const FormLayout: FC<layout> = (props) => {
 
         const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
             let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
-            if(autoSizeAnchors.length > 0)
-            console.log(leftTopAnchor, rightBottomAnchor, autoSizeAnchors[0].autoSizeCalculated)
             if(autoSizeAnchors.length === autoSizeCount && preferredSize){
                 let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                 autoSizeAnchors.forEach(anchor => {
@@ -123,7 +128,6 @@ const FormLayout: FC<layout> = (props) => {
             }
 
             autoSizeAnchors = getAutoSizeAnchorsBetween(rightBottomAnchor, leftTopAnchor);
-
             if(autoSizeAnchors.length === autoSizeCount && preferredSize){
                 let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                 autoSizeAnchors.forEach(anchor => {
@@ -131,6 +135,7 @@ const FormLayout: FC<layout> = (props) => {
                 });
                 const diffSize = (preferredSize - fixedSize + autoSizeCount -1) / autoSizeCount;
                 autoSizeAnchors.forEach(anchor => {
+
                     if(diffSize > anchor.position){
                         anchor.position = diffSize;
                     }
@@ -282,7 +287,6 @@ const FormLayout: FC<layout> = (props) => {
                     }
                     if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
                         let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
-                        console.log(h)
                         if(h > preferredHeight){
                             preferredHeight = h;
                         }
@@ -501,33 +505,44 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     const buildComponents = () => {
-        Children.map(props.children, child => {
-            const childWithProps = (child as childWithProps);
-            const constraint = componentConstraints.get(childWithProps.props.id);
-
-            const lba = anchors.get("l");
-            const rba = anchors.get("r");
-
-            if(lba && rba && constraint) {
-
-            }
-        });
-
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const tba = anchors.get("t");
         const bba = anchors.get("b");
 
-        if(lba && rba && tba && bba) {
-            changeStyle({height: preferredHeight +5, width: preferredWidth +5, left: lba.getAbsolutePosition(), top: tba.getAbsolutePosition()});
+        const tma = anchors.get("tm")
+        if(lba && rba && tba && bba && tma){
+            Children.map(props.children, child => {
+                const childWithProps = (child as childWithProps);
+                const constraint = componentConstraints.get(childWithProps.props.id);
+
+                if(constraint) {
+                    const left = constraint.leftAnchor.position;
+                    const top = constraint.topAnchor.getAbsolutePosition() - tma.getAbsolutePosition();
+                    const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition()+5;
+                    const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+
+                    const styleObj: layoutInfo = {
+                        position: "absolute",
+                        id: childWithProps.props.id,
+                        height: height,
+                        left: left,
+                        top: top,
+                        width: width
+                    }
+
+                    context.eventStream.styleEvent.next(styleObj)
+                }
+            });
+        changeStyle({height: preferredHeight, width: preferredWidth +5, left: lba.getAbsolutePosition(), top: tba.getAbsolutePosition()});
         }
     }
 
     return(
         <div ref={layoutDiv} className={"default"}>
-            <div style={{...style, position:"relative"}}>
+            <span style={{...style, position:"relative", display:"inline-block"}}>
                 {props.children}
-            </div>
+            </span>
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import React, {Component, FC, useEffect, useRef} from "react";
 import {Button} from "primereact/button";
+import useLayout from "../../zhooks/useLayout";
 
 export type buttonProps = {
     accelerator: string,
@@ -18,6 +19,7 @@ export type buttonProps = {
 const UIButton: FC<buttonProps> = (props) => {
 
     const buttonRef = useRef<Component>(null);
+    const layoutStyle = useLayout(props.id);
 
     useEffect(()=> {
         if(buttonRef.current){
@@ -29,7 +31,7 @@ const UIButton: FC<buttonProps> = (props) => {
     });
 
     return(
-        <Button ref={buttonRef} label={props.text} id={props.id}/>
+        <Button ref={buttonRef} label={props.text} id={props.id} style={layoutStyle}/>
     )
 }
 export default UIButton;
