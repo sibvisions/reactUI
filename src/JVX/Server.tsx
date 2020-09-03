@@ -5,6 +5,10 @@ import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
 import MenuResponse from "./response/MenuResponse";
 import GenericResponse from "./response/GenericResponse";
+import CloseScreenResponse from "./response/CloseScreenResponse";
+import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
+import UserDataResponse from "./response/UserDataResponse";
+import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 
 class Server{
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
@@ -12,6 +16,7 @@ class Server{
         this.contentStore = store
     }
     contentStore: ContentStore;
+    activeScreen = "";
 
     sendRequest(request: any, endpoint: string){
         let reqOpt: RequestInit = {
@@ -43,11 +48,12 @@ class Server{
     }
 
     responseMap = new Map<string, Function>()
-        .set("applicationMetaData", this.applicationMetaData.bind(this))
-        .set("userData", this.userData.bind(this))
-        .set("menu", this.menu.bind(this))
-        .set("screen.generic", this.generic.bind(this))
-        .set("closeScreen", this.closeScreen.bind(this));
+        .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
+        .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
+        .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
+        .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this));
 
     responseHandler(responses: Array<BaseResponse>){
         responses.forEach((responseObject: BaseResponse) => {
@@ -56,31 +62,77 @@ class Server{
                 mapper(responseObject);
             }
         });
+
+        this.routingDecider(responses);
     }
 
+    //MetaData
     applicationMetaData(metaData: ApplicationMetaData){
         sessionStorage.setItem("clientId", metaData.clientId);
     }
 
     userData(){
-        browserHistory.push("/home/s")
+
+    }
+
+    authenticationData(authData: AuthenticationDataResponse){
+        localStorage.setItem("authKey", authData.authKey);
+    }
+
+
+
+    //Content Responses
+    generic(genericData: GenericResponse){
+        this.contentStore.updateContent(genericData.changedComponents);
+    }
+
+    closeScreen(closeScreenData: CloseScreenResponse){
+        this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
     menu(menuData: MenuResponse){
         this.contentStore.buildMenuBar(menuData);
     }
 
-    generic(genericData: GenericResponse){
-        this.contentStore.updateContent(genericData.changedComponents);
 
-        if(!genericData.update){
-            browserHistory.push("/home/"+genericData.componentId);
-        }
+    //Decides if and where to the user should be routed based on all responses
+    routingDecider(responses: Array<BaseResponse>){
+        let routeTo: string;
+        let highestPriority = 0;
 
-    }
+        responses.map(response => {
+           if(response.name === RESPONSE_NAMES.USER_DATA){
+               if(highestPriority < 1){
+                   highestPriority = 1;
+                   routeTo="home";
+               }
+           }
+           else if(response.name === RESPONSE_NAMES.SCREEN_GENERIC){
+                const GResponse = (response as GenericResponse);
+                if(!GResponse.update){
+                    if(highestPriority < 2){
+                        highestPriority = 2;
+                        routeTo = "home/"+GResponse.componentId;
+                    }
+                }
+           }
+           else if(response.name === RESPONSE_NAMES.CLOSE_SCREEN){
+               if(highestPriority < 1){
+                   highestPriority = 1;
+                   routeTo = "home";
+               }
+           }
+           else if(response.name === RESPONSE_NAMES.LOGIN){
+               if(highestPriority < 1){
+                   highestPriority = 1;
+                   routeTo = "login"
+               }
+           }
 
-    closeScreen(closeScreenData: any){
-
+           if(routeTo){
+               browserHistory.push("/"+routeTo);
+           }
+        });
     }
 }
 export default Server

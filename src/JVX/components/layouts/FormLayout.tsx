@@ -5,7 +5,6 @@ import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
 import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
-import "./FormLayout.scss"
 import {jvxContext} from "../../jvxProvider";
 import {layoutInfo} from "../../EventStream";
 
@@ -95,7 +94,7 @@ const FormLayout: FC<layout> = (props) => {
         });
     }
 
-    const calculateAnchors = () => {
+    const calculateAnchors = () =>  {
 
         const getAutoSizeAnchorsBetween = (startAnchor: Anchor, endAnchor: Anchor): Array<Anchor> => {
             const autoSizeAnchors = Array<Anchor>();
@@ -571,7 +570,7 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     return(
-        <div ref={layoutDiv} className={"default"}>
+        <div ref={layoutDiv} style={{height: "100%"}}>
             <span style={{...style, position:"relative", display:"inline-block"}}>
                 {props.children}
             </span>

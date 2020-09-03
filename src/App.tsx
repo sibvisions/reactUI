@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect} from 'react';
+import React, {FC, useContext, useEffect, useLayoutEffect} from 'react';
 import {Redirect, Route, Router, Switch} from "react-router";
 import { createBrowserHistory } from "history"
 
@@ -11,17 +11,37 @@ import {createStartupRequest} from "./JVX/factories/RequestFactory";
 //UI
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
+import * as queryString from "querystring";
 
 export const browserHistory = createBrowserHistory();
+
+type queryType = {
+    appName?: string,
+    userName?: string,
+    password?: string,
+    baseUrl?: string
+}
 
 const App: FC = () => {
     const context = useContext(jvxContext);
 
-    useEffect(() => {
-        browserHistory.push("/login")
-        let startUpRequest = createStartupRequest();
+    useLayoutEffect(() => {
+        const queryParams: queryType = queryString.parse(window.location.search);
+        const startUpRequest = createStartupRequest();
+        const authKey = localStorage.getItem("authKey");
+        if(queryParams.appName && queryParams.baseUrl){
+            startUpRequest.applicationName = queryParams.appName;
+            context.server.BASE_URL = queryParams.baseUrl;
+        }
+        if(queryParams.userName && queryParams.password){
+            startUpRequest.password = queryParams.password;
+            startUpRequest.userName = queryParams.userName;
+        }
+        if(authKey){
+            startUpRequest.authKey = authKey;
+        }
         context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-    })
+    });
 
     return (
         <Router history={browserHistory} >
@@ -31,8 +51,10 @@ const App: FC = () => {
                 </Route>
                 <Route path={"/home/:componentId"}>
                     <Home />
-                </Route>>
-                <Redirect to={"/login"}/>
+                </Route>
+                <Route path={"/home"}>
+                    <Home />
+                </Route>
             </Switch>
       </Router>
   );

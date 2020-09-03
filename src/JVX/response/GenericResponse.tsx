@@ -4,6 +4,6 @@ import BaseComponent from "../components/BaseComponent";
 interface GenericResponse extends BaseResponse{
     componentId: string,
     changedComponents: Array<BaseComponent>,
-    update: boolean
+    update: boolean,
 }
 export default GenericResponse

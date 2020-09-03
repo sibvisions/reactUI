@@ -1,7 +1,7 @@
 interface StartupRequest {
-    layoutMode?: string
-    appMode?: string
-    applicationName?: string
+    layoutMode: string
+    appMode: string
+    applicationName: string
 
     userName?: string
     password?: string
@@ -9,14 +9,14 @@ interface StartupRequest {
 
     osName?: string
     osVersion?: string
-    technology?: string
+    technology: string
 
     screenWidth?: number
     screenHeight?: number
 
-    deviceType?: string
-    deviceTypeModel?: string
+    deviceType: string
+    deviceTypeModel: string
 
-    readAheadLimit?: number
+    readAheadLimit: number
 }
 export default StartupRequest;

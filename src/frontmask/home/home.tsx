@@ -10,19 +10,13 @@ const Home: FC = () => {
     const context = useContext(jvxContext);
 
     const buildWindow = () => {
-        const window = context.contentStore.flatContent.find(storedComponent => {
-            return storedComponent.name === componentId;
-        });
+        const window = context.contentStore.getWindow(componentId);
         if(window){
             const component = componentHandler(window);
             return component;
 
         }
         return undefined;
-    }
-
-    const reachedEnd = () => {
-
     }
 
     return(

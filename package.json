@@ -1,5 +1,6 @@
 {
   "name": "reactUI",
+  "homepage": ".",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,6 +14,7 @@
     "primeflex": "^2.0.0-rc.1",
     "primeicons": "^4.0.0",
     "primereact": "^5.0.0-rc.1",
+    "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",

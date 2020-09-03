@@ -1,6 +1,6 @@
 interface BaseComponent{
     onLoadCallback: Function | undefined
-    id: number,
+    id: string,
     parent: string | undefined
     name: string,
     className: string,

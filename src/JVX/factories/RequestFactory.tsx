@@ -37,7 +37,7 @@ export const createStartupRequest = (values?: StartupRequest): StartupRequest =>
 export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
     const req: LoginRequest = {
         clientId: values?.clientId || getClientId(),
-        createAuthKey: values?.createAuthKey || false,
+        createAuthKey: values?.createAuthKey || true,
         loginData: {
             userName: {
                 componentId: values?.loginData.userName.componentId || "UserName",

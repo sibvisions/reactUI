@@ -1,8 +1,6 @@
 import React, {FC, useState} from "react";
-import useSubjects from "../../zhooks/useSubjects";
+import useChildren from "../../zhooks/useChildren";
 import Layout from "../../layouts/Layout";
-import BaseComponent from "../../BaseComponent";
-
 
 export type panel = {
     className: string,
@@ -35,7 +33,7 @@ const UIPanel: FC<panel> = (props) => {
         }
     }
     const [preferredSizes, setSizes] = useState<Map<string, size>>()
-    const children = useSubjects(props.id, loaded);
+    const children = useChildren(props.id, loaded);
     let childrenCounter = 0;
 
 

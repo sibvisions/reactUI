@@ -6,41 +6,76 @@ import BaseComponent from "./components/BaseComponent";
 class ContentStore{
     menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1)
 
-    flatContent = Array<BaseComponent>();
-    removedContent = Array<BaseComponent>();
+    flatContent = new Map<string ,BaseComponent>();
+    removedContent = new Map<string ,BaseComponent>();
 
 
     updateContent(componentsToUpdate: Array<BaseComponent>){
         componentsToUpdate.forEach(newComponent => {
-            let existingComponent;
-            existingComponent = this.removedContent.findIndex(oldEl => oldEl.id === newComponent.id)
-            if(existingComponent !== -1){
-                const reAddedComponent =  this.removedContent.splice(existingComponent,1);
-                this.flatContent.push(reAddedComponent[0]);
+            //Check if component was removed earlier, if yes then re-add it to flatContent
+            let existingComponent = this.removedContent.get(newComponent.id);
+            if(existingComponent){
+                this.removedContent.delete(existingComponent.id);
+                this.flatContent.set(existingComponent.id, existingComponent);
             }
-            existingComponent = this.flatContent.find(oldEl => oldEl.id === newComponent.id)
+
+            //Update existing component
+            existingComponent = this.flatContent.get(newComponent.id)
             if(existingComponent){
                 if(newComponent["~destroy"]){
                     //Delete Component From flatContent
-                    let indexToDelete = this.flatContent.findIndex(component => component.id === newComponent.id);
-                    if(indexToDelete !== -1) this.flatContent.splice(indexToDelete, 1);
+                    const componentToRemove = this.flatContent.get(newComponent.id);
+                    if(componentToRemove) {
+                        this.flatContent.delete(componentToRemove.id);
+                    }
                 }
                 else if (newComponent["~remove"]){
                     //Move Component to removedContent
-                    let indexToRemove = this.flatContent.findIndex(component => component.id === newComponent.id);
-                    if(indexToRemove !== -1) {
-                        let removedElem = this.flatContent.splice(indexToRemove, 1);
-                        this.removedContent.push(removedElem[0]);
+                    const componentToRemove = this.flatContent.get(newComponent.id);
+                    if(componentToRemove) {
+                        this.flatContent.delete(componentToRemove.id);
+                        this.removedContent.set(componentToRemove.id, componentToRemove);
                     }
                 }
                 else {
+                    //Update or set properties
                     for(let newPropName in newComponent){
                             // @ts-ignore
                             existingComponent[newPropName] = newComponent[newPropName]
                     }
                 }
-            } else this.flatContent.push(newComponent)
+            }
+            else {
+                this.flatContent.set(newComponent.id, newComponent);
+            }
         });
+    }
+
+    getWindow(windowName: string): BaseComponent | undefined{
+        const componentEntries = this.flatContent.entries();
+
+        let entry = componentEntries.next();
+        while(!entry.done){
+            if(entry.value[1].name === windowName){
+                return entry.value[1];
+            }
+            entry = componentEntries.next();
+        }
+        return undefined;
+    }
+
+    getChildren(parentId: string): Array<BaseComponent>{
+        const componentEntries = this.flatContent.entries();
+        const children = new Array<BaseComponent>();
+
+        let entry = componentEntries.next();
+        while (!entry.done){
+            if(entry.value[1].parent === parentId){
+                children.push(entry.value[1]);
+            }
+            entry = componentEntries.next();
+        }
+        return children;
     }
 
     buildMenuBar(menuResponse: MenuResponse){
@@ -68,6 +103,23 @@ class ContentStore{
             });
         });
         this.menuSubject.next(groups);
+    }
+
+    closeScreen(windowName: string){
+        const deleteChildren = (parentId: string) => {
+            const children = this.getChildren(parentId);
+
+            children.forEach(child => {
+               deleteChildren(child.id);
+               this.flatContent.delete(child.id);
+            });
+        }
+
+        const window = this.getWindow(windowName);
+        if(window){
+            deleteChildren(window.id);
+            this.flatContent.delete(window.id)
+        }
     }
 }
 export default ContentStore
