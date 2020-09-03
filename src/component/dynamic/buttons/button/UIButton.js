@@ -21,13 +21,7 @@ class UIButton extends BaseButton {
 
         this.context.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
+                size: getPreferredSize(this.props),
                 id: this.props.id, 
                 parent: this.props.parent
             }

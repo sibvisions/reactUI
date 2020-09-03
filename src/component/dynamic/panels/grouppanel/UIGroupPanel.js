@@ -1,36 +1,33 @@
-import React from 'react';
-import Base from '../../Base';
+import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { RefContext } from '../../../helper/Context';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { getPanelBgdColor } from '../../ComponentProperties';
+import useCompStartUp from '../../../hooks/useCompStartUp';
+import { insertLayout } from '../../../helper/InsertLayout';
 
-class UIGroupPanel extends Base {
+function UIGroupPanel(props) {
+    const [bgdColor, setBgdColor] = useState();
+    const content = useCompStartUp(props);
+    const con = useContext(RefContext)
 
-    componentDidMount() {
-        this.startUp();
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
-        );
-    }
-
-    render() {
-        let bgdColor = getPanelBgdColor(this.props, this.context);
-        return (
-            <span id={this.props.id} style={{height: '100%', background: bgdColor, ...this.props.layoutStyle}}>
-                {this.insertLayout()}
-            </span>
         )
-    }
+    }, [props, con]);
+
+    useLayoutEffect(() => {
+        setBgdColor(getPanelBgdColor(props, con));
+    }, [props, con]);
+
+    return (
+        <span id={props.id} style={{height: '100%', background: bgdColor, ...props.layoutStyle}}>
+                {insertLayout(content, props)}
+        </span>
+    );
 }
-UIGroupPanel.contextType = RefContext;
 export default UIGroupPanel;

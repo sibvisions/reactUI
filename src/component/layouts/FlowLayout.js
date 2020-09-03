@@ -19,13 +19,7 @@ class FlowLayout extends Component {
         let tempContent = [];
         this.components.forEach(component => {
             if (component.props.visible === undefined || component.props.visible) {
-                let preferredSize = getPreferredSize({
-                    id: component.props.id, 
-                    preferredSize: component.props.preferredSize, 
-                    horizontalTextPosition: component.props.horizontalTextPosition,
-                    minimumSize: component.props.minimumSize,
-                    maximumSize: component.props.maximumSize
-                });
+                let preferredSize = getPreferredSize(component.props);
                 let style={
                         height: preferredSize.height,
                         width: preferredSize.width,

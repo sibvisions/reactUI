@@ -89,7 +89,6 @@ class Base extends Component {
                         return <GridLayout
                             component={this}
                             id={this.props.id}
-                            className={this.props.className}
                             constraints={this.props.constraints}
                             subjects={this.state.content}
                             margins={margins}
@@ -100,14 +99,16 @@ class Base extends Component {
                             maximumSize={this.props.maximumSize}
                             />;
                     default: return <NullLayout
-                        component={this}
+                        id={this.props.id}
+                        constraints={this.props.constraints}
                         subjects={this.state.content}
                         />;
                 }
             }
             else {
                 return <NullLayout
-                    component={this}
+                    id={this.props.id}
+                    constraints={this.props.constraints}
                     subjects={this.state.content}
                     />;
             }

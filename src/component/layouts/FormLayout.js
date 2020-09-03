@@ -395,13 +395,7 @@ class FormLayout extends Component {
                             preferredSize = this.compSizes.get(component.props.id)
                         }
                         else {
-                            preferredSize = getPreferredSize({
-                                id: component.props.id, 
-                                preferredSize: component.props.preferredSize, 
-                                horizontalTextPosition: component.props.horizontalTextPosition,
-                                minimumSize: component.props.minimumSize,
-                                maximumSize: component.props.maximumSize
-                            });
+                            preferredSize = getPreferredSize(component.props);
                         }
                         this.calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height, autoSizeCount);
                         this.calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width, autoSizeCount);
@@ -449,13 +443,7 @@ class FormLayout extends Component {
                         preferredSize = this.compSizes.get(component.props.id)
                     }
                     else {
-                        preferredSize = getPreferredSize({
-                            id: component.props.id, 
-                            preferredSize: component.props.preferredSize, 
-                            horizontalTextPosition: component.props.horizontalTextPosition,
-                            minimumSize: component.props.minimumSize,
-                            maximumSize: component.props.maximumSize
-                        });
+                        preferredSize = getPreferredSize(component.props);
                     }
                     let minimumSize = this.props.getMinimumSize({
                         id: component.props.id, 
@@ -597,15 +585,8 @@ class FormLayout extends Component {
                 size = new Size(document.getElementById(this.props.id).parentElement.clientWidth, document.getElementById(this.props.id).parentElement.clientHeight)
             }
             else {
-                size = getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize, 
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                });
+                size = getPreferredSize(this.props);
             }
-            console.log(size, this.props.id)
             let minSize = this.minimumLayoutSize();
             let maxSize = this.maximumLayoutSize();
 
@@ -705,13 +686,7 @@ class FormLayout extends Component {
                         preferredSize = this.compSizes.get(component.props.id)
                     }
                     else {
-                        preferredSize = getPreferredSize({
-                            id: component.props.id, 
-                            preferredSize: component.props.preferredSize, 
-                            horizontalTextPosition: component.props.horizontalTextPosition,
-                            minimumSize: component.props.minimumSize,
-                            maximumSize: component.props.maximumSize
-                        });
+                        preferredSize = getPreferredSize(component.props);
                     }
                     this.calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
                     this.calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
@@ -779,7 +754,7 @@ class FormLayout extends Component {
 
     render() {
         let formHeight;
-        if (FindReact(document.getElementById(this.props.id)).props.constraints === 'Center') {
+        if (this.props.constraints === 'Center') {
             formHeight = 'calc(100% - ' + toPx((parseInt(this.props.margins.marginTop) + parseInt(this.props.margins.marginBottom))) + ')'
         }
         else {

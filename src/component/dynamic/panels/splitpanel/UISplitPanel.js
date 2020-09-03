@@ -1,41 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
 import Split from 'react-split'
-import Base from '../../Base';
 import "./UISplitPanel.css";
 import { RefContext } from '../../../helper/Context';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { getPanelBgdColor } from '../../ComponentProperties';
+import useCompStartUp from '../../../hooks/useCompStartUp';
 
-class UISplitPanel extends Base {
+function UISplitPanel(props) {
+    const [bgdColor, setBgdColor] = useState();
+    const content = useCompStartUp(props);
+    const con = useContext(RefContext);
 
-    componentDidMount() {
-        this.startUp();
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
-        );
-    }
+        )
+    }, [props, con]);
 
-    getLeftComponents(){
+    useLayoutEffect(() => {
+        setBgdColor(getPanelBgdColor(props, con));
+    }, [props, con]);
+
+    const getLeftComponents = () => {
         let leftComp = [];
 
-        if(this.state.content){
-            this.state.content.forEach(x => {
-                if(x.props.constraints === "SECOND_COMPONENT"){
-                    let style = {
-                        height: '100%',
-                        width: '100%'
-                    }
-                    let clonedComponent = React.cloneElement(x, {layoutStyle: style});
+        if (content) {
+            content.forEach(component => {
+                if (component.props.constraints === "FIRST_COMPONENT") {
+                    let style = {height: '100%', width: '100%'}
+                    let clonedComponent = React.cloneElement(component, {layoutStyle: style});
                     leftComp.push(clonedComponent);
                 }
             });
@@ -43,43 +40,40 @@ class UISplitPanel extends Base {
         return leftComp;
     }
 
-    getRightComponents(){
+    const getRightComponents = () => {
         let rightComp = [];
-        if(this.state.content){
-            this.state.content.forEach(x => {
-                if(x.props.constraints === "FIRST_COMPONENT"){
-                    rightComp.push(x);
-                } 
+
+        if (content) {
+            content.forEach(component => {
+                if (component.props.constraints === "SECOND_COMPONENT") {
+                    let style = {height: '100%', width: '100%'}
+                    let clonedComponent = React.cloneElement(component, {layoutStyle: style});
+                    rightComp.push(clonedComponent);
+                }
             });
         }
         return rightComp;
     }
 
-    render() {
-        let bgdColor = getPanelBgdColor(this.props, this.context);
-        return (
-            <Split className= "splitHolder"
-            id={this.props.id}
-            style={{background: bgdColor}}
+    return (
+        <Split
+            className="splitHolder"
+            id={props.id}
+            style={{ background: bgdColor }}
             sizes={[30, 70]}
             minSize={0}
             gutterSize={30}
             gutterAlign="center"
             dragInterval={2}
             direction="horizontal"
-            cursor="col-resize"
-            >
-                <div className="split">
-                    {this.getRightComponents()}
-                </div>
-                <div className="split" >
-                    {this.getLeftComponents()}
-                </div>
-            </Split>
-
-
-        );
-    }
+            cursor="col-resize">
+            <div className="split">
+                {getLeftComponents()}
+            </div>
+            <div className="split" >
+                {getRightComponents()}
+            </div>
+        </Split>
+    );
 }
-UISplitPanel.contextType = RefContext
 export default UISplitPanel;

@@ -46,13 +46,7 @@ class GridLayout extends Component {
             let highest = 0;
             this.components.forEach(component => {
                 let componentConstraints = new CellConstraints(component.props.constraints)
-                let prefSize = getPreferredSize({
-                    id: component.props.id, 
-                    preferredSize: component.props.preferredSize, 
-                    horizontalTextPosition: component.props.horizontalTextPosition,
-                    minimumSize: component.props.minimumSize,
-                    maximumSize: component.props.maximumSize
-                });
+                let prefSize = getPreferredSize(component.props);
                 let widthOneField = Math.ceil(prefSize.width / componentConstraints.gridWidth)
                 let heightOneField = Math.ceil(prefSize.height / componentConstraints.gridHeight)
                 if (widthOneField > widest) {

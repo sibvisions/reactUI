@@ -95,6 +95,11 @@ class ResponseHandler{
             this.metaData(data);
         })
 
+        let fetchedData = responseArray.filter(response => response.name === "dal.fetch");
+        fetchedData.forEach(data => {
+            this.fetchedData(data);
+        });
+
 
         responseArray.forEach(res => {
             let toExecute = this.responseMapper.find(toExecute => toExecute.name === res.name)

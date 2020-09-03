@@ -25,13 +25,7 @@ function UIEditorLinkedHooks(props){
         }
         con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: props.id, 
-                    preferredSize: props.preferredSize,
-                    horizontalTextPosition: props.horizontalTextPosition,
-                    minimumSize: props.minimumSize,
-                    maximumSize: props.maximumSize
-                }), 
+                size: getPreferredSize(props), 
                 id: props.id, 
                 parent: props.parent
             }

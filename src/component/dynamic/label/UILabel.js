@@ -1,57 +1,43 @@
-import React from 'react';
-import Base from '../Base';
+import React, { useEffect, useContext } from 'react';
 import { getPreferredSize } from '../../helper/GetSizes';
 import { RefContext } from '../../helper/Context';
-import { getMargins, getAlignments } from '../ComponentProperties';
+import { getMargins, getAlignments, getFont } from '../ComponentProperties';
 
-class UILabel extends Base {
+function UILabel(props) {
+    const con = useContext(RefContext);
+    const lblMargins = getMargins(props);
+    const lblAlignments = getAlignments(props);
+    const lblFont = getFont(props);
+    const lblBackground = props.background;
+    const lblColor = props.foreground;
 
-    lblMargins;
-    lblAlignments;
-    lblFont;
-    lblBackground;
-    lblColor;
-
-    constructor(props) {
-        super(props);
-        this.lblMargins = getMargins(props);
-        this.lblAlignments = getAlignments(props);
-        this.lblBackground = this.props.background;
-        this.lblColor = this.props.foreground;
-    }
-
-    componentDidMount() {
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
+    }, [props, con]);
 
-    render() {
-        return ( 
-           <span id={this.props.id} style={{
-               ...this.props.layoutStyle,
-               display: 'inline-flex', 
-               justifyContent: this.lblAlignments.ha,
-               alignContent: this.lblAlignments.va,
-               background: this.lblBackground,
-               color: this.lblColor,
-               paddingTop: this.lblMargins.marginTop,
-               paddingLeft: this.lblMargins.marginLeft,
-               paddingBottom: this.lblMargins.marginBottom,
-               paddingRight: this.lblMargins.marginRight
-            }}>{this.props.text}</span> 
-        );
-    }
+    return (
+        <span id={props.id} style={{
+            display: 'inline-flex',
+            justifyContent: lblAlignments.ha,
+            alignContent: lblAlignments.va,
+            background: lblBackground,
+            color: lblColor,
+            fontFamily: lblFont.fontFamily,
+            fontWeight: lblFont.fontWeight,
+            fontStyle: lblFont.fontStyle,
+            fontSize: lblFont.fontSize,
+            paddingTop: lblMargins.marginTop,
+            paddingLeft: lblMargins.marginLeft,
+            paddingBottom: lblMargins.marginBottom,
+            paddingRight: lblMargins.marginRight,
+            ...props.layoutStyle
+        }}>{props.text}</span>
+    );
 }
-UILabel.contextType = RefContext;
 export default UILabel;

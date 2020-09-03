@@ -1,45 +1,38 @@
-import React from 'react';
-import Base from '../../Base';
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import './UIPanel.scss';
 import { RefContext } from '../../../helper/Context';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { getPanelBgdColor } from '../../ComponentProperties';
+import useCompStartUp from '../../../hooks/useCompStartUp'
+import { insertLayout } from '../../../helper/InsertLayout'
 
-class UIPanel extends Base {
+function UIPanel(props) {
+    const [panelProps, setPanelProps] = useState({ bgdColor: null, overflowYVal: null });
+    const content = useCompStartUp(props);
+    const con = useContext(RefContext);
 
-    componentDidMount() {
-        this.startUp();
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
+    }, [props, con]);
 
-    render() {
-        let overflowYVal;
-        let bgdColor = getPanelBgdColor(this.props, this.context);
-        if (this.context.contentStore.layoutMode === 'Small' || this.context.contentStore.layoutMode === 'Mini') {
-            overflowYVal = 'auto'
+    useLayoutEffect(() => {
+        let tempOfVal;
+        if (con.contentStore.layoutMode === 'Small' || con.contentStore.layoutMode === 'Mini') {
+            tempOfVal = 'auto'
         }
-        else {
-            overflowYVal = null
-        }
-        
-        return (
-        <span id={this.props.id} style={ {height: '100%', background: bgdColor, borderTop: '1px solid transparent', overflowY: overflowYVal, ...this.props.layoutStyle, } }>
-            {this.insertLayout()}
+        setPanelProps({ bgdColor: getPanelBgdColor(props, con), overflowYVal: tempOfVal });
+    }, [props, con]);
+
+    return (
+        <span id={props.id} style={{height: '100%', background: panelProps.bgdColor, borderTop: '1px solid transparent', overflowY: panelProps.overflowYVal, ...props.layoutStyle}}>
+            {insertLayout(content, props)}
         </span>
-        );
-    }
+    );
 }
-UIPanel.contextType = RefContext
 export default UIPanel;

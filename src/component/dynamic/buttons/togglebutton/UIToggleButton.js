@@ -26,13 +26,7 @@ class UIToggleButton extends BaseButton {
         this.addHoverEffect(this.button.children[0], this.btnBgd, 5)
         this.context.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize({
-                    id: this.props.id, 
-                    preferredSize: this.props.preferredSize,
-                    horizontalTextPosition: this.props.horizontalTextPosition,
-                    minimumSize: this.props.minimumSize,
-                    maximumSize: this.props.maximumSize
-                }), 
+                size: getPreferredSize(this.props), 
                 id: this.props.id, 
                 parent: this.props.parent
             }
