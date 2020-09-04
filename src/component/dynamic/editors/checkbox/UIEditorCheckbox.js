@@ -1,33 +1,35 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {Checkbox} from 'primereact/checkbox';
-import Base from '../../Base';
-import { checkCellEditorAlignments, mapFlex } from '../../../helper/CheckAlignments';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
+import { getAlignments } from '../../ComponentProperties';
 
+function UIEditorCheckbox(props) {
+    const [checked, setChecked] = useState(props.selected ? true : false)
+    const con = useContext(RefContext);
+    const alignments = getAlignments(props);
 
-class UIEditorCheckbox extends Base {
-
-    state = {}
-
-    componentDidMount() {
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
+    }, [props, con]);
 
-    render() {
-        let alignments = mapFlex(checkCellEditorAlignments(this.props))
-        return ( 
-        <span id={this.props.id} style={{...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"], display: 'inline-flex', justifyContent: alignments.ha}}>
-            <Checkbox inputId={this.props.id} style={{alignSelf: alignments.va}} onChange={x => this.setState({checked: x.checked})} checked={this.state.checked} disabled={!this.props["cellEditor.editable"]}/>
-            <label htmlFor={this.props.id} style={{alignSelf: alignments.va}} className="p-checkbox-label">{this.props.cellEditor.text}</label>
-        </span> );
-    }
+    return (
+        <span id={props.id} style={{
+            ...props.layoutStyle,
+            display: "inline-flex",
+            background: props["cellEditor.background"],
+            justifyContent: alignments.ha,
+            alignContent: alignments.va
+        }}>
+            <Checkbox inputId={props.id} onChange={e => setChecked(e.checked)} checked={checked} disabled={!props["cellEditor.editable"]} />
+            <label htmlFor={props.id}>{props.cellEditor.text}</label>
+        </span>
+    )
 }
-UIEditorCheckbox.contextType = RefContext;
 export default UIEditorCheckbox;

@@ -18,7 +18,6 @@ class GridLayout extends Component {
     }
     
     componentDidMount() {
-        console.log('mounted')
         this.calculateLayoutSize();
         this.calculateGridComponents(this.fieldSize(this.props.gridSize.columns, this.props.gridSize.rows), this.components);
         window.addEventListener("resize", this.handleCalculations)
@@ -26,7 +25,6 @@ class GridLayout extends Component {
     }
 
     componentWillUnmount() {
-        console.log('unmounted')
         window.removeEventListener("resize", this.handleCalculations);
     }
 
@@ -60,7 +58,6 @@ class GridLayout extends Component {
             this.preferredWidth = widest * this.props.gridSize.columns - (margins.marginLeft + margins.marginRight);
             this.preferredHeight = highest * this.props.gridSize.rows - (margins.marginTop + margins.marginBottom);
         }
-        //console.log(this.preferredWidth, this.preferredHeight);
     }
 
     fieldSize(columns, rows){

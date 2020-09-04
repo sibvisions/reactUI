@@ -1,6 +1,6 @@
 import tinycolor from 'tinycolor2';
 import { Margins } from '../layouts/layoutObj/Margins';
-import { mapFlex, checkAlignments } from '../helper/CheckAlignments';
+import { mapFlex, checkAlignments, checkCellEditorAlignments } from '../helper/CheckAlignments';
 import { UIFont } from '../helper/UIFont';
 import { Size } from '../helper/Size';
 
@@ -37,11 +37,11 @@ export function getMargins(props) {
 }
 
 export function getAlignments(props) {
-    if (props.className.includes("Button") || props.className === "Label") {
-        return mapFlex(checkAlignments(props))
+    if (props.className === "Editor") {
+        return mapFlex(checkCellEditorAlignments(props))
     }
     else {
-        return checkAlignments(props)
+        return mapFlex(checkAlignments(props))
     }
 }
 

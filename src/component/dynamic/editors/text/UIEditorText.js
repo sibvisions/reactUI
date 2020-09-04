@@ -1,41 +1,43 @@
-import React from 'react';
-import { InputText } from "primereact/inputtext";
-import { RefContext } from '../../../helper/Context';
-import Base from '../../Base';
+import React, { useEffect, useRef, useContext, useLayoutEffect } from 'react';
+import { InputText } from 'primereact/inputtext';
+import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import withRowSelection from '../withRowSelection';
 import { getPreferredSize } from '../../../helper/GetSizes';
+import { RefContext } from '../../../helper/Context';
 
 
-class UIEditorText extends Base {
+function UIEditorTextHooks(props){
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
+    const inputRef = useRef();
+    const con = useContext(RefContext)
 
-    componentDidMount() {
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props), 
+                id: props.id, 
+                parent: props.parent
             }
         );
-    }
+    }, [con, props]);
 
-
-    render() {
-        let alignment = checkCellEditorAlignments(this.props)
-        let newSelection = ""
-        if(this.props.selection){
-            newSelection = this.props.selection[this.props.columnName];
+    useLayoutEffect(() => {
+        if(inputRef.current.element){
+            const alignments = checkCellEditorAlignments(props);
+            inputRef.current.element.style['background-color'] = props['cellEditor.background'];
+            inputRef.current.element.style['text-align'] = alignments.ha;
         }
-        return ( 
-            <InputText
-                id={this.props.id}
-                value={this.state.selection ? this.state.selection : newSelection}
-                style={{...this.props.layoutStyle, backgroundColor: this.props["cellEditor.background"], textAlign: alignment.ha}}
-                onChange={x => this.setState({selection: x.value})}
-                disabled={!this.props["cellEditor.editable"]}
-            /> 
-        );
-    }
+    })
+    
+    return (
+        <InputText
+            ref={inputRef}
+            id={props.id}
+            value={selectedColumn}
+            style={props.layoutStyle}
+            onChange={change => editColumn(change.value, props.columnName)}
+            disabled={!props["cellEditor.editable"]}
+        />
+    );
 }
-export default withRowSelection(UIEditorText, RefContext);
-//export default UIEditorText
+export default UIEditorTextHooks

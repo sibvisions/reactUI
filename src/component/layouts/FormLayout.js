@@ -58,8 +58,8 @@ class FormLayout extends Component {
             if (sizedComps.parent === this.props.id) {
                 if (this.compSizes.get(sizedComps.id) === undefined) {
                     this.anzComps--;
-                    this.compSizes.set(sizedComps.id, sizedComps.size);
                 }
+                this.compSizes.set(sizedComps.id, sizedComps.size);
                 if (this.anzComps === 0 && this.firstSubRender) {
                     const someElements = document.getElementsByClassName("formlayout")
                     for (const element of someElements) {
@@ -98,6 +98,7 @@ class FormLayout extends Component {
                 { attributes: true }
             )
         }
+        console.log(this.preferredWidth, this.preferredHeight, this.props.id)
         this.context.contentStore.emitSizeCalculated({size: 
             new Size(this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight, this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom), 
             id: this.props.id, parent: this.props.parent});

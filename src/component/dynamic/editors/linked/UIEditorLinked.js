@@ -1,102 +1,76 @@
-import Base from "../../Base";
-import React from 'react';
-import './UIEditorLinked.scss'
+import React, { useContext, useEffect, useRef, useLayoutEffect } from 'react';
+import { RefContext } from '../../../helper/Context';
 
-import { AutoComplete } from "primereact/autocomplete"
-import { RefContext } from "../../../helper/Context";
-import { checkCellEditorAlignments } from "../../../helper/CheckAlignments";
-import withRowSelection from "../withRowSelection";
-import { getPreferredSize } from "../../../helper/GetSizes";
+// prime
+import { AutoComplete } from 'primereact/autocomplete';
 
-class UIEditorLinked extends Base {
+// hooks
+import useFetchListen from "../../../hooks/useFetchListen";
+import useRowSelect from '../../../hooks/useRowSelect';
+import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
+import { getPreferredSize } from '../../../helper/GetSizes';
 
-    state = {
-        suggestions: [],
-        options: [],
-    }
+function UIEditorLinked(props){
+    const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
+    const con = useContext(RefContext)
+    const autoComRef = useRef();
 
-    componentDidMount(){
-        if (this.autoC.container !== null) {
-            let alignments = checkCellEditorAlignments(this.props);
-            for (let child of this.autoC.container.children) {
-                if (child.tagName === 'INPUT') {
-                    child.style.setProperty('background-color', this.props["cellEditor.background"])
-                    child.style.setProperty('text-align', alignments.ha)
-                }
-            }
-        }
-        
-        this.fetchSub = this.context.contentStore.fetchCompleted.subscribe(this.formatFetchResponse.bind(this));
-
-        if (this.autoC.panel) {
-            this.elem = this.autoC.panel.element;
-            this.elem.addEventListener("scroll", this.handleScroll.bind(this));
-        }
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(()=> {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props), 
+                id: props.id, 
+                parent: props.parent
             }
         );
-    }
+    });
 
-    componentWillUnmount(){
-        if (this.elem) {
-            this.elem.removeEventListener("scroll", this.handleScroll.bind(this));
+    useLayoutEffect(() => {
+        if(autoComRef.current.inputEl){
+            const alignments = checkCellEditorAlignments(props);
+            autoComRef.current.inputEl.style['background-color'] = props['cellEditor.background'];
+            autoComRef.current.inputEl.style['text-align'] = alignments.ha;
         }
-        this.fetchSub.unsubscribe();
-    }
+    });
 
-    handleScroll(){
-        if((this.elem.scrollHeight - this.elem.scrollTop - this.elem.clientHeight) <= 0){
-            console.log("end reached")
-        } 
-    }
-
-    formatFetchResponse(fetchedData){
-        if(fetchedData.dataProvider === this.props.cellEditor.linkReference.dataProvider){
-            let buildOptions = []
-            fetchedData.records.forEach(record => {
-                let element = {};
-                record.forEach((data, index) => {
-                    if(data !== null) element[this.props.cellEditor.clearColumns[index]] = data
-                });
-                buildOptions.push(element);
+    function buildSuggestions(response= {records: []}){
+        let suggestions= []
+        response.records.forEach(record => {
+            let element = {};
+            record.forEach((data, index) => {
+                if(data !== null) element[props.cellEditor.clearColumns[index]] = data
             });
-            this.setState({suggestions: buildOptions})
-        }
+            suggestions.push(element);
+        });
+        return suggestions
+    }
+
+    function onInputChange(event){
+        con.serverComm.fetchFilterdData(
+            props.cellEditor.linkReference.dataProvider,
+            event.query,
+            props.name);
+    }
+
+    return (
+        <AutoComplete
+            appendTo={document.body}
+            id={props.id}
+            style={props.layoutStyle}
+            ref={autoComRef}
+
+            dropdown={true}
+            completeMethod={onInputChange}
         
-    }
+            suggestions={buildSuggestions(fetchedData)}
+            field={props.columnName}
 
-    fetchFilterdData(filterString){
-        this.context.serverComm.fetchFilterdData(
-            this.props.cellEditor.linkReference.dataProvider,
-            filterString,
-            this.props.name);
-    }
+            value={selectedColumn} 
+            onChange={event => editColumn(event.target.value)}
 
-    autoComplete(event){
-        this.fetchFilterdData(event.query)
-    }
-
-    render(){ 
-        return (
-
-            <AutoComplete
-                id={this.props.id}
-                ref= {r => this.autoC = r}
-                style={this.props.layoutStyle}
-                dropdown={true}
-                completeMethod={this.autoComplete.bind(this)}
-                field={this.props.columnName}
-                value={this.state.selection ? this.state.selection : this.props.selection}
-                suggestions={this.state.suggestions}
-                onChange={x => this.setState({selectedObject: x.target.value})}
-                disabled={!this.props["cellEditor.editable"]}
-            />
-        )
-    }
+            disabled={!props["cellEditor.editable"]}
+        />
+    );
 }
-UIEditorLinked.contextType = RefContext
-export default withRowSelection(UIEditorLinked, RefContext);
+export default UIEditorLinked

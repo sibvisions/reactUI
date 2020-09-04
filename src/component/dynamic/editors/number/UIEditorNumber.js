@@ -1,48 +1,44 @@
-import React from 'react';
-import Base from '../../Base';
-import { InputNumber } from 'primereact/inputnumber';
-import { RefContext } from '../../../helper/Context';
+import useRowSelect from "../../../hooks/useRowSelect";
+import React, { useRef, useEffect, useContext, useLayoutEffect } from 'react';
+import { InputNumber } from "primereact/inputnumber";
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
-import withRowSelection from '../withRowSelection';
-import { getPreferredSize } from '../../../helper/GetSizes';
+import { getPreferredSize } from "../../../helper/GetSizes";
+import { RefContext } from "../../../helper/Context";
 
-class UIEditorNumber extends Base {
+function UIEditorNumberHooks(props) {
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id);
+    const inputRef = useRef();
+    const con = useContext(RefContext);
 
 
-    componentDidMount() {
-        if (this.number.element !== null) {
-            let alignments = checkCellEditorAlignments(this.props)
-            for (let child of this.number.element.children) {
-                if (child.tagName === 'INPUT') {
-                    child.style.setProperty('background-color', this.props["cellEditor.background"])
-                    child.style.setProperty('text-align', alignments.ha)
-                }
-            }
-        }
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props), 
+                id: props.id, 
+                parent: props.parent
             }
         );
-    }
+    });
 
-    render(){
-        let newSelection = ""
-        if(this.props.selection){
-            newSelection = this.props.selection[this.props.columnName];
+    useLayoutEffect(() => {
+        if(inputRef.current.inputEl){
+            const alignments = checkCellEditorAlignments(props);
+            inputRef.current.inputEl.style['background-color'] = props['cellEditor.background'];
+            inputRef.current.inputEl.style['text-align'] = alignments.ha;
         }
-        return( 
-            <InputNumber
-                useGrouping={false}
-                id={this.props.id}
-                ref={r => this.number = r}
-                value={this.state.selection ? this.state.selection : newSelection}
-                style={this.props.layoutStyle}
-                onChange={x => this.setState({selection: x.value})}
-                disabled={!this.props["cellEditor.editable"]}/>
-        )
-    }
+    })
+
+    return(
+        <InputNumber
+            id={props.id}
+            ref={inputRef}
+            useGrouping={false}
+            value={selectedColumn}
+            style={props.layoutStyle}
+            onChange={changeEvent => editColumn(changeEvent.value)}
+            disabled={!props["cellEditor.editable"]}
+        />
+    )
 }
-export default withRowSelection(UIEditorNumber, RefContext);
+export default UIEditorNumberHooks
