@@ -1,31 +1,28 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { InputText } from "primereact/inputtext";
-import Base from '../../Base';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
-class UIEditorDisabled extends Base {
+function UIEditorDisabled(props) {
+    const con = useContext(RefContext);
 
-    componentDidMount() {
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
+    }, [props, con]);
 
-    render() {
-        return ( 
-            <InputText
-                disabled={true}
-                id={this.props.id}
-                contentEditable="false"
-                style={{...this.props.layoutStyle, backgroundColor:this.props.background}}
-            />
-        );
-    }
+    return (
+        <InputText
+            disabled={true}
+            id={props.id}
+            contentEditable="false"
+            style={{...props.layoutStyle, background: props.background}}
+        />
+    );
 }
-UIEditorDisabled.contextType = RefContext;
 export default UIEditorDisabled;
