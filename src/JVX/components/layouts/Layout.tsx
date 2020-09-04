@@ -1,6 +1,7 @@
 import React, {FC} from "react";
 import FormLayout from "./FormLayout";
 import {size} from "../panels/panel/UIPanel";
+import BorderLayout from "./BorderLayout";
 
 export type layout = {
     layout: string,
@@ -11,13 +12,21 @@ export type layout = {
 
 const Layout: FC<layout> = (props) => {
 
-    if(props.layout.includes("FormLayout")){
-        return(
+    if(props.layout.includes("FormLayout")) {
+        return (
             <FormLayout {...props}>
                 {props.children}
             </FormLayout>
-        )
-    } else {
+        );
+    }
+    else if(props.layout.includes("BorderLayout")) {
+        return (
+            <BorderLayout {...props}>
+                {props.children}
+            </BorderLayout>
+        );
+    }
+    else {
         return(
             <h1>WRONG</h1>
         )

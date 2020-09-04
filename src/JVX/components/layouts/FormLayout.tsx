@@ -548,10 +548,10 @@ const FormLayout: FC<layout> = (props) => {
                 const styleObj: layoutInfo = {
                     position: "absolute",
                     id: childWithProps.props.id,
-                    height: height,
+                    height: height.toString()+"px",
                     left: left,
                     top: top,
-                    width: width
+                    width: width.toString()+"px"
                 }
                 context.eventStream.styleEvent.next(styleObj)
             }
