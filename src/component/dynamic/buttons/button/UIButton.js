@@ -1,50 +1,54 @@
-import React from 'react';
+import React, { useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import './UIButton.scss'
 import { Button } from "primereact/button";
 import { RefContext } from '../../../helper/Context';
-import BaseButton from '../BaseButton';
-import { FindReact } from '../../../helper/FindReact';
 import { getPreferredSize } from '../../../helper/GetSizes';
+import { buttonProps, styleButton, styleChildren, addHoverEffect } from '../ButtonStyling'
 
-class UIButton extends BaseButton {
+function UIButton(props) {
+    const con = useContext(RefContext);
+    const btnRef = useRef();
+    const btnData = buttonProps(props)
 
-    componentDidMount() {
-        this.styleButton(this.button.children[0]);
-        this.styleChildren(this.button.children[0].children, FindReact(this.button).props.className);
-        this.addHoverEffect(this.button.children[0], this.btnBgd, 5);
-
-        window.addEventListener("resize", () => {
-            if (this.button !== null) {
-                this.styleButton(this.button.children[0])
-            }
-        })
-
-        this.context.contentStore.emitSizeCalculated(
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props),
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
+        
+        let btnDiv = btnRef.current;
+        window.addEventListener("resize", () => {
+            if (btnDiv !== null) {
+                styleButton(btnDiv, btnDiv.children[0], props.constraints);
+            }
+        });
 
-    componentWillUnmount() {
-        window.removeEventListener("resize", () => {
-            this.styleButton(this.button.children[0])
-        })
-    }
+        return () => {
+            window.removeEventListener("resize", () => {
+                if (btnDiv !== null) {
+                    styleButton(btnDiv, btnDiv.children[0], props.constraints);
+                }
+            });
+        }
+    }, [con, props]);
 
-    render() {
-        return (
-            <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                <Button
-                    {...this.btnProps}
-                    label={this.props.text}
-                    icon={this.iconProps ? this.iconProps.icon : null}
-                />
-            </div>
-        )
-    }
+    useLayoutEffect(() => {
+        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleChildren(btnRef.current.children[0].children, props, btnData);
+        addHoverEffect(btnRef.current.children[0], btnData.btnProps.style.background, null, 5, props, btnData.btnBorderPainted, null)
+    })
+
+    return (
+        <div ref={btnRef} style={props.layoutStyle}>
+            <Button 
+                {...btnData.btnProps}
+                label={props.text}
+                icon={btnData.iconProps ? btnData.iconProps.icon : null}
+                onClick={() => con.serverComm.pressButton(props.name)}/>
+        </div>
+    );
 }
-UIButton.contextType = RefContext
 export default UIButton

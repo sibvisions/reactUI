@@ -1,10 +1,39 @@
-import React from 'react';
+import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { ToggleButton } from 'primereact/togglebutton';
 import { RefContext } from '../../../helper/Context';
 import tinycolor from 'tinycolor2';
 import BaseButton from '../BaseButton';
 import { FindReact } from '../../../helper/FindReact';
 import { getPreferredSize } from '../../../helper/GetSizes';
+import { buttonProps, styleButton, styleChildren, addHoverEffect } from '../ButtonStyling';
+
+function UIToggleButton(props) {
+    const [checked, setChecked] = useState();
+    const [bgd, setBgd] = useState();
+    const btnBgdChecked = props.background !== undefined ? tinycolor(this.props.background).darken(10) : tinycolor("#007ad9").darken(10);
+    const con = useContext(RefContext);
+    const btnData = buttonProps(props);
+
+    useEffect(() => {
+        con.contentStore.emitSizeCalculated(
+            {
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
+            }
+        );
+    }, [con, props]);
+
+    useLayoutEffect(() => {
+        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleChildren(btnRef.current.children[0].children, props, btnData);
+        addHoverEffect(btnRef.current.children[0], btnData.btnProps.style.background, btnBgdChecked, 5, props, btnData.btnBorderPainted, checked);
+    });
+
+    return (
+        
+    )
+}
 
 class UIToggleButton extends BaseButton {
 
@@ -48,7 +77,6 @@ class UIToggleButton extends BaseButton {
                     obj.style.setProperty('background', color.getOriginalInput())
                     obj.style.setProperty('border-color', color.getOriginalInput())
                 }
-                
             }
         }
         else if (this.props.borderOnMouseEntered && !this.borderPainted) {

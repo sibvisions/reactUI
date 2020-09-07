@@ -37,8 +37,9 @@ function UITable(props) {
                 tempDataColumns.push(<Column {...columnProps}/>);
             }
             setDataColumns(tempDataColumns)
-        }
+        };
         buildColumns(props.columnLabels, props.columnNames);
+        
         let data = con.contentStore.storedData.get(props.dataProvider);
         if (data) {
             buildData(data);

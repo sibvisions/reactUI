@@ -51,6 +51,11 @@ export class UIFont {
     }
 
     setFontSize(fontSize) {
-        this.fontSize = parseInt(fontSize);
+        if (fontSize !== null) {
+            this.fontSize = parseInt(fontSize);
+        }
+        else {
+            this.fontSize = 16
+        }
     }
 }

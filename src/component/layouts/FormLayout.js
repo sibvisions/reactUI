@@ -98,9 +98,6 @@ class FormLayout extends Component {
                 { attributes: true }
             )
         }
-        this.context.contentStore.emitSizeCalculated({size: 
-            new Size(this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight, this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom), 
-            id: this.props.id, parent: this.props.parent});
     }
 
     componentWillUnmount() {
@@ -736,6 +733,9 @@ class FormLayout extends Component {
     }
 
     finishSizesAndPos() {
+        this.context.contentStore.emitSizeCalculated({size: 
+            new Size(this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight, this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom), 
+            id: this.props.id, parent: this.props.parent});
         let el = document.getElementById(this.props.id)
         if (el !== null) {
             if (!this.firstPosCalc) {

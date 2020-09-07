@@ -1,114 +1,91 @@
-import React from 'react';
+import React, { useContext, useRef, useEffect, useLayoutEffect, useState } from 'react';
 import { RefContext } from '../../../helper/Context';
 import './UIMenuButton.scss'
 import { SplitButton } from "primereact/splitbutton";
-import BaseButton from '../BaseButton';
 import { getPreferredSize } from '../../../helper/GetSizes';
-import { toPx } from '../../../helper/ToPx';
 import { parseIconData } from '../../ComponentProperties';
+import { styleButton, styleChildren, addHoverEffect, buttonProps } from '../ButtonStyling';
 
-class UIMenuButton extends BaseButton {
+function UIMenuButton(props) {
+    const [items, setItems] = useState();
+    const con = useContext(RefContext);
+    const btnRef = useRef();
+    const menuRef = useRef();
+    const btnData = buttonProps(props);
 
-    state = {
-        items: []
-    };
+    useEffect(() => {
+        const buildMenu = foundItems => {
+            let tempItems = [];
+            foundItems.forEach(item => {
+                let iconProps = parseIconData(item.props, item.image);
+                tempItems.push({
+                    label: item.text,
+                    icon: iconProps ? iconProps.icon : null,
+                    id: item.id,
+                    className: item.id,
+                    style: {
+                        color: iconProps.color
+                    },
+                    color: iconProps.color,
+                    command: () => con.serverComm.pressButton(item.name)
+                });
+            });
+            setItems(tempItems);
+        };
+        buildMenu(con.contentStore.flatContent.filter(item => item.parent === props.popupMenu));
 
-    componentDidMount() {
-        this.styleButton(this.button.children[0]);
-        this.styleChildren(this.button.children[0].children);
-        this.buildMenu(this.context.contentStore.flatContent.filter(item => item.parent === this.props.popupMenu));
-        this.addHoverEffect(this.button.children[0].children[0], this.btnBgd, 5);
-        this.addHoverEffect(this.button.children[0].children[1], this.btnBgd, 5);
-
-        this.context.contentStore.emitSizeCalculated(
+        con.contentStore.emitSizeCalculated(
             {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
+                size: getPreferredSize(props),
+                id: props.id,
+                parent: props.parent
             }
         );
-    }
 
-    styleChildren(btnChildren) {
-        for (let btnChild of btnChildren) {
-            if (this.props.layoutStyle !== undefined) {
-                btnChild.style.setProperty('height', toPx(this.props.layoutStyle.height));
-                btnChild.style.setProperty('padding-top', toPx(this.btnProps.style.paddingTop));
-                btnChild.style.setProperty('padding-left', toPx(this.btnProps.style.paddingLeft));
-                btnChild.style.setProperty('padding-bottom', toPx(this.btnProps.style.paddingBottom));
-                btnChild.style.setProperty('padding-right', toPx(this.btnProps.style.paddingRight));
-                if (btnChild.classList.contains("p-splitbutton-defaultbutton")) {
-                    btnChild.style.setProperty('width', !(this.props.layoutStyle.width+'').includes('%') ? toPx(this.props.layoutStyle.width-38) : 'calc(100% - 38px)');
-                    btnChild.style.setProperty('display', this.btnProps.style.display);
-                    btnChild.style.setProperty('flex-direction', this.btnProps.style.flexDirection);
-                    btnChild.style.setProperty('justify-content', this.btnProps.style.justifyContent);
-                    btnChild.style.setProperty('align-items', this.btnProps.style.alignItems);
-                }
-                else if (btnChild.classList.contains("p-splitbutton-menubutton")) {
-                    btnChild.style.setProperty('width', '38px');
-                    
-                }
+        let btnDiv = btnRef.current;
+        window.addEventListener("resize", () => {
+            if (btnDiv !== null) {
+                styleButton(btnDiv, btnDiv.children[0], props.constraints);
+                styleChildren(btnDiv.children[0].children, props, btnData);
             }
-            for (let child of btnChild.children) {
-                if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
-                    let gapPos = this.getGapPos(this.props.horizontalTextPosition, this.props.verticalTextPosition);
-                    child.style.setProperty('margin-' + gapPos, toPx(this.btnImgTextGap));
-                }
-                if (this.iconProps) {
-                    if (child.classList.value.includes(this.iconProps.icon)) {
-                        child.style.setProperty('width', toPx(this.iconProps.size.width));
-                        child.style.setProperty('height', toPx(this.iconProps.size.height));
-                        child.style.setProperty('color', this.iconProps.color);
-                        if (!child.classList.value.includes('fas')) {
-                            child.style.setProperty('background-image', 'url(http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + this.iconProps.icon + ')');
-                        }
-                    }
-                }
-                child.style.setProperty('padding', 0);
-            }
-        }
-    }
-
-    buildMenu(foundItems) {
-        let tempItems = [];
-        foundItems.forEach(item => {
-            let iconProps = parseIconData(item.props, item.image);
-            tempItems.push({
-                label: item.text,
-                icon: iconProps ? iconProps.icon : null,
-                id: item.id,
-                className: item.id,
-                style: {
-                    color: iconProps.color
-                },
-                color: iconProps.color,
-                command: () => this.context.serverComm.pressButton(item.name)
-            });
         });
-        this.setState({items: tempItems});
+
+        return () => {
+            window.removeEventListener("resize", () => {
+                if (btnDiv !== null) {
+                    styleButton(btnDiv, btnDiv.children[0], props.constraints);
+                    styleChildren(btnDiv.children[0].children, props, btnData);
+                }
+            });
+        }
+    // eslint-disable-next-line
+    }, [con, props]);
+
+    useLayoutEffect(() => {
+        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleChildren(btnRef.current.children[0].children, props, btnData);
+        addHoverEffect(btnRef.current.children[0].children[0], btnData.btnProps.style.background, null, 5, props, btnData.btnBorderPainted, null);
+        addHoverEffect(btnRef.current.children[0].children[1], btnData.btnProps.style.background, null, 5, props, btnData.btnBorderPainted, null);
+    });
+
+    const onMainButtonClicked = () => {
+        menuRef.current.show()
     }
 
-    onMainButtonClicked() {
-        this.menu.show()
-    }
-
-    render() {
-        return (
-            <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                <SplitButton 
-                    id={this.btnProps.id}
-                    ref={r => this.menu = r}
-                    label={this.props.text}
-                    style={{background: this.btnProps.style.background, borderColor: this.btnProps.style.borderColor, borderRadius: '3px'}}
-                    btnProps={this.btnProps}
-                    icon={this.iconProps ? this.iconProps.icon : null}
-                    onClick={() => this.onMainButtonClicked()} 
-                    model={this.state.items}
-                    tabIndex={this.btnProps.tabIndex}
-                />
-            </div>
-        )
-    }
+    return (
+        <div ref={btnRef} style={props.layoutStyle}>
+            <SplitButton
+                id={btnData.btnProps.id}
+                ref={menuRef}
+                label={props.text}
+                style={{background: btnData.btnProps.style.background, borderColor: btnData.btnProps.style.borderColor, borderRadius: '3px'}}
+                icon={btnData.iconProps ? btnData.iconProps.icon : null}
+                onClick={() => onMainButtonClicked()}
+                model={items}
+                tabIndex={btnData.btnProps.tabIndex}
+            />
+        </div>
+    );
 }
-UIMenuButton.contextType = RefContext
+
 export default UIMenuButton

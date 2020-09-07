@@ -53,7 +53,7 @@ class BaseButton extends Base {
                 fontStyle: this.btnFont.fontStyle,
                 fontSize: this.btnFont.fontSize,
             },
-            tabIndex:this.focusable ? (this.props.tabIndex ? this.props.tabIndex : 0) : -1,
+            tabIndex:this.focusable ? (this.props.tabIndex ? this.props.tabIndex : '0') : '-1',
             iconPos: this.btnIconPos
         }
     }
