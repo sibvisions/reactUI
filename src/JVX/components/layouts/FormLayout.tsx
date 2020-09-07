@@ -105,6 +105,7 @@ const FormLayout: FC<layout> = (props) => {
                 }
                 startAnchorIntern = startAnchorIntern.relatedAnchor;
             }
+
             //If the anchors are not dependent on each other return an empty array!!
             if(!startAnchorIntern){
                 autoSizeAnchors.length = 0;
@@ -143,7 +144,6 @@ const FormLayout: FC<layout> = (props) => {
                 });
                 const diffSize = (preferredSize - fixedSize + autoSizeCount -1) / autoSizeCount;
                 autoSizeAnchors.forEach(anchor => {
-
                     if(diffSize > anchor.position){
                         anchor.position = diffSize;
                     }

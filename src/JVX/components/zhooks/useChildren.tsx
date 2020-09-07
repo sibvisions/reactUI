@@ -1,9 +1,10 @@
 import {ReactElement, useContext} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
+import {onLoadCallBack} from "../BaseComponent";
 
 
-const useChildren = (id: string, onLoadCallback: Function): Array<ReactElement> => {
+const useChildren = (id: string, onLoadCallback: onLoadCallBack): Array<ReactElement> => {
     const context = useContext(jvxContext)
     const children = context.contentStore.getChildren(id);
 

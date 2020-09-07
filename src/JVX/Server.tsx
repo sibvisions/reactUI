@@ -7,7 +7,6 @@ import MenuResponse from "./response/MenuResponse";
 import GenericResponse from "./response/GenericResponse";
 import CloseScreenResponse from "./response/CloseScreenResponse";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
-import UserDataResponse from "./response/UserDataResponse";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 
 class Server{
@@ -97,10 +96,10 @@ class Server{
 
     //Decides if and where to the user should be routed based on all responses
     routingDecider(responses: Array<BaseResponse>){
-        let routeTo: string;
+        let routeTo: string | undefined;
         let highestPriority = 0;
 
-        responses.map(response => {
+        responses.forEach(response => {
            if(response.name === RESPONSE_NAMES.USER_DATA){
                if(highestPriority < 1){
                    highestPriority = 1;
@@ -128,11 +127,12 @@ class Server{
                    routeTo = "login"
                }
            }
-
-           if(routeTo){
-               browserHistory.push("/"+routeTo);
-           }
         });
+
+
+        if(routeTo){
+            browserHistory.push("/"+routeTo);
+        }
     }
 }
 export default Server

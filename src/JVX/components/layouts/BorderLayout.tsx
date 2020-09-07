@@ -1,7 +1,6 @@
-import React, {Children, CSSProperties, FC, ReactElement, ReactNode, useContext, useMemo} from "react";
+import React, {Children, CSSProperties, FC, ReactNode, useContext, useMemo} from "react";
 import {layout} from "./Layout";
 import Margins from "./models/Margins";
-import Gaps from "./models/Gaps";
 import {jvxContext} from "../../jvxProvider";
 
 type borderLayoutComponents = {
@@ -23,7 +22,7 @@ const BorderLayout: FC<layout> = (props) => {
 
     const context = useContext(jvxContext);
     const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4))
-    const gaps = new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6))
+    //const gaps = new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6))
     const borderLayoutStyle: CSSProperties = {
         flexFlow: "column",
         padding: 0,

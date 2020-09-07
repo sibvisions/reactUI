@@ -28,7 +28,9 @@ const Layout: FC<layout> = (props) => {
     }
     else {
         return(
-            <h1>WRONG</h1>
+            <div>
+                {props.children}
+            </div>
         )
     }
 }

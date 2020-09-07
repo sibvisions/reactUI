@@ -22,10 +22,10 @@ export type size = {
 
 const UIPanel: FC<panel> = (props) => {
     const tempSizes = new Map<string, size>();
-    const loaded = (sizeOfElement: size) => {
+    const loaded = (id: string, height:number, width: number) => {
         if(!preferredSizes){
             childrenCounter++;
-            tempSizes.set(sizeOfElement.id, sizeOfElement);
+            tempSizes.set(id, {height: height, id: id, width: width});
 
             if(childrenCounter === children.length){
                 setSizes(tempSizes);
@@ -35,7 +35,6 @@ const UIPanel: FC<panel> = (props) => {
     const [preferredSizes, setSizes] = useState<Map<string, size>>()
     const children = useChildren(props.id, loaded);
     let childrenCounter = 0;
-
 
     return(
         <Layout layout={props.layout} layoutData={props.layoutData} preferredSizes={preferredSizes}>

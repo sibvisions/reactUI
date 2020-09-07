@@ -4,19 +4,13 @@ import useLayout from "../../zhooks/useLayout";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import BaseComponent from "../../BaseComponent";
 
-export type buttonProps = {
+export interface buttonProps extends BaseComponent{
     accelerator: string,
-    className: string,
     constraints: string,
     eventAction: boolean,
-    id: string,
-    indexOf: number,
-    name: string,
-    parent: string,
     text: string,
-    onLoadCallback: Function,
-    isVisible: boolean;
 }
 
 const UIButton: FC<buttonProps> = (props) => {
@@ -26,10 +20,10 @@ const UIButton: FC<buttonProps> = (props) => {
     const layoutStyle = useLayout(props.id);
 
     useEffect(()=> {
-        if(buttonRef.current && !layoutStyle){
+        if(buttonRef.current && !layoutStyle && props.onLoadCallback){
             // @ts-ignore
-            const size = buttonRef.current.element.getBoundingClientRect();
-            props.onLoadCallback({width: size.width, height: size.height, id: props.id});
+            const size = buttonRef.current.element.getClientRects();
+            props.onLoadCallback(props.id, size[0].height, size[0].width);
         }
     });
 

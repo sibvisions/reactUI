@@ -1,6 +1,6 @@
 //React
-import React, {FC, useContext, useEffect, useLayoutEffect} from 'react';
-import {Redirect, Route, Router, Switch} from "react-router";
+import React, {FC, useContext, useLayoutEffect} from 'react';
+import {Route, Router, Switch} from "react-router";
 import { createBrowserHistory } from "history"
 
 //Custom
