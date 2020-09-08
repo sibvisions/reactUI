@@ -1,0 +1,25 @@
+.splitPanel{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.first{
+  background-color: #333333;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.second{
+  background-color: #a80000;
+  text-align: center;
+  overflow-x: hidden;
+  flex: 1;
+}
+
+.separator{
+  cursor: row-resize;
+  width: 40px;
+  background-color: #34a835;
+}

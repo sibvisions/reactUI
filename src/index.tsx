@@ -8,12 +8,13 @@ import 'primereact/resources/themes/nova/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
+import SplitPanel from "./JVX/components/panels/split/SplitPanel";
 
 
 ReactDOM.render(
   <React.StrictMode>
       <JVXProvider>
-          <App />
+          <SplitPanel />
       </JVXProvider>
   </React.StrictMode>,
   document.getElementById('root')
