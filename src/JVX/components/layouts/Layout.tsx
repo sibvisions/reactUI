@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import FormLayout from "./FormLayout";
-import {size} from "../panels/panel/UIPanel";
 import BorderLayout from "./BorderLayout";
+import {size} from "../zhooks/useChildren";
 
 export type layout = {
     layout: string,
