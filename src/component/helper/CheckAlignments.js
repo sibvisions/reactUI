@@ -18,7 +18,7 @@ export function checkAlignments(props) {
     if (props.className.includes('Button') && props.className !== "RadioButton") {
         compType = 'btn';
     }
-    else if (props.className === "RadioButton") {
+    else if (props.className === "RadioButton" || props.className === "CheckBox") {
         compType = 'rbtn'
     }
     else if (props.className.includes('Label')) {
@@ -32,8 +32,11 @@ export function checkAlignments(props) {
         if (compType === 'btn') {
             return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(1, 'v')};
         }
-        else if(compType === 'lbl') {
+        else if (compType === 'lbl') {
             return {ha : translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(0, 'v')};
+        }
+        else if (compType === 'rbtn') {
+            return {ha: translateAlignments(props.horizontalAlignment, 'h'), va: translateAlignments(1, 'v')}
         }
     }
     else if (props.verticalAlignment !== undefined) {
@@ -42,6 +45,9 @@ export function checkAlignments(props) {
         }
         else if (compType === 'lbl') {
             return {ha: translateAlignments(0, 'h'), va: translateAlignments(props.verticalAlignment, 'v')};
+        }
+        else if (compType === 'rbtn') {
+            return {ha: translateAlignments(0, 'h'), va: translateAlignments(props.verticalAlignment, 'v')}
         }
     }
     else {

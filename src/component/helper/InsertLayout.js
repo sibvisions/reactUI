@@ -46,8 +46,11 @@ export function insertLayout(content, props) {
                     let orientation = new Orientation(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(6, 7));
                     alignments = mapFlex(checkFlowAlignments(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(7, 10)));
                     return <FlowLayout
+                        id={props.id}
+                        parent={props.parent}
                         subjects={content}
                         margins={margins}
+                        constraints={props.constraints}
                         gaps={gaps}
                         orientation={orientation.orientation}
                         alignments={alignments}

@@ -189,8 +189,9 @@ class ResponseHandler{
     }
 
     dataProviderChange(changeData){
+        this.serverCommunicator.fetchDataFromProvider(changeData.dataProvider);
         if(changeData.reload === -1){
-            this.serverCommunicator.fetchDataFromProvider(changeData.dataProvider);    
+                
         }
     }
 

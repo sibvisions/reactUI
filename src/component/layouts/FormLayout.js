@@ -60,6 +60,9 @@ class FormLayout extends Component {
                     this.anzComps--;
                 }
                 this.compSizes.set(sizedComps.id, sizedComps.size);
+                if (sizedComps.disableFlag) {
+                    this.firstSubRender = true
+                }
                 if (this.anzComps === 0 && this.firstSubRender) {
                     const someElements = document.getElementsByClassName("formlayout")
                     for (const element of someElements) {
@@ -223,7 +226,6 @@ class FormLayout extends Component {
     }
 
     calculateAutoSize(leftTopAnchor, rightBottomAnchor, preferredSize, autoSizeCount) {
-
         let autoSizeAnchors = this.getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor)
         let size = autoSizeAnchors.length;
 

@@ -17,6 +17,7 @@ function UIEditorLinked(props){
     const autoComRef = useRef();
 
     useEffect(()=> {
+        console.log(selectedColumn)
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 

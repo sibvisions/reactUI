@@ -1,18 +1,17 @@
-import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { ToggleButton } from 'primereact/togglebutton';
 import { RefContext } from '../../../helper/Context';
 import tinycolor from 'tinycolor2';
-import BaseButton from '../BaseButton';
-import { FindReact } from '../../../helper/FindReact';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { buttonProps, styleButton, styleChildren, addHoverEffect } from '../ButtonStyling';
 
 function UIToggleButton(props) {
     const [checked, setChecked] = useState();
-    const [bgd, setBgd] = useState();
-    const btnBgdChecked = props.background !== undefined ? tinycolor(this.props.background).darken(10) : tinycolor("#007ad9").darken(10);
     const con = useContext(RefContext);
+    const btnRef = useRef();
     const btnData = buttonProps(props);
+    const [bgd, setBgd] = useState(btnData.btnProps.style.background);
+    const btnBgdChecked = props.background !== undefined ? tinycolor(props.background).darken(5) : tinycolor("#007ad9").darken(10);
 
     useEffect(() => {
         con.contentStore.emitSizeCalculated(
@@ -31,89 +30,20 @@ function UIToggleButton(props) {
     });
 
     return (
-        
+        <div ref={btnRef} style={props.layoutStyle}>
+            <ToggleButton
+                {...btnData.btnProps}
+                offLabel={props.text}
+                onLabel={props.text}
+                offIcon={btnData.iconProps.icon}
+                onIcon={btnData.iconProps.icon}
+                checked={checked}
+                style={{...btnData.btnProps.style, background: bgd, borderColor: bgd}}
+                onChange={e => {
+                    setChecked(e.value);
+                    setBgd(e.value ? btnBgdChecked : btnData.btnProps.style.background)
+                }}/>
+        </div>
     )
 }
-
-class UIToggleButton extends BaseButton {
-
-    constructor(props) {
-        super(props);
-        if (this.btnBgd !== undefined) {
-            this.btnBgdChecked = this.props.background !== undefined ? 
-            tinycolor(this.props.background).darken(10) : tinycolor("#007ad9").darken(10)
-            this.state = {
-                checked: false,
-                bgd: this.btnBgd
-            }
-        }
-    }
-
-    componentDidMount() {
-        this.styleButton(this.button.children[0]);
-        this.styleChildren(this.button.children[0].children, FindReact(this.button).props.className)
-        this.addHoverEffect(this.button.children[0], this.btnBgd, 5)
-        this.context.contentStore.emitSizeCalculated(
-            {
-                size: getPreferredSize(this.props), 
-                id: this.props.id, 
-                parent: this.props.parent
-            }
-        );
-    }
-
-    addHoverEffect(obj, color, dark) {
-        if ((this.props.borderOnMouseEntered && this.borderPainted) || (!this.props.borderOnMouseEntered && this.borderPainted)) {
-            obj.onmouseover = () => {
-                obj.style.setProperty('background', tinycolor(color.getOriginalInput()).darken(dark))
-                obj.style.setProperty('border-color', tinycolor(color.getOriginalInput()).darken(dark))
-            }
-            obj.onmouseout = () => {
-                if (this.state.checked) {
-                    obj.style.setProperty('background', this.btnBgdChecked)
-                    obj.style.setProperty('border-color', this.btnBgdChecked)
-                }
-                else {
-                    obj.style.setProperty('background', color.getOriginalInput())
-                    obj.style.setProperty('border-color', color.getOriginalInput())
-                }
-            }
-        }
-        else if (this.props.borderOnMouseEntered && !this.borderPainted) {
-            obj.onmouseover = () => {
-                obj.style.setProperty('background', this.props.background !== undefined ? this.props.background : "#007ad9")
-                obj.style.setProperty('border-color', this.props.background !== undefined ? this.props.background : "#007ad9")
-            }
-            obj.onmouseout = () => {
-                if (this.state.checked) {
-                    obj.style.setProperty('background', this.btnBgdChecked)
-                    obj.style.setProperty('border-color', this.btnBgdChecked)
-                }
-                else {
-                    obj.style.setProperty('background', this.btnBgd)
-                    obj.style.setProperty('border-color', this.btnBgd)
-                }
-            }
-        }
-    }
-
-    render() {
-        return (
-            <div ref={r => this.button = r} style={this.props.layoutStyle}>
-                <ToggleButton
-                    {...this.btnProps}
-                    offLabel={this.props.text}
-                    onLabel={this.props.text}
-                    offIcon={this.iconProps.icon}
-                    onIcon={this.iconProps.icon}
-                    checked={this.state.checked}
-                    onChange={(e) => {
-                        this.setState({ checked: e.value, bgd: e.value ? this.btnBgdChecked : this.btnBgd })
-                    }}
-                />
-            </div>
-        )
-    }
-}
-UIToggleButton.contextType = RefContext
 export default UIToggleButton

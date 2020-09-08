@@ -85,6 +85,18 @@ function styleMenuButton(btnChild, layoutStyle, btnProps) {
 
 function styleButtonContent(child, props, iconProps) {
     if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
+        if ((props.className === "RadioButton" || props.className === "CheckBox") && props.horizontalTextPosition === 1) {
+            let alignment = getAlignments(props).ha
+            let labelWidth = document.getElementById(props.id).querySelector("[class$=label]").offsetWidth/2;
+            let childWidth = child.offsetWidth/2;
+            //ha because if hTextPos = 1 ha and va get switched
+            if (alignment === 'flex-start') {
+                child.style.setProperty('margin-left', toPx(labelWidth-childWidth))
+            }
+            else if (alignment === 'flex-end') {
+                child.style.setProperty('margin-right', toPx(labelWidth-childWidth))
+            }
+        }
         let gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
         child.style.setProperty('margin-' + gapPos, toPx(getImageTextGap(props)));
     }
@@ -157,8 +169,12 @@ function getBtnBgdColor(props) {
             return tinycolor(props.background);
         }
         else {
-            let bgd = props.className === 'RadioButton' ? tinycolor(document.getElementById(props.parent).style.background) : tinycolor("#007ad9");
-            return bgd;
+            if (props.className === "RadioButton" || props.className === "CheckBox") {
+                return tinycolor(document.getElementById(props.parent).style.background)
+            }
+            else {
+                return tinycolor("#007ad9")
+            }
         }
     }
     else {
@@ -171,8 +187,12 @@ function getFgdColor(props) {
         return tinycolor(props.foreground);
     }
     else {
-        let fgd = props.className === 'RadioButton' ? tinycolor('black') : tinycolor('white')
-        return fgd;
+        if (props.className === "RadioButton" || props.className === "CheckBox") {
+            return tinycolor('black')
+        }
+        else {
+            return tinycolor('white')
+        }
     }
 }
 
