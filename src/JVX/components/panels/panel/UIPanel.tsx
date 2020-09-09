@@ -1,29 +1,33 @@
-import React, {FC} from "react";
+import React, {FC, useLayoutEffect, useRef} from "react";
 import useChildren from "../../zhooks/useChildren";
 import Layout from "../../layouts/Layout";
+import BaseComponent from "../../BaseComponent";
 
-export type panel = {
-    className: string,
+export interface panel extends BaseComponent{
     classNameEventSourceRef: string,
-    id: string,
     layout: string,
     layoutData: string,
     "mobile.autoclose": boolean,
-    name: string,
     "screen.title": string,
-    onLoaded: Function,
-    isVisible: boolean
 }
-
-
 
 const UIPanel: FC<panel> = (props) => {
     const [children, preferredSizes] = useChildren(props.id);
+    const availableDiv = useRef<HTMLDivElement>(null);
+
 
     return(
-        <Layout layout={props.layout} layoutData={props.layoutData} preferredSizes={preferredSizes}>
-            {children}
-        </Layout>
+        <div style={{height: props.parent ? "" : "100%"}} id={props.id} ref={availableDiv}>
+            <Layout
+                layout={props.layout}
+                layoutData={props.layoutData}
+                preferredSizes={preferredSizes}
+                availableSize={availableDiv.current ? availableDiv.current.getBoundingClientRect() : undefined}
+            >
+                {children}
+            </Layout>
+        </div>
+
     )
 }
 export default UIPanel
