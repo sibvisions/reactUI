@@ -126,7 +126,7 @@ class FlowLayout extends Component {
         return (
             <div style={{
                 display: 'flex',
-                flexWrap: 'wrap',
+                flexWrap: this.props.autoWrap ? 'wrap' : null,
                 flexDirection: this.orientation,
                 justifyContent: this.props.alignments.ha,
                 alignItems: this.props.alignments.va,

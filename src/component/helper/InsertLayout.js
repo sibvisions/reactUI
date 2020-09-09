@@ -45,6 +45,7 @@ export function insertLayout(content, props) {
                 case "FlowLayout":
                     let orientation = new Orientation(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(6, 7));
                     alignments = mapFlex(checkFlowAlignments(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(7, 10)));
+                    let autoWrap = props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(10, 11);
                     return <FlowLayout
                         id={props.id}
                         parent={props.parent}
@@ -54,7 +55,7 @@ export function insertLayout(content, props) {
                         gaps={gaps}
                         orientation={orientation.orientation}
                         alignments={alignments}
-                        autoWrap={true}
+                        autoWrap={autoWrap}
                     />;
                 case "GridLayout":
                     let gridSize = new GridSize(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(6, 8));

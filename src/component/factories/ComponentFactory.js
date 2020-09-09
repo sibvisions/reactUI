@@ -6,7 +6,6 @@ import UILabel from '../dynamic/label/UILabel';
 import UIGroupPanel from "../dynamic/panels/grouppanel/UIGroupPanel";
 import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
-//import UIEditorTextHooks from "../dynamic/editors/text/UIEditorTextHooks";
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
 import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
 import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
@@ -17,6 +16,7 @@ import UIEditorText from '../dynamic/editors/text/UIEditorText';
 import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIRadioButton from '../dynamic/buttons/radiobutton/UIRadioButton';
+import UIEditorChoice from '../dynamic/editors/choice/UIEditorChoice'
 
 export function createButton(buttonData){
     const props= {
@@ -71,6 +71,8 @@ export function createEditor(editorData) {
         return <UIEditorImage {...props}/>
     } else if(editorData.cellEditor.className === "DateCellEditor"){
         return <UIEditorDate {...props}/>
+    } else if(editorData.cellEditor.className === "ChoiceCellEditor"){
+        return <UIEditorChoice {...props}/>
     }
 }
 

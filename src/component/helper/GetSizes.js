@@ -62,7 +62,7 @@ export function getPreferredSize(props) {
                     prefSize.setHeight(minSize.height);
                 }
                 if (prefSize.width === 0) {
-                    prefSize.setHeight(minSize.width);
+                    prefSize.setWidth(minSize.width);
                 }
                 if (prefSize.height === 0) {
                     prefSize.setHeight(minSize.height)
@@ -78,7 +78,7 @@ export function getPreferredSize(props) {
                     prefSize.setHeight(maxSize.height);
                 }
                 if (prefSize.width === 0) {
-                    prefSize.setHeight(maxSize.width);
+                    prefSize.setWidth(maxSize.width);
                 }
                 if (prefSize.height === 0) {
                     prefSize.setHeight(maxSize.height)
