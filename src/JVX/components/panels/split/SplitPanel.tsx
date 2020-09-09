@@ -1,13 +1,24 @@
-import React, {FC, useRef, useState} from "react";
+import React, {FC, ReactElement, ReactNode, useRef, useState} from "react";
 import "./SplitPanel.scss"
 
-const SplitPanel:FC = (props) => {
 
-    const [firstWidth, setFirstWidth] = useState<number | undefined>()
+type SplitPanelProps = {
+    leftComponent?: ReactNode
+    rightComponent?: ReactNode
+}
+
+const SplitPanel: FC<SplitPanelProps> = (props) => {
+
+    const [firstWidth, setFirstWidth] = useState<number | undefined>();
     const positionRef = useRef<HTMLDivElement>(null);
+    let absoluteWidthPosition = 0;
 
     const dragging = (event: MouseEvent) => {
-        setFirstWidth(event.clientX - 20);
+        let newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
+        if(newSeparatorPosition > 0){
+            setFirstWidth(newSeparatorPosition);
+        }
+
     }
 
     const stopDrag = () => {
@@ -16,6 +27,10 @@ const SplitPanel:FC = (props) => {
     }
 
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
+        if(positionRef.current){
+            const size = positionRef.current.getBoundingClientRect();
+            absoluteWidthPosition = size.x;
+        }
         document.addEventListener("mouseup", stopDrag);
         document.addEventListener("mousemove", dragging);
     }
@@ -23,17 +38,13 @@ const SplitPanel:FC = (props) => {
 
 
     return(
-        <div style={{width: 500, position: "absolute", left: 600}}>
-            <div className={"splitPanel"} ref={positionRef}>
-                <div className={"first"} style={{width: firstWidth || "50%"}}>
-                    <h1>first</h1>
-                </div>
-                <div className={"separator"} onMouseDown={dragStart}>
-
-                </div>
-                <div className={"second"}>
-                    <h1>second</h1>
-                </div>
+        <div className={"splitPanel"} ref={positionRef}>
+            <div className={"first"} style={{width: firstWidth || "50%"}}>
+                {props.leftComponent}
+            </div>
+            <div className={"separator"} onMouseDown={dragStart} />
+            <div className={"second"}>
+                {props.rightComponent}
             </div>
         </div>
     )

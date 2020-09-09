@@ -7,9 +7,14 @@ import Dummy from "../components/dummy";
 import UIEditorImage, {IEditorImage} from "../components/editors/image/UIEditorImage";
 import {IEditor} from "../components/editors/IEditor";
 import UIEditorText, {IEditorText} from "../components/editors/text/UIEditorText";
+import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISplitPanel";
 
 export const createPanel: FC<panel> = (props) => {
-    return <UIPanel {...props} key={props.id}/>
+    return <UIPanel isVisible={true} {...props} key={props.id}/>
+}
+
+export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
+    return <UISplitPanel isVisible={true} {...props} />
 }
 
 export const createButton: FC<buttonProps> = (props) => {
@@ -53,6 +58,7 @@ const classNameMapper = new Map<string, Function>()
     .set("Panel", createPanel)
     .set("GroupPanel", createPanel)
     .set("ScrollPanel", createPanel)
+    .set("SplitPanel", createSplitPanel)
     .set("Button", createButton)
     .set("Label", createLabel)
     .set("Editor", createEditor)

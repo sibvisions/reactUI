@@ -1,4 +1,4 @@
-import React, {Children, FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {Children, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -7,6 +7,8 @@ import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import {jvxContext} from "../../jvxProvider";
 import {layoutInfo} from "../../EventStream";
+import ReactResizeDetector from 'react-resize-detector';
+
 
 type childWithProps = {
     props: {
@@ -32,15 +34,20 @@ type selfStyle = {
 const FormLayout: FC<layout> = (props) => {
 
     const [style, changeStyle] = useState<selfStyle>();
+    const [selfRenderd, changeSelfRenderd] = useState(false);
     const layoutDiv = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext)
 
+    const start = () => {
+        setAnchorsAndConstraints();
+        calculateAnchors();
+        calculateTargetDependentAnchors();
+        buildComponents();
+    }
+
     useLayoutEffect(()=> {
         if(props.preferredSizes && !style){
-            setAnchorsAndConstraints();
-            calculateAnchors();
-            calculateTargetDependentAnchors();
-            buildComponents();
+            start();
         }
     });
 
@@ -240,7 +247,7 @@ const FormLayout: FC<layout> = (props) => {
                     }
                 }
             });
-        }
+            }
 
         let leftWidth = 0;
         let rightWidth = 0;
@@ -390,6 +397,36 @@ const FormLayout: FC<layout> = (props) => {
 
     const calculateTargetDependentAnchors = () => {
         const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
+            if(leftTopAnchor.relative){
+                const rightBottom = rightBottomAnchor.getRelativeAnchor();
+                if(rightBottom && rightBottom !== leftTopAnchor){
+                    let pref = rightBottom.getAbsolutePosition() - rightBottomAnchor.getAbsolutePosition() + preferredSize;
+                    let size = 0;
+                    if(rightBottom.relatedAnchor && leftTopAnchor.relatedAnchor){
+                        size = rightBottom.relatedAnchor.getAbsolutePosition() - leftTopAnchor.relatedAnchor.getAbsolutePosition();
+                    }
+                    let pos = pref - size;
+
+                    if(pos < 0){
+                        pos /= 2;
+                    } else {
+                        pos -= pos/2;
+                    }
+
+                    if(rightBottom.firstCalculation || pos > rightBottom.position){
+                        rightBottom.firstCalculation = false;
+                        rightBottom.position = pos;
+                    }
+                    pos = pref - size - pos;
+                    if(leftTopAnchor.firstCalculation || pos > - leftTopAnchor){
+                        leftTopAnchor.firstCalculation = false
+                        leftTopAnchor.position = -pos;
+                    }
+                }
+            }
+            else if(rightBottomAnchor.relative){
+                console.log("bas")
+            }
         }
 
         //Set from Server
@@ -570,11 +607,13 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     return(
-        <div ref={layoutDiv} style={{height: "100%"}}>
-            <span style={{...style, position:"relative", display:"inline-block"}}>
-                {props.children}
-            </span>
-        </div>
+        <ReactResizeDetector targetRef={layoutDiv} onResize={start} skipOnMount={true}>
+            <div ref={layoutDiv} style={{height: "100%"}} >
+                <span style={{...style, position:"relative", display:"inline-block"}}>
+                    {props.children}
+                </span>
+            </div>
+        </ReactResizeDetector>
     )
 }
 export default FormLayout

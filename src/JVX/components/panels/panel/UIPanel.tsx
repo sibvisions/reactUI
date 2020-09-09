@@ -11,7 +11,8 @@ export type panel = {
     "mobile.autoclose": boolean,
     name: string,
     "screen.title": string,
-    onLoaded: Function
+    onLoaded: Function,
+    isVisible: boolean
 }
 
 

@@ -65,21 +65,21 @@ const BorderLayout: FC<layout> = (props) => {
 
     return(
         <div className={"p-grid p-nogutter"} style={borderLayoutStyle}>
-            <div className={"p-col-12 north"} style={{textAlign:"center", padding: 0}}>
+            <div className={"p-col-12 north"} style={{padding: 0}}>
                 {positions.north}
             </div>
             <div className={"p-grid p-nogutter p-align-center"} style={{height: "100%"}}>
-                <div className={"p-col-fixed west"} style={{textAlign: "center", width:"auto", padding: 0}}>
+                <div className={"p-col-fixed west"} style={{width:"auto", padding: 0}}>
                     {positions.west}
                 </div>
-                <div className={"p-col center"} style={{textAlign:"center", height:"100%", width:"100%", padding: 0}}>
+                <div className={"p-col center"} style={{height:"100%", width:"100%", padding: 0}}>
                     {positions.center}
                 </div>
-                <div className={"p-col-fixed east"} style={{textAlign:"center", width:"auto", padding: 0}}>
+                <div className={"p-col-fixed east"} style={{width:"auto", padding: 0}}>
                     {positions.east}
                 </div>
             </div>
-            <div className={"p-col-12 south"} style={{textAlign:"center", padding: 0}}>
+            <div className={"p-col-12 south"} style={{padding: 0}}>
                 {positions.south}
             </div>
         </div>
