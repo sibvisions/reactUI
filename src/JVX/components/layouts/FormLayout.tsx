@@ -33,7 +33,8 @@ type selfStyle = {
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<selfStyle | undefined>(undefined);
+    const [style, changeStyle] = useState<selfStyle>();
+    const [selfRenderd, changeSelfRenderd] = useState(false);
     const layoutDiv = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext)
 
@@ -433,10 +434,12 @@ const FormLayout: FC<layout> = (props) => {
         const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
         //Div Size
         let availableSize: {width: number, height: number} | undefined = undefined;
-        if(props.availableSize){
-            availableSize = {width: props.availableSize.width, height: props.availableSize.height};
+        if(layoutDiv.current){
+            const size = layoutDiv.current.getClientRects().item(0);
+            if(size) {
+                availableSize = {width: size.width, height: size.height};
+            }
         }
-
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const bba = anchors.get("b");
@@ -605,9 +608,11 @@ const FormLayout: FC<layout> = (props) => {
 
     return(
         <ReactResizeDetector targetRef={layoutDiv} onResize={start} skipOnMount={true}>
-            <span style={{...style, position:"relative", display:"inline-block"}}>
+            <div ref={layoutDiv} style={{height: "100%"}} >
+                <span style={{...style, position:"relative", display:"inline-block"}}>
                     {props.children}
                 </span>
+            </div>
         </ReactResizeDetector>
     )
 }

@@ -7,7 +7,6 @@ export type layout = {
     layout: string,
     layoutData: string,
     preferredSizes?: Map<string, size>
-    availableSize: DOMRect | undefined
 }
 
 
