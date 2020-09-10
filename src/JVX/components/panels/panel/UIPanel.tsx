@@ -1,10 +1,8 @@
-import React, {FC} from "react";
-import useChildren from "../../zhooks/useChildren";
+import React, {FC, useRef} from "react";
 import Layout from "../../layouts/Layout";
 import BaseComponent from "../../BaseComponent";
 
 export interface Panel extends BaseComponent{
-    id: string,
     layout: string,
     layoutData: string,
     "mobile.autoclose": boolean,
@@ -13,8 +11,14 @@ export interface Panel extends BaseComponent{
 
 const UIPanel: FC<Panel> = (props) => {
 
+    const divRef = useRef(null);
+
+
     return(
-        <Layout id={props.id} layout={props.layout} layoutData={props.layoutData} />
+        <div ref={divRef} id={props.id} style={{height: props.parent ? "inherit" : "100%"}}>
+            <Layout onFinish={props.onLoadCallback} parentDivRef={divRef} id={props.id} layout={props.layout} layoutData={props.layoutData} />
+        </div>
+
     )
 }
 export default UIPanel

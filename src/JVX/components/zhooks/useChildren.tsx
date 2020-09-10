@@ -1,14 +1,14 @@
 import {ReactElement, useContext, useMemo, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
-export type size = {
+type ComponentSize = {
     id: string
     width: number,
     height: number
 }
 
 
-const useChildren = (id: string): [Array<ReactElement>, Map<string,size>| undefined] => {
+const useChildren = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
     const context = useContext(jvxContext)
 
     const buildChildren = (): Array<ReactElement> => {
@@ -33,10 +33,10 @@ const useChildren = (id: string): [Array<ReactElement>, Map<string,size>| undefi
     }
 
 
-    const [preferredSizes, setPreferredSizes] = useState<Map<string, size>| undefined>(undefined);
+    const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>| undefined>(undefined);
     const reactChildren = useMemo<Array<ReactElement>>(buildChildren, [id])
 
-    let tempSizes = new Map<string, size>();
+    let tempSizes = new Map<string, ComponentSize>();
     let sizeCounter = 0;
 
 

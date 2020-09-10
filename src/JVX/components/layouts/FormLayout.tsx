@@ -10,9 +10,11 @@ import {layoutInfo} from "../../EventStream";
 import ChildWithProps from "../util/ChildWithProps";
 import useChildren from "../zhooks/useChildren";
 import useLayout from "../zhooks/useLayout";
+import Size from "../util/Size";
 
 type selfStyle = {
     valid: boolean,
+    outsideValid: boolean
     calculatedStyle: CSSProperties
 }
 
@@ -20,10 +22,9 @@ type selfStyle = {
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<selfStyle>({valid: false, calculatedStyle: {}});
+    const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: {}});
     const [children, preferredSize] = useChildren(props.id);
     const dictatedStyle = useLayout(props.id);
-    const layoutDiv = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext)
 
     const start = () => {
@@ -38,8 +39,8 @@ const FormLayout: FC<layout> = (props) => {
             start();
         }
 
-        if(dictatedStyle){
-
+        if(dictatedStyle && !style.outsideValid){
+            start();
         }
     });
 
@@ -206,7 +207,6 @@ const FormLayout: FC<layout> = (props) => {
                 if(childWithProps.props.isVisible){
                     const constraint: Constraints | undefined = componentConstraints.get(childWithProps.props.id);
                     if(constraint && preferredSize){
-                        console.log(constraint, preferredSize)
                         const preferredSizeObj = preferredSize.get(childWithProps.props.id);
                         if(preferredSizeObj){
                             calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height, autoSizeCount);
@@ -419,7 +419,7 @@ const FormLayout: FC<layout> = (props) => {
                 }
             }
             else if(rightBottomAnchor.relative){
-                console.log("bas")
+                console.warn("not yet implemented")
             }
         }
 
@@ -427,9 +427,13 @@ const FormLayout: FC<layout> = (props) => {
         const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
         const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
         //Div Size
-        let availableSize: DOMRect | undefined = undefined;
-        if(layoutDiv.current){
-            availableSize = layoutDiv.current.getBoundingClientRect();
+        let availableSize: Size = {width: 0, height:0};
+        if(dictatedStyle){
+            availableSize = {height: dictatedStyle.height, width: dictatedStyle.width}
+        }
+        else if(props.parentDivRef.current){
+            const DOMElement = props.parentDivRef.current.getBoundingClientRect();
+            availableSize = {height: DOMElement.height, width: DOMElement.width}
         }
         const lba = anchors.get("l");
         const rba = anchors.get("r");
@@ -574,42 +578,50 @@ const FormLayout: FC<layout> = (props) => {
                 const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
 
                 const styleObj: layoutInfo = {
-                    position: "absolute",
+                    position: childWithProps.props.id.includes("P") ? "relative" : "absolute",
                     id: childWithProps.props.id,
                     height: height,
                     left: left,
                     top: top,
                     width: width
                 }
+
                 context.eventStream.styleEvent.next(styleObj)
             }
         });
 
 
         if(borderConstraint && marginConstraint){
+            // @ts-ignore
+            if(props.onFinish){
+                props.onFinish(props.id, preferredHeight, preferredWidth);
+            }
+
+
             changeStyle({
                 calculatedStyle: {
-                    height: preferredHeight,
-                    width: preferredWidth,
-                    left: marginConstraint.leftAnchor.getAbsolutePosition(),
-                    top: marginConstraint.topAnchor.getAbsolutePosition(),
+                    height: dictatedStyle ? dictatedStyle.height : preferredHeight,
+                    width: dictatedStyle ? dictatedStyle.width : preferredWidth,
+                    left: dictatedStyle ? dictatedStyle.left : marginConstraint.leftAnchor.getAbsolutePosition(),
+                    top: dictatedStyle ? dictatedStyle.top : marginConstraint.topAnchor.getAbsolutePosition(),
                     marginBottom: margins.marginBottom,
                     marginLeft: margins.marginLeft,
                     marginRight: margins.marginRight,
                     marginTop: margins.marginTop,
-                    display: "inline-block",
                     position: "relative"
                 },
-                valid: true
+                valid: true,
+                outsideValid: !!dictatedStyle
             });
+
+
+
         }
     }
 
     return(
-        <div ref={layoutDiv} style={{height: "100%"}} >
-            <span style={style.calculatedStyle}>
-                {children}
-            </span>
+        <div style={style.calculatedStyle}>
+            {children}
         </div>
     )
 }

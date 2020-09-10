@@ -6,7 +6,7 @@ export type layoutInfo = {
     height: number,
     left: number,
     top: number,
-    position?: "absolute" | undefined;
+    position?: "absolute" | "relative" | undefined;
 }
 
 class EventStream{

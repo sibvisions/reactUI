@@ -1,7 +1,7 @@
 import LoadCallBack from "./util/LoadCallBack";
 
 interface BaseComponent{
-    onLoadCallback?: LoadCallBack
+    onLoadCallback: LoadCallBack
     id: string,
     parent: string | undefined
     name: string,
