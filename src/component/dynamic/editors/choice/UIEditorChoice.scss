@@ -3,3 +3,9 @@
     border: none;
     background-color: transparent;
 }
+
+.choice-editor:focus {
+    outline-color: transparent;
+    outline-style: unset;
+    outline-width: unset;
+}

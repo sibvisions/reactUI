@@ -6,7 +6,7 @@ import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 
 
-function UIEditorTextHooks(props){
+function UIEditorText(props){
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
     const inputRef = useRef();
     const con = useContext(RefContext)
@@ -35,9 +35,9 @@ function UIEditorTextHooks(props){
             id={props.id}
             value={selectedColumn}
             style={props.layoutStyle}
-            onChange={change => editColumn(change.value, props.columnName)}
+            onChange={change => editColumn(change.target.value, props.columnName)}
             disabled={!props["cellEditor.editable"]}
         />
     );
 }
-export default UIEditorTextHooks
+export default UIEditorText

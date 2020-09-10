@@ -43,10 +43,7 @@ function UIEditorNumber(props) {
             maxFractionDigits={scaleDigits}
             value={selectedColumn}
             style={props.layoutStyle}
-            onChange={changeEvent => {
-                console.log(changeEvent.value)
-                editColumn(changeEvent.value)
-            }}
+            onChange={change => {editColumn(change.value)}}
             disabled={!props["cellEditor.editable"]}
         />
     )

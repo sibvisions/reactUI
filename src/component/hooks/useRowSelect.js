@@ -11,7 +11,7 @@ function useRowSelect(columnName, init, id="no") {
             if(value){
                 editColumn(row[columnName]);
             }
-            else editColumn ("");
+            else editColumn("");
             con.contentStore.updateContent([{id: id, initialValue: value || init}]);
         });
         return function cleanUp(){

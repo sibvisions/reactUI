@@ -5,7 +5,11 @@ import { createPanel,
          createEditor, 
          createGroupPanel,
          createSplitPanel, 
-         createCheckBox} from "../component/factories/ComponentFactory";
+         createCheckBox,
+         createTextArea,
+         createPassword,
+         createTextField,
+         createIcon} from "../component/factories/ComponentFactory";
 
 class UiBuilder{
     serverCommunicator = {};
@@ -59,6 +63,22 @@ class UiBuilder{
         {
             name:"CheckBox",
             method: this.checkBox.bind(this)
+        },
+        {
+            name:"TextArea",
+            method: this.textArea.bind(this)
+        },
+        {
+            name:"PasswordField",
+            method: this.passwordField.bind(this)
+        },
+        {
+            name:"TextField",
+            method: this.textField.bind(this)
+        },
+        {
+            name:"Icon",
+            method: this.icon.bind(this)
         }
     ]
 
@@ -106,6 +126,20 @@ class UiBuilder{
         return createCheckBox(checkBoxData);
     }
 
-    
+    textField(textFieldData) {
+        return createTextField(textFieldData)
+    }
+
+    textArea(textAreaData) {
+        return createTextArea(textAreaData);
+    }
+
+    passwordField(passwordData) {
+        return createPassword(passwordData);
+    }
+
+    icon(iconData) {
+        return createIcon(iconData);
+    }
 }
 export default UiBuilder

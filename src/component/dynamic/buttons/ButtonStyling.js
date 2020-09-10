@@ -9,7 +9,8 @@ export function buttonProps(props) {
         btnProps: {
             id: props.id,
             iconPos: getIconPos(props.horizontalTextPosition, props.verticalTextPosition),
-            tabIndex: getBtnFocusable(props.focusable) ? (props.tabIndex ? props.tabIndex : '0') : '-1',
+            //extra check if togglebutton because of weird tabindex bug (togglebutton needs number-, splitbutton needs string value)
+            tabIndex: getBtnFocusable(props.focusable) ? (props.tabIndex ? props.tabIndex : props.className === "ToggleButton" ? 0 : '0') : props.className === "ToggleButton" ? -1 : '-1',
             style: {
                 display: 'flex',
                 flexDirection: getBtnDirection(props.horizontalTextPosition),
@@ -43,8 +44,8 @@ export function styleButton(ref, btn, constraints) {
         }
     }
     let size = new Size(parseInt(ref.style.width), parseInt(ref.style.height));
-    btn.style.setProperty('width', constraints === 'Center' ? '100%' : toPx(size.width));
-    btn.style.setProperty('height', constraints === 'Center' ? '100%' : toPx(size.height));
+    btn.style.setProperty('width', isBorderConstraints(constraints) ? '100%' : toPx(size.width));
+    btn.style.setProperty('height', isBorderConstraints(constraints) ? '100%' : toPx(size.height));
 }
 
 export function styleChildren(btnChildren, props, btnData) {
@@ -145,6 +146,16 @@ export function addHoverEffect(obj, color, checkedColor, dark, props, borderPain
                 obj.style.setProperty('border-color', color.getOriginalInput())
             }
         }
+    }
+}
+
+function isBorderConstraints(constraints) {
+    if (constraints === 'North' || constraints === 'West' || constraints === 'Center' ||
+        constraints === 'East' || constraints === 'South') {
+        return true;
+    }
+    else {
+        return false;
     }
 }
 

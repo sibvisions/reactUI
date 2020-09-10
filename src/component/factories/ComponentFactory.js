@@ -7,7 +7,7 @@ import UIGroupPanel from "../dynamic/panels/grouppanel/UIGroupPanel";
 import UISplitPanel from '../dynamic/panels/splitpanel/UISplitPanel';
 import UIEditorCheckbox from '../dynamic/editors/checkbox/UIEditorCheckbox';
 import UIEditorImage from '../dynamic/editors/image/UIEditorImage';
-import UICheckBox from '../dynamic/ckeckbox/UICheckBox';
+import UICheckBox from '../dynamic/checkbox/UICheckBox';
 import UIEditorDisabled from '../dynamic/editors/disabled/UIEditorDisabled';
 import UIEditorDate from '../dynamic/editors/date/UIEditorDate';
 import UIMenuButton from '../dynamic/buttons/menubutton/UIMenuButton';
@@ -17,6 +17,12 @@ import UIEditorLinked from '../dynamic/editors/linked/UIEditorLinked';
 import UIEditorNumber from '../dynamic/editors/number/UIEditorNumber';
 import UIRadioButton from '../dynamic/buttons/radiobutton/UIRadioButton';
 import UIEditorChoice from '../dynamic/editors/choice/UIEditorChoice'
+import UITextArea from '../dynamic/text/UITextArea';
+import UIEditorTextArea from '../dynamic/editors/text/UIEditorTextArea';
+import UIPassword from '../dynamic/text/UIPassword';
+import UIEditorPassword from '../dynamic/editors/text/UIEditorPassword';
+import UIText from '../dynamic/text/UIText';
+import UIIcon from '../dynamic/icon/UIIcon';
 
 export function createButton(buttonData){
     const props= {
@@ -64,7 +70,15 @@ export function createEditor(editorData) {
     } else if(editorData.cellEditor.className === "NumberCellEditor"){
         return <UIEditorNumber {...props}/>
     } else if(editorData.cellEditor.className === "TextCellEditor"){
-        return <UIEditorText {...props}/>
+        if (editorData.cellEditor.contentType.includes("singleline")) {
+            return <UIEditorText {...props}/>
+        }
+        else if (editorData.cellEditor.contentType.includes("multiline")) {
+            return <UIEditorTextArea {...props}/>
+        }
+        else if(editorData.cellEditor.contentType.includes("password")) {
+            return <UIEditorPassword {...props}/>
+        }
     } else if(editorData.cellEditor.className === "LinkedCellEditor"){
         return <UIEditorLinked {...props}/>
     } else if(editorData.cellEditor.className === "ImageViewer"){
@@ -84,6 +98,22 @@ export function createSplitPanel(splitPanelData) {
     return <UISplitPanel {...splitPanelData} key={splitPanelData.id}/>
 }
 
-export function createCheckBox(checkBoxData){
+export function createCheckBox(checkBoxData) {
     return <UICheckBox {...checkBoxData} key={checkBoxData.id}/>
+}
+
+export function createTextField(textFieldData) {
+    return <UIText {...textFieldData} key={textFieldData.id}/>
+}
+
+export function createTextArea(textAreaData) {
+    return <UITextArea {...textAreaData} key={textAreaData.id}/>
+}
+
+export function createPassword(passwordData) {
+    return <UIPassword {...passwordData} key={passwordData.id}/>
+}
+
+export function createIcon(iconData) {
+    return <UIIcon {...iconData} key={iconData.id}/>
 }

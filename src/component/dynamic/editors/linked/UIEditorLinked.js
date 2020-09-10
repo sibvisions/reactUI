@@ -11,13 +11,12 @@ import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import { getPreferredSize } from '../../../helper/GetSizes';
 
 function UIEditorLinked(props){
-    const [fetchedData] = useFetchListen(props.cellEditor.linkReference.dataProvider);
+    const [fetchedData] = useFetchListen(props.cellEditor.linkReference.referencedDataBook);
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
     const con = useContext(RefContext)
     const autoComRef = useRef();
 
     useEffect(()=> {
-        console.log(selectedColumn)
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 
@@ -49,7 +48,7 @@ function UIEditorLinked(props){
 
     function onInputChange(event){
         con.serverComm.fetchFilterdData(
-            props.cellEditor.linkReference.dataProvider,
+            props.cellEditor.linkReference.referencedDataBook,
             event.query,
             props.name);
     }

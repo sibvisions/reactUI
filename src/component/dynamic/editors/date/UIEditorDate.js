@@ -17,11 +17,17 @@ function UIEditorDate(props) {
 
     function parseDateFormat(dateFormat) {
         let formatted = dateFormat;
-        if (dateFormat.indexOf("MMMM") !== -1) {
-            formatted = dateFormat.replace("MMMM", 'MM').replace("y", "yy").replace(", HH:mm", '');
+        if (dateFormat.includes("MMMM")) {
+            formatted = dateFormat.replace("MMMM", 'MM').replace(", HH:mm", '');
         }
-        else if (dateFormat.indexOf("MM") !== -1) {
-            formatted = dateFormat.replace("MM", "mm").replace("y", "yy").replace(", HH:mm", '');;
+        else if (dateFormat.includes("MM")) {
+            formatted = dateFormat.replace("MM", "mm").replace(", HH:mm", '');
+        }
+        if (dateFormat.includes("yyyy")) {
+            formatted = formatted.replace("yyyy", "yy");
+        }
+        else if (dateFormat.includes("y") && !dateFormat.includes("yy")) {
+            formatted = formatted.replace("y", "yy");
         }
         return formatted
     }

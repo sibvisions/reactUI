@@ -15,7 +15,7 @@ function UITable(props) {
 
     useEffect(() => {
         let fetchSub = con.contentStore.fetchCompleted.subscribe(fetchData => {
-            if (fetchData.dataProvider === props.dataProvider) {
+            if (fetchData.dataBook === props.dataBook) {
                 buildData(fetchData);
             }
         });
@@ -40,7 +40,7 @@ function UITable(props) {
         };
         buildColumns(props.columnLabels, props.columnNames);
         
-        let data = con.contentStore.storedData.get(props.dataProvider);
+        let data = con.contentStore.storedData.get(props.dataBook);
         if (data) {
             buildData(data);
         }
@@ -88,7 +88,7 @@ function UITable(props) {
     const onSelectChange = async event => {
         const value = event.data;
         con.contentStore.emitChangeOfSelectedRow(value);
-        con.serverComm.selectRow(props.name, props.dataProvider, value)
+        con.serverComm.selectRow(props.name, props.dataBook, value)
     }
 
     return (

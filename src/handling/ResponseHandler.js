@@ -55,6 +55,10 @@ class ResponseHandler{
             methodToExecute: this.closeScreen.bind(this)
         },
         {
+            name: "restart",
+            methodToExecute: this.restart.bind(this)
+        },
+        {
             name: "authenticationData",
             methodToExecute: this.authenticationData.bind(this)
         },
@@ -158,6 +162,10 @@ class ResponseHandler{
     closeScreen(screenToClose){
         this.contentStore.deleteWindow(screenToClose)
         this.routeTo("/main");
+    }
+
+    restart(restartData) {
+        console.log(restartData, this)
     }
 
     authenticationData(authData){
