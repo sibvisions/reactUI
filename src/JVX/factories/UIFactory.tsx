@@ -1,6 +1,6 @@
 import BaseComponent from "../components/BaseComponent";
 import React, {FC} from "react"
-import UIPanel, {panel} from "../components/panels/panel/UIPanel";
+import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
 import UIButton, {buttonProps} from "../components/buttons/button/UIButton";
 import UILabel, {uiLabel} from "../components/label/UILabel";
 import Dummy from "../components/dummy";
@@ -9,7 +9,7 @@ import {IEditor} from "../components/editors/IEditor";
 import UIEditorText, {IEditorText} from "../components/editors/text/UIEditorText";
 import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISplitPanel";
 
-export const createPanel: FC<panel> = (props) => {
+export const createPanel: FC<Panel> = (props) => {
     return <UIPanel isVisible={true} {...props} key={props.id}/>
 }
 

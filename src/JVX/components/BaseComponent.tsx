@@ -1,7 +1,7 @@
-export type onLoadCallBack = (id: string, height: number, width:number) => void
+import LoadCallBack from "./util/LoadCallBack";
 
 interface BaseComponent{
-    onLoadCallback?: onLoadCallBack
+    onLoadCallback?: LoadCallBack
     id: string,
     parent: string | undefined
     name: string,

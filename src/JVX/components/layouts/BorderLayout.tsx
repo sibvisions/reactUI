@@ -1,26 +1,22 @@
-import React, {Children, CSSProperties, FC, ReactNode, useContext, useMemo} from "react";
+import React, {CSSProperties, FC, ReactElement, useContext, useMemo} from "react";
 import {layout} from "./Layout";
 import Margins from "./models/Margins";
 import {jvxContext} from "../../jvxProvider";
+import useChildren from "../zhooks/useChildren";
+import ChildWithProps from "../util/ChildWithProps";
 
 type borderLayoutComponents = {
-    north?: ReactNode,
-    center?: ReactNode,
-    west?: ReactNode,
-    east?: ReactNode,
-    south?: ReactNode
-}
-
-type childWithProps = {
-    props:{
-        id: string
-        constraints: string
-    }
+    north?: ReactElement,
+    center?: ReactElement,
+    west?: ReactElement,
+    east?: ReactElement,
+    south?: ReactElement
 }
 
 const BorderLayout: FC<layout> = (props) => {
 
     const context = useContext(jvxContext);
+    const [children] = useChildren(props.id);
     const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4))
     //const gaps = new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6))
     const borderLayoutStyle: CSSProperties = {
@@ -35,9 +31,10 @@ const BorderLayout: FC<layout> = (props) => {
     }
     const setConstraints = (): borderLayoutComponents => {
         const components: borderLayoutComponents = {};
-        Children.map(props.children, child => {
-            const childProps = (child as childWithProps);
-            context.eventStream.styleEvent.next({height: "100%", width: "100%", id:childProps.props.id});
+        children.forEach(child => {
+            const childProps = (child as ChildWithProps);
+            context.eventStream.styleEvent.next({height: 200, width: 200, id:childProps.props.id, top: 0, position:"absolute", left:0});
+
             switch (childProps.props.constraints){
                 case "North":
                     components.north = child;

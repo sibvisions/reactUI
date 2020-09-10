@@ -27,7 +27,6 @@ const useChildren = (id: string): [Array<ReactElement>, Map<string,size>| undefi
     const componentHasLoaded = (id: string, height: number, width:number)=> {
         tempSizes.set(id, {id: id, width: width, height: height});
         sizeCounter++;
-
         if(sizeCounter === reactChildren.length){
             setPreferredSizes(tempSizes);
         }

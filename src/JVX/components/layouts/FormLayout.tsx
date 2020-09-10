@@ -1,4 +1,4 @@
-import React, {Children, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {Children, CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -7,34 +7,22 @@ import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import {jvxContext} from "../../jvxProvider";
 import {layoutInfo} from "../../EventStream";
-import ReactResizeDetector from 'react-resize-detector';
-
-
-type childWithProps = {
-    props: {
-        id: string,
-        constraints: string
-        isVisible: boolean | undefined
-    }
-}
+import ChildWithProps from "../util/ChildWithProps";
+import useChildren from "../zhooks/useChildren";
+import useLayout from "../zhooks/useLayout";
 
 type selfStyle = {
-    height: number,
-    width: number,
-    top: number,
-    left: number,
-    marginTop: number,
-    marginBottom: number,
-    marginRight: number,
-    marginLeft: number
+    valid: boolean,
+    calculatedStyle: CSSProperties
 }
 
 
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<selfStyle>();
-    const [selfRenderd, changeSelfRenderd] = useState(false);
+    const [style, changeStyle] = useState<selfStyle>({valid: false, calculatedStyle: {}});
+    const [children, preferredSize] = useChildren(props.id);
+    const dictatedStyle = useLayout(props.id);
     const layoutDiv = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext)
 
@@ -46,8 +34,12 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     useLayoutEffect(()=> {
-        if(props.preferredSizes && !style){
+        if(preferredSize && !style.valid){
             start();
+        }
+
+        if(dictatedStyle){
+
         }
     });
 
@@ -85,8 +77,8 @@ const FormLayout: FC<layout> = (props) => {
             value.relatedAnchor = anchors.get(value.relatedAnchorName);
         });
         //Build Constraints of Children
-        Children.map(props.children, child => {
-            const childWithProps = (child as childWithProps);
+        children.forEach(child => {
+            const childWithProps = (child as ChildWithProps);
             const anchorNames = childWithProps.props.constraints.split(";");
             //Get Anchors
             const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
@@ -195,8 +187,8 @@ const FormLayout: FC<layout> = (props) => {
         });
 
         //Init autosize Anchors
-        Children.map(props.children, child => {
-            const childWithProps = (child as childWithProps);
+        children.forEach(child => {
+            const childWithProps = (child as ChildWithProps)
             const constraint = componentConstraints.get(childWithProps.props.id);
             if(constraint && constraint.rightAnchor && constraint.leftAnchor && constraint.bottomAnchor && constraint.topAnchor){
                 initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
@@ -209,12 +201,13 @@ const FormLayout: FC<layout> = (props) => {
         //AutoSize calculations
         for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
             //CalculateAutoSize
-            Children.map(props.children, child => {
-                const childWithProps = (child as childWithProps);
+            children.forEach(child => {
+                const childWithProps = (child as ChildWithProps);
                 if(childWithProps.props.isVisible){
                     const constraint: Constraints | undefined = componentConstraints.get(childWithProps.props.id);
-                    if(constraint && props.preferredSizes){
-                        const preferredSizeObj = props.preferredSizes.get(childWithProps.props.id);
+                    if(constraint && preferredSize){
+                        console.log(constraint, preferredSize)
+                        const preferredSizeObj = preferredSize.get(childWithProps.props.id);
                         if(preferredSizeObj){
                             calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height, autoSizeCount);
                             calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width, autoSizeCount);
@@ -223,9 +216,10 @@ const FormLayout: FC<layout> = (props) => {
                 }
             });
             autoSizeCount = 100000;
+
             //Finish AutoSize
-            Children.map(props.children, child => {
-                const childWithProps = (child as childWithProps);
+            children.forEach(child => {
+                const childWithProps = (child as ChildWithProps);
                 const constraints = componentConstraints.get(childWithProps.props.id)
                 if(constraints){
                     let count: number
@@ -247,7 +241,7 @@ const FormLayout: FC<layout> = (props) => {
                     }
                 }
             });
-            }
+        }
 
         let leftWidth = 0;
         let rightWidth = 0;
@@ -255,12 +249,12 @@ const FormLayout: FC<layout> = (props) => {
         let bottomHeight = 0;
 
         //Anchor Positions of Children
-        Children.map(props.children, child => {
-            const childWithProps = (child as childWithProps);
-            if(childWithProps.props.isVisible && props.preferredSizes){
+        children.forEach(child => {
+            const childWithProps = (child as ChildWithProps);
+            if(childWithProps.props.isVisible && preferredSize){
                 const constraint = componentConstraints.get(childWithProps.props.id);
-                const preferredSize = props.preferredSizes.get(childWithProps.props.id);
-                if(constraint && preferredSize){
+                const preferredComponentSize = preferredSize.get(childWithProps.props.id);
+                if(constraint && preferredComponentSize){
                     if(constraint.rightAnchor.getBorderAnchor().name === "l"){
                         let w = constraint.rightAnchor.getAbsolutePosition();
                         if(w > leftWidth){
@@ -290,7 +284,7 @@ const FormLayout: FC<layout> = (props) => {
                         bottomBorderUsed = true;
                     }
                     if(constraint.leftAnchor.getBorderAnchor().name === "l" && constraint.rightAnchor.getBorderAnchor().name === "r"){
-                        let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredSize.width;
+                        let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredComponentSize.width;
                         if(w > preferredWidth){
                             preferredWidth = w;
                         }
@@ -301,7 +295,7 @@ const FormLayout: FC<layout> = (props) => {
                         rightBorderUsed = true;
                     }
                     if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
-                        let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredSize.height;
+                        let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredComponentSize.height;
                         if(h > preferredHeight){
                             preferredHeight = h;
                         }
@@ -433,18 +427,15 @@ const FormLayout: FC<layout> = (props) => {
         const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
         const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
         //Div Size
-        let availableSize: {width: number, height: number} | undefined = undefined;
+        let availableSize: DOMRect | undefined = undefined;
         if(layoutDiv.current){
-            const size = layoutDiv.current.getClientRects().item(0);
-            if(size) {
-                availableSize = {width: size.width, height: size.height};
-            }
+            availableSize = layoutDiv.current.getBoundingClientRect();
         }
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const bba = anchors.get("b");
         const tba = anchors.get("t");
-        if(calculatedTargetDependentAnchors && props.preferredSizes && lba && rba && bba && tba && availableSize){
+        if(calculatedTargetDependentAnchors && preferredSize && lba && rba && bba && tba && availableSize){
             if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)){
                 if(minLayoutSize.width > availableSize.width){
                     lba.position = 0;
@@ -532,14 +523,14 @@ const FormLayout: FC<layout> = (props) => {
             tba.position -= margins.marginTop;
             bba.position -= margins.marginTop;
 
-            Children.map(props.children, child => {
-                const childWithProps = (child as childWithProps);
-                if(childWithProps.props.isVisible && props.preferredSizes){
+            children.forEach(child => {
+                const childWithProps = (child as ChildWithProps);
+                if(childWithProps.props.isVisible && preferredSize){
                     const constraint = componentConstraints.get(childWithProps.props.id);
-                    const preferredSize = props.preferredSizes.get(childWithProps.props.id);
-                    if(constraint && preferredSize){
-                        calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredSize.width);
-                        calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredSize.height);
+                    const preferredComponentSize = preferredSize.get(childWithProps.props.id);
+                    if(constraint && preferredComponentSize){
+                        calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredComponentSize.width);
+                        calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredComponentSize.height);
                     }
 
                 }
@@ -572,8 +563,8 @@ const FormLayout: FC<layout> = (props) => {
             borderConstraint = new Constraints(tba, lba, bba, rba);
         }
 
-        Children.map(props.children, child => {
-            const childWithProps = (child as childWithProps);
+        children.forEach(child => {
+            const childWithProps = (child as ChildWithProps);
             const constraint = componentConstraints.get(childWithProps.props.id);
 
             if(constraint && marginConstraint && borderConstraint) {
@@ -585,35 +576,41 @@ const FormLayout: FC<layout> = (props) => {
                 const styleObj: layoutInfo = {
                     position: "absolute",
                     id: childWithProps.props.id,
-                    height: height.toString()+"px",
+                    height: height,
                     left: left,
                     top: top,
-                    width: width.toString()+"px"
+                    width: width
                 }
                 context.eventStream.styleEvent.next(styleObj)
             }
         });
-        if(borderConstraint && marginConstraint)
+
+
+        if(borderConstraint && marginConstraint){
             changeStyle({
-                height: preferredHeight,
-                width: preferredWidth,
-                left: marginConstraint.leftAnchor.getAbsolutePosition(),
-                top: marginConstraint.topAnchor.getAbsolutePosition(),
-                marginBottom: margins.marginBottom,
-                marginLeft: margins.marginLeft,
-                marginRight: margins.marginRight,
-                marginTop: margins.marginTop
+                calculatedStyle: {
+                    height: preferredHeight,
+                    width: preferredWidth,
+                    left: marginConstraint.leftAnchor.getAbsolutePosition(),
+                    top: marginConstraint.topAnchor.getAbsolutePosition(),
+                    marginBottom: margins.marginBottom,
+                    marginLeft: margins.marginLeft,
+                    marginRight: margins.marginRight,
+                    marginTop: margins.marginTop,
+                    display: "inline-block",
+                    position: "relative"
+                },
+                valid: true
             });
+        }
     }
 
     return(
-        <ReactResizeDetector targetRef={layoutDiv} onResize={start} skipOnMount={true}>
-            <div ref={layoutDiv} style={{height: "100%"}} >
-                <span style={{...style, position:"relative", display:"inline-block"}}>
-                    {props.children}
-                </span>
-            </div>
-        </ReactResizeDetector>
+        <div ref={layoutDiv} style={{height: "100%"}} >
+            <span style={style.calculatedStyle}>
+                {children}
+            </span>
+        </div>
     )
 }
 export default FormLayout
