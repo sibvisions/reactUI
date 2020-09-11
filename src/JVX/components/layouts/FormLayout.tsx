@@ -15,17 +15,18 @@ import Size from "../util/Size";
 type selfStyle = {
     valid: boolean,
     outsideValid: boolean
-    calculatedStyle: CSSProperties
+    calculatedStyle: CSSProperties | undefined
 }
 
 
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: {}});
+    const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: undefined});
     const [children, preferredSize] = useChildren(props.id);
     const dictatedStyle = useLayout(props.id);
     const context = useContext(jvxContext)
+    const testRef = useRef<HTMLDivElement>(null);
 
     const start = () => {
         setAnchorsAndConstraints();
@@ -431,9 +432,9 @@ const FormLayout: FC<layout> = (props) => {
         if(dictatedStyle){
             availableSize = {height: dictatedStyle.height, width: dictatedStyle.width}
         }
-        else if(props.parentDivRef.current){
-            const DOMElement = props.parentDivRef.current.getBoundingClientRect();
-            availableSize = {height: DOMElement.height, width: DOMElement.width}
+        else if(testRef.current){
+            const DOMElement = testRef.current.getBoundingClientRect();
+            availableSize = {height: DOMElement.height - margins.marginTop - margins.marginBottom, width: DOMElement.width - margins.marginRight - margins.marginLeft}
         }
         const lba = anchors.get("l");
         const rba = anchors.get("r");
@@ -572,20 +573,24 @@ const FormLayout: FC<layout> = (props) => {
             const constraint = componentConstraints.get(childWithProps.props.id);
 
             if(constraint && marginConstraint && borderConstraint) {
-                const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition();
-                const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition();
-                const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
-                const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
+                // const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition();
+                // const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition();
+                // const width = constraint.rightAnchor.position
+                // const height = constraint.bottomAnchor.position
+
+                const left = constraint.leftAnchor.getAbsolutePosition() - borderConstraint.leftAnchor.getAbsolutePosition();
+                const top = constraint.topAnchor.getAbsolutePosition() - borderConstraint.topAnchor.getAbsolutePosition();
+                const width = constraint.rightAnchor.position
+                const height = constraint.bottomAnchor.position
 
                 const styleObj: layoutInfo = {
-                    position: childWithProps.props.id.includes("P") ? "relative" : "absolute",
+                    position: "absolute",
                     id: childWithProps.props.id,
                     height: height,
                     left: left,
                     top: top,
                     width: width
                 }
-
                 context.eventStream.styleEvent.next(styleObj)
             }
         });
@@ -597,18 +602,17 @@ const FormLayout: FC<layout> = (props) => {
                 props.onFinish(props.id, preferredHeight, preferredWidth);
             }
 
-
             changeStyle({
                 calculatedStyle: {
-                    height: dictatedStyle ? dictatedStyle.height : preferredHeight,
-                    width: dictatedStyle ? dictatedStyle.width : preferredWidth,
+                    height: dictatedStyle ? dictatedStyle.height : borderConstraint.bottomAnchor.position,
+                    width: dictatedStyle ? dictatedStyle.width : borderConstraint.rightAnchor.position,
                     left: dictatedStyle ? dictatedStyle.left : marginConstraint.leftAnchor.getAbsolutePosition(),
                     top: dictatedStyle ? dictatedStyle.top : marginConstraint.topAnchor.getAbsolutePosition(),
                     marginBottom: margins.marginBottom,
                     marginLeft: margins.marginLeft,
                     marginRight: margins.marginRight,
                     marginTop: margins.marginTop,
-                    position: "relative"
+                    position: dictatedStyle ? dictatedStyle.position : "relative"
                 },
                 valid: true,
                 outsideValid: !!dictatedStyle
@@ -620,7 +624,7 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     return(
-        <div style={style.calculatedStyle}>
+        <div ref={testRef} style={style.calculatedStyle ? style.calculatedStyle : {height: "100%"}}>
             {children}
         </div>
     )

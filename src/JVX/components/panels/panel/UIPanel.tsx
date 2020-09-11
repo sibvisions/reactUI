@@ -15,10 +15,7 @@ const UIPanel: FC<Panel> = (props) => {
 
 
     return(
-        <div ref={divRef} id={props.id} style={{height: props.parent ? "inherit" : "100%"}}>
-            <Layout onFinish={props.onLoadCallback} parentDivRef={divRef} id={props.id} layout={props.layout} layoutData={props.layoutData} />
-        </div>
-
+        <Layout onFinish={props.onLoadCallback} parentDivRef={divRef} id={props.id} layout={props.layout} layoutData={props.layoutData} />
     )
 }
 export default UIPanel
