@@ -10,8 +10,9 @@ import 'primeicons/primeicons.css';
 import "primeflex/primeflex.css";
 
 import './App.css';
-import '@fortawesome/fontawesome-free/js/all.js';
-import '@fortawesome/fontawesome-free/css/all.css';
+//import '@fortawesome/fontawesome-free/js/all.js';
+//import '@fortawesome/fontawesome-free/css/all.css';
+import 'font-awesome/css/font-awesome.min.css'
 
 //Component Imports
 import Login from './component/frontend/login/Login';

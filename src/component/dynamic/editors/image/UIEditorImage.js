@@ -122,7 +122,7 @@ function UIEditorImage(props) {
     }
 
     return (
-        <svg id={props.id} style={{ ...props.layoutStyle, backgroundColor: props["cellEditor.background"] }}>
+        <svg id={props.id} style={{ ...props.layoutStyle }}>
                 <image
                     href={(selectedColumn.indexOf('localhost') === -1 && selectedColumn !== "") ? "data:image/png;base64," + selectedColumn : selectedColumn}
                     ref={imgRef}

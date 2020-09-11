@@ -74,14 +74,14 @@ export function parseIconData(props, iconData) {
             let index = iconData.indexOf(';');
             if (index < 0) {
                 splittedIconData = iconString.split(',');
-                iconName = "fas fa-" + splittedIconData[0];
+                iconName = "fa fa-" + splittedIconData[0];
                 iconSize = new Size(splittedIconData[1], splittedIconData[2]);
                 iconColor = props.foreground !== undefined ? tinycolor(props.foreground) : tinycolor('white');
                 return {icon: iconName, size: iconSize, color: iconColor};
             }
             else {
                 splittedIconData = iconString.split(';');
-                iconName = "fas fa-" + splittedIconData[0];
+                iconName = "fa fa-" + splittedIconData[0];
                 splittedIconData.splice(splittedIconData, 1)
                 let sizeFound = false;
                 let colorFound = false;

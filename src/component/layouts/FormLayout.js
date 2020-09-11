@@ -740,16 +740,21 @@ class FormLayout extends Component {
             id: this.props.id, parent: this.props.parent});
         let el = document.getElementById(this.props.id)
         if (el !== null) {
-            if (!this.firstPosCalc) {
-                this.prevTop = el.style.top
-                this.firstPosCalc = true;
-            }
+            // if (!this.firstPosCalc) {
+            //     this.prevTop = el.style.top
+            //     this.firstPosCalc = true;
+            // }
             if (this.props.constraints !== 'Center') {
-                el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom));
-                el.style.width = toPx((this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight));
-                if (el.previousSibling !== null) {
-                    el.style.top = toPx((parseInt(this.prevTop) + parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)))
+                if (this.props.id.includes('GP')) {
+                    el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom + 22));
                 }
+                else {
+                    el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom));
+                }
+                el.style.width = toPx((this.preferredWidth + this.props.margins.marginLeft + this.props.margins.marginRight));
+                // if (el.previousSibling !== null) {
+                //     el.style.top = toPx((parseInt(this.prevTop) + parseInt(el.previousSibling.style.height) + parseInt(el.previousSibling.style.top)))
+                // }
             }
         }
     }

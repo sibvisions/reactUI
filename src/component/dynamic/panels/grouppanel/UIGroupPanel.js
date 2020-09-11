@@ -25,9 +25,10 @@ function UIGroupPanel(props) {
     }, [props, con]);
 
     return (
-        <span id={props.id} style={{height: '100%', background: bgdColor, ...props.layoutStyle}}>
+        <fieldset id={props.id} style={{height: '100%', background: bgdColor, paddingInlineStart: '0', paddingInlineEnd: '0', paddingBlockStart: '0', paddingBlockEnd: '0', ...props.layoutStyle}}>
+            <legend>{props.text}</legend>
                 {insertLayout(content, props)}
-        </span>
+        </fieldset>
     );
 }
 export default UIGroupPanel;

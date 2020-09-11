@@ -1,10 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { RefContext } from '../../helper/Context';
 import { parseIconData } from '../ComponentProperties';
 import { getPreferredSize } from '../../helper/GetSizes';
 
 function UIIcon(props) {
-    const [icon, setIcon] = useState();
     const con = useContext(RefContext);
     const iconProps = parseIconData(props, props.image)
 
@@ -19,7 +18,7 @@ function UIIcon(props) {
     }, [props, con]);
 
     function iconOrImage(icon) {
-        if (icon.includes('fas fa-')) {
+        if (icon.includes('fa fa-')) {
             return <i className={icon} />
         }
         else {

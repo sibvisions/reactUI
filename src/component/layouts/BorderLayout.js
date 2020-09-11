@@ -16,11 +16,23 @@ class BorderLayout extends Component {
             if(component.props.visible === undefined || component.props.visible) {
                 let clonedComponent;
                 if (component.props.constraints) {
-                    const props={
-                        layoutStyle: {
-                            height: "100%",
-                            width: "100%"
-                        }                        
+                    let props
+                    //hack no scollbar...
+                    if (component.props.className === "GroupPanel") {
+                        props={
+                            layoutStyle: {
+                                height: "calc(100% - 18px)",
+                                width: "calc(100% - 4px)"
+                            }                        
+                        }
+                    }
+                    else {
+                        props={
+                            layoutStyle: {
+                                height: "100%",
+                                width: "100%"
+                            }                        
+                        }
                     }
                     switch(component.props.constraints) {
                         case 'North':

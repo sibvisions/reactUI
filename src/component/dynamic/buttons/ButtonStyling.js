@@ -102,11 +102,13 @@ function styleButtonContent(child, props, iconProps) {
         child.style.setProperty('margin-' + gapPos, toPx(getImageTextGap(props)));
     }
     if (iconProps) {
+        console.log(iconProps)
         if (child.classList.value.includes(iconProps.icon)) {
             child.style.setProperty('width', toPx(iconProps.size.width));
             child.style.setProperty('height', toPx(iconProps.size.height));
+            child.style.setProperty('font-size', toPx(iconProps.size.height));
             child.style.setProperty('color', iconProps.color);
-            if (!child.classList.value.includes('fas')) {
+            if (!child.classList.value.includes('fa')) {
                 child.style.setProperty('background-image', 'url(http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + iconProps.icon + ')');
             }
         }
