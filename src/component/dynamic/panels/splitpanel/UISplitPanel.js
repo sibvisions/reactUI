@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Split from 'react-split'
 import "./UISplitPanel.css";
 import { RefContext } from '../../../helper/Context';
 import { getPreferredSize } from '../../../helper/GetSizes';
-import { getPanelBgdColor } from '../../ComponentProperties';
 import useCompStartUp from '../../../hooks/useCompStartUp';
 
 function UISplitPanel(props) {
-    const [bgdColor, setBgdColor] = useState();
     const content = useCompStartUp(props);
     const con = useContext(RefContext);
 
@@ -19,10 +17,6 @@ function UISplitPanel(props) {
                 parent: props.parent
             }
         )
-    }, [props, con]);
-
-    useLayoutEffect(() => {
-        setBgdColor(getPanelBgdColor(props, con));
     }, [props, con]);
 
     const getLeftComponents = () => {
@@ -59,7 +53,6 @@ function UISplitPanel(props) {
         <Split
             className="splitHolder"
             id={props.id}
-            style={{ background: bgdColor }}
             sizes={[30, 70]}
             minSize={0}
             gutterSize={30}

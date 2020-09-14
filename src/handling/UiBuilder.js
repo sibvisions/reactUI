@@ -2,9 +2,7 @@ import { createPanel,
          createTable, 
          createButton, 
          createLabel, 
-         createEditor, 
-         createGroupPanel,
-         createSplitPanel, 
+         createEditor,  
          createCheckBox,
          createTextArea,
          createPassword,
@@ -50,14 +48,18 @@ class UiBuilder{
         },
         {
             name:"SplitPanel",
-            method: this.splitPanel.bind(this)
+            method: this.panel.bind(this)
         },
         {
             name:"GroupPanel",
-            method: this.groupPanel.bind(this)
+            method: this.panel.bind(this)
         },
         {
             name:"ScrollPanel",
+            method: this.panel.bind(this)
+        },
+        {
+            name:"TabsetPanel",
             method: this.panel.bind(this)
         },
         {
@@ -98,10 +100,6 @@ class UiBuilder{
         return createPanel(panelData);
     }
 
-    groupPanel(groupPanelData) {
-        return createGroupPanel(groupPanelData)
-    }
-
     table(tableData) {
         return createTable(tableData);
     }
@@ -116,10 +114,6 @@ class UiBuilder{
 
     editor(editorData){
         return createEditor(editorData)
-    }
-
-    splitPanel(splitPanelData){
-        return createSplitPanel(splitPanelData)
     }
 
     checkBox(checkBoxData){

@@ -5,21 +5,32 @@ import { UIFont } from '../helper/UIFont';
 import { Size } from '../helper/Size';
 
 export function getPanelBgdColor(props, con) {
-    if (document.getElementById(props.id) !== null) {
-        if (props.background) {
-            return tinycolor(props.background);
+    let bgdColor
+    if (props.background) {
+        bgdColor = tinycolor(props.background);
+    }
+    else {
+        let parent = con.contentStore.flatContent.find(elem => elem.id === props.parent);
+        if (parent !== undefined && parent.background !== undefined) {
+            bgdColor = parent.background
         }
         else {
-            //first panel w/o parent
-            if (con.contentStore.flatContent.find(elem => elem.id === props.parent) === undefined) {
-                return tinycolor(document.getElementById(props.id).parentElement.style.backgroundColor);
-            }
-            //parent panel
-            else {
-                return tinycolor(document.getElementById(props.parent).style.background);
-            }
+            bgdColor = tinycolor('#C8C8C8')
         }
+        // //first panel w/o parent
+        // if (con.contentStore.flatContent.find(elem => elem.id === props.parent) === undefined) {
+        //     bgdColor = tinycolor(document.getElementById(props.id).parentElement.style.backgroundColor);
+        // }
+        // //parent panel
+        // else {
+        //     if (document.getElementById(props.parent)) {
+        //         console.log(props)
+        //         bgdColor = tinycolor(document.getElementById(props.parent).style.background);
+        //     }
+        // }
     }
+    if (!bgdColor) bgdColor = tinycolor('#C8C8C8')
+    return bgdColor;
 }
 
 export function getMargins(props) {

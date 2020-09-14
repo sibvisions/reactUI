@@ -15,7 +15,7 @@ function UIGroupPanel(props) {
             {
                 size: getPreferredSize(props),
                 id: props.id,
-                parent: props.parent
+                parent: props.parent,
             }
         )
     }, [props, con]);
@@ -25,7 +25,7 @@ function UIGroupPanel(props) {
     }, [props, con]);
 
     return (
-        <fieldset id={props.id} style={{height: '100%', background: bgdColor, paddingInlineStart: '0', paddingInlineEnd: '0', paddingBlockStart: '0', paddingBlockEnd: '0', ...props.layoutStyle}}>
+        <fieldset id={props.id} style={{height: '100%', width: (props.parent !== undefined && props.parent.includes("TP")) ? 'min-content' : null, background: bgdColor, paddingInlineStart: '0', paddingInlineEnd: '0', paddingBlockStart: '0', paddingBlockEnd: '0', ...props.layoutStyle}}>
             <legend>{props.text}</legend>
                 {insertLayout(content, props)}
         </fieldset>

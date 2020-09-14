@@ -30,9 +30,9 @@ function UIPanel(props) {
     }, [props, con]);
 
     return (
-        <span id={props.id} style={{height: '100%', background: panelProps.bgdColor, borderTop: '1px solid transparent', overflowY: panelProps.overflowYVal, ...props.layoutStyle}}>
+        <div id={props.id} style={{height: '100%', width: (props.parent !== undefined && !props.parent.includes("TP")) ? 'min-content' : null, background: panelProps.bgdColor, padding: '0.05px', overflowY: panelProps.overflowYVal, ...props.layoutStyle}}>
             {insertLayout(content, props)}
-        </span>
+        </div>
     );
 }
 export default UIPanel;

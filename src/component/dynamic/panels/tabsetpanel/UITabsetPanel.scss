@@ -1,0 +1,34 @@
+.p-tabview {
+    .p-tabview-panels {
+        height: calc(100% - 30.72px);
+        padding: 0;
+        background-color: unset;
+        color: unset;
+        border: none;
+        border-bottom-right-radius: unset;
+        border-bottom-left-radius: unset;
+        .p-tabview-panel {
+            height: 100%;
+            width: 100%;
+        }
+    }
+
+    .p-tabview-nav {
+        li {
+            .p-tabview-nav-link {
+                  padding: 0.429rem 0.5rem;
+            }
+        }
+    }
+}
+
+.tabview-button {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    &:hover {
+        font-weight: bold;
+    }
+}

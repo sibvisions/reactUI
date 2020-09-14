@@ -26,7 +26,7 @@ function UIEditorChoice(props) {
     }
 
     return(
-        <span id={props.id} style={{...props.layoutStyle, display: 'flex', justifyContent: alignments.ha, alignItems: alignments.va}}>
+        <span id={props.id} style={{...props.layoutStyle, display: 'inline-flex', justifyContent: alignments.ha, alignItems: alignments.va}}>
             <button className="choice-editor" onClick={handleClick}>
                 <img alt="yo" src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName}></img>
             </button>

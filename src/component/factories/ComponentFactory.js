@@ -23,12 +23,14 @@ import UIPassword from '../dynamic/text/UIPassword';
 import UIEditorPassword from '../dynamic/editors/text/UIEditorPassword';
 import UIText from '../dynamic/text/UIText';
 import UIIcon from '../dynamic/icon/UIIcon';
+import UITabsetPanel from '../dynamic/panels/tabsetpanel/UITabsetPanel';
 
 export function createButton(buttonData){
     const props= {
         ...buttonData,
         key: buttonData.id
     }
+
     if(buttonData.className === "Button") {
         return <UIButton {...props} />
     }
@@ -44,7 +46,23 @@ export function createButton(buttonData){
 }
 
 export function createPanel(panelData){
-    return  <UIPanel  {...panelData} key={panelData.id} />
+    const props= {
+        ...panelData,
+        key: panelData.id
+    }
+
+    if(panelData.className === "Panel" || panelData.className === "ScrollPanel") {
+        return <UIPanel  {...props} />
+    }
+    else if (panelData.className === "GroupPanel") {
+        return <UIGroupPanel {...props} />
+    }
+    else if (panelData.className === "SplitPanel") {
+        return <UISplitPanel {...props} />
+    }
+    else if (panelData.className === "TabsetPanel") {
+        return <UITabsetPanel {...props} />
+    }
 }
 
 export function createTable(tableData) {

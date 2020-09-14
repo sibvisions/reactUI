@@ -132,7 +132,23 @@ class ServerCommunicator {
                 columnNames: ["ID"],
                 values: [selected["ID"].toString(10)]
             }
-        };this.sendRequest("/api/dal/selectRecord", reqBody, timeout)
+        };this.sendRequest("/api/dal/selectRecord", reqBody, timeout);
+    }
+
+    selectTab(componentId, index) {
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+            index: index
+        }; this.sendRequest("/api/comp/selectTab", reqBody);
+    }
+
+    closeTab(componentId, index) {
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+            index: index
+        }; this.sendRequest("/api/comp/closeTab", reqBody);
     }
 
     //---Fetch Requests------

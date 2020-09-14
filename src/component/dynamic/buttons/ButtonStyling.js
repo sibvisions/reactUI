@@ -12,7 +12,7 @@ export function buttonProps(props) {
             //extra check if togglebutton because of weird tabindex bug (togglebutton needs number-, splitbutton needs string value)
             tabIndex: getBtnFocusable(props.focusable) ? (props.tabIndex ? props.tabIndex : props.className === "ToggleButton" ? 0 : '0') : props.className === "ToggleButton" ? -1 : '-1',
             style: {
-                display: 'flex',
+                display: 'inline-flex',
                 flexDirection: getBtnDirection(props.horizontalTextPosition),
                 justifyContent: getBtnDirection(props.horizontalTextPosition) === 'row' ? getAlignments(props).ha : getAlignments(props).va,
                 alignItems: getBtnDirection(props.horizontalTextPosition) === 'row' ? getAlignments(props).va : getAlignments(props).ha,
@@ -102,7 +102,6 @@ function styleButtonContent(child, props, iconProps) {
         child.style.setProperty('margin-' + gapPos, toPx(getImageTextGap(props)));
     }
     if (iconProps) {
-        console.log(iconProps)
         if (child.classList.value.includes(iconProps.icon)) {
             child.style.setProperty('width', toPx(iconProps.size.width));
             child.style.setProperty('height', toPx(iconProps.size.height));
