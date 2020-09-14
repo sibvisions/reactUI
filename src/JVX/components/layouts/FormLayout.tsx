@@ -11,6 +11,7 @@ import ChildWithProps from "../util/ChildWithProps";
 import useChildren from "../zhooks/useChildren";
 import useLayout from "../zhooks/useLayout";
 import Size from "../util/Size";
+import {emitKeypressEvents} from "readline";
 
 type selfStyle = {
     valid: boolean,
@@ -23,6 +24,7 @@ type selfStyle = {
 const FormLayout: FC<layout> = (props) => {
 
     const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: undefined});
+    const [availableSize, setAvailableSize] = useState<Size | undefined>(undefined)
     const [children, preferredSize] = useChildren(props.id);
     const dictatedStyle = useLayout(props.id);
     const context = useContext(jvxContext)
@@ -36,13 +38,20 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     useLayoutEffect(()=> {
-        if(preferredSize && !style.valid){
-            start();
+        if(availableSize){
+            if(preferredSize && !style.valid){
+                start();
+            }
+
+            if(dictatedStyle && !style.outsideValid){
+                start();
+            }
+        } else if(testRef.current) {
+            const tempSize = testRef.current.getBoundingClientRect();
+            // size reported is always exactly this much smaller
+            setAvailableSize({width: tempSize.width+21.25, height: tempSize.height })
         }
 
-        if(dictatedStyle && !style.outsideValid){
-            start();
-        }
     });
 
     const anchors = new Map<string, Anchor>();
@@ -427,22 +436,23 @@ const FormLayout: FC<layout> = (props) => {
         //Set from Server
         const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
         const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
+
         //Div Size
-        let availableSize: Size = {width: 0, height:0};
+        let initSize: Size = {width: 0, height:0};
         if(dictatedStyle){
-            availableSize = {height: dictatedStyle.height, width: dictatedStyle.width}
+            initSize = {height: dictatedStyle.height, width: dictatedStyle.width}
+        } else if (availableSize){
+            console.log(availableSize)
+            initSize = {height: availableSize.height, width: availableSize.width}
         }
-        else if(testRef.current){
-            const DOMElement = testRef.current.getBoundingClientRect();
-            availableSize = {height: DOMElement.height - margins.marginTop - margins.marginBottom, width: DOMElement.width - margins.marginRight - margins.marginLeft}
-        }
+
         const lba = anchors.get("l");
         const rba = anchors.get("r");
         const bba = anchors.get("b");
         const tba = anchors.get("t");
-        if(calculatedTargetDependentAnchors && preferredSize && lba && rba && bba && tba && availableSize){
+        if(calculatedTargetDependentAnchors && preferredSize && lba && rba && bba && tba){
             if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)){
-                if(minLayoutSize.width > availableSize.width){
+                if(minLayoutSize.width > initSize.width){
                     lba.position = 0;
                     rba.position = minLayoutSize.width;
                 }
@@ -452,20 +462,20 @@ const FormLayout: FC<layout> = (props) => {
                             lba.position = 0;
                             break;
                         case HORIZONTAL_ALIGNMENT.RIGHT:
-                            lba.position = availableSize.width - maxLayoutSize.width;
+                            lba.position = initSize.width - maxLayoutSize.width;
                             break;
                         default:
-                            lba.position = (availableSize.width - maxLayoutSize.width) / 2;
+                            lba.position = (initSize.width - maxLayoutSize.width) / 2;
                     }
                     rba.position = lba.position + maxLayoutSize.width;
                 }
                 else {
                     lba.position = 0;
-                    rba.position = availableSize.width;
+                    rba.position = initSize.width;
                 }
             }
             else {
-                if(preferredWidth > availableSize.width){
+                if(preferredWidth > initSize.width){
                     lba.position = 0;
                 }
                 else {
@@ -474,39 +484,39 @@ const FormLayout: FC<layout> = (props) => {
                             lba.position = 0;
                             break
                         case HORIZONTAL_ALIGNMENT.RIGHT:
-                            lba.position = availableSize.width - preferredWidth
+                            lba.position = initSize.width - preferredWidth
                             break;
                         default:
-                            lba.position = (availableSize.width - preferredWidth) / 2
+                            lba.position = (initSize.width - preferredWidth) / 2
                     }
                 }
                 rba.position = lba.position + preferredWidth;
             }
             if(verticalAlignment === VERTICAL_ALIGNMENT.STRETCH || (topBorderUsed && bottomBorderUsed)){
-                if(minLayoutSize.height > availableSize.height){
+                if(minLayoutSize.height > initSize.height){
                     tba.position = 0;
                     bba.position = minLayoutSize.height;
                 }
-                else if(maxLayoutSize.height < availableSize.height){
+                else if(maxLayoutSize.height < initSize.height){
                     switch (verticalAlignment){
                         case VERTICAL_ALIGNMENT.TOP:
                             tba.position = 0;
                             break;
                         case VERTICAL_ALIGNMENT.BOTTOM:
-                            tba.position = availableSize.height - maxLayoutSize.height;
+                            tba.position = initSize.height - maxLayoutSize.height;
                             break;
                         default:
-                            tba.position = (availableSize.height - maxLayoutSize.height) / 2;
+                            tba.position = (initSize.height - maxLayoutSize.height) / 2;
                     }
                     bba.position = tba.position + maxLayoutSize.height;
                 }
                 else{
                     tba.position = 0;
-                    bba.position = availableSize.height;
+                    bba.position = initSize.height;
                 }
             }
             else {
-                if(preferredHeight > availableSize.height){
+                if(preferredHeight > initSize.height){
                     tba.position = 0;
                 }
                 else {
@@ -515,10 +525,10 @@ const FormLayout: FC<layout> = (props) => {
                             tba.position = 0;
                             break;
                         case VERTICAL_ALIGNMENT.BOTTOM:
-                            tba.position = availableSize.height - preferredHeight;
+                            tba.position = initSize.height - preferredHeight;
                             break;
                         default:
-                            tba.position = (availableSize.height - preferredHeight) / 2;
+                            tba.position = (initSize.height - preferredHeight) / 2;
                     }
                 }
                 bba.position = tba.position + preferredHeight;
@@ -573,15 +583,10 @@ const FormLayout: FC<layout> = (props) => {
             const constraint = componentConstraints.get(childWithProps.props.id);
 
             if(constraint && marginConstraint && borderConstraint) {
-                // const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition();
-                // const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition();
-                // const width = constraint.rightAnchor.position
-                // const height = constraint.bottomAnchor.position
-
-                const left = constraint.leftAnchor.getAbsolutePosition() - borderConstraint.leftAnchor.getAbsolutePosition();
-                const top = constraint.topAnchor.getAbsolutePosition() - borderConstraint.topAnchor.getAbsolutePosition();
-                const width = constraint.rightAnchor.position
-                const height = constraint.bottomAnchor.position
+                const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition() + margins.marginLeft;
+                const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition() + margins.marginTop;
+                const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
+                const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
 
                 const styleObj: layoutInfo = {
                     position: "absolute",
@@ -591,10 +596,9 @@ const FormLayout: FC<layout> = (props) => {
                     top: top,
                     width: width
                 }
-                context.eventStream.styleEvent.next(styleObj)
+                context.eventStream.styleEvent.next(styleObj);
             }
         });
-
 
         if(borderConstraint && marginConstraint){
             // @ts-ignore
@@ -602,29 +606,37 @@ const FormLayout: FC<layout> = (props) => {
                 props.onFinish(props.id, preferredHeight, preferredWidth);
             }
 
+            // Check & set height & width
+            let height =  (margins.marginTop + margins.marginBottom);
+            let width =  (margins.marginLeft + margins.marginRight);
+            if(preferredHeight < borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position){
+                height += borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position - margins.marginTop - margins.marginBottom;
+            } else {
+                height += preferredHeight;
+            }
+
+            if(preferredWidth < borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position){
+                width += borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position - margins.marginLeft - margins.marginRight;
+            } else {
+                width += preferredWidth;
+            }
+
             changeStyle({
                 calculatedStyle: {
-                    height: dictatedStyle ? dictatedStyle.height : borderConstraint.bottomAnchor.position,
-                    width: dictatedStyle ? dictatedStyle.width : borderConstraint.rightAnchor.position,
+                    height: dictatedStyle ? dictatedStyle.height : height,
+                    width: dictatedStyle ? dictatedStyle.width  : width,
                     left: dictatedStyle ? dictatedStyle.left : marginConstraint.leftAnchor.getAbsolutePosition(),
                     top: dictatedStyle ? dictatedStyle.top : marginConstraint.topAnchor.getAbsolutePosition(),
-                    marginBottom: margins.marginBottom,
-                    marginLeft: margins.marginLeft,
-                    marginRight: margins.marginRight,
-                    marginTop: margins.marginTop,
-                    position: dictatedStyle ? dictatedStyle.position : "relative"
+                    position: dictatedStyle ? dictatedStyle.position : "relative",
                 },
                 valid: true,
                 outsideValid: !!dictatedStyle
             });
-
-
-
         }
     }
 
     return(
-        <div ref={testRef} style={style.calculatedStyle ? style.calculatedStyle : {height: "100%"}}>
+        <div id={props.id} ref={testRef} style={style.calculatedStyle ? style.calculatedStyle : {height: "100%"}}>
             {children}
         </div>
     )
