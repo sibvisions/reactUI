@@ -116,6 +116,16 @@ class ServerCommunicator {
         }; this.sendRequest("/api/comp/setValue", reqBody);
     }
 
+    setValues(componentId, dataProvider, columnName, values) {
+        const reqBody = {
+            clientId: localStorage.getItem("clientId"),
+            componentId: componentId,
+            dataProvider: dataProvider,
+            columnNames: [columnName],
+            values: [values]
+        }; this.sendRequest("/api/dal/setValues", reqBody);
+    }
+
     openScreen(componentId){
         const reqBody = {
             clientId: localStorage.getItem("clientId"),

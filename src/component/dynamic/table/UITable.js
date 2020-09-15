@@ -16,6 +16,7 @@ function UITable(props) {
     useEffect(() => {
         let fetchSub = con.contentStore.fetchCompleted.subscribe(fetchData => {
             if (fetchData.dataBook === props.dataBook) {
+                console.log(fetchData)
                 buildData(fetchData);
             }
         });
@@ -34,7 +35,7 @@ function UITable(props) {
                     metaData.cellEditor.clearColumns = ["ID", names[index]];
                     columnProps.editor = (props) => buildEditor(props, metaData);
                 }
-                tempDataColumns.push(<Column {...columnProps}/>);
+                tempDataColumns.push(<Column onEditorInit={() => console.log(document.getElementById(props.id))} {...columnProps}/>);
             }
             setDataColumns(tempDataColumns)
         };
@@ -52,6 +53,7 @@ function UITable(props) {
             }
         );
         return fetchSub.unsubscribe();
+        // eslint-disable-next-line
     }, [con, props]);
 
     const buildData = async data => {
@@ -66,7 +68,7 @@ function UITable(props) {
         setData(tempArray);
     }
 
-    const buildEditor = (props, data) => {
+    const buildEditor = (buildProps, data) => {
         if (data) {
             const className = data.cellEditor.className;
             if (className === "LinkedCellEditor") {
@@ -76,8 +78,9 @@ function UITable(props) {
                 data.appendToBody = true;
             }
             data["cellEditor.editable"] = true;
-            data.columnName = props.field;
-            data.initialValue = props.rowData[props.field];
+            data.columnName = buildProps.field;
+            data.initialValue = buildProps.rowData[buildProps.field];
+            data.dataRow = props.dataBook;
             return createEditor(data);
         } 
         else {
@@ -96,7 +99,7 @@ function UITable(props) {
             id={props.id}
             header="Table"
             value={data ? data : []}
-            onRowDoubleClick={onSelectChange}
+            onRowClick={onSelectChange}
             resizableColumns={true}
             columnResizeMode={"expand"}
             scrollable={true}

@@ -40,6 +40,7 @@ function UIToggleButton(props) {
                 checked={checked}
                 style={{...btnData.btnProps.style, background: bgd, borderColor: bgd}}
                 onChange={e => {
+                    con.serverComm.pressButton(props.name);
                     setChecked(e.value);
                     setBgd(e.value ? btnBgdChecked : btnData.btnProps.style.background)
                 }}/>

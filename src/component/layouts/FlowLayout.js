@@ -11,6 +11,8 @@ class FlowLayout extends Component {
 
     preferredWidth;
     preferredHeight;
+    innerWidth;
+    innerHeight;
 
     orientation;
     components = this.props.subjects;
@@ -54,44 +56,45 @@ class FlowLayout extends Component {
     calculateLayoutSize() {
         if (this.props.constraints === "Center" || this.props.constraints === undefined) {
             let margins = this.props.margins
-            this.preferredWidth = document.getElementById(this.props.id).parentElement.clientWidth - (margins.marginLeft + margins.marginRight);
-            this.preferredHeight = document.getElementById(this.props.id).parentElement.clientHeight - (margins.marginTop + margins.marginBottom) - 1;
+            this.preferredWidth = document.getElementById(this.props.id).parentElement.getBoundingClientRect().width - (margins.marginLeft + margins.marginRight);
+            this.preferredHeight = document.getElementById(this.props.id).parentElement.getBoundingClientRect().height - (margins.marginTop + margins.marginBottom);
+            let innerLayout = this.calculateComps();
+            this.innerWidth = innerLayout.width;
+            this.innerHeight = innerLayout.height;
         }
         else {
-            if (this.props.orientation === 'horizontal') {
-                let highest = 0;
-                let calcWidth = 0;
-                this.components.forEach(component => {
-                    let prefSize = getPreferredSize(component.props);
-                    if (prefSize.height > highest) {
-                        highest = prefSize.height;
-                    }
-                    calcWidth += prefSize.width + this.props.gaps.horizontalGap
-                });
-                //let margins = this.props.margins
-                this.preferredWidth = calcWidth;
-                this.preferredHeight = highest;
-            }
-            else {
-                let widest = 0;
-                let calcHeight = 0;
-                this.components.forEach(component => {
-                    let prefSize = getPreferredSize(component.props);
-                    if (prefSize.width > widest) {
-                        widest = prefSize.width;
-                    }
-                    calcHeight += prefSize.height + this.props.gaps.verticalGap
-                });
-                //let margins = this.props.margins
-                this.preferredWidth = widest;
-                this.preferredHeight = calcHeight;
-            }
-            if (this.preferredHeight < document.getElementById(this.props.id).offsetHeight) {
-                this.preferredHeight = document.getElementById(this.props.id).offsetHeight;
-            }
-            if (this.preferredWidth < document.getElementById(this.props.id).offsetWidth) {
-                this.preferredWidth = document.getElementById(this.props.id).offsetWidth;
-            }
+            let layout = this.calculateComps();
+            this.preferredWidth = layout.width;
+            this.innerWidth = layout.width;
+            this.preferredHeight = layout.height;
+            this.innerHeight = layout.height;
+        }
+    }
+
+    calculateComps() {
+        if (this.props.orientation === 'horizontal') {
+            let highest = 0;
+            let calcWidth = 0;
+            this.components.forEach(component => {
+                let prefSize = getPreferredSize(component.props);
+                if (prefSize.height > highest) {
+                    highest = prefSize.height;
+                }
+                calcWidth += prefSize.width + this.props.gaps.horizontalGap
+            });
+            return new Size(calcWidth, highest);
+        }
+        else {
+            let widest = 0;
+            let calcHeight = 0;
+            this.components.forEach(component => {
+                let prefSize = getPreferredSize(component.props);
+                if (prefSize.width > widest) {
+                    widest = prefSize.width;
+                }
+                calcHeight += prefSize.height + this.props.gaps.verticalGap
+            });
+            return new Size(widest, calcHeight);
         }
     }
 
@@ -124,10 +127,8 @@ class FlowLayout extends Component {
             this.orientation = 'column'
         }
         return (
-            <div style={{
+            <div id={this.props.id} style={{
                 display: 'flex',
-                flexWrap: this.props.autoWrap ? 'wrap' : null,
-                flexDirection: this.orientation,
                 justifyContent: this.props.alignments.ha,
                 alignItems: this.props.alignments.va,
                 height: this.preferredHeight,
@@ -136,8 +137,17 @@ class FlowLayout extends Component {
                 marginLeft: this.props.margins.marginLeft,
                 marginBottom: this.props.margins.marginBottom,
                 marginRight: this.props.margins.marginRight,
+            }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: this.orientation,
+                    flexWrap: this.props.autoWrap ? 'wrap' : null,
+                    height: this.innerHeight,
+                    width: this.innerWidth
                 }}>
                     {this.state.content}
+                </div>
+
             </div>
         )
     }

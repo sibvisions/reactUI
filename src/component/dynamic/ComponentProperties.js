@@ -110,7 +110,7 @@ export function parseIconData(props, iconData) {
                     iconSize = new Size(iconString[1], iconString[2]);
                 }
                 if (!colorFound) {
-                    iconColor = props.foreground !== undefined ? tinycolor(props.foreground) : tinycolor('white');
+                    iconColor = props.foreground !== undefined ? tinycolor(props.foreground) : tinycolor('black');
                 }
                 return {icon: iconName, size: iconSize, color: iconColor};
             }

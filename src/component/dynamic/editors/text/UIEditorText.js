@@ -36,6 +36,9 @@ function UIEditorText(props){
             value={selectedColumn}
             style={props.layoutStyle}
             onChange={change => editColumn(change.target.value, props.columnName)}
+            onBlur={() => {
+                con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+            }}
             disabled={!props["cellEditor.editable"]}
         />
     );
