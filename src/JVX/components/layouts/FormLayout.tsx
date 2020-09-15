@@ -1,4 +1,4 @@
-import React, {Children, CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {CSSProperties, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -9,9 +9,9 @@ import {jvxContext} from "../../jvxProvider";
 import {layoutInfo} from "../../EventStream";
 import ChildWithProps from "../util/ChildWithProps";
 import useChildren from "../zhooks/useChildren";
-import useLayout from "../zhooks/useLayout";
 import Size from "../util/Size";
-import {emitKeypressEvents} from "readline";
+import useNewLayout from "../zhooks/useNewLayout";
+import useLayout from "../zhooks/useLayout";
 
 type selfStyle = {
     valid: boolean,
@@ -23,12 +23,6 @@ type selfStyle = {
 
 const FormLayout: FC<layout> = (props) => {
 
-    const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: undefined});
-    const [availableSize, setAvailableSize] = useState<Size | undefined>(undefined)
-    const [children, preferredSize] = useChildren(props.id);
-    const dictatedStyle = useLayout(props.id);
-    const context = useContext(jvxContext)
-    const testRef = useRef<HTMLDivElement>(null);
 
     const start = () => {
         setAnchorsAndConstraints();
@@ -37,21 +31,39 @@ const FormLayout: FC<layout> = (props) => {
         buildComponents();
     }
 
+    const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: undefined});
+    const [availableSize, setAvailableSize] = useState<Size | undefined>(undefined)
+    const [children, preferredSize] = useChildren(props.id);
+    const dictatedStyle = useLayout(props.id);
+    const context = useContext(jvxContext)
+    const testRef = useRef<HTMLDivElement>(null);
+
+
+
     useLayoutEffect(()=> {
         if(availableSize){
             if(preferredSize && !style.valid){
                 start();
             }
-
-            if(dictatedStyle && !style.outsideValid){
+            else if(dictatedStyle && !style.outsideValid){
                 start();
             }
-        } else if(testRef.current) {
+        }
+        else if(testRef.current) {
             const tempSize = testRef.current.getBoundingClientRect();
-            // size reported is always exactly this much smaller
-            setAvailableSize({width: tempSize.width+21.25, height: tempSize.height })
+            setAvailableSize({width: tempSize.width, height: tempSize.height})
         }
 
+        const reSizeSub = context.eventStream.resizeEvent.subscribe((event) => {
+            if(props.parent === event.id && availableSize){
+                setAvailableSize({width: event.width, height: availableSize.height});
+                changeStyle({valid: false, outsideValid:false, calculatedStyle: undefined});
+            }
+        });
+
+        return () => {
+            reSizeSub.unsubscribe();
+        }
     });
 
     const anchors = new Map<string, Anchor>();
@@ -439,10 +451,9 @@ const FormLayout: FC<layout> = (props) => {
 
         //Div Size
         let initSize: Size = {width: 0, height:0};
-        if(dictatedStyle){
+        if(dictatedStyle && style.valid){
             initSize = {height: dictatedStyle.height, width: dictatedStyle.width}
         } else if (availableSize){
-            console.log(availableSize)
             initSize = {height: availableSize.height, width: availableSize.width}
         }
 
@@ -601,11 +612,6 @@ const FormLayout: FC<layout> = (props) => {
         });
 
         if(borderConstraint && marginConstraint){
-            // @ts-ignore
-            if(props.onFinish){
-                props.onFinish(props.id, preferredHeight, preferredWidth);
-            }
-
             // Check & set height & width
             let height =  (margins.marginTop + margins.marginBottom);
             let width =  (margins.marginLeft + margins.marginRight);
@@ -619,6 +625,10 @@ const FormLayout: FC<layout> = (props) => {
                 width += borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position - margins.marginLeft - margins.marginRight;
             } else {
                 width += preferredWidth;
+            }
+
+            if(props.onFinish){
+                props.onFinish(props.id, preferredHeight+(margins.marginTop + margins.marginBottom), preferredWidth+ (margins.marginLeft + margins.marginRight));
             }
 
             changeStyle({

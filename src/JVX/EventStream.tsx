@@ -9,7 +9,13 @@ export type layoutInfo = {
     position?: "absolute" | "relative" | undefined;
 }
 
+type resize = {
+    id: string,
+    width: number
+}
+
 class EventStream{
     styleEvent = new Subject<layoutInfo>();
+    resizeEvent = new Subject<resize>();
 }
 export default EventStream

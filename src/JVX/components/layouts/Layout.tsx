@@ -1,13 +1,13 @@
-import React, {FC, RefObject} from "react";
+import React, {FC} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import LoadCallBack from "../util/LoadCallBack";
 
 export type layout = {
+    parent: string | undefined
     id: string
     layout: string,
     layoutData: string,
-    parentDivRef: RefObject<HTMLDivElement>
     onFinish: LoadCallBack
 }
 

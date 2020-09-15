@@ -1,6 +1,8 @@
-import React, {FC, ReactElement} from "react";
+import React, {FC, ReactElement, useCallback, useContext, useMemo} from "react";
 import SplitPanel from "./SplitPanel";
 import useChildren from "../../zhooks/useChildren";
+import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
+import {jvxContext} from "../../../jvxProvider";
 
 export type UISplitPanelProps ={
     className: string,
@@ -17,12 +19,11 @@ export type UISplitPanelProps ={
 type childProps = {
     props: {
         constraints: string
+        id: string
     }
 }
 
 const UISplitPanel: FC<UISplitPanelProps> = (props) => {
-
-    const [children] = useChildren(props.id);
 
     const getChildByConstraint = (constraint: string): ReactElement | undefined => {
         return children.find(child => {
@@ -31,10 +32,15 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
         });
     }
 
+    const [children] = useChildren(props.id);
+    const firstChild = getChildByConstraint("FIRST_COMPONENT");
+    const secondChild = getChildByConstraint("SECOND_COMPONENT");
+
+
     return(
         <SplitPanel
-            leftComponent={getChildByConstraint("FIRST_COMPONENT")}
-            rightComponent={getChildByConstraint("SECOND_COMPONENT")}
+            leftComponent={firstChild}
+            rightComponent={secondChild}
         />
     )
 }

@@ -20,7 +20,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     useLayoutEffect(() => {
         if(!layoutStyle && props.onLoadCallback && props.preferredSize){
             const size = props.preferredSize.split(",");
-            props.onLoadCallback(props.id, parseInt(size[0]), parseInt(size[1]));
+            props.onLoadCallback(props.id, parseInt(size[1]), parseInt(size[0]));
         }
     });
 

@@ -1,9 +1,10 @@
-import React, {CSSProperties, FC, ReactElement, useContext, useMemo} from "react";
+import React, {CSSProperties, FC, ReactElement, useContext, useMemo, useRef} from "react";
 import {layout} from "./Layout";
 import Margins from "./models/Margins";
 import {jvxContext} from "../../jvxProvider";
 import useChildren from "../zhooks/useChildren";
 import ChildWithProps from "../util/ChildWithProps";
+import ReactResizeDetector from "react-resize-detector";
 
 type borderLayoutComponents = {
     north?: ReactElement,
@@ -17,8 +18,8 @@ const BorderLayout: FC<layout> = (props) => {
 
     const context = useContext(jvxContext);
     const [children] = useChildren(props.id);
-    const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4))
-    //const gaps = new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6))
+    const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4));
+    const layoutRef = useRef<HTMLDivElement>(null);
     const borderLayoutStyle: CSSProperties = {
         flexFlow: "column",
         padding: 0,
@@ -33,7 +34,7 @@ const BorderLayout: FC<layout> = (props) => {
         const components: borderLayoutComponents = {};
         children.forEach(child => {
             const childProps = (child as ChildWithProps);
-            context.eventStream.styleEvent.next({height: 200, width: 200, id:childProps.props.id, top: 0, position:"absolute", left:0});
+            // context.eventStream.styleEvent.next({height: 200, width: 200, id:childProps.props.id, top: 0, position:"absolute", left:0});
 
             switch (childProps.props.constraints){
                 case "North":
@@ -57,29 +58,32 @@ const BorderLayout: FC<layout> = (props) => {
     }
     const positions = useMemo(setConstraints, [props.children]);
 
-
-
+    const onResize = (width: number) => {
+        context.eventStream.resizeEvent.next({id: props.id, width: width})
+    }
 
     return(
-        <div className={"p-grid p-nogutter"} style={borderLayoutStyle}>
-            <div className={"p-col-12 north"} style={{padding: 0}}>
-                {positions.north}
-            </div>
-            <div className={"p-grid p-nogutter p-align-center"} style={{height: "100%"}}>
-                <div className={"p-col-fixed west"} style={{width:"auto", padding: 0}}>
-                    {positions.west}
+        <ReactResizeDetector onResize={onResize} targetRef={layoutRef} skipOnMount={true} >
+            <div className={"p-grid p-nogutter"} style={borderLayoutStyle}>
+                <div className={"p-col-12 north"} style={{padding: 0}}>
+                    {positions.north}
                 </div>
-                <div className={"p-col center"} style={{height:"100%", width:"100%", padding: 0}}>
-                    {positions.center}
+                <div className={"p-grid p-nogutter p-align-center"} style={{height: "100%"}}>
+                    <div className={"p-col-fixed west"} style={{width:"auto", padding: 0}}>
+                        {positions.west}
+                    </div>
+                    <div className={"p-col center"} style={{height:"100%", width:"100%", padding: 0}}>
+                        {positions.center}
+                    </div>
+                    <div className={"p-col-fixed east"} style={{width:"auto", padding: 0}}>
+                        {positions.east}
+                    </div>
                 </div>
-                <div className={"p-col-fixed east"} style={{width:"auto", padding: 0}}>
-                    {positions.east}
+                <div className={"p-col-12 south"} style={{padding: 0}}>
+                    {positions.south}
                 </div>
             </div>
-            <div className={"p-col-12 south"} style={{padding: 0}}>
-                {positions.south}
-            </div>
-        </div>
+        </ReactResizeDetector>
     )
 }
 export default BorderLayout

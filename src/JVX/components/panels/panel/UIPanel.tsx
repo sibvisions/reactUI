@@ -11,11 +11,8 @@ export interface Panel extends BaseComponent{
 
 const UIPanel: FC<Panel> = (props) => {
 
-    const divRef = useRef(null);
-
-
     return(
-        <Layout onFinish={props.onLoadCallback} parentDivRef={divRef} id={props.id} layout={props.layout} layoutData={props.layoutData} />
+        <Layout onFinish={props.onLoadCallback} parent={props.parent} id={props.id} layout={props.layout} layoutData={props.layoutData} />
     )
 }
 export default UIPanel
