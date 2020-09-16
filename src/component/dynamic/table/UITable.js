@@ -7,20 +7,15 @@ import { createEditor } from "../../factories/ComponentFactory";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { getPreferredSize } from '../../helper/GetSizes';
+import useFetchListen from '../../hooks/useFetchListen'
 
 function UITable(props) {
+    const [fetchedData] = useFetchListen(props.dataBook);
     const [data, setData] = useState();
     const [dataColumns, setDataColumns] = useState()
     const con = useContext(RefContext);
 
     useEffect(() => {
-        let fetchSub = con.contentStore.fetchCompleted.subscribe(fetchData => {
-            if (fetchData.dataBook === props.dataBook) {
-                console.log(fetchData)
-                buildData(fetchData);
-            }
-        });
-
         const buildColumns = (labels, names) => {
             let tempDataColumns = [];
             for (let index = 0; index < labels.length; index++) {
@@ -35,7 +30,7 @@ function UITable(props) {
                     metaData.cellEditor.clearColumns = ["ID", names[index]];
                     columnProps.editor = (props) => buildEditor(props, metaData);
                 }
-                tempDataColumns.push(<Column onEditorInit={() => console.log(document.getElementById(props.id))} {...columnProps}/>);
+                tempDataColumns.push(<Column {...columnProps} sortable/>);
             }
             setDataColumns(tempDataColumns)
         };
@@ -52,9 +47,8 @@ function UITable(props) {
                 parent: props.parent
             }
         );
-        return fetchSub.unsubscribe();
         // eslint-disable-next-line
-    }, [con, props]);
+    }, [con, props, fetchedData]);
 
     const buildData = async data => {
         let tempArray = []
@@ -80,6 +74,7 @@ function UITable(props) {
             data["cellEditor.editable"] = true;
             data.columnName = buildProps.field;
             data.initialValue = buildProps.rowData[buildProps.field];
+            data.rowId = buildProps.rowData["ID"]
             data.dataRow = props.dataBook;
             return createEditor(data);
         } 
@@ -99,7 +94,7 @@ function UITable(props) {
             id={props.id}
             header="Table"
             value={data ? data : []}
-            onRowClick={onSelectChange}
+            onRowDoubleClick={onSelectChange}
             resizableColumns={true}
             columnResizeMode={"expand"}
             scrollable={true}

@@ -7,7 +7,7 @@ import { RefContext } from '../../../helper/Context';
 
 
 function UIEditorText(props){
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
     const inputRef = useRef();
     const con = useContext(RefContext)
 
@@ -37,7 +37,14 @@ function UIEditorText(props){
             style={props.layoutStyle}
             onChange={change => editColumn(change.target.value, props.columnName)}
             onBlur={() => {
-                con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+                if (props.rowId) {
+                    if (con.contentStore.storedData.get(props.dataRow).selectedRow === props.rowId - 1) {
+                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+                    }
+                }
+                else {
+                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+                }
             }}
             disabled={!props["cellEditor.editable"]}
         />

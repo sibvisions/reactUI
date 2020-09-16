@@ -24,7 +24,20 @@ class ContentStore{
     }
 
     emitFetchSuccess(fetchResponse){
-        this.storedData.set(fetchResponse.dataProvider, fetchResponse)
+        let currData = this.storedData.get(fetchResponse.dataProvider);
+        if (currData) {
+            let x = 0;
+            currData.selectedRow = fetchResponse.selectedRow
+            for (let i = fetchResponse.from; i <= fetchResponse.to; i++) {
+                if (currData.records.length > 0) {
+                    currData.records[i] = fetchResponse.records[x];
+                }
+                x++;
+            }
+        }
+        else {
+            this.storedData.set(fetchResponse.dataProvider, fetchResponse)
+        }
         this.fetchCompleted.next(fetchResponse);
     }
 
