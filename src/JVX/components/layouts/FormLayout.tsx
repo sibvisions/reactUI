@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -10,8 +10,8 @@ import {layoutInfo} from "../../EventStream";
 import ChildWithProps from "../util/ChildWithProps";
 import useChildren from "../zhooks/useChildren";
 import Size from "../util/Size";
-import useNewLayout from "../zhooks/useNewLayout";
 import useLayout from "../zhooks/useLayout";
+import useResizeLayout from "../zhooks/useResizeLayout";
 
 type selfStyle = {
     valid: boolean,
@@ -25,46 +25,35 @@ const FormLayout: FC<layout> = (props) => {
 
 
     const start = () => {
+        if(testRef.current){
+            const size = testRef.current.getBoundingClientRect();
+            availableSize= {height: size.height, width: size.width}
+        }
         setAnchorsAndConstraints();
         calculateAnchors();
         calculateTargetDependentAnchors();
         buildComponents();
     }
 
+    let availableSize: {width: number, height: number} | undefined = undefined;
     const [style, changeStyle] = useState<selfStyle>({valid: false, outsideValid:false, calculatedStyle: undefined});
-    const [availableSize, setAvailableSize] = useState<Size | undefined>(undefined)
     const [children, preferredSize] = useChildren(props.id);
     const dictatedStyle = useLayout(props.id);
     const context = useContext(jvxContext)
     const testRef = useRef<HTMLDivElement>(null);
-
-
+    const [newSize] = useResizeLayout(props.id);
 
     useLayoutEffect(()=> {
-        if(availableSize){
-            if(preferredSize && !style.valid){
-                start();
-            }
-            else if(dictatedStyle && !style.outsideValid){
-                start();
-            }
+        if(preferredSize && !style.valid){
+            start();
         }
-        else if(testRef.current) {
-            const tempSize = testRef.current.getBoundingClientRect();
-            setAvailableSize({width: tempSize.width, height: tempSize.height})
+        else if(dictatedStyle){
+            start();
         }
-
-        const reSizeSub = context.eventStream.resizeEvent.subscribe((event) => {
-            if(props.parent === event.id && availableSize){
-                setAvailableSize({width: event.width, height: availableSize.height});
-                changeStyle({valid: false, outsideValid:false, calculatedStyle: undefined});
-            }
-        });
-
-        return () => {
-            reSizeSub.unsubscribe();
+        else if(preferredSize && newSize){
+            start();
         }
-    });
+    }, [newSize ,preferredSize, dictatedStyle]);
 
     const anchors = new Map<string, Anchor>();
     const componentConstraints = new Map<string, Constraints>();
@@ -451,9 +440,13 @@ const FormLayout: FC<layout> = (props) => {
 
         //Div Size
         let initSize: Size = {width: 0, height:0};
+        if(newSize){
+            initSize = {height: newSize.height, width: newSize.width}
+        }
         if(dictatedStyle && style.valid){
             initSize = {height: dictatedStyle.height, width: dictatedStyle.width}
-        } else if (availableSize){
+        }
+        else if (availableSize){
             initSize = {height: availableSize.height, width: availableSize.width}
         }
 
@@ -589,6 +582,7 @@ const FormLayout: FC<layout> = (props) => {
             borderConstraint = new Constraints(tba, lba, bba, rba);
         }
 
+        const sizeMap = new Map<string, {width: number, height: number}>();
         children.forEach(child => {
             const childWithProps = (child as ChildWithProps);
             const constraint = componentConstraints.get(childWithProps.props.id);
@@ -641,14 +635,16 @@ const FormLayout: FC<layout> = (props) => {
                 },
                 valid: true,
                 outsideValid: !!dictatedStyle
-            });
+            })
+
+
         }
     }
 
     return(
-        <div id={props.id} ref={testRef} style={style.calculatedStyle ? style.calculatedStyle : {height: "100%"}}>
-            {children}
-        </div>
+         <div id={props.id} style={style.calculatedStyle ? style.calculatedStyle : {height:"100%"}}>
+             {children}
+         </div>
     )
 }
 export default FormLayout
