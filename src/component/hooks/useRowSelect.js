@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
+import { recordToObject } from '../helper/RecordToObject';
 
 function useRowSelect(columnName, init, id="no", dataProvider) {
     const [selectedColumn, editColumn] = useState(init);
@@ -17,17 +18,31 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
 
         const sub2 = con.contentStore.fetchCompleted.subscribe(fetchResponse => {
             if (fetchResponse.dataProvider === dataProvider) {
-                let fetchedData = {};
-                for (let fetchRecord of fetchResponse.records) {
-                    console.log(con.contentStore.storedData.get(dataProvider).records.find(record => record[0] === fetchRecord[0]))
-                }
-                for (let i = 0; i < fetchResponse.columnNames.length; i++) {
-                    if (fetchResponse.records.length > 0) {
-                        fetchedData[fetchResponse.columnNames[i]] = fetchResponse.records[0][i];
-                    }
-                }
-                if (fetchedData[columnName]) {
-                    editColumn(fetchedData[columnName])
+                let fetchedData = [];
+                if (fetchResponse.records.length > 0) {
+                    fetchResponse.records.forEach(record => {
+                        fetchedData.push(recordToObject(fetchResponse, record));
+                    });
+                    let primaryKeyColumns = con.contentStore.metaData.get(fetchResponse.dataProvider).primaryKeyColumns;
+                    let storedData = con.contentStore.storedData.get(fetchResponse.dataProvider);
+                    let found;
+                    fetchedData.forEach(record => {
+                        let filter = {};
+                        primaryKeyColumns.forEach(pkColumn => {
+                            filter[pkColumn] = record[pkColumn];
+                        })
+                        found = storedData.find(storedRecord => {
+                            for (let key in filter) {
+                                if (storedRecord[key] === undefined || storedRecord[key] !== filter[key]) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        })
+                        if (found[columnName] && found === storedData[con.contentStore.selectedRow.get(dataProvider)]) {
+                            editColumn(found[columnName])
+                        }
+                    })
                 }
             }
         })

@@ -1,5 +1,7 @@
 class ResponseHandler{
 
+    testMap = new Map();
+
     // Setter
 
     setContentStore(contentStore){
@@ -204,9 +206,13 @@ class ResponseHandler{
     }
 
     metaData(mData){
-        mData["columnView.table"].forEach((column, index) => {
-            this.contentStore.metaData.set(column, mData.columns.find(data => data.name === column));
-        });
+        let metaValue = {}
+        metaValue["primaryKeyColumns"] = mData["primaryKeyColumns"];
+        metaValue["columns"] = new Map();
+         mData["columnView.table"].forEach(column => {
+            metaValue["columns"].set(column, mData.columns.find(data => data.name === column))
+        })
+        this.contentStore.metaData.set(mData.dataProvider, metaValue)
     }
 }
 export default ResponseHandler

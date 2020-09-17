@@ -1,4 +1,5 @@
 import { Subject } from "rxjs";
+import { recordToObject } from "../component/helper/RecordToObject";
 
 class ContentStore{
 
@@ -10,6 +11,7 @@ class ContentStore{
     menuItems = [];
     removedContent = [];
 
+    selectedRow = new Map();
     storedData = new Map();
     metaData = new Map();
 
@@ -27,16 +29,21 @@ class ContentStore{
         let currData = this.storedData.get(fetchResponse.dataProvider);
         if (currData) {
             let x = 0;
-            currData.selectedRow = fetchResponse.selectedRow
+            this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             for (let i = fetchResponse.from; i <= fetchResponse.to; i++) {
-                if (currData.records.length > 0) {
-                    currData.records[i] = fetchResponse.records[x];
+                if (currData.length > 0) {
+                    currData[i] = recordToObject(fetchResponse, fetchResponse.records[x]);
                 }
                 x++;
             }
         }
         else {
-            this.storedData.set(fetchResponse.dataProvider, fetchResponse)
+            this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
+            let fetchedData = []
+            fetchResponse.records.forEach(record => {
+                fetchedData.push(recordToObject(fetchResponse, record));
+            });
+            this.storedData.set(fetchResponse.dataProvider, fetchedData)
         }
         this.fetchCompleted.next(fetchResponse);
     }

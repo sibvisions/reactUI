@@ -10,7 +10,7 @@ function UIEditorNumber(props) {
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id);
     const inputRef = useRef();
     const con = useContext(RefContext);
-    const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
+    //const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
 
 
     useEffect(() => {
@@ -39,8 +39,8 @@ function UIEditorNumber(props) {
             ref={inputRef}
             mode="decimal"
             useGrouping={false}
-            minFractionDigits={scaleDigits}
-            maxFractionDigits={scaleDigits}
+            //minFractionDigits={scaleDigits}
+            //maxFractionDigits={scaleDigits}
             value={selectedColumn}
             style={props.layoutStyle}
             onChange={change => {editColumn(change.value)}}

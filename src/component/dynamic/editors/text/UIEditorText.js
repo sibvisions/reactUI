@@ -38,7 +38,7 @@ function UIEditorText(props){
             onChange={change => editColumn(change.target.value, props.columnName)}
             onBlur={() => {
                 if (props.rowId) {
-                    if (con.contentStore.storedData.get(props.dataRow).selectedRow === props.rowId - 1) {
+                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
                         con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
                     }
                 }

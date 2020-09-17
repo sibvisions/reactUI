@@ -24,7 +24,7 @@ function UITable(props) {
                     header: labels[index],
                     key: names[index]
                 };
-                let metaData = con.contentStore.metaData.get(names[index]);
+                let metaData = con.contentStore.metaData.get(props.dataBook).columns.get(names[index]);
                 if (metaData) {
                     metaData.name = props.name;
                     metaData.cellEditor.clearColumns = ["ID", names[index]];
@@ -52,12 +52,12 @@ function UITable(props) {
 
     const buildData = async data => {
         let tempArray = []
-        data.records.forEach(set => {
-            let tableData = {}
-            for (let index = 0; index <= data.columnNames.length; index++) {
-                tableData[data.columnNames[index]] = set[index];
-            }
-            tempArray.push(tableData);
+        data.forEach(set => {
+            // let tableData = {}
+            // for (let index = 0; index <= data.length; index++) {
+            //     tableData[data.columnNames[index]] = set[index];
+            // }
+            tempArray.push(set);
         });
         setData(tempArray);
     }
