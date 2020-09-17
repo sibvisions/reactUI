@@ -25,6 +25,8 @@ const BorderLayout: FC<layout> = (props) => {
     const eastRef = useRef<HTMLDivElement>(null);
     const southRef = useRef<HTMLDivElement>(null);
 
+    const layoutRef = useRef<HTMLDivElement>(null);
+
 
     const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4));
     const borderLayoutStyle: CSSProperties = {
@@ -66,6 +68,7 @@ const BorderLayout: FC<layout> = (props) => {
 
             context.eventStream.resizeEvent.next(sizeMap);
         }
+
     })
 
     const setConstraints = (): borderLayoutComponents => {
@@ -95,7 +98,7 @@ const BorderLayout: FC<layout> = (props) => {
     const positions = useMemo(setConstraints, [props.children]);
 
     return(
-        <div className={"p-grid p-nogutter"} style={borderLayoutStyle}>
+        <div  className={"p-grid p-nogutter"} style={borderLayoutStyle}>
             <div ref={northRef} className={"p-col-12 north"} style={{padding: 0}}>
                 {positions.north}
             </div>

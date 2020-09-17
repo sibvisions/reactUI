@@ -1,6 +1,7 @@
 import {ReactElement, useContext, useMemo, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
+import ChildWithProps from "../util/ChildWithProps";
 type ComponentSize = {
     id: string
     width: number,
@@ -24,10 +25,16 @@ const useChildren = (id: string): [Array<ReactElement>, Map<string,ComponentSize
         return reactChildrenArray;
     }
 
-    const componentHasLoaded = (id: string, height: number, width:number)=> {
-        tempSizes.set(id, {id: id, width: width, height: height});
+    const componentHasLoaded = (compId: string, height: number, width:number)=> {
+        tempSizes.set(compId, {id: compId, width: width, height: height});
         sizeCounter++;
-        if(sizeCounter === reactChildren.length){
+        //
+        // const missing = reactChildren.filter(child => {
+        //     const cwp = (child as ChildWithProps);
+        //     return !tempSizes.has(cwp.props.id);
+        // });
+        // console.log(missing, id)
+        if(sizeCounter === reactChildren.length && !preferredSizes){
             setPreferredSizes(tempSizes);
         }
     }

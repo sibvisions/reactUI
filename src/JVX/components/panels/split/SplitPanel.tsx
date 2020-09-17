@@ -23,22 +23,21 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     let timeOutId: NodeJS.Timeout;
     const dragging = (event: MouseEvent) => {
-        clearTimeout(timeOutId);
 
-        timeOutId = setTimeout(() => {
-            let newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
-            if(newSeparatorPosition > 0){
-                if(props.onResize && secondRef.current && firstRef.current){
+        let newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
+        if(newSeparatorPosition > 0){
+            clearTimeout(timeOutId);
+            timeOutId = setTimeout(() => {
+                if (props.onResize && secondRef.current && firstRef.current) {
                     const firstDom = firstRef.current.getBoundingClientRect();
                     const secondDom = secondRef.current.getBoundingClientRect();
-
                     props.onResize(
                         {width: firstDom.width, height: firstDom.height},
                         {width: secondDom.width, height: secondDom.height});
                 }
-                setFirstWidth(newSeparatorPosition);
-            }
-        }, 7);
+            }, 10)
+            setFirstWidth(newSeparatorPosition);
+        }
     }
 
     const stopDrag = () => {

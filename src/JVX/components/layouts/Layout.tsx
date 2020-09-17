@@ -1,7 +1,8 @@
-import React, {FC} from "react";
+import React, {FC, useCallback, useLayoutEffect, useRef} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import LoadCallBack from "../util/LoadCallBack";
+import useChildren from "../zhooks/useChildren";
 
 export type layout = {
     parent: string | undefined
@@ -21,10 +22,32 @@ const Layout: FC<layout> = (props) => {
     }
     else {
         return(
-            <div>
-                <h1>Not Yet Implemented</h1>
-            </div>
+            <DummyLayout {...props}/>
         )
     }
 }
 export default Layout
+
+
+
+
+const DummyLayout: FC<layout> = (props) => {
+
+    const layoutSize = useRef<HTMLDivElement>(null);
+    const [children] = useChildren(props.id);
+
+    useLayoutEffect(() => {
+        if(layoutSize.current){
+            const size = layoutSize.current.getBoundingClientRect();
+
+            props.onFinish(props.id, size.height, size.width);
+        }
+    });
+
+
+    return(
+        <div ref={layoutSize}>
+            {children}
+        </div>
+    )
+}

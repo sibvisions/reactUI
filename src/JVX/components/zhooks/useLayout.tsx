@@ -16,7 +16,7 @@ const useLayout = (componentId: string) => {
         return () => {
             sub.unsubscribe();
         }
-    });
+    }, []);
 
     return layoutStyle
 }

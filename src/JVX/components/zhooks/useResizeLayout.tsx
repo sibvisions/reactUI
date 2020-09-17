@@ -1,4 +1,4 @@
-import {useContext, useLayoutEffect, useState} from "react";
+import {useContext, useEffect, useLayoutEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 
 const useResizeLayout = (id: string) => {
@@ -6,7 +6,7 @@ const useResizeLayout = (id: string) => {
     const [newSize, setNewSize] = useState<{width: number, height: number}>();
     const context = useContext(jvxContext)
 
-    useLayoutEffect(() => {
+    useEffect(() => {
        const resizeSub = context.eventStream.resizeEvent.subscribe(value => {
            if(value.get(id)){
                setNewSize(value.get(id))
@@ -15,9 +15,9 @@ const useResizeLayout = (id: string) => {
        return () => {
            resizeSub.unsubscribe();
        };
-    });
+    }, [id, context]);
 
-    return [newSize];
+    return newSize;
 }
 
 export default useResizeLayout
