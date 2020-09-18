@@ -39,9 +39,9 @@ export const createEditorText: FC<IEditorText> = (props) => {
 
 const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
-        // if(props.cellEditor.className === "ImageViewer"){
-        //     return createEditorImage((props as IEditorImage));
-        // }
+        if(props.cellEditor.className === "ImageViewer"){
+            return createEditorImage((props as IEditorImage));
+        }
          if(props.cellEditor.className === "TextCellEditor"){
             return createEditorText((props as IEditorText));
         }
