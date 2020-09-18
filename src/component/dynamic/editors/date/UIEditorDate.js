@@ -70,6 +70,16 @@ function UIEditorDate(props) {
             showIcon={true}
             style={{width:"100%", textAlign: 'start',  ...props.layoutStyle}}
             onChange={change => editColumn(change.value, props.columnName)}
+            onBlur={() => {
+                if (props.rowId) {
+                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
+                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+                    }
+                }
+                else {
+                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
+                }
+            }}
             disabled={!props["cellEditor.editable"]}/>
     );
 }

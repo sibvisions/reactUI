@@ -7,10 +7,11 @@ import { getPreferredSize } from "../../../helper/GetSizes";
 import { RefContext } from "../../../helper/Context";
 
 function UIEditorNumber(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue,
+                                                      props.id, props.dataRow, props.cellEditor.className);
     const inputRef = useRef();
     const con = useContext(RefContext);
-    //const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
+    const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
 
 
     useEffect(() => {
@@ -39,11 +40,21 @@ function UIEditorNumber(props) {
             ref={inputRef}
             mode="decimal"
             useGrouping={false}
-            //minFractionDigits={scaleDigits}
-            //maxFractionDigits={scaleDigits}
+            minFractionDigits={scaleDigits}
+            maxFractionDigits={scaleDigits}
             value={selectedColumn}
             style={props.layoutStyle}
             onChange={change => {editColumn(change.value)}}
+            onBlur={() => {
+                if (props.rowId) {
+                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
+                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn);
+                    }
+                }
+                else {
+                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn);
+                }
+            }}
             disabled={!props["cellEditor.editable"]}
         />
     )

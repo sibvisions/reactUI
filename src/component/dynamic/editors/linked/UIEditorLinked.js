@@ -12,7 +12,8 @@ import { getPreferredSize } from '../../../helper/GetSizes';
 
 function UIEditorLinked(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.referencedDataBook);
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "",
+                                                      props.id, props.dataRow, props.cellEditor.className);
     const con = useContext(RefContext)
     const autoComRef = useRef();
 
@@ -59,16 +60,22 @@ function UIEditorLinked(props){
             id={props.id}
             style={props.layoutStyle}
             ref={autoComRef}
-
             dropdown={true}
             completeMethod={onInputChange}
-        
             suggestions={buildSuggestions(fetchedData)}
             field={props.columnName}
-
             value={selectedColumn} 
             onChange={event => editColumn(event.target.value)}
-
+        	onBlur={() => {
+                if (props.rowId) {
+                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
+                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn[props.columnName])
+                    }
+                }
+                else {
+                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn[props.columnName])
+                }
+            }}
             disabled={!props["cellEditor.editable"]}
         />
     );

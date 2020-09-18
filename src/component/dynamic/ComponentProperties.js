@@ -24,7 +24,6 @@ export function getPanelBgdColor(props, con) {
         // //parent panel
         // else {
         //     if (document.getElementById(props.parent)) {
-        //         console.log(props)
         //         bgdColor = tinycolor(document.getElementById(props.parent).style.background);
         //     }
         // }

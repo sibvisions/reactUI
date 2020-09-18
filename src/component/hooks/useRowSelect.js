@@ -2,21 +2,32 @@ import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
 import { recordToObject } from '../helper/RecordToObject';
 
-function useRowSelect(columnName, init, id="no", dataProvider) {
+function useRowSelect(columnName, init, id="no", dataProvider, className) {
     const [selectedColumn, editColumn] = useState(init);
     const con = useContext(RefContext);
 
+    // eslint-disable-next-line
+    String.prototype.indexOfEnd = function(string) {
+        var io = this.indexOf(string);
+        return io === -1 ? -1 : io + string.length;
+    }
+
     useEffect(()=> {
-        const sub = con.contentStore.selectedDataRowChange.subscribe(row => {
+        const rowSub = con.contentStore.selectedDataRowChange.subscribe(row => {
             const value = row[columnName];
+            
             if(value){
+                console.log(value, columnName)
                 editColumn(row[columnName]);
             }
-            else editColumn("");
+            else {
+                console.log(value, columnName)
+                editColumn("");
+            } 
             con.contentStore.updateContent([{id: id, initialValue: value || init}]);
         });
 
-        const sub2 = con.contentStore.fetchCompleted.subscribe(fetchResponse => {
+        const fetchSub = con.contentStore.fetchCompleted.subscribe(fetchResponse => {
             if (fetchResponse.dataProvider === dataProvider) {
                 let fetchedData = [];
                 if (fetchResponse.records.length > 0) {
@@ -39,8 +50,13 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
                             }
                             return true;
                         })
-                        if (found[columnName] && found === storedData[con.contentStore.selectedRow.get(dataProvider)]) {
-                            editColumn(found[columnName])
+                        if (found === storedData[con.contentStore.selectedRow.get(dataProvider)]) {
+                            if(found[columnName]) {
+                                editColumn(found[columnName])
+                            }
+                            else {
+                                editColumn("")
+                            }
                         }
                     })
                 }
@@ -48,8 +64,8 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
         })
 
         return function cleanUp(){
-            sub.unsubscribe();
-            sub2.unsubscribe();
+            rowSub.unsubscribe();
+            fetchSub.unsubscribe();
         }
     });
     return [selectedColumn , editColumn];
