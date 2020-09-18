@@ -36,6 +36,8 @@ const FormLayout: FC<layout> = (props) => {
         buildComponents();
     }
 
+    // Set init Size  & start
+
     useLayoutEffect(() => {
         if(preferredChildrenSizes){
             start();
@@ -446,13 +448,30 @@ const FormLayout: FC<layout> = (props) => {
 
 
         //Available Size
-        //ToDo
         if(!initSize){
             if(layoutSizeRef.current){
                 const size = layoutSizeRef.current.getBoundingClientRect();
                 initSize = {height: size.height, width: size.width};
             }
         }
+        else{
+            let height = 0; let width = 0;
+            if(initSize.width < minimumWidth){
+                width = minimumWidth;
+            } else {
+                width = initSize.width;
+            }
+
+            if(initSize.height < minimumHeight){
+                height = minimumWidth;
+            } else {
+                height = initSize.height
+            }
+
+            initSize = {height: height, width: width}
+        }
+
+
 
 
         const lba = anchors.get("l");
@@ -614,13 +633,13 @@ const FormLayout: FC<layout> = (props) => {
             let height =  (margins.marginTop + margins.marginBottom);
             let width =  (margins.marginLeft + margins.marginRight);
             if(preferredHeight < borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position){
-                height += borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position ;
+                height += borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position - (margins.marginTop + margins.marginBottom);
             } else {
                 height += preferredHeight;
             }
 
             if(preferredWidth < borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position){
-                width += borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position - margins.marginLeft - margins.marginRight;
+                width += borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position - (margins.marginLeft + margins.marginRight);
             } else {
                 width += preferredWidth;
             }
@@ -643,7 +662,7 @@ const FormLayout: FC<layout> = (props) => {
 
 
     return(
-         <div ref={layoutSizeRef} id={props.id} style={{ height:"100%" , ...calculatedStyle}}>
+         <div ref={layoutSizeRef} id={props.id} style={{ height:"100%", ...calculatedStyle}}>
              {children}
          </div>
     )

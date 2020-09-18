@@ -35,7 +35,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
                         {width: firstDom.width, height: firstDom.height},
                         {width: secondDom.width, height: secondDom.height});
                 }
-            }, 10)
+            }, 5)
             setFirstWidth(newSeparatorPosition);
         }
     }
@@ -58,11 +58,11 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     return(
         <div className={"splitPanel"} ref={positionRef}>
-            <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%"}}>
+            <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%", overflow:"auto"}}>
                 {props.leftComponent}
             </div>
             <div className={"separator"} onMouseDown={dragStart} />
-            <div ref={secondRef} className={"second"}>
+            <div ref={secondRef} className={"second"} style={{overflow:"auto"}}>
                 {props.rightComponent}
             </div>
         </div>

@@ -46,8 +46,8 @@ const DummyLayout: FC<layout> = (props) => {
 
 
     return(
-        <div ref={layoutSize}>
+        <span id={props.id} ref={layoutSize}>
             {children}
-        </div>
+        </span>
     )
 }
