@@ -1,0 +1,29 @@
+.border-box{
+  display: flex;
+  flex-flow: column;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  height: 100%;
+}
+
+.center-border-box{
+  height: 100%;
+  align-self: stretch;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+}
+
+.north{
+  text-align: center;
+}
+
+.south{
+  text-align: center;
+}
+
+.center{
+  width: 100%;
+  text-align: center;
+}

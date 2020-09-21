@@ -1,10 +1,20 @@
-import React, {CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, {
+    CSSProperties,
+    FC,
+    ReactElement,
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState
+} from "react";
 import {layout} from "./Layout";
 import Margins from "./models/Margins";
-import {jvxContext} from "../../jvxProvider";
 import useChildren from "../zhooks/useChildren";
 import ChildWithProps from "../util/ChildWithProps";
-import useResizeLayout from "../zhooks/useResizeLayout";
+import {LayoutContext} from "../../LayoutContext"
+import "./BorderLayout.scss"
 
 type borderLayoutComponents = {
     north?: ReactElement,
@@ -17,61 +27,52 @@ type borderLayoutComponents = {
 const BorderLayout: FC<layout> = (props) => {
 
     const [children] = useChildren(props.id);
-    const newSize = useResizeLayout(props.id);
-    const context = useContext(jvxContext);
     const northRef = useRef<HTMLDivElement>(null);
     const westRef = useRef<HTMLDivElement>(null);
-    const centerRef = useRef<HTMLDivElement>(null);
+    const layoutRef = useRef<HTMLDivElement>(null);
     const eastRef = useRef<HTMLDivElement>(null);
     const southRef = useRef<HTMLDivElement>(null);
+    const layoutContextValue = useContext(LayoutContext);
 
-    const layoutRef = useRef<HTMLDivElement>(null);
-
-
-    const margins = new Margins(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(0, 4));
-    const borderLayoutStyle: CSSProperties = {
-        flexFlow: "column",
-        padding: 0,
-        marginTop: margins.marginTop,
-        marginLeft: margins.marginLeft,
-        marginRight: margins.marginRight,
-        marginBottom: margins.marginBottom,
-        height: "calc(100% - " + margins.marginTop + "px - " + margins.marginBottom + "px)",
-        width: "calc(100% - " + margins.marginRight + "px - " + margins.marginLeft + "px)"
-    }
+    const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
+    const [constraintComponents, setConstraintComponents] = useState<borderLayoutComponents>({});
 
     useLayoutEffect(() => {
-        if(newSize && centerRef.current && northRef.current && southRef.current && eastRef.current && westRef.current){
+        if(layoutRef.current && northRef.current && southRef.current && eastRef.current && westRef.current){
             const sizeMap = new Map<string, {width: number, height: number}>();
-            const centerSize = centerRef.current.getBoundingClientRect();
+            const layoutSize = layoutRef.current.getBoundingClientRect();
             const northSize = northRef.current.getBoundingClientRect();
             const southSize = southRef.current.getBoundingClientRect();
             const eastSize = eastRef.current.getBoundingClientRect();
             const westSize = westRef.current.getBoundingClientRect();
 
-            const centerWithProps = (positions.center as ChildWithProps);
-            const northWithProps = (positions.north as ChildWithProps);
-            const southWithProps = (positions.south as ChildWithProps);
-            const eastWithProps = (positions.east as ChildWithProps);
-            const westWithProps = (positions.west as ChildWithProps);
+            const centerWithProps = (constraintComponents.center as ChildWithProps);
+            const northWithProps = (constraintComponents.north as ChildWithProps);
+            const southWithProps = (constraintComponents.south as ChildWithProps);
+            const eastWithProps = (constraintComponents.east as ChildWithProps);
+            const westWithProps = (constraintComponents.west as ChildWithProps);
 
             if(centerWithProps)
-            sizeMap.set(centerWithProps.props.id, {height: centerSize.height, width: centerSize.width});
+                sizeMap.set(centerWithProps.props.id, {
+                    height: layoutSize.height - northSize.height - southSize.height,
+                    width: layoutSize.width - eastSize.width - westSize.width
+                });
             if(northWithProps)
-            sizeMap.set(northWithProps.props.id, {height: northSize.height, width: northSize.width});
+                sizeMap.set(northWithProps.props.id, {height: northSize.height, width: northSize.width});
             if(southWithProps)
-            sizeMap.set(southWithProps.props.id, {height: southSize.height, width: southSize.width});
+                sizeMap.set(southWithProps.props.id, {height: southSize.height, width: southSize.width});
             if(eastWithProps)
-            sizeMap.set(eastWithProps.props.id, {height: eastSize.height, width: eastSize.width});
+                sizeMap.set(eastWithProps.props.id, {height: eastSize.height, width: eastSize.width});
             if(westWithProps)
-            sizeMap.set(westWithProps.props.id, {height: westSize.height, width: westSize.width});
+                sizeMap.set(westWithProps.props.id, {height: westSize.height, width: westSize.width});
 
-            context.eventStream.resizeEvent.next(sizeMap);
+            setComponentSizes(sizeMap);
         }
+    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents])
 
-    })
 
-    const setConstraints = (): borderLayoutComponents => {
+
+    useLayoutEffect(() => {
         const components: borderLayoutComponents = {};
         children.forEach(child => {
             const childProps = (child as ChildWithProps);
@@ -92,31 +93,32 @@ const BorderLayout: FC<layout> = (props) => {
                     components.south = child;
                     break;
             }
-        });
-        return components;
-    }
-    const positions = useMemo(setConstraints, [props.children]);
+        })
+        setConstraintComponents(components);
+    }, [children]);
 
     return(
-        <div  className={"p-grid p-nogutter"} style={borderLayoutStyle}>
-            <div ref={northRef} className={"p-col-12 north"} style={{padding: 0}}>
-                {positions.north}
-            </div>
-            <div className={"p-grid p-nogutter p-align-center"} style={{height: "100%"}}>
-                <div ref={westRef} className={"p-col-fixed west"} style={{width:"auto", padding: 0}}>
-                    {positions.west}
+        <LayoutContext.Provider value={componentSizes}>
+            <div ref={layoutRef} className={"border-box"}>
+                <div ref={northRef} className={"north"}>
+                    {constraintComponents.north}
                 </div>
-                <div ref={centerRef} className={"p-col center"} style={{height:"100%", width:"100%", padding: 0}}>
-                    {positions.center}
+                <div className={"center-border-box"}>
+                    <div ref={westRef} className={"west"}>
+                        {constraintComponents.west}
+                    </div>
+                    <div className={"center"}>
+                        {constraintComponents.center}
+                    </div>
+                    <div ref={eastRef} className={"east"}>
+                        {constraintComponents.east}
+                    </div>
                 </div>
-                <div ref={eastRef} className={"p-col-fixed east"} style={{width:"auto", padding: 0}}>
-                    {positions.east}
+                <div ref={southRef} className={"south"}>
+                    {constraintComponents.south}
                 </div>
             </div>
-            <div ref={southRef} className={"p-col-12 south"} style={{padding: 0}}>
-                {positions.south}
-            </div>
-        </div>
+        </LayoutContext.Provider>
     )
 }
 export default BorderLayout
