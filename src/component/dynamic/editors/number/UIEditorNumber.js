@@ -5,10 +5,10 @@ import { InputNumber } from "primereact/inputnumber";
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import { getPreferredSize } from "../../../helper/GetSizes";
 import { RefContext } from "../../../helper/Context";
+import { sendSetValues } from "../../../helper/SendSetValues";
 
 function UIEditorNumber(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue,
-                                                      props.id, props.dataRow, props.cellEditor.className);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id, props.dataRow);
     const inputRef = useRef();
     const con = useContext(RefContext);
     const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
@@ -45,16 +45,7 @@ function UIEditorNumber(props) {
             value={selectedColumn}
             style={props.layoutStyle}
             onChange={change => {editColumn(change.value)}}
-            onBlur={() => {
-                if (props.rowId) {
-                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
-                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn);
-                    }
-                }
-                else {
-                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn);
-                }
-            }}
+            onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, selectedColumn)}
             disabled={!props["cellEditor.editable"]}
         />
     )

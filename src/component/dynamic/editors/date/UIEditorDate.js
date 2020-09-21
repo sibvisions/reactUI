@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { Calendar } from 'primereact/calendar';
-import "./UIEditorDate.scss"
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
 import useRowSelect from '../../../hooks/useRowSelect';
 import { isValidDate } from '../../../helper/IsValidDate';
+import { sendSetValues } from '../../../helper/SendSetValues';
 
 function UIEditorDate(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id)
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || 0, props.id, props.dataRow)
     const con = useContext(RefContext);
     const calender = useRef()
     const dateFormat = parseDateFormat(props.cellEditor.dateFormat)
@@ -43,7 +43,6 @@ function UIEditorDate(props) {
     }, [con, props]);
 
     useLayoutEffect(() => {
-        
         if (calender.current.container !== null) {
             let alignments = checkCellEditorAlignments(props)
             for (let child of calender.current.container.children) {
@@ -53,7 +52,7 @@ function UIEditorDate(props) {
                 }
             }
         }
-    }, [props]);
+    });
 
     return (
         <Calendar
@@ -69,17 +68,9 @@ function UIEditorDate(props) {
             timeOnly={timeOnly}
             showIcon={true}
             style={{width:"100%", textAlign: 'start',  ...props.layoutStyle}}
-            onChange={change => editColumn(change.value, props.columnName)}
-            onBlur={() => {
-                if (props.rowId) {
-                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
-                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
-                    }
-                }
-                else {
-                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn)
-                }
-            }}
+            onChange={change => editColumn(change.target.value, props.columnName)}
+            onBlur={change => {sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, change.value.getTime())}}
+            onSelect={change => {sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, change.value.getTime())}}
             disabled={!props["cellEditor.editable"]}/>
     );
 }

@@ -9,11 +9,11 @@ import useFetchListen from "../../../hooks/useFetchListen";
 import useRowSelect from '../../../hooks/useRowSelect';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 import { getPreferredSize } from '../../../helper/GetSizes';
+import { sendSetValues } from '../../../helper/SendSetValues';
 
 function UIEditorLinked(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.referencedDataBook);
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "",
-                                                      props.id, props.dataRow, props.cellEditor.className);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
     const con = useContext(RefContext)
     const autoComRef = useRef();
 
@@ -66,16 +66,7 @@ function UIEditorLinked(props){
             field={props.columnName}
             value={selectedColumn} 
             onChange={event => editColumn(event.target.value)}
-        	onBlur={() => {
-                if (props.rowId) {
-                    if (con.contentStore.selectedRow.get(props.dataRow) === props.rowId - 1) {
-                        con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn[props.columnName])
-                    }
-                }
-                else {
-                    con.serverComm.setValues(props.name, props.dataRow, props.columnName, selectedColumn[props.columnName])
-                }
-            }}
+        	onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, selectedColumn)}
             disabled={!props["cellEditor.editable"]}
         />
     );

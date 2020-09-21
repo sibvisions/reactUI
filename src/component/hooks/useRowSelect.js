@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
 import { recordToObject } from '../helper/RecordToObject';
 
-function useRowSelect(columnName, init, id="no", dataProvider, className) {
+function useRowSelect(columnName, init, id="no", dataProvider) {
     const [selectedColumn, editColumn] = useState(init);
     const con = useContext(RefContext);
 
@@ -15,16 +15,13 @@ function useRowSelect(columnName, init, id="no", dataProvider, className) {
     useEffect(()=> {
         const rowSub = con.contentStore.selectedDataRowChange.subscribe(row => {
             const value = row[columnName];
-            
             if(value){
-                console.log(value, columnName)
                 editColumn(row[columnName]);
             }
             else {
-                console.log(value, columnName)
                 editColumn("");
             } 
-            con.contentStore.updateContent([{id: id, initialValue: value || init}]);
+            con.contentStore.updateContent([{id: id, initialValue: value}]);
         });
 
         const fetchSub = con.contentStore.fetchCompleted.subscribe(fetchResponse => {
@@ -36,33 +33,42 @@ function useRowSelect(columnName, init, id="no", dataProvider, className) {
                     });
                     let primaryKeyColumns = con.contentStore.metaData.get(fetchResponse.dataProvider).primaryKeyColumns;
                     let storedData = con.contentStore.storedData.get(fetchResponse.dataProvider);
-                    let found;
                     fetchedData.forEach(record => {
-                        let filter = {};
-                        primaryKeyColumns.forEach(pkColumn => {
-                            filter[pkColumn] = record[pkColumn];
-                        })
-                        found = storedData.find(storedRecord => {
-                            for (let key in filter) {
-                                if (storedRecord[key] === undefined || storedRecord[key] !== filter[key]) {
-                                    return false;
+                        if (primaryKeyColumns) {
+                            let found;
+                            let filter = {};
+                            primaryKeyColumns.forEach(pkColumn => {
+                                filter[pkColumn] = record[pkColumn];
+                            })
+                            found = storedData.find(storedRecord => {
+                                for (let key in filter) {
+                                    if (storedRecord[key] === undefined || storedRecord[key] !== filter[key]) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            })
+                            if (found === storedData[con.contentStore.selectedRow.get(dataProvider)]) {
+                                if(found[columnName]) {
+                                    editColumn(found[columnName]);
+                                }
+                                else {
+                                    editColumn("");
                                 }
                             }
-                            return true;
-                        })
-                        if (found === storedData[con.contentStore.selectedRow.get(dataProvider)]) {
-                            if(found[columnName]) {
-                                editColumn(found[columnName])
+                        }
+                        else {
+                            if (record[columnName]) {
+                                editColumn(record[columnName]);
                             }
                             else {
-                                editColumn("")
+                                editColumn("");
                             }
                         }
                     })
                 }
             }
         })
-
         return function cleanUp(){
             rowSub.unsubscribe();
             fetchSub.unsubscribe();

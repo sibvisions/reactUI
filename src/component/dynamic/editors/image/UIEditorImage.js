@@ -6,10 +6,11 @@ import { getAlignments } from "../../ComponentProperties";
 import { Size } from '../../../helper/Size';
 
 function UIEditorImage(props) {
-    const [selectedColumn] = useRowSelect(props.columnName, props.initialValue ? props.initialValue : (props.cellEditor.defaultImageName ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName : ""), props.id);
+    const [selectedColumn] = useRowSelect(props.columnName, props.initialValue ? props.initialValue : (props.cellEditor.defaultImageName ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName : ""), props.id, props.dataRow);
     const con = useContext(RefContext);
     const imgRef = useRef();
     const alignments = getAlignments(props)
+    const imageHref = selectedColumn === "" ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName : (selectedColumn.includes('localhost') ? selectedColumn : "data:image/png;base64," + selectedColumn)
 
     useEffect(() => {
         con.contentStore.emitSizeCalculated(
@@ -124,7 +125,7 @@ function UIEditorImage(props) {
     return (
         <svg id={props.id} style={{ ...props.layoutStyle }}>
                 <image
-                    href={(selectedColumn.indexOf('localhost') === -1 && selectedColumn !== "") ? "data:image/png;base64," + selectedColumn : selectedColumn}
+                    href={imageHref}
                     ref={imgRef}
                     onLoad={setImgAlignments}
                     preserveAspectRatio={props.cellEditor.preserveAspectRatio ? 'xMidYMid meet' : 'none'}
