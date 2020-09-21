@@ -1,7 +1,8 @@
-import React, {FC, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import {InputText} from "primereact/inputtext";
 import useLayout from "../../zhooks/useLayout";
 import {ICellEditor, IEditor} from "../IEditor";
+import {LayoutContext} from "../../../LayoutContext";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode: number
@@ -14,19 +15,18 @@ export interface IEditorText extends IEditor{
 const UIEditorText: FC<IEditorText> = (props) => {
 
     const inputRef = useRef(null);
-    const layoutStyle = useLayout(props.id);
-
+    const layoutValue = useContext(LayoutContext);
 
     useLayoutEffect(() => {
-        if(!layoutStyle && props.onLoadCallback && inputRef.current){
+        if(props.onLoadCallback && inputRef.current){
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.element.getClientRects();
             props.onLoadCallback(props.id, size[0].height, size[0].width);
         }
-    });
+    }, [props, inputRef]);
 
     return(
-        <InputText ref={inputRef} style={layoutStyle}>
+        <InputText ref={inputRef} style={layoutValue.get(props.id)}>
 
         </InputText>
     )

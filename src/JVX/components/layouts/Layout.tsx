@@ -1,8 +1,9 @@
-import React, {FC, useCallback, useLayoutEffect, useRef} from "react";
+import React, {FC, useCallback, useContext, useLayoutEffect, useRef} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import LoadCallBack from "../util/LoadCallBack";
 import useChildren from "../zhooks/useChildren";
+import {LayoutContext} from "../../LayoutContext";
 
 export type layout = {
     parent: string | undefined
@@ -13,18 +14,12 @@ export type layout = {
 }
 
 const Layout: FC<layout> = (props) => {
-
-    if(props.layout.includes("FormLayout")) {
-        return ( <FormLayout {...props} /> );
-    }
-    else if(props.layout.includes("BorderLayout")) {
-        return ( <BorderLayout {...props} /> );
-    }
-    else {
-        return(
-            <DummyLayout {...props}/>
-        )
-    }
+    if(props.layout.includes("FormLayout"))
+        return <FormLayout {...props} />
+    else if(props.layout.includes("BorderLayout"))
+        return <BorderLayout {...props} />
+    else
+        return <DummyLayout {...props}/>
 }
 export default Layout
 
@@ -35,6 +30,7 @@ const DummyLayout: FC<layout> = (props) => {
 
     const layoutSize = useRef<HTMLDivElement>(null);
     const [children] = useChildren(props.id);
+    const layoutValue = useContext(LayoutContext);
 
     useLayoutEffect(() => {
         if(layoutSize.current){
@@ -42,11 +38,11 @@ const DummyLayout: FC<layout> = (props) => {
 
             props.onFinish(props.id, size.height, size.width);
         }
-    });
+    }, [layoutSize, props]);
 
 
     return(
-        <span id={props.id} ref={layoutSize}>
+        <span id={props.id} ref={layoutSize} style={layoutValue.get(props.id)}>
             {children}
         </span>
     )

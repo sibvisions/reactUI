@@ -1,6 +1,7 @@
-import React, {FC, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import BaseComponent from "../BaseComponent";
 import useLayout from "../zhooks/useLayout";
+import {LayoutContext} from "../../LayoutContext";
 
 export interface uiLabel extends BaseComponent {
     text: string
@@ -8,18 +9,18 @@ export interface uiLabel extends BaseComponent {
 
 const UILabel: FC<uiLabel> = (props) => {
     const labelRef = useRef<HTMLSpanElement>(null)
-    const layoutStyle = useLayout(props.id)
+    const layoutValue = useContext(LayoutContext);
 
     useLayoutEffect(() => {
-        if(!layoutStyle && labelRef.current && props.onLoadCallback){
+        if(labelRef.current && props.onLoadCallback){
             const size = labelRef.current.getBoundingClientRect();
             props.onLoadCallback(props.id, size.height, size.width);
         }
-    });
+    }, [labelRef, props]);
 
 
     return(
-        <span ref={labelRef} style={layoutStyle}>
+        <span ref={labelRef} style={layoutValue.get(props.id)}>
             {props.text}
         </span>
     )

@@ -9,24 +9,23 @@ import {jvxContext} from "../../jvxProvider";
 import {layoutInfo} from "../../EventStream";
 import ChildWithProps from "../util/ChildWithProps";
 import useChildren from "../zhooks/useChildren";
-import Size from "../util/Size";
 import useLayout from "../zhooks/useLayout";
-import useResizeLayout from "../zhooks/useResizeLayout";
+import {LayoutContext} from "../../LayoutContext";
 
 
 const FormLayout: FC<layout> = (props) => {
 
 
     // React Hooks
-    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>({});
+    const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
+    const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     const layoutSizeRef = useRef<HTMLDivElement>(null);
 
 
     // Custom Hooks
     const [children, preferredChildrenSizes] = useChildren(props.id);
-    const dictatedAvailableSize = useResizeLayout(props.id);
+    const resizeValue = useContext(LayoutContext);
     const dictatedStyle = useLayout(props.id);
-    const context = useContext(jvxContext);
 
 
     const start = () => {
@@ -45,18 +44,19 @@ const FormLayout: FC<layout> = (props) => {
     },[preferredChildrenSizes]);
 
     useLayoutEffect(() => {
-        if(dictatedAvailableSize){
-            initSize = {width: dictatedAvailableSize.width, height: dictatedAvailableSize.height}
+        const size = resizeValue.get(props.id);
+        if(size){
+            initSize = {width: (size.width as number), height: (size.height as number)};
             start();
         }
-    },[dictatedAvailableSize]);
+    },[resizeValue]);
 
     useLayoutEffect(() => {
         if(dictatedStyle){
             initSize = {height: dictatedStyle.height, width: dictatedStyle.width}
             start();
         }
-    }, [dictatedStyle])
+    },[dictatedStyle])
 
 
 
@@ -606,6 +606,8 @@ const FormLayout: FC<layout> = (props) => {
             borderConstraint = new Constraints(tba, lba, bba, rba);
         }
 
+        const sizeMap = new Map<string, CSSProperties>();
+
         children.forEach(child => {
             const childWithProps = (child as ChildWithProps);
             const constraint = componentConstraints.get(childWithProps.props.id);
@@ -615,16 +617,13 @@ const FormLayout: FC<layout> = (props) => {
                 const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition() + margins.marginTop;
                 const width = constraint.rightAnchor.getAbsolutePosition() - constraint.leftAnchor.getAbsolutePosition();
                 const height = constraint.bottomAnchor.getAbsolutePosition() - constraint.topAnchor.getAbsolutePosition();
-
-                const styleObj: layoutInfo = {
-                    position: "absolute",
-                    id: childWithProps.props.id,
-                    height: height,
-                    left: left,
-                    top: top,
-                    width: width
-                }
-                context.eventStream.styleEvent.next(styleObj);
+                sizeMap.set(childWithProps.props.id, {
+                        position: "absolute",
+                        height: height,
+                        width: width,
+                        left: left,
+                        top: top
+                });
             }
         });
 
@@ -647,24 +646,27 @@ const FormLayout: FC<layout> = (props) => {
             if(props.onFinish){
                 props.onFinish(props.id, preferredHeight+(margins.marginTop + margins.marginBottom), preferredWidth+ (margins.marginLeft + margins.marginRight));
             }
-            setCalculatedStyle({
-                height: dictatedStyle ? dictatedStyle.height : height,
-                width: dictatedStyle ? dictatedStyle.width : width,
-                left: dictatedStyle ? dictatedStyle.left : marginConstraint.leftAnchor.getAbsolutePosition(),
-                top: dictatedStyle ? dictatedStyle.top : marginConstraint.topAnchor.getAbsolutePosition(),
-                position: dictatedStyle ? dictatedStyle.position : "relative",
-            })
-
-
+            setCalculatedStyle( {
+                style: {
+                    height: dictatedStyle ? dictatedStyle.height : height,
+                    width: dictatedStyle ? dictatedStyle.width : width,
+                    left: dictatedStyle ? dictatedStyle.left : marginConstraint.leftAnchor.getAbsolutePosition(),
+                    top: dictatedStyle ? dictatedStyle.top : marginConstraint.topAnchor.getAbsolutePosition(),
+                    position: dictatedStyle ? dictatedStyle.position : "relative",
+                },
+                componentSizes: sizeMap
+            });
         }
     }
 
 
 
     return(
-         <div ref={layoutSizeRef} id={props.id} style={{ height:"100%", ...calculatedStyle}}>
-             {children}
-         </div>
+        <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
+            <div ref={layoutSizeRef} id={props.id} style={{ height:"100%", ...calculatedStyle?.style}}>
+                {children}
+            </div>
+        </LayoutContext.Provider>
     )
 }
 export default FormLayout

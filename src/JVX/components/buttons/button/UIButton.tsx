@@ -1,10 +1,11 @@
-import React, {Component, FC, useContext, useEffect, useRef} from "react";
+import React, {Component, FC, useContext, useEffect, useLayoutEffect, useRef} from "react";
 import {Button} from "primereact/button";
 import useLayout from "../../zhooks/useLayout";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import BaseComponent from "../../BaseComponent";
+import {LayoutContext} from "../../../LayoutContext";
 
 export interface buttonProps extends BaseComponent{
     accelerator: string,
@@ -16,16 +17,17 @@ export interface buttonProps extends BaseComponent{
 const UIButton: FC<buttonProps> = (props) => {
 
     const context = useContext(jvxContext)
+    const layoutContext = useContext(LayoutContext);
     const buttonRef = useRef<Component>(null);
-    const layoutStyle = useLayout(props.id);
+    // const layoutStyle = useLayout(props.id);
 
-    useEffect(()=> {
-        if(buttonRef.current && !layoutStyle && props.onLoadCallback){
+    useLayoutEffect(()=> {
+        if(buttonRef.current && props.onLoadCallback){
             // @ts-ignore
             const size = buttonRef.current.element.getClientRects();
             props.onLoadCallback(props.id, size[0].height, size[0].width);
         }
-    });
+    }, [ buttonRef, props]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();
@@ -33,8 +35,10 @@ const UIButton: FC<buttonProps> = (props) => {
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
 
+    console.log(layoutContext.get(props.id));
+
     return(
-        <Button ref={buttonRef} label={props.text} id={props.id} style={layoutStyle} onClick={onButtonPress}/>
+        <Button ref={buttonRef} label={props.text} id={props.id} style={layoutContext.get(props.id)} onClick={onButtonPress}/>
     )
 }
 export default UIButton;

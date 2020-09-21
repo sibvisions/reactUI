@@ -1,7 +1,8 @@
-import React, {FC, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import placeHolder from "../../../../assests/IMAGE.png"
 import useLayout from "../../zhooks/useLayout";
 import {ICellEditor, IEditor} from "../IEditor";
+import {LayoutContext} from "../../../LayoutContext";
 
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
@@ -15,7 +16,7 @@ export interface IEditorImage extends IEditor{
 
 const UIEditorImage: FC<IEditorImage> = (props) => {
 
-    const layoutStyle = useLayout(props.id);
+    const layoutValue = useContext(LayoutContext);
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         if(props.preferredSize){
@@ -29,7 +30,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
 
     return(
         <img
-            style={layoutStyle}
+            style={layoutValue.get(props.id)}
             src={placeHolder}
             alt={"could not be loaded"}
             onLoad={imageLoaded}
