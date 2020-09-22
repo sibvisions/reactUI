@@ -3,15 +3,12 @@ import React, {
     FC,
     ReactElement,
     useContext,
-    useEffect,
     useLayoutEffect,
-    useMemo,
     useRef,
     useState
 } from "react";
 import {layout} from "./Layout";
-import Margins from "./models/Margins";
-import useChildren from "../zhooks/useChildren";
+import useComponents from "../zhooks/useComponents";
 import ChildWithProps from "../util/ChildWithProps";
 import {LayoutContext} from "../../LayoutContext"
 import "./BorderLayout.scss"
@@ -26,7 +23,7 @@ type borderLayoutComponents = {
 
 const BorderLayout: FC<layout> = (props) => {
 
-    const [children] = useChildren(props.id);
+    const [children] = useComponents(props.id);
     const northRef = useRef<HTMLDivElement>(null);
     const westRef = useRef<HTMLDivElement>(null);
     const layoutRef = useRef<HTMLDivElement>(null);

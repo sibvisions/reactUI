@@ -1,6 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import BaseComponent from "../BaseComponent";
-import useLayout from "../zhooks/useLayout";
 import {LayoutContext} from "../../LayoutContext";
 
 export interface uiLabel extends BaseComponent {

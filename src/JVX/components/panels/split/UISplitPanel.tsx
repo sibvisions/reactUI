@@ -1,7 +1,6 @@
 import React, {CSSProperties, FC, ReactElement, useContext, useState} from "react";
 import SplitPanel, {splitSize} from "./SplitPanel";
-import useChildren from "../../zhooks/useChildren";
-import {jvxContext} from "../../../jvxProvider";
+import useComponents from "../../zhooks/useComponents";
 import ChildWithProps from "../../util/ChildWithProps";
 import {LayoutContext} from "../../../LayoutContext";
 
@@ -27,16 +26,17 @@ type childProps = {
 const UISplitPanel: FC<UISplitPanelProps> = (props) => {
 
     const getChildByConstraint = (constraint: string): ReactElement | undefined => {
-        return children.find(child => {
+        return components.find((child: childProps) => {
             const childWithProps = (child as childProps);
             return childWithProps.props.constraints === constraint;
         });
     }
 
-    const [children] = useChildren(props.id);
+    const [components] = useComponents(props.id);
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     const firstChild = getChildByConstraint("FIRST_COMPONENT");
     const secondChild = getChildByConstraint("SECOND_COMPONENT");
+    const sizeValue = useContext(LayoutContext);
 
     const handleResize = (firstSize: splitSize, secondSize: splitSize) => {
 
@@ -50,9 +50,12 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
         setComponentSizes(sizeMap);
     }
 
+
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
+                trigger={sizeValue}
+                onTrigger={handleResize}
                 onResize={handleResize}
                 leftComponent={firstChild}
                 rightComponent={secondChild}

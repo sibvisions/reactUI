@@ -1,10 +1,9 @@
-import React, {Children, CSSProperties, FC, useContext, useEffect, useRef, useState} from "react";
+import React, {Children, CSSProperties, FC, useEffect, useRef, useState} from "react";
 import Menu from "./menu/menu";
 import "./Layout.scss"
-import useResizeLayout from "../JVX/components/zhooks/useResizeLayout";
-import {jvxContext} from "../JVX/jvxProvider";
 import ChildWithProps from "../JVX/components/util/ChildWithProps";
 import {LayoutContext} from "../JVX/LayoutContext";
+import Throttle from "../JVX/components/util/Throttle";
 
 const Layout: FC = (props) => {
 
@@ -40,7 +39,7 @@ const Layout: FC = (props) => {
                 </div>
             </LayoutContext.Provider>
             <div style={{backgroundColor: "grey"}}>
-                <h1>footer</h1>
+                <h4>footer</h4>
             </div>
         </div>
 

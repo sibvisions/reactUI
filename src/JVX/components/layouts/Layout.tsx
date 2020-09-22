@@ -1,8 +1,8 @@
-import React, {FC, useCallback, useContext, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import LoadCallBack from "../util/LoadCallBack";
-import useChildren from "../zhooks/useChildren";
+import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 
 export type layout = {
@@ -11,6 +11,7 @@ export type layout = {
     layout: string,
     layoutData: string,
     onFinish: LoadCallBack
+    screenTitle?: string
 }
 
 const Layout: FC<layout> = (props) => {
@@ -29,7 +30,7 @@ export default Layout
 const DummyLayout: FC<layout> = (props) => {
 
     const layoutSize = useRef<HTMLDivElement>(null);
-    const [children] = useChildren(props.id);
+    const [children] = useComponents(props.id);
     const layoutValue = useContext(LayoutContext);
 
     useLayoutEffect(() => {

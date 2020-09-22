@@ -1,6 +1,5 @@
-import React, {Component, FC, useContext, useEffect, useLayoutEffect, useRef} from "react";
+import React, {Component, FC, useContext, useLayoutEffect, useRef} from "react";
 import {Button} from "primereact/button";
-import useLayout from "../../zhooks/useLayout";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
@@ -34,8 +33,6 @@ const UIButton: FC<buttonProps> = (props) => {
         req.componentId = props.name;
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
-
-    console.log(layoutContext.get(props.id));
 
     return(
         <Button ref={buttonRef} label={props.text} id={props.id} style={layoutContext.get(props.id)} onClick={onButtonPress}/>
