@@ -48,7 +48,12 @@ export function getMargins(props) {
 
 export function getAlignments(props) {
     if (props.className === "Editor") {
-        return mapFlex(checkCellEditorAlignments(props))
+        if (props.cellEditor.className === "ImageViewer") {
+            return checkCellEditorAlignments(props)
+        }
+        else {
+            return mapFlex(checkCellEditorAlignments(props))
+        }
     }
     else {
         return mapFlex(checkAlignments(props))

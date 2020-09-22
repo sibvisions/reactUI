@@ -161,6 +161,15 @@ class ServerCommunicator {
         }; this.sendRequest("/api/comp/closeTab", reqBody);
     }
 
+    // async upload(fileId, fileName, data) {
+    //     let formFields = {clientId: localStorage.getItem("clientId"), fileId: fileId}
+    //     let formData = new FormData()
+    //     formData.append("fields", JSON.stringify(formFields))
+    //     formData.append("data", data, fileName)
+    //     let r = await fetch(this.BaseUrl+"/upload", {method: 'POST', body: formData});
+    //     this.responseHandler.getResponse(r);
+    // }
+
     //---Fetch Requests------
 
     fetchDataFromProvider(dataProvider, timeout=2000){

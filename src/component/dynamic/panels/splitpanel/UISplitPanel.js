@@ -49,11 +49,27 @@ function UISplitPanel(props) {
         return rightComp;
     }
 
+    const getSplitDividerPos = dividerPos => {
+        if (dividerPos !== -1) {
+            let panelSize = getPreferredSize(props);
+            if (panelSize) {
+                let posPerc = dividerPos*100/panelSize.width;
+                return [posPerc, 100-posPerc];
+            }
+            else {
+                return [0, 0]
+            }
+        }
+        else {
+            return [30, 70];
+        }
+    }
+
     return (
         <Split
             className="splitHolder"
             id={props.id}
-            sizes={[30, 70]}
+            sizes={getSplitDividerPos(props.dividerPosition)}
             minSize={0}
             gutterSize={30}
             gutterAlign="center"

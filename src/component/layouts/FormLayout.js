@@ -744,7 +744,7 @@ class FormLayout extends Component {
             //     this.prevTop = el.style.top
             //     this.firstPosCalc = true;
             // }
-            if (this.props.constraints !== 'Center') {
+            if (this.props.constraints !== 'Center' && this.props.constraints !== "North" && this.props.constraints !== "South") {
                 if (this.props.id.includes('GP')) {
                     el.style.height = toPx((this.preferredHeight + this.props.margins.marginTop + this.props.margins.marginBottom + 22));
                 }

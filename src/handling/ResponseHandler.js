@@ -84,6 +84,10 @@ class ResponseHandler{
         {
             name: "dal.dataProviderChanged",
             methodToExecute: this.dataProviderChange.bind(this)
+        },
+        {
+            name: "upload",
+            methodToExecute: this.upload.bind(this)
         }
     ]
 
@@ -188,6 +192,20 @@ class ResponseHandler{
         if(deviceData.layoutMode !== this.contentStore.layoutMode){
             this.contentStore.layoutMode = deviceData.layoutMode
             this.layoutModeChanged();
+        }
+    }
+
+    //upload & download
+
+    upload(uploadData) {
+        let inputElem = document.createElement('input');
+        inputElem.style.display = 'none';
+        inputElem.type = 'file';
+        document.body.appendChild(inputElem);
+        inputElem.click()
+        inputElem.onchange = e => {
+            console.log(e.target.files[0])
+            this.serverCommunicator.upload(uploadData.fileId, e.target.files[0].name, e.target.files[0])
         }
     }
 

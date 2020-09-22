@@ -23,10 +23,18 @@ function UIEditorText(props) {
     }, [con, props]);
 
     useLayoutEffect(() => {
-        if(inputRef.current.element){
+        let currElem = inputRef.current.element;
+        if(currElem){
             const alignments = checkCellEditorAlignments(props);
-            inputRef.current.element.style['background-color'] = props['cellEditor.background'];
-            inputRef.current.element.style['text-align'] = alignments.ha;
+            currElem.style.setProperty('text-align', alignments.ha);
+            if (props.borderVisible === false) {
+                currElem.style.setProperty('background-color', 'transparent');
+                currElem.style.setProperty('border', 'none');
+            }
+            else {
+                currElem.style.setProperty('background-color', props['cellEditor.background']);
+            }
+            
         }
     })
     

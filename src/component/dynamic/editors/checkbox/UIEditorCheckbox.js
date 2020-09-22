@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {Checkbox} from 'primereact/checkbox';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { RefContext } from '../../../helper/Context';
@@ -9,7 +9,6 @@ import useRowSelect from '../../../hooks/useRowSelect';
 function UIEditorCheckbox(props) {
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
     const cbxType = getCbxType(props.cellEditor.selectedValue)
-    const [checked, setChecked] = useState((props.initialValue === true || props.initialValue === 'Y') ? true : false)
     const con = useContext(RefContext);
     const alignments = getAlignments(props);
 

@@ -8,7 +8,7 @@ import { isValidDate } from '../../../helper/IsValidDate';
 import { sendSetValues } from '../../../helper/SendSetValues';
 
 function UIEditorDate(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || 0, props.id, props.dataRow)
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow)
     const con = useContext(RefContext);
     const calender = useRef()
     const dateFormat = parseDateFormat(props.cellEditor.dateFormat)
@@ -69,8 +69,8 @@ function UIEditorDate(props) {
             showIcon={true}
             style={{width:"100%", textAlign: 'start',  ...props.layoutStyle}}
             onChange={change => editColumn(change.target.value, props.columnName)}
-            onBlur={change => {sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, change.value.getTime())}}
-            onSelect={change => {sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, change.value.getTime())}}
+            onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, typeof selectedColumn === 'object' ? selectedColumn.getTime() : selectedColumn)}
+            onSelect={change => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, change.value.getTime())}
             disabled={!props["cellEditor.editable"]}/>
     );
 }

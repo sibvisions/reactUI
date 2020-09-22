@@ -1,13 +1,15 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useLayoutEffect, useRef } from 'react';
 import useRowSelect from '../../../hooks/useRowSelect';
 import { RefContext } from '../../../helper/Context';
 import {Password} from 'primereact/password';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { sendSetValues } from '../../../helper/SendSetValues';
+import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 function UIEditorPassword(props) {
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
-    const con = useContext(RefContext)
+    const inputRef = useRef();
+    const con = useContext(RefContext);
 
     useEffect(() => {
         con.contentStore.emitSizeCalculated(
@@ -19,9 +21,18 @@ function UIEditorPassword(props) {
         );
     }, [con, props]);
 
+    useLayoutEffect(() => {
+        if (inputRef.current.element) {
+            const alignments = checkCellEditorAlignments(props);
+            inputRef.current.element.style['background-color'] = props['cellEditor.background'];
+            inputRef.current.element.style['text-align'] = alignments.ha;
+        }
+    })
+
     return (
         <Password 
-            id={props.id} 
+            id={props.id}
+            ref={inputRef}
             value={selectedColumn} 
             style={props.layoutStyle} 
             feedback={false}
