@@ -161,14 +161,22 @@ class ServerCommunicator {
         }; this.sendRequest("/api/comp/closeTab", reqBody);
     }
 
-    // async upload(fileId, fileName, data) {
-    //     let formFields = {clientId: localStorage.getItem("clientId"), fileId: fileId}
-    //     let formData = new FormData()
-    //     formData.append("fields", JSON.stringify(formFields))
-    //     formData.append("data", data, fileName)
-    //     let r = await fetch(this.BaseUrl+"/upload", {method: 'POST', body: formData});
-    //     this.responseHandler.getResponse(r);
-    // }
+    async upload(fileId, fileName, data) {
+        this.getBase64(data, result => {
+            const reqBody = {
+                clientId: localStorage.getItem("clientId"),
+                fileId: fileId,
+                fileName: fileName,
+                data: result.split(',')[1]
+            }; this.sendRequest("/upload", reqBody);
+        })
+        // let formFields = {clientId: localStorage.getItem("clientId"), fileId: fileId, fileName: fileName}
+        // let formData = new FormData()
+        // formData.append("fields", JSON.stringify(formFields))
+        // formData.append("data", data)
+        // let r = await fetch(this.BaseUrl+"/upload", {method: 'POST', body: formData});
+        // this.responseHandler.getResponse(r);
+    }
 
     //---Fetch Requests------
 
@@ -213,6 +221,17 @@ class ServerCommunicator {
         }
         return {name: "unknown", Version: "unknown" }
     }
+
+    getBase64(file, fn) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+          fn(reader.result);
+        };
+        reader.onerror = function (error) {
+          console.log('Error: ', error);
+        };
+     }
 }
  
 export default ServerCommunicator;

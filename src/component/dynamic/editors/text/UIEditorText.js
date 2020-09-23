@@ -11,6 +11,8 @@ function UIEditorText(props) {
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
     const inputRef = useRef();
     const con = useContext(RefContext)
+    const length = con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.length ? 
+    con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.length : null;
 
     useEffect(() => {
         con.contentStore.emitSizeCalculated(
@@ -43,6 +45,7 @@ function UIEditorText(props) {
             id={props.id}
             ref={inputRef}
             value={selectedColumn}
+            maxLength={length}
             style={props.layoutStyle}
             onChange={change => editColumn(change.target.value, props.columnName)}
             onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, selectedColumn)}

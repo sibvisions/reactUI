@@ -227,8 +227,8 @@ class ResponseHandler{
         let metaValue = {}
         metaValue["primaryKeyColumns"] = mData["primaryKeyColumns"];
         metaValue["columns"] = new Map();
-         mData["columnView.table"].forEach(column => {
-            metaValue["columns"].set(column, mData.columns.find(data => data.name === column))
+         mData["columns"].forEach(column => {
+            metaValue["columns"].set(column.name, column)
         })
         this.contentStore.metaData.set(mData.dataProvider, metaValue)
     }

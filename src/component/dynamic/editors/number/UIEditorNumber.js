@@ -11,10 +11,18 @@ function UIEditorNumber(props) {
     const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id, props.dataRow);
     const inputRef = useRef();
     const con = useContext(RefContext);
-    const scaleDigits = con.contentStore.metaData.get(props.columnName) ? con.contentStore.metaData.get(props.columnName).cellEditor.scale : null;
-
+    const metaData = con.contentStore.metaData.get(props.dataRow);
+    const scaleDigits = metaData.columns.get(props.columnName).cellEditor.scale ? metaData.columns.get(props.columnName).cellEditor.scale : null;
+    const length = scaleDigits > 0 ? (metaData.columns.get(props.columnName).cellEditor.length ? metaData.columns.get(props.columnName).cellEditor.length : null) :
+    (metaData.columns.get(props.columnName).cellEditor.precision ? metaData.columns.get(props.columnName).cellEditor.precision : null);
 
     useEffect(() => {
+        inputRef.current.inputEl.setAttribute('maxlength', length);
+        inputRef.current.inputEl.onkeydown = () => {
+            if (inputRef.current.inputEl.value.length === inputRef.current.inputEl.maxLength) {
+                return false;
+            }
+        }
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 
@@ -22,15 +30,16 @@ function UIEditorNumber(props) {
                 parent: props.parent
             }
         );
-    });
+    }, [con, props, length]);
 
     useLayoutEffect(() => {
-        if(inputRef.current.inputEl){
+        let currElem = inputRef.current.inputEl;
+        if(currElem){
             const alignments = checkCellEditorAlignments(props);
-            inputRef.current.inputEl.style.setProperty('background-color', props['cellEditor.background']);
-            inputRef.current.inputEl.style.setProperty('text-align', alignments.ha);
-            inputRef.current.inputEl.style.setProperty('height', '100%');
-            inputRef.current.inputEl.style.setProperty('width', '100%');
+            currElem.style.setProperty('background-color', props['cellEditor.background']);
+            currElem.style.setProperty('text-align', alignments.ha);
+            currElem.style.setProperty('height', '100%');
+            currElem.style.setProperty('width', '100%');
         }
     })
 
@@ -44,7 +53,7 @@ function UIEditorNumber(props) {
             maxFractionDigits={scaleDigits}
             value={selectedColumn}
             style={props.layoutStyle}
-            onChange={change => {editColumn(change.value)}}
+            onChange={change => editColumn(change.value)}
             onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, selectedColumn)}
             disabled={!props["cellEditor.editable"]}
         />
