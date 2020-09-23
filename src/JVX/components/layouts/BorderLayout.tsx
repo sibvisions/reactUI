@@ -69,7 +69,7 @@ const BorderLayout: FC<layout> = (props) => {
 
 
 
-    useLayoutEffect(() => {
+    useLayoutEffect(() =>             {
         const components: borderLayoutComponents = {};
         children.forEach(child => {
             const childProps = (child as ChildWithProps);

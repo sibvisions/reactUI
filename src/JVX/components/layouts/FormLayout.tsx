@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -41,15 +41,17 @@ const FormLayout: FC<layout> = (props) => {
     useLayoutEffect(() => {
         const size = resizeValue.get(props.id);
         if(size && preferredComponentSizes){
-            initSize = {width: (size.width as number), height: (size.height as number)};
+            initSizeRef.current = {width: (size.width as number) - margins.marginRight, height: (size.height as number)}
             start();
         }
-    },[resizeValue, preferredComponentSizes]);
+    },[resizeValue, preferredComponentSizes, props.id]);
+
+
 
 
 
     // Layout----------------------------------
-    let initSize: {width: number, height: number} | undefined = undefined
+    const initSizeRef = useRef<{width: number, height: number} | undefined>(undefined)
     const anchors = new Map<string, Anchor>();
     const componentConstraints = new Map<string, Constraints>();
 
@@ -427,6 +429,7 @@ const FormLayout: FC<layout> = (props) => {
 
 
         //Available Size
+        let initSize = initSizeRef.current;
         if(!initSize){
             if(layoutSizeRef.current){
                 const size = layoutSizeRef.current.getBoundingClientRect();
@@ -434,17 +437,17 @@ const FormLayout: FC<layout> = (props) => {
             }
         }
         else{
-            let height = 0; let width = 0;
+            let height: number; let width: number;
             if(initSize.width < preferredWidth){
                 width = preferredWidth;
             } else {
                 width = initSize.width;
             }
 
-            if(initSize.height < preferredHeight){
+            if(initSize.height < preferredHeight ){
                 height = preferredHeight;
             } else {
-                height = initSize.height
+                height = initSize.height;
             }
             initSize = {height: height, width: width}
         }
@@ -603,23 +606,25 @@ const FormLayout: FC<layout> = (props) => {
         });
 
         if(borderConstraint && marginConstraint){
+            const height = borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position;
+            const width = borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position;
 
-            if(props.onFinish){
-                props.onFinish(props.id, minimumHeight, minimumWidth);
-            }
 
-            let left = undefined;
-            let top = undefined;
+            let top = undefined; let left = undefined;
             const selfSize = resizeValue.get(props.id);
             if(selfSize){
-                left = (selfSize.left as number)
-                top = (selfSize.top as number)
+                left = (selfSize.left as number);
+                top = (selfSize.top as number);
+            }
+
+            if(props.onFinish){
+                props.onFinish(props.id, width, height);
             }
 
             setCalculatedStyle( {
                 style: {
-                    height: resizeValue.get(props.id) ? props.screenTitle ? preferredHeight : initSize?.height : preferredHeight,
-                    width: resizeValue.get(props.id) ? props.screenTitle ? preferredWidth : initSize?.width : preferredWidth,
+                    height: height,
+                    width: width,
                     left:  left || marginConstraint.leftAnchor.getAbsolutePosition(),
                     top:  top || marginConstraint.topAnchor.getAbsolutePosition(),
                     position: resizeValue.get(props.id)?.position || "relative",
@@ -628,8 +633,6 @@ const FormLayout: FC<layout> = (props) => {
             });
         }
     }
-
-
 
     return(
         <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>

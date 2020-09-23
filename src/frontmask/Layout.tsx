@@ -10,8 +10,7 @@ const Layout: FC = (props) => {
     const sizeRef = useRef<HTMLDivElement>(null);
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>())
 
-
-    const handleResize = () => {
+    const doResize = () => {
         if(sizeRef.current){
             const size = sizeRef.current.getBoundingClientRect();
             const sizeMap = new Map<string, CSSProperties>();
@@ -22,6 +21,12 @@ const Layout: FC = (props) => {
             setComponentSize(sizeMap);
         }
     }
+
+    const handleResize = () => {
+        Throttle(doResize,50)()
+    }
+
+
 
     useEffect(() => {
        window.addEventListener("resize", handleResize);
@@ -38,9 +43,9 @@ const Layout: FC = (props) => {
                     {props.children}
                 </div>
             </LayoutContext.Provider>
-            <div style={{backgroundColor: "grey"}}>
-                <h4>footer</h4>
-            </div>
+            {/*<div style={{backgroundColor: "grey"}}>*/}
+            {/*    <h4>footer</h4>*/}
+            {/*</div>*/}
         </div>
 
     )
