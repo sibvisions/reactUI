@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
 import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
@@ -17,10 +17,9 @@ const FormLayout: FC<layout> = (props) => {
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     const layoutSizeRef = useRef<HTMLDivElement>(null);
 
-
     // Custom Hooks
     const [components, preferredComponentSizes] = useComponents(props.id);
-    const resizeValue = useContext(LayoutContext);
+    const dictatedStyle = useContext(LayoutContext);
 
 
     const start = () => {
@@ -39,16 +38,12 @@ const FormLayout: FC<layout> = (props) => {
     },[preferredComponentSizes]);
 
     useLayoutEffect(() => {
-        const size = resizeValue.get(props.id);
+        const size = dictatedStyle.get(props.id);
         if(size && preferredComponentSizes){
             initSizeRef.current = {width: (size.width as number) - margins.marginRight, height: (size.height as number)}
             start();
         }
-    },[resizeValue, preferredComponentSizes, props.id]);
-
-
-
-
+    },[dictatedStyle, preferredComponentSizes, props.id]);
 
     // Layout----------------------------------
     const initSizeRef = useRef<{width: number, height: number} | undefined>(undefined)
@@ -271,8 +266,8 @@ const FormLayout: FC<layout> = (props) => {
                         leftBorderUsed = true;
                     }
                     if(constraint.leftAnchor.getBorderAnchor().name === "r"){
-                        let w = constraint.leftAnchor.getAbsolutePosition();
-                        if(w > rightWidth){
+                        let w = -constraint.leftAnchor.getAbsolutePosition();
+                        if(w/2 > rightWidth){
                             rightWidth = w;
                         }
                         rightBorderUsed = true;
@@ -285,8 +280,8 @@ const FormLayout: FC<layout> = (props) => {
                         topBorderUsed = true;
                     }
                     if(constraint.topAnchor.getBorderAnchor().name === "b"){
-                        let h = constraint.topAnchor.getAbsolutePosition();
-                        if(h > bottomHeight){
+                        let h = -constraint.topAnchor.getAbsolutePosition();
+                        if(h/2 > bottomHeight){
                             bottomHeight = h;
                         }
                         bottomBorderUsed = true;
@@ -351,6 +346,8 @@ const FormLayout: FC<layout> = (props) => {
                 }
             }
         }
+
+
 
         //Preferred Height
         if(topHeight !== 0 && bottomHeight !== 0){
@@ -606,28 +603,17 @@ const FormLayout: FC<layout> = (props) => {
         });
 
         if(borderConstraint && marginConstraint){
-            const height = borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position;
-            const width = borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position;
-
-
-            let top = undefined; let left = undefined;
-            const selfSize = resizeValue.get(props.id);
-            if(selfSize){
-                left = (selfSize.left as number);
-                top = (selfSize.top as number);
-            }
-
             if(props.onFinish){
-                props.onFinish(props.id, width, height);
+                props.onFinish(props.id, preferredHeight, preferredWidth);
             }
 
             setCalculatedStyle( {
                 style: {
-                    height: height,
-                    width: width,
-                    left:  left || marginConstraint.leftAnchor.getAbsolutePosition(),
-                    top:  top || marginConstraint.topAnchor.getAbsolutePosition(),
-                    position: resizeValue.get(props.id)?.position || "relative",
+                    height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
+                    width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
+                    left:  dictatedStyle.get(props.id)?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
+                    top:  dictatedStyle.get(props.id)?.top || marginConstraint.topAnchor.getAbsolutePosition(),
+                    position: dictatedStyle.get(props.id)?.position || "relative",
                 },
                 componentSizes: sizeMap
             });
