@@ -2,13 +2,15 @@ import MenuResponse from "./response/MenuResponse";
 import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
+import UserData from "./model/UserData";
 
 class ContentStore{
-    menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1)
 
+    menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1)
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
 
+    currentUser: UserData = new UserData();
 
     updateContent(componentsToUpdate: Array<BaseComponent>){
         componentsToUpdate.forEach(newComponent => {
@@ -118,7 +120,7 @@ class ContentStore{
         const window = this.getWindow(windowName);
         if(window){
             deleteChildren(window.id);
-            this.flatContent.delete(window.id)
+            this.flatContent.delete(window.id);
         }
     }
 }

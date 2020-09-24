@@ -8,6 +8,7 @@ import GenericResponse from "./response/GenericResponse";
 import CloseScreenResponse from "./response/CloseScreenResponse";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
+import UserDataResponse from "./response/UserDataResponse";
 
 class Server{
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
@@ -70,8 +71,8 @@ class Server{
         sessionStorage.setItem("clientId", metaData.clientId);
     }
 
-    userData(){
-
+    userData(userData: UserDataResponse){
+        this.contentStore.currentUser = userData;
     }
 
     authenticationData(authData: AuthenticationDataResponse){

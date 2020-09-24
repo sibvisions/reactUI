@@ -35,6 +35,8 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
         }
     }
 
+
+
     const dragging = (event: MouseEvent) => {
         const newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
         if(newSeparatorPosition > 0){
@@ -57,6 +59,31 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
         document.addEventListener("mousemove", dragging);
     }
 
+    //Touch ----------------------
+
+    const stopTouchDrag = () => {
+        document.removeEventListener("touchend", stopTouchDrag);
+        document.removeEventListener("touchmove", touchDragging);
+    }
+
+    const touchDragging = (event: TouchEvent) => {
+         const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absoluteWidthPosition;
+        if(newSeparatorPosition > 0){
+            Throttle(callOnResize, 16.5)()
+            setFirstWidth(newSeparatorPosition);
+        }
+    }
+
+    const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        if(positionRef.current){
+            const size = positionRef.current.getBoundingClientRect();
+            absoluteWidthPosition = size.x;
+        }
+        document.addEventListener("touchend", stopTouchDrag);
+        document.addEventListener("touchmove", touchDragging);
+
+    }
+
     useLayoutEffect(() => {
         callOnResize()
     }, [props.trigger])
@@ -68,7 +95,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
             <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%"}}>
                 {props.leftComponent}
             </div>
-            <div className={"separator"} onMouseDown={dragStart} />
+            <div className={"separator"} onMouseDown={dragStart} onTouchStart={dragTouchStart}/>
             <div ref={secondRef} className={"second"} >
                 {props.rightComponent}
             </div>

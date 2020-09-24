@@ -23,7 +23,7 @@ const Layout: FC = (props) => {
     }
 
     const handleResize = () => {
-        Throttle(doResize,50)()
+        Throttle(doResize,75)()
     }
 
 
