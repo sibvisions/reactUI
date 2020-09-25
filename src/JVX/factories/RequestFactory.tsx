@@ -2,6 +2,7 @@ import StartupRequest from "../request/StartupRequest";
 import LoginRequest from "../request/LoginRequest";
 import PressButtonRequest from "../request/PressButtonRequest";
 import OpenScreenRequest from "../request/OpenScreenRequest";
+import LogoutRequest from "../request/LogoutRequest";
 
 
 
@@ -68,6 +69,13 @@ export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenR
     const req: OpenScreenRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
+    }
+    return req;
+}
+
+export const createLogoutRequest = (values? : LogoutRequest): LogoutRequest => {
+    const req: LogoutRequest = {
+        clientId: values?.clientId || getClientId()
     }
     return req;
 }

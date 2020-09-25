@@ -4,12 +4,14 @@ import BorderLayout from "./BorderLayout";
 import LoadCallBack from "../util/LoadCallBack";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
+import FlowLayout from "./FlowLayout";
 
 export type layout = {
     parent: string | undefined
     id: string
     layout: string,
     layoutData: string,
+    orientation: number
     onFinish: LoadCallBack
     screenTitle?: string
 }
@@ -19,6 +21,8 @@ const Layout: FC<layout> = (props) => {
         return <FormLayout {...props} />
     else if(props.layout.includes("BorderLayout"))
         return <BorderLayout {...props} />
+    else if(props.layout.includes("FlowLayout"))
+        return <FlowLayout {...props} />
     else
         return <DummyLayout {...props}/>
 }
@@ -34,7 +38,7 @@ const DummyLayout: FC<layout> = (props) => {
     const layoutValue = useContext(LayoutContext);
 
     useLayoutEffect(() => {
-        if(layoutSize.current){
+        if(layoutSize.current && props.onFinish){
             const size = layoutSize.current.getBoundingClientRect();
 
             props.onFinish(props.id, size.height, size.width);

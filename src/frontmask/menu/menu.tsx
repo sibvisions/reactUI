@@ -2,7 +2,7 @@
 import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 //Custom
-import {createOpenScreenRequest} from "../../JVX/factories/RequestFactory";
+import {createLogoutRequest, createOpenScreenRequest} from "../../JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
@@ -12,6 +12,7 @@ import {Menubar} from "primereact/menubar";
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
 import {Button} from "primereact/button";
+import UserData from "../../JVX/model/UserData";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);
@@ -19,10 +20,23 @@ const Menu: FC = () => {
     const slideRef = useRef<SlideMenu>(null)
 
     const profileMenu = useMemo(() => {
+
+        // Profile Menu
+        const sendLogout = () => {
+            const logoutRequest = createLogoutRequest();
+            localStorage.removeItem("authKey")
+            context.contentStore.currentUser = new UserData()
+            context.contentStore.flatContent.clear();
+            context.contentStore.removedContent.clear();
+            context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT);
+        }
         const slideOptions: Array<MenuItem> =
             [
                 {
-                     label: "Logout"
+                    label: "Logout",
+                    command(e: { originalEvent: Event; item: MenuItem }) {
+                        sendLogout()
+                    }
                 }
             ]
 
@@ -38,8 +52,10 @@ const Menu: FC = () => {
                     model={slideOptions}
                     popup={true}/>
                 <img
-                    src={"data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage}
-                    style={{height:50, width:50, borderRadius: 25}}/>
+                    onClick={event => slideRef.current?.show(event)}
+                    src={context.contentStore.currentUser.profileImage ? "data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage : undefined}
+                    style={context.contentStore.currentUser.profileImage ? {height:50, width:50, borderRadius: 25} : undefined}
+                />
             </div>
         )
     }, [slideRef , context.contentStore.currentUser])

@@ -26,14 +26,14 @@ const Layout: FC = (props) => {
         Throttle(doResize,75)()
     }
 
-
-
     useEffect(() => {
        window.addEventListener("resize", handleResize);
        return () => {
            window.removeEventListener("resize", handleResize);
        }
     });
+
+
 
     return(
         <div className={"layout"}>
