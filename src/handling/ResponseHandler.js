@@ -88,6 +88,10 @@ class ResponseHandler{
         {
             name: "upload",
             methodToExecute: this.upload.bind(this)
+        },
+        {
+            name: "download",
+            methodToExecute: this.download.bind(this)
         }
     ]
 
@@ -198,15 +202,24 @@ class ResponseHandler{
     //upload & download
 
     upload(uploadData) {
-        let inputElem = document.createElement('input');
+        const inputElem = document.createElement('input');
         inputElem.style.display = 'none';
         inputElem.type = 'file';
         document.body.appendChild(inputElem);
         inputElem.click()
         inputElem.onchange = e => {
-            console.log(e.target.files[0])
             this.serverCommunicator.upload(uploadData.fileId, e.target.files[0].name, e.target.files[0])
         }
+    }
+
+    download(downloadData) {
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = downloadData.url.split(';')[0];
+        a.setAttribute('download', downloadData.fileName);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
 

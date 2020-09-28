@@ -55,6 +55,7 @@
 .settings-grid .p-card-content {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     .p-inputswitch {
         margin-left: 5px;
     }
@@ -80,8 +81,8 @@
     }
 }
 
-//if the screen is smaller than 945px move content lower
-@media only screen and (max-width: 945px) {
+//if the screen is smaller than 960px move content lower
+@media only screen and (max-width: 960px) {
     .settings-content-top {
         height: -moz-calc(100% - 141.5px);
         height: -webkit-calc(100% - 141.5px);

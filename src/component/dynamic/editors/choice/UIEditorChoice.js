@@ -1,34 +1,47 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import "./UIEditorChoice.scss"
 import { RefContext } from '../../../helper/Context';
-//import useRowSelect from '../../../hooks/useRowSelect';
 import { getAlignments } from '../../ComponentProperties';
-import { Size } from '../../../helper/Size';
+import { getPreferredSize } from '../../../helper/GetSizes';
+import { sendSetValues } from '../../../helper/SendSetValues';
 
 function UIEditorChoice(props) {
-    //const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id)
     const con = useContext(RefContext);
-    const alignments = getAlignments(props)
+    const alignments = getAlignments(props);
+    const allowedValues = con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.allowedValues
+    const [currValue, setCurrValue] = useState(allowedValues.indexOf(con.contentStore.storedData.get(props.dataRow)[con.contentStore.selectedRow.get(props.dataRow)][props.columnName]))
 
+    function handleClick() {
+        let newIndex = currValue;
+        if (allowedValues[newIndex+1] === undefined) {
+            newIndex = 0;
+        }
+        else {
+            newIndex++
+        }
+        setCurrValue(newIndex)
+        sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, allowedValues[newIndex])
+    }
 
-    useEffect(() => {
+    function sendSize() {
         con.contentStore.emitSizeCalculated(
             {
-                size: new Size(16, 16),
+                size: getPreferredSize(props),
                 id: props.id,
                 parent: props.parent
             }
         );
-    }, [con, props]);
-
-    function handleClick() {
-        console.log('yo')
     }
 
-    return(
-        <span id={props.id} style={{...props.layoutStyle, display: 'inline-flex', justifyContent: alignments.ha, alignItems: alignments.va}}>
+    return (
+        <span style={{ ...props.layoutStyle, display: 'inline-flex', justifyContent: alignments.ha, alignItems: alignments.va }}>
             <button className="choice-editor" onClick={handleClick}>
-                <img alt="yo" src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName}></img>
+                <img 
+                    id={props.id} alt="yo" 
+                    style={{cursor: 'pointer'}} 
+                    onLoad={sendSize} 
+                    src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.imageNames[currValue]}
+                />
             </button>
         </span>
     )

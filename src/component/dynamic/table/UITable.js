@@ -12,10 +12,12 @@ import useFetchListen from '../../hooks/useFetchListen'
 function UITable(props) {
     const [fetchedData] = useFetchListen(props.dataBook);
     const [data, setData] = useState();
+    const [inMemoryData, setInMemoryData] = useState();
     const [dataColumns, setDataColumns] = useState()
     const con = useContext(RefContext);
 
     useEffect(() => {
+        console.log(con.contentStore.storedData.get(props.dataBook))
         const buildColumns = (labels, names) => {
             let tempDataColumns = [];
             for (let index = 0; index < labels.length; index++) {
@@ -53,10 +55,6 @@ function UITable(props) {
     const buildData = async data => {
         let tempArray = []
         data.forEach(set => {
-            // let tableData = {}
-            // for (let index = 0; index <= data.length; index++) {
-            //     tableData[data.columnNames[index]] = set[index];
-            // }
             tempArray.push(set);
         });
         setData(tempArray);
@@ -89,15 +87,37 @@ function UITable(props) {
         con.serverComm.selectRow(props.name, props.dataBook, value)
     }
 
+    const loadChunk = (index, length) => {
+        let chunk = [];
+        for (let i = 0; i < length; i++) {
+            chunk[i] = {...inMemoryData[i]}
+        }
+    }
+
+    const onVirtualScroll = event => {
+        setTimeout(() => {
+            if (event.first === con.contentStore.storedData.get(props.dataBook).length - 20) {
+                setData(loadChunk(event.first, 20))
+            }
+            else {
+                setData(loadChunk(event.first, event.rows))
+            }
+        }, 250)
+    }
+
     return (
         <DataTable
             id={props.id}
             header="Table"
             value={data ? data : []}
             onRowDoubleClick={onSelectChange}
-            resizableColumns={true}
+            resizableColumns
             columnResizeMode={"expand"}
-            scrollable={true}
+            scrollable
+            lazy
+            //rows={20}
+            virtualScroll
+            //onVirtualScroll={onVirtualScroll}
             style={props.layoutStyle}>
             {dataColumns}
         </DataTable>

@@ -147,7 +147,7 @@ body {
     }
 }
 
-@media only screen and (max-width: 945px) {
+@media only screen and (max-width: 960px) {
     body {
         .topMenuBar {
             padding-bottom: 110px;
@@ -161,17 +161,39 @@ body {
                 display: none;
             }
             .profile {
-                padding-top: 26px;
+                padding-top: 20px;
+                .p-menubar {
+                    .p-menubar-root-list {
+                        position: unset;
+                        display: unset;
+                        padding: unset;
+                        background: unset;
+                        border: unset;
+                        -webkit-box-shadow: unset;
+                        box-shadow: unset;
+                        width: unset;
+                    }
+                }
             }
         }
     }
 }
 
-@media only screen and (max-width: 733px) {
+@media only screen and (max-width: 772px) {
     body {
         .topMenuBar {
             .logo-topmenu {
                 display: none;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 520px) {
+    body {
+        .topMenuBar {
+            .profile {
+                padding-right: 0;
             }
         }
     }

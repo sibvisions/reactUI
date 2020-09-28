@@ -63,8 +63,8 @@
   }
 }
 
-//if the window is below 945px the grid will be moved down
-@media only screen and (max-width: 945px) {
+//if the window is below 960px the grid will be moved down
+@media only screen and (max-width: 960px) {
   .content-topmenu {
     .p-grid {
       margin-top: 0;

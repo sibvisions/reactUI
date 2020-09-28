@@ -7,7 +7,7 @@ class ServerCommunicator {
         this.responseHandler = responseHandler;
     }
     
-    sendRequest(endpoint, body, timeout=5000){
+    sendRequest(endpoint, body, timeout=10000){
         const reqBody = {
             method: 'POST',
             body: JSON.stringify(body),

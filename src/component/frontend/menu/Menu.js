@@ -21,6 +21,8 @@ class Menu extends Component {
     }
 
     componentDidMount() {
+        let profile = document.getElementById('profile-menu')
+        profile.getElementsByClassName('p-menubar-button')[0].remove();
         this.replaceSubIcon('right');
         this.replaceSubIcon('down');
     }
@@ -146,7 +148,7 @@ class Menu extends Component {
                     </div>
                     <div className="profile p-col-fixed">
                         <div className="profile-content">
-                            <Menubar model={this.getProfileMenu()} />
+                            <Menubar id="profile-menu" model={this.getProfileMenu()} />
                         </div>
                     </div>
                 </div>
