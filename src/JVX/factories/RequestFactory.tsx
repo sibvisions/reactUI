@@ -3,6 +3,7 @@ import LoginRequest from "../request/LoginRequest";
 import PressButtonRequest from "../request/PressButtonRequest";
 import OpenScreenRequest from "../request/OpenScreenRequest";
 import LogoutRequest from "../request/LogoutRequest";
+import DeviceStatusRequest from "../request/DeviceStatusRequest";
 
 
 
@@ -73,9 +74,18 @@ export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenR
     return req;
 }
 
-export const createLogoutRequest = (values? : LogoutRequest): LogoutRequest => {
+export const createLogoutRequest = (values?: LogoutRequest): LogoutRequest => {
     const req: LogoutRequest = {
         clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceStatusRequest => {
+    const req: DeviceStatusRequest = {
+        clientId: getClientId(),
+        screenHeight: values?.screenHeight || 0,
+        screenWidth: values?.screenWidth || 0
     }
     return req;
 }

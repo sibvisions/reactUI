@@ -58,7 +58,7 @@ const Menu: FC = () => {
                 />
             </div>
         )
-    }, [slideRef , context.contentStore.currentUser])
+    }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server])
 
     useEffect(()=> {
         const menuSubscription= context.contentStore.menuSubject.subscribe((menuItems: Array<MenuItemCustom>) => {

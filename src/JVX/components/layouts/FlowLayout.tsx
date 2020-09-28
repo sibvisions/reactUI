@@ -4,58 +4,93 @@ import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import {ORIENTATION} from "./models/Anchor";
 import Gaps from "./models/Gaps";
+import {hostReportError} from "rxjs/internal-compatibility";
+import {match} from "react-router";
+import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 
 const FlowLayout: FC<layout> = (props) => {
 
+    const [preferredSize, setPreferredSize] = useState<{ style: CSSProperties, componentSize: Map<string, CSSProperties> }>({style: {}, componentSize: new Map<string, React.CSSProperties>()})
     const [components, preferredComponentSizes] = useComponents(props.id);
     const layoutContext = useContext(LayoutContext);
     const divRef = useRef<HTMLDivElement>(null);
 
-    const gaps = useMemo(() => new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6)), [props.layoutData])
-    const orientation = useMemo(() => parseInt(props.layout.split(",")[7]), [props.layout]);
-    const [preferredSize, setPreferredSize] = useState<CSSProperties>()
+    const gaps = useMemo(() => {
+        return  new Gaps(props.layout.substring(props.layout.indexOf(',') + 1, props.layout.length).split(',').slice(4, 6));
+    }, [props.layout]);
 
+    const orientation = useMemo(() => {
+        return parseInt(props.layout.split(",")[7]);
+    }, [props.layout]);
+
+    const alignments = useMemo(() => {
+        const splitAlignments = props.layout.split(",")
+        let va: string = "center"; let ha: string = "center"; let ca: string = "center";
+        if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.LEFT)
+            ha = "flex-start";
+        else if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.RIGHT)
+            ha = "flex-end";
+
+        if(parseInt(splitAlignments[9]) === VERTICAL_ALIGNMENT.TOP)
+            va = "flex-start";
+        else if(parseInt(splitAlignments[9]) === VERTICAL_ALIGNMENT.BOTTOM)
+            va = "flex-end";
+
+        if(parseInt(splitAlignments[10]) === VERTICAL_ALIGNMENT.TOP)
+            ca = "flex-start";
+        else if(parseInt(splitAlignments[10]) === VERTICAL_ALIGNMENT.BOTTOM)
+            ca = "flex-end";
+        return {va: va, ha: ha, ca: ca}
+    }, [props.layout]);
 
     // CalculateComps
     useLayoutEffect(() => {
+        let height = 0; let width = 0
         if(preferredComponentSizes){
             if(orientation === ORIENTATION.HORIZONTAL){
-                let highest = 0; let calcWidth = 0;
-
                 preferredComponentSizes.forEach(value => {
-                   if(value.height > highest){
-                       highest = value.height;
-                   }
-                   calcWidth += value.width + gaps.horizontalGap;
+                   if(value.height > height){
+                       height = value.height;
+                   } width += value.width + gaps.horizontalGap;
                 });
-                setPreferredSize({height: highest, width: calcWidth});
             } else {
-                let widest = 0; let calcHeight = 0;
-
                 preferredComponentSizes.forEach(value => {
-                    if(value.width > widest){
-                        widest = value.width;
-                    }
-                    calcHeight += value.height + gaps.vertical;
+                    if(value.width > width){
+                        width = value.width;
+                    } height += value.height + gaps.vertical;
                 });
-                setPreferredSize({height: calcHeight, width: widest});
             }
         }
-    }, [preferredComponentSizes, gaps, props.orientation])
-
-    useLayoutEffect(() => {
-
-    }, [components, layoutContext])
+        setPreferredSize({style: {height: height, width: width}, componentSize: preferredComponentSizes || new Map<string, CSSProperties>()})
+        //@ts-ignore
+        if(props.onFinish)
+            props.onFinish(props.id, height, width);
+    }, [preferredComponentSizes, gaps, props, orientation])
 
 
     return(
-        <div style={{
+        <div id={props.id} style={{
                 width: layoutContext.get(props.id)?.width || "100%",
                 height: layoutContext.get(props.id)?.height || "100%",
-                display:"flex", justifyContent: "center", alignItems:"center"}}>
-            <div ref={divRef} style={preferredSize}>
-                {components}
-            </div>
+                left: layoutContext.get(props.id)?.left,
+                top: layoutContext.get(props.id)?.top,
+                position: layoutContext.get(props.id)?.position,
+                display: "flex",
+                justifyContent: alignments.ha,
+                alignItems: alignments.va}}>
+            <LayoutContext.Provider value={preferredSize.componentSize}>
+                <div
+                    ref={divRef}
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: alignments.ca,
+                        ...preferredSize.style
+                    }}>
+                    {components}
+                </div>
+            </LayoutContext.Provider>
+
         </div>
     )
 }

@@ -1,14 +1,49 @@
-import React, {Children, CSSProperties, FC, useEffect, useRef, useState} from "react";
+//React
+import React, {
+    Children,
+    CSSProperties,
+    FC, useContext,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState
+} from "react";
+
+//Components
 import Menu from "./menu/menu";
 import "./Layout.scss"
+
+//Utils
 import ChildWithProps from "../JVX/components/util/ChildWithProps";
+import * as queryString from "querystring";
+import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
+import {createDeviceStatusRequest, createStartupRequest} from "../JVX/factories/RequestFactory";
+
+//Context
+import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
-import Throttle from "../JVX/components/util/Throttle";
+
+
+
+
+
+
+type queryType = {
+    appName?: string,
+    userName?: string,
+    password?: string,
+    baseUrl?: string
+}
+
 
 const Layout: FC = (props) => {
 
     const sizeRef = useRef<HTMLDivElement>(null);
+    const context = useContext(jvxContext);
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>())
+
+    const resizeRef = useRef<NodeJS.Timeout | undefined>();
+    const deviceRef = useRef<NodeJS.Timeout>(setTimeout(() => {}, 100))
 
     const doResize = () => {
         if(sizeRef.current){
@@ -23,15 +58,61 @@ const Layout: FC = (props) => {
     }
 
     const handleResize = () => {
-        Throttle(doResize,75)()
+        if(resizeRef.current){
+            return;
+        }
+        resizeRef.current = setTimeout(() => {
+            console.log("resizing")
+            doResize();
+            resizeRef.current = undefined
+        }, 23);
+    };
+
+
+    const handleDeviceStatus = () => {
+        clearTimeout(deviceRef.current);
+        deviceRef.current = setTimeout(() => {
+            const deviceStatusReq = createDeviceStatusRequest();
+            if(sizeRef.current){
+                const mainSize = sizeRef.current.getBoundingClientRect();
+                deviceStatusReq.screenHeight = mainSize.height;
+                deviceStatusReq.screenWidth = mainSize.width;
+                context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
+            }
+        }, 500)
     }
 
     useEffect(() => {
        window.addEventListener("resize", handleResize);
+       window.addEventListener("resize", handleDeviceStatus);
        return () => {
+           window.removeEventListener("resize", handleDeviceStatus)
            window.removeEventListener("resize", handleResize);
        }
     });
+
+    // useLayoutEffect(() => {
+    //     const queryParams: queryType = queryString.parse(window.location.search);
+    //     const startUpRequest = createStartupRequest();
+    //     const authKey = localStorage.getItem("authKey");
+    //     if(queryParams.appName && queryParams.baseUrl){
+    //         startUpRequest.applicationName = queryParams.appName;
+    //         context.server.BASE_URL = queryParams.baseUrl;
+    //     }
+    //     if(queryParams.userName && queryParams.password){
+    //         startUpRequest.password = queryParams.password;
+    //         startUpRequest.userName = queryParams.userName;
+    //     }
+    //     if(authKey){
+    //         startUpRequest.authKey = authKey;
+    //     }
+    //     if(sizeRef.current){
+    //         const size = sizeRef.current.getBoundingClientRect();
+    //         startUpRequest.screenWidth = size.width;
+    //         startUpRequest.screenHeight = size.height;
+    //     }
+    //     context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
+    // }, [context.server, sizeRef]);
 
 
 

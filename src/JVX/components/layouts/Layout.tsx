@@ -18,11 +18,11 @@ export type layout = {
 
 const Layout: FC<layout> = (props) => {
     if(props.layout.includes("FormLayout"))
-        return <FormLayout {...props} />
+        return <FormLayout {...props}/>
     else if(props.layout.includes("BorderLayout"))
-        return <BorderLayout {...props} />
+        return <BorderLayout {...props}/>
     else if(props.layout.includes("FlowLayout"))
-        return <FlowLayout {...props} />
+        return <FlowLayout {...props}/>
     else
         return <DummyLayout {...props}/>
 }

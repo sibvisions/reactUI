@@ -42,7 +42,7 @@ const createEditor: FC<IEditor> = ( props ) => {
         if(props.cellEditor.className === "ImageViewer"){
             return createEditorImage((props as IEditorImage));
         }
-         if(props.cellEditor.className === "TextCellEditor"){
+         if(props.cellEditor.className === "TextCellEditor" || props.cellEditor.className === "NumberCellEditor"){
             return createEditorText((props as IEditorText));
         }
         else{
