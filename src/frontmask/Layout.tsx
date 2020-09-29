@@ -62,7 +62,6 @@ const Layout: FC = (props) => {
             return;
         }
         resizeRef.current = setTimeout(() => {
-            console.log("resizing")
             doResize();
             resizeRef.current = undefined
         }, 23);
@@ -90,31 +89,6 @@ const Layout: FC = (props) => {
            window.removeEventListener("resize", handleResize);
        }
     });
-
-    // useLayoutEffect(() => {
-    //     const queryParams: queryType = queryString.parse(window.location.search);
-    //     const startUpRequest = createStartupRequest();
-    //     const authKey = localStorage.getItem("authKey");
-    //     if(queryParams.appName && queryParams.baseUrl){
-    //         startUpRequest.applicationName = queryParams.appName;
-    //         context.server.BASE_URL = queryParams.baseUrl;
-    //     }
-    //     if(queryParams.userName && queryParams.password){
-    //         startUpRequest.password = queryParams.password;
-    //         startUpRequest.userName = queryParams.userName;
-    //     }
-    //     if(authKey){
-    //         startUpRequest.authKey = authKey;
-    //     }
-    //     if(sizeRef.current){
-    //         const size = sizeRef.current.getBoundingClientRect();
-    //         startUpRequest.screenWidth = size.width;
-    //         startUpRequest.screenHeight = size.height;
-    //     }
-    //     context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-    // }, [context.server, sizeRef]);
-
-
 
     return(
         <div className={"layout"}>

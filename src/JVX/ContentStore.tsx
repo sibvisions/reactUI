@@ -3,6 +3,9 @@ import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
+import {type} from "os";
+
+type propertySubFunc = (componentProperties: BaseComponent) => void
 
 class ContentStore{
 
@@ -12,7 +15,19 @@ class ContentStore{
 
     currentUser: UserData = new UserData();
 
+    //Subscription Maps
+    propertiesSub = new Map<string, Function>();
+
+    subscribeToProperties(id: string, fn: Function){
+        this.propertiesSub.set(id, fn);
+    }
+
+    unsubscribeFromProperties(id: string){
+        this.propertiesSub.delete(id);
+    }
+
     updateContent(componentsToUpdate: Array<BaseComponent>){
+        //Update Properties and delete components
         componentsToUpdate.forEach(newComponent => {
             //Check if component was removed earlier, if yes then re-add it to flatContent
             let existingComponent = this.removedContent.get(newComponent.id);
@@ -49,6 +64,17 @@ class ContentStore{
             }
             else {
                 this.flatContent.set(newComponent.id, newComponent);
+            }
+        });
+
+        //Notify Components of Change
+        componentsToUpdate.forEach(newComponent => {
+            const freshComponent = this.flatContent.get(newComponent.id);
+            if(freshComponent){
+                const subFunc = this.propertiesSub.get(newComponent.id);
+                if(subFunc){
+                    subFunc.apply(undefined, [freshComponent])
+                }
             }
         });
     }

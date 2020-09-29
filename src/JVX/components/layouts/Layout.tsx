@@ -5,10 +5,19 @@ import LoadCallBack from "../util/LoadCallBack";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import FlowLayout from "./FlowLayout";
+import BaseComponent from "../BaseComponent";
 
 export type layout = {
     parent: string | undefined
     id: string
+    layout: string,
+    layoutData: string,
+    orientation: number
+    onFinish: LoadCallBack
+    screenTitle?: string
+}
+
+export interface layoutInfo extends BaseComponent{
     layout: string,
     layoutData: string,
     orientation: number

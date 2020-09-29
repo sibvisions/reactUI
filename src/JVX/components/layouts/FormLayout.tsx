@@ -1,5 +1,5 @@
 import React, {CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
-import {layout} from "./Layout";
+import {layout, layoutInfo} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
@@ -8,18 +8,21 @@ import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import ChildWithProps from "../util/ChildWithProps";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
+import useProperties from "../zhooks/useProperties";
+import {jvxContext} from "../../jvxProvider";
 
 
-const FormLayout: FC<layout> = (props) => {
-
+const FormLayout: FC<{id: string}> = (baseProps) => {
 
     // React Hooks
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     const layoutSizeRef = useRef<HTMLDivElement>(null);
+    const dictatedStyle = useContext(LayoutContext);
+    const context = useContext(jvxContext);
 
     // Custom Hooks
-    const [components, preferredComponentSizes] = useComponents(props.id);
-    const dictatedStyle = useContext(LayoutContext);
+    const [components, preferredComponentSizes] = useComponents(baseProps.id);
+    const [props] = useProperties<layoutInfo>(baseProps.id);
 
 
     const start = () => {
@@ -30,6 +33,15 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     // Set init Size  & start
+
+    useLayoutEffect(() => {
+        console.log("hey")
+        const size = dictatedStyle.get(props.id);
+        if(size && preferredComponentSizes){
+            initSizeRef.current = {width: (size.width as number) - margins.marginRight, height: (size.height as number)}
+            start();
+        }
+    }, [props])
 
     useLayoutEffect(() => {
         if(preferredComponentSizes){
@@ -81,16 +93,30 @@ const FormLayout: FC<layout> = (props) => {
             value.relatedAnchor = anchors.get(value.relatedAnchorName);
         });
         //Build Constraints of Children
-        components.forEach(child => {
-            const childWithProps = (child as ChildWithProps);
-            const anchorNames = childWithProps.props.constraints.split(";");
-            //Get Anchors
+        // components.forEach(child => {
+        //     const childWithProps = (child as ChildWithProps);
+        //     const anchorNames = childWithProps.props.constraints.split(";");
+        //     //Get Anchors
+        //     const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
+        //     const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+        //     //Set Constraint
+        //     if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
+        //         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
+        //         componentConstraints.set(childWithProps.props.id, constraint);
+        //     } else {
+        //         console.warn("Constraint Anchors were undefined");
+        //     }
+        // });
+
+        const componentData = context.contentStore.getChildren(baseProps.id);
+        componentData.forEach(component => {
+            const anchorNames = component.constraints.split(";");
             const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
             const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
             //Set Constraint
             if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                 const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
-                componentConstraints.set(childWithProps.props.id, constraint);
+                componentConstraints.set(component.id, constraint);
             } else {
                 console.warn("Constraint Anchors were undefined");
             }
