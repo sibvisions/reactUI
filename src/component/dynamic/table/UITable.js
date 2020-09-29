@@ -12,12 +12,12 @@ import useFetchListen from '../../hooks/useFetchListen'
 function UITable(props) {
     const [fetchedData] = useFetchListen(props.dataBook);
     const [data, setData] = useState();
-    const [inMemoryData, setInMemoryData] = useState();
+    //const [totalRecords, setTotalRecords] = useState();
     const [dataColumns, setDataColumns] = useState()
     const con = useContext(RefContext);
+    const rows = 20;
 
     useEffect(() => {
-        console.log(con.contentStore.storedData.get(props.dataBook))
         const buildColumns = (labels, names) => {
             let tempDataColumns = [];
             for (let index = 0; index < labels.length; index++) {
@@ -32,16 +32,18 @@ function UITable(props) {
                     metaData.cellEditor.clearColumns = ["ID", names[index]];
                     columnProps.editor = (props) => buildEditor(props, metaData);
                 }
-                tempDataColumns.push(<Column {...columnProps} sortable/>);
+                tempDataColumns.push(<Column loadingBody={loadingText} {...columnProps} sortable/>);
             }
             setDataColumns(tempDataColumns)
         };
         buildColumns(props.columnLabels, props.columnNames);
         
-        let data = con.contentStore.storedData.get(props.dataBook);
-        if (data) {
-            buildData(data);
-        }
+        // let data = con.contentStore.storedData.get(props.dataBook);
+        // if (data) {
+        //     buildData(data);
+        // }
+        //setTotalRecords(con.contentStore.storedData.get(props.dataBook).length)
+        setData(con.contentStore.storedData.get(props.dataBook).slice(0, rows*2))
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props),
@@ -90,19 +92,25 @@ function UITable(props) {
     const loadChunk = (index, length) => {
         let chunk = [];
         for (let i = 0; i < length; i++) {
-            chunk[i] = {...inMemoryData[i]}
+            chunk[i] = {...con.contentStore.storedData.get(props.dataBook)[i+index]}
         }
+        return chunk
     }
 
     const onVirtualScroll = event => {
         setTimeout(() => {
-            if (event.first === con.contentStore.storedData.get(props.dataBook).length - 20) {
-                setData(loadChunk(event.first, 20))
+            if (event.first + event.rows >= con.contentStore.storedData.get(props.dataBook).length) {
+                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length-1, 101)
+                buildData(loadChunk(event.first, event.rows))
             }
             else {
-                setData(loadChunk(event.first, event.rows))
+                buildData(loadChunk(event.first, event.rows))
             }
         }, 250)
+    }
+
+    const loadingText = () => {
+        return <span className="loading-text"/>
     }
 
     return (
@@ -115,8 +123,10 @@ function UITable(props) {
             columnResizeMode={"expand"}
             scrollable
             lazy
-            //rows={20}
-            virtualScroll
+            rows={rows}
+            //totalRecords={totalRecords}
+            scrollHeight="400px"
+            //virtualScroll
             //onVirtualScroll={onVirtualScroll}
             style={props.layoutStyle}>
             {dataColumns}

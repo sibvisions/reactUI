@@ -35,7 +35,7 @@ export function buttonProps(props) {
     }
 }
 
-export function styleButton(ref, btn, constraints) {
+export function styleButton(ref, btn, props) {
     if (btn.classList.contains("p-button-icon-only")) {
         for (let child of btn.children) {
             if (child.classList.contains("p-button-text")) {
@@ -43,9 +43,12 @@ export function styleButton(ref, btn, constraints) {
             }
         }
     }
+    if (props.style && props.style.includes('hyperlink')) {
+        btn.classList.add('hyperlink')
+    }
     let size = new Size(parseInt(ref.style.width), parseInt(ref.style.height));
-    btn.style.setProperty('width', isBorderConstraints(constraints) ? '100%' : toPx(size.width));
-    btn.style.setProperty('height', isBorderConstraints(constraints) ? '100%' : toPx(size.height));
+    btn.style.setProperty('width', isBorderConstraints(props.constraints) ? '100%' : toPx(size.width));
+    btn.style.setProperty('height', isBorderConstraints(props.constraints) ? '100%' : toPx(size.height));
 }
 
 export function styleChildren(btnChildren, props, btnData) {

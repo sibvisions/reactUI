@@ -22,21 +22,21 @@ function UIButton(props) {
         let btnDiv = btnRef.current;
         window.addEventListener("resize", () => {
             if (btnDiv !== null) {
-                styleButton(btnDiv, btnDiv.children[0], props.constraints);
+                styleButton(btnDiv, btnDiv.children[0], props);
             }
         });
 
         return () => {
             window.removeEventListener("resize", () => {
                 if (btnDiv !== null) {
-                    styleButton(btnDiv, btnDiv.children[0], props.constraints);
+                    styleButton(btnDiv, btnDiv.children[0], props);
                 }
             });
         }
     }, [con, props]);
 
     useLayoutEffect(() => {
-        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleButton(btnRef.current, btnRef.current.children[0], props);
         styleChildren(btnRef.current.children[0].children, props, btnData);
         addHoverEffect(btnRef.current.children[0], btnData.btnProps.style.background, null, 5, props, btnData.btnBorderPainted, null)
     })

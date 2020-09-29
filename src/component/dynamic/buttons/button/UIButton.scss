@@ -14,6 +14,15 @@
     }
 }
 
+.hyperlink {
+    .p-button-label {
+        color: black;
+        &:hover {
+            text-decoration: underline;   
+        }
+    }
+}
+
 .formlayout {
     >div {
         >.p-button {

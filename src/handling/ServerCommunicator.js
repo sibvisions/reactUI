@@ -121,8 +121,8 @@ class ServerCommunicator {
             clientId: localStorage.getItem("clientId"),
             componentId: componentId,
             dataProvider: dataProvider,
-            columnNames: [columnName],
-            values: [values]
+            columnNames: Array.isArray(columnName) ? columnName : [columnName],
+            values: Array.isArray(values) ? values : [values]
         }; this.sendRequest("/api/dal/setValues", reqBody);
     }
 
@@ -180,10 +180,12 @@ class ServerCommunicator {
 
     //---Fetch Requests------
 
-    fetchDataFromProvider(dataProvider, timeout=2000){
+    fetchDataFromProvider(dataProvider, from=0, rowCount, timeout=2000){
         const reqBody = {
             clientId: localStorage.getItem("clientId"),
             dataProvider: dataProvider, 
+            fromRow: from,
+            rowCount: rowCount
         }; this.sendRequest("/api/dal/fetch" , reqBody, timeout);
     }
 

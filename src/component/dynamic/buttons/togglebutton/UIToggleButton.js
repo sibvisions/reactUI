@@ -24,7 +24,7 @@ function UIToggleButton(props) {
     }, [con, props]);
 
     useLayoutEffect(() => {
-        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleButton(btnRef.current, btnRef.current.children[0], props);
         styleChildren(btnRef.current.children[0].children, props, btnData);
         addHoverEffect(btnRef.current.children[0], btnData.btnProps.style.background, btnBgdChecked, 5, props, btnData.btnBorderPainted, checked);
     });

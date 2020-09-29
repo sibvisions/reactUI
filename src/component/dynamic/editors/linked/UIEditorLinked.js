@@ -66,7 +66,14 @@ function UIEditorLinked(props){
             field={props.columnName}
             value={selectedColumn} 
             onChange={event => editColumn(event.target.value)}
-        	onBlur={() => sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, selectedColumn[props.columnName])}
+        	onBlur={() => {
+                if (typeof selectedColumn === "object") {
+                    sendSetValues(con, props.rowId, props.dataRow, props.name, props.cellEditor.clearColumns, selectedColumn)
+                }
+                else if (selectedColumn === "") {
+                    sendSetValues(con, props.rowId, props.dataRow, props.name, props.cellEditor.clearColumns, null)
+                }
+            }}
             disabled={!props["cellEditor.editable"]}
         />
     );

@@ -21,7 +21,7 @@ function UIRadioButton(props) {
     }, [con, props]);
 
     useLayoutEffect(() => {
-        styleButton(btnRef.current, btnRef.current.children[0], props.constraints);
+        styleButton(btnRef.current, btnRef.current.children[0], props);
         styleChildren(btnRef.current.children[0].children, props, btnData);
     });
 

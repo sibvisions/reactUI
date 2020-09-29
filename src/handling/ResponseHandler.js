@@ -92,6 +92,10 @@ class ResponseHandler{
         {
             name: "download",
             methodToExecute: this.download.bind(this)
+        },
+        {
+            name: "showDocument",
+            methodToExecute: this.showDocument.bind(this)
         }
     ]
 
@@ -197,6 +201,17 @@ class ResponseHandler{
             this.contentStore.layoutMode = deviceData.layoutMode
             this.layoutModeChanged();
         }
+    }
+
+    showDocument(showData) {
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        let splitURL = showData.url.split(';')
+        a.href = splitURL[0];
+        a.setAttribute('target', splitURL[2]);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
     //upload & download

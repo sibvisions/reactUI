@@ -27,7 +27,7 @@ class ContentStore{
 
     emitFetchSuccess(fetchResponse){
         let currData = this.storedData.get(fetchResponse.dataProvider);
-        if (currData) {
+        if (currData && fetchResponse.selectedRow !== -1) {
             let x = 0;
             this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             for (let i = fetchResponse.from; i <= fetchResponse.to; i++) {
