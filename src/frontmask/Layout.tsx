@@ -62,7 +62,6 @@ const Layout: FC = (props) => {
             return;
         }
         resizeRef.current = setTimeout(() => {
-            console.log("resizing")
             doResize();
             resizeRef.current = undefined
         }, 23);

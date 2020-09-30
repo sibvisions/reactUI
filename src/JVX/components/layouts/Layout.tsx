@@ -1,22 +1,23 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
-import LoadCallBack from "../util/LoadCallBack";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import FlowLayout from "./FlowLayout";
+import {Panel} from "../panels/panel/UIPanel";
+import useProperties from "../zhooks/useProperties";
 
-export type layout = {
-    parent: string | undefined
-    id: string
-    layout: string,
-    layoutData: string,
-    orientation: number
-    onFinish: LoadCallBack
-    screenTitle?: string
-}
+// export type layout = {
+//     parent: string | undefined
+//     id: string
+//     layout: string,
+//     layoutData: string,
+//     orientation: number
+//     onFinish: LoadCallBack
+//     screenTitle?: string
+// }
 
-const Layout: FC<layout> = (props) => {
+const Layout: FC<Panel> = (props) => {
     if(props.layout.includes("FormLayout"))
         return <FormLayout {...props}/>
     else if(props.layout.includes("BorderLayout"))
@@ -31,17 +32,18 @@ export default Layout
 
 
 
-const DummyLayout: FC<layout> = (props) => {
+const DummyLayout: FC<Panel> = (baseProps) => {
 
     const layoutSize = useRef<HTMLDivElement>(null);
-    const [children] = useComponents(props.id);
+    const [children] = useComponents(baseProps.id);
     const layoutValue = useContext(LayoutContext);
+    const [props] = useProperties<Panel>(baseProps.id, baseProps);
 
     useLayoutEffect(() => {
-        if(layoutSize.current && props.onFinish){
+        if(layoutSize.current && props.onLoadCallback){
             const size = layoutSize.current.getBoundingClientRect();
 
-            props.onFinish(props.id, size.height, size.width);
+            props.onLoadCallback(props.id, size.height, size.width);
         }
     }, [layoutSize, props]);
 

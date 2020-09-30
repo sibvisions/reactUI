@@ -1,10 +1,11 @@
-import React, {Component, CSSProperties, FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {Component, CSSProperties, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
+import useProperties from "../../zhooks/useProperties";
 
 export interface buttonProps extends BaseComponent{
     accelerator: string,
@@ -13,26 +14,29 @@ export interface buttonProps extends BaseComponent{
     text: string,
 }
 
-const UIButton: FC<buttonProps> = (props) => {
+const UIButton: FC<buttonProps> = (baseProps) => {
 
     const context = useContext(jvxContext)
     const layoutContext = useContext(LayoutContext);
     const buttonRef = useRef<Component>(null);
-    const prefSize = useRef<CSSProperties>({})
+    const prefSize = useRef<CSSProperties>({});
+
+    const [props] = useProperties<buttonProps>(baseProps.id, baseProps);
 
     useLayoutEffect(()=> {
+        const load = props.onLoadCallback;
         if(buttonRef.current && props.onLoadCallback){
             if(props.preferredSize){
                 const sizes = props.preferredSize.split(",");
                 prefSize.current = {width: sizes[0], height: sizes[1]}
-                props.onLoadCallback(props.id, parseInt(sizes[1]), parseInt(sizes[0]));
+                load(props.id, parseInt(sizes[1]), parseInt(sizes[0]));
             } else {
                 // @ts-ignore
                 const size = buttonRef.current.element.getClientRects();
-                props.onLoadCallback(props.id, size[0].height, size[0].width);
+                load(props.id, size[0].height, size[0].width);
             }
         }
-    }, [ buttonRef, props]);
+    }, [buttonRef, props.preferredSize, props.onLoadCallback, props.id]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();

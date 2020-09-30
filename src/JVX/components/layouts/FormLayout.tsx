@@ -1,5 +1,4 @@
 import React, {CSSProperties, FC, useContext, useLayoutEffect, useRef, useState} from "react";
-import {layout} from "./Layout";
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
@@ -8,18 +7,22 @@ import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import ChildWithProps from "../util/ChildWithProps";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
+import {Panel} from "../panels/panel/UIPanel";
+import useProperties from "../zhooks/useProperties";
+import {jvxContext} from "../../jvxProvider";
 
 
-const FormLayout: FC<layout> = (props) => {
-
+const FormLayout: FC<Panel> = (baseProps) => {
 
     // React Hooks
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     const layoutSizeRef = useRef<HTMLDivElement>(null);
+    const context = useContext(jvxContext);
 
     // Custom Hooks
-    const [components, preferredComponentSizes] = useComponents(props.id);
+    const [components, preferredComponentSizes] = useComponents(baseProps.id);
     const dictatedStyle = useContext(LayoutContext);
+    const [props] = useProperties(baseProps.id, baseProps);
 
 
     const start = () => {
@@ -30,7 +33,6 @@ const FormLayout: FC<layout> = (props) => {
     }
 
     // Set init Size  & start
-
     useLayoutEffect(() => {
         if(preferredComponentSizes){
             start();
@@ -43,7 +45,7 @@ const FormLayout: FC<layout> = (props) => {
             initSizeRef.current = {width: (size.width as number) - margins.marginRight, height: (size.height as number)}
             start();
         }
-    },[dictatedStyle, preferredComponentSizes, props.id]);
+    },[dictatedStyle, preferredComponentSizes, props.id, props.layoutData, props.layout]);
 
     // Layout----------------------------------
     const initSizeRef = useRef<{width: number, height: number} | undefined>(undefined)
@@ -82,18 +84,21 @@ const FormLayout: FC<layout> = (props) => {
         });
         //Build Constraints of Children
         components.forEach(child => {
-            const childWithProps = (child as ChildWithProps);
-            const anchorNames = childWithProps.props.constraints.split(";");
-            //Get Anchors
-            const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
-            const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
-            //Set Constraint
-            if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
-                const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
-                componentConstraints.set(childWithProps.props.id, constraint);
-            } else {
-                console.warn("Constraint Anchors were undefined");
+            const contentStoreComponent = context.contentStore.flatContent.get(child.props.id)
+            if(contentStoreComponent){
+                const anchorNames = contentStoreComponent.constraints.split(";");
+                //Get Anchors
+                const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
+                const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+                //Set Constraint
+                if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
+                    const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
+                    componentConstraints.set(contentStoreComponent.id, constraint);
+                } else {
+                    console.warn("Constraint Anchors were undefined");
+                }
             }
+
         });
     }
 
@@ -603,8 +608,8 @@ const FormLayout: FC<layout> = (props) => {
         });
 
         if(borderConstraint && marginConstraint){
-            if(props.onFinish){
-                props.onFinish(props.id, preferredHeight, preferredWidth);
+            if(props.onLoadCallback){
+                props.onLoadCallback(props.id, preferredHeight, preferredWidth);
             }
 
             setCalculatedStyle( {

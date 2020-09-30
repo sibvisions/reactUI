@@ -13,7 +13,7 @@ export interface Panel extends BaseComponent{
 const UIPanel: FC<Panel> = (props) => {
 
     return(
-        <Layout orientation={props.orientation} screenTitle={props["screen.title"]} onFinish={props.onLoadCallback} parent={props.parent} id={props.id} layout={props.layout} layoutData={props.layoutData} />
+        <Layout {...props} />
     )
 }
 export default UIPanel

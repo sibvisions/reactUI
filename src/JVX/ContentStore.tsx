@@ -1,5 +1,5 @@
 import MenuResponse from "./response/MenuResponse";
-import {ReplaySubject} from "rxjs";
+import {ReplaySubject, Subject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
@@ -11,6 +11,9 @@ class ContentStore{
     removedContent = new Map<string ,BaseComponent>();
 
     currentUser: UserData = new UserData();
+
+    //Sub Maps
+    propertiesSubscriber = new Map<string, Function>();
 
     updateContent(componentsToUpdate: Array<BaseComponent>){
         componentsToUpdate.forEach(newComponent => {
@@ -51,6 +54,24 @@ class ContentStore{
                 this.flatContent.set(newComponent.id, newComponent);
             }
         });
+
+        componentsToUpdate.forEach(value => {
+            const existingComp = this.flatContent.get(value.id);
+            const updateFunction = this.propertiesSubscriber.get(value.id);
+            if(existingComp && updateFunction){
+                updateFunction(existingComp);
+            }
+        });
+
+
+    }
+
+    unsubscribeFromPropChange(id: string){
+        this.propertiesSubscriber.delete(id);
+    }
+
+    subscribeToPropChange(id: string, fn: Function){
+        this.propertiesSubscriber.set(id, fn);
     }
 
     getWindow(windowName: string): BaseComponent | undefined{

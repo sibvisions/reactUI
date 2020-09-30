@@ -7,11 +7,11 @@ import React, {
     useRef,
     useState
 } from "react";
-import {layout} from "./Layout";
 import useComponents from "../zhooks/useComponents";
 import ChildWithProps from "../util/ChildWithProps";
 import {LayoutContext} from "../../LayoutContext"
 import "./BorderLayout.scss"
+import {Panel} from "../panels/panel/UIPanel";
 
 type borderLayoutComponents = {
     north?: ReactElement,
@@ -21,7 +21,7 @@ type borderLayoutComponents = {
     south?: ReactElement
 }
 
-const BorderLayout: FC<layout> = (props) => {
+const BorderLayout: FC<Panel> = (props) => {
 
     const [children] = useComponents(props.id);
     const northRef = useRef<HTMLDivElement>(null);

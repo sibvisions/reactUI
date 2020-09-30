@@ -9,8 +9,7 @@ type ComponentSize = {
 
 
 const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
-    const context = useContext(jvxContext)
-
+    const context = useContext(jvxContext);
 
     const buildComponents = (): Array<ReactElement> => {
         const children = context.contentStore.getChildren(id);

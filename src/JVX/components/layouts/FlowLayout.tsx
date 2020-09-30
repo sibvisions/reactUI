@@ -1,14 +1,12 @@
 import React, {CSSProperties, FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
-import {layout} from "./Layout";
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import {ORIENTATION} from "./models/Anchor";
 import Gaps from "./models/Gaps";
-import {hostReportError} from "rxjs/internal-compatibility";
-import {match} from "react-router";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
+import {Panel} from "../panels/panel/UIPanel";
 
-const FlowLayout: FC<layout> = (props) => {
+const FlowLayout: FC<Panel> = (props) => {
 
     const [preferredSize, setPreferredSize] = useState<{ style: CSSProperties, componentSize: Map<string, CSSProperties> }>({style: {}, componentSize: new Map<string, React.CSSProperties>()})
     const [components, preferredComponentSizes] = useComponents(props.id);
@@ -63,8 +61,8 @@ const FlowLayout: FC<layout> = (props) => {
         }
         setPreferredSize({style: {height: height, width: width}, componentSize: preferredComponentSizes || new Map<string, CSSProperties>()})
         //@ts-ignore
-        if(props.onFinish)
-            props.onFinish(props.id, height, width);
+        if(props.onLoadCallback)
+            props.onLoadCallback(props.id, height, width);
     }, [preferredComponentSizes, gaps, props, orientation])
 
 
