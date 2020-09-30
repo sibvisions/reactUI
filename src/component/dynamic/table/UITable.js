@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import './UITable.scss'
 
 import { RefContext } from '../../helper/Context';
@@ -12,12 +12,26 @@ import useFetchListen from '../../hooks/useFetchListen'
 function UITable(props) {
     const [fetchedData] = useFetchListen(props.dataBook);
     const [data, setData] = useState();
-    //const [totalRecords, setTotalRecords] = useState();
-    const [dataColumns, setDataColumns] = useState()
+    const [totalRecords, setTotalRecords] = useState();
+    const [dataColumns, setDataColumns] = useState();
+    const [firstRender, setFirstRender] = useState(true);
+    const [rows, setRows] = useState(50)
+    //const [lastRow, setLastRow] = useState();
+    const tableRef = useRef();
     const con = useContext(RefContext);
-    const rows = 20;
 
     useEffect(() => {
+        // let x = tableRef.current.container.getElementsByClassName('p-datatable-scrollable-body')[0]
+        // if (x) {
+        //     x.onscroll = () => {
+        //         console.log(x.offsetHeight + x.scrollTop, x.scrollHeight)
+        //         if (x.scrollTop + x.offsetHeight >= x.scrollHeight) {
+        //             setData(con.contentStore.storedData.get(props.dataBook).slice(lastRow-10, lastRow+140));
+        //             setLastRow(lastRow+150);
+        //             x.scrollTop = 440
+        //         }
+        //     }
+        // }
         const buildColumns = (labels, names) => {
             let tempDataColumns = [];
             for (let index = 0; index < labels.length; index++) {
@@ -37,13 +51,12 @@ function UITable(props) {
             setDataColumns(tempDataColumns)
         };
         buildColumns(props.columnLabels, props.columnNames);
-        
-        // let data = con.contentStore.storedData.get(props.dataBook);
-        // if (data) {
-        //     buildData(data);
-        // }
-        //setTotalRecords(con.contentStore.storedData.get(props.dataBook).length)
-        setData(con.contentStore.storedData.get(props.dataBook).slice(0, rows*2))
+        setTotalRecords(con.contentStore.storedData.get(props.dataBook).length)
+        if (firstRender) {
+            setData(con.contentStore.storedData.get(props.dataBook).slice(0, rows*2))
+            //setLastRow(149)
+        } 
+        setFirstRender(false)
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props),
@@ -53,14 +66,6 @@ function UITable(props) {
         );
         // eslint-disable-next-line
     }, [con, props, fetchedData]);
-
-    const buildData = async data => {
-        let tempArray = []
-        data.forEach(set => {
-            tempArray.push(set);
-        });
-        setData(tempArray);
-    }
 
     const buildEditor = (buildProps, data) => {
         if (data) {
@@ -89,24 +94,33 @@ function UITable(props) {
         con.serverComm.selectRow(props.name, props.dataBook, value)
     }
 
-    const loadChunk = (index, length) => {
+    const loadChunk = async (index, length) => {
         let chunk = [];
         for (let i = 0; i < length; i++) {
             chunk[i] = {...con.contentStore.storedData.get(props.dataBook)[i+index]}
         }
+        console.log(chunk)
         return chunk
     }
 
-    const onVirtualScroll = event => {
-        setTimeout(() => {
-            if (event.first + event.rows >= con.contentStore.storedData.get(props.dataBook).length) {
-                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length-1, 101)
-                buildData(loadChunk(event.first, event.rows))
+    const onVirtualScroll = async event => {
+        let rowDiff = (con.contentStore.storedData.get(props.dataBook).length - 1) - (event.first + event.rows)
+        console.log(event.first + event.rows, event.first, event.rows, con.contentStore.storedData.get(props.dataBook).length, fetchedData.from)
+        if (event.first + event.rows >= con.contentStore.storedData.get(props.dataBook).length - 1) {
+            console.log('normal fetch fired')
+            con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, -2)
+            setData(await loadChunk(event.first, con.contentStore.storedData.get(props.dataBook).length - event.first))
+        }
+        else if (rowDiff >= 0 && rowDiff < rows) {
+            console.log('rowDiff fired', fetchedData.isAllFetched, totalRecords)
+            if (!fetchedData.isAllFetched) {
+                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, -2)
             }
-            else {
-                buildData(loadChunk(event.first, event.rows))
-            }
-        }, 250)
+            setData(await loadChunk((event.first+rowDiff)+1, event.rows))
+        }
+        else {
+            setData(await loadChunk(event.first, event.rows))
+        }
     }
 
     const loadingText = () => {
@@ -116,6 +130,7 @@ function UITable(props) {
     return (
         <DataTable
             id={props.id}
+            ref={tableRef}
             header="Table"
             value={data ? data : []}
             onRowDoubleClick={onSelectChange}
@@ -124,10 +139,10 @@ function UITable(props) {
             scrollable
             lazy
             rows={rows}
-            //totalRecords={totalRecords}
+            totalRecords={totalRecords}
             scrollHeight="400px"
-            //virtualScroll
-            //onVirtualScroll={onVirtualScroll}
+            virtualScroll
+            onVirtualScroll={onVirtualScroll}
             style={props.layoutStyle}>
             {dataColumns}
         </DataTable>
