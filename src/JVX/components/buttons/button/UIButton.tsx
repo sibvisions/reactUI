@@ -5,7 +5,6 @@ import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
-import useProperties from "../../zhooks/useProperties";
 
 export interface buttonProps extends BaseComponent{
     accelerator: string,
@@ -14,14 +13,12 @@ export interface buttonProps extends BaseComponent{
     text: string,
 }
 
-const UIButton: FC<{id: string}> = (baseProps) => {
+const UIButton: FC<buttonProps> = (props) => {
 
     const context = useContext(jvxContext)
     const layoutContext = useContext(LayoutContext);
     const buttonRef = useRef<Component>(null);
-    const prefSize = useRef<CSSProperties>({});
-
-    const [props] = useProperties<buttonProps>(baseProps.id);
+    const prefSize = useRef<CSSProperties>({})
 
     useLayoutEffect(()=> {
         if(buttonRef.current && props.onLoadCallback){
