@@ -59,7 +59,7 @@ class ServerCommunicator {
             deviceType: "Browser",
             deviceTypeModel: navigator.userAgent,
 
-            readAheadLimit: 2353
+            readAheadLimit: 100
         };this.sendRequest("/api/startup", reqBody);
     }
 

@@ -18,6 +18,10 @@ function UIEditorLinked(props){
     const autoComRef = useRef();
 
     useEffect(()=> {
+        console.log(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook))
+        setTimeout(() => {
+            handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0])
+        }, 0);   
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 
@@ -25,7 +29,7 @@ function UIEditorLinked(props){
                 parent: props.parent
             }
         );
-    });
+    }, [fetchedData]);
 
     useLayoutEffect(() => {
         if(autoComRef.current.inputEl){
@@ -35,15 +39,29 @@ function UIEditorLinked(props){
         }
     });
 
+    function handleScroll(elem) {
+        if (elem) {
+            elem.onscroll = () => {
+                console.log(Math.ceil((elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight), Math.ceil((elem.scrollHeight * 0.9)*100/elem.scrollHeight))
+                if ((elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight) {
+                    con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, -2)
+                }
+            }
+        } 
+    }
+
     function buildSuggestions(response= {records: []}){
-        let suggestions= []
-        response.records.forEach(record => {
-            let element = {};
-            record.forEach((data, index) => {
-                if(data !== null) element[props.cellEditor.clearColumns[index]] = data
+        let suggestions = []
+        //console.log(response)
+        if (response.length > 0) {
+            response.forEach(record => {
+                let element = {};
+                Object.values(record).forEach((data, index) => {
+                    if(data !== null) element[props.cellEditor.clearColumns[index]] = data;
+                });
+                suggestions.push(element)
             });
-            suggestions.push(element);
-        });
+        }
         return suggestions
     }
 
@@ -62,9 +80,9 @@ function UIEditorLinked(props){
             ref={autoComRef}
             dropdown={true}
             completeMethod={onInputChange}
-            suggestions={buildSuggestions(fetchedData)}
+            suggestions={buildSuggestions(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook))}
             field={props.columnName}
-            value={selectedColumn} 
+            value={selectedColumn}
             onChange={event => editColumn(event.target.value)}
         	onBlur={() => {
                 if (typeof selectedColumn === "object") {

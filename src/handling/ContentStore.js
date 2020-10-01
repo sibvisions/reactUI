@@ -14,6 +14,7 @@ class ContentStore{
     selectedRow = new Map();
     storedData = new Map();
     metaData = new Map();
+    dataProviderChangedData = new Map();
 
 
     selectedDataRowChange = new Subject();
@@ -27,7 +28,7 @@ class ContentStore{
 
     emitFetchSuccess(fetchResponse){
         let currData = this.storedData.get(fetchResponse.dataProvider);
-        if (currData && fetchResponse.selectedRow !== -1) {
+        if (currData) {
             let x = 0;
             this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             for (let i = fetchResponse.from; i <= fetchResponse.to; i++) {
@@ -144,6 +145,12 @@ class ContentStore{
 
     setCurrentUser(userData){
         this.currentUser = userData
+    }
+
+    setDataProviderChangeData(changeData) {
+        if (changeData.reload === -1) {
+            this.storedData.delete(changeData.dataProvider)
+        }
     }
 }
 export default ContentStore

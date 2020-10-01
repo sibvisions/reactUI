@@ -245,10 +245,8 @@ class ResponseHandler{
     }
 
     dataProviderChange(changeData){
+        this.contentStore.setDataProviderChangeData(changeData);
         this.serverCommunicator.fetchDataFromProvider(changeData.dataProvider);
-        if(changeData.reload === -1){
-                
-        }
     }
 
     metaData(mData){
