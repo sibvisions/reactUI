@@ -14,8 +14,11 @@ class ContentStore{
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
+    parentSubscriber = new Map<string, Function>();
 
     updateContent(componentsToUpdate: Array<BaseComponent>){
+        const notifyList = new Array<string>();
+        //Update FlatContent
         componentsToUpdate.forEach(newComponent => {
             //Check if component was removed earlier, if yes then re-add it to flatContent
             let existingComponent = this.removedContent.get(newComponent.id);
@@ -24,8 +27,16 @@ class ContentStore{
                 this.flatContent.set(existingComponent.id, existingComponent);
             }
 
+
+
             //Update existing component
-            existingComponent = this.flatContent.get(newComponent.id)
+            existingComponent = this.flatContent.get(newComponent.id);
+
+            if(newComponent.parent && existingComponent){
+                notifyList.push(existingComponent.id)
+                notifyList.push(newComponent.parent);
+            }
+
             if(existingComponent){
                 if(newComponent["~destroy"]){
                     //Delete Component From flatContent
@@ -45,8 +56,9 @@ class ContentStore{
                 else {
                     //Update or set properties
                     for(let newPropName in newComponent){
-                            // @ts-ignore
-                            existingComponent[newPropName] = newComponent[newPropName]
+                        // @ts-ignore
+                        existingComponent[newPropName] = newComponent[newPropName]
+
                     }
                 }
             }
@@ -55,6 +67,8 @@ class ContentStore{
             }
         });
 
+
+        //Notify active components
         componentsToUpdate.forEach(value => {
             const existingComp = this.flatContent.get(value.id);
             const updateFunction = this.propertiesSubscriber.get(value.id);
@@ -63,15 +77,25 @@ class ContentStore{
             }
         });
 
-
-    }
-
-    unsubscribeFromPropChange(id: string){
-        this.propertiesSubscriber.delete(id);
+        notifyList.forEach(value => {
+           this.parentSubscriber.get(value)?.();
+        });
     }
 
     subscribeToPropChange(id: string, fn: Function){
         this.propertiesSubscriber.set(id, fn);
+    }
+
+    subscribeToParentChange(id: string, fn: Function){
+        this.parentSubscriber.set(id, fn);
+    }
+
+    unsubscribeFromParentChange(id: string){
+        this.parentSubscriber.delete(id);
+    }
+
+    unsubscribeFromPropChange(id: string){
+        this.propertiesSubscriber.delete(id);
     }
 
     getWindow(windowName: string): BaseComponent | undefined{

@@ -1,14 +1,17 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
+import useProperties from "../zhooks/useProperties";
 
 export interface uiLabel extends BaseComponent {
     text: string
 }
 
-const UILabel: FC<uiLabel> = (props) => {
-    const labelRef = useRef<HTMLSpanElement>(null)
+const UILabel: FC<uiLabel> = (baseProps) => {
+    const labelRef = useRef<HTMLSpanElement>(null);
     const layoutValue = useContext(LayoutContext);
+
+    const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
 
     useLayoutEffect(() => {
         if(labelRef.current && props.onLoadCallback){

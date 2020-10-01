@@ -17,11 +17,11 @@ const FormLayout: FC<Panel> = (baseProps) => {
     // React Hooks
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     const layoutSizeRef = useRef<HTMLDivElement>(null);
+    const dictatedStyle = useContext(LayoutContext);
     const context = useContext(jvxContext);
 
     // Custom Hooks
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
-    const dictatedStyle = useContext(LayoutContext);
     const [props] = useProperties(baseProps.id, baseProps);
 
 
