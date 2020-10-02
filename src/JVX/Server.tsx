@@ -9,12 +9,16 @@ import CloseScreenResponse from "./response/CloseScreenResponse";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
+import FetchResponse from "./response/FetchResponse";
+import {forwardRef} from "react";
+import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 
 class Server{
-    BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
     constructor(store: ContentStore) {
         this.contentStore = store
     }
+
+    BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
     contentStore: ContentStore;
     activeScreen = "";
 
@@ -53,7 +57,9 @@ class Server{
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
         .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
-        .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this));
+        .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
+        .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this));
+
 
     responseHandler(responses: Array<BaseResponse>){
         responses.forEach((responseObject: BaseResponse) => {
@@ -92,6 +98,18 @@ class Server{
 
     menu(menuData: MenuResponse){
         this.contentStore.buildMenuBar(menuData);
+    }
+
+    //Dal
+    processFetch(fetchData: FetchResponse){
+        const builtData = fetchData.records.map(record => {
+            const data : any = {}
+            fetchData.columnNames.forEach((columnName, index) => {
+                data[columnName] = record[index];
+            });
+            return data;
+        });
+        this.contentStore.updateDataProvider(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
     }
 
 

@@ -8,6 +8,7 @@ import UIEditorImage, {IEditorImage} from "../components/editors/image/UIEditorI
 import {IEditor} from "../components/editors/IEditor";
 import UIEditorText, {IEditorText} from "../components/editors/text/UIEditorText";
 import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISplitPanel";
+import UITable, {TableProps} from "../components/table/UITable";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel isVisible={true} {...props} key={props.id}/>
@@ -37,6 +38,10 @@ export const createEditorText: FC<IEditorText> = (props) => {
     return <UIEditorText isVisible={true} {...props} key={props.id}/>
 }
 
+export const createTable: FC<TableProps> = (props) => {
+    return <UITable {...props}/>
+}
+
 const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
@@ -62,6 +67,7 @@ const classNameMapper = new Map<string, Function>()
     .set("Button", createButton)
     .set("Label", createLabel)
     .set("Editor", createEditor)
+    .set("Table", createTable)
 
 export const componentHandler = (component: BaseComponent) => {
     const builder = classNameMapper.get(component.className);

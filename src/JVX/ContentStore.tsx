@@ -6,7 +6,7 @@ import UserData from "./model/UserData";
 
 class ContentStore{
 
-    menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1)
+    menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1);
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
 
@@ -15,7 +15,14 @@ class ContentStore{
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
     parentSubscriber = new Map<string, Function>();
+    dataProviderSubscriber = new Array<{id: string, dataProvider: string, fn: Function}>()
 
+
+    //DataProvider Maps
+    dataProviderMap = new Map<string, Array<any>>();
+
+
+    //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
         //Update FlatContent
@@ -82,22 +89,49 @@ class ContentStore{
         });
     }
 
-    subscribeToPropChange(id: string, fn: Function){
-        this.propertiesSubscriber.set(id, fn);
+    closeScreen(windowName: string){
+        const deleteChildren = (parentId: string) => {
+            const children = this.getChildren(parentId);
+
+            children.forEach(child => {
+                deleteChildren(child.id);
+                this.flatContent.delete(child.id);
+            });
+        }
+
+        const window = this.getWindow(windowName);
+        if(window){
+            deleteChildren(window.id);
+            this.flatContent.delete(window.id);
+        }
     }
 
-    subscribeToParentChange(id: string, fn: Function){
-        this.parentSubscriber.set(id, fn);
+
+    //Data Provider Management
+    updateDataProvider(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
+        const existingData = this.dataProviderMap.get(dataProvider);
+        if(existingData){
+            let newDataSetIndex = 0;
+            console.log(newDataSet)
+            for(let i = to; i < from; i++){
+                existingData[i] = newDataSet[newDataSetIndex];
+                newDataSetIndex++;
+            }
+        }
+        else{
+            this.dataProviderMap.set(dataProvider, newDataSet);
+        }
+
+        console.log(this.dataProviderMap)
     }
 
-    unsubscribeFromParentChange(id: string){
-        this.parentSubscriber.delete(id);
+    getData(dataProvider: string): Array<any>{
+        const dataArray = this.dataProviderMap.get(dataProvider);
+        return  dataArray || []
     }
 
-    unsubscribeFromPropChange(id: string){
-        this.propertiesSubscriber.delete(id);
-    }
 
+    // Getters
     getWindow(windowName: string): BaseComponent | undefined{
         const componentEntries = this.flatContent.entries();
 
@@ -125,6 +159,8 @@ class ContentStore{
         return children;
     }
 
+
+    //Menu
     buildMenuBar(menuResponse: MenuResponse){
         let groupsString= Array<string>();
         let groups = Array<MenuItemCustom>();
@@ -152,21 +188,30 @@ class ContentStore{
         this.menuSubject.next(groups);
     }
 
-    closeScreen(windowName: string){
-        const deleteChildren = (parentId: string) => {
-            const children = this.getChildren(parentId);
 
-            children.forEach(child => {
-               deleteChildren(child.id);
-               this.flatContent.delete(child.id);
-            });
-        }
+    // Subscription Management
+    subscribeToPropChange(id: string, fn: Function){
+        this.propertiesSubscriber.set(id, fn);
+    }
 
-        const window = this.getWindow(windowName);
-        if(window){
-            deleteChildren(window.id);
-            this.flatContent.delete(window.id);
-        }
+    subscribeToParentChange(id: string, fn: Function){
+        this.parentSubscriber.set(id, fn);
+    }
+
+    subscribeToDataProviderChange(dataProvider: string, id: string, fn: Function){
+        this.dataProviderSubscriber.push({id: id, dataProvider: dataProvider, fn: fn});
+    }
+
+    unsubscribeFromDataProviderChange(id: string){
+        this.dataProviderSubscriber.splice(this.dataProviderSubscriber.findIndex(value => value.id === id),1);
+    }
+
+    unsubscribeFromParentChange(id: string){
+        this.parentSubscriber.delete(id);
+    }
+
+    unsubscribeFromPropChange(id: string){
+        this.propertiesSubscriber.delete(id);
     }
 }
 export default ContentStore
