@@ -18,10 +18,20 @@ function UIEditorLinked(props){
     const autoComRef = useRef();
 
     useEffect(()=> {
-        console.log(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook))
+        let blockFetch = false;
+        const handleScroll = (elem) => {
+            if (elem) {
+                elem.onscroll = () => {
+                    if (!blockFetch && (elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight) {
+                        blockFetch = true
+                        con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, -2)
+                    }
+                }
+            } 
+        }
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0])
-        }, 0);   
+        }, 0);
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 
@@ -29,7 +39,7 @@ function UIEditorLinked(props){
                 parent: props.parent
             }
         );
-    }, [fetchedData]);
+    }, [con, props, fetchedData]);
 
     useLayoutEffect(() => {
         if(autoComRef.current.inputEl){
@@ -39,20 +49,8 @@ function UIEditorLinked(props){
         }
     });
 
-    function handleScroll(elem) {
-        if (elem) {
-            elem.onscroll = () => {
-                console.log(Math.ceil((elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight), Math.ceil((elem.scrollHeight * 0.9)*100/elem.scrollHeight))
-                if ((elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight) {
-                    con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, -2)
-                }
-            }
-        } 
-    }
-
     function buildSuggestions(response= {records: []}){
         let suggestions = []
-        //console.log(response)
         if (response.length > 0) {
             response.forEach(record => {
                 let element = {};
