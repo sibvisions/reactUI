@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useContext, useState, useRef, useMemo } from 'react';
 import './UITable.scss'
 
 import { RefContext } from '../../helper/Context';
@@ -8,44 +8,59 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { getPreferredSize } from '../../helper/GetSizes';
 import useFetchListen from '../../hooks/useFetchListen'
+import { toPx } from '../../helper/ToPx';
 
 function UITable(props) {
     const con = useContext(RefContext);
-    //const initalLength = useState(con.contentStore.storedData.get(props.dataBook).length);
-    const [data, setData] = useState();
-    const [totalRecords, setTotalRecords] = useState();
-    const [dataColumns, setDataColumns] = useState();
-    const [firstRow, setFirstRow] = useState(0);
-    const [lastRow, setLastRow] = useState(con.contentStore.storedData.get(props.dataBook).length);
-    const rows = 20
+    const rows = 50
     const [fetchedData] = useFetchListen(props.dataBook);
+    const [firstRow, setFirstRow] = useState(0);
+    const [lastRow, setLastRow] = useState(rows*2);
+    // eslint-disable-next-line
+    const data = useMemo(() => con.contentStore.storedData.get(props.dataBook).slice(firstRow, lastRow) || [], [fetchedData, con.contentStore, props.dataBook, firstRow, lastRow] );
+    // eslint-disable-next-line
+    const totalRecords = useMemo(() => con.contentStore.storedData.get(props.dataBook).length || 0, [fetchedData, con.contentStore, props.dataBook]);
+
+    const buildColumns = (labels, names) => {
+        let tempDataColumns = [];
+        for (let index = 0; index < labels.length; index++) {
+            let columnProps = {
+                field: names[index],
+                header: labels[index],
+                key: names[index]
+            };
+            let metaData = con.contentStore.metaData.get(props.dataBook).columns.get(names[index]);
+            if (metaData) {
+                metaData.name = props.name;
+                metaData.cellEditor.clearColumns = ["ID", names[index]];
+                columnProps.editor = (props) => buildEditor(props, metaData);
+            }
+            tempDataColumns.push(<Column loadingBody={() => {return <span className="loading-text"/>}} {...columnProps} sortable/>);
+        }
+        return tempDataColumns
+    };
+    // eslint-disable-next-line
+    const dataColumns= useMemo(() => buildColumns(props.columnLabels, props.columnNames), [props.columnLabels, props.columnNames])
+    const [firstRender, setFirstRender] = useState(true)
+    const [scrollHeight, setScrollHeight] = useState('400px')
+    //let test = '400px'
     const tableRef = useRef();
 
     useEffect(() => {
-        console.log(rows, con.contentStore.storedData.get(props.dataBook).length)
-        const buildColumns = (labels, names) => {
-            let tempDataColumns = [];
-            for (let index = 0; index < labels.length; index++) {
-                let columnProps = {
-                    field: names[index],
-                    header: labels[index],
-                    key: names[index]
-                };
-                let metaData = con.contentStore.metaData.get(props.dataBook).columns.get(names[index]);
-                if (metaData) {
-                    metaData.name = props.name;
-                    metaData.cellEditor.clearColumns = ["ID", names[index]];
-                    columnProps.editor = (props) => buildEditor(props, metaData);
+        const tableScrollHeight = (ref) => {
+            if (ref) {
+                if (!firstRender) {
+                    let elem = ref.container;
+                    console.log(Math.ceil(elem.getBoundingClientRect().height), Math.ceil(elem.getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height), Math.ceil(elem.getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)-1, elem)
+                    setScrollHeight(toPx(Math.ceil(elem.getBoundingClientRect().height) - 
+                                    Math.ceil(elem.getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height) -
+                                    Math.ceil(elem.getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)-1));
                 }
-                tempDataColumns.push(<Column loadingBody={() => {return <span className="loading-text"/>}} {...columnProps} sortable/>);
             }
-            setDataColumns(tempDataColumns)
-        };
-        buildColumns(props.columnLabels, props.columnNames);
-
-        setTotalRecords(con.contentStore.storedData.get(props.dataBook).length)
-        setData(con.contentStore.storedData.get(props.dataBook).slice(firstRow, lastRow))
-
+        }
+        tableScrollHeight(tableRef.current)
+        //some tables are first rendered after initial fetches are sent, so useFetch doesn't update and there is no rerender, this rerenders the table at the start
+        setFirstRender(false);
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props),
@@ -53,8 +68,9 @@ function UITable(props) {
                 parent: props.parent
             }
         );
-        // eslint-disable-next-line
-    }, [con, props, fetchedData]);
+    }, [con.contentStore, props, firstRender]);
+
+    
 
     const buildEditor = (buildProps, data) => {
         if (data) {
@@ -83,40 +99,32 @@ function UITable(props) {
         con.serverComm.selectRow(props.name, props.dataBook, value)
     }
 
-    const loadChunk = async (index, length) => {
-        let chunk = [];
-        for (let i = 0; i < length; i++) {
-            chunk[i] = {...con.contentStore.storedData.get(props.dataBook)[i+index]}
-        }
-        console.log(chunk)
-        return chunk
-    }
-
     const onVirtualScroll = async event => {
         let rowDiff = (con.contentStore.storedData.get(props.dataBook).length - 1) - (event.first + event.rows)
         console.log(event.rows, rows, event.first)
         if (event.first + event.rows >= con.contentStore.storedData.get(props.dataBook).length - 1) {
-            con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, -2);
-            setData(await loadChunk(event.first, con.contentStore.storedData.get(props.dataBook).length - event.first));
+            if (!fetchedData.isAllFetched) {
+                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, 100)
+            }
             setFirstRow(event.first);
             setLastRow(event.first+event.rows);
         }
         else if (rowDiff >= 0 && rowDiff < rows) {
-            console.log('rowdiff')
-            console.log(event.first, event.first+event.rows)
             if (!fetchedData.isAllFetched) {
-                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, -2)
+                con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, 100)
             }
-            setData(await loadChunk((event.first+rowDiff)+1, event.rows))
             setFirstRow(event.first);
             setLastRow(event.first+event.rows);
         }
         else {
-            setData(await loadChunk(event.first, event.rows));
             setFirstRow(event.first);
             setLastRow(event.first+event.rows);
         }
     }
+
+    // if (document.getElementById(props.id)) {
+    //     console.log(document.getElementById(props.id).getBoundingClientRect().height, document.getElementById(props.id).getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height, document.getElementById(props.id).getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)
+    // }
 
     return (
         <DataTable
@@ -131,8 +139,8 @@ function UITable(props) {
             lazy
             rows={rows}
             totalRecords={totalRecords}
-            scrollHeight="400px"
-            virtualScroll
+            scrollHeight={scrollHeight}
+            virtualScroll={totalRecords > rows*2 ? true : false}
             onVirtualScroll={onVirtualScroll}
             style={props.layoutStyle}>
             {dataColumns}
