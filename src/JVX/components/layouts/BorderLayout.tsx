@@ -12,6 +12,8 @@ import ChildWithProps from "../util/ChildWithProps";
 import {LayoutContext} from "../../LayoutContext"
 import "./BorderLayout.scss"
 import {Panel} from "../panels/panel/UIPanel";
+import {jvxContext} from "../../jvxProvider";
+import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 
 type borderLayoutComponents = {
     north?: ReactElement,
@@ -23,13 +25,14 @@ type borderLayoutComponents = {
 
 const BorderLayout: FC<Panel> = (props) => {
 
-    const [children] = useComponents(props.id);
+    const [components, preferredComponentSizes] = useComponents(props.id);
     const northRef = useRef<HTMLDivElement>(null);
     const westRef = useRef<HTMLDivElement>(null);
     const layoutRef = useRef<HTMLDivElement>(null);
     const eastRef = useRef<HTMLDivElement>(null);
     const southRef = useRef<HTMLDivElement>(null);
     const layoutContextValue = useContext(LayoutContext);
+    const context = useContext(jvxContext);
 
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     const [constraintComponents, setConstraintComponents] = useState<borderLayoutComponents>({});
@@ -49,54 +52,70 @@ const BorderLayout: FC<Panel> = (props) => {
             const eastWithProps = (constraintComponents.east as ChildWithProps);
             const westWithProps = (constraintComponents.west as ChildWithProps);
 
+            let southHeight = southSize.height;
+            let northHeight = northSize.height
+            if(preferredComponentSizes){
+                const preferredSouth = preferredComponentSizes.get(southWithProps?.props.id);
+                if(preferredSouth)
+                    southHeight = preferredSouth.height;
+
+                const preferredNorth = preferredComponentSizes.get(northWithProps?.props.id);
+                if(preferredNorth)
+                    northHeight = preferredNorth.height;
+            }
+
+
+            console.log(layoutContextValue.get(props.id)?.width)
             if(centerWithProps)
                 sizeMap.set(centerWithProps.props.id, {
-                    height: layoutSize.height - northSize.height - southSize.height,
+                    height: layoutSize.height - southHeight - northHeight,
                     width: layoutSize.width - eastSize.width - westSize.width
                 });
             if(northWithProps)
-                sizeMap.set(northWithProps.props.id, {height: northSize.height, width: northSize.width});
+                sizeMap.set(northWithProps.props.id, {height: 0, width: layoutContextValue.get(props.id)?.width as number || 0});
             if(southWithProps)
-                sizeMap.set(southWithProps.props.id, {height: southSize.height, width: southSize.width});
+                sizeMap.set(southWithProps.props.id, {height: southHeight, width: layoutContextValue.get(props.id)?.width as number || 0});
             if(eastWithProps)
-                sizeMap.set(eastWithProps.props.id, {height: eastSize.height, width: eastSize.width});
+                sizeMap.set(eastWithProps.props.id, {height: layoutSize.height - southHeight, width: 0});
             if(westWithProps)
-                sizeMap.set(westWithProps.props.id, {height: westSize.height, width: westSize.width});
+                sizeMap.set(westWithProps.props.id, {height: layoutSize.height - southHeight, width: 0});
 
+            console.log(sizeMap)
             setComponentSizes(sizeMap);
         }
-    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents])
+    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents ,preferredComponentSizes])
 
 
 
-    useLayoutEffect(() =>             {
-        const components: borderLayoutComponents = {};
-        children.forEach(child => {
-            const childProps = (child as ChildWithProps);
-            switch (childProps.props.constraints){
+    useLayoutEffect(() => {
+        const layout: borderLayoutComponents = {};
+        components.forEach(component => {
+            const compProps = context.contentStore.flatContent.get(component.props.id);
+            if(compProps && (compProps.visible === true || compProps.visible === undefined))
+            switch (compProps.constraints){
                 case "North":
-                    components.north = child;
+                    layout.north = component;
                     break;
                 case "Center":
-                    components.center = child;
+                    layout.center = component;
                     break;
                 case "West":
-                    components.west = child;
+                    layout.west = component;
                     break;
                 case "East":
-                    components.east = child;
+                    layout.east = component;
                     break;
                 case "South":
-                    components.south = child;
+                    layout.south = component;
                     break;
             }
         })
-        setConstraintComponents(components);
-    }, [children]);
+        setConstraintComponents(layout);
+    }, [components, context.contentStore]);
 
     return(
         <LayoutContext.Provider value={componentSizes}>
-            <div ref={layoutRef} className={"border-box"}>
+            <div ref={layoutRef} className={"border-box"} style={{height: layoutContextValue.get(props.id)?.height}}>
                 <div ref={northRef} className={"north"}>
                     {constraintComponents.north}
                 </div>

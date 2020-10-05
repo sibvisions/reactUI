@@ -1,5 +1,5 @@
 import MenuResponse from "./response/MenuResponse";
-import {ReplaySubject, Subject} from "rxjs";
+import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
@@ -42,6 +42,10 @@ class ContentStore{
             if(newComponent.parent && existingComponent){
                 notifyList.push(existingComponent.id)
                 notifyList.push(newComponent.parent);
+            }
+            if(newComponent.visible !== undefined && existingComponent){
+                if(existingComponent.parent)
+                    notifyList.push(existingComponent.parent);
             }
 
             if(existingComponent){
@@ -112,7 +116,6 @@ class ContentStore{
         const existingData = this.dataProviderMap.get(dataProvider);
         if(existingData){
             let newDataSetIndex = 0;
-            console.log(newDataSet)
             for(let i = to; i < from; i++){
                 existingData[i] = newDataSet[newDataSetIndex];
                 newDataSetIndex++;
@@ -121,8 +124,6 @@ class ContentStore{
         else{
             this.dataProviderMap.set(dataProvider, newDataSet);
         }
-
-        console.log(this.dataProviderMap)
     }
 
     getData(dataProvider: string): Array<any>{

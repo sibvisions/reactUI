@@ -10,8 +10,6 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
-import {forwardRef} from "react";
-import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 
 class Server{
     constructor(store: ContentStore) {

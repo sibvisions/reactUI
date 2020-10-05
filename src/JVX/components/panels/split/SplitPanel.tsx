@@ -24,7 +24,6 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     const secondRef = useRef<HTMLDivElement>(null);
     let absoluteWidthPosition = 0;
 
-
     const callOnResize = () => {
         if (props.onResize && secondRef.current && firstRef.current) {
             const firstDom = firstRef.current.getBoundingClientRect();
@@ -34,8 +33,6 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
                 {width: secondDom.width, height: secondDom.height});
         }
     }
-
-
 
     const dragging = (event: MouseEvent) => {
         const newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
@@ -85,9 +82,8 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     useLayoutEffect(() => {
-        callOnResize()
+        callOnResize();
     }, [props.trigger])
-
 
 
     return(

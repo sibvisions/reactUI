@@ -1,4 +1,4 @@
-import {ReactElement, useContext, useEffect, useMemo, useState} from "react";
+import {ReactElement, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
 type ComponentSize = {
@@ -19,7 +19,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         const componentHasLoaded = (compId: string, height: number, width:number)=> {
             tempSizes.set(compId, {id: compId, width: width, height: height});
             sizeCounter++;
-            if(sizeCounter === components.length && !preferredSizes){
+            if(sizeCounter === components.length ){
                 setPreferredSizes(tempSizes);
             }
         }

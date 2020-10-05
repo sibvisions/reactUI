@@ -3,8 +3,7 @@ import React, {
     Children,
     CSSProperties,
     FC, useContext,
-    useEffect,
-    useLayoutEffect,
+    useEffect, useLayoutEffect,
     useRef,
     useState
 } from "react";
@@ -15,9 +14,8 @@ import "./Layout.scss"
 
 //Utils
 import ChildWithProps from "../JVX/components/util/ChildWithProps";
-import * as queryString from "querystring";
 import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
-import {createDeviceStatusRequest, createStartupRequest} from "../JVX/factories/RequestFactory";
+import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 
 //Context
 import {jvxContext} from "../JVX/jvxProvider";
@@ -78,7 +76,7 @@ const Layout: FC = (props) => {
                 deviceStatusReq.screenWidth = mainSize.width;
                 context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
             }
-        }, 500)
+        }, 150)
     }
 
     useEffect(() => {
@@ -90,28 +88,17 @@ const Layout: FC = (props) => {
        }
     });
 
-    // useLayoutEffect(() => {
-    //     const queryParams: queryType = queryString.parse(window.location.search);
-    //     const startUpRequest = createStartupRequest();
-    //     const authKey = localStorage.getItem("authKey");
-    //     if(queryParams.appName && queryParams.baseUrl){
-    //         startUpRequest.applicationName = queryParams.appName;
-    //         context.server.BASE_URL = queryParams.baseUrl;
-    //     }
-    //     if(queryParams.userName && queryParams.password){
-    //         startUpRequest.password = queryParams.password;
-    //         startUpRequest.userName = queryParams.userName;
-    //     }
-    //     if(authKey){
-    //         startUpRequest.authKey = authKey;
-    //     }
-    //     if(sizeRef.current){
-    //         const size = sizeRef.current.getBoundingClientRect();
-    //         startUpRequest.screenWidth = size.width;
-    //         startUpRequest.screenHeight = size.height;
-    //     }
-    //     context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-    // }, [context.server, sizeRef]);
+    useLayoutEffect(() => {
+        if(sizeRef.current){
+            const size = sizeRef.current.getBoundingClientRect();
+            const sizeMap = new Map<string, CSSProperties>();
+            Children.forEach(props.children,child => {
+                const childWithProps = (child as ChildWithProps);
+                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
+            });
+            setComponentSize(sizeMap);
+        }
+    }, [props.children])
 
 
 

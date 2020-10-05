@@ -40,6 +40,21 @@ const Menu: FC = () => {
                 }
             ]
 
+        const image = () => {
+            if(context.contentStore.currentUser.profileImage){
+                return (
+                    <img
+                        alt={"profileImage"}
+                        onClick={event => slideRef.current?.show(event)}
+                        src={"data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage}
+                        style={context.contentStore.currentUser.profileImage ? {height:50, width:50, borderRadius: 25} : undefined}
+                    />
+                )
+            } else {
+                return undefined
+            }
+        }
+
         return(
             <div style={{display: "flex"}}>
                 <Button
@@ -51,11 +66,8 @@ const Menu: FC = () => {
                     ref={slideRef}
                     model={slideOptions}
                     popup={true}/>
-                <img
-                    onClick={event => slideRef.current?.show(event)}
-                    src={context.contentStore.currentUser.profileImage ? "data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage : undefined}
-                    style={context.contentStore.currentUser.profileImage ? {height:50, width:50, borderRadius: 25} : undefined}
-                />
+                { image() }
+
             </div>
         )
     }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server])

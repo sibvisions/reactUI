@@ -1,7 +1,6 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react"
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
-import {jvxContext} from "../../jvxProvider";
 import {Column, useTable} from "react-table";
 import useDataProvider from "../zhooks/useDataProvider";
 

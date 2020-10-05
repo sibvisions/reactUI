@@ -19,22 +19,25 @@ const UIButton: FC<buttonProps> = (baseProps) => {
     const context = useContext(jvxContext)
     const layoutContext = useContext(LayoutContext);
     const buttonRef = useRef<Component>(null);
-    const prefSize = useRef<CSSProperties>({});
+    const prefSize = useRef<{height: number, width:number }>({width:0, height:0});
 
     const [props] = useProperties<buttonProps>(baseProps.id, baseProps);
 
     useLayoutEffect(()=> {
         const load = props.onLoadCallback;
-        if(buttonRef.current && props.onLoadCallback){
-            if(props.preferredSize){
+        if(buttonRef.current && prefSize.current.height === 0){
+            if(props.preferredSize ){
                 const sizes = props.preferredSize.split(",");
-                prefSize.current = {width: sizes[0], height: sizes[1]}
-                load(props.id, parseInt(sizes[1]), parseInt(sizes[0]));
+                prefSize.current = {width: parseInt(sizes[0]), height: parseInt(sizes[1])}
             } else {
                 // @ts-ignore
-                const size = buttonRef.current.element.getClientRects();
-                load(props.id, size[0].height, size[0].width);
+                const size = buttonRef.current.element.getBoundingClientRect();
+                prefSize.current = {width: size.width, height: size.height};
             }
+        }
+        if(load){
+            console.log(prefSize.current)
+            load(props.id, prefSize.current.height, prefSize.current.width)
         }
     }, [buttonRef, props.preferredSize, props.onLoadCallback, props.id]);
 

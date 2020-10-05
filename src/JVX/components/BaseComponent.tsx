@@ -9,6 +9,7 @@ interface BaseComponent{
     "~remove": boolean | undefined,
     "~destroy": boolean | undefined,
     isVisible: boolean | undefined,
+    visible: boolean | undefined,
     constraints: string
     preferredSize?: string
 }
