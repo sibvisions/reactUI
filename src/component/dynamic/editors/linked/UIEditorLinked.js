@@ -4,6 +4,8 @@ import { RefContext } from '../../../helper/Context';
 // prime
 import { AutoComplete } from 'primereact/autocomplete';
 
+import * as _ from 'underscore';
+
 // hooks
 import useFetchListen from "../../../hooks/useFetchListen";
 import useRowSelect from '../../../hooks/useRowSelect';
@@ -26,24 +28,30 @@ function UIEditorLinked(props){
         let blockFetch = false;
         const handleScroll = (elem) => {
             if (elem) {
-                elem.onscroll = () => {
-                    console.log((elem.scrollTop+elem.offsetHeight)/35, elem.scrollTop+elem.offsetHeight, lastRow, elem.children[0].children[0])
-                    if ((elem.scrollTop+elem.offsetHeight)/35 > lastRow) {
-                        elem.children[0].children[0].scrollTop = firstRow
-                        setFirstRow(lastRow)
-                        setLastRow(lastRow+100)
+                elem.onscroll = _.throttle(() => {
+                    let currFirstItem = elem.scrollTop/elem.children[0].children[0].getBoundingClientRect().height;
+                    let currLastItem = (elem.scrollTop+elem.offsetHeight)/elem.children[0].children[0].getBoundingClientRect().height;
+                    if (currFirstItem < firstRow) {
+                        setFirstRow(Math.floor(currFirstItem/50)*50);
+                        setLastRow(Math.floor(currFirstItem/50)*50+100);
+                        elem.scrollTop = elem.children[0].children[0].getBoundingClientRect().height * (currLastItem-5)
                     }
-
+                    if (currLastItem > lastRow) {
+                        setFirstRow(Math.floor(currLastItem/100)*100);
+                        setLastRow(Math.ceil(currLastItem/100)*100);
+                        elem.scrollTop = elem.children[0].children[0].getBoundingClientRect().height * (currFirstItem+5)
+                    }
                     if (!blockFetch && (elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight) {
                         blockFetch = true
-                        con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, -2)
+                        con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, 100)
                     }
-                }
+                }, 100);
             } 
         }
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0])
         }, 0);
+
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props), 
@@ -51,13 +59,28 @@ function UIEditorLinked(props){
                 parent: props.parent
             }
         );
-    }, [con, props, fetchedData]);
+    }, [con, props, fetchedData, firstRow, lastRow]);
 
     useLayoutEffect(() => {
         if (autoComRef.current) {
             setTimeout(() => {
-                if (document.getElementsByClassName("p-autocomplete-panel")[0]) {
-                    document.getElementsByClassName("p-autocomplete-panel")[0].children[0].style.height = toPx(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length * 35)
+                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
+                if (autoPanel) {
+                    let itemsList = document.getElementsByClassName("p-autocomplete-item");
+                    for (let i = 0; i < itemsList.length; i++) {
+                        itemsList[i].style.top = toPx(autoPanel.children[0].children[0].getBoundingClientRect().height * firstRow)
+                    }
+                }
+            }, 0);
+        }
+    }, [lastRow]);
+
+    useLayoutEffect(() => {
+        if (autoComRef.current) {
+            setTimeout(() => {
+                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
+                if (autoPanel) {
+                    autoPanel.children[0].style.height = toPx(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length * autoPanel.children[0].children[0].getBoundingClientRect().height);
                 }
             }, 0);
 
@@ -67,7 +90,7 @@ function UIEditorLinked(props){
                 autoComRef.current.inputEl.style['text-align'] = alignments.ha;
             }
         }
-    });
+    })
 
     // function buildSuggestions(response= {records: []}){
     //     let suggestions = []

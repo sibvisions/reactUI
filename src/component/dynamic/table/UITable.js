@@ -43,7 +43,6 @@ function UITable(props) {
     const dataColumns= useMemo(() => buildColumns(props.columnLabels, props.columnNames), [props.columnLabels, props.columnNames])
     const [firstRender, setFirstRender] = useState(true)
     const [scrollHeight, setScrollHeight] = useState('400px')
-    //let test = '400px'
     const tableRef = useRef();
 
     useEffect(() => {
@@ -51,7 +50,6 @@ function UITable(props) {
             if (ref) {
                 if (!firstRender) {
                     let elem = ref.container;
-                    console.log(Math.ceil(elem.getBoundingClientRect().height), Math.ceil(elem.getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height), Math.ceil(elem.getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)-1, elem)
                     setScrollHeight(toPx(Math.ceil(elem.getBoundingClientRect().height) - 
                                     Math.ceil(elem.getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height) -
                                     Math.ceil(elem.getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)-1));

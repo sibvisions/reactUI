@@ -28,7 +28,8 @@
     "react-split": "^2.0.9",
     "react-transition-group": "^4.4.1",
     "rxjs": "^6.6.0",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.4.1",
+    "underscore": "^1.11.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
