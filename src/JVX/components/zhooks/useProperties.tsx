@@ -15,7 +15,7 @@ const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
         return() => {
            context.contentStore.unsubscribeFromPropChange(id);
         };
-    }, [id, context.contentStore, props.constraints, props]);
+    }, [id, context.contentStore, props]);
 
     return [props]
 }

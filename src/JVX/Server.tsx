@@ -10,6 +10,7 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
+import MetaDataResponse from "./response/MetaDataResponse";
 
 class Server{
     constructor(store: ContentStore) {
@@ -56,7 +57,8 @@ class Server{
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
         .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
-        .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this));
+        .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
+        .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -70,7 +72,7 @@ class Server{
         this.routingDecider(responses);
     }
 
-    //MetaData
+    //Application MetaData
     applicationMetaData(metaData: ApplicationMetaData){
         sessionStorage.setItem("clientId", metaData.clientId);
     }
@@ -108,6 +110,10 @@ class Server{
             return data;
         });
         this.contentStore.updateDataProvider(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+    }
+
+    processMetaData(metaData: MetaDataResponse){
+        this.contentStore.dataProviderMetaMap.set(metaData.dataProvider, metaData);
     }
 
 

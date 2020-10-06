@@ -36,7 +36,6 @@ const UIButton: FC<buttonProps> = (baseProps) => {
             }
         }
         if(load){
-            console.log(prefSize.current)
             load(props.id, prefSize.current.height, prefSize.current.width)
         }
     }, [buttonRef, props.preferredSize, props.onLoadCallback, props.id]);

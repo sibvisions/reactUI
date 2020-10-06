@@ -5,4 +5,12 @@ table, th, td {
 
 td {
     text-align: center;
+    padding: 8px;
+    height: auto;
 }
+
+tr {
+    height: 0;
+}
+
+tr:hover {background-color:#c5c5c5;}

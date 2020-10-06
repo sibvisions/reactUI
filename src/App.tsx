@@ -41,6 +41,8 @@ const App: FC = () => {
         if(authKey){
             startUpRequest.authKey = authKey;
         }
+        startUpRequest.screenHeight = window.innerHeight;
+        startUpRequest.screenWidth = window.innerWidth;
         context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
     });
 

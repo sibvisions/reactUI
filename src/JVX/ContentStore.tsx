@@ -3,6 +3,7 @@ import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
+import MetaDataResponse from "./response/MetaDataResponse";
 
 class ContentStore{
 
@@ -20,6 +21,7 @@ class ContentStore{
 
     //DataProvider Maps
     dataProviderMap = new Map<string, Array<any>>();
+    dataProviderMetaMap = new Map<string, MetaDataResponse>();
 
 
     //Content
@@ -34,18 +36,18 @@ class ContentStore{
                 this.flatContent.set(existingComponent.id, existingComponent);
             }
 
-
-
             //Update existing component
             existingComponent = this.flatContent.get(newComponent.id);
 
-            if(newComponent.parent && existingComponent){
-                notifyList.push(existingComponent.id)
+            //Build Notify List
+            if(newComponent.parent){
                 notifyList.push(newComponent.parent);
+                if(existingComponent){
+                    notifyList.push(existingComponent.id);
+                }
             }
-            if(newComponent.visible !== undefined && existingComponent){
-                if(existingComponent.parent)
-                    notifyList.push(existingComponent.parent);
+            if(newComponent.visible !== undefined && existingComponent && existingComponent.parent){
+                notifyList.push(existingComponent.parent)
             }
 
             if(existingComponent){
@@ -78,8 +80,7 @@ class ContentStore{
             }
         });
 
-
-        //Notify active components
+        //Properties
         componentsToUpdate.forEach(value => {
             const existingComp = this.flatContent.get(value.id);
             const updateFunction = this.propertiesSubscriber.get(value.id);
@@ -88,9 +89,12 @@ class ContentStore{
             }
         });
 
+        //Parents
         notifyList.forEach(value => {
-           this.parentSubscriber.get(value)?.();
+            this.parentSubscriber.get(value)?.apply(undefined, []);
         });
+
+
     }
 
     closeScreen(windowName: string){

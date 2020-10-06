@@ -4,6 +4,7 @@ import PressButtonRequest from "../request/PressButtonRequest";
 import OpenScreenRequest from "../request/OpenScreenRequest";
 import LogoutRequest from "../request/LogoutRequest";
 import DeviceStatusRequest from "../request/DeviceStatusRequest";
+import SelectRowRequest from "../request/SelectRowRequest";
 
 
 
@@ -88,5 +89,15 @@ export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceS
         screenWidth: values?.screenWidth || 0
     }
     return req;
+}
+
+export const createSelectRowRequest = (values?: SelectRowRequest) => {
+    const req: SelectRowRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        dataProvider: values?.dataProvider,
+        filter: values?.filter
+    }
+    return req
 }
 
