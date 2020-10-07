@@ -15,7 +15,7 @@ export const createPanel: FC<Panel> = (props) => {
 }
 
 export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
-    return <UISplitPanel isVisible={true} {...props} />
+    return <UISplitPanel isVisible={true} {...props} key={props.id}/>
 }
 
 export const createButton: FC<buttonProps> = (props) => {
@@ -39,7 +39,7 @@ export const createEditorText: FC<IEditorText> = (props) => {
 }
 
 export const createTable: FC<TableProps> = (props) => {
-    return <UITable {...props}/>
+    return <UITable {...props} key={props.id}/>
 }
 
 const createEditor: FC<IEditor> = ( props ) => {

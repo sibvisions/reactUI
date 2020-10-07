@@ -1,4 +1,4 @@
-import {ReactElement, useContext, useEffect, useRef, useState} from "react";
+import {ReactElement, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
 type ComponentSize = {
@@ -40,7 +40,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         });
         return reactChildrenArray;
     }
-
     const context = useContext(jvxContext);
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
@@ -69,7 +68,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
        return () => {
            context.contentStore.unsubscribeFromParentChange(id);
        }
-    }, []);
+    }, [context.contentStore, id, components]);
 
 
 

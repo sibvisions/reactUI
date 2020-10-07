@@ -89,8 +89,6 @@ const FormLayout: FC<Panel> = (baseProps) => {
                 if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                     const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                     componentConstraints.set(component.id, constraint);
-                } else {
-                    console.warn("Constraint Anchors were undefined");
                 }
             });
         }

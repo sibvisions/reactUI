@@ -5,12 +5,19 @@ table, th, td {
 
 td {
     text-align: center;
-    padding: 8px;
     height: auto;
 }
 
 tr {
     height: 0;
+    background-color: #f9f9f9
 }
 
 tr:hover {background-color:#c5c5c5;}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+tr:nth-child(even):hover {
+    background-color: #c5c5c5;
+}

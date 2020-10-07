@@ -11,6 +11,9 @@ import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
 import MetaDataResponse from "./response/MetaDataResponse";
+import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
+import {createFetchRequest} from "./factories/RequestFactory";
+import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 
 class Server{
     constructor(store: ContentStore) {
@@ -58,7 +61,8 @@ class Server{
         .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
-        .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this));
+        .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
+        .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -109,11 +113,26 @@ class Server{
             });
             return data;
         });
-        this.contentStore.updateDataProvider(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+        this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
+        this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
     }
 
     processMetaData(metaData: MetaDataResponse){
-        this.contentStore.dataProviderMetaMap.set(metaData.dataProvider, metaData);
+        this.contentStore.dataProviderMetaData.set(metaData.dataProvider, metaData);
+    }
+
+    processDataProviderChanged(changedProvider: DataProviderChangedResponse){
+        if(changedProvider.selectedRow === -1){
+            this.contentStore.clearSelectedRow(changedProvider.dataProvider);
+            this.contentStore.emitRowSelect(changedProvider.dataProvider);
+        }
+
+        if(changedProvider.reload === -1){
+            this.contentStore.clearDataFromProvider(changedProvider.dataProvider);
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = changedProvider.dataProvider;
+            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+        }
     }
 
 

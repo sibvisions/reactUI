@@ -16,7 +16,7 @@ export interface IEditor extends BaseComponent{
     verticalAlignment: 0 | 1 | 2| 3,
     enabled: boolean,
     columnName: string,
-    dataProvider: string,
+    dataRow: string,
     eventFocusedGain: boolean
 
 }

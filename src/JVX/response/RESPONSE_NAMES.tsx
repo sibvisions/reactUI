@@ -7,6 +7,7 @@ enum RESPONSE_NAMES{
     LOGIN="login",
     AUTHENTICATION_DATA="authenticationData",
     DAL_FETCH="dal.fetch",
-    DAL_META_DATA="dal.metaData"
+    DAL_META_DATA="dal.metaData",
+    DAL_DATA_PROVIDER_CHANGED="dal.dataProviderChanged"
 }
 export default RESPONSE_NAMES

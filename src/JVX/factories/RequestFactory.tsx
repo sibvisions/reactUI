@@ -5,6 +5,8 @@ import OpenScreenRequest from "../request/OpenScreenRequest";
 import LogoutRequest from "../request/LogoutRequest";
 import DeviceStatusRequest from "../request/DeviceStatusRequest";
 import SelectRowRequest from "../request/SelectRowRequest";
+import FetchRequest from "../request/FetchRequest";
+import SetValuesRequest from "../request/SetValuesRequest";
 
 
 
@@ -91,7 +93,7 @@ export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceS
     return req;
 }
 
-export const createSelectRowRequest = (values?: SelectRowRequest) => {
+export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequest => {
     const req: SelectRowRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
@@ -99,5 +101,26 @@ export const createSelectRowRequest = (values?: SelectRowRequest) => {
         filter: values?.filter
     }
     return req
+}
+
+export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
+    const req: FetchRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider,
+        fromRow: values?.fromRow,
+        rowCount: values?.rowCount
+    }
+    return req;
+}
+
+export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequest => {
+    const req: SetValuesRequest = {
+        clientId: values?.clientId || getClientId(),
+        columnNames: values?.columnNames,
+        componentId: values?.componentId,
+        dataProvider: values?.dataProvider,
+        values: values?.values
+    };
+    return req;
 }
 

@@ -1,4 +1,4 @@
-import React, {Component, CSSProperties, FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {Component, FC, useContext, useLayoutEffect, useRef} from "react";
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";

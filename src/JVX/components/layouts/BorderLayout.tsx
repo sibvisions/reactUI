@@ -13,8 +13,6 @@ import {LayoutContext} from "../../LayoutContext"
 import "./BorderLayout.scss"
 import {Panel} from "../panels/panel/UIPanel";
 import {jvxContext} from "../../jvxProvider";
-import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
-import {cpus} from "os";
 
 type borderLayoutComponents = {
     north?: ReactElement,

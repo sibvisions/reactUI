@@ -16,12 +16,14 @@ class ContentStore{
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
     parentSubscriber = new Map<string, Function>();
-    dataProviderSubscriber = new Array<{id: string, dataProvider: string, fn: Function}>()
-
+    rowSelectionSubscriber = new Map<string, Array<Function>>();
+    dataChangeSubscriber = new Map<string, Array<Function>>();
 
     //DataProvider Maps
-    dataProviderMap = new Map<string, Array<any>>();
-    dataProviderMetaMap = new Map<string, MetaDataResponse>();
+    dataProviderData = new Map<string, Array<any>>();
+    dataProviderMetaData = new Map<string, MetaDataResponse>();
+    dataProviderFetched = new Map<string, boolean>();
+    dataProviderSelectedRow = new Map<string, any>();
 
 
     //Content
@@ -116,27 +118,43 @@ class ContentStore{
 
 
     //Data Provider Management
-    updateDataProvider(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
-        const existingData = this.dataProviderMap.get(dataProvider);
+    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
+        const existingData = this.dataProviderData.get(dataProvider);
         if(existingData){
             let newDataSetIndex = 0;
-            for(let i = to; i < from; i++){
+            for(let i = to; i <= from; i++){
                 existingData[i] = newDataSet[newDataSetIndex];
                 newDataSetIndex++;
             }
         }
         else{
-            this.dataProviderMap.set(dataProvider, newDataSet);
+            this.dataProviderData.set(dataProvider, newDataSet);
         }
+
+        this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
+           value.apply(undefined, [from, to]);
+        });
     }
 
     getData(dataProvider: string): Array<any>{
-        const dataArray = this.dataProviderMap.get(dataProvider);
+        const dataArray = this.dataProviderData.get(dataProvider);
         return  dataArray || []
     }
 
+    setSelectedRow(dataProvider: string, dataRow: any){
+        this.dataProviderSelectedRow.set(dataProvider, dataRow);
+    }
 
-    // Getters
+    clearSelectedRow(dataProvider: string){
+        this.dataProviderSelectedRow.delete(dataProvider);
+    }
+
+    clearDataFromProvider(dataProvider: string){
+        this.dataProviderData.delete(dataProvider);
+    }
+
+
+    //Getters
     getWindow(windowName: string): BaseComponent | undefined{
         const componentEntries = this.flatContent.entries();
 
@@ -194,7 +212,7 @@ class ContentStore{
     }
 
 
-    // Subscription Management
+    //Subscription Management
     subscribeToPropChange(id: string, fn: Function){
         this.propertiesSubscriber.set(id, fn);
     }
@@ -203,12 +221,37 @@ class ContentStore{
         this.parentSubscriber.set(id, fn);
     }
 
-    subscribeToDataProviderChange(dataProvider: string, id: string, fn: Function){
-        this.dataProviderSubscriber.push({id: id, dataProvider: dataProvider, fn: fn});
+    subscribeToRowSelection(dataProvider: string, fn: Function){
+        const subscriber = this.rowSelectionSubscriber.get(dataProvider);
+        if(subscriber){
+            subscriber.push(fn);
+        } else {
+            this.rowSelectionSubscriber.set(dataProvider, new Array<Function>(fn));
+        }
     }
 
-    unsubscribeFromDataProviderChange(id: string){
-        this.dataProviderSubscriber.splice(this.dataProviderSubscriber.findIndex(value => value.id === id),1);
+    subscribeToDataChange(dataProvider: string, fn: Function){
+        const subscriber = this.dataChangeSubscriber.get(dataProvider);
+        if(subscriber){
+            subscriber.push(fn);
+        } else {
+            this.dataChangeSubscriber.set(dataProvider, new Array<Function>(fn));
+        }
+    }
+
+
+    unsubscribeFromDataChange(dataProvider: string, fn: Function){
+        const subscriber = this.dataChangeSubscriber.get(dataProvider)
+        if(subscriber){
+            subscriber.splice(subscriber.findIndex(value => value === fn),1);
+        }
+    }
+
+    unsubscribeFromRowSelection(dataProvider: string, fn: Function){
+        const subscriber = this.rowSelectionSubscriber.get(dataProvider)
+        if(subscriber){
+            subscriber.splice(subscriber.findIndex(value => value === fn),1);
+        }
     }
 
     unsubscribeFromParentChange(id: string){
@@ -217,6 +260,18 @@ class ContentStore{
 
     unsubscribeFromPropChange(id: string){
         this.propertiesSubscriber.delete(id);
+    }
+
+
+    //Events
+    emitRowSelect(dataProvider: string){
+        const subscriber = this.rowSelectionSubscriber.get(dataProvider);
+        const selectedRow = this.dataProviderSelectedRow.get(dataProvider);
+        if(subscriber){
+            subscriber.forEach(sub => {
+                sub.apply(undefined, [selectedRow]);
+            });
+        }
     }
 }
 export default ContentStore
