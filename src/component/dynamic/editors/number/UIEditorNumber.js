@@ -8,7 +8,7 @@ import { RefContext } from "../../../helper/Context";
 import { sendSetValues } from "../../../helper/SendSetValues";
 
 function UIEditorNumber(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id, props.dataRow);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue, props.id, props.dataRow, props.cellEditor.className);
     const inputRef = useRef();
     const con = useContext(RefContext);
     const metaData = con.contentStore.metaData.get(props.dataRow);

@@ -170,12 +170,6 @@ class ServerCommunicator {
                 data: result.split(',')[1]
             }; this.sendRequest("/upload", reqBody);
         })
-        // let formFields = {clientId: localStorage.getItem("clientId"), fileId: fileId, fileName: fileName}
-        // let formData = new FormData()
-        // formData.append("fields", JSON.stringify(formFields))
-        // formData.append("data", data)
-        // let r = await fetch(this.BaseUrl+"/upload", {method: 'POST', body: formData});
-        // this.responseHandler.getResponse(r);
     }
 
     //---Fetch Requests------

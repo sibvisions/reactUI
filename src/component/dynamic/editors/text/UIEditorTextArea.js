@@ -7,7 +7,7 @@ import { sendSetValues } from '../../../helper/SendSetValues';
 import { checkCellEditorAlignments } from '../../../helper/CheckAlignments';
 
 function UIEditorTextArea(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.cellEditor.className);
     const inputRef = useRef();
     const con = useContext(RefContext);
 

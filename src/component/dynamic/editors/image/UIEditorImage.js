@@ -6,7 +6,9 @@ import { getAlignments } from "../../ComponentProperties";
 import { Size } from '../../../helper/Size';
 
 function UIEditorImage(props) {
-    const [selectedColumn] = useRowSelect(props.columnName, props.initialValue ? props.initialValue : (props.cellEditor.defaultImageName ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName : ""), props.id, props.dataRow);
+    const [selectedColumn] = useRowSelect(props.columnName, props.initialValue ? props.initialValue : 
+                                         (props.cellEditor.defaultImageName ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.defaultImageName : ""), 
+                                          props.id, props.dataRow, props.cellEditor.className);
     const con = useContext(RefContext);
     const imgRef = useRef();
     const alignments = getAlignments(props)

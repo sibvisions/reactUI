@@ -12,3 +12,13 @@ td.p-cell-editing{
     text-indent: -99999px;
     overflow: hidden;
 }
+
+.p-datatable {
+    .p-datatable-tbody {
+        >tr {
+            >td.ChoiceCellEditor {
+                text-align: center;
+            }
+        } 
+    }
+}

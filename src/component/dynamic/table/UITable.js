@@ -17,20 +17,44 @@ function UITable(props) {
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(rows*2);
     // eslint-disable-next-line
-    const data = useMemo(() => con.contentStore.storedData.get(props.dataBook).slice(firstRow, lastRow) || [], [fetchedData, con.contentStore, props.dataBook, firstRow, lastRow] );
+    const data = useMemo(() => con.contentStore.storedData.get(props.dataBook) ? con.contentStore.storedData.get(props.dataBook).slice(firstRow, lastRow) : [], [fetchedData, con.contentStore, props.dataBook, firstRow, lastRow] );
     // eslint-disable-next-line
-    const totalRecords = useMemo(() => con.contentStore.storedData.get(props.dataBook).length || 0, [fetchedData, con.contentStore, props.dataBook]);
+    const totalRecords = useMemo(() => con.contentStore.storedData.get(props.dataBook) ? con.contentStore.storedData.get(props.dataBook).length : 0, [fetchedData, con.contentStore, props.dataBook]);
+
+    const columnTemplate = (rowData, column) => {
+        if (rowData[column.field] !== null || column.allowedValues) {
+            if (column.className === 'DateCellEditor') {
+                return new Date(rowData[column.field]).toDateString();
+            }
+            else if (column.className === 'ChoiceCellEditor') {
+                return <img alt="yo" style={{cursor: 'pointer'}} src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + column.images[column.allowedValues.indexOf(rowData[column.field])]} />
+            }
+            else {
+                return rowData[column.field];
+            }
+        }
+        else {
+            return null;
+        }
+        
+    }
 
     const buildColumns = (labels, names) => {
         let tempDataColumns = [];
         for (let index = 0; index < labels.length; index++) {
+            let metaData = con.contentStore.metaData.get(props.dataBook).columns.get(names[index]);
             let columnProps = {
                 field: names[index],
                 header: labels[index],
-                key: names[index]
+                key: names[index],
+                body: columnTemplate
             };
-            let metaData = con.contentStore.metaData.get(props.dataBook).columns.get(names[index]);
             if (metaData) {
+                columnProps.className = metaData.cellEditor.className;
+                if (metaData.cellEditor.className === 'ChoiceCellEditor') {
+                    columnProps.allowedValues = metaData.cellEditor.allowedValues;
+                    columnProps.images = metaData.cellEditor.images;
+                }
                 metaData.name = props.name;
                 metaData.cellEditor.clearColumns = ["ID", names[index]];
                 columnProps.editor = (props) => buildEditor(props, metaData);
@@ -68,17 +92,21 @@ function UITable(props) {
         );
     }, [con.contentStore, props, firstRender]);
 
-    
-
     const buildEditor = (buildProps, data) => {
         if (data) {
             const className = data.cellEditor.className;
+            data.className = "Editor"
+            data.cellEditor.className = className;
             if (className === "LinkedCellEditor") {
                 data.appendToBody = true;
             } 
             else if (className === "DateCellEditor") {
                 data.appendToBody = true;
             }
+            else if (className === "ChoiceCellEditor") {
+                data.cellEditor.imageNames = buildProps.images
+            }
+            
             data["cellEditor.editable"] = true;
             data.columnName = buildProps.field;
             data.initialValue = buildProps.rowData[buildProps.field];
@@ -92,14 +120,15 @@ function UITable(props) {
     }
 
     const onSelectChange = async event => {
-        const value = event.data;
-        con.contentStore.emitChangeOfSelectedRow(value);
-        con.serverComm.selectRow(props.name, props.dataBook, value)
+        if (event.index !== con.contentStore.selectedRow.get(props.dataBook)) {
+            const value = event.data;
+            con.contentStore.emitChangeOfSelectedRow(value);
+            con.serverComm.selectRow(props.name, props.dataBook, value)
+        }
     }
 
     const onVirtualScroll = async event => {
         let rowDiff = (con.contentStore.storedData.get(props.dataBook).length - 1) - (event.first + event.rows)
-        console.log(event.rows, rows, event.first)
         if (event.first + event.rows >= con.contentStore.storedData.get(props.dataBook).length - 1) {
             if (!fetchedData.isAllFetched) {
                 con.serverComm.fetchDataFromProvider(props.dataBook, con.contentStore.storedData.get(props.dataBook).length, 100)
@@ -120,17 +149,13 @@ function UITable(props) {
         }
     }
 
-    // if (document.getElementById(props.id)) {
-    //     console.log(document.getElementById(props.id).getBoundingClientRect().height, document.getElementById(props.id).getElementsByClassName('p-datatable-header')[0].getBoundingClientRect().height, document.getElementById(props.id).getElementsByClassName('p-datatable-scrollable-header')[0].getBoundingClientRect().height)
-    // }
-
     return (
         <DataTable
             id={props.id}
             ref={tableRef}
             header="Table"
             value={data ? data : []}
-            onRowDoubleClick={onSelectChange}
+            onRowClick={onSelectChange}
             resizableColumns
             columnResizeMode={"expand"}
             scrollable

@@ -1,29 +1,37 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import "./UIEditorChoice.scss"
 import { RefContext } from '../../../helper/Context';
 import { getAlignments } from '../../ComponentProperties';
 import { getPreferredSize } from '../../../helper/GetSizes';
 import { sendSetValues } from '../../../helper/SendSetValues';
+import { toPx } from '../../../helper/ToPx';
+import useRowSelect from '../../../hooks/useRowSelect';
+import { mergeObject } from '../../../helper/MergeObject';
 
 function UIEditorChoice(props) {
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue !== undefined ? props.initialValue : "", props.id, props.dataRow, props.cellEditor.className);
     const con = useContext(RefContext);
+    const btnRef = useRef();
     const alignments = getAlignments(props);
-    const allowedValues = con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.allowedValues
-    const [currValue, setCurrValue] = useState(allowedValues.indexOf(con.contentStore.storedData.get(props.dataRow)[con.contentStore.selectedRow.get(props.dataRow)][props.columnName]))
+    const allowedValues = con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.allowedValues;
+    const images = con.contentStore.metaData.get(props.dataRow).columns.get(props.columnName).cellEditor.images;
+    const mergedValImg = mergeObject(allowedValues, images)
 
     function handleClick() {
-        let newIndex = currValue;
+        let newIndex = allowedValues.indexOf(selectedColumn);
         if (allowedValues[newIndex+1] === undefined) {
             newIndex = 0;
         }
         else {
             newIndex++
         }
-        setCurrValue(newIndex)
+        editColumn(allowedValues[newIndex])
         sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, allowedValues[newIndex])
     }
 
     function sendSize() {
+        btnRef.current.style.height = toPx(btnRef.current.children[0].offsetHeight);
+        btnRef.current.style.width = toPx(btnRef.current.children[0].offsetWidth);
         con.contentStore.emitSizeCalculated(
             {
                 size: getPreferredSize(props),
@@ -35,12 +43,13 @@ function UIEditorChoice(props) {
 
     return (
         <span style={{ ...props.layoutStyle, display: 'inline-flex', justifyContent: alignments.ha, alignItems: alignments.va }}>
-            <button className="choice-editor" onClick={handleClick}>
+            <button ref={btnRef} className="choice-editor" onClick={handleClick}>
                 <img 
-                    id={props.id} alt="yo" 
+                    id={props.id} 
+                    alt="yo" 
                     style={{cursor: 'pointer'}} 
                     onLoad={sendSize} 
-                    src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + props.cellEditor.imageNames[currValue]}
+                    src={mergedValImg[selectedColumn] ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + mergedValImg[selectedColumn] : ""}
                 />
             </button>
         </span>

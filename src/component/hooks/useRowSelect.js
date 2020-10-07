@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from 'react';
 import { RefContext } from '../helper/Context';
-import { recordToObject } from '../helper/RecordToObject';
+import { mergeObject } from '../helper/MergeObject';
 
-function useRowSelect(columnName, init, id="no", dataProvider) {
+function useRowSelect(columnName, init, id="no", dataProvider, className) {
     const [selectedColumn, editColumn] = useState(init);
     const con = useContext(RefContext);
 
@@ -19,7 +19,12 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
                 editColumn(row[columnName]);
             }
             else {
-                editColumn("");
+                if (className === "ChoiceCellEditor") {
+                    editColumn(value);
+                }
+                else {
+                    editColumn("");
+                }
             } 
             con.contentStore.updateContent([{id: id, initialValue: value}]);
         });
@@ -29,7 +34,7 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
                 let fetchedData = [];
                 if (fetchResponse.records.length > 0) {
                     fetchResponse.records.forEach(record => {
-                        fetchedData.push(recordToObject(fetchResponse, record));
+                        fetchedData.push(mergeObject(fetchResponse.columnNames, record));
                     });
                     let primaryKeyColumns = con.contentStore.metaData.get(fetchResponse.dataProvider).primaryKeyColumns;
                     let storedData = con.contentStore.storedData.get(fetchResponse.dataProvider);
@@ -53,7 +58,13 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
                                     editColumn(found[columnName]);
                                 }
                                 else {
-                                    editColumn("");
+                                    if (className === "ChoiceCellEditor") {
+                                        console.log(found[columnName], columnName)
+                                        editColumn(found[columnName]);
+                                    }
+                                    else {
+                                        editColumn("");
+                                    }
                                 }
                             }
                         }
@@ -62,7 +73,12 @@ function useRowSelect(columnName, init, id="no", dataProvider) {
                                 editColumn(record[columnName]);
                             }
                             else {
-                                editColumn("");
+                                if (className === "ChoiceCellEditor") {
+                                    editColumn(record[columnName]);
+                                }
+                                else {
+                                    editColumn("");
+                                }
                             }
                         }
                     })

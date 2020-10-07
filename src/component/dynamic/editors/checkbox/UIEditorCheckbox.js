@@ -7,7 +7,7 @@ import { sendSetValues } from '../../../helper/SendSetValues';
 import useRowSelect from '../../../hooks/useRowSelect';
 
 function UIEditorCheckbox(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow, props.cellEditor.className);
     const cbxType = getCbxType(props.cellEditor.selectedValue)
     const con = useContext(RefContext);
     const alignments = getAlignments(props);

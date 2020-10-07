@@ -8,7 +8,7 @@ import { isValidDate } from '../../../helper/IsValidDate';
 import { sendSetValues } from '../../../helper/SendSetValues';
 
 function UIEditorDate(props) {
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow)
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow, props.cellEditor.className)
     const con = useContext(RefContext);
     const calender = useRef()
     const dateFormat = parseDateFormat(props.cellEditor.dateFormat)
@@ -18,10 +18,10 @@ function UIEditorDate(props) {
     function parseDateFormat(dateFormat) {
         let formatted = dateFormat;
         if (dateFormat.includes("MMMM")) {
-            formatted = dateFormat.replace("MMMM", 'MM').replace(", HH:mm", '');
+            formatted = dateFormat.replace("MMMM", 'MM').replace(", HH:mm", '').replace(" HH:mm", '');
         }
         else if (dateFormat.includes("MM")) {
-            formatted = dateFormat.replace("MM", "mm").replace(", HH:mm", '');
+            formatted = dateFormat.replace("MM", "mm").replace(", HH:mm", '').replace(" HH:mm", '');
         }
         if (dateFormat.includes("yyyy")) {
             formatted = formatted.replace("yyyy", "yy");

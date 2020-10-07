@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { recordToObject } from "../component/helper/RecordToObject";
+import { mergeObject } from "../component/helper/MergeObject";
 
 class ContentStore{
 
@@ -33,7 +33,7 @@ class ContentStore{
             this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             for (let i = fetchResponse.from; i <= fetchResponse.to; i++) {
                 if (currData.length > 0) {
-                    currData[i] = recordToObject(fetchResponse, fetchResponse.records[x]);
+                    currData[i] = mergeObject(fetchResponse.columnNames, fetchResponse.records[x]);
                 }
                 x++;
             }
@@ -42,7 +42,7 @@ class ContentStore{
             this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             let fetchedData = []
             fetchResponse.records.forEach(record => {
-                fetchedData.push(recordToObject(fetchResponse, record));
+                fetchedData.push(mergeObject(fetchResponse, record));
             });
             this.storedData.set(fetchResponse.dataProvider, fetchedData)
         }

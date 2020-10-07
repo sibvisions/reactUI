@@ -16,7 +16,7 @@ import { toPx } from '../../../helper/ToPx';
 
 function UIEditorLinked(props){
     const [fetchedData] = useFetchListen(props.cellEditor.linkReference.referencedDataBook);
-    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow);
+    const [selectedColumn, editColumn] = useRowSelect(props.columnName, props.initialValue || "", props.id, props.dataRow, props.cellEditor.columnName);
     const con = useContext(RefContext)
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(100);
@@ -41,7 +41,7 @@ function UIEditorLinked(props){
                         setLastRow(Math.ceil(currLastItem/100)*100);
                         elem.scrollTop = elem.children[0].children[0].getBoundingClientRect().height * (currFirstItem+5)
                     }
-                    if (!blockFetch && (elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight) {
+                    if (!blockFetch && (elem.scrollTop + elem.offsetHeight)*100/elem.scrollHeight >= (elem.scrollHeight * 0.9)*100/elem.scrollHeight && !fetchedData.isAllFetched) {
                         blockFetch = true
                         con.serverComm.fetchDataFromProvider(props.cellEditor.linkReference.referencedDataBook, con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook).length, 100)
                     }
@@ -73,6 +73,7 @@ function UIEditorLinked(props){
                 }
             }, 0);
         }
+    // eslint-disable-next-line
     }, [lastRow]);
 
     useLayoutEffect(() => {
@@ -91,20 +92,6 @@ function UIEditorLinked(props){
             }
         }
     })
-
-    // function buildSuggestions(response= {records: []}){
-    //     let suggestions = []
-    //     if (response.length > 0) {
-    //         response.forEach(record => {
-    //             let element = {};
-    //             Object.values(record).forEach((data, index) => {
-    //                 if(data !== null) element[props.cellEditor.clearColumns[index]] = data;
-    //             });
-    //             suggestions.push(element)
-    //         });
-    //     }
-    //     return suggestions
-    // }
 
     function buildSuggestions(response= {records: []}){
         let suggestions = []
