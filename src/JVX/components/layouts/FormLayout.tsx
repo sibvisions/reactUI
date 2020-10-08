@@ -645,7 +645,7 @@ const FormLayout: FC<Panel> = (baseProps) => {
     },[dictatedStyle, preferredComponentSizes, props, calculateLayout, compProps]);
     return(
         <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div ref={layoutSizeRef} id={props.id} style={{height:"100%" , ...calculatedStyle?.style}}>
+            <div ref={layoutSizeRef} id={props.id} style={{...calculatedStyle?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>

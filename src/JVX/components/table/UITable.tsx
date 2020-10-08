@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react"
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import {CellProps, Column, useTable} from "react-table";
@@ -9,6 +9,7 @@ import {LayoutContext} from "../../LayoutContext";
 import {createSelectRowRequest} from "../../factories/RequestFactory";
 import {jvxContext} from "../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import UIEditorText from "../editors/text/UIEditorText";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -19,34 +20,47 @@ export interface TableProps extends BaseComponent{
 
 type CellEditor = {
     cellData: CellProps<any>,
-    dataBook: string,
-    name: string
+    onRowSelect: Function
 }
 
 const UICellEditor: FC<CellEditor> = (props) => {
 
-    const context = useContext(jvxContext);
+    const [edit, setEdit] = useState(false);
 
-    const selectedRow = (selectedRow: CellProps<any, any>) => {
-        // Select Row Event
-        context.contentStore.setSelectedRow(props.dataBook, selectedRow.row.original)
-        context.contentStore.emitRowSelect(props.dataBook);
-        context.contentStore.dataProviderSelectedRow.set(props.dataBook, selectedRow.row.original);
+    const makeEditor = () => {
 
-        // Select Row Request
-        const selectRowReq = createSelectRowRequest();
-        selectRowReq.dataProvider = props.dataBook;
-        selectRowReq.componentId = props.name;
-        selectRowReq.filter = {
-            columnNames: ["ID"],
-            values: [selectedRow.row.original.ID]
-        }
-        context.server.sendRequest(selectRowReq, REQUEST_ENDPOINTS.SELECT_ROW);
     }
 
+    const editor = useMemo(() => {
+        if(!edit){
+            return (
+                <div
+                    onClick={event => props.onRowSelect(props.cellData)}
+                    onDoubleClick={event => setEdit(true)}
+                    style={{width: "100%", height:"100%"}}
+                >
+                    {props.cellData.value}
+                </div>
+            )
+        } else {
+            return(
+                <div>
+                    <input
+                        autoFocus={true}
+                        onBlur={event => setEdit(false)}
+                        value={props.cellData.value}
+                        style={{width: "100%", height:"100%"}}
+                    />
+                </div>
+            )
+        }
+    }, [edit, props])
+
+
+
     return(
-        <div onClick={event => selectedRow(props.cellData)} style={{padding: 8}}>
-            {props.cellData.value}
+        <div style={{padding: 8 ,width: "100%", height:"100%"}}>
+            {editor}
         </div>
     )
 }
@@ -55,6 +69,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //React Hook
     const tableRef = useRef<HTMLTableElement>(null);
+    const alreadySelected = useRef<any>();
     const layoutContext = useContext(LayoutContext);
     const context = useContext(jvxContext);
 
@@ -63,8 +78,30 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
 
 
+
+
     //Dependent Hooks
     const columns = useMemo<Array<Column<any>>>(() => {
+
+        const handleRowSelect = (selectedRow: CellProps<any, any>) => {
+            if(alreadySelected.current === selectedRow.row.original)
+                return;
+
+            // Select Row Event
+            alreadySelected.current = selectedRow.row.original;
+            context.contentStore.setSelectedRow(props.dataBook, selectedRow.row.original);
+            context.contentStore.emitRowSelect(props.dataBook);
+
+            // Select Row Request
+            const selectRowReq = createSelectRowRequest();
+            selectRowReq.dataProvider = props.dataBook;
+            selectRowReq.componentId = props.name;
+            selectRowReq.filter = {
+                columnNames: ["ID"],
+                values: [selectedRow.row.original.ID]
+            }
+            context.server.sendRequest(selectRowReq, REQUEST_ENDPOINTS.SELECT_ROW);
+        }
 
         const columns: Array<Column<any>> = [];
 
@@ -72,12 +109,11 @@ const UITable: FC<TableProps> = (baseProps) => {
             columns.push({
                 Header: label,
                 accessor: props.columnNames[index],
-                Cell: cellData => <UICellEditor cellData={cellData} dataBook={props.dataBook} name={props.name}/>
+                Cell: cellData => <UICellEditor onRowSelect={handleRowSelect} cellData={cellData}/>
             });
         });
         return columns
     }, [props.columnNames, props.columnLabels, context.server, props.dataBook, props.name, context.contentStore]);
-
 
     const {
         getTableProps,
@@ -102,7 +138,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                            <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                            <th {...column.getHeaderProps()}><h3>{column.render("Header")}</h3></th>
                         ))}
                     </tr>
                 ))}

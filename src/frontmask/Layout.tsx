@@ -110,7 +110,7 @@ const Layout: FC = (props) => {
                     {props.children}
                 </div>
             </LayoutContext.Provider>
-            {/*<div style={{backgroundColor: "grey"}}>*/}
+            {/*<div style={{backgroundColor: "blue"}}>*/}
             {/*    <h4>footer</h4>*/}
             {/*</div>*/}
         </div>

@@ -40,15 +40,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     }
 
     const onBlurCallback = () => {
-        if(text !== alreadySend.current && text !== selectedRow){
+        if(text !== alreadySend.current && text !== selectedRow)
             sendSetValue();
-        }
     }
 
     const handleKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if(event.key === "Enter"){
+        if(event.key === "Enter")
             sendSetValue();
-        }
     }
 
     useLayoutEffect(() => {
@@ -59,12 +57,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [onLoadCallback, id]);
 
-    useLayoutEffect(() => {
-        setText(selectedRow);
-    }, [selectedRow]);
-
-
-
+    useLayoutEffect(() => setText(selectedRow),[selectedRow]);
 
     return(
         <InputText
