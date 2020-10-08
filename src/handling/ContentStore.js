@@ -42,7 +42,7 @@ class ContentStore{
             this.selectedRow.set(fetchResponse.dataProvider, fetchResponse.selectedRow);
             let fetchedData = []
             fetchResponse.records.forEach(record => {
-                fetchedData.push(mergeObject(fetchResponse, record));
+                fetchedData.push(mergeObject(fetchResponse.columnNames, record));
             });
             this.storedData.set(fetchResponse.dataProvider, fetchedData)
         }

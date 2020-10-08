@@ -26,6 +26,7 @@ function UIEditorChoice(props) {
             newIndex++
         }
         editColumn(allowedValues[newIndex])
+        console.log(props.rowId)
         sendSetValues(con, props.rowId, props.dataRow, props.name, props.columnName, allowedValues[newIndex])
     }
 

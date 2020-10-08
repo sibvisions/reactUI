@@ -155,6 +155,7 @@ class ResponseHandler{
                 }
             });
         });
+        console.log(groups)
         this.contentStore.menuItems = groups;
         this.routeTo("/main")
     }

@@ -1,5 +1,4 @@
 import { getMargins, getAlignments, getFont, parseIconData, getImageTextGap } from '../ComponentProperties';
-import { Size } from '../../helper/Size';
 import { toPx } from '../../helper/ToPx';
 import tinycolor from 'tinycolor2';
 
@@ -13,6 +12,8 @@ export function buttonProps(props) {
             tabIndex: getBtnFocusable(props.focusable) ? (props.tabIndex ? props.tabIndex : props.className === "ToggleButton" ? 0 : '0') : props.className === "ToggleButton" ? -1 : '-1',
             style: {
                 display: 'inline-flex',
+                height: 'inherit',
+                width: 'inherit',
                 flexDirection: getBtnDirection(props.horizontalTextPosition),
                 justifyContent: getBtnDirection(props.horizontalTextPosition) === 'row' ? getAlignments(props).ha : getAlignments(props).va,
                 alignItems: getBtnDirection(props.horizontalTextPosition) === 'row' ? getAlignments(props).va : getAlignments(props).ha,
@@ -46,9 +47,6 @@ export function styleButton(ref, btn, props) {
     if (props.style && props.style.includes('hyperlink')) {
         btn.classList.add('hyperlink')
     }
-    let size = new Size(parseInt(ref.style.width), parseInt(ref.style.height));
-    btn.style.setProperty('width', isBorderConstraints(props.constraints) ? '100%' : toPx(size.width));
-    btn.style.setProperty('height', isBorderConstraints(props.constraints) ? '100%' : toPx(size.height));
 }
 
 export function styleChildren(btnChildren, props, btnData) {
@@ -89,6 +87,7 @@ function styleMenuButton(btnChild, layoutStyle, btnProps) {
 
 function styleButtonContent(child, props, iconProps) {
     if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
+        //if the button is a Radiobutton or a Checkbox and the hTextPos is 1, the Radiobutton/Checkbox gets moved to the center of the component
         if ((props.className === "RadioButton" || props.className === "CheckBox") && props.horizontalTextPosition === 1) {
             let alignment = getAlignments(props).ha
             let labelWidth = document.getElementById(props.id).querySelector("[class$=label]").offsetWidth/2;
@@ -153,16 +152,6 @@ export function addHoverEffect(obj, color, checkedColor, dark, props, borderPain
     }
 }
 
-function isBorderConstraints(constraints) {
-    if (constraints === 'North' || constraints === 'West' || constraints === 'Center' ||
-        constraints === 'East' || constraints === 'South') {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
 function getGapPos(hTextPos, vTextPos) {
     if (hTextPos === 0) {
         return 'left'
@@ -179,7 +168,7 @@ function getGapPos(hTextPos, vTextPos) {
 }
 
 function getBtnBgdColor(props) {
-    if (props.borderPainted === undefined || props.borderPainted === true) {
+    if (props.borderPainted !== false) {
         if (props.background) {
             return tinycolor(props.background);
         }
@@ -230,7 +219,7 @@ function getIconPos(hTextPos, vTextPos) {
 }
 
 function getBorderPainted(borderPainted) {
-    if (borderPainted === undefined || borderPainted === true) {
+    if (borderPainted !== false) {
         return true;
     }
     else {
@@ -239,10 +228,11 @@ function getBorderPainted(borderPainted) {
 }
 
 function getBtnFocusable(focusable) {
-    if (focusable === undefined || focusable === true) {
+    if (focusable !== false) {
         return true;
     }
     else {
         return false;
     }
+
 }

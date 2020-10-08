@@ -3,12 +3,13 @@ import './UITable.scss'
 
 import { RefContext } from '../../helper/Context';
 import { createEditor } from "../../factories/ComponentFactory";
-
+import moment from 'moment';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { getPreferredSize } from '../../helper/GetSizes';
 import useFetchListen from '../../hooks/useFetchListen'
 import { toPx } from '../../helper/ToPx';
+import { parseDateFormatTable } from '../../helper/ParseDateFormats'
 
 function UITable(props) {
     const con = useContext(RefContext);
@@ -24,7 +25,8 @@ function UITable(props) {
     const columnTemplate = (rowData, column) => {
         if (rowData[column.field] !== null || column.allowedValues) {
             if (column.className === 'DateCellEditor') {
-                return new Date(rowData[column.field]).toDateString();
+                let momentFormat = parseDateFormatTable(column.dateFormat);
+                return moment(rowData[column.field]).format(momentFormat);
             }
             else if (column.className === 'ChoiceCellEditor') {
                 return <img alt="yo" style={{cursor: 'pointer'}} src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + column.images[column.allowedValues.indexOf(rowData[column.field])]} />
@@ -47,6 +49,7 @@ function UITable(props) {
                 field: names[index],
                 header: labels[index],
                 key: names[index],
+                sortable: true,
                 body: columnTemplate
             };
             if (metaData) {
@@ -55,11 +58,14 @@ function UITable(props) {
                     columnProps.allowedValues = metaData.cellEditor.allowedValues;
                     columnProps.images = metaData.cellEditor.images;
                 }
+                else if (metaData.cellEditor.className === 'DateCellEditor') {
+                    columnProps.dateFormat = metaData.cellEditor.dateFormat;
+                }
                 metaData.name = props.name;
                 metaData.cellEditor.clearColumns = ["ID", names[index]];
                 columnProps.editor = (props) => buildEditor(props, metaData);
             }
-            tempDataColumns.push(<Column loadingBody={() => {return <span className="loading-text"/>}} {...columnProps} sortable/>);
+            tempDataColumns.push(<Column loadingBody={() => {return <span className="loading-text"/>}} {...columnProps}/>);
         }
         return tempDataColumns
     };
@@ -110,7 +116,6 @@ function UITable(props) {
             data["cellEditor.editable"] = true;
             data.columnName = buildProps.field;
             data.initialValue = buildProps.rowData[buildProps.field];
-            data.rowId = buildProps.rowData["ID"]
             data.dataRow = props.dataBook;
             return createEditor(data);
         } 

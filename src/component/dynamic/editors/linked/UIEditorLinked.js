@@ -96,6 +96,7 @@ function UIEditorLinked(props){
     function buildSuggestions(response= {records: []}){
         let suggestions = []
         if (response.length > 0) {
+            console.log(response)
             response.forEach(record => {
                 let element = {};
                 Object.values(record).forEach((data, index) => {
@@ -122,7 +123,6 @@ function UIEditorLinked(props){
             ref={autoComRef}
             dropdown={true}
             completeMethod={onInputChange}
-            //suggestions={buildSuggestions(con.contentStore.storedData.get(props.cellEditor.linkReference.referencedDataBook))}
             suggestions={buildSuggestions(suggestionData)}
             field={props.columnName}
             value={selectedColumn}
