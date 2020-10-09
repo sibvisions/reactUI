@@ -114,7 +114,7 @@ class Server{
             return data;
         });
         this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
-        this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+        this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.selectedRow);
     }
 
     processMetaData(metaData: MetaDataResponse){

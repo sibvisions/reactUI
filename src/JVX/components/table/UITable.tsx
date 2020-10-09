@@ -9,7 +9,15 @@ import {LayoutContext} from "../../LayoutContext";
 import {createSelectRowRequest} from "../../factories/RequestFactory";
 import {jvxContext} from "../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import UIEditorText from "../editors/text/UIEditorText";
+import CellEditorText from "./inCellEditors/CellEditorText";
+
+type CellEditor = {
+    cellData: CellProps<any>,
+    onRowSelect: Function,
+    dataProvider: string,
+    columnName: string
+    name: string
+}
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -18,20 +26,24 @@ export interface TableProps extends BaseComponent{
     dataBook: string,
 }
 
-type CellEditor = {
-    cellData: CellProps<any>,
-    onRowSelect: Function
-}
-
 const UICellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
-
-    const makeEditor = () => {
-
-    }
-
     const editor = useMemo(() => {
+        const makeEditor = () => {
+            const handleBlur = () => {
+                setEdit(false)
+            }
+
+            return <CellEditorText
+                onBlur={handleBlur}
+                name={props.name}
+                dataProvider={props.dataProvider}
+                text={props.cellData.value}
+                columnName={props.columnName}
+            />
+        }
+
         if(!edit){
             return (
                 <div
@@ -45,18 +57,11 @@ const UICellEditor: FC<CellEditor> = (props) => {
         } else {
             return(
                 <div>
-                    <input
-                        autoFocus={true}
-                        onBlur={event => setEdit(false)}
-                        value={props.cellData.value}
-                        style={{width: "100%", height:"100%"}}
-                    />
+                    {makeEditor()}
                 </div>
             )
         }
     }, [edit, props])
-
-
 
     return(
         <div style={{padding: 8 ,width: "100%", height:"100%"}}>
@@ -109,7 +114,13 @@ const UITable: FC<TableProps> = (baseProps) => {
             columns.push({
                 Header: label,
                 accessor: props.columnNames[index],
-                Cell: cellData => <UICellEditor onRowSelect={handleRowSelect} cellData={cellData}/>
+                Cell: cellData => <UICellEditor
+                    dataProvider={props.dataBook}
+                    onRowSelect={handleRowSelect}
+                    cellData={cellData}
+                    columnName={props.columnNames[index]}
+                    name={props.name}
+                />
             });
         });
         return columns
@@ -120,13 +131,14 @@ const UITable: FC<TableProps> = (baseProps) => {
         getTableBodyProps,
         headerGroups,
         rows,
-        prepareRow
+        prepareRow,
     } = useTable({ columns: columns, data: providerData });
 
     useLayoutEffect(() => {
         if(tableRef.current && !layoutContext.get(props.id)){
             const size = tableRef.current.getBoundingClientRect();
-            props.onLoadCallback(props.id, size.height, size.width);
+            if(props.onLoadCallback)
+                props.onLoadCallback(props.id, size.height, size.width);
         }
     }, [tableRef, props, layoutContext])
 

@@ -18,12 +18,18 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     const layoutValue = useContext(LayoutContext);
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        let height: number, width: number
         if(props.preferredSize){
             const size = props.preferredSize.split(",");
-            props.onLoadCallback(props.id, parseInt(size[1]), parseInt(size[0]));
+            height = parseInt(size[1]);
+            width = parseInt(size[0]);
         } else {
-            const size = {width: event.currentTarget.width, height: event.currentTarget.height}
-            props.onLoadCallback(props.id, size.height, size.width);
+            height = event.currentTarget.height;
+            width = event.currentTarget.width;
+        }
+
+        if(props.onLoadCallback){
+            props.onLoadCallback(props.id, height, width);
         }
     }
 

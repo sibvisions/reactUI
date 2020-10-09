@@ -7,6 +7,11 @@ table, th, td {
 td {
     text-align: center;
     height: auto;
+    max-width: 20%;
+}
+
+td input{
+    width: 100%;
 }
 
 tr {

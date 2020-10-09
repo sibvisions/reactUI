@@ -1,15 +1,14 @@
 import LoadCallBack from "./util/LoadCallBack";
 
 interface BaseComponent{
-    onLoadCallback: LoadCallBack
+    onLoadCallback?: LoadCallBack
     id: string,
-    parent: string | undefined
+    parent?: string
     name: string,
     className: string,
-    "~remove": boolean | undefined,
-    "~destroy": boolean | undefined,
-    isVisible: boolean | undefined,
-    visible: boolean | undefined,
+    "~remove"?: boolean
+    "~destroy"?: boolean
+    visible?: boolean
     constraints: string
     preferredSize?: string
 }

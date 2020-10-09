@@ -9,11 +9,11 @@ import {createSetValuesRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
 interface ICellEditorText extends ICellEditor{
-    preferredEditorMode: number
+    preferredEditorMode?: number
 }
 
 export interface IEditorText extends IEditor{
-    cellEditor: ICellEditorText
+    cellEditor?: ICellEditorText
 }
 
 const UIEditorText: FC<IEditorText> = (baseProps) => {
@@ -25,7 +25,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
     const alreadySend = useRef<string | undefined>(undefined);
 
-    const [text, setText] = useState("");
+    const [text, setText] = useState(baseProps.text || "");
     const {onLoadCallback, id} = baseProps;
 
     const sendSetValue = () => {
@@ -40,6 +40,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     }
 
     const onBlurCallback = () => {
+        if(baseProps.onSubmit)
+            baseProps.onSubmit()
         if(text !== alreadySend.current && text !== selectedRow)
             sendSetValue();
     }
@@ -53,7 +55,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         if(onLoadCallback && inputRef.current){
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.element.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            if(onLoadCallback)
+                onLoadCallback(id, size[0].height, size[0].width);
         }
     }, [onLoadCallback, id]);
 
@@ -61,6 +64,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     return(
         <InputText
+            autoFocus={true}
             ref={inputRef}
             style={layoutValue.get(props.id)}
             disabled={!props["cellEditor.editable"]}

@@ -11,31 +11,31 @@ import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISpli
 import UITable, {TableProps} from "../components/table/UITable";
 
 export const createPanel: FC<Panel> = (props) => {
-    return <UIPanel isVisible={true} {...props} key={props.id}/>
+    return <UIPanel  {...props} key={props.id}/>
 }
 
 export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
-    return <UISplitPanel isVisible={true} {...props} key={props.id}/>
+    return <UISplitPanel  {...props} key={props.id}/>
 }
 
 export const createButton: FC<buttonProps> = (props) => {
-    return <UIButton isVisible={true} {...props} key={props.id}/>
+    return <UIButton  {...props} key={props.id}/>
 }
 
 export const createLabel: FC<uiLabel> = (props) => {
-    return <UILabel isVisible={true} {...props} key={props.id}/>
+    return <UILabel  {...props} key={props.id}/>
 }
 
 export const createDummy: FC<BaseComponent> = (props) => {
-    return <Dummy isVisible={true} {...props} key={props.id}/>
+    return <Dummy  {...props} key={props.id}/>
 }
 
 export const createEditorImage: FC<IEditorImage> = (props) => {
-    return <UIEditorImage isVisible={true} {...props} key={props.id} />
+    return <UIEditorImage {...props} key={props.id} />
 }
 
 export const createEditorText: FC<IEditorText> = (props) => {
-    return <UIEditorText isVisible={true} {...props} key={props.id}/>
+    return <UIEditorText {...props} key={props.id}/>
 }
 
 export const createTable: FC<TableProps> = (props) => {

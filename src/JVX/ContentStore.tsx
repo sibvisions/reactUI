@@ -118,7 +118,7 @@ class ContentStore{
 
 
     //Data Provider Management
-    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
+    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number, selectedRow: number){
         const existingData = this.dataProviderData.get(dataProvider);
         if(existingData){
             let newDataSetIndex = 0;
@@ -131,6 +131,12 @@ class ContentStore{
             this.dataProviderData.set(dataProvider, newDataSet);
         }
 
+
+        //Notify
+        if(selectedRow !== -1) {
+            this.setSelectedRow(dataProvider, this.dataProviderData.get(dataProvider)?.[selectedRow]);
+            this.emitRowSelect(dataProvider);
+        }
         this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
            value.apply(undefined, [from, to]);
         });

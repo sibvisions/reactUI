@@ -9,7 +9,6 @@ const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
 
     useEffect(() => {
         context.contentStore.subscribeToPropChange(id, (value: T) => {
-            value.isVisible = true
             setProps({...value});
         });
         return() => {
