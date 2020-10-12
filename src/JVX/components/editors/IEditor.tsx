@@ -1,4 +1,5 @@
 import BaseComponent from "../BaseComponent";
+import {CSSProperties} from "react";
 
 export interface ICellEditor{
     className: string,
@@ -20,5 +21,6 @@ export interface IEditor extends BaseComponent{
     eventFocusedGain?: boolean,
     text?:string
     onSubmit?: Function
+    style?: CSSProperties
 
 }

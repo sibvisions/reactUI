@@ -10,7 +10,7 @@ const useDataProviderData = (id: string, dataProvider: string) => {
 
     useEffect(() => {
 
-        const onDataChange = (to: number, from: number) => setData([...context.contentStore.getData(dataProvider)]);
+        const onDataChange = () => setData([...context.contentStore.getData(dataProvider)]);
 
         context.contentStore.subscribeToDataChange(dataProvider,onDataChange);
 

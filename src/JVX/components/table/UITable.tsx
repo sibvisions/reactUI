@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import {CellProps, Column, useTable} from "react-table";
@@ -10,6 +10,7 @@ import {createSelectRowRequest} from "../../factories/RequestFactory";
 import {jvxContext} from "../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import CellEditorText from "./inCellEditors/CellEditorText";
+import useRowSelect from "../zhooks/useRowSelect";
 
 type CellEditor = {
     cellData: CellProps<any>,
@@ -34,7 +35,6 @@ const UICellEditor: FC<CellEditor> = (props) => {
             const handleBlur = () => {
                 setEdit(false)
             }
-
             return <CellEditorText
                 onBlur={handleBlur}
                 name={props.name}
@@ -43,28 +43,21 @@ const UICellEditor: FC<CellEditor> = (props) => {
                 columnName={props.columnName}
             />
         }
-
         if(!edit){
             return (
                 <div
                     onClick={event => props.onRowSelect(props.cellData)}
                     onDoubleClick={event => setEdit(true)}
-                    style={{width: "100%", height:"100%"}}
                 >
                     {props.cellData.value}
-                </div>
-            )
+                </div>)
         } else {
-            return(
-                <div>
-                    {makeEditor()}
-                </div>
-            )
+            return makeEditor()
         }
     }, [edit, props])
 
     return(
-        <div style={{padding: 8 ,width: "100%", height:"100%"}}>
+        <div style={{paddingTop: 16, paddingBottom: 16, paddingLeft:8, paddingRight:8 ,width: "100%", height:"100%"}}>
             {editor}
         </div>
     )
@@ -74,28 +67,21 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //React Hook
     const tableRef = useRef<HTMLTableElement>(null);
-    const alreadySelected = useRef<any>();
     const layoutContext = useContext(LayoutContext);
     const context = useContext(jvxContext);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+
 
     //Custom Hooks
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
     const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
 
-
-
-
     //Dependent Hooks
     const columns = useMemo<Array<Column<any>>>(() => {
-
+        const columns: Array<Column<any>> = [];
         const handleRowSelect = (selectedRow: CellProps<any, any>) => {
-            if(alreadySelected.current === selectedRow.row.original)
+            if(selectedIndex === selectedRow.row.index)
                 return;
-
-            // Select Row Event
-            alreadySelected.current = selectedRow.row.original;
-            context.contentStore.setSelectedRow(props.dataBook, selectedRow.row.original);
-            context.contentStore.emitRowSelect(props.dataBook);
 
             // Select Row Request
             const selectRowReq = createSelectRowRequest();
@@ -108,7 +94,6 @@ const UITable: FC<TableProps> = (baseProps) => {
             context.server.sendRequest(selectRowReq, REQUEST_ENDPOINTS.SELECT_ROW);
         }
 
-        const columns: Array<Column<any>> = [];
 
         props.columnLabels.forEach((label, index) => {
             columns.push({
@@ -124,7 +109,9 @@ const UITable: FC<TableProps> = (baseProps) => {
             });
         });
         return columns
-    }, [props.columnNames, props.columnLabels, context.server, props.dataBook, props.name, context.contentStore]);
+    },
+[props.columnNames, props.columnLabels, context.server, props.dataBook, props.name, selectedIndex]);
+
 
     const {
         getTableProps,
@@ -135,6 +122,14 @@ const UITable: FC<TableProps> = (baseProps) => {
     } = useTable({ columns: columns, data: providerData });
 
     useLayoutEffect(() => {
+        const handleIndexChange = (index: number) => {
+            setSelectedIndex(index)
+        };
+        context.contentStore.subscribeToRowIndexSelection(props.dataBook, handleIndexChange);
+        return () => context.contentStore.unsubscribeFromRowIndexSelection(props.dataBook, handleIndexChange);
+    }, [context.contentStore, props.dataBook]);
+
+    useLayoutEffect(() => {
         if(tableRef.current && !layoutContext.get(props.id)){
             const size = tableRef.current.getBoundingClientRect();
             if(props.onLoadCallback)
@@ -142,6 +137,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [tableRef, props, layoutContext])
 
+    const checkIfSelected = (index: number) => selectedIndex === index
 
     return(
         <div style={{...layoutContext.get(baseProps.id) }}>
@@ -159,7 +155,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 {rows.map((row) => {
                     prepareRow(row);
                     return (
-                        <tr {...row.getRowProps()} >
+                        <tr {...row.getRowProps()} style={ checkIfSelected(row.index) ? {backgroundColor: "cyan"} : {}}>
                             {row.cells.map(cell => {
                                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                             })}

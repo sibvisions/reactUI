@@ -17,6 +17,7 @@ class ContentStore{
     propertiesSubscriber = new Map<string, Function>();
     parentSubscriber = new Map<string, Function>();
     rowSelectionSubscriber = new Map<string, Array<Function>>();
+    rowSelectionIndexSubscriber = new Map<string, Array<Function>>();
     dataChangeSubscriber = new Map<string, Array<Function>>();
 
     //DataProvider Maps
@@ -24,6 +25,7 @@ class ContentStore{
     dataProviderMetaData = new Map<string, MetaDataResponse>();
     dataProviderFetched = new Map<string, boolean>();
     dataProviderSelectedRow = new Map<string, any>();
+    dataProviderSelectedRowIndex = new Map<string, number>();
 
 
     //Content
@@ -95,8 +97,6 @@ class ContentStore{
         notifyList.forEach(value => {
             this.parentSubscriber.get(value)?.apply(undefined, []);
         });
-
-
     }
 
     closeScreen(windowName: string){
@@ -116,6 +116,16 @@ class ContentStore{
         }
     }
 
+    reset(){
+        this.flatContent.clear();
+        this.removedContent.clear();
+        this.currentUser = new UserData();
+        this.dataProviderData.clear();
+        this.dataProviderMetaData.clear();
+        this.dataProviderFetched.clear();
+        this.dataProviderSelectedRow.clear();
+    }
+
 
     //Data Provider Management
     updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number, selectedRow: number){
@@ -131,14 +141,13 @@ class ContentStore{
             this.dataProviderData.set(dataProvider, newDataSet);
         }
 
-
         //Notify
         if(selectedRow !== -1) {
-            this.setSelectedRow(dataProvider, this.dataProviderData.get(dataProvider)?.[selectedRow]);
+            this.setSelectedRow(dataProvider, this.dataProviderData.get(dataProvider)?.[selectedRow], selectedRow);
             this.emitRowSelect(dataProvider);
         }
         this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
-           value.apply(undefined, [from, to]);
+           value.apply(undefined, []);
         });
     }
 
@@ -147,12 +156,27 @@ class ContentStore{
         return  dataArray || []
     }
 
-    setSelectedRow(dataProvider: string, dataRow: any){
+    getDataRow(dataProvider: string, indexOfRow: number) : any{
+        const data = this.getData(dataProvider);
+        const dataRow = data[indexOfRow];
+        if(dataRow)
+            return dataRow;
+        else
+            return undefined
+    }
+
+    getSelectedIndex(dataProvider: string) : number{
+        return this.dataProviderSelectedRowIndex.get(dataProvider) || -1
+    }
+
+    setSelectedRow(dataProvider: string, dataRow: any, index: number){
         this.dataProviderSelectedRow.set(dataProvider, dataRow);
+        this.dataProviderSelectedRowIndex.set(dataProvider, index)
     }
 
     clearSelectedRow(dataProvider: string){
         this.dataProviderSelectedRow.delete(dataProvider);
+        this.dataProviderSelectedRowIndex.delete(dataProvider);
     }
 
     clearDataFromProvider(dataProvider: string){
@@ -236,6 +260,18 @@ class ContentStore{
         }
     }
 
+    subscribeToRowIndexSelection(dataProvider: string, fn: Function){
+        const subscriber = this.rowSelectionIndexSubscriber.get(dataProvider);
+        const selectedIndex = this.dataProviderSelectedRowIndex.get(dataProvider);
+        if(selectedIndex !== undefined)
+            fn.apply(undefined, [selectedIndex])
+        if(subscriber){
+            subscriber.push(fn);
+        } else {
+            this.rowSelectionIndexSubscriber.set(dataProvider, new Array<Function>(fn));
+        }
+    }
+
     subscribeToDataChange(dataProvider: string, fn: Function){
         const subscriber = this.dataChangeSubscriber.get(dataProvider);
         if(subscriber){
@@ -260,6 +296,13 @@ class ContentStore{
         }
     }
 
+    unsubscribeFromRowIndexSelection(dataProvider: string, fn: Function){
+        const subscriber = this.rowSelectionSubscriber.get(dataProvider)
+        if(subscriber){
+            subscriber.splice(subscriber.findIndex(value => value === fn),1);
+        }
+    }
+
     unsubscribeFromParentChange(id: string){
         this.parentSubscriber.delete(id);
     }
@@ -271,13 +314,18 @@ class ContentStore{
 
     //Events
     emitRowSelect(dataProvider: string){
-        const subscriber = this.rowSelectionSubscriber.get(dataProvider);
+        const rowSubscriber = this.rowSelectionSubscriber.get(dataProvider);
+        const indexSubscriber = this.rowSelectionIndexSubscriber.get(dataProvider);
         const selectedRow = this.dataProviderSelectedRow.get(dataProvider);
-        if(subscriber){
-            subscriber.forEach(sub => {
+        const selectedIndex = this.dataProviderSelectedRowIndex.get(dataProvider);
+        if(rowSubscriber)
+            rowSubscriber.forEach(sub => {
                 sub.apply(undefined, [selectedRow]);
             });
-        }
+        if(indexSubscriber)
+            indexSubscriber.forEach(sub => {
+                sub.apply(undefined, [selectedIndex]);
+            });
     }
 }
 export default ContentStore

@@ -1,4 +1,4 @@
-import React, {FC, useMemo} from "react";
+import React, {CSSProperties, FC, useMemo} from "react";
 import UIEditorText from "../../editors/text/UIEditorText";
 import {createEditorText} from "../../../factories/UIFactory";
 
@@ -8,6 +8,7 @@ type cellEditorText = {
     onBlur: Function
     columnName: string
     text: string
+    style?: CSSProperties
 }
 
 const CellEditorText: FC<cellEditorText> = (props) => {
@@ -22,6 +23,7 @@ const CellEditorText: FC<cellEditorText> = (props) => {
         className: "",
         constraints:"",
         id: "none",
+        style: props.style,
     });
 
     return testDummy
