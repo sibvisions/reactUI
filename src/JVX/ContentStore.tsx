@@ -18,7 +18,7 @@ class ContentStore{
     parentSubscriber = new Map<string, Function>();
     rowSelectionSubscriber = new Map<string, Array<Function>>();
     rowSelectionIndexSubscriber = new Map<string, Array<Function>>();
-    dataChangeSubscriber = new Map<string, Array<Function>>();
+    dataChangeSubscriber = new Map<string, Array<{ displayRecords: number, fn: Function }>>();
 
     //DataProvider Maps
     dataProviderData = new Map<string, Array<any>>();
@@ -128,13 +128,18 @@ class ContentStore{
 
 
     //Data Provider Management
-    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number, selectedRow: number){
+    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
         const existingData = this.dataProviderData.get(dataProvider);
         if(existingData){
-            let newDataSetIndex = 0;
-            for(let i = to; i <= from; i++){
-                existingData[i] = newDataSet[newDataSetIndex];
-                newDataSetIndex++;
+            if(existingData.length < from){
+                console.log("dads")
+                existingData.push(...newDataSet)
+            } else {
+                let newDataSetIndex = 0;
+                for(let i = to; i <= from; i++){
+                    existingData[i] = newDataSet[newDataSetIndex];
+                    newDataSetIndex++;
+                }
             }
         }
         else{
@@ -142,17 +147,18 @@ class ContentStore{
         }
 
         //Notify
-        if(selectedRow !== -1) {
-            this.setSelectedRow(dataProvider, this.dataProviderData.get(dataProvider)?.[selectedRow], selectedRow);
-            this.emitRowSelect(dataProvider);
-        }
         this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
-           value.apply(undefined, []);
+           value.fn.apply(undefined, []);
         });
     }
 
-    getData(dataProvider: string): Array<any>{
+    getData(dataProvider: string, from?: number, to?: number): Array<any>{
         const dataArray = this.dataProviderData.get(dataProvider);
+
+        if(from !== undefined && to !== undefined){
+            return dataArray?.slice(from, to) || [];
+        }
+
         return  dataArray || []
     }
 
@@ -272,12 +278,12 @@ class ContentStore{
         }
     }
 
-    subscribeToDataChange(dataProvider: string, fn: Function){
+    subscribeToDataChange(dataProvider: string, fn: Function, displayRecords= 50){
         const subscriber = this.dataChangeSubscriber.get(dataProvider);
         if(subscriber){
-            subscriber.push(fn);
+            subscriber.push({fn: fn, displayRecords: displayRecords});
         } else {
-            this.dataChangeSubscriber.set(dataProvider, new Array<Function>(fn));
+            this.dataChangeSubscriber.set(dataProvider, new Array<{ displayRecords: number, fn: Function}>({fn: fn, displayRecords: displayRecords}));
         }
     }
 
@@ -285,7 +291,7 @@ class ContentStore{
     unsubscribeFromDataChange(dataProvider: string, fn: Function){
         const subscriber = this.dataChangeSubscriber.get(dataProvider)
         if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
+            subscriber.splice(subscriber.findIndex(value => value.fn === fn),1);
         }
     }
 

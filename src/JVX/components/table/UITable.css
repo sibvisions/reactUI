@@ -1,7 +1,10 @@
 table, th, td {
     border: 1px solid #ddd;
     border-collapse: collapse;
-    /*table-layout: fixed;*/
+}
+
+table{
+
 }
 
 td {
@@ -12,6 +15,10 @@ td {
 
 td input{
     width: 100%;
+}
+
+.content{
+    padding: 16px 8px;
 }
 
 tr {

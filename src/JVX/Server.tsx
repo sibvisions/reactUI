@@ -130,7 +130,7 @@ class Server{
         });
         this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
         if(fetchData.records.length !== 0)
-            this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.selectedRow);
+            this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 

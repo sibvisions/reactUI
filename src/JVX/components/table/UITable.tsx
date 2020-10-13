@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import {CellProps, Column, useTable} from "react-table";
@@ -10,7 +10,7 @@ import {createSelectRowRequest} from "../../factories/RequestFactory";
 import {jvxContext} from "../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import CellEditorText from "./inCellEditors/CellEditorText";
-import useRowSelect from "../zhooks/useRowSelect";
+import {of} from "rxjs";
 
 type CellEditor = {
     cellData: CellProps<any>,
@@ -45,19 +45,19 @@ const UICellEditor: FC<CellEditor> = (props) => {
         }
         if(!edit){
             return (
-                <div
-                    onClick={event => props.onRowSelect(props.cellData)}
-                    onDoubleClick={event => setEdit(true)}
-                >
+                <div className={"content"}>
                     {props.cellData.value}
-                </div>)
+                </div>
+            )
         } else {
             return makeEditor()
         }
     }, [edit, props])
 
     return(
-        <div style={{paddingTop: 16, paddingBottom: 16, paddingLeft:8, paddingRight:8 ,width: "100%", height:"100%"}}>
+        <div style={{width: "100%", height:"100%"}}
+             onClick={event => props.onRowSelect(props.cellData)}
+             onDoubleClick={event => setEdit(true)}>
             {editor}
         </div>
     )
@@ -66,15 +66,18 @@ const UICellEditor: FC<CellEditor> = (props) => {
 const UITable: FC<TableProps> = (baseProps) => {
 
     //React Hook
-    const tableRef = useRef<HTMLTableElement>(null);
+    const wrapRef = useRef<HTMLDivElement>(null);
     const layoutContext = useContext(LayoutContext);
     const context = useContext(jvxContext);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
+    const offset = 30;
+    const rowCount = 90;
+
 
     //Custom Hooks
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-    const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
+    const [providerData, getNextData] = useDataProviderData(baseProps.id, props.dataBook, offset, rowCount);
 
     //Dependent Hooks
     const columns = useMemo<Array<Column<any>>>(() => {
@@ -119,6 +122,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         headerGroups,
         rows,
         prepareRow,
+
     } = useTable({ columns: columns, data: providerData });
 
     useLayoutEffect(() => {
@@ -130,18 +134,35 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [context.contentStore, props.dataBook]);
 
     useLayoutEffect(() => {
-        if(tableRef.current && !layoutContext.get(props.id)){
-            const size = tableRef.current.getBoundingClientRect();
-            if(props.onLoadCallback)
-                props.onLoadCallback(props.id, size.height, size.width);
+        if(wrapRef.current && !layoutContext.get(baseProps.id)){
+            const size = wrapRef.current.getBoundingClientRect();
+            if(baseProps.onLoadCallback)
+                baseProps.onLoadCallback(baseProps.id, size.height, size.width);
         }
-    }, [tableRef, props, layoutContext])
+    }, [wrapRef, baseProps, layoutContext]);
+
+    useEffect(() => {
+        const wrap = wrapRef.current;
+        if(wrap){
+            const handleScroll = () => {
+                if(wrap.scrollTop > wrap.scrollHeight-52*(offset-1)){
+                     wrap.scrollTop -= 52*offset
+                    getNextData();
+                }
+            }
+            wrap.addEventListener("scroll", handleScroll);
+            return () => {
+                wrap.removeEventListener("scroll", handleScroll);
+            }
+        }
+
+    },[getNextData])
 
     const checkIfSelected = (index: number) => selectedIndex === index
 
     return(
-        <div style={{...layoutContext.get(baseProps.id) }}>
-            <table {...getTableProps()} ref={tableRef} style={layoutContext.get(baseProps.id) ? { width: "100%"}: {}}>
+        <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(baseProps.id), overflow: "auto"}}>
+            <table {...getTableProps()}  style={{width:"100%"}}>
                 <thead>
                 {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -155,7 +176,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 {rows.map((row) => {
                     prepareRow(row);
                     return (
-                        <tr {...row.getRowProps()} style={ checkIfSelected(row.index) ? {backgroundColor: "cyan"} : {}}>
+                        <tr {...row.getRowProps()} style={ checkIfSelected(row.index) ? {backgroundColor: "cyan", height:52} : {height:52}}>
                             {row.cells.map(cell => {
                                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                             })}
