@@ -71,13 +71,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     const context = useContext(jvxContext);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
-    const offset = 30;
-    const rowCount = 90;
-
 
     //Custom Hooks
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-    const [providerData, getNextData] = useDataProviderData(baseProps.id, props.dataBook, offset, rowCount);
+    const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
 
     //Dependent Hooks
     const columns = useMemo<Array<Column<any>>>(() => {
@@ -145,10 +142,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         const wrap = wrapRef.current;
         if(wrap){
             const handleScroll = () => {
-                if(wrap.scrollTop > wrap.scrollHeight-52*(offset-1)){
-                     wrap.scrollTop -= 52*offset
-                    getNextData();
-                }
+
             }
             wrap.addEventListener("scroll", handleScroll);
             return () => {
@@ -156,7 +150,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
         }
 
-    },[getNextData])
+    },[])
 
     const checkIfSelected = (index: number) => selectedIndex === index
 
