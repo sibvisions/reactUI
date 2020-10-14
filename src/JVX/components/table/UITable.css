@@ -1,36 +1,17 @@
-table, th, td {
-    border: 1px solid #ddd;
-    border-collapse: collapse;
-}
-
-table{
+td{
+    height: 1px;
+    padding: 0 !important;
+    border-color: #191919 !important;
 
 }
 
-td {
-    text-align: center;
-    height: auto;
-    max-width: 20%;
+
+
+.cellData{
+    padding: 8px 16px;
 }
 
-td input{
-    width: 100%;
-}
-
-.content{
-    padding: 16px 8px;
-}
-
-tr {
-    height: 0;
-    background-color: #f9f9f9
-}
-
-tr:hover {background-color:#c5c5c5;}
-
-tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-tr:nth-child(even):hover {
-    background-color: #c5c5c5;
+tr:nth-child(odd) {
+    background: #c5c5c5 !important;
+    border-color: black;
 }

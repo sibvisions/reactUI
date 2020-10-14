@@ -1,8 +1,5 @@
-import {useContext, useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
-import {of} from "rxjs";
-import {createFetchRequest} from "../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 
 const useDataProviderData = (id: string, dataProvider: string): [Array<any>]=> {
     const context = useContext(jvxContext);
