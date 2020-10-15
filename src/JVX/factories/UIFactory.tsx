@@ -42,7 +42,7 @@ export const createTable: FC<TableProps> = (props) => {
     return <UITable {...props} key={props.id}/>
 }
 
-const createEditor: FC<IEditor> = ( props ) => {
+export const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
             return createEditorImage((props as IEditorImage));

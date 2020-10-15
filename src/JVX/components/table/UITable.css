@@ -5,13 +5,19 @@ td{
 
 }
 
+tr.p-highlight{
+    background: #007ad9 !important;
+}
 
+tr:nth-child(odd).p-highlight{
+    background: #007ad9 !important;
+}
+
+tr:nth-child(odd){
+    background: #c5c5c5 !important;
+    border-color: black;
+}
 
 .cellData{
     padding: 8px 16px;
-}
-
-tr:nth-child(odd) {
-    background: #c5c5c5 !important;
-    border-color: black;
 }
