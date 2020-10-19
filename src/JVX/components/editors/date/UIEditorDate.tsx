@@ -1,0 +1,85 @@
+import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import {Calendar} from 'primereact/calendar';
+import {ICellEditor, IEditor} from "../IEditor";
+import {LayoutContext} from "../../../LayoutContext";
+import useProperties from "../../zhooks/useProperties";
+import useRowSelect from "../../zhooks/useRowSelect";
+import {jvxContext} from "../../../jvxProvider";
+import {sendSetValues} from "../../util/SendSetValues";
+import {handleEnterKey} from "../../util/HandleEnterKey";
+import { parseDateFormatCell } from "../../util/ParseDateFormats";
+import { onBlurCallback } from "../../util/OnBlurCallback";
+
+interface ICellEditorDate extends ICellEditor{
+    dateFormat?: string
+    preferredEditorMode?: number
+}
+
+export interface IEditorDate extends IEditor{
+    cellEditor?: ICellEditorDate
+}
+
+const UIEditorDate: FC<IEditorDate> = (baseProps) => {
+
+    const calender = useRef(null);
+    const context = useContext(jvxContext);
+    const layoutValue = useContext(LayoutContext);
+    const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
+    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const lastValue = useRef<any>();
+
+    const [value, setValue] = useState<Date|Date[]>();
+    const {onLoadCallback, id} = baseProps;
+
+    const dateFormat = parseDateFormatCell(props.cellEditor?.dateFormat);
+    const showTime = props.cellEditor?.dateFormat?.includes("HH");
+    const timeOnly = props.cellEditor?.dateFormat === "HH:mm";
+
+    const onSelectCallback = (submitValue:any) => {
+        console.log(submitValue)
+        if (Array.isArray(submitValue)) {
+            let tempArray:Array<number> = [];
+            submitValue.forEach(date => {
+                tempArray.push(date.getTime())
+            })
+            onBlurCallback(baseProps, tempArray, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, tempArray, lastValue.current, context))
+        }
+        else {
+            onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, lastValue.current, context))
+        }
+    }
+
+    useLayoutEffect(() => {
+        if (onLoadCallback && calender.current) {
+            //@ts-ignore
+            const size: Array<DOMRect> = calender.current.container.getClientRects();
+            onLoadCallback(id, size[0].height, size[0].width);
+        }
+    },[onLoadCallback, id]);
+
+    useLayoutEffect(() => {
+        setValue(selectedRow ? new Date(selectedRow) : undefined);
+        lastValue.current = selectedRow;
+        
+    },[selectedRow])
+
+    return(
+        <Calendar
+             ref={calender}
+             monthNavigator={true}
+             yearNavigator={true}
+             yearRange="1900:2030"
+             dateFormat={dateFormat}
+             showTime={showTime}
+             timeOnly={timeOnly}
+             showIcon={true}
+             style={layoutValue.get(props.id) || baseProps.style}
+             value={value}
+             appendTo={document.body}
+             onChange={event => setValue(event.target.value)}
+             onSelect={event => onSelectCallback(event.value)}
+             disabled={!props["cellEditor.editable"]}
+        />
+    )
+}
+export default UIEditorDate

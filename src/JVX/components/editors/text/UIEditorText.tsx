@@ -5,8 +5,9 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
-import {createSetValuesRequest} from "../../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import {sendSetValues} from "../../util/SendSetValues";
+import {handleEnterKey} from "../../util/HandleEnterKey";
+import { onBlurCallback } from "../../util/OnBlurCallback";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number
@@ -28,37 +29,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const [text, setText] = useState(baseProps.text || "");
     const {onLoadCallback, id} = baseProps;
 
-    const sendSetValue = () => {
-        const req =  createSetValuesRequest();
-        req.dataProvider = props.dataRow;
-        req.componentId = props.name;
-        req.columnNames = [props.columnName];
-        req.values = [text];
-
-        lastValue.current = text;
-        context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUES);
-    }
-
-    const onBlurCallback = () => {
-        if(baseProps.onSubmit)
-            baseProps.onSubmit()
-        if(text && text !== lastValue.current)
-            sendSetValue();
-    }
-
-    const handleKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if(event.key === "Enter")
-            sendSetValue();
-    }
-
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.element.getClientRects();
-            if(onLoadCallback)
-                onLoadCallback(id, size[0].height, size[0].width);
+            onLoadCallback(id, size[0].height, size[0].width);
         }
-    }, [onLoadCallback, id]);
+    },[onLoadCallback, id]);
 
     useLayoutEffect(() => {
         setText(selectedRow);
@@ -73,8 +50,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             disabled={!props["cellEditor.editable"]}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
-            onBlur={onBlurCallback}
-            onKeyDown={handleKey}
+            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context))}
+            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context))}
         />
     )
 }

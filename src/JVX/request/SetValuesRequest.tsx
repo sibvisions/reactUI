@@ -3,6 +3,6 @@ interface SetValuesRequest{
     componentId: string | undefined,
     dataProvider: string | undefined,
     columnNames: Array<string> | undefined,
-    values: Array<string> | undefined
+    values: Array<any> | undefined
 }
 export default SetValuesRequest

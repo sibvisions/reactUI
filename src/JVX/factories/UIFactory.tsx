@@ -9,6 +9,8 @@ import {IEditor} from "../components/editors/IEditor";
 import UIEditorText, {IEditorText} from "../components/editors/text/UIEditorText";
 import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISplitPanel";
 import UITable, {TableProps} from "../components/table/UITable";
+import UIEditorNumber, {IEditorNumber} from "../components/editors/number/UIEditorNumber";
+import UIEditorDate, { IEditorDate } from "../components/editors/date/UIEditorDate";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel  {...props} key={props.id}/>
@@ -38,6 +40,14 @@ export const createEditorText: FC<IEditorText> = (props) => {
     return <UIEditorText {...props} key={props.id}/>
 }
 
+export const createEditorNumber: FC<IEditorNumber> = (props) => {
+    return <UIEditorNumber {...props} key={props.id}/>
+}
+
+export const createEditorDate: FC<IEditorDate> = (props) => {
+    return <UIEditorDate {...props} key={props.id}/>
+}
+
 export const createTable: FC<TableProps> = (props) => {
     return <UITable {...props} key={props.id}/>
 }
@@ -47,8 +57,14 @@ export const createEditor: FC<IEditor> = ( props ) => {
         if(props.cellEditor.className === "ImageViewer"){
             return createEditorImage((props as IEditorImage));
         }
-         if(props.cellEditor.className === "TextCellEditor" || props.cellEditor.className === "NumberCellEditor"){
+        else if(props.cellEditor.className === "TextCellEditor"){
             return createEditorText((props as IEditorText));
+        }
+        else if (props.cellEditor.className === "NumberCellEditor") {
+            return createEditorNumber((props as IEditorNumber))
+        }
+        else if (props.cellEditor.className === "DateCellEditor") {
+            return createEditorDate((props as IEditorDate))
         }
         else{
             return createDummy(props)

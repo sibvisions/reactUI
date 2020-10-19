@@ -144,7 +144,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //to subtract header Height
     const heightNoHeaders: number = layoutContext.get(baseProps.id)?.height as number - 41 || 0
-    console.log(heightNoHeaders, props.dataBook)
+    //console.log(heightNoHeaders, props.dataBook)
 
     return(
        <div ref={wrapRef} style={{width:"min-content", overflow:"hidden" , ...layoutContext.get(baseProps.id)}}>

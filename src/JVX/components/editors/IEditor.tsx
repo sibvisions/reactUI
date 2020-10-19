@@ -13,6 +13,7 @@ export interface IEditor extends BaseComponent{
     "cellEditor.editable":boolean,
     "cellEditor.horizontalAlignment"?: 0 | 1 | 2| 3,
     "cellEditor.verticalAlignment"?: 0 | 1 | 2| 3,
+    "cellEditor.background"?:string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
     enabled: boolean,
