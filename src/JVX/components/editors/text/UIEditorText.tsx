@@ -70,7 +70,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus={true}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.style}
-            disabled={!props["cellEditor.editable"]}
+            disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
             onBlur={onBlurCallback}

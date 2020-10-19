@@ -131,8 +131,7 @@ class ContentStore{
     updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
         const existingData = this.dataProviderData.get(dataProvider);
         if(existingData){
-            if(existingData.length < from){
-                console.log("dads")
+            if(existingData.length <= from){
                 existingData.push(...newDataSet)
             } else {
                 let newDataSetIndex = 0;

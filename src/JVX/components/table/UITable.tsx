@@ -1,11 +1,4 @@
-import React, {
-    FC,
-    useContext, useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState
-} from "react"
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
@@ -15,13 +8,11 @@ import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import {Column} from "primereact/column";
 import {DataTable} from "primereact/datatable";
-import {createSelectRowRequest} from "../../factories/RequestFactory";
+import {createFetchRequest, createSelectRowRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import useRowSelect from "../zhooks/useRowSelect";
-import {createEditor, createEditorText} from "../../factories/UIFactory";
-import {IEditor} from "../editors/IEditor";
-import {first} from "rxjs/operators";
-import {root} from "rxjs/internal-compatibility";
+import {createEditor} from "../../factories/UIFactory";
+import MetaDataResponse from "../../response/MetaDataResponse";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -34,6 +25,7 @@ type CellEditor = {
     cellData: any,
     dataProvider: string,
     colName: string,
+    metaData: MetaDataResponse | undefined
 }
 
 
@@ -41,43 +33,44 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
 
-    const decideEditor = () => {
-        const editorProps: IEditor = {
-            name: "none",
-            id: "none",
-            constraints: "",
-            "cellEditor.editable": true,
-            dataRow: props.dataProvider,
-            columnName: props.colName,
-            enabled: true,
-            className:"",
-            style: {width:"100%", height:"100%"},
-            onSubmit: () => {setEdit(false)}
-        }
-        return createEditorText(editorProps)
-    }
 
-    const display = useMemo(() =>{
-        if(!edit) {
+
+    return useMemo(() => {
+
+        const decideEditor = () => {
+            let editor = <div> {props.cellData} </div>
+            const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
+
+            if(columnMetaData){
+                editor = createEditor({
+                    ...columnMetaData,
+                    dataRow:props.dataProvider,
+                    columnName: props.colName,
+                    id: "",
+                    cellEditor_editable_:true,
+                    onSubmit:() => setEdit(false)
+                }) || editor
+            }
+
+
+            return editor
+        }
+
+        if (!edit) {
             return (
-                <div className={"cellData"} style={{height: "100%"}} onDoubleClick={event => setEdit(true)}>
+                <div className={"cellData"} style={{height: 50}} onDoubleClick={event => setEdit(true)}>
                     {props.cellData}
                 </div>
             )
         } else {
             return (
-                <div>
+                <div style={{height: 50}}>
                     {decideEditor()}
                 </div>
             )
         }
     }, [edit, props.cellData]);
-
-
-    return display;
 }
-
-
 
 const UITable: FC<TableProps> = (baseProps) => {
 
@@ -85,13 +78,15 @@ const UITable: FC<TableProps> = (baseProps) => {
     const wrapRef = useRef<HTMLDivElement>(null);
     const layoutContext = useContext(LayoutContext);
     const context = useContext(jvxContext);
-    const [virtualRows, setVirtualRows] = useState(new Array<any>())
-
 
     //Custom Hooks
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
     const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
     const [selectedRow] = useRowSelect(props.dataBook);
+
+    const rows = 40;
+    const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
+    const firstRowIndex = useRef(0);
 
     //Report Size
     useLayoutEffect(() => {
@@ -103,27 +98,27 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [wrapRef, baseProps, layoutContext]);
 
     useEffect(() => {
-        setVirtualRows(providerData.slice(0, 40))
+        setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
 
-
-
     const columns = useMemo(() => {
-        const cellEditor = (rowData: any, colName: string) => {
-            return (
-                <div style={{height: "100%", width: "100%"}}>
-                    <CellEditor cellData={rowData} dataProvider={props.dataBook} colName={colName}/>
-                </div>
-            )
-        }
+
+        const metaData = context.contentStore.dataProviderMetaData.get(props.dataBook);
 
         return props.columnNames.map((colName, colIndex) =>
-            <Column field={colName} header={props.columnLabels[colIndex]}
-                    body={(rowData: any) => cellEditor(rowData[colName], colName)}
-                    loadingBody={() => <div style={{height: 50}}>Loading</div>}/>
+            <Column
+                field={colName}
+                header={props.columnLabels[colIndex]}
+                body={(rowData: any) => <CellEditor
+                    colName={colName}
+                    dataProvider={props.dataBook}
+                    cellData={rowData[colName]}
+                    metaData={metaData}
+                />}
+                loadingBody={() => <div style={{height: 50}}>Loading</div>}/>
         )
-    },[props.columnNames, props.columnLabels, props.dataBook])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore])
 
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(props.dataBook)?.primaryKeyColumns || ["ID"];
@@ -139,19 +134,29 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     const handleVirtualScroll = (event: {first: number, rows: number}) => {
-        setVirtualRows(providerData.slice(event.first, event.first+event.rows));
+        const slicedProviderData = providerData.slice(event.first, event.first+event.rows);
+        firstRowIndex.current = event.first;
+        if(providerData.length < event.first+(event.rows*2)) {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = props.dataBook;
+            fetchReq.fromRow = providerData.length;
+            fetchReq.rowCount = event.rows*4;
+            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+        } else {
+            setVirtualRows(slicedProviderData);
+        }
+
     }
 
     //to subtract header Height
     const heightNoHeaders: number = layoutContext.get(baseProps.id)?.height as number - 41 || 0
-    console.log(heightNoHeaders, props.dataBook)
 
     return(
        <div ref={wrapRef} style={{width:"min-content", overflow:"hidden" , ...layoutContext.get(baseProps.id)}}>
            <DataTable
                style={{width:"100%", height: "100%"}}
                scrollable lazy virtualScroll
-               rows={20}
+               rows={rows}
                virtualRowHeight={50}
                scrollHeight={heightNoHeaders.toString() + "px"}
                onVirtualScroll={handleVirtualScroll}

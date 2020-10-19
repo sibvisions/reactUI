@@ -1,5 +1,5 @@
 import BaseComponent from "../components/BaseComponent";
-import React, {FC} from "react"
+import React, {FC, ReactElement} from "react"
 import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
 import UIButton, {buttonProps} from "../components/buttons/button/UIButton";
 import UILabel, {uiLabel} from "../components/label/UILabel";

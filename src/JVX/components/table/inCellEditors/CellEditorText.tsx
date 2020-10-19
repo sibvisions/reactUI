@@ -1,5 +1,4 @@
-import React, {CSSProperties, FC, useMemo} from "react";
-import UIEditorText from "../../editors/text/UIEditorText";
+import React, {CSSProperties, FC} from "react";
 import {createEditorText} from "../../../factories/UIFactory";
 
 type cellEditorText = {
@@ -14,7 +13,7 @@ type cellEditorText = {
 const CellEditorText: FC<cellEditorText> = (props) => {
 
     const testDummy = createEditorText({
-        "cellEditor.editable": true,
+        cellEditor_editable_: true,
         enabled: true,
         name: props.name,
         columnName: props.columnName,
