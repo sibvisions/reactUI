@@ -62,7 +62,8 @@ class Server{
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
         .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
-        .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this));
+        .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
+        .set(RESPONSE_NAMES.LOGIN, this.login.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -89,6 +90,9 @@ class Server{
         localStorage.setItem("authKey", authData.authKey);
     }
 
+    login(login: any){
+        this.contentStore.reset();
+    }
 
 
     //Content Responses
@@ -105,6 +109,17 @@ class Server{
     }
 
     //Dal
+    processRowSelection(selectedRowIndex: number | undefined, dataProvider: string){
+        if(selectedRowIndex !== -1 && selectedRowIndex !== undefined) {
+            const selectedRow = this.contentStore.getDataRow(dataProvider, selectedRowIndex);
+            this.contentStore.setSelectedRow(dataProvider, selectedRow, selectedRowIndex);
+            this.contentStore.emitRowSelect(dataProvider);
+        } else if(selectedRowIndex === -1) {
+            this.contentStore.clearSelectedRow(dataProvider);
+            this.contentStore.emitRowSelect(dataProvider);
+        }
+    }
+
     processFetch(fetchData: FetchResponse){
         const builtData = fetchData.records.map(record => {
             const data : any = {}
@@ -114,25 +129,23 @@ class Server{
             return data;
         });
         this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
-        this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.selectedRow);
-    }
-
-    processMetaData(metaData: MetaDataResponse){
-        this.contentStore.dataProviderMetaData.set(metaData.dataProvider, metaData);
+        if(fetchData.records.length !== 0)
+            this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+        this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
     processDataProviderChanged(changedProvider: DataProviderChangedResponse){
-        if(changedProvider.selectedRow === -1){
-            this.contentStore.clearSelectedRow(changedProvider.dataProvider);
-            this.contentStore.emitRowSelect(changedProvider.dataProvider);
-        }
-
         if(changedProvider.reload === -1){
             this.contentStore.clearDataFromProvider(changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
         }
+        this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
+    }
+
+    processMetaData(metaData: MetaDataResponse){
+        this.contentStore.dataProviderMetaData.set(metaData.dataProvider, metaData);
     }
 
 
@@ -172,7 +185,8 @@ class Server{
         });
 
 
-        if(routeTo){
+        if(routeTo && routeTo !== this.activeScreen){
+            this.activeScreen = routeTo;
             browserHistory.push("/"+routeTo);
         }
     }

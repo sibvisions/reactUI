@@ -14,11 +14,11 @@ const UILabel: FC<uiLabel> = (baseProps) => {
     const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
 
     useLayoutEffect(() => {
-        if(labelRef.current && props.onLoadCallback){
+        if(labelRef.current && props.onLoadCallback && !layoutValue.get(props.id)){
             const size = labelRef.current.getBoundingClientRect();
             props.onLoadCallback(props.id, size.height, size.width);
         }
-    }, [labelRef, props]);
+    }, [labelRef, props, layoutValue]);
 
 
     return(

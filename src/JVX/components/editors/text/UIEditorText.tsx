@@ -23,7 +23,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
-    const alreadySend = useRef<string | undefined>(undefined);
+    const lastValue = useRef<any>();
 
     const [text, setText] = useState(baseProps.text || "");
     const {onLoadCallback, id} = baseProps;
@@ -35,14 +35,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         req.columnNames = [props.columnName];
         req.values = [text];
 
-        alreadySend.current = text;
+        lastValue.current = text;
         context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUES);
     }
 
     const onBlurCallback = () => {
         if(baseProps.onSubmit)
             baseProps.onSubmit()
-        if(text !== alreadySend.current && text !== selectedRow)
+        if(text && text !== lastValue.current)
             sendSetValue();
     }
 
@@ -60,13 +60,16 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [onLoadCallback, id]);
 
-    useLayoutEffect(() => setText(selectedRow),[selectedRow]);
+    useLayoutEffect(() => {
+        setText(selectedRow);
+        lastValue.current = selectedRow;
+    },[selectedRow]);
 
     return(
         <InputText
             autoFocus={true}
             ref={inputRef}
-            style={layoutValue.get(props.id)}
+            style={layoutValue.get(props.id) || baseProps.style}
             disabled={!props["cellEditor.editable"]}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
