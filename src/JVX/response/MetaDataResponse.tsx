@@ -1,8 +1,9 @@
 import BaseResponse from "./BaseResponse";
+import {IEditor} from "../components/editors/IEditor";
 
 interface MetaDataResponse extends BaseResponse{
     "columnView.table": Array<string>,
-    columns: Array<any>,
+    columns: Array<IEditor>,
     primaryKeyColumns: Array<string>,
     dataProvider: string,
     deleteEnabled: boolean,

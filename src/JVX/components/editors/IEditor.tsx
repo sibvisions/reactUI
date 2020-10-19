@@ -3,17 +3,17 @@ import {CSSProperties} from "react";
 
 export interface ICellEditor{
     className: string,
-    horizontalAlignment: 0 | 1 | 2| 3,
-    verticalAlignment: 0 | 1 | 2| 3,
+    horizontalAlignment?: 0 | 1 | 2| 3,
+    verticalAlignment?: 0 | 1 | 2| 3,
     directCellEditor?: boolean
 }
 
 export interface IEditor extends BaseComponent{
     cellEditor?: ICellEditor,
-    "cellEditor.editable":boolean,
-    "cellEditor.horizontalAlignment"?: 0 | 1 | 2| 3,
-    "cellEditor.verticalAlignment"?: 0 | 1 | 2| 3,
-    "cellEditor.background"?:string,
+    cellEditor_editable_:boolean,
+    cellEditor_horizontalAlignment_?: 0 | 1 | 2| 3,
+    cellEditor_verticalAlignment_?: 0 | 1 | 2| 3,
+    cellEditor_background_?:string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
     enabled: boolean,
