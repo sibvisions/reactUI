@@ -1,14 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
 import App from './App';
 import JVXProvider from "./JVX/jvxProvider";
 import * as serviceWorker from './serviceWorker';
-import 'primereact/resources/themes/nova/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import "primeflex/primeflex.css";
-
 
 ReactDOM.render(
   <React.StrictMode>

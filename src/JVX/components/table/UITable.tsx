@@ -4,7 +4,7 @@ import useProperties from "../zhooks/useProperties";
 import {CellProps, Column, useTable} from "react-table";
 import useDataProviderData from "../zhooks/useDataProviderData";
 
-import "./UITable.css";
+import "./UITable.scss";
 import {LayoutContext} from "../../LayoutContext";
 import {createSelectRowRequest} from "../../factories/RequestFactory";
 import {jvxContext} from "../../jvxProvider";

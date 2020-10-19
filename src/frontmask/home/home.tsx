@@ -6,7 +6,7 @@ import {componentHandler} from "../../JVX/factories/UIFactory";
 
 
 const Home: FC = () => {
-    const { componentId } = useParams();
+    const { componentId } = useParams<any>();
     const context = useContext(jvxContext);
 
     const buildWindow = () => {
