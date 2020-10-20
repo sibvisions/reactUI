@@ -1,7 +1,10 @@
-import React, {FC, useContext} from "react";
-import placeHolder from "../../../../assests/IMAGE.png"
+import React, {CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
+import useRowSelect from "../../zhooks/useRowSelect";
+import {jvxContext} from "../../../jvxProvider";
+import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "../../layouts/models/ALIGNMENT";
+import useProperties from "../../zhooks/useProperties";
 
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
@@ -13,9 +16,18 @@ export interface IEditorImage extends IEditor{
     placeholderVisible: boolean,
 }
 
-const UIEditorImage: FC<IEditorImage> = (props) => {
+const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     const layoutValue = useContext(LayoutContext);
+    const context = useContext(jvxContext);
+    const imageRef = useRef<HTMLImageElement>(null);
+    const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
+
+    const {verticalAlignment, horizontalAlignment} = props
+
+    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+
+    const [correctedImage, setCorrectedImage] = useState<CSSProperties>();
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number
@@ -33,13 +45,57 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
         }
     }
 
+    const alignmentCss = useMemo(() => {
+        const spanCSS: CSSProperties = {};
+        const imgCSS: CSSProperties = {};
+        const cellHA = props.cellEditor_horizontalAlignment_
+        const cellVA = props.cellEditor_verticalAlignment_
+
+        let ha = horizontalAlignment || cellHA;
+        let va = verticalAlignment || cellVA;
+
+        if(ha === HORIZONTAL_ALIGNMENT.LEFT)
+            spanCSS.justifyContent = "flex-start";
+        else if(ha === HORIZONTAL_ALIGNMENT.CENTER)
+            spanCSS.justifyContent = "center";
+        else if(ha === HORIZONTAL_ALIGNMENT.RIGHT)
+            spanCSS.justifyContent = "flex-end";
+
+        if(va === VERTICAL_ALIGNMENT.TOP)
+            spanCSS.alignItems = "flex-start";
+        else if(va === VERTICAL_ALIGNMENT.CENTER)
+            spanCSS.alignItems = "center";
+        else if(va === VERTICAL_ALIGNMENT.BOTTOM)
+            spanCSS.alignItems = "flex-end";
+
+        if(va === VERTICAL_ALIGNMENT.STRETCH && ha === HORIZONTAL_ALIGNMENT.STRETCH)
+            imgCSS.width = "100%";
+        else if(ha === HORIZONTAL_ALIGNMENT.STRETCH) {
+            spanCSS.flexFlow = "column";
+            spanCSS.justifyContent = spanCSS.alignItems;
+            spanCSS.alignItems = undefined;
+        }
+
+
+
+
+        return {span: spanCSS, img: imgCSS};
+    }, [verticalAlignment, horizontalAlignment])
+
+
+
     return(
-        <img
-            style={layoutValue.get(props.id)}
-            src={placeHolder}
-            alt={"could not be loaded"}
-            onLoad={imageLoaded}
-        />
+        <span style={{position:"absolute", ...layoutValue.get(props.id), display:"flex", ...alignmentCss.span}}>
+            <img
+                style={alignmentCss.img}
+                ref={imageRef}
+                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL+props.cellEditor.defaultImageName}
+                alt={"could not be loaded"}
+                onLoad={imageLoaded}
+
+            />
+        </span>
+
     )
 }
 export default UIEditorImage

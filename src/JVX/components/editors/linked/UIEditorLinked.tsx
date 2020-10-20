@@ -154,6 +154,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     return (
         <AutoComplete
+            appendTo={document.body}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.style}
             disabled={!props.cellEditor_editable_}
@@ -162,10 +163,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             completeMethod={onInputChange}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
-            appendTo={document.body}
             onChange={event => setText(event.target.value)}
             onBlur={() => {
-                console.log(lastValue.current, text === "")
                 if (typeof text === "object") {
                     onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, text, lastValue.current, context) : null)
                 }

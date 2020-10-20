@@ -32,9 +32,6 @@ type CellEditor = {
 const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
-
-
-
     return useMemo(() => {
 
         const decideEditor = () => {
@@ -48,7 +45,8 @@ const CellEditor: FC<CellEditor> = (props) => {
                     columnName: props.colName,
                     id: "",
                     cellEditor_editable_:true,
-                    onSubmit:() => setEdit(false)
+                    onSubmit:() => setEdit(false),
+                    style: {width: "100%", height:"100%"}
                 }) || editor
             }
 
