@@ -17,6 +17,6 @@ interface StartupRequest {
     deviceType: string
     deviceTypeModel: string
 
-    readAheadLimit: number
+    readAheadLimit?: number
 }
 export default StartupRequest;

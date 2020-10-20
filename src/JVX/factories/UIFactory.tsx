@@ -11,6 +11,9 @@ import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISpli
 import UITable, {TableProps} from "../components/table/UITable";
 import UIEditorNumber, {IEditorNumber} from "../components/editors/number/UIEditorNumber";
 import UIEditorDate, { IEditorDate } from "../components/editors/date/UIEditorDate";
+import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEditorChoice";
+import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
+import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel  {...props} key={props.id}/>
@@ -48,6 +51,18 @@ export const createEditorDate: FC<IEditorDate> = (props) => {
     return <UIEditorDate {...props} key={props.id}/>
 }
 
+export const createEditorChoice: FC<IEditorChoice> = (props) => {
+    return <UIEditorChoice {...props} key={props.id}/>
+}
+
+export const createEditorCheckbox: FC<IEditorCheckbox> = (props) => {
+    return <UIEditorCheckbox {...props} key={props.id}/>
+}
+
+export const createEditorLinked: FC<IEditorLinked> = (props) => {
+    return <UIEditorLinked {...props} key={props.id}/>
+}
+
 export const createTable: FC<TableProps> = (props) => {
     return <UITable {...props} key={props.id}/>
 }
@@ -61,10 +76,19 @@ export const createEditor: FC<IEditor> = ( props ) => {
             return createEditorText((props as IEditorText));
         }
         else if (props.cellEditor.className === "NumberCellEditor") {
-            return createEditorNumber((props as IEditorNumber))
+            return createEditorNumber((props as IEditorNumber));
         }
         else if (props.cellEditor.className === "DateCellEditor") {
-            return createEditorDate((props as IEditorDate))
+            return createEditorDate((props as IEditorDate));
+        }
+        else if (props.cellEditor.className === "ChoiceCellEditor") {
+            return createEditorChoice((props as IEditorChoice));
+        }
+        else if (props.cellEditor.className === "CheckBoxCellEditor") {
+            return createEditorCheckbox((props as IEditorCheckbox));
+        }
+        else if (props.cellEditor.className === "LinkedCellEditor") {
+            return createEditorLinked((props as IEditorLinked))
         }
         else{
             return createDummy(props)

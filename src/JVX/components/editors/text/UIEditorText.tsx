@@ -7,7 +7,7 @@ import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
-import { onBlurCallback } from "../../util/OnBlurCallback";
+import {onBlurCallback} from "../../util/OnBlurCallback";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number

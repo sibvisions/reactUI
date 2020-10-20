@@ -7,6 +7,7 @@ import DeviceStatusRequest from "../request/DeviceStatusRequest";
 import SelectRowRequest from "../request/SelectRowRequest";
 import FetchRequest from "../request/FetchRequest";
 import SetValuesRequest from "../request/SetValuesRequest";
+import FilterRequest from "../request/FilterRequest";
 
 
 
@@ -34,7 +35,7 @@ export const createStartupRequest = (values?: StartupRequest): StartupRequest =>
         deviceType: values?.deviceType || 'Browser',
         deviceTypeModel: values?.deviceTypeModel || navigator.userAgent,
 
-        readAheadLimit: values?.readAheadLimit || 100
+        readAheadLimit: values?.readAheadLimit
     }
     return  req;
 }
@@ -109,6 +110,16 @@ export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
         dataProvider: values?.dataProvider,
         fromRow: values?.fromRow,
         rowCount: values?.rowCount
+    }
+    return req;
+}
+
+export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
+    const req: FilterRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider,
+        editorComponentId: values?.editorComponentId,
+        value: values?.value||""
     }
     return req;
 }

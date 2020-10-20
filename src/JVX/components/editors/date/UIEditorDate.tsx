@@ -11,7 +11,7 @@ import { parseDateFormatCell } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
 
 interface ICellEditorDate extends ICellEditor{
-    dateFormat?: string
+    dateFormat?: string,
     preferredEditorMode?: number
 }
 
@@ -50,6 +50,20 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     }
 
     useLayoutEffect(() => {
+        //@ts-ignore
+        if (calender.current.container !== null) {
+            //let alignments = checkCellEditorAlignments(props)
+            //@ts-ignore
+            for (let child of calender.current.container.children) {
+                if (child.tagName === 'INPUT') {
+                    child.style.setProperty('background-color', props.cellEditor_background_)
+                    //child.style.setProperty('text-align', alignments.ha)
+                }
+            }
+        }
+    });
+
+    useLayoutEffect(() => {
         if (onLoadCallback && calender.current) {
             //@ts-ignore
             const size: Array<DOMRect> = calender.current.container.getClientRects();
@@ -78,7 +92,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
              appendTo={document.body}
              onChange={event => setValue(event.target.value)}
              onSelect={event => onSelectCallback(event.value)}
-             disabled={!props["cellEditor.editable"]}
+             disabled={!props.cellEditor_editable_}
         />
     )
 }

@@ -5,7 +5,7 @@ export interface ICellEditor{
     className: string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
-    directCellEditor?: boolean
+    directCellEditor?: boolean,
 }
 
 export interface IEditor extends BaseComponent{

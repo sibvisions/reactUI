@@ -7,6 +7,7 @@ enum REQUEST_ENDPOINTS  {
     DEVICE_STATUS = "/api/deviceStatus",
     SELECT_ROW = "/api/dal/selectRecord",
     FETCH = "/api/dal/fetch",
+    FILTER = "/api/dal/filter",
     SET_VALUES = "/api/dal/setValues",
 }
 export default REQUEST_ENDPOINTS
