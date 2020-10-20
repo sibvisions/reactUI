@@ -11,6 +11,9 @@ import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 
 interface ICellEditorNumber extends ICellEditor{
+    scale?: number,
+    length?: number,
+    precision?: number,
     preferredEditorMode?: number
 }
 
@@ -30,10 +33,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [value, setValue] = useState(parseInt(baseProps.text || ""));
     const {onLoadCallback, id} = baseProps;
 
-    const cellEditorMetaData = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName);
-    const scaleDigits = cellEditorMetaData?.cellEditor.scale ? cellEditorMetaData?.cellEditor.scale : null;
-    const length = scaleDigits > 0 ? (cellEditorMetaData?.cellEditor.length ? cellEditorMetaData?.cellEditor.length : null) :
-    (cellEditorMetaData?.cellEditor.precision ? cellEditorMetaData?.cellEditor.precision : null);
+    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName);
+    const scaleDigits = cellEditorMetaData?.cellEditor?.scale ? cellEditorMetaData?.cellEditor.scale : undefined;
+    const length = (scaleDigits && scaleDigits > 0) ? (cellEditorMetaData?.cellEditor?.length ? cellEditorMetaData?.cellEditor.length : null) :
+    (cellEditorMetaData?.cellEditor?.precision ? cellEditorMetaData?.cellEditor.precision : null);
 
     useEffect(() => {
         //@ts-ignore
@@ -53,7 +56,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         let currElem = inputRef.current.inputEl;
         if(currElem){
             //const alignments = checkCellEditorAlignments(props);
-            currElem.style.setProperty('background-color', props['cellEditor.background']);
+            currElem.style.setProperty('background-color', props.cellEditor_background_);
             //currElem.style.setProperty('text-align', alignments.ha);
             currElem.style.setProperty('height', '100%');
             currElem.style.setProperty('width', '100%');
@@ -84,7 +87,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.style}
             onChange={event => setValue(event.value)}
             onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context))}
-            disabled={!props["cellEditor.editable"]}
+            disabled={!props.cellEditor_editable_}
         />
     )
 }
