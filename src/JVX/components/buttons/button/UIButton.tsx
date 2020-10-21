@@ -1,44 +1,36 @@
-import React, {Component, FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import './UIButton.scss'
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
+import {IButton} from "../IButton";
+import {addHoverEffect, buttonProps, styleButton, styleChildren} from "../ButtonStyling";
 
-export interface buttonProps extends BaseComponent{
-    accelerator: string,
-    constraints: string,
-    eventAction: boolean,
-    text: string,
-}
+const UIButton: FC<IButton> = (baseProps) => {
 
-const UIButton: FC<buttonProps> = (baseProps) => {
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const context = useContext(jvxContext);
+    const layoutValue = useContext(LayoutContext);
+    const [props] = useProperties<IButton>(baseProps.id, baseProps);
+    const btnData = buttonProps(props);
+    const {onLoadCallback, id} = baseProps;
 
-    const context = useContext(jvxContext)
-    const layoutContext = useContext(LayoutContext);
-    const buttonRef = useRef<Component>(null);
-    const prefSize = useRef<{height: number, width:number }>({width:0, height:0});
-
-    const [props] = useProperties<buttonProps>(baseProps.id, baseProps);
-
-    useLayoutEffect(()=> {
-        const load = props.onLoadCallback;
-        if(buttonRef.current && prefSize.current.height === 0){
-            if(props.preferredSize ){
-                const sizes = props.preferredSize.split(",");
-                prefSize.current = {width: parseInt(sizes[0]), height: parseInt(sizes[1])}
-            } else {
-                // @ts-ignore
-                const size = buttonRef.current.element.getBoundingClientRect();
-                prefSize.current = {width: size.width, height: size.height};
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
+            styleButton(btnRef.children[0] as HTMLElement, props);
+            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id));
+            addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined)
+            if (onLoadCallback) {
+                const size: DOMRect = btnRef.getBoundingClientRect();
+                onLoadCallback(id, size.height, size.width);
             }
         }
-        if(load){
-            load(props.id, prefSize.current.height, prefSize.current.width)
-        }
-    }, [buttonRef, props.preferredSize, props.onLoadCallback, props.id]);
+
+    }, [onLoadCallback, id]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();
@@ -48,13 +40,17 @@ const UIButton: FC<buttonProps> = (baseProps) => {
 
 
     return(
-        <Button
-            ref={buttonRef}
-            label={props.text}
-            id={props.id}
-            onClick={onButtonPress}
-            style={layoutContext.get(props.id)}
-        />
+        <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
+            <Button
+                style={btnData.style}
+                label={props.text}
+                icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
+                iconPos={btnData.iconPos}
+                tabIndex={btnData.tabIndex as number}
+                onClick={onButtonPress}
+            />
+        </span>
+        
     )
 }
 export default UIButton;

@@ -1,7 +1,7 @@
 import BaseComponent from "../components/BaseComponent";
 import React, {FC, ReactElement} from "react"
 import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
-import UIButton, {buttonProps} from "../components/buttons/button/UIButton";
+import UIButton from "../components/buttons/button/UIButton";
 import UILabel, {uiLabel} from "../components/label/UILabel";
 import Dummy from "../components/dummy";
 import UIEditorImage, {IEditorImage} from "../components/editors/image/UIEditorImage";
@@ -14,25 +14,31 @@ import UIEditorDate, { IEditorDate } from "../components/editors/date/UIEditorDa
 import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEditorChoice";
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import { IButton } from "../components/buttons/IButton";
+import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
 
 export const createPanel: FC<Panel> = (props) => {
-    return <UIPanel  {...props} key={props.id}/>
+    return <UIPanel {...props} key={props.id}/>
 }
 
 export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
-    return <UISplitPanel  {...props} key={props.id}/>
+    return <UISplitPanel {...props} key={props.id}/>
 }
 
-export const createButton: FC<buttonProps> = (props) => {
-    return <UIButton  {...props} key={props.id}/>
+export const createButton: FC<IButton> = (props) => {
+    return <UIButton {...props} key={props.id}/>
+}
+
+export const createToggleButton: FC<IButton> = (props) => {
+    return <UIToggleButton {...props} key={props.id}/>
 }
 
 export const createLabel: FC<uiLabel> = (props) => {
-    return <UILabel  {...props} key={props.id}/>
+    return <UILabel {...props} key={props.id}/>
 }
 
 export const createDummy: FC<BaseComponent> = (props) => {
-    return <Dummy  {...props} key={props.id}/>
+    return <Dummy {...props} key={props.id}/>
 }
 
 export const createEditorImage: FC<IEditorImage> = (props) => {
@@ -98,13 +104,13 @@ export const createEditor: FC<IEditor> = ( props ) => {
     }
 }
 
-
 const classNameMapper = new Map<string, Function>()
     .set("Panel", createPanel)
     .set("GroupPanel", createPanel)
     .set("ScrollPanel", createPanel)
     .set("SplitPanel", createSplitPanel)
     .set("Button", createButton)
+    .set("ToggleButton", createToggleButton)
     .set("Label", createLabel)
     .set("Editor", createEditor)
     .set("Table", createTable)

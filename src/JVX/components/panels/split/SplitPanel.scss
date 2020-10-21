@@ -15,7 +15,9 @@
 }
 
 .separator{
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 50% 50%;
   cursor: e-resize;
   width: 40px;
-  background-color: #34a835;
 }

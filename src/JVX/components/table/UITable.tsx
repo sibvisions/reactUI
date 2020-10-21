@@ -46,7 +46,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     id: "",
                     cellEditor_editable_:true,
                     onSubmit:() => setEdit(false),
-                    style: {width: "100%", height:"100%"}
+                    editorStyle: {width: "100%", height:"100%"}
                 }) || editor
             }
 
@@ -133,8 +133,9 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const handleVirtualScroll = (event: {first: number, rows: number}) => {
         const slicedProviderData = providerData.slice(event.first, event.first+event.rows);
+        const isAllFetched = context.contentStore.dataProviderFetched.get(props.dataBook);
         firstRowIndex.current = event.first;
-        if(providerData.length < event.first+(event.rows*2)) {
+        if((providerData.length < event.first+(event.rows*2)) && !isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
             fetchReq.fromRow = providerData.length;

@@ -27,8 +27,6 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
 
-    const [correctedImage, setCorrectedImage] = useState<CSSProperties>();
-
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number
         if(props.preferredSize){
@@ -75,10 +73,6 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             spanCSS.justifyContent = spanCSS.alignItems;
             spanCSS.alignItems = undefined;
         }
-
-
-
-
         return {span: spanCSS, img: imgCSS};
     }, [verticalAlignment, horizontalAlignment])
 
@@ -89,10 +83,9 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             <img
                 style={alignmentCss.img}
                 ref={imageRef}
-                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL+props.cellEditor.defaultImageName}
+                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt={"could not be loaded"}
                 onLoad={imageLoaded}
-
             />
         </span>
 

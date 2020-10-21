@@ -1,0 +1,53 @@
+:root {
+    --icon: unset;
+}
+
+.p-button {
+    .p-button-icon-left {
+        margin-right: unset;
+    }
+}
+
+.p-button {
+    .p-button-icon-right {
+        margin-left: unset;
+    }
+}
+
+.hyperlink {
+    .p-button-label {
+        color: black;
+        &:hover {
+            text-decoration: underline;   
+        }
+    }
+}
+
+.formlayout {
+    >div {
+        >.p-button {
+            .p-button-label {
+                flex-grow: unset;
+                flex-shrink: unset;
+                flex-basis: unset;
+            }
+        } 
+    }
+}
+
+.formlayout {
+    >div {
+        >div {
+            >.p-button {
+                flex-grow: unset;
+                flex-shrink: unset;
+                flex-basis: unset;
+                .p-button-label {
+                    flex-grow: unset;
+                    flex-shrink: unset;
+                    flex-basis: unset;
+                }
+            }
+        }
+    }
+}

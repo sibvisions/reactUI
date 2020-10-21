@@ -64,7 +64,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     return (
         //justifyContent: alignments.ha, alignItems: alignments.va add to span style
-        <span style={{...layoutValue.get(props.id)||baseProps.style, display: 'inline-flex'}}>
+        <span style={{...layoutValue.get(props.id)||baseProps.editorStyle, display: 'inline-flex'}}>
             <img
                 ref={btnRef}
                 alt=""

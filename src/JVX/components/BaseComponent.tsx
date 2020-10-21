@@ -11,5 +11,15 @@ interface BaseComponent{
     visible?: boolean
     constraints: string
     preferredSize?: string
+    background?: string
+    foreground?: string
+    margins?: string
+    horizontalAlignment?: 0 | 1 | 2| 3
+    verticalAlignment?: 0 | 1 | 2| 3
+    font?: string
+    image?: string
+    focusable?: boolean
+    tabIndex?: number
+    style?: string
 }
 export default BaseComponent

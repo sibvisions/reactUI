@@ -82,7 +82,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         <span
             ref={cbxRef}
             style={{
-                ...layoutValue.get(props.id) || baseProps.style,
+                ...layoutValue.get(props.id) || baseProps.editorStyle,
                 display: 'inline-flex',
                 background: props.cellEditor_background_
             }}>

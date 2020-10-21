@@ -14,11 +14,14 @@ import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import {createFetchRequest} from "./factories/RequestFactory";
 import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
+import UploadResponse from "./response/UploadResponse";
+import DownloadResponse from "./response/DownloadResponse";
 
 class Server{
     constructor(store: ContentStore) {
         this.contentStore = store
     }
+
     APP_NAME = "demo"
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
     RESOURCE_URL = this.BASE_URL + "/resource/" + this.APP_NAME;
@@ -64,7 +67,9 @@ class Server{
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
         .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
         .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
-        .set(RESPONSE_NAMES.LOGIN, this.login.bind(this));
+        .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))
+        .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
+        .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -141,6 +146,13 @@ class Server{
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+        } else {
+            const fetchReq = createFetchRequest();
+            fetchReq.rowCount = 1;
+            fetchReq.fromRow = changedProvider.reload;
+            fetchReq.dataProvider = changedProvider.dataProvider;
+            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH
+            )
         }
         this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
     }
@@ -149,6 +161,37 @@ class Server{
         this.contentStore.dataProviderMetaData.set(metaData.dataProvider, metaData);
     }
 
+    //Down- & UpLoad
+
+    upload(uploadData: UploadResponse){
+        const inputElem = document.createElement('input');
+        inputElem.type = 'file';
+        inputElem.click()
+        inputElem.onchange = (e) => {
+            const formData = new FormData();
+            formData.set("clientId", sessionStorage.getItem("clientId") || "")
+            formData.set("fileId", uploadData.fileId)
+            // @ts-ignore
+            formData.set("data", e.target.files[0])
+            let reqOpt: RequestInit = {
+                method: 'POST',
+                body: formData,
+                credentials:"include",
+            };
+
+            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.UPLOAD, reqOpt), 2000)
+                .then((response: any) => response.json())
+                .then(this.responseHandler.bind(this))
+                .catch(error => console.error(error));
+        }
+    }
+
+    download(downloadData: DownloadResponse){
+        const a = document.createElement('a');
+        a.href = downloadData.url.split(';')[0];
+        a.setAttribute('download', downloadData.fileName);
+        a.click();
+    }
 
     //Decides if and where to the user should be routed based on all responses
     routingDecider(responses: Array<BaseResponse>){

@@ -46,7 +46,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         <InputText
             // autoFocus={true}
             ref={inputRef}
-            style={layoutValue.get(props.id) || baseProps.style}
+            style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}

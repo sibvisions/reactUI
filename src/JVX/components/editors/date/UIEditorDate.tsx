@@ -87,7 +87,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
              showTime={showTime}
              timeOnly={timeOnly}
              showIcon={true}
-             style={layoutValue.get(props.id) || baseProps.style}
+             style={layoutValue.get(props.id) || baseProps.editorStyle}
              value={value}
              appendTo={document.body}
              onChange={event => setValue(event.target.value)}

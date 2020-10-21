@@ -84,7 +84,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             minFractionDigits={scaleDigits}
             maxFractionDigits={scaleDigits}
             value={value}
-            style={layoutValue.get(props.id) || baseProps.style}
+            style={layoutValue.get(props.id) || baseProps.editorStyle}
             onChange={event => setValue(event.value)}
             onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context))}
             disabled={!props.cellEditor_editable_}

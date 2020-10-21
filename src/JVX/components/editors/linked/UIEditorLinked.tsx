@@ -156,7 +156,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         <AutoComplete
             appendTo={document.body}
             ref={inputRef}
-            style={layoutValue.get(props.id) || baseProps.style}
+            style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             dropdown
             field={props.columnName}
