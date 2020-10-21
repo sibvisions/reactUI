@@ -44,7 +44,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     return(
         <InputText
-            autoFocus={true}
+            // autoFocus={true}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.style}
             disabled={!props.cellEditor_editable_}

@@ -14,7 +14,6 @@ const Home: FC = () => {
         if(window){
             const component = componentHandler(window);
             return component;
-
         }
         return undefined;
     }

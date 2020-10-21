@@ -19,8 +19,9 @@ class Server{
     constructor(store: ContentStore) {
         this.contentStore = store
     }
-
+    APP_NAME = "demo"
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
+    RESOURCE_URL = this.BASE_URL + "/resource/" + this.APP_NAME;
     contentStore: ContentStore;
     activeScreen = "";
 
@@ -28,7 +29,7 @@ class Server{
         let reqOpt: RequestInit = {
             method: 'POST',
             body: JSON.stringify(request),
-            credentials:"include"
+            credentials:"include",
         };
         this.timeoutRequest(fetch(this.BASE_URL+endpoint, reqOpt), 2000)
             .then((response: any) => response.json())
@@ -185,7 +186,7 @@ class Server{
         });
 
 
-        if(routeTo && routeTo !== this.activeScreen){
+        if(routeTo){
             this.activeScreen = routeTo;
             browserHistory.push("/"+routeTo);
         }

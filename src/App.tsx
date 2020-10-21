@@ -32,6 +32,7 @@ const App: FC = () => {
         const authKey = localStorage.getItem("authKey");
         if(queryParams.appName && queryParams.baseUrl){
             startUpRequest.applicationName = queryParams.appName;
+            context.server.APP_NAME = queryParams.appName;
             context.server.BASE_URL = queryParams.baseUrl;
         }
         if(queryParams.userName && queryParams.password){

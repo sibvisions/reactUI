@@ -6,11 +6,11 @@ import JVXProvider from "./JVX/jvxProvider";
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
       <JVXProvider>
           <App />
-      </JVXProvider>
-  </React.StrictMode>,
+      </JVXProvider>,
+  // </React.StrictMode>,
   document.getElementById('root')
 );
 
