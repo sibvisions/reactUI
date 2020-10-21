@@ -5,6 +5,7 @@ enum REQUEST_ENDPOINTS  {
     PRESS_BUTTON = "/api/v2/pressButton",
     OPEN_SCREEN = "/api/v2/openScreen",
     DEVICE_STATUS = "/api/deviceStatus",
+    UPLOAD = "/upload",
     SELECT_ROW = "/api/dal/selectRecord",
     FETCH = "/api/dal/fetch",
     FILTER = "/api/dal/filter",
