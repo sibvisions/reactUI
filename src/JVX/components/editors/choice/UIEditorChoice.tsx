@@ -75,7 +75,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     console.log(alignments)
 
     return (
-        <span style={{...layoutValue.get(props.id)||baseProps.editorStyle, display: 'inline-flex', justifyContent: alignments?.ha, alignItems: alignments?.va}}>
+        <span style={{...layoutValue.get(props.id)||baseProps.editorStyle, display: 'inline-flex', justifyContent: alignments?.ha ? alignments.ha : 'center', alignItems: alignments?.va ? alignments.va : "center"}}>
             <img
                 ref={btnRef}
                 alt=""

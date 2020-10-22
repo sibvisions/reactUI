@@ -20,7 +20,32 @@ tr:nth-child(odd){
 
 .cellData{
     padding: 8px 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+.p-datatable {
+    .p-datatable-tbody {
+        >tr {
+            >td.ChoiceCellEditor, >td.CheckBoxCellEditor {
+                text-align: center;
+                >.cellData {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+            >td.TextCellEditor, >td.DateCellEditor {
+                >.cellData{
+                    display: flex;
+                    align-items: center;
+                }
+            }
+            >td.NumberCellEditor {
+                text-align: right;
+                >.cellData {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        } 
+    }
 }

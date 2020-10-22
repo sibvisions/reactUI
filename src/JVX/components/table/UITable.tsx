@@ -145,6 +145,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellData={rowData[colName]}
                     metaData={metaData}
                 />}
+                className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div style={{height: 50}}>Loading</div>}/>
         )
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore])
