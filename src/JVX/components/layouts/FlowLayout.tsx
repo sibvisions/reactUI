@@ -83,6 +83,7 @@ const FlowLayout: FC<Panel> = (props) => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: alignments.ca,
+                        backgroundColor: props.background,
                         ...preferredSize.style
                     }}>
                     {components}

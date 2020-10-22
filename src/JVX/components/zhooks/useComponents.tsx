@@ -33,9 +33,11 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         }
         children.forEach(child => {
             child.onLoadCallback = componentHasLoaded;
-            const reactChild = componentHandler(child);
-            if(reactChild){
-                reactChildrenArray.push(reactChild);
+            if (child.visible !== false) {
+                const reactChild = componentHandler(child);
+                if(reactChild){
+                    reactChildrenArray.push(reactChild);
+                }
             }
         });
         return reactChildrenArray;

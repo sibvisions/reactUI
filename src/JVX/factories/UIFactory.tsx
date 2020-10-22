@@ -1,5 +1,5 @@
 import BaseComponent from "../components/BaseComponent";
-import React, {FC, ReactElement} from "react"
+import React, {FC} from "react"
 import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
 import UIButton from "../components/buttons/button/UIButton";
 import UILabel, {uiLabel} from "../components/label/UILabel";
@@ -16,6 +16,13 @@ import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbo
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import { IButton } from "../components/buttons/IButton";
 import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
+import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
+import UIRadioButton, { IRadioButton } from "../components/buttons/radiobutton/UIRadioButton";
+import UICheckBox, { ICheckBox } from "../components/checkbox/UICheckBox";
+import UIIcon from "../components/icon/UIIcon";
+import UIText from "../components/text/UIText";
+import UITextArea from "../components/text/UITextArea";
+import UIPassword from "../components/text/UIPassword";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -31,6 +38,18 @@ export const createButton: FC<IButton> = (props) => {
 
 export const createToggleButton: FC<IButton> = (props) => {
     return <UIToggleButton {...props} key={props.id}/>
+}
+
+export const createPopupMenuButton: FC<IMenuButton> = (props) => {
+    return <UIMenuButton {...props} key={props.id}/>
+}
+
+export const createRadioButton: FC<IRadioButton> = (props) => {
+    return <UIRadioButton {...props} key={props.id}/>
+}
+
+export const createCheckBox: FC<ICheckBox> = (props) => {
+    return <UICheckBox {...props} key={props.id}/>
 }
 
 export const createLabel: FC<uiLabel> = (props) => {
@@ -73,6 +92,22 @@ export const createTable: FC<TableProps> = (props) => {
     return <UITable {...props} key={props.id}/>
 }
 
+export const createIcon: FC<BaseComponent> = (props) => {
+    return <UIIcon {...props} key={props.id}/>
+}
+
+export const createTextField: FC<BaseComponent> = (props) => {
+    return <UIText {...props} key={props.id}/>
+}
+
+export const createTextArea: FC<BaseComponent> = (props) => {
+    return <UITextArea {...props} key={props.id}/>
+}
+
+export const createPassword: FC<BaseComponent> = (props) => {
+    return <UIPassword {...props} key={props.id}/>
+}
+
 export const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
@@ -111,9 +146,16 @@ const classNameMapper = new Map<string, Function>()
     .set("SplitPanel", createSplitPanel)
     .set("Button", createButton)
     .set("ToggleButton", createToggleButton)
+    .set("PopupMenuButton", createPopupMenuButton)
+    .set("RadioButton", createRadioButton)
+    .set("CheckBox", createCheckBox)
     .set("Label", createLabel)
     .set("Editor", createEditor)
     .set("Table", createTable)
+    .set("Icon", createIcon)
+    .set("TextField", createTextField)
+    .set("TextArea", createTextArea)
+    .set("PasswordField", createPassword)
 
 export const componentHandler = (component: BaseComponent) => {
     const builder = classNameMapper.get(component.className);

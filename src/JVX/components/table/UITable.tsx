@@ -13,6 +13,10 @@ import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import useRowSelect from "../zhooks/useRowSelect";
 import {createEditor} from "../../factories/UIFactory";
 import MetaDataResponse from "../../response/MetaDataResponse";
+import { IEditorChoice } from "../editors/choice/UIEditorChoice";
+import { IEditorDate } from "../editors/date/UIEditorDate";
+import { parseDateFormatTable } from "../util/ParseDateFormats";
+import moment from "moment";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -33,10 +37,10 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
     return useMemo(() => {
-
+        const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
         const decideEditor = () => {
             let editor = <div> {props.cellData} </div>
-            const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
+            console.log(props)
 
             if(columnMetaData){
                 editor = createEditor({
@@ -54,10 +58,36 @@ const CellEditor: FC<CellEditor> = (props) => {
             return editor
         }
 
+        const showCellData = () => {
+            console.log(columnMetaData)
+            if (props.cellData !== undefined) {
+                if (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") {
+                    const castedColumn = columnMetaData as IEditorChoice;
+                    const cellIndex = castedColumn?.cellEditor?.allowedValues?.indexOf(props.cellData)
+                    if (castedColumn.cellEditor?.images && cellIndex !== undefined) {
+                        return <img alt="choice" style={{cursor: 'pointer'}} src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + castedColumn?.cellEditor?.images[cellIndex]}/>
+                    }
+                }
+                else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {
+                    const castedColumn = columnMetaData as IEditorDate;
+                    const formattedDate = moment(props.cellData).format(parseDateFormatTable(castedColumn.cellEditor?.dateFormat))
+                    if (formattedDate !== "Invalid date") 
+                        return formattedDate
+                    else
+                        return null
+                }
+                else
+                    return props.cellData
+            }
+            else
+                return null
+            
+        }
+
         if (!edit) {
             return (
                 <div className={"cellData"} style={{height: 50}} onDoubleClick={event => setEdit(true)}>
-                    {props.cellData}
+                    {showCellData()}
                 </div>
             )
         } else {
@@ -108,7 +138,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             <Column
                 field={colName}
                 header={props.columnLabels[colIndex]}
-                body={(rowData: any) => <CellEditor
+                body={(rowData: any, column:any) => <CellEditor
                     colName={colName}
                     dataProvider={props.dataBook}
                     cellData={rowData[colName]}

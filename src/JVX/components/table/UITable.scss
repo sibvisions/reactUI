@@ -20,4 +20,7 @@ tr:nth-child(odd){
 
 .cellData{
     padding: 8px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

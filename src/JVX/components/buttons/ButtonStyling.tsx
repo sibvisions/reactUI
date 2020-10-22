@@ -70,6 +70,8 @@ function styleMenuButton(btnChild:HTMLElement, layoutStyle:React.CSSProperties, 
     btnChild.style.setProperty('padding-left', btnProps.style.paddingLeft+'px');
     btnChild.style.setProperty('padding-bottom', btnProps.style.paddingBottom+'px');
     btnChild.style.setProperty('padding-right', btnProps.style.paddingRight+'px');
+    btnChild.style.setProperty('border-color', btnProps.style.backgroundColor);
+    btnChild.style.setProperty('color', btnProps.style.color);
     if (btnChild.classList.contains("p-splitbutton-defaultbutton")) {
         //@ts-ignore
         btnChild.style.setProperty('width', !(layoutStyle.width+'').includes('%') ? (layoutStyle.width-38)+'px' : 'calc(100% - 38px)');
@@ -122,7 +124,7 @@ export function styleChildren(btnChildren:HTMLCollection, props:IButton, btnData
     if (props.className === "PopupMenuButton") {
         for (let btnChild of btnChildren) {
             if (layoutStyle !== undefined)
-                styleMenuButton(btnChild as HTMLElement, layoutStyle, btnData.btnProps);
+                styleMenuButton(btnChild as HTMLElement, layoutStyle, btnData);
             for (let child of btnChild.children)
                 styleButtonContent(child as HTMLElement, props, btnData.iconProps);
         }
@@ -170,7 +172,7 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
 }
 
 function getBtnBgdColor(props:IButton) {
-    let btnColor = tinycolor('#C8C8C8'); 
+    let btnColor = tinycolor('grey'); 
     if (props.borderPainted !== false) {
         if (props.background)
             btnColor = tinycolor(props.background);

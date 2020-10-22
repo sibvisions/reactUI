@@ -11,6 +11,7 @@ import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import useDataProviderData from "../../zhooks/useDataProviderData";
 import * as _ from 'underscore'
 import { onBlurCallback } from "../../util/OnBlurCallback";
+import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorLinked extends ICellEditor{
     linkReference: {
@@ -112,11 +113,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             }, 0);
             //@ts-ignore
             if (inputRef.current.inputEl) {
-                //const alignments = checkCellEditorAlignments(props);
+                const alignments = checkCellEditorAlignments(props);
                 //@ts-ignore
                 inputRef.current.inputEl.style['background-color'] = props.cellEditor_background_;
                 //@ts-ignore
-                //autoComRef.current.inputEl.style['text-align'] = alignments.ha;
+                inputRef.current.inputEl.style['text-align'] = alignments.ha;
             }
         }
     });

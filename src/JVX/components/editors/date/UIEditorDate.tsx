@@ -9,6 +9,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import { parseDateFormatCell } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
+import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
@@ -52,12 +53,12 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useLayoutEffect(() => {
         //@ts-ignore
         if (calender.current.container !== null) {
-            //let alignments = checkCellEditorAlignments(props)
+            const alignments = checkCellEditorAlignments(props)
             //@ts-ignore
             for (let child of calender.current.container.children) {
                 if (child.tagName === 'INPUT') {
                     child.style.setProperty('background-color', props.cellEditor_background_)
-                    //child.style.setProperty('text-align', alignments.ha)
+                    child.style.setProperty('text-align', alignments?.ha)
                 }
             }
         }

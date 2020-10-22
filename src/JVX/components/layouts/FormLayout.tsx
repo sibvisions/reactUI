@@ -16,7 +16,7 @@ const FormLayout: FC<Panel> = (baseProps) => {
 
     // React Hooks
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
-    const layoutSizeRef = useRef<HTMLDivElement>(null);
+    const layoutSizeRef = useRef(null);
     const dictatedStyle = useContext(LayoutContext);
     const context = useContext(jvxContext);
     const initSizeRef = useRef<{width: number, height: number} | undefined>(undefined);
@@ -419,6 +419,7 @@ const FormLayout: FC<Panel> = (baseProps) => {
             let initSize = initSizeRef.current;
             if(!initSize){
                 if(layoutSizeRef.current){
+                    //@ts-ignore
                     const size = layoutSizeRef.current.getBoundingClientRect();
                     initSize = {height: size.height, width: size.width};
                 }
@@ -612,7 +613,6 @@ const FormLayout: FC<Panel> = (baseProps) => {
         calculateTargetDependentAnchors();
         buildComponents();
     }, []);
-
     // Set init Size  & start
     useLayoutEffect(() => {
         if(preferredComponentSizes){
@@ -643,12 +643,25 @@ const FormLayout: FC<Panel> = (baseProps) => {
             );
         }
     },[dictatedStyle, preferredComponentSizes, props, calculateLayout, compProps]);
-    return(
-        <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div ref={layoutSizeRef} id={props.id} style={{...calculatedStyle?.style}}>
-                {components}
-            </div>
-        </LayoutContext.Provider>
-    )
+    
+    if (props.className === "GroupPanel") {
+        return(
+            <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
+                <fieldset ref={layoutSizeRef} id={props.id} style={{...calculatedStyle?.style, backgroundColor: props.background, paddingInlineStart: '0', paddingInlineEnd: '0', paddingBlockStart: '0', paddingBlockEnd: '0'}}>
+                    <legend>{props.text}</legend>
+                    {components}
+                </fieldset>
+            </LayoutContext.Provider>
+        )
+    }
+    else {
+        return(
+            <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
+                <div ref={layoutSizeRef} id={props.id} style={{...calculatedStyle?.style, backgroundColor: props.background}}>
+                    {components}
+                </div>
+            </LayoutContext.Provider>
+        )
+    }
 }
 export default FormLayout

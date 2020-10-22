@@ -1,6 +1,6 @@
 export class UIFont {
     fontFamily = "";
-    fontWeight = "normal";
+    fontWeight = 400;
     fontStyle = "normal";
     fontSize = 16;
 
@@ -19,7 +19,7 @@ export class UIFont {
 
     setFontWeight(fontWeight:string) {
         if (fontWeight === '1' || fontWeight === '3') {
-            this.fontWeight = 'bold';
+            this.fontWeight = 700;
         }
     }
 

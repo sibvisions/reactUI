@@ -2,9 +2,9 @@ import BaseComponent from "../BaseComponent";
 import { IEditor } from "../editors/IEditor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
 
-function translateAlignments(pha:number, pva:number) {
-    let ha:string = "flex-start";
-    let va:string = "flex-start";
+function translateAlignments(pha:number|undefined, pva:number|undefined) {
+    let ha:string|undefined;
+    let va:string|undefined;
 
     if (pha === HORIZONTAL_ALIGNMENT.LEFT)
         ha = "flex-start";
@@ -37,8 +37,11 @@ export function checkCellEditorAlignments(props:IEditor) {
             return translateAlignments(props.cellEditor.horizontalAlignment, props.cellEditor_verticalAlignment_);
         else if (props.cellEditor.horizontalAlignment !== undefined && props.cellEditor.verticalAlignment !== undefined)
             return translateAlignments(props.cellEditor.horizontalAlignment, props.cellEditor.verticalAlignment);
-        else
-            return translateAlignments(0, 0);
+        else {
+            console.log('test')
+            return translateAlignments(undefined, undefined);
+        }
+            
     }
 }
 

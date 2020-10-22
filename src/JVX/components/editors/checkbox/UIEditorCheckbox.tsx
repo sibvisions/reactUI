@@ -6,6 +6,7 @@ import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
+import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorCheckbox extends ICellEditor{
     text?: string,
@@ -24,6 +25,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorCheckbox>(baseProps.id, baseProps)
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const alignments = checkCellEditorAlignments(props);
 
     const getCbxType = (selectedValue:string|boolean|number|undefined) => {
         if (selectedValue === 'Y') {
@@ -75,16 +77,15 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         }
     },[onLoadCallback, id]);
 
-    //console.log(selectedRow)
-
     return (
-        //justifyContent: alignments.ha, alignItems: alignments.va add to span style
         <span
             ref={cbxRef}
             style={{
                 ...layoutValue.get(props.id) || baseProps.editorStyle,
                 display: 'inline-flex',
-                background: props.cellEditor_background_
+                background: props.cellEditor_background_,
+                justifyContent: alignments?.ha,
+                alignItems: alignments?.va
             }}>
             <Checkbox
                 inputId={id}

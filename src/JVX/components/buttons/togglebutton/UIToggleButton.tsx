@@ -22,7 +22,7 @@ type ToggleButtonEvent = {
 
 const UIToggleButton: FC<IButton> = (baseProps) => {
 
-    const buttonRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLSpanElement>(null);
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IButton>(baseProps.id, baseProps);

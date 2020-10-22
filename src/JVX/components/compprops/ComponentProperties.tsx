@@ -8,7 +8,7 @@ import { checkCellEditorAlignments } from './CheckAlignments';
 import { UIFont } from './UIFont';
 
 export function  getPanelBgdColor(props:Panel, context:any) {
-    let bgdColor = tinycolor('#C8C8C8');
+    let bgdColor = tinycolor('grey');
 
     if (props.background)
         bgdColor = tinycolor(props.background);

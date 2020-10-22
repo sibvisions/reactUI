@@ -8,6 +8,7 @@ import SelectRowRequest from "../request/SelectRowRequest";
 import FetchRequest from "../request/FetchRequest";
 import SetValuesRequest from "../request/SetValuesRequest";
 import FilterRequest from "../request/FilterRequest";
+import SetValueRequest from "../request/SetValueRequest";
 
 
 
@@ -121,6 +122,15 @@ export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
         editorComponentId: values?.editorComponentId,
         value: values?.value||""
     }
+    return req;
+}
+
+export const createSetValueRequest = (values?: SetValueRequest): SetValueRequest => {
+    const req: SetValueRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        value: values?.value
+    };
     return req;
 }
 

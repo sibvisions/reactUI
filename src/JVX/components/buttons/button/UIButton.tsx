@@ -1,5 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
-import './UIButton.scss'
+import './UIButton.scss';
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
@@ -11,7 +11,7 @@ import {addHoverEffect, buttonProps, styleButton, styleChildren} from "../Button
 
 const UIButton: FC<IButton> = (baseProps) => {
 
-    const buttonRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLSpanElement>(null);
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
@@ -23,13 +23,12 @@ const UIButton: FC<IButton> = (baseProps) => {
         if (btnRef) {
             styleButton(btnRef.children[0] as HTMLElement, props);
             styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id));
-            addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined)
+            addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined);
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();
                 onLoadCallback(id, size.height, size.width);
             }
         }
-
     }, [onLoadCallback, id]);
 
     const onButtonPress = () => {
