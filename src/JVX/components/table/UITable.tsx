@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
@@ -116,16 +116,17 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
     const firstRowIndex = useRef(0);
 
+    const {onLoadCallback, id} = baseProps
     //Report Size
-    useLayoutEffect(() => {
-        if(wrapRef.current && !layoutContext.get(baseProps.id)){
-            const size = wrapRef.current.getBoundingClientRect();
-            if(baseProps.onLoadCallback)
-                baseProps.onLoadCallback(baseProps.id, size.height, size.width);
-        }
-    }, [wrapRef, baseProps, layoutContext]);
-
     useEffect(() => {
+        if(wrapRef.current){
+            const size = wrapRef.current.getBoundingClientRect();
+            if(onLoadCallback)
+                onLoadCallback(id, size.height, size.width);
+        }
+    }, [id, onLoadCallback]);
+
+    useLayoutEffect(() => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
@@ -178,16 +179,16 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     //to subtract header Height
-    const heightNoHeaders: number = layoutContext.get(baseProps.id)?.height as number - 41 || 0
+    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
 
     return(
-       <div ref={wrapRef} style={{width:"min-content", overflow:"hidden" , ...layoutContext.get(baseProps.id)}}>
+       <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(baseProps.id)}}>
            <DataTable
                style={{width:"100%", height: "100%"}}
                scrollable lazy virtualScroll
                rows={rows}
                virtualRowHeight={50}
-               scrollHeight={heightNoHeaders.toString() + "px"}
+               scrollHeight={heightNoHeaders}
                onVirtualScroll={handleVirtualScroll}
                totalRecords={providerData.length}
                value={virtualRows}

@@ -20,6 +20,7 @@ type SplitPanelProps = {
 const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     const [firstWidth, setFirstWidth] = useState<number | undefined>();
+    const [drag, setDrag] = useState<boolean>(false);
     const positionRef = useRef<HTMLDivElement>(null);
     const firstRef = useRef<HTMLDivElement>(null);
     const secondRef = useRef<HTMLDivElement>(null);
@@ -47,6 +48,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     const stopDrag = () => {
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("mousemove", dragging);
+        setDrag(false);
     }
 
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -54,6 +56,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
             const size = positionRef.current.getBoundingClientRect();
             absoluteWidthPosition = size.x;
         }
+        setDrag(true);
         document.addEventListener("mouseup", stopDrag);
         document.addEventListener("mousemove", dragging);
     }
@@ -80,22 +83,22 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
         }
         document.addEventListener("touchend", stopTouchDrag);
         document.addEventListener("touchmove", touchDragging);
-
     }
 
     useLayoutEffect(() => {
         callOnResize();
+
     }, [props.trigger])
 
 
     return(
-        <div className={"splitPanel"} ref={positionRef}>
-            <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%"}}>
+        <div className={"splitPanel"} ref={positionRef} style={{overflow: drag ? "hidden" : "scroll"}}>
+            <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%", overflow:"hidden"}}>
                 {props.leftComponent}
             </div>
             <div className={"separator"} style={{backgroundImage:"url("+ SplitImage +")"}}  onMouseDown={dragStart} onTouchStart={dragTouchStart}>
             </div>
-            <div ref={secondRef} className={"second"} >
+            <div ref={secondRef} className={"second"} style={{overflow: drag ? "hidden" : "scroll"}} >
                 {props.rightComponent}
             </div>
         </div>
