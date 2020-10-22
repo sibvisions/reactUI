@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
 import tinycolor from 'tinycolor2';
-import BaseComponent from '../BaseComponent';
-import { checkAlignments } from "../compprops/CheckAlignments";
+import { checkAlignments} from "../compprops/CheckAlignments";
 import { getFont, getMargins, parseIconData } from '../compprops/ComponentProperties';
 import Size from '../util/Size';
 import { IButton } from "./IButton";

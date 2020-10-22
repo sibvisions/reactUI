@@ -65,7 +65,6 @@ const Layout: FC = (props) => {
         }, 23);
     };
 
-
     const handleDeviceStatus = () => {
         clearTimeout(deviceRef.current);
         deviceRef.current = setTimeout(() => {

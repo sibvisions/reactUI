@@ -155,6 +155,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     return (
         <AutoComplete
+            autoFocus={true}
             appendTo={document.body}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
@@ -166,12 +167,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             value={text}
             onChange={event => setText(event.target.value)}
             onBlur={() => {
-                if (typeof text === "object") {
-                    onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, text, lastValue.current, context) : null)
-                }
-                else if (text === "") {
-                    onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, null, lastValue.current, context) : null)
-                }
+                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, text, lastValue.current, context) : null)
             }}/>
     )
 }

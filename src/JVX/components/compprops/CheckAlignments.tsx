@@ -38,7 +38,6 @@ export function checkCellEditorAlignments(props:IEditor) {
         else if (props.cellEditor.horizontalAlignment !== undefined && props.cellEditor.verticalAlignment !== undefined)
             return translateAlignments(props.cellEditor.horizontalAlignment, props.cellEditor.verticalAlignment);
         else {
-            console.log('test')
             return translateAlignments(undefined, undefined);
         }
             

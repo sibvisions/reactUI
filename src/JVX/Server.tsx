@@ -146,7 +146,7 @@ class Server{
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
-        } else {
+        } else if(changedProvider.reload !== undefined) {
             const fetchReq = createFetchRequest();
             fetchReq.rowCount = 1;
             fetchReq.fromRow = changedProvider.reload;
@@ -179,7 +179,7 @@ class Server{
                 credentials:"include",
             };
 
-            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.UPLOAD, reqOpt), 2000)
+            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.UPLOAD, reqOpt), 10000)
                 .then((response: any) => response.json())
                 .then(this.responseHandler.bind(this))
                 .catch(error => console.error(error));

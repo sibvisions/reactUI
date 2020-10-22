@@ -40,7 +40,6 @@ const CellEditor: FC<CellEditor> = (props) => {
         const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
         const decideEditor = () => {
             let editor = <div> {props.cellData} </div>
-            console.log(props)
 
             if(columnMetaData){
                 editor = createEditor({
@@ -59,7 +58,6 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
 
         const showCellData = () => {
-            console.log(columnMetaData)
             if (props.cellData !== undefined) {
                 if (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") {
                     const castedColumn = columnMetaData as IEditorChoice;

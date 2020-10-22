@@ -37,7 +37,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const timeOnly = props.cellEditor?.dateFormat === "HH:mm";
 
     const onSelectCallback = (submitValue:any) => {
-        console.log(submitValue)
         if (Array.isArray(submitValue)) {
             let tempArray:Array<number> = [];
             submitValue.forEach(date => {
@@ -92,7 +91,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
              value={value}
              appendTo={document.body}
              onChange={event => setValue(event.target.value)}
-             onSelect={event => onSelectCallback(event.value)}
+             onSelect={onSelectCallback}
              disabled={!props.cellEditor_editable_}
         />
     )

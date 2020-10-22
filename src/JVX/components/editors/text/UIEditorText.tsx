@@ -42,9 +42,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
+
+
     return(
         <InputText
-            // autoFocus={true}
+            autoFocus={true}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
