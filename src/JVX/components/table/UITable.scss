@@ -9,13 +9,25 @@ tr.p-highlight{
     background: #007ad9 !important;
 }
 
-tr:nth-child(odd).p-highlight{
-    background: #007ad9 !important;
+.loading-text {
+    display: block;
+    background-color: #f1f1f1;;
+    min-height: 19px;
+    animation: pulse 0.4s infinite ease-in-out;
+    text-indent: -99999px;
+    overflow: hidden;
 }
 
-tr:nth-child(odd){
-    background: #c5c5c5 !important;
-    border-color: black;
+@keyframes pulse {
+    0% {
+        background-color: rgba(165, 165, 165, 0.1)
+    }
+    50% {
+        background-color: rgba(165, 165, 165, 0.3)
+    }
+    100% {
+        background-color: rgba(165, 165, 165, 0.1)
+    }
 }
 
 .cellData{

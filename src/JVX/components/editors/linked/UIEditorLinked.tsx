@@ -48,7 +48,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     },[onLoadCallback, id]);
 
-    const suggestionData = useMemo(() => providedData ? providedData.slice(firstRow, lastRow) : [], [providedData, firstRow, lastRow])
+    const suggestionData = useMemo(() => {
+        return providedData ? providedData.slice(firstRow, lastRow) : []
+    }, [providedData, firstRow, lastRow])
 
     useEffect(() => {
         let blockFetch:boolean = false;
@@ -108,7 +110,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
                 if (autoPanel) {
                     //@ts-ignore
-                    autoPanel.children[0].style.height = (providedData.length * autoPanel.children[0].children[0].getBoundingClientRect().height)+'px';
+                    autoPanel.children[0].style.height = (providedData.length * (autoPanel.children[0].children[0].getBoundingClientRect().height + 6.864))+'px';
                 }
             }, 0);
             //@ts-ignore
@@ -130,7 +132,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 Object.values(record).forEach((data:any, index:any) => {
                     if(data !== null) {
                         if (props.cellEditor?.clearColumns !== undefined) {
-                            element[props.cellEditor?.clearColumns[index]] = data;
+                            element[props.cellEditor.clearColumns[index]] = data;
                         }
                     } 
                 });

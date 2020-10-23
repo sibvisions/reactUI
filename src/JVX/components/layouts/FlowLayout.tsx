@@ -23,21 +23,28 @@ const FlowLayout: FC<Panel> = (props) => {
 
     const alignments = useMemo(() => {
         const splitAlignments = props.layout.split(",")
+        console.log(splitAlignments)
         let va: string = "center"; let ha: string = "center"; let ca: string = "center";
         if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.LEFT)
             ha = "flex-start";
         else if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.RIGHT)
             ha = "flex-end";
+        else if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.STRETCH)
+            ha = "stretch"
 
         if(parseInt(splitAlignments[9]) === VERTICAL_ALIGNMENT.TOP)
             va = "flex-start";
         else if(parseInt(splitAlignments[9]) === VERTICAL_ALIGNMENT.BOTTOM)
             va = "flex-end";
+        else if(parseInt(splitAlignments[9]) === HORIZONTAL_ALIGNMENT.STRETCH)
+            va = "stretch"
 
         if(parseInt(splitAlignments[10]) === VERTICAL_ALIGNMENT.TOP)
             ca = "flex-start";
         else if(parseInt(splitAlignments[10]) === VERTICAL_ALIGNMENT.BOTTOM)
             ca = "flex-end";
+        // else if(parseInt(splitAlignments[10]) === HORIZONTAL_ALIGNMENT.STRETCH)
+        //     ca = "stretch"
         return {va: va, ha: ha, ca: ca}
     }, [props.layout]);
 
@@ -53,18 +60,22 @@ const FlowLayout: FC<Panel> = (props) => {
                 });
             } else {
                 preferredComponentSizes.forEach(value => {
+                    console.log(value.width)
                     if(value.width > width){
                         width = value.width;
                     } height += value.height + gaps.vertical;
                 });
             }
         }
+        console.log(height, width, orientation)
         setPreferredSize({style: {height: height, width: width}, componentSize: preferredComponentSizes || new Map<string, CSSProperties>()})
         //@ts-ignore
-        if(props.onLoadCallback)
+        if(props.onLoadCallback) {
+            console.log(height,width)
             props.onLoadCallback(props.id, height, width);
+        }
+            
     }, [preferredComponentSizes, gaps, props, orientation])
-
 
     return(
         <div id={props.id} style={{
@@ -81,6 +92,7 @@ const FlowLayout: FC<Panel> = (props) => {
                     ref={divRef}
                     style={{
                         display: "flex",
+                        flexDirection: orientation === ORIENTATION.HORIZONTAL ? 'row' : 'column',
                         justifyContent: "space-between",
                         alignItems: alignments.ca,
                         backgroundColor: props.background,

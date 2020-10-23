@@ -12,6 +12,7 @@ import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
 import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
+import ShowDocumentResponse from "./response/ShowDocumentResponse"
 import {createFetchRequest} from "./factories/RequestFactory";
 import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 import UploadResponse from "./response/UploadResponse";
@@ -69,7 +70,8 @@ class Server{
         .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
         .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
-        .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this));
+        .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
+        .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -191,6 +193,18 @@ class Server{
         a.href = downloadData.url.split(';')[0];
         a.setAttribute('download', downloadData.fileName);
         a.click();
+    }
+
+    //Show Document
+    showDocument(showData: ShowDocumentResponse) {
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        let splitURL = showData.url.split(';')
+        a.href = splitURL[0];
+        a.setAttribute('target', splitURL[2]);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
     //Decides if and where to the user should be routed based on all responses

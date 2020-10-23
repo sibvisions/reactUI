@@ -10,6 +10,7 @@ enum RESPONSE_NAMES{
     DOWNLOAD="download",
     DAL_FETCH="dal.fetch",
     DAL_META_DATA="dal.metaData",
-    DAL_DATA_PROVIDER_CHANGED="dal.dataProviderChanged"
+    DAL_DATA_PROVIDER_CHANGED="dal.dataProviderChanged",
+    SHOW_DOCUMENT="showDocument"
 }
 export default RESPONSE_NAMES

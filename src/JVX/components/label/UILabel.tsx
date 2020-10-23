@@ -14,17 +14,19 @@ const UILabel: FC<uiLabel> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
 
     const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
+    const {onLoadCallback, id} = baseProps;
 
     const lblMargins = getMargins(props);
     const lblAlignments = checkAlignments(props);
     const lblFont = getFont(props);
 
     useLayoutEffect(() => {
-        if(labelRef.current && props.onLoadCallback && !layoutValue.get(props.id)){
+        if(labelRef.current && onLoadCallback){
             const size = labelRef.current.getBoundingClientRect();
-            props.onLoadCallback(props.id, size.height, size.width);
+            console.log(size.height, size.width, props.id)
+            onLoadCallback(props.id, size.height, size.width);
         }
-    }, [labelRef, props, layoutValue]);
+    }, [onLoadCallback, id]);
 
 
     return(
@@ -44,7 +46,19 @@ const UILabel: FC<uiLabel> = (baseProps) => {
             paddingRight: lblMargins.marginRight,
             ...layoutValue.get(props.id)
         } : {
-                position: "absolute",
+                display: 'inline-flex',
+                justifyContent: lblAlignments?.ha,
+                alignContent: lblAlignments?.va,
+                backgroundColor: props.background,
+                color: props.foreground,
+                fontFamily: lblFont.fontFamily,
+                fontWeight: lblFont.fontWeight,
+                fontStyle: lblFont.fontStyle,
+                fontSize: lblFont.fontSize,
+                paddingTop: lblMargins.marginTop,
+                paddingLeft: lblMargins.marginLeft,
+                paddingBottom: lblMargins.marginBottom,
+                paddingRight: lblMargins.marginRight,
             }}>
             {props.text}
         </span>
