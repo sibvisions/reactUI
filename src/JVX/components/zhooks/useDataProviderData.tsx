@@ -8,6 +8,7 @@ const useDataProviderData = (id: string, dataProvider: string): [Array<any>]=> {
     useEffect(() => {
         const onDataChange = () => {
             const a = context.contentStore.getData(dataProvider);
+            console.log(a)
             setData([...a])
         }
         context.contentStore.subscribeToDataChange(dataProvider,onDataChange);

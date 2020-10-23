@@ -49,6 +49,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     },[onLoadCallback, id]);
 
     const suggestionData = useMemo(() => {
+        console.log(providedData)
         return providedData ? providedData.slice(firstRow, lastRow) : []
     }, [providedData, firstRow, lastRow])
 
@@ -143,6 +144,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }
 
     const onInputChange = (event:any) => {
+        context.contentStore.clearDataFromProvider(props.cellEditor?.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest()
         filterReq.dataProvider = props.cellEditor?.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
