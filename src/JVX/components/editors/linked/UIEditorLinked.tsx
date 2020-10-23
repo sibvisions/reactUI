@@ -49,7 +49,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     },[onLoadCallback, id]);
 
     const suggestionData = useMemo(() => {
-        console.log(providedData)
         return providedData ? providedData.slice(firstRow, lastRow) : []
     }, [providedData, firstRow, lastRow])
 
