@@ -25,7 +25,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
-    const inputRef = useRef(null);
+    const inputRef = useRef<InputNumber>(null);
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
     const lastValue = useRef<any>();
@@ -75,6 +75,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         setValue(selectedRow);
         lastValue.current = selectedRow;
     },[selectedRow]);
+
+
+    useEffect(() => {
+        if(baseProps.autoFocus) {
+            //@ts-ignore
+            inputRef.current?.inputEl?.focus?.()
+        }
+    }, [baseProps.autoFocus])
 
     return (
         <InputNumber

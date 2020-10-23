@@ -49,7 +49,8 @@ const CellEditor: FC<CellEditor> = (props) => {
                     id: "",
                     cellEditor_editable_:true,
                     onSubmit:() => setEdit(false),
-                    editorStyle: {width: "100%", height:"100%"}
+                    editorStyle: {width: "100%", height:"100%"},
+                    autoFocus: true
                 }) || editor
             }
 
@@ -120,7 +121,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         if(wrapRef.current){
             const size = wrapRef.current.getBoundingClientRect();
             if(onLoadCallback)
-                onLoadCallback(id, size.height, size.width);
+                onLoadCallback(id, 400, size.width);
         }
     }, [id, onLoadCallback]);
 

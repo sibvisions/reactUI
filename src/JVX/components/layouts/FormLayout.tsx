@@ -236,7 +236,6 @@ const FormLayout: FC<Panel> = (baseProps) => {
                     }
                 });
             }
-
             let leftWidth = 0;
             let rightWidth = 0;
             let topHeight = 0;

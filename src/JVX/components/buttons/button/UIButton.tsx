@@ -37,7 +37,6 @@ const UIButton: FC<IButton> = (baseProps) => {
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
 
-
     return(
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <Button

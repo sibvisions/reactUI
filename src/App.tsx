@@ -34,6 +34,7 @@ const App: FC = () => {
             startUpRequest.applicationName = queryParams.appName;
             context.server.APP_NAME = queryParams.appName;
             context.server.BASE_URL = queryParams.baseUrl;
+            context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
         }
         if(queryParams.userName && queryParams.password){
             startUpRequest.password = queryParams.password;

@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -43,10 +43,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     },[selectedRow]);
 
 
-
     return(
         <InputText
-            autoFocus={true}
+            autoFocus={baseProps.autoFocus}
             ref={inputRef}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
