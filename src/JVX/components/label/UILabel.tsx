@@ -23,7 +23,6 @@ const UILabel: FC<uiLabel> = (baseProps) => {
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback){
             const size = labelRef.current.getBoundingClientRect();
-            console.log(size.height, size.width, props.id)
             onLoadCallback(props.id, size.height, size.width);
         }
     }, [onLoadCallback, id]);

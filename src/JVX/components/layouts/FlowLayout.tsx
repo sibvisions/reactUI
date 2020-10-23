@@ -23,7 +23,6 @@ const FlowLayout: FC<Panel> = (props) => {
 
     const alignments = useMemo(() => {
         const splitAlignments = props.layout.split(",")
-        console.log(splitAlignments)
         let va: string = "center"; let ha: string = "center"; let ca: string = "center";
         if(parseInt(splitAlignments[8]) === HORIZONTAL_ALIGNMENT.LEFT)
             ha = "flex-start";
@@ -67,11 +66,9 @@ const FlowLayout: FC<Panel> = (props) => {
                 });
             }
         }
-        console.log(height, width, orientation)
         setPreferredSize({style: {height: height, width: width}, componentSize: preferredComponentSizes || new Map<string, CSSProperties>()})
         //@ts-ignore
         if(props.onLoadCallback) {
-            console.log(height,width)
             props.onLoadCallback(props.id, height, width);
         }
             
