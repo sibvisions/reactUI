@@ -23,6 +23,7 @@ import UIIcon from "../components/icon/UIIcon";
 import UIText from "../components/text/UIText";
 import UITextArea from "../components/text/UITextArea";
 import UIPassword from "../components/text/UIPassword";
+import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -108,6 +109,10 @@ export const createPassword: FC<BaseComponent> = (props) => {
     return <UIPassword {...props} key={props.id}/>
 }
 
+export const createTabsetPanel: FC<ITabsetPanel> = (props) => {
+    return <UITabsetPanel {...props} key={props.id}/>
+}
+
 export const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
@@ -156,6 +161,7 @@ const classNameMapper = new Map<string, Function>()
     .set("TextField", createTextField)
     .set("TextArea", createTextArea)
     .set("PasswordField", createPassword)
+    .set("TabsetPanel", createTabsetPanel)
 
 export const componentHandler = (component: BaseComponent) => {
     const builder = classNameMapper.get(component.className);

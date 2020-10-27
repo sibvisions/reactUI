@@ -38,7 +38,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     }
 
     return(
-        <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
+        <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
                 style={btnData.style}
                 label={props.text}

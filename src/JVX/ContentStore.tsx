@@ -13,6 +13,8 @@ class ContentStore{
 
     currentUser: UserData = new UserData();
 
+    currentTheme:string = "dark"
+
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
     parentSubscriber = new Map<string, Function>();

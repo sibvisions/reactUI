@@ -138,6 +138,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             <Column
                 field={colName}
                 header={props.columnLabels[colIndex]}
+                headerStyle={{overflowX: "hidden", textOverflow: 'Ellipsis'}}
                 body={(rowData: any, column:any) => <CellEditor
                     colName={colName}
                     dataProvider={props.dataBook}

@@ -1,19 +1,17 @@
 import tinycolor from 'tinycolor2';
 import BaseComponent from '../BaseComponent';
-import {IEditor} from "../editors/IEditor";
 import Margins from '../layouts/models/Margins';
 import { Panel } from '../panels/panel/UIPanel';
 import Size from '../util/Size';
-import { checkCellEditorAlignments } from './CheckAlignments';
 import { UIFont } from './UIFont';
 
 export function  getPanelBgdColor(props:Panel, context:any) {
-    let bgdColor = tinycolor('grey');
+    let bgdColor = tinycolor('C8C8C8');
 
     if (props.background)
         bgdColor = tinycolor(props.background);
     else {
-        const parent:BaseComponent = context.contentStore.flatContent.find((elem:BaseComponent) => elem.id === props.parent);
+        const parent:BaseComponent = context.contentStore.flatContent.get(props.parent);
         if (parent !== undefined && parent.background)
             bgdColor = tinycolor(parent.background)
     }

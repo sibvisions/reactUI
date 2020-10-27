@@ -11,5 +11,7 @@ enum REQUEST_ENDPOINTS  {
     FILTER = "/api/dal/filter",
     SET_VALUE = "/api/comp/setValue",
     SET_VALUES = "/api/dal/setValues",
+    SELECT_TAB = "/api/comp/selectTab",
+    CLOSE_TAB = "/api/comp/closeTab",
 }
 export default REQUEST_ENDPOINTS

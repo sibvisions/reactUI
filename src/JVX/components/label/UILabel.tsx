@@ -39,10 +39,8 @@ const UILabel: FC<uiLabel> = (baseProps) => {
             fontWeight: lblFont.fontWeight,
             fontStyle: lblFont.fontStyle,
             fontSize: lblFont.fontSize,
-            paddingTop: lblMargins.marginTop,
-            paddingLeft: lblMargins.marginLeft,
-            paddingBottom: lblMargins.marginBottom,
-            paddingRight: lblMargins.marginRight,
+            paddingTop: "0.429rem",
+            paddingBottom: "0.429rem",
             ...layoutValue.get(props.id)
         } : {
                 display: 'inline-flex',
@@ -54,10 +52,8 @@ const UILabel: FC<uiLabel> = (baseProps) => {
                 fontWeight: lblFont.fontWeight,
                 fontStyle: lblFont.fontStyle,
                 fontSize: lblFont.fontSize,
-                paddingTop: lblMargins.marginTop,
-                paddingLeft: lblMargins.marginLeft,
-                paddingBottom: lblMargins.marginBottom,
-                paddingRight: lblMargins.marginRight,
+                paddingTop: "0.429rem",
+                paddingBottom: "0.429rem",
             }}>
             {props.text}
         </span>

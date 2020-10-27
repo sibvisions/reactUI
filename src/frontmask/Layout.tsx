@@ -102,7 +102,7 @@ const Layout: FC = (props) => {
 
 
     return(
-        <div className={"layout"}>
+        <div className="layout dark">
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
                 <div ref={sizeRef} className={"main"}>

@@ -9,6 +9,7 @@ import FetchRequest from "../request/FetchRequest";
 import SetValuesRequest from "../request/SetValuesRequest";
 import FilterRequest from "../request/FilterRequest";
 import SetValueRequest from "../request/SetValueRequest";
+import TabRequest from "../request/TabRequest";
 
 
 
@@ -143,5 +144,14 @@ export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequ
         values: values?.values
     };
     return req;
+}
+
+export const createTabRequest = (values?: TabRequest): TabRequest => {
+    const req:TabRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        index: values?.index
+    };
+    return req
 }
 

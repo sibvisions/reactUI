@@ -34,9 +34,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName);
-    const scaleDigits = cellEditorMetaData?.cellEditor?.scale;
-    const length = (scaleDigits && scaleDigits > 0) ? (cellEditorMetaData?.cellEditor?.length ? cellEditorMetaData?.cellEditor.length : null) :
-    (cellEditorMetaData?.cellEditor?.precision ? cellEditorMetaData?.cellEditor.precision : null);
+    const scaleDigits = cellEditorMetaData?.cellEditor?.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined;
+    const length = cellEditorMetaData?.cellEditor?.precision ? cellEditorMetaData?.cellEditor.precision : null
 
     useEffect(() => {
         //@ts-ignore

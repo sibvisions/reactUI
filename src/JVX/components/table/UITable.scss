@@ -2,7 +2,8 @@ td{
     height: 1px;
     padding: 0 !important;
     border-color: #191919 !important;
-    overflow: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 tr.p-highlight{

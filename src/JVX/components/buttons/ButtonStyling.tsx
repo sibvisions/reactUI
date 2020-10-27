@@ -171,7 +171,7 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
 }
 
 function getBtnBgdColor(props:IButton) {
-    let btnColor = tinycolor('grey'); 
+    let btnColor = tinycolor('C8C8C8'); 
     if (props.borderPainted !== false) {
         if (props.background)
             btnColor = tinycolor(props.background);

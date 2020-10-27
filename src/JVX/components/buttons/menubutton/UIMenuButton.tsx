@@ -29,7 +29,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         const buildMenu = (foundItems:Array<any>) => {
             let tempItems:Array<any> = [];
             foundItems.forEach(item => {
-                let iconProps = parseIconData(item.props, item.image);
+                console.log(props)
+                let iconProps = parseIconData(props, item.image);
                 tempItems.push({
                     label: item.text,
                     icon: iconProps ? iconProps.icon : undefined,

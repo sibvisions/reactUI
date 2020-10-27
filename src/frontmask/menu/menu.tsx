@@ -2,21 +2,26 @@
 import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 //Custom
+import './menu.scss';
 import {createLogoutRequest, createOpenScreenRequest} from "../../JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
+import logo from '../../assests/sibvisionslogo.png'
 
 //Prime
 import {Menubar} from "primereact/menubar";
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
+import {Sidebar} from 'primereact/sidebar';
+import {TieredMenu} from 'primereact/tieredmenu';
 import {Button} from "primereact/button";
 import UserData from "../../JVX/model/UserData";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
+    const [sbVisible, setSbVisible] = useState<boolean>(false);
     const slideRef = useRef<SlideMenu>(null)
 
     const profileMenu = useMemo(() => {
@@ -60,7 +65,8 @@ const Menu: FC = () => {
                 <Button
                     className={"p-button-secondary p-button-text"}
                     label={context.contentStore.currentUser.displayName}
-                    style={{marginRight: 7}}
+                    icon="pi pi-angle-down"
+                    iconPos="right"
                     onClick={event => slideRef.current?.show(event)}/>
                 <SlideMenu
                     ref={slideRef}
@@ -99,10 +105,17 @@ const Menu: FC = () => {
     }
 
     return(
-        <Menubar
-            model={menuItems}
-            end={() => profileMenu}
-            />
+        <>
+            <div className="topMenuBar p-grid">
+                <div className="menuBtnTop" onClick={() => sbVisible ? setSbVisible(false) : setSbVisible(true)}>
+                    <i className="pi pi-bars" style={{ fontSize: '2em', fontWeight: 'bold' }} />
+                </div>
+                <Menubar model={menuItems} className="p-col" end={() => profileMenu}/>
+            </div>
+            <Sidebar visible={sbVisible} position="left" onHide={() => setSbVisible(false)}>
+                <TieredMenu className="sidebar-menu" model={menuItems}/>
+            </Sidebar>
+        </>
     )
 }
 export default Menu;
