@@ -15,8 +15,6 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            //@ts-ignore
-            console.log(inputRef.current.inputEl.getBoundingClientRect())
             // @ts-ignore
             const size:DOMRect = inputRef.current.inputEl.getBoundingClientRect();
             onLoadCallback(id, size.height, size.width);

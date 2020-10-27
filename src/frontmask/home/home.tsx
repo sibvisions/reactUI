@@ -1,8 +1,8 @@
 import React, {FC, useContext} from "react";
-import {useParams} from "react-router";
 import {jvxContext} from "../../JVX/jvxProvider";
 import Layout from "../Layout";
 import {componentHandler} from "../../JVX/factories/UIFactory";
+import {useParams} from "react-router-dom";
 
 
 const Home: FC = () => {

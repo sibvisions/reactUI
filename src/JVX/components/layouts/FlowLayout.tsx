@@ -59,7 +59,6 @@ const FlowLayout: FC<Panel> = (props) => {
                 });
             } else {
                 preferredComponentSizes.forEach(value => {
-                    console.log(value.width)
                     if(value.width > width){
                         width = value.width;
                     } height += value.height + gaps.vertical;

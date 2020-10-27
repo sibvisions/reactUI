@@ -1,4 +1,3 @@
-import {browserHistory} from "../App";
 import ContentStore from "./ContentStore"
 
 import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
@@ -27,7 +26,6 @@ class Server{
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
     RESOURCE_URL = this.BASE_URL + "/resource/" + this.APP_NAME;
     contentStore: ContentStore;
-    activeScreen = "";
 
     sendRequest(request: any, endpoint: string){
         let reqOpt: RequestInit = {
@@ -244,8 +242,8 @@ class Server{
 
 
         if(routeTo){
-            this.activeScreen = routeTo;
-            browserHistory.push("/"+routeTo);
+            window.location.hash = "/"+routeTo
+            // history.push();//
         }
     }
 }

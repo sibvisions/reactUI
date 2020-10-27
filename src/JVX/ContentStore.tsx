@@ -10,10 +10,9 @@ class ContentStore{
     menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1);
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
+    invisibleContent = new Map<string, BaseComponent>();
 
     currentUser: UserData = new UserData();
-
-    currentTheme:string = "dark"
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
@@ -29,59 +28,84 @@ class ContentStore{
     dataProviderSelectedRow = new Map<string, any>();
     dataProviderSelectedRowIndex = new Map<string, number>();
 
-
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
+        let existingComponent: BaseComponent | undefined;
         //Update FlatContent
         componentsToUpdate.forEach(newComponent => {
-            //Check if component was removed earlier, if yes then re-add it to flatContent
-            let existingComponent = this.removedContent.get(newComponent.id);
-            if(existingComponent){
-                this.removedContent.delete(existingComponent.id);
-                this.flatContent.set(existingComponent.id, existingComponent);
-            }
 
-            //Update existing component
-            existingComponent = this.flatContent.get(newComponent.id);
-
-            //Build Notify List
-            if(newComponent.parent){
-                notifyList.push(newComponent.parent);
-                if(existingComponent){
-                    notifyList.push(existingComponent.id);
+            //Changed notify List
+            if(existingComponent) {
+                if (newComponent.parent) {
+                    notifyList.push(newComponent.parent);
+                    notifyList.push(existingComponent.parent || "");
                 }
-            }
-            if(newComponent.visible !== undefined && existingComponent && existingComponent.parent){
-                notifyList.push(existingComponent.parent)
+                if (newComponent.visible !== undefined)
+                    notifyList.push(existingComponent.parent || "");
+                if (newComponent["~remove"] !== undefined)
+                    notifyList.push(existingComponent.parent || "");
+                if (newComponent["~destroy"] !== undefined)
+                    notifyList.push(existingComponent.parent || "");
             }
 
-            if(existingComponent){
-                if(newComponent["~destroy"]){
-                    //Delete Component From flatContent
-                    const componentToRemove = this.flatContent.get(newComponent.id);
-                    if(componentToRemove) {
-                        this.flatContent.delete(componentToRemove.id);
+            // [~destroy] Delete Element
+            if(newComponent["~destroy"]){
+                existingComponent = this.invisibleContent.get(newComponent.id);
+                if(existingComponent)
+                    this.invisibleContent.delete(newComponent.id);
+                existingComponent = this.removedContent.get(newComponent.id);
+                if(existingComponent)
+                    this.removedContent.delete(newComponent.id);
+                existingComponent = this.flatContent.get(newComponent.id);
+                if(existingComponent)
+                    this.flatContent.delete(newComponent.id);
+            }
+            // [~remove] & [visible]
+            else if(newComponent["~remove"] !== undefined || newComponent.visible !== undefined) {
+                // [~remove] Remove or re-add
+                if(newComponent["~remove"]){
+                    existingComponent = this.flatContent.get(newComponent.id);
+                    if(existingComponent){
+                        this.flatContent.delete(newComponent.id);
+                        this.removedContent.set(newComponent.id, existingComponent);
                     }
                 }
-                else if (newComponent["~remove"]){
-                    //Move Component to removedContent
-                    const componentToRemove = this.flatContent.get(newComponent.id);
-                    if(componentToRemove) {
-                        this.flatContent.delete(componentToRemove.id);
-                        this.removedContent.set(componentToRemove.id, componentToRemove);
+                else if(newComponent["~remove"] === false){
+                    existingComponent = this.removedContent.get(newComponent.id);
+                    if(existingComponent){
+                        this.removedContent.delete(newComponent.id);
+                        this.flatContent.set(newComponent.id, existingComponent);
                     }
                 }
-                else {
-                    //Update or set properties
-                    for(let newPropName in newComponent){
-                        // @ts-ignore
-                        existingComponent[newPropName] = newComponent[newPropName]
 
+                // [visible] Remove or re-add
+                if(newComponent.visible){
+                    existingComponent = this.invisibleContent.get(newComponent.id);
+                    if(existingComponent){
+                        this.invisibleContent.delete(newComponent.id);
+                        this.flatContent.set(newComponent.id, existingComponent);
+                    }
+                }
+                else if(newComponent.visible === false){
+                    existingComponent = this.flatContent.get(newComponent.id);
+                    if(existingComponent){
+                        this.flatContent.delete(newComponent.id);
+                        this.invisibleContent.set(newComponent.id, existingComponent);
                     }
                 }
             }
-            else {
+
+            existingComponent = this.flatContent.get(newComponent.id)
+
+            // Add new Component or updated Properties
+            if(existingComponent) {
+                for (let newPropName in newComponent) {
+                    // @ts-ignore
+                    existingComponent[newPropName] = newComponent[newPropName]
+                }
+            }
+            else if(newComponent["~remove"] === undefined && newComponent["~destroy"] === undefined) {
                 this.flatContent.set(newComponent.id, newComponent);
             }
         });
@@ -95,11 +119,14 @@ class ContentStore{
             }
         });
 
-        //Parents
-        notifyList.forEach(value => {
-            this.parentSubscriber.get(value)?.apply(undefined, []);
-        });
+        console.log(notifyList.filter(this.onlyUnique))
+        notifyList.filter(this.onlyUnique).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
+
+    onlyUnique(value: string, index: number, self: Array<string>) {
+        return self.indexOf(value) === index;
+    }
+
 
     closeScreen(windowName: string){
         const deleteChildren = (parentId: string) => {
@@ -149,7 +176,7 @@ class ContentStore{
 
         //Notify
         this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
-           value.fn.apply(undefined, []);
+            value.fn.apply(undefined, []);
         });
     }
 

@@ -1,7 +1,5 @@
 //React
-import React, {FC, useContext, useLayoutEffect} from 'react';
-import {Route, Router, Switch} from "react-router";
-import { createBrowserHistory } from "history"
+import React, {FC, useContext, useEffect, useLayoutEffect} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -12,9 +10,10 @@ import {createStartupRequest} from "./JVX/factories/RequestFactory";
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
 import * as queryString from "querystring";
+import {HashRouter, Route, Switch, useHistory} from "react-router-dom";
+import history from "history/hash"
 
 
-export const browserHistory = createBrowserHistory();
 
 type queryType = {
     appName?: string,
@@ -46,22 +45,22 @@ const App: FC = () => {
         startUpRequest.screenHeight = window.innerHeight;
         startUpRequest.screenWidth = window.innerWidth;
         context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-    });
+    }, [context.server]);
 
     return (
-        <Router history={browserHistory} >
+        <HashRouter>
             <Switch>
-                <Route path={"/login"}>
+                <Route exact path={"/login"}>
                     <Login />
                 </Route>
-                <Route path={"/home/:componentId"}>
+                <Route exact  path={"/home/:componentId"}>
                     <Home />
                 </Route>
-                <Route path={"/home"}>
+                <Route  path={"/home"}>
                     <Home />
                 </Route>
             </Switch>
-      </Router>
+      </HashRouter>
   );
 }
 export default App;
