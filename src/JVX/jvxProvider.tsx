@@ -1,30 +1,52 @@
-import React, { createContext, FC } from "react";
+import React, {createContext, FC, useState} from "react";
 import Server from "./Server";
 import ContentStore from "./ContentStore";
-import EventStream from "./EventStream";
 
 
 type jvxContextType={
     server: Server,
     contentStore: ContentStore,
-    eventStream: EventStream
+    theme: string,
+    setTheme: Function
 }
 
 const contentStore = new ContentStore();
 const server = new Server(contentStore);
-const eventStream = new EventStream();
 const initValue: jvxContextType = {
     contentStore: contentStore,
     server: server,
-    eventStream: eventStream
+    theme: "",
+    setTheme: () => {},
 }
 
 export const jvxContext = createContext<jvxContextType>(initValue)
 
 const JVXProvider: FC = ({children}) => {
 
+    const initState = (): jvxContextType => {
+        const setTheme = (newTheme: string) => {
+            setContextState({...contextState, theme: newTheme});
+        }
+
+        const contentStore = new ContentStore();
+        const server = new Server(contentStore);
+
+        return {
+            theme: "dark",
+            setTheme: setTheme,
+            contentStore: contentStore,
+            server: server
+        }
+
+    }
+
+    const [contextState, setContextState] = useState<jvxContextType>(initState())
+
+
+
+
     return (
-        <jvxContext.Provider value={initValue}>
+        <jvxContext.Provider value={contextState}>
             {children}
         </jvxContext.Provider>
     )
