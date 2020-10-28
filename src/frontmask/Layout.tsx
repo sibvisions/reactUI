@@ -38,7 +38,7 @@ const Layout: FC = (props) => {
 
     const sizeRef = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext);
-    const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>())
+    const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
     const resizeRef = useRef<NodeJS.Timeout | undefined>();
     const deviceRef = useRef<NodeJS.Timeout>(setTimeout(() => {}, 100))
@@ -102,16 +102,16 @@ const Layout: FC = (props) => {
 
 
     return(
-        <div className="layout dark">
+        <div className={"layout " + context.theme}>
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
                 <div ref={sizeRef} className={"main"}>
                     {props.children}
                 </div>
             </LayoutContext.Provider>
-            {/*<div style={{backgroundColor: "blue"}}>*/}
-            {/*    <h4>footer</h4>*/}
-            {/*</div>*/}
+            <div className="footer">
+                <h4>Fußzeile</h4>
+            </div>
         </div>
 
     )

@@ -46,7 +46,7 @@ tr.p-highlight{
                     align-items: center;
                 }
             }
-            >td.TextCellEditor, >td.DateCellEditor {
+            >td.TextCellEditor, >td.DateCellEditor, >td.LinkedCellEditor {
                 >.cellData{
                     display: flex;
                     align-items: center;

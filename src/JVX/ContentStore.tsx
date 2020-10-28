@@ -13,6 +13,7 @@ class ContentStore{
     invisibleContent = new Map<string, BaseComponent>();
 
     currentUser: UserData = new UserData();
+    currentTheme: string = "dark"
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
@@ -118,8 +119,6 @@ class ContentStore{
                 updateFunction(existingComp);
             }
         });
-
-        console.log(notifyList.filter(this.onlyUnique))
         notifyList.filter(this.onlyUnique).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
@@ -255,7 +254,7 @@ class ContentStore{
         menuResponse.items.forEach(parent => {
             if(groupsString.indexOf(parent.group) === -1) {
                 groupsString.push(parent.group)
-                groups.push({label: parent.group, items: Array<MenuItemCustom>(), icon: "pi pi-google"})
+                groups.push({label: parent.group, items: Array<MenuItemCustom>()})
             }
         });
         //Add SubMenus to parents

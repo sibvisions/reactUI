@@ -8,6 +8,7 @@ import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
 import logo from '../../assests/sibvisionslogo.png'
+import BaseResponse from '../../JVX/response/BaseResponse'
 
 //Prime
 import {Menubar} from "primereact/menubar";
@@ -38,7 +39,15 @@ const Menu: FC = () => {
         const slideOptions: Array<MenuItem> =
             [
                 {
+                    label: "Settings",
+                    icon: "pi pi-cog",
+                    command: () => {
+                        context.server.routingDecider([{name: "settings"}])
+                    }
+                },
+                {
                     label: "Logout",
+                    icon: "pi pi-power-off",
                     command(e: { originalEvent: Event; item: MenuItem }) {
                         sendLogout()
                     }
@@ -107,10 +116,7 @@ const Menu: FC = () => {
     return(
         <>
             <div className="topMenuBar p-grid">
-                <div className="menuBtnTop" onClick={() => sbVisible ? setSbVisible(false) : setSbVisible(true)}>
-                    <i className="pi pi-bars" style={{ fontSize: '2em', fontWeight: 'bold' }} />
-                </div>
-                <Menubar model={menuItems} className="p-col" end={() => profileMenu}/>
+                <Menubar start={() => <img src={logo}/>} model={menuItems} className="p-col" end={() => profileMenu}/>
             </div>
             <Sidebar visible={sbVisible} position="left" onHide={() => setSbVisible(false)}>
                 <TieredMenu className="sidebar-menu" model={menuItems}/>

@@ -1,3 +1,22 @@
+@import './themes/theme-dark';
+@import './themes/theme-light';
+@import './themes/theme-blue';
+
+@mixin themable($theme-name, $theme-map) {
+  .#{$theme-name} {
+    .footer {
+      background-color: map-get($theme-map, "footer");
+      color: map-get($theme-map, "fgdColor");
+      padding-left: 20px;
+      font-family: "Segoe UI";
+    }
+  } 
+}
+
+@include themable('dark', $theme-dark);
+@include themable('light', $theme-light);
+@include themable('blue', $theme-blue);
+
 .layout{
   height: 100vh;
   display: flex;

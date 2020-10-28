@@ -238,6 +238,9 @@ class Server{
                    routeTo = "login"
                }
            }
+           else if (response.name === "settings") {
+               routeTo = "home/settings";
+           }
         });
 
 

@@ -115,6 +115,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
     const firstRowIndex = useRef(0);
 
+    const virtualEnabled = useMemo(() => {
+        return providerData.length > rows*2
+    },[providerData.length])
+
     const {onLoadCallback, id} = baseProps
     //Report Size
     useEffect(() => {
@@ -179,14 +183,18 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     }
 
+    console.log(layoutContext.get(baseProps.id), baseProps.id)
+
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
 
     return(
-       <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(baseProps.id)}}>
+       <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(props.id)}}>
            <DataTable
-               style={{width:"100%", height: "100%"}}
-               scrollable lazy virtualScroll
+               style={{width:"100%", height: "100%", backgroundColor: "white", border: "1px solid", borderCollapse: "collapse"}}
+               scrollable={virtualEnabled}
+               lazy={virtualEnabled}
+               virtualScroll={virtualEnabled}
                rows={rows}
                virtualRowHeight={50}
                scrollHeight={heightNoHeaders}
@@ -195,8 +203,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                value={virtualRows}
                selection={selectedRow}
                selectionMode={"single"}
-               onSelectionChange={handleRowSelection}
-               >
+               onSelectionChange={handleRowSelection}>
                {columns}
            </DataTable>
        </div>

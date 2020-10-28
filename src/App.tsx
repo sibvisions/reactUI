@@ -9,6 +9,7 @@ import {createStartupRequest} from "./JVX/factories/RequestFactory";
 //UI
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
+import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
 import {HashRouter, Route, Switch, useHistory} from "react-router-dom";
 import history from "history/hash"
@@ -55,6 +56,9 @@ const App: FC = () => {
                 </Route>
                 <Route exact  path={"/home/:componentId"}>
                     <Home />
+                </Route>
+                <Route exact path={"/settings"}>
+                    <Settings />
                 </Route>
                 <Route  path={"/home"}>
                     <Home />
