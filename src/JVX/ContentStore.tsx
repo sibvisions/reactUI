@@ -13,7 +13,6 @@ class ContentStore{
     invisibleContent = new Map<string, BaseComponent>();
 
     currentUser: UserData = new UserData();
-    currentTheme: string = "dark"
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
@@ -36,68 +35,27 @@ class ContentStore{
         //Update FlatContent
         componentsToUpdate.forEach(newComponent => {
 
-            //Changed notify List
-            if(existingComponent) {
-                if (newComponent.parent) {
+            existingComponent = this.flatContent.get(newComponent.id) || this.removedContent.get(newComponent.id);
+
+            if(this.removedContent.has(newComponent.id) && existingComponent){
+                this.removedContent.delete(newComponent.id);
+                this.flatContent.set(newComponent.id, existingComponent)
+            }
+
+            if(newComponent.parent || newComponent["~remove"] || newComponent["~destroy"] || newComponent.visible !== undefined || newComponent.constraints){
+                notifyList.push(existingComponent?.parent || "");
+                if(newComponent.parent){
                     notifyList.push(newComponent.parent);
-                    notifyList.push(existingComponent.parent || "");
                 }
-                if (newComponent.visible !== undefined)
-                    notifyList.push(existingComponent.parent || "");
-                if (newComponent["~remove"] !== undefined)
-                    notifyList.push(existingComponent.parent || "");
-                if (newComponent["~destroy"] !== undefined)
-                    notifyList.push(existingComponent.parent || "");
             }
 
-            // [~destroy] Delete Element
-            if(newComponent["~destroy"]){
-                existingComponent = this.invisibleContent.get(newComponent.id);
-                if(existingComponent)
-                    this.invisibleContent.delete(newComponent.id);
-                existingComponent = this.removedContent.get(newComponent.id);
-                if(existingComponent)
+            if((newComponent["~remove"] || newComponent["~destroy"]) && existingComponent){
+                this.flatContent.delete(newComponent.id);
+                if(newComponent["~remove"])
+                    this.removedContent.set(newComponent.id, existingComponent);
+                else
                     this.removedContent.delete(newComponent.id);
-                existingComponent = this.flatContent.get(newComponent.id);
-                if(existingComponent)
-                    this.flatContent.delete(newComponent.id);
             }
-            // [~remove] & [visible]
-            else if(newComponent["~remove"] !== undefined || newComponent.visible !== undefined) {
-                // [~remove] Remove or re-add
-                if(newComponent["~remove"]){
-                    existingComponent = this.flatContent.get(newComponent.id);
-                    if(existingComponent){
-                        this.flatContent.delete(newComponent.id);
-                        this.removedContent.set(newComponent.id, existingComponent);
-                    }
-                }
-                else if(newComponent["~remove"] === false){
-                    existingComponent = this.removedContent.get(newComponent.id);
-                    if(existingComponent){
-                        this.removedContent.delete(newComponent.id);
-                        this.flatContent.set(newComponent.id, existingComponent);
-                    }
-                }
-
-                // [visible] Remove or re-add
-                if(newComponent.visible){
-                    existingComponent = this.invisibleContent.get(newComponent.id);
-                    if(existingComponent){
-                        this.invisibleContent.delete(newComponent.id);
-                        this.flatContent.set(newComponent.id, existingComponent);
-                    }
-                }
-                else if(newComponent.visible === false){
-                    existingComponent = this.flatContent.get(newComponent.id);
-                    if(existingComponent){
-                        this.flatContent.delete(newComponent.id);
-                        this.invisibleContent.set(newComponent.id, existingComponent);
-                    }
-                }
-            }
-
-            existingComponent = this.flatContent.get(newComponent.id)
 
             // Add new Component or updated Properties
             if(existingComponent) {
@@ -105,21 +63,23 @@ class ContentStore{
                     // @ts-ignore
                     existingComponent[newPropName] = newComponent[newPropName]
                 }
-            }
-            else if(newComponent["~remove"] === undefined && newComponent["~destroy"] === undefined) {
+            } else {
                 this.flatContent.set(newComponent.id, newComponent);
             }
+
+
         });
 
         //Properties
         componentsToUpdate.forEach(value => {
-            const existingComp = this.flatContent.get(value.id);
+            const existingComp = this.flatContent.get(value.id) || this.removedContent.get(value.id);
             const updateFunction = this.propertiesSubscriber.get(value.id);
             if(existingComp && updateFunction){
                 updateFunction(existingComp);
             }
         });
         notifyList.filter(this.onlyUnique).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
+        console.log(this.removedContent)
     }
 
     onlyUnique(value: string, index: number, self: Array<string>) {
@@ -237,7 +197,7 @@ class ContentStore{
 
         let entry = componentEntries.next();
         while (!entry.done){
-            if(entry.value[1].parent === parentId){
+            if(entry.value[1].parent === parentId && entry.value[1].visible !== false){
                 children.push(entry.value[1]);
             }
             entry = componentEntries.next();
@@ -254,7 +214,7 @@ class ContentStore{
         menuResponse.items.forEach(parent => {
             if(groupsString.indexOf(parent.group) === -1) {
                 groupsString.push(parent.group)
-                groups.push({label: parent.group, items: Array<MenuItemCustom>()})
+                groups.push({label: parent.group, items: Array<MenuItemCustom>(), icon: "pi pi-google"})
             }
         });
         //Add SubMenus to parents
