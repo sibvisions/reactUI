@@ -27,15 +27,12 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && panelRef.current) {
             //@ts-ignore
-            console.log(panelRef.current.nav.parentElement.getBoundingClientRect(), panelRef.current.nav.parentElement)
-            //@ts-ignore
             const size:DOMRect = panelRef.current.nav.parentElement.getBoundingClientRect()
             onLoadCallback(id, size.height, size.width);
         }
     },[onLoadCallback, id]);
 
     useLayoutEffect(() => {
-        console.log('yo')
         const sizeMap = new Map<string, CSSProperties>();
         //@ts-ignore
         const width = panelRef.current.nav.nextElementSibling.getBoundingClientRect().width;

@@ -29,7 +29,8 @@ type CellEditor = {
     cellData: any,
     dataProvider: string,
     colName: string,
-    metaData: MetaDataResponse | undefined
+    metaData: MetaDataResponse | undefined,
+    resource: string
 }
 
 
@@ -64,7 +65,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     const castedColumn = columnMetaData as IEditorChoice;
                     const cellIndex = castedColumn?.cellEditor?.allowedValues?.indexOf(props.cellData)
                     if (castedColumn.cellEditor?.images && cellIndex !== undefined) {
-                        return <img alt="choice" style={{cursor: 'pointer'}} src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + castedColumn?.cellEditor?.images[cellIndex]}/>
+                        return <img alt="choice" style={{cursor: 'pointer'}} src={props.resource + castedColumn?.cellEditor?.images[cellIndex]}/>
                     }
                 }
                 else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {
@@ -85,13 +86,13 @@ const CellEditor: FC<CellEditor> = (props) => {
 
         if (!edit) {
             return (
-                <div className={"cellData"} style={{height: 50}} onDoubleClick={event => setEdit(true)}>
+                <div className={"cellData"} style={{height: 30}} onDoubleClick={event => setEdit(true)}>
                     {showCellData()}
                 </div>
             )
         } else {
             return (
-                <div style={{height: 50}}>
+                <div style={{height: 30}}>
                     {decideEditor()}
                 </div>
             )
@@ -143,14 +144,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                 field={colName}
                 header={props.columnLabels[colIndex]}
                 headerStyle={{overflowX: "hidden", textOverflow: 'Ellipsis'}}
-                body={(rowData: any, column:any) => <CellEditor
+                body={(rowData: any) => <CellEditor
                     colName={colName}
                     dataProvider={props.dataBook}
                     cellData={rowData[colName]}
                     metaData={metaData}
+                    resource={context.server.RESOURCE_URL}
                 />}
+                style={{width: '1%', whiteSpace: 'nowrap', lineHeight: '14px'}}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
-                loadingBody={() => <div className="loading-text" style={{height: 50}} />}/>
+                loadingBody={() => <div className="loading-text" style={{height: 30}} />}/>
         )
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore])
 
@@ -183,8 +186,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     }
 
-    console.log(layoutContext.get(baseProps.id), baseProps.id)
-
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
 
@@ -195,8 +196,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                scrollable={virtualEnabled}
                lazy={virtualEnabled}
                virtualScroll={virtualEnabled}
+               resizableColumns
                rows={rows}
-               virtualRowHeight={50}
+               virtualRowHeight={30}
                scrollHeight={heightNoHeaders}
                onVirtualScroll={handleVirtualScroll}
                totalRecords={providerData.length}

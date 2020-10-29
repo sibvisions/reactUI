@@ -38,6 +38,12 @@ tr.p-highlight{
 .p-datatable {
     .p-datatable-tbody {
         >tr {
+            &:focus {
+                outline: none;
+            }
+            ::-moz-focus-inner {
+                border: 0;
+            }
             >td.ChoiceCellEditor, >td.CheckBoxCellEditor {
                 text-align: center;
                 >.cellData {
@@ -46,18 +52,15 @@ tr.p-highlight{
                     align-items: center;
                 }
             }
-            >td.TextCellEditor, >td.DateCellEditor, >td.LinkedCellEditor {
+            >td {
                 >.cellData{
-                    display: flex;
-                    align-items: center;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
             >td.NumberCellEditor {
                 text-align: right;
-                >.cellData {
-                    display: flex;
-                    align-items: center;
-                }
+
             }
         } 
     }

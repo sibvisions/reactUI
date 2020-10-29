@@ -1,4 +1,5 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useContext } from 'react';
+import { jvxContext } from 'src/JVX/jvxProvider';
 import tinycolor from 'tinycolor2';
 import { checkAlignments} from "../compprops/CheckAlignments";
 import { getFont, getMargins, parseIconData } from '../compprops/ComponentProperties';
@@ -82,9 +83,15 @@ function styleMenuButton(btnChild:HTMLElement, layoutStyle:React.CSSProperties, 
     else if (btnChild.classList.contains("p-splitbutton-menubutton")) {
         btnChild.style.setProperty('width', '38px');
     }
+    btnChild.onfocus = () => {
+        btnChild.parentElement?.style.setProperty('box-shadow', '0 0 0 0.2rem #8dcdff')
+    }
+    btnChild.onblur = () => {
+        btnChild.parentElement?.style.removeProperty('box-shadow')
+    }
 }
 
-function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any) {
+function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any, resource:string) {
     if (child.parentElement !== null) {
         if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
             //if the button is a Radiobutton or a Checkbox and the hTextPos is 1, the Radiobutton/Checkbox gets moved to the center of the component
@@ -111,7 +118,7 @@ function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any) {
                 child.style.setProperty('font-size', iconProps.size.height+'px');
                 child.style.setProperty('color', iconProps.color);
                 if (!child.classList.value.includes('fa')) {
-                    child.style.setProperty('background-image', 'url(http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + iconProps.icon + ')');
+                    child.style.setProperty('background-image', 'url(' + resource + iconProps.icon + ')');
                 }
             }
         }
@@ -119,18 +126,18 @@ function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any) {
     }
 }
 
-export function styleChildren(btnChildren:HTMLCollection, props:IButton, btnData:any, layoutStyle:React.CSSProperties|undefined) {
+export function styleChildren(btnChildren:HTMLCollection, props:IButton, btnData:any, layoutStyle:React.CSSProperties|undefined, resource:string) {
     if (props.className === "PopupMenuButton") {
         for (let btnChild of btnChildren) {
             if (layoutStyle !== undefined)
                 styleMenuButton(btnChild as HTMLElement, layoutStyle, btnData);
             for (let child of btnChild.children)
-                styleButtonContent(child as HTMLElement, props, btnData.iconProps);
+                styleButtonContent(child as HTMLElement, props, btnData.iconProps, resource);
         }
     }
     else {
         for (let child of btnChildren) {
-            styleButtonContent(child as HTMLElement, props, btnData.iconProps)
+            styleButtonContent(child as HTMLElement, props, btnData.iconProps, resource)
         }
     }
 }
@@ -140,6 +147,14 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
         obj.onmouseover = () => {
             obj.style.setProperty('background', tinycolor(color).darken(dark).toString());
             obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
+            if (props.className === "PopupMenuButton") {
+                for (const child of obj.children) {
+                    const castedChild = child as HTMLElement;
+                    if (castedChild.tagName === "BUTTON")
+                        castedChild.style.setProperty('border-color', tinycolor(color).darken(dark).toString())
+                        
+                }
+            }
         }
         obj.onmouseout = () => {
             if (checked && checkedColor !== null) {
@@ -149,13 +164,27 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
             else {
                 obj.style.setProperty('background', color ? color : null);
                 obj.style.setProperty('border-color', color ? color : null);
+                if (props.className === "PopupMenuButton") {
+                    for (const child of obj.children) {
+                        const castedChild = child as HTMLElement;
+                        if (castedChild.tagName === "BUTTON")
+                            castedChild.style.setProperty('border-color', color ? color : null);
+                    }
+                }
             }
         }
     }
     else if (props.borderOnMouseEntered) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background', props.background !== undefined ? props.background : "#007ad9")
-            obj.style.setProperty('border-color', props.background !== undefined ? props.background : "#007ad9")
+            obj.style.setProperty('background', props.background !== undefined ? props.background : "#007ad9");
+            obj.style.setProperty('border-color', props.background !== undefined ? props.background : "#007ad9");
+            if (props.className === "PopupMenuButton") {
+                for (const child of obj.children) {
+                    const castedChild = child as HTMLElement;
+                    if (castedChild.tagName === "BUTTON")
+                        castedChild.style.setProperty('border-color', props.background !== undefined ? props.background : "#007ad9");
+                }
+            }
         }
         obj.onmouseout = () => {
             if (checked && checkedColor !== null) {
@@ -165,13 +194,20 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
             else {
                 obj.style.setProperty('background', color ? color : null)
                 obj.style.setProperty('border-color', color ? color : null)
+                if (props.className === "PopupMenuButton") {
+                    for (const child of obj.children) {
+                        const castedChild = child as HTMLElement;
+                        if (castedChild.tagName === "BUTTON")
+                        castedChild.style.setProperty('border-color', color ? color : null);
+                    }
+                }
             }
         }
     }
 }
 
 function getBtnBgdColor(props:IButton) {
-    let btnColor = tinycolor('C8C8C8'); 
+    let btnColor = tinycolor('white'); 
     if (props.borderPainted !== false) {
         if (props.background)
             btnColor = tinycolor(props.background);

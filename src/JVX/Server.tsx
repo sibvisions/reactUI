@@ -1,5 +1,5 @@
 import ContentStore from "./ContentStore"
-
+import * as queryString from "querystring";
 import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
 import MenuResponse from "./response/MenuResponse";
@@ -12,10 +12,19 @@ import FetchResponse from "./response/FetchResponse";
 import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import ShowDocumentResponse from "./response/ShowDocumentResponse"
-import {createFetchRequest} from "./factories/RequestFactory";
+import {createFetchRequest, createStartupRequest} from "./factories/RequestFactory";
 import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
+import SessionExpiredResponse from "./response/SessionExpiredResponse";
+import { ToastMessage } from "primereact/toast";
+
+type queryType = {
+    appName?: string,
+    userName?: string,
+    password?: string,
+    baseUrl?: string
+}
 
 class Server{
     constructor(store: ContentStore) {
@@ -26,7 +35,8 @@ class Server{
     BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
     RESOURCE_URL = this.BASE_URL + "/resource/" + this.APP_NAME;
     contentStore: ContentStore;
-
+    showToast = (message: any) => {};
+ 
     sendRequest(request: any, endpoint: string){
         let reqOpt: RequestInit = {
             method: 'POST',
@@ -69,7 +79,8 @@ class Server{
         .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
-        .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this));
+        .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))
+        .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -137,6 +148,8 @@ class Server{
         this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
         if(fetchData.records.length !== 0)
             this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+        else
+            this.contentStore.notifyDataChange(fetchData.dataProvider);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
@@ -205,6 +218,33 @@ class Server{
         document.body.removeChild(a);
     }
 
+    sessionExpired(expData: SessionExpiredResponse) {
+        const queryParams: queryType = queryString.parse(window.location.search);
+        const startUpRequest = createStartupRequest();
+        const authKey = localStorage.getItem("authKey");
+        if(queryParams.appName && queryParams.baseUrl){
+            startUpRequest.applicationName = queryParams.appName;
+            // this.APP_NAME = queryParams.appName;
+            // this.BASE_URL = queryParams.baseUrl;
+            // this.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
+        }
+        if(queryParams.userName && queryParams.password){
+            startUpRequest.password = queryParams.password;
+            startUpRequest.userName = queryParams.userName;
+        }
+        if(authKey){
+            startUpRequest.authKey = authKey;
+        }
+        startUpRequest.screenHeight = window.innerHeight;
+        startUpRequest.screenWidth = window.innerWidth;
+        this.contentStore.flatContent.clear();
+        this.contentStore.removedContent.clear();
+        this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
+        this.routingDecider([expData]);
+        this.showToast({severity: 'error', summary: expData.title})
+        new Error(expData.title)
+    }
+
     //Decides if and where to the user should be routed based on all responses
     routingDecider(responses: Array<BaseResponse>){
         let routeTo: string | undefined;
@@ -232,7 +272,7 @@ class Server{
                    routeTo = "home";
                }
            }
-           else if(response.name === RESPONSE_NAMES.LOGIN){
+           else if(response.name === RESPONSE_NAMES.LOGIN || response.name === RESPONSE_NAMES.SESSION_EXPIRED){
                if(highestPriority < 1){
                    highestPriority = 1;
                    routeTo = "login"

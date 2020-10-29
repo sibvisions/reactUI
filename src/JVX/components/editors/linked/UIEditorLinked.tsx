@@ -168,8 +168,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             completeMethod={onInputChange}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
-            onChange={event => setText(event.target.value)}
+            onChange={event => {
+                setText(event.target.value)
+            }}
             onBlur={() => {
+                console.log(text)
                 onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, text, lastValue.current, context) : null)
             }}/>
     )

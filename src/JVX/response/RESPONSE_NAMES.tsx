@@ -11,6 +11,7 @@ enum RESPONSE_NAMES{
     DAL_FETCH="dal.fetch",
     DAL_META_DATA="dal.metaData",
     DAL_DATA_PROVIDER_CHANGED="dal.dataProviderChanged",
-    SHOW_DOCUMENT="showDocument"
+    SHOW_DOCUMENT="showDocument",
+    SESSION_EXPIRED="message.sessionexpired"
 }
 export default RESPONSE_NAMES

@@ -2,12 +2,17 @@
     .p-button {
         background: inherit;
         border-color: inherit;
+        transition: unset;
         &:enabled {
             &:hover {
                 background-color: unset;
                 border-color: unset;
                 color: unset;
             }
+        }
+        &:focus {
+            box-shadow: unset;
+            -webkit-box-shadow: unset;
         }
     }
     .p-button-label {

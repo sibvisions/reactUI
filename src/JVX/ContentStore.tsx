@@ -79,7 +79,6 @@ class ContentStore{
             }
         });
         notifyList.filter(this.onlyUnique).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
-        console.log(this.removedContent)
     }
 
     onlyUnique(value: string, index: number, self: Array<string>) {
@@ -133,6 +132,10 @@ class ContentStore{
             this.dataProviderData.set(dataProvider, newDataSet);
         }
 
+        this.notifyDataChange(dataProvider)
+    }
+
+    notifyDataChange(dataProvider: string) {
         //Notify
         this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
             value.fn.apply(undefined, []);
@@ -214,7 +217,7 @@ class ContentStore{
         menuResponse.items.forEach(parent => {
             if(groupsString.indexOf(parent.group) === -1) {
                 groupsString.push(parent.group)
-                groups.push({label: parent.group, items: Array<MenuItemCustom>(), icon: "pi pi-google"})
+                groups.push({label: parent.group, items: Array<MenuItemCustom>()})
             }
         });
         //Add SubMenus to parents

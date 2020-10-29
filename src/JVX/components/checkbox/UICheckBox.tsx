@@ -25,7 +25,7 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
         const btnRef = buttonRef.current;
         if (btnRef) {
             styleButton(btnRef.children[0] as HTMLElement, props);
-            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id));
+            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id), context.server.RESOURCE_URL);
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();
                 onLoadCallback(id, size.height, size.width);

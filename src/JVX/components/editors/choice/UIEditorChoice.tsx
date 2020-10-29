@@ -72,8 +72,6 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         }
     }
 
-    console.log(alignments)
-
     return (
         <span style={{...layoutValue.get(props.id)||baseProps.editorStyle, display: 'inline-flex', justifyContent: alignments?.ha ? alignments.ha : 'center', alignItems: alignments?.va ? alignments.va : "center"}}>
             <img
@@ -81,7 +79,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 alt=""
                 style={{cursor: 'pointer'}}
                 onClick={handleClick}
-                src={mergedValImg[selectedRow] ? 'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + mergedValImg[selectedRow] : ""}
+                src={mergedValImg[selectedRow] ? context.server.RESOURCE_URL + mergedValImg[selectedRow] : ""}
                 onLoad={onChoiceLoaded}
             />
         </span>

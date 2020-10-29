@@ -32,13 +32,10 @@ const UILabel: FC<uiLabel> = (baseProps) => {
         <span ref={labelRef} style={layoutValue.get(props.id) ? {
             display: 'inline-flex',
             justifyContent: lblAlignments?.ha,
-            alignContent: lblAlignments?.va,
+            alignItems: lblAlignments?.va,
             backgroundColor: props.background,
             color: props.foreground,
-            fontFamily: lblFont.fontFamily,
-            fontWeight: lblFont.fontWeight,
-            fontStyle: lblFont.fontStyle,
-            fontSize: lblFont.fontSize,
+            ...lblFont,
             paddingTop: "0.429rem",
             paddingBottom: "0.429rem",
             ...layoutValue.get(props.id)
@@ -48,10 +45,7 @@ const UILabel: FC<uiLabel> = (baseProps) => {
                 alignContent: lblAlignments?.va,
                 backgroundColor: props.background,
                 color: props.foreground,
-                fontFamily: lblFont.fontFamily,
-                fontWeight: lblFont.fontWeight,
-                fontStyle: lblFont.fontStyle,
-                fontSize: lblFont.fontSize,
+                ...lblFont,
                 paddingTop: "0.429rem",
                 paddingBottom: "0.429rem",
             }}>

@@ -593,7 +593,7 @@ const FormLayout: FC<Panel> = (baseProps) => {
                 if(onLayoutCallback){
                     onLayoutCallback(id, preferredHeight, preferredWidth);
                 }
-
+                console.log('hallo')
                 setCalculatedStyle( {
                     style: {
                         height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
@@ -642,6 +642,8 @@ const FormLayout: FC<Panel> = (baseProps) => {
             );
         }
     },[dictatedStyle, preferredComponentSizes, props, calculateLayout, compProps]);
+
+    console.log(calculatedStyle)
     
     if (props.className === "GroupPanel") {
         return(

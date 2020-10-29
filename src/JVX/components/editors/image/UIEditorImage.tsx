@@ -38,6 +38,8 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             width = event.currentTarget.width;
         }
 
+        console.log(height, width, props.id)
+
         if(props.onLoadCallback){
             props.onLoadCallback(props.id, height, width);
         }
@@ -76,14 +78,14 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         return {span: spanCSS, img: imgCSS};
     }, [verticalAlignment, horizontalAlignment])
 
-
+    console.log(selectedRow ? "data:image/jpeg;base64," + selectedRow : (props.cellEditor.defaultImageName !== null ? context.server.RESOURCE_URL + props.cellEditor.defaultImageName : "//:0"))
 
     return(
         <span style={{position:"absolute", ...layoutValue.get(props.id), display:"flex", ...alignmentCss.span}}>
             <img
                 style={alignmentCss.img}
                 ref={imageRef}
-                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : (props.cellEditor.defaultImageName !== null ? context.server.RESOURCE_URL + props.cellEditor.defaultImageName : "//:0")}
                 alt={"could not be loaded"}
                 onLoad={imageLoaded}
             />

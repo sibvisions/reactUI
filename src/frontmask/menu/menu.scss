@@ -77,6 +77,12 @@ body {
         }
 
         .p-menubar:not(.p-menubar-mobile-active) {
+            .p-menubar-root-list {
+                >.p-menuitem {
+                    border-bottom: 4px solid transparent;
+                }
+            }
+
             .p-menuitem.p-menuitem-active
             > .p-submenu-list {
                 >.p-menuitem {
@@ -113,6 +119,7 @@ body {
              >.p-menubar-end {
                  .p-button{
                     color: white;
+                    border-bottom: 4px solid transparent;
                     .p-button-icon-right {
                         margin-left: 0.5rem;
                     }
@@ -126,9 +133,6 @@ body {
     .profile {
         margin-top: -12px;
         padding-right: 50px;
-        .p-submenu-list {
-            right: 0;
-        }
     }
     .p-sidebar {
         background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgba(246,246,246,1) 74%, rgba(233,233,233,1) 91%);

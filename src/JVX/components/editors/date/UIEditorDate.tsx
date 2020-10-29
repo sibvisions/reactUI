@@ -42,11 +42,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             submitValue.forEach(date => {
                 tempArray.push(date.getTime())
             })
-            console.log(tempArray)
             onBlurCallback(baseProps, tempArray, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, tempArray, lastValue.current, context))
         }
         else {
-            console.log(submitValue)
             onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, lastValue.current, context))
         }
     }

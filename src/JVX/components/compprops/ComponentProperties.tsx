@@ -6,7 +6,7 @@ import Size from '../util/Size';
 import { UIFont } from './UIFont';
 
 export function  getPanelBgdColor(props:Panel, context:any) {
-    let bgdColor = tinycolor('C8C8C8');
+    let bgdColor = tinycolor('white');
 
     if (props.background)
         bgdColor = tinycolor(props.background);

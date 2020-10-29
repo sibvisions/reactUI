@@ -47,7 +47,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             else
                 return <img
                     alt="icon"
-                    src={'http://localhost:8080/JVx.mobile/services/mobile/resource/demo' + iconProps.icon}
+                    src={context.server.RESOURCE_URL + iconProps.icon}
                     onLoad={iconLoaded}/>
         }
     }

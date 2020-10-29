@@ -22,7 +22,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         const btnRef = buttonRef.current;
         if (btnRef) {
             styleButton(btnRef.children[0] as HTMLElement, props);
-            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id));
+            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id), context.server.RESOURCE_URL);
             addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined);
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();

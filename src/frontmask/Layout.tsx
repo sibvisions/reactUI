@@ -109,9 +109,9 @@ const Layout: FC = (props) => {
                     {props.children}
                 </div>
             </LayoutContext.Provider>
-            <div className="footer">
+            {/* <div className="footer">
                 <h4>Fußzeile</h4>
-            </div>
+            </div> */}
         </div>
 
     )
