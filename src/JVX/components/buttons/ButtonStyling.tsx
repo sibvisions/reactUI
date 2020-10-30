@@ -8,7 +8,7 @@ import { IButton } from "./IButton";
 
 export function buttonProps(props:IButton): {iconPos:string, tabIndex:number|string, style:CSSProperties, iconProps:{icon:string|undefined, size:Size|undefined, color:string|undefined}, btnImgTextGap:number, btnBorderPainted:boolean} {
     const margins = getMargins(props);
-    const font = getFont(props);
+    const font = getFont(props.font);
     return {
         iconPos: (props.horizontalTextPosition === 0 || (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0)) ? "right" : "left",
         tabIndex: props.focusable !== false ? (props.tabIndex ? props.tabIndex : props.className === "ToggleButton" ? 0 : "0") : props.className === "ToggleButton" ? -1 : "-1",

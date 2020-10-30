@@ -18,7 +18,7 @@ const UILabel: FC<uiLabel> = (baseProps) => {
 
     const lblMargins = getMargins(props);
     const lblAlignments = checkAlignments(props);
-    const lblFont = getFont(props);
+    const lblFont = getFont(props.font);
 
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback){
@@ -36,8 +36,8 @@ const UILabel: FC<uiLabel> = (baseProps) => {
             backgroundColor: props.background,
             color: props.foreground,
             ...lblFont,
-            paddingTop: "0.429rem",
-            paddingBottom: "0.429rem",
+            paddingTop: "7.864px",
+            paddingBottom: "7.864px",
             ...layoutValue.get(props.id)
         } : {
                 display: 'inline-flex',
@@ -46,8 +46,8 @@ const UILabel: FC<uiLabel> = (baseProps) => {
                 backgroundColor: props.background,
                 color: props.foreground,
                 ...lblFont,
-                paddingTop: "0.429rem",
-                paddingBottom: "0.429rem",
+                paddingTop: "7.864px",
+                paddingBottom: "7.864px",
             }}>
             {props.text}
         </span>

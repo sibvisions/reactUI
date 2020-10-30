@@ -29,9 +29,13 @@ export function getMargins(props:BaseComponent) {
     }
 }
 
-export function getFont(props:BaseComponent) {
-    if (props.font)
-        return new UIFont(props.font.split(','));
+export function getFont(font:string|UIFont|undefined): UIFont {
+    if (font !== undefined) {
+        if (typeof font === "string")
+            return new UIFont(font.split(','));
+        else
+            return font
+    }
     else
         return new UIFont(["Segoe UI", "normal", "normal", "16"])
 }

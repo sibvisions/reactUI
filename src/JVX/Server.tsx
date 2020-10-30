@@ -18,6 +18,7 @@ import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
 import SessionExpiredResponse from "./response/SessionExpiredResponse";
 import { ToastMessage } from "primereact/toast";
+import ErrorResponse from "./response/ErrorResponse";
 
 type queryType = {
     appName?: string,
@@ -80,7 +81,8 @@ class Server{
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
         .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))
-        .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this));
+        .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this))
+        .set(RESPONSE_NAMES.ERROR, this.showError.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -242,7 +244,12 @@ class Server{
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})
-        new Error(expData.title)
+        console.error(expData.title)
+    }
+
+    showError(errData: ErrorResponse) {
+        this.showToast({severity: 'error', summary: errData.message});
+        console.error(errData.details)
     }
 
     //Decides if and where to the user should be routed based on all responses

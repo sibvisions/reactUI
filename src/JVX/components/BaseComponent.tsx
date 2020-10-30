@@ -1,3 +1,4 @@
+import { UIFont } from "./compprops/UIFont";
 import LoadCallBack from "./util/LoadCallBack";
 
 interface BaseComponent{
@@ -16,7 +17,7 @@ interface BaseComponent{
     margins?: string
     horizontalAlignment?: 0 | 1 | 2| 3
     verticalAlignment?: 0 | 1 | 2| 3
-    font?: string
+    font?: string|UIFont
     image?: string
     focusable?: boolean
     tabIndex?: number

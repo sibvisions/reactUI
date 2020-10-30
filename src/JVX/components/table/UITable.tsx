@@ -192,7 +192,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     return(
        <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(props.id)}}>
            <DataTable
-               style={{width:"100%", height: "100%", backgroundColor: "white", border: "1px solid", borderCollapse: "collapse"}}
+               style={{width:"100%", height: "100%", border: "1px solid", borderCollapse: "collapse"}}
                scrollable={virtualEnabled}
                lazy={virtualEnabled}
                virtualScroll={virtualEnabled}

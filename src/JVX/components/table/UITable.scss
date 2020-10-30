@@ -1,13 +1,52 @@
-td{
-    height: 1px;
-    padding: 0 !important;
-    border-color: #191919 !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
+tr.p-highlight{
+    background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%) !important;
 }
 
-tr.p-highlight{
-    background: #007ad9 !important;
+.p-datatable {
+    background-color: #fafafa;
+    .p-datatable-thead {
+        >tr {
+            th {
+                border-width: 0px 1px 1px 1px;
+            }
+        }
+    }
+    .p-datatable-tbody {
+        >tr {
+            &:nth-child(even) {
+                background-color: #f5f5f5;
+            }
+            &:focus {
+                outline: none;
+            }
+            ::-moz-focus-inner {
+                border: 0;
+            }
+            >td {
+                height: 1px;
+                padding: 0.2rem 0.4rem !important;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                border-width: 0px 0px 1px 0px !important;
+                &.ChoiceCellEditor, &.CheckBoxCellEditor {
+                    text-align: center;
+                    >.cellData {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                }
+                &.NumberCellEditor {
+                    text-align: right;
+                }
+                >.cellData{
+                    padding: 8px 16px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
 }
 
 .loading-text {
@@ -28,40 +67,5 @@ tr.p-highlight{
     }
     100% {
         background-color: rgba(165, 165, 165, 0.1)
-    }
-}
-
-.cellData{
-    padding: 8px 16px;
-}
-
-.p-datatable {
-    .p-datatable-tbody {
-        >tr {
-            &:focus {
-                outline: none;
-            }
-            ::-moz-focus-inner {
-                border: 0;
-            }
-            >td.ChoiceCellEditor, >td.CheckBoxCellEditor {
-                text-align: center;
-                >.cellData {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-            }
-            >td {
-                >.cellData{
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-            >td.NumberCellEditor {
-                text-align: right;
-
-            }
-        } 
     }
 }

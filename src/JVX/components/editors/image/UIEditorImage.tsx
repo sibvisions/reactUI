@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useContext, useMemo, useRef} from "react";
+import React, {CSSProperties, FC, useContext, useEffect, useMemo, useRef} from "react";
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import useRowSelect from "../../zhooks/useRowSelect";
@@ -27,6 +27,19 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
 
+    useEffect(() => {
+        if (!props.cellEditor.defaultImageName) {
+            let height = 0, width = 0;
+            if (props.preferredSize) {
+                const size = props.preferredSize.split(',');
+                width = parseInt(size[0]);
+                height = parseInt(size[1]);
+            }
+            if (props.onLoadCallback)
+                props.onLoadCallback(props.id, height, width)
+        }
+    },[props.onLoadCallback, props.id])
+
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number
         if(props.preferredSize){
@@ -37,8 +50,6 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             height = event.currentTarget.height;
             width = event.currentTarget.width;
         }
-
-        console.log(height, width, props.id)
 
         if(props.onLoadCallback){
             props.onLoadCallback(props.id, height, width);
@@ -78,16 +89,15 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         return {span: spanCSS, img: imgCSS};
     }, [verticalAlignment, horizontalAlignment])
 
-    console.log(selectedRow ? "data:image/jpeg;base64," + selectedRow : (props.cellEditor.defaultImageName !== null ? context.server.RESOURCE_URL + props.cellEditor.defaultImageName : "//:0"))
-
     return(
         <span style={{position:"absolute", ...layoutValue.get(props.id), display:"flex", ...alignmentCss.span}}>
             <img
                 style={alignmentCss.img}
                 ref={imageRef}
-                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : (props.cellEditor.defaultImageName !== null ? context.server.RESOURCE_URL + props.cellEditor.defaultImageName : "//:0")}
+                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt={"could not be loaded"}
                 onLoad={imageLoaded}
+                onError={e => (e.target as HTMLImageElement).style.display = 'none'}
             />
         </span>
 
