@@ -16,6 +16,8 @@ import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 interface ICellEditorLinked extends ICellEditor{
     linkReference: {
         referencedDataBook: string
+        columnNames: string[]
+        referencedColumnNames: string[]
     }
     clearColumns:Array<string>
     preferredEditorMode?: number
@@ -39,6 +41,50 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(100);
     const {onLoadCallback, id} = baseProps;
+
+    const handleInput = () => {
+        const newVal:any = {}
+        const foundData = providedData.filter(data => {
+            if (props.cellEditor) {
+                const refColNames = props.cellEditor.linkReference.referencedColumnNames
+                const colNames = props.cellEditor.linkReference.columnNames
+                const index = colNames.findIndex(col => col === props.columnName)
+                if (typeof text === "string") {
+                    return data[refColNames[index]].toLowerCase().includes(text.toLowerCase())
+                }
+                else if (typeof text === "object" && text !== null) {
+                    return data[refColNames[index]] === text[colNames[index]]
+                }
+            }
+            return false
+        });
+        if (foundData.length === 1) {                     
+            if (props.cellEditor) {
+                for (let i = 0; i < Object.values(foundData[0]).length; i++) {
+                    newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];
+                }
+            }
+                setText(newVal);
+                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.clearColumns, newVal, lastValue.current, context) : null);
+        }
+        else if (text === "") {
+            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.clearColumns, null, lastValue.current, context) : null);
+        }
+        else {
+            setText(lastValue.current)
+        }
+    }
+
+    useEffect(() => {
+        if (inputRef.current) {
+            //@ts-ignore
+            inputRef.current.inputEl.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === "Enter") {
+                    handleInput();
+                }
+            }
+        }
+    })
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
@@ -85,10 +131,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         },100);
     }, [context, props, providedData, firstRow, lastRow])
 
-    useEffect(() => {
-        setText(selectedRow)
-    },[selectedRow])
-
     useLayoutEffect(() => {
         if (inputRef.current) {
             setTimeout(() => {
@@ -105,12 +147,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [lastRow])
     
     useLayoutEffect(() => {
+        if (providedData.length )
         if (inputRef.current) {
             setTimeout(() => {
                 let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
                 if (autoPanel) {
                     //@ts-ignore
-                    autoPanel.children[0].style.height = (providedData.length * (autoPanel.children[0].children[0].getBoundingClientRect().height + 6.864))+'px';
+                    if (autoPanel.children[0].children[0]) {
+                        //@ts-ignore
+                        autoPanel.children[0].style.height = (providedData.length * (autoPanel.children[0].children[0].getBoundingClientRect().height + 6.864))+'px';
+                    }
                 }
             }, 0);
             //@ts-ignore
@@ -172,8 +218,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 setText(event.target.value)
             }}
             onBlur={() => {
-                console.log(text)
-                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor?.clearColumns, text, lastValue.current, context) : null)
+                handleInput();
             }}/>
     )
 }
