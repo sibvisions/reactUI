@@ -17,7 +17,6 @@ import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
 import SessionExpiredResponse from "./response/SessionExpiredResponse";
-import { ToastMessage } from "primereact/toast";
 import ErrorResponse from "./response/ErrorResponse";
 
 type queryType = {
@@ -32,9 +31,9 @@ class Server{
         this.contentStore = store
     }
 
-    APP_NAME = "demo"
-    BASE_URL = "http://localhost:8080/JVx.mobile/services/mobile";
-    RESOURCE_URL = this.BASE_URL + "/resource/" + this.APP_NAME;
+    APP_NAME = ""
+    BASE_URL = ""
+    RESOURCE_URL = ""
     contentStore: ContentStore;
     showToast = (message: any) => {};
  

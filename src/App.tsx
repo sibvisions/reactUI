@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useEffect, useLayoutEffect, useRef} from 'react';
+import React, {createContext, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -16,6 +16,7 @@ import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
 import {HashRouter, Route, Switch, useHistory} from "react-router-dom";
 import history from "history/hash"
+import { checkProperties } from './JVX/components/util/CheckProperties';
 
 
 
@@ -34,25 +35,47 @@ const App: FC = () => {
 
     useLayoutEffect(() => {
         const queryParams: queryType = queryString.parse(window.location.search);
-        const startUpRequest = createStartupRequest();
         const authKey = localStorage.getItem("authKey");
-        if(queryParams.appName && queryParams.baseUrl){
-            startUpRequest.applicationName = queryParams.appName;
-            context.server.APP_NAME = queryParams.appName;
-            context.server.BASE_URL = queryParams.baseUrl;
-            context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
-        }
-        if(queryParams.userName && queryParams.password){
-            startUpRequest.password = queryParams.password;
-            startUpRequest.userName = queryParams.userName;
-        }
-        if(authKey){
-            startUpRequest.authKey = authKey;
-        }
-        startUpRequest.screenHeight = window.innerHeight;
-        startUpRequest.screenWidth = window.innerWidth;
-        context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-        context.server.showToast = msg
+        fetch('config.json')
+        .then((r) => r.json())
+        .then((data) => {
+            const emptyConfProps = checkProperties(data);
+            if (emptyConfProps.length > 0) {
+                let propsToPrint = ""
+                emptyConfProps.forEach((emptyProp:string) => {
+                    propsToPrint += emptyProp + ", "
+                })
+                const warnMsg = propsToPrint + "field(s) is/are not configured in the config.json file!"
+                msg({severity: 'warn', summary: warnMsg})
+                console.warn(warnMsg)
+            }
+            const startUpRequest = createStartupRequest();
+
+            startUpRequest.applicationName = data.APP_NAME;
+            context.server.APP_NAME = data.APP_NAME;
+            context.server.BASE_URL = data.BASE_URL;
+            context.server.RESOURCE_URL = data.BASE_URL + "/resource" + data.APP_NAME;
+            startUpRequest.userName = data.USERNAME;
+            startUpRequest.password = data.PASSWORD;
+
+            if(queryParams.appName && queryParams.baseUrl){
+                startUpRequest.applicationName = queryParams.appName;
+                context.server.APP_NAME = queryParams.appName;
+                context.server.BASE_URL = queryParams.baseUrl;
+                context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
+            }
+            if(queryParams.userName && queryParams.password){
+                startUpRequest.password = queryParams.password;
+                startUpRequest.userName = queryParams.userName;
+            }
+            if(authKey){
+                startUpRequest.authKey = authKey;
+            }
+            startUpRequest.screenHeight = window.innerHeight;
+            startUpRequest.screenWidth = window.innerWidth;
+            context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
+            context.server.showToast = msg
+        })
     }, [context.server]);
 
     const msg = (messageObj: ToastMessage) => {
