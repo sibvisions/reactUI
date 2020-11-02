@@ -54,7 +54,7 @@ const App: FC = () => {
             startUpRequest.applicationName = data.APP_NAME;
             context.server.APP_NAME = data.APP_NAME;
             context.server.BASE_URL = data.BASE_URL;
-            context.server.RESOURCE_URL = data.BASE_URL + "/resource" + data.APP_NAME;
+            context.server.RESOURCE_URL = data.BASE_URL + "/resource/" + data.APP_NAME;
             startUpRequest.userName = data.USERNAME;
             startUpRequest.password = data.PASSWORD;
 
