@@ -27,6 +27,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     const callOnResize = () => {
         if (props.onResize && secondRef.current && firstRef.current) {
+            //console.log(firstRef.current, secondRef.current)
             const firstDom = firstRef.current.getBoundingClientRect();
             const secondDom = secondRef.current.getBoundingClientRect();
             props.onResize(
@@ -45,6 +46,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     const stopDrag = () => {
+        console.log('stopped dragging')
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("mousemove", dragging);
     }
@@ -61,6 +63,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     //Touch ----------------------
 
     const stopTouchDrag = () => {
+        console.log('stopped touch')
         document.removeEventListener("touchend", stopTouchDrag);
         document.removeEventListener("touchmove", touchDragging);
     }

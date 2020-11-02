@@ -1,12 +1,12 @@
-import { CSSProperties, useContext } from 'react';
-import { jvxContext } from 'src/JVX/jvxProvider';
+import {CSSProperties} from 'react';
 import tinycolor from 'tinycolor2';
-import { checkAlignments} from "../compprops/CheckAlignments";
-import { getFont, getMargins, parseIconData } from '../compprops/ComponentProperties';
-import Size from '../util/Size';
-import { IButton } from "./IButton";
+import Alignments from '../compprops/Alignments';
+import {checkAlignments} from "../compprops/CheckAlignments";
+import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
+import IconProps from '../compprops/IconProps';
+import {IButton} from "./IButton";
 
-export function buttonProps(props:IButton): {iconPos:string, tabIndex:number|string, style:CSSProperties, iconProps:{icon:string|undefined, size:Size|undefined, color:string|undefined}, btnImgTextGap:number, btnBorderPainted:boolean} {
+export function buttonProps(props:IButton): {iconPos:string, tabIndex:number|string, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean, btnAlignments:Alignments} {
     const margins = getMargins(props);
     const font = getFont(props.font);
     return {
@@ -34,7 +34,8 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number|str
         },
         iconProps: parseIconData(props, props.image),
         btnImgTextGap: props.imageTextGap ? props.imageTextGap : 4,
-        btnBorderPainted: props.borderPainted !== false ? true : false
+        btnBorderPainted: props.borderPainted !== false ? true : false,
+        btnAlignments: checkAlignments(props)
     }
 }
 
@@ -53,32 +54,32 @@ function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
     }
 }
 
-export function styleButton(btn:HTMLElement, props:IButton) {
+export function styleButton(btn:HTMLElement, style:string|undefined) {
     if (btn.classList.contains("p-button-icon-only")) {
         for (let child of btn.children) {
             if (child.classList.contains("p-button-text"))
                 child.remove();
         }
     }
-    if (props.style && props.style.includes("hyperlink"))
+    if (style && style.includes("hyperlink"))
         btn.classList.add("hyperlink");
 }
 
-function styleMenuButton(btnChild:HTMLElement, layoutStyle:React.CSSProperties, btnProps:any) {
-    btnChild.style.setProperty('height', layoutStyle.height+'px');
-    btnChild.style.setProperty('padding-top', btnProps.style.paddingTop+'px');
-    btnChild.style.setProperty('padding-left', btnProps.style.paddingLeft+'px');
-    btnChild.style.setProperty('padding-bottom', btnProps.style.paddingBottom+'px');
-    btnChild.style.setProperty('padding-right', btnProps.style.paddingRight+'px');
-    btnChild.style.setProperty('border-color', btnProps.style.backgroundColor);
-    btnChild.style.setProperty('color', btnProps.style.color);
+function styleMenuButton(btnChild:HTMLElement, layoutHeight:number, layoutWidth:number, btnStyle:CSSProperties) {
+    btnChild.style.setProperty('height', layoutHeight+'px');
+    btnChild.style.setProperty('padding-top', btnStyle.paddingTop+'px');
+    btnChild.style.setProperty('padding-left', btnStyle.paddingLeft+'px');
+    btnChild.style.setProperty('padding-bottom', btnStyle.paddingBottom+'px');
+    btnChild.style.setProperty('padding-right', btnStyle.paddingRight+'px');
+    btnChild.style.setProperty('border-color', btnStyle.backgroundColor ? btnStyle.backgroundColor : null);
+    btnChild.style.setProperty('color', btnStyle.color ? btnStyle.color : null);
     if (btnChild.classList.contains("p-splitbutton-defaultbutton")) {
         //@ts-ignore
-        btnChild.style.setProperty('width', !(layoutStyle.width+'').includes('%') ? (layoutStyle.width-38)+'px' : 'calc(100% - 38px)');
-        btnChild.style.setProperty('display', btnProps.style.display);
-        btnChild.style.setProperty('flex-direction', btnProps.style.flexDirection);
-        btnChild.style.setProperty('justify-content', btnProps.style.justifyContent);
-        btnChild.style.setProperty('align-items', btnProps.style.alignItems);  
+        btnChild.style.setProperty('width', !(layoutWidth+'').includes('%') ? (layoutWidth-38)+'px' : 'calc(100% - 38px)');
+        btnChild.style.setProperty('display', btnStyle.display ? btnStyle.display : null);
+        btnChild.style.setProperty('flex-direction', btnStyle.flexDirection ? btnStyle.flexDirection : null);
+        btnChild.style.setProperty('justify-content', btnStyle.justifyContent ? btnStyle.justifyContent : null);
+        btnChild.style.setProperty('align-items', btnStyle.alignItems ? btnStyle.alignItems : null);  
     }
     else if (btnChild.classList.contains("p-splitbutton-menubutton")) {
         btnChild.style.setProperty('width', '38px');
@@ -91,12 +92,12 @@ function styleMenuButton(btnChild:HTMLElement, layoutStyle:React.CSSProperties, 
     }
 }
 
-function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any, resource:string) {
+function styleButtonContent(child:HTMLElement, className:string, hTextPos:number|undefined, vTextPos:number|undefined, imgTextGap:number|undefined, iconProps:any, alignments:Alignments, resource:string) {
     if (child.parentElement !== null) {
         if (!child.parentElement.classList.contains("p-button-icon-only") && !child.classList.value.includes("label")) {
             //if the button is a Radiobutton or a Checkbox and the hTextPos is 1, the Radiobutton/Checkbox gets moved to the center of the component
-            if ((props.className === "RadioButton" || props.className === "CheckBox") && props.horizontalTextPosition === 1) {
-                let alignment = checkAlignments(props)?.ha
+            if ((className === "RadioButton" || className === "CheckBox") && hTextPos === 1) {
+                let alignment = alignments.ha
                 let labelElem = child.nextElementSibling as HTMLElement;
                 let labelWidth = labelElem.offsetWidth/2;
                 let childWidth = child.offsetWidth/2;
@@ -108,8 +109,8 @@ function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any, res
                     child.style.setProperty('margin-right', labelWidth-childWidth+'px')
                 }
             }
-            let gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
-            child.style.setProperty('margin-' + gapPos, (props.imageTextGap ? props.imageTextGap : 4)+'px');
+            let gapPos = getGapPos(hTextPos, vTextPos);
+            child.style.setProperty('margin-' + gapPos, (imgTextGap ? imgTextGap : 4)+'px');
         }
         if (iconProps) {
             if (child.classList.value.includes(iconProps.icon)) {
@@ -126,28 +127,30 @@ function styleButtonContent(child:HTMLElement, props:IButton, iconProps:any, res
     }
 }
 
-export function styleChildren(btnChildren:HTMLCollection, props:IButton, btnData:any, layoutStyle:React.CSSProperties|undefined, resource:string) {
-    if (props.className === "PopupMenuButton") {
+export function styleChildren(btnChildren:HTMLCollection, className:string, hTextPos:number|undefined, vTextPos:number|undefined, 
+    imgTextGap:number|undefined, btnStyle:CSSProperties, iconProps:IconProps, alignments:Alignments,
+    layoutHeight:number|undefined, layoutWidth:number|undefined, resource:string) {
+    if (className === "PopupMenuButton") {
         for (let btnChild of btnChildren) {
-            if (layoutStyle !== undefined)
-                styleMenuButton(btnChild as HTMLElement, layoutStyle, btnData);
+            if (layoutHeight !== undefined && layoutWidth !== undefined)
+                styleMenuButton(btnChild as HTMLElement, layoutHeight, layoutWidth, btnStyle);
             for (let child of btnChild.children)
-                styleButtonContent(child as HTMLElement, props, btnData.iconProps, resource);
+                styleButtonContent(child as HTMLElement, className, hTextPos, vTextPos, imgTextGap, iconProps, alignments, resource);
         }
     }
     else {
         for (let child of btnChildren) {
-            styleButtonContent(child as HTMLElement, props, btnData.iconProps, resource)
+            styleButtonContent(child as HTMLElement, className, hTextPos, vTextPos, imgTextGap, iconProps, alignments, resource)
         }
     }
 }
 
-export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedColor:string|null, dark: number, props:IButton, borderPainted:boolean, checked:boolean|undefined) {
+export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseEntered:boolean|undefined, color:string|undefined, checkedColor:string|null, dark: number, borderPainted:boolean, checked:boolean|undefined) {
     if (borderPainted) {
         obj.onmouseover = () => {
             obj.style.setProperty('background', tinycolor(color).darken(dark).toString());
             obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
-            if (props.className === "PopupMenuButton") {
+            if (className === "PopupMenuButton") {
                 for (const child of obj.children) {
                     const castedChild = child as HTMLElement;
                     if (castedChild.tagName === "BUTTON")
@@ -164,7 +167,7 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
             else {
                 obj.style.setProperty('background', color ? color : null);
                 obj.style.setProperty('border-color', color ? color : null);
-                if (props.className === "PopupMenuButton") {
+                if (className === "PopupMenuButton") {
                     for (const child of obj.children) {
                         const castedChild = child as HTMLElement;
                         if (castedChild.tagName === "BUTTON")
@@ -174,15 +177,15 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
             }
         }
     }
-    else if (props.borderOnMouseEntered) {
+    else if (borderOnMouseEntered) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background', props.background !== undefined ? props.background : "#007ad9");
-            obj.style.setProperty('border-color', props.background !== undefined ? props.background : "#007ad9");
-            if (props.className === "PopupMenuButton") {
+            obj.style.setProperty('background', color !== undefined ? color : "#007ad9");
+            obj.style.setProperty('border-color', color !== undefined ? color : "#007ad9");
+            if (className === "PopupMenuButton") {
                 for (const child of obj.children) {
                     const castedChild = child as HTMLElement;
                     if (castedChild.tagName === "BUTTON")
-                        castedChild.style.setProperty('border-color', props.background !== undefined ? props.background : "#007ad9");
+                        castedChild.style.setProperty('border-color', color !== undefined ? color : "#007ad9");
                 }
             }
         }
@@ -194,7 +197,7 @@ export function addHoverEffect(obj:HTMLElement, color:string|undefined, checkedC
             else {
                 obj.style.setProperty('background', color ? color : null)
                 obj.style.setProperty('border-color', color ? color : null)
-                if (props.className === "PopupMenuButton") {
+                if (className === "PopupMenuButton") {
                     for (const child of obj.children) {
                         const castedChild = child as HTMLElement;
                         if (castedChild.tagName === "BUTTON")

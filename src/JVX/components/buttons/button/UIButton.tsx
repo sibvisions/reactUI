@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import './UIButton.scss';
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
@@ -15,15 +15,26 @@ const UIButton: FC<IButton> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
-    const btnData = buttonProps(props);
+    const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props);
-            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id), context.server.RESOURCE_URL);
-            addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined);
+            styleButton(btnRef.children[0] as HTMLElement, props.style);
+            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+                props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, 
+                layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, btnData.style.backgroundColor, null, 5, btnData.btnBorderPainted, undefined);
+        }
+    }, [btnData.btnAlignments, btnData.btnBorderPainted, 
+        btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
+        props.className, props.horizontalTextPosition, props.imageTextGap,
+        props.style, props.verticalTextPosition, id, layoutValue, props.borderOnMouseEntered])
+
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();
                 onLoadCallback(id, size.height, size.width);

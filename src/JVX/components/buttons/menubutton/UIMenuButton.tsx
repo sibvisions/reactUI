@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import './UIMenuButton.scss';
 import {SplitButton} from "primereact/splitbutton";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
@@ -21,7 +21,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IMenuButton>(baseProps.id, baseProps);
-    const btnData = buttonProps(props);
+    const btnData = useMemo(() => buttonProps(props), [props]);
     const [items, setItems] = useState<Array<any>>();
     const {onLoadCallback, id} = baseProps;
 
@@ -47,20 +47,29 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             setItems(tempItems);
         }
         buildMenu(context.contentStore.getChildren(props.popupMenu));
-    },[])
+    },[context.contentStore, context.server, props])
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props);
-            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id), context.server.RESOURCE_URL);
-            addHoverEffect(btnRef.children[0] as HTMLElement, btnData.style.backgroundColor, null, 5, props, btnData.btnBorderPainted, undefined);
+            styleButton(btnRef.children[0] as HTMLElement, props.style);
+            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, btnData.style.backgroundColor, null, 5, btnData.btnBorderPainted, undefined);
+        }
+    },[btnData.btnAlignments, btnData.btnBorderPainted, 
+        btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
+        props.className, props.horizontalTextPosition, props.imageTextGap,
+        props.style, props.verticalTextPosition, id, layoutValue, props.borderOnMouseEntered])
+
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();
                 onLoadCallback(id, size.height, size.width);
             }
         }
-    }, [onLoadCallback, id, layoutValue.get(props.id)]);
+    }, [onLoadCallback, id]);
 
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

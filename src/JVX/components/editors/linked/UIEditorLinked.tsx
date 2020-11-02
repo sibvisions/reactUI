@@ -144,7 +144,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 }
             }, 0)
         }
-    }, [lastRow])
+    }, [firstRow, lastRow])
     
     useLayoutEffect(() => {
         if (providedData.length )

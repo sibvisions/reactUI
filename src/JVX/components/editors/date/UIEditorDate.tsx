@@ -6,7 +6,6 @@ import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
-import {handleEnterKey} from "../../util/HandleEnterKey";
 import { parseDateFormatCell } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";

@@ -2,8 +2,8 @@ import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
-import { getFont, getMargins } from "../compprops/ComponentProperties";
-import { checkAlignments } from "../compprops/CheckAlignments";
+import {getFont} from "../compprops/ComponentProperties";
+import {checkAlignments} from "../compprops/CheckAlignments";
 
 export interface uiLabel extends BaseComponent {
     text: string
@@ -15,15 +15,13 @@ const UILabel: FC<uiLabel> = (baseProps) => {
 
     const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
     const {onLoadCallback, id} = baseProps;
-
-    const lblMargins = getMargins(props);
     const lblAlignments = checkAlignments(props);
     const lblFont = getFont(props.font);
 
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback){
             const size = labelRef.current.getBoundingClientRect();
-            onLoadCallback(props.id, size.height, size.width);
+            onLoadCallback(id, size.height, size.width);
         }
     }, [onLoadCallback, id]);
 

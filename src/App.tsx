@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {createContext, FC, useContext, useLayoutEffect, useRef} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -14,8 +14,7 @@ import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
 import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
-import {HashRouter, Route, Switch, useHistory} from "react-router-dom";
-import history from "history/hash"
+import {HashRouter, Route, Switch} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
 
 

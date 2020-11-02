@@ -1,6 +1,7 @@
 import BaseComponent from "../BaseComponent";
 import { IEditor } from "../editors/IEditor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
+import Alignments from "./Alignments";
 
 function translateAlignments(pha:number|undefined, pva:number|undefined) {
     let ha:string|undefined;
@@ -44,7 +45,7 @@ export function checkCellEditorAlignments(props:IEditor) {
     }
 }
 
-export function checkAlignments(props:BaseComponent) {
+export function checkAlignments(props:BaseComponent):Alignments {
     let compType:string = "lbl";
 
     if (props.className.includes('Button') && props.className !== "RadioButton")
@@ -57,15 +58,15 @@ export function checkAlignments(props:BaseComponent) {
     if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined)
         return translateAlignments(props.horizontalAlignment, props.verticalAlignment);
     else if (props.horizontalAlignment !== undefined) {
-        if (compType === 'btn' || compType === 'rbtn')
-            return translateAlignments(props.horizontalAlignment, 1);
-        else if (compType === 'lbl')
+        if (compType === 'lbl')
             return translateAlignments(props.horizontalAlignment, 0);
+        else
+            return translateAlignments(props.horizontalAlignment, 1);
     }
     else if (props.verticalAlignment !== undefined) {
         if (compType === 'btn')
             return translateAlignments(1, props.verticalAlignment);
-        else if (compType === 'lbl' || compType === 'rbtn')
+        else
             return translateAlignments(0, props.verticalAlignment);
     }
     else {
@@ -73,7 +74,7 @@ export function checkAlignments(props:BaseComponent) {
             return translateAlignments(0, 0);
         else if (compType === 'rbtn')
             return translateAlignments(0, 1);
-        else if (compType === 'btn')
+        else
             return translateAlignments(1, 1);
     }
 }

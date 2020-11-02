@@ -8,7 +8,6 @@ import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
 import logo from '../../assests/sibvisionslogo.png'
-import BaseResponse from '../../JVX/response/BaseResponse'
 
 //Prime
 import {Menubar} from "primereact/menubar";
@@ -116,7 +115,7 @@ const Menu: FC = () => {
     return(
         <>
             <div className="topMenuBar p-grid">
-                <Menubar start={() => <img src={logo}/>} model={menuItems} className="p-col" end={() => profileMenu}/>
+                <Menubar start={() => <img src={logo} alt="logo"/>} model={menuItems} className="p-col" end={() => profileMenu}/>
             </div>
             <Sidebar visible={sbVisible} position="left" onHide={() => setSbVisible(false)}>
                 <TieredMenu className="sidebar-menu" model={menuItems}/>

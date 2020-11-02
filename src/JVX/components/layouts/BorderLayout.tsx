@@ -78,7 +78,7 @@ const BorderLayout: FC<Panel> = (props) => {
 
             setComponentSizes(sizeMap);
         }
-    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents ,preferredComponentSizes])
+    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents ,preferredComponentSizes, props.id])
 
 
 

@@ -20,7 +20,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
-    const [components, preferredComponentSizes] = useComponents(baseProps.id)
+    const [components] = useComponents(baseProps.id)
     const {onLoadCallback, id} = baseProps;
     let closing = false;
 

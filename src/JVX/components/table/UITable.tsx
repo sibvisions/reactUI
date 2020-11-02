@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
 import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
@@ -97,7 +97,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 </div>
             )
         }
-    }, [edit, props.cellData]);
+    }, [edit, props.cellData, props.colName, props.dataProvider, props.metaData, props.resource]);
 }
 
 const UITable: FC<TableProps> = (baseProps) => {
@@ -136,7 +136,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
 
     const columns = useMemo(() => {
-
         const metaData = context.contentStore.dataProviderMetaData.get(props.dataBook);
 
         return props.columnNames.map((colName, colIndex) =>
@@ -155,7 +154,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div className="loading-text" style={{height: 30}} />}/>
         )
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL])
 
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(props.dataBook)?.primaryKeyColumns || ["ID"];

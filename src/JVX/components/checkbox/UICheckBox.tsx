@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import {Checkbox} from 'primereact/checkbox';
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
@@ -18,14 +18,25 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<ICheckBox>(baseProps.id, baseProps);
-    const btnData = buttonProps(props);
+    const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props);
-            styleChildren(btnRef.children[0].children, props, btnData, layoutValue.get(props.id), context.server.RESOURCE_URL);
+            styleButton(btnRef.children[0] as HTMLElement, props.style);
+            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+                props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, 
+                layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
+        }
+    }, [btnData.btnAlignments, btnData.btnBorderPainted, 
+        btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
+        props.className, props.horizontalTextPosition, props.imageTextGap,
+        props.style, props.verticalTextPosition, id, layoutValue])
+
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
             if (onLoadCallback) {
                 const size: DOMRect = btnRef.getBoundingClientRect();
                 onLoadCallback(id, size.height, size.width);

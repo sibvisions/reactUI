@@ -3,6 +3,7 @@ import BaseComponent from '../BaseComponent';
 import Margins from '../layouts/models/Margins';
 import { Panel } from '../panels/panel/UIPanel';
 import Size from '../util/Size';
+import IconProps from './IconProps';
 import { UIFont } from './UIFont';
 
 export function  getPanelBgdColor(props:Panel, context:any) {
@@ -40,7 +41,7 @@ export function getFont(font:string|UIFont|undefined): UIFont {
         return new UIFont(["Segoe UI", "normal", "normal", "16"])
 }
 
-export function parseIconData(props:BaseComponent, iconData:string|undefined) {
+export function parseIconData(props:BaseComponent, iconData:string|undefined): IconProps {
     if (iconData) {
         let splittedIconData:string[];
         let iconName:string;
