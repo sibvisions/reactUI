@@ -1,4 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import './UILabel.scss'
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
@@ -27,25 +28,19 @@ const UILabel: FC<uiLabel> = (baseProps) => {
 
 
     return(
-        <span ref={labelRef} style={layoutValue.get(props.id) ? {
-            display: 'inline-flex',
-            justifyContent: lblAlignments?.ha,
-            alignItems: lblAlignments?.va,
+        <span ref={labelRef} className="jvxLabel" style={layoutValue.get(props.id) ? {
+            justifyContent: lblAlignments.ha,
+            alignItems: lblAlignments.va,
             backgroundColor: props.background,
             color: props.foreground,
             ...lblFont,
-            paddingTop: "7.864px",
-            paddingBottom: "7.864px",
             ...layoutValue.get(props.id)
         } : {
-                display: 'inline-flex',
-                justifyContent: lblAlignments?.ha,
-                alignContent: lblAlignments?.va,
+                justifyContent: lblAlignments.ha,
+                alignContent: lblAlignments.va,
                 backgroundColor: props.background,
                 color: props.foreground,
                 ...lblFont,
-                paddingTop: "7.864px",
-                paddingBottom: "7.864px",
             }}>
             {props.text}
         </span>

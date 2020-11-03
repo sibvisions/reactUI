@@ -2,8 +2,12 @@ tr.p-highlight{
     background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%) !important;
 }
 
-.p-datatable {
+.jvxTable {
     background-color: #fafafa;
+    width: 100%;
+    height: 100%;
+    border: 1px solid;
+    border-collapse: collapse;
     .p-datatable-thead {
         >tr {
             th {

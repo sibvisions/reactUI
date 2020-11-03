@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, styleButton, styleChildren} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
@@ -20,17 +20,20 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
+        let bgdColor = btnData.style.backgroundColor;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props.style);
-            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
-                props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, 
-                layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, btnData.style.backgroundColor, null, 5, btnData.btnBorderPainted, undefined);
+            if (props.style?.includes('hyperlink'))
+                btnRef.children[0].classList.add('hyperlink');
+            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+                props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
+            if (!bgdColor)
+                bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
-    }, [btnData.btnAlignments, btnData.btnBorderPainted, 
+    }, [btnData.btnBorderPainted, props.background,
         btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
         props.className, props.horizontalTextPosition, props.imageTextGap,
-        props.style, props.verticalTextPosition, id, layoutValue, props.borderOnMouseEntered])
+        props.style, props.verticalTextPosition, id, props.borderOnMouseEntered])
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
@@ -51,6 +54,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return(
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
+                className="jvxButton"
                 style={btnData.style}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}

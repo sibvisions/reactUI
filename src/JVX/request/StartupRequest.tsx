@@ -14,6 +14,8 @@ interface StartupRequest {
     screenWidth?: number
     screenHeight?: number
 
+    deviceMode: "desktop"|"mobile"
+
     deviceType: string
     deviceTypeModel: string
 

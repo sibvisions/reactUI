@@ -1,7 +1,10 @@
 {
-    "APP_NAME": "demo",
-    "BASE_URL": "http://localhost:8080/JVx.mobile/services/mobile",
-    "USERNAME": "admin",
-    "PASSWORD": "admin"
+    "appName": "demo",
+    "baseURL": "http://localhost:8080/JVx.mobile/services/mobile",
+    "username": "admin",
+    "password": "admin",
+    "deviceMode": "desktop",
+    "language": "de",
+    "timezone": "CET"
 }
   

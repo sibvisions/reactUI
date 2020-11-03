@@ -1,4 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import './UIEditorDate.scss'
 import {Calendar} from 'primereact/calendar';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -79,6 +80,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     return(
         <Calendar
              ref={calender}
+             className="jvxEditorDate"
              monthNavigator={true}
              yearNavigator={true}
              yearRange="1900:2030"

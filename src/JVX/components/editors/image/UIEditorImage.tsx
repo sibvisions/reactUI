@@ -1,4 +1,5 @@
 import React, {CSSProperties, FC, useContext, useEffect, useMemo, useRef} from "react";
+import './UIEditorImage.scss'
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import useRowSelect from "../../zhooks/useRowSelect";
@@ -23,6 +24,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const imageRef = useRef<HTMLImageElement>(null);
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
 
+    const {onLoadCallback, id} = baseProps
     const {verticalAlignment, horizontalAlignment} = props
 
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
@@ -35,10 +37,10 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
                 width = parseInt(size[0]);
                 height = parseInt(size[1]);
             }
-            if (props.onLoadCallback)
-                props.onLoadCallback(props.id, height, width)
+            if (onLoadCallback)
+                onLoadCallback(id, height, width)
         }
-    },[props.onLoadCallback, props.id])
+    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize])
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number
@@ -84,13 +86,13 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         else if(ha === HORIZONTAL_ALIGNMENT.STRETCH) {
             spanCSS.flexFlow = "column";
             spanCSS.justifyContent = spanCSS.alignItems;
-            spanCSS.alignItems = undefined;
+            spanCSS.alignItems = "unset";
         }
         return {span: spanCSS, img: imgCSS};
-    }, [verticalAlignment, horizontalAlignment])
+    }, [verticalAlignment, horizontalAlignment, props.cellEditor_verticalAlignment_, props.cellEditor_horizontalAlignment_])
 
     return(
-        <span style={{position:"absolute", ...layoutValue.get(props.id), display:"flex", ...alignmentCss.span}}>
+        <span className="jvxEditorImage" style={{...layoutValue.get(props.id), ...alignmentCss.span}}>
             <img
                 style={alignmentCss.img}
                 ref={imageRef}

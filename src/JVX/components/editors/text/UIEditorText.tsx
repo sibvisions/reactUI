@@ -1,4 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import './UIEditorText.scss'
 import {InputText} from "primereact/inputtext";
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -8,6 +9,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
+import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number
@@ -15,6 +17,7 @@ interface ICellEditorText extends ICellEditor{
 
 export interface IEditorText extends IEditor{
     cellEditor?: ICellEditorText
+    borderVisible?: boolean
 }
 
 const UIEditorText: FC<IEditorText> = (baseProps) => {
@@ -30,12 +33,27 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
+        //@ts-ignore
+        let currElem = inputRef.current.element;
+        if(currElem){
+            console.log(currElem, props.cellEditor_background_)
+            currElem.style.setProperty('background-color', props.cellEditor_background_);
+            currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
+        }
+    })
+
+    useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
+            //@ts-ignore
+            const currElem = inputRef.current.element
+            if (props.borderVisible === false && !currElem.classList.contains("invisibleBorder")) {
+                currElem.classList.add("invisibleBorder");
+            }
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.element.getClientRects();
             onLoadCallback(id, size[0].height, size[0].width);
         }
-    },[onLoadCallback, id]);
+    },[onLoadCallback, id, props.borderVisible]);
 
     useLayoutEffect(() => {
         setText(selectedRow);
@@ -47,6 +65,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         <InputText
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
+            className="jvxEditorText"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             value={text || ""}

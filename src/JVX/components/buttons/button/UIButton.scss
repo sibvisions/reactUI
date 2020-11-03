@@ -2,15 +2,25 @@
     --icon: unset;
 }
 
-.p-button {
+.jvxButton {
+    display: inline-flex;
+    height: inherit;
+    width: inherit;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px 5px 10px;
     .p-button-icon-left {
         margin-right: unset;
     }
-}
-
-.p-button {
     .p-button-icon-right {
         margin-left: unset;
+    }
+}
+
+.p-button-icon-only {
+    .p-button-label {
+        display: none;
     }
 }
 
@@ -19,35 +29,6 @@
         color: black;
         &:hover {
             text-decoration: underline;   
-        }
-    }
-}
-
-.formlayout {
-    >div {
-        >.p-button {
-            .p-button-label {
-                flex-grow: unset;
-                flex-shrink: unset;
-                flex-basis: unset;
-            }
-        } 
-    }
-}
-
-.formlayout {
-    >div {
-        >div {
-            >.p-button {
-                flex-grow: unset;
-                flex-shrink: unset;
-                flex-basis: unset;
-                .p-button-label {
-                    flex-grow: unset;
-                    flex-shrink: unset;
-                    flex-basis: unset;
-                }
-            }
         }
     }
 }

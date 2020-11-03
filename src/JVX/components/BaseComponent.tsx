@@ -1,4 +1,5 @@
 import { UIFont } from "./compprops/UIFont";
+import Margins from "./layouts/models/Margins";
 import LoadCallBack from "./util/LoadCallBack";
 
 interface BaseComponent{
@@ -14,7 +15,7 @@ interface BaseComponent{
     preferredSize?: string
     background?: string
     foreground?: string
-    margins?: string
+    margins?: string|Margins
     horizontalAlignment?: 0 | 1 | 2| 3
     verticalAlignment?: 0 | 1 | 2| 3
     font?: string|UIFont

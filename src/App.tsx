@@ -50,12 +50,12 @@ const App: FC = () => {
             }
             const startUpRequest = createStartupRequest();
 
-            startUpRequest.applicationName = data.APP_NAME;
-            context.server.APP_NAME = data.APP_NAME;
-            context.server.BASE_URL = data.BASE_URL;
-            context.server.RESOURCE_URL = data.BASE_URL + "/resource/" + data.APP_NAME;
-            startUpRequest.userName = data.USERNAME;
-            startUpRequest.password = data.PASSWORD;
+            startUpRequest.applicationName = data.appName;
+            context.server.APP_NAME = data.appName;
+            context.server.BASE_URL = data.baseURL;
+            context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
+            startUpRequest.userName = data.username;
+            startUpRequest.password = data.password;
 
             if(queryParams.appName && queryParams.baseUrl){
                 startUpRequest.applicationName = queryParams.appName;
@@ -70,6 +70,7 @@ const App: FC = () => {
             if(authKey){
                 startUpRequest.authKey = authKey;
             }
+            startUpRequest.deviceMode = "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);

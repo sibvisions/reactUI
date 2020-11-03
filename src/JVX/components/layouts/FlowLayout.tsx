@@ -1,4 +1,5 @@
 import React, {CSSProperties, FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
+import './FlowLayout.scss'
 import useComponents from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import {ORIENTATION} from "./models/Anchor";
@@ -74,22 +75,20 @@ const FlowLayout: FC<Panel> = (props) => {
     }, [preferredComponentSizes, gaps, props, orientation])
 
     return(
-        <div id={props.id} style={{
-                width: layoutContext.get(props.id)?.width || "100%",
-                height: layoutContext.get(props.id)?.height || "100%",
+        <div id={props.id} className="jvxFlowLayout" style={{
+                width: layoutContext.get(props.id)?.width,
+                height: layoutContext.get(props.id)?.height,
                 left: layoutContext.get(props.id)?.left,
                 top: layoutContext.get(props.id)?.top,
                 position: layoutContext.get(props.id)?.position,
-                display: "flex",
                 justifyContent: alignments.ha,
                 alignItems: alignments.va}}>
             <LayoutContext.Provider value={preferredSize.componentSize}>
                 <div
                     ref={divRef}
+                    className="jvxFlowLayout-inner"
                     style={{
-                        display: "flex",
                         flexDirection: orientation === ORIENTATION.HORIZONTAL ? 'row' : 'column',
-                        justifyContent: "space-between",
                         alignItems: alignments.ca,
                         backgroundColor: props.background,
                         ...preferredSize.style

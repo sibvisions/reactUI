@@ -9,6 +9,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
+import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorNumber extends ICellEditor{
     scale?: number,
@@ -54,11 +55,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         //@ts-ignore
         let currElem = inputRef.current.inputEl;
         if(currElem){
-            //const alignments = checkCellEditorAlignments(props);
             currElem.style.setProperty('background-color', props.cellEditor_background_);
-            //currElem.style.setProperty('text-align', alignments.ha);
-            currElem.style.setProperty('height', '100%');
-            currElem.style.setProperty('width', '100%');
+            currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }
     })
 
@@ -86,6 +84,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     return (
         <InputNumber
             ref={inputRef}
+            className="jvxEditorNumber"
             mode="decimal"
             useGrouping={false}
             minFractionDigits={scaleDigits}

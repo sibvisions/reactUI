@@ -1,4 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import './UIIcon.scss'
 import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import useProperties from "../zhooks/useProperties";
@@ -11,7 +12,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
-    const iconProps = parseIconData(props, props.image)
+    const iconProps = parseIconData(props.foreground, props.image)
     const {onLoadCallback, id} = baseProps;
 
     const iconLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -26,8 +27,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             width = event.currentTarget.width;
         }
 
-        if (props.onLoadCallback) {
-            props.onLoadCallback(props.id, height, width);
+        if (onLoadCallback) {
+            onLoadCallback(id, height, width);
         }
     }
 
@@ -38,7 +39,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 onLoadCallback(id, size.height, size.width);
             }
         }
-    },[onLoadCallback, id]);
+    },[onLoadCallback, id, iconProps.icon]);
 
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
@@ -53,7 +54,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     }
 
     return (
-        <span ref={iconRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+        <span ref={iconRef} className="jvxIcon" style={layoutValue.get(props.id)}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

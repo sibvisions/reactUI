@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, styleButton, styleChildren} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 
 type ToggleButtonEvent = {
     originalEvent: Event,
@@ -36,16 +36,14 @@ const UIToggleButton: FC<IButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props.style);
-            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
-                props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, 
-                layoutValue.get(id)?.height as number | undefined, layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
+            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+                props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, 
-                btnData.style.backgroundColor, btnBgdChecked, 5, btnData.btnBorderPainted, checked);
+                btnData.style.backgroundColor, btnBgdChecked, 5, btnData.btnBorderPainted, checked, props.background ? true : false);
         }
-    },[btnBgdChecked, btnData.btnAlignments, btnData.btnBorderPainted, 
+    },[btnBgdChecked, btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, checked, context.server.RESOURCE_URL,
-        id, layoutValue, props.borderOnMouseEntered, props.className,
+        id, props.borderOnMouseEntered, props.className, props.background,
         props.horizontalTextPosition, props.imageTextGap, props.style, props.verticalTextPosition])
 
     useLayoutEffect(() => {
@@ -69,9 +67,10 @@ const UIToggleButton: FC<IButton> = (baseProps) => {
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <ToggleButton
+                className="jvxButton"
                 style={{...btnData.style, backgroundColor: bgd, borderColor: bgd}}
-                offLabel={props.text}
-                onLabel={props.text}
+                //offLabel={props.text}
+                //onLabel={props.text}
                 offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 onIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 iconPos={btnData.iconPos}

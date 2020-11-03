@@ -43,38 +43,20 @@ export function checkCellEditorAlignments(props:IEditor) {
         }
             
     }
+    else
+        return translateAlignments(undefined, undefined)
 }
 
 export function checkAlignments(props:BaseComponent):Alignments {
-    let compType:string = "lbl";
-
-    if (props.className.includes('Button') && props.className !== "RadioButton")
-        compType = 'btn';
-    else if (props.className === "RadioButton" || props.className === "CheckBox")
-        compType = 'rbtn'
-    else if (props.className.includes('Label'))
-        compType = 'lbl';
-
     if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined)
         return translateAlignments(props.horizontalAlignment, props.verticalAlignment);
     else if (props.horizontalAlignment !== undefined) {
-        if (compType === 'lbl')
-            return translateAlignments(props.horizontalAlignment, 0);
-        else
-            return translateAlignments(props.horizontalAlignment, 1);
+        return translateAlignments(props.horizontalAlignment, undefined);
     }
     else if (props.verticalAlignment !== undefined) {
-        if (compType === 'btn')
-            return translateAlignments(1, props.verticalAlignment);
-        else
-            return translateAlignments(0, props.verticalAlignment);
+        return translateAlignments(undefined, props.verticalAlignment);
     }
     else {
-        if (compType === 'lbl')
-            return translateAlignments(0, 0);
-        else if (compType === 'rbtn')
-            return translateAlignments(0, 1);
-        else
-            return translateAlignments(1, 1);
+        return translateAlignments(undefined, undefined);
     }
 }

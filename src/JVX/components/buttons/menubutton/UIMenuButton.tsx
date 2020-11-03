@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, styleButton, styleChildren} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 
 export interface IMenuButton extends IButton {
@@ -29,7 +29,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         const buildMenu = (foundItems:Array<any>) => {
             let tempItems:Array<any> = [];
             foundItems.forEach(item => {
-                let iconProps = parseIconData(props, item.image);
+                let iconProps = parseIconData(props.foreground, item.image);
                 tempItems.push({
                     label: item.text,
                     icon: iconProps ? iconProps.icon : undefined,
@@ -51,15 +51,17 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
+        let bgdColor = btnData.style.backgroundColor;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props.style);
-            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, btnData.style.backgroundColor, null, 5, btnData.btnBorderPainted, undefined);
+            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
+            if (!bgdColor)
+                bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
-    },[btnData.btnAlignments, btnData.btnBorderPainted, 
+    },[btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
-        props.className, props.horizontalTextPosition, props.imageTextGap,
-        props.style, props.verticalTextPosition, id, layoutValue, props.borderOnMouseEntered])
+        props.className, props.horizontalTextPosition, props.imageTextGap, props.background,
+        props.style, props.verticalTextPosition, id, props.borderOnMouseEntered, layoutValue])
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
@@ -75,7 +77,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
                 ref={menuRef}
-                style={{...btnData.style, padding: 0, borderRadius: '3px'}}
+                className="jvxPopupMenuButton"
+                style={{...btnData.style, borderRadius: '3px'}}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 tabIndex={btnData.tabIndex as string}

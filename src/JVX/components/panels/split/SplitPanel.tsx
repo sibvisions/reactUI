@@ -27,7 +27,6 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     const callOnResize = () => {
         if (props.onResize && secondRef.current && firstRef.current) {
-            //console.log(firstRef.current, secondRef.current)
             const firstDom = firstRef.current.getBoundingClientRect();
             const secondDom = secondRef.current.getBoundingClientRect();
             props.onResize(
@@ -93,7 +92,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     return(
         <div className={"splitPanel"} ref={positionRef}>
-            <div ref={firstRef} className={"first"} style={{width: firstWidth || "25%", overflow:"hidden"}}>
+            <div ref={firstRef} className={"first"} style={{width: firstWidth}}>
                 {props.leftComponent}
             </div>
             <div className={"separator"} style={{backgroundImage:"url("+ SplitImage +")"}}  onMouseDown={dragStart} onTouchStart={dragTouchStart}>

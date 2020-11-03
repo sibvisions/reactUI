@@ -73,11 +73,11 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     return (
-        <span style={{...layoutValue.get(props.id)||baseProps.editorStyle, display: 'inline-flex', justifyContent: alignments?.ha ? alignments.ha : 'center', alignItems: alignments?.va ? alignments.va : "center"}}>
+        <span className="jvxEditorChoice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>
             <img
                 ref={btnRef}
+                className="jvxEditorChoice-img"
                 alt=""
-                style={{cursor: 'pointer'}}
                 onClick={handleClick}
                 src={mergedValImg[selectedRow] ? context.server.RESOURCE_URL + mergedValImg[selectedRow] : ""}
                 onLoad={onChoiceLoaded}

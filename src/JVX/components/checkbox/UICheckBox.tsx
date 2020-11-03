@@ -1,12 +1,14 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import './UICheckBox.scss'
 import {Checkbox} from 'primereact/checkbox';
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import {IButton} from "../buttons/IButton";
-import {buttonProps, styleButton, styleChildren} from "../buttons/ButtonStyling";
+import {buttonProps, styleButton} from "../buttons/ButtonStyling";
 import {createSetValueRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import { swapProps } from "../util/SwapProps";
 
 export interface ICheckBox extends IButton {
     selected?: boolean;
@@ -24,15 +26,15 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0] as HTMLElement, props.style);
-            styleChildren(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
-                props.imageTextGap, btnData.style, btnData.iconProps, btnData.btnAlignments, layoutValue.get(id)?.height as number | undefined, 
-                layoutValue.get(id)?.width as number | undefined, context.server.RESOURCE_URL);
+            if (props.horizontalTextPosition === 1)
+                swapProps(btnRef.children[0] as HTMLElement, 'justify-content', 'align-items');
+            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+                props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
         }
-    }, [btnData.btnAlignments, btnData.btnBorderPainted, 
+    }, [btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
         props.className, props.horizontalTextPosition, props.imageTextGap,
-        props.style, props.verticalTextPosition, id, layoutValue])
+        props.style, props.verticalTextPosition, id])
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
@@ -46,7 +48,7 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
 
     return (
         <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span style={btnData.style}>
+            <span className="jvxCheckBox" style={btnData.style}>
                 <Checkbox
                     inputId={props.id}
                     style={{order: btnData.iconPos === 'left' ? 1 : 2}}

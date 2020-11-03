@@ -7,41 +7,39 @@ import IconProps from './IconProps';
 import { UIFont } from './UIFont';
 
 export function  getPanelBgdColor(props:Panel, context:any) {
-    let bgdColor = tinycolor('white');
-
     if (props.background)
-        bgdColor = tinycolor(props.background);
+        return tinycolor(props.background);
     else {
         const parent:BaseComponent = context.contentStore.flatContent.get(props.parent);
         if (parent !== undefined && parent.background)
-            bgdColor = tinycolor(parent.background)
-    }
-    return bgdColor
-}
-
-export function getMargins(props:BaseComponent) {
-    if (props.margins)
-        return new Margins(props.margins.split(','));
-    else {
-        if (props.className.includes("Button") && props.className !== "RadioButton")
-            return new Margins(['5', '10', '5', '10']);
+            return tinycolor(parent.background)
         else
-            return new Margins(['0', '0', '0', '0']);
+            return undefined
     }
 }
 
-export function getFont(font:string|UIFont|undefined): UIFont {
+export function getMargins(margins:string|Margins|undefined) {
+    if (margins !== undefined)
+        if (typeof margins === "string")
+            return new Margins(margins.split(','));
+        else
+            return margins;
+    else
+        return undefined
+}
+
+export function getFont(font:string|UIFont|undefined) {
     if (font !== undefined) {
         if (typeof font === "string")
             return new UIFont(font.split(','));
         else
-            return font
+            return font;
     }
     else
-        return new UIFont(["Segoe UI", "normal", "normal", "16"])
+        return undefined;
 }
 
-export function parseIconData(props:BaseComponent, iconData:string|undefined): IconProps {
+export function parseIconData(foreground:string|undefined, iconData:string|undefined): IconProps {
     if (iconData) {
         let splittedIconData:string[];
         let iconName:string;
@@ -54,7 +52,7 @@ export function parseIconData(props:BaseComponent, iconData:string|undefined): I
 
                 iconName = "fa fa-" + splittedIconData[0];
                 iconSize = {width: parseInt(splittedIconData[1]), height: parseInt(splittedIconData[2])};
-                iconColor = props.foreground ? tinycolor(props.foreground) : tinycolor('white');
+                iconColor = foreground ? tinycolor(foreground) : tinycolor('white');
 
                 return {icon: iconName, size: iconSize, color: iconColor.toString()};
             }
@@ -79,7 +77,7 @@ export function parseIconData(props:BaseComponent, iconData:string|undefined): I
                 if (!sizeFound)
                     iconSize = {width: parseInt(iconData.slice(iconData.indexOf('.') + 1)[1]), height: parseInt(iconData.slice(iconData.indexOf('.') + 1)[2])}
                 if (!colorFound)
-                    iconColor = props.foreground ? tinycolor(props.foreground) : tinycolor('white');
+                    iconColor = foreground ? tinycolor(foreground) : tinycolor('white');
                 return {icon: iconName, size: iconSize, color: iconColor.toString()}
             }
         }

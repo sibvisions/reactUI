@@ -1,11 +1,9 @@
-.choice-editor{
-    padding: 0;
-    border: none;
-    background-color: transparent;
+.jvxEditorChoice {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.choice-editor:focus {
-    outline-color: transparent;
-    outline-style: unset;
-    outline-width: unset;
+.jvxEditorChoice-img {
+    cursor: pointer;
 }

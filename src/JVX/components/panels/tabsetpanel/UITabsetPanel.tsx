@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
 import './UITabsetPanel.scss'
 import {TabView,TabPanel} from 'primereact/tabview';
 import {LayoutContext} from "../../../LayoutContext";
@@ -22,7 +22,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
     const [components] = useComponents(baseProps.id)
     const {onLoadCallback, id} = baseProps;
-    let closing = false;
+    const closing = useRef(false);
 
     useLayoutEffect(() => {
         if (onLoadCallback && panelRef.current) {
@@ -33,36 +33,40 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     },[onLoadCallback, id]);
 
     useLayoutEffect(() => {
-        const sizeMap = new Map<string, CSSProperties>();
-        //@ts-ignore
-        const width = panelRef.current.nav.nextElementSibling.getBoundingClientRect().width;
-        //@ts-ignore
-        const height = panelRef.current.nav.nextElementSibling.getBoundingClientRect().height;
-        components.forEach((subject:any) => {
-            sizeMap.set(subject.props.id, {width, height})
-        })
-        setComponentSizes(sizeMap)
-    },[panelRef.current]);
+        if (panelRef.current) {
+            console.log('test')
+            const sizeMap = new Map<string, CSSProperties>();
+            //@ts-ignore
+            const width = panelRef.current.nav.nextElementSibling.getBoundingClientRect().width;
+            //@ts-ignore
+            const height = panelRef.current.nav.nextElementSibling.getBoundingClientRect().height;
+            components.forEach((subject:any) => {
+                sizeMap.set(subject.props.id, {width, height})
+            })
+            setComponentSizes(sizeMap)  
+        }
+    // eslint-disable-next-line
+    },[components, panelRef.current]);
 
-    const buildTabRequest = (tabId:number) => {
+    const buildTabRequest = useCallback((tabId:number) => {
         const req = createTabRequest();
         req.componentId = props.name;
         req.index = tabId;
         return req
-    }
-
-    const handleClose = (tabId:number) => {
-        context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB);
-        closing = true
-    }
+    },[props.name])
 
     const handleSelect = (tabId:number) => {
-        if(!closing)
+        if(!closing.current)
             context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB);
-        closing = false;
+        closing.current = false;
     }
 
     const buildTabs = useMemo(() => {
+        const handleClose = (tabId:number) => {
+            context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB);
+            closing.current = true
+        }
+
         let builtTabs:Array<JSX.Element> = [];
         if (components) {
             components.forEach((subject:any) => {
@@ -72,7 +76,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 if (subjectConstraints.includes("FontAwesome")) {
                     let splitConstIcon = subjectConstraints.slice(0, subjectConstraints.indexOf(";FontAwesome"));
                     constraints = splitConstIcon.split(';');
-                    icon = parseIconData(props, subjectConstraints.slice(subjectConstraints.indexOf(';FontAwesome')));
+                    icon = parseIconData(props.foreground, subjectConstraints.slice(subjectConstraints.indexOf(';FontAwesome')));
                 }
                 else
                     constraints = subjectConstraints.split(';');
@@ -87,7 +91,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             });
         }
         return builtTabs;
-    }, [components])
+    }, [components, props.foreground, buildTabRequest, context.server])
 
     return (
         <LayoutContext.Provider value={componentSizes}>

@@ -1,4 +1,5 @@
 import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import './UIEditorCheckbox.scss'
 import {Checkbox} from 'primereact/checkbox';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -80,10 +81,10 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     return (
         <span
             ref={cbxRef}
+            className="jvxEditorCheckbox"
             style={{
                 ...layoutValue.get(props.id) || baseProps.editorStyle,
-                display: 'inline-flex',
-                background: props.cellEditor_background_,
+                backgroundColor: props.cellEditor_background_,
                 justifyContent: alignments?.ha,
                 alignItems: alignments?.va
             }}>
@@ -95,7 +96,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
                     sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(getBooleanValue(checked), cbxType), undefined, context)
                 }} 
             />
-            <label htmlFor={id}>{props.cellEditor?.text}</label>
+            <label className="jvxEditorCheckbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
         </span>
     )
 }
