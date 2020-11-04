@@ -36,7 +36,6 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         //@ts-ignore
         let currElem = inputRef.current.element;
         if(currElem){
-            console.log(currElem, props.cellEditor_background_)
             currElem.style.setProperty('background-color', props.cellEditor_background_);
             currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }

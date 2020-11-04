@@ -17,6 +17,7 @@ import { IEditorChoice } from "../editors/choice/UIEditorChoice";
 import { IEditorDate } from "../editors/date/UIEditorDate";
 import { parseDateFormatTable } from "../util/ParseDateFormats";
 import moment from "moment";
+import useOutsideClick from "../zhooks/useOutsideClick";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -26,6 +27,7 @@ export interface TableProps extends BaseComponent{
 }
 
 type CellEditor = {
+    name: string
     cellData: any,
     dataProvider: string,
     colName: string,
@@ -37,6 +39,8 @@ type CellEditor = {
 const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
+    const wrapperRef = useRef(null)
+    useOutsideClick(wrapperRef, setEdit)
     return useMemo(() => {
         const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
         const decideEditor = () => {
@@ -45,17 +49,16 @@ const CellEditor: FC<CellEditor> = (props) => {
             if(columnMetaData){
                 editor = createEditor({
                     ...columnMetaData,
+                    name:props.name,
                     dataRow:props.dataProvider,
                     columnName: props.colName,
                     id: "",
                     cellEditor_editable_:true,
-                    onSubmit:() => setEdit(false),
+                    //onSubmit:() => {console.log('submitted'); setEdit(false)},
                     editorStyle: {width: "100%", height:"100%"},
                     autoFocus: true
                 }) || editor
             }
-
-
             return editor
         }
 
@@ -92,18 +95,19 @@ const CellEditor: FC<CellEditor> = (props) => {
             )
         } else {
             return (
-                <div style={{height: 30}}>
+                <div ref={wrapperRef} style={{height: 30}}>
                     {decideEditor()}
                 </div>
             )
         }
-    }, [edit, props.cellData, props.colName, props.dataProvider, props.metaData, props.resource]);
+    }, [edit, props.cellData, props.colName, props.dataProvider, props.metaData, props.resource, props.name]);
 }
 
 const UITable: FC<TableProps> = (baseProps) => {
 
     //React Hook
     const wrapRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef(null)
     const layoutContext = useContext(LayoutContext);
     const context = useContext(jvxContext);
 
@@ -131,6 +135,25 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [id, onLoadCallback]);
 
     useLayoutEffect(() => {
+        if (tableRef.current) {
+            //@ts-ignore
+            tableRef.current.table.style.setProperty('table-layout', 'auto');
+            //@ts-ignore
+            const theader =tableRef.current.table.querySelectorAll('th')
+            let tempSizes = new Map<any, string>()
+            theader.forEach((node:any) => {
+                tempSizes.set(node, window.getComputedStyle(node).width);
+            });
+            //@ts-ignore
+            tableRef.current.table.style.setProperty('table-layout', 'fixed');
+            theader.forEach((node:any) => {
+                node.style.setProperty('width', tempSizes.get(node))
+            })
+
+        }
+    })
+
+    useLayoutEffect(() => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
@@ -138,12 +161,13 @@ const UITable: FC<TableProps> = (baseProps) => {
     const columns = useMemo(() => {
         const metaData = context.contentStore.dataProviderMetaData.get(props.dataBook);
 
-        return props.columnNames.map((colName, colIndex) =>
-            <Column
+        return props.columnNames.map((colName, colIndex) => {
+            return <Column
                 field={colName}
                 header={props.columnLabels[colIndex]}
-                headerStyle={{overflowX: "hidden", textOverflow: 'Ellipsis'}}
+                headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis'}}
                 body={(rowData: any) => <CellEditor
+                    name={props.name}
                     colName={colName}
                     dataProvider={props.dataBook}
                     cellData={rowData[colName]}
@@ -153,8 +177,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 style={{width: '1%', whiteSpace: 'nowrap', lineHeight: '14px'}}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div className="loading-text" style={{height: 30}} />}/>
+        }
+
         )
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name])
 
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(props.dataBook)?.primaryKeyColumns || ["ID"];
@@ -191,6 +217,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     return(
        <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(props.id)}}>
            <DataTable
+               ref={tableRef}
                className="jvxTable"
                scrollable={virtualEnabled}
                lazy={virtualEnabled}

@@ -50,7 +50,7 @@ const BorderLayout: FC<Panel> = (props) => {
             const southWithProps = (constraintComponents.south as ChildWithProps);
             const eastWithProps = (constraintComponents.east as ChildWithProps);
             const westWithProps = (constraintComponents.west as ChildWithProps);
-
+            
             let southHeight = southSize.height;
             let northHeight = northSize.height
             if(preferredComponentSizes){
@@ -62,25 +62,24 @@ const BorderLayout: FC<Panel> = (props) => {
                 if(preferredNorth)
                     northHeight = preferredNorth.height;
             }
-            if(centerWithProps)
+            if(centerWithProps) {
                 sizeMap.set(centerWithProps.props.id, {
                     height: layoutSize.height - southHeight - northHeight -3,
                     width: layoutSize.width - eastSize.width - westSize.width
                 });
+            }
             if(northWithProps)
                 sizeMap.set(northWithProps.props.id, {height: 0, width: layoutContextValue.get(props.id)?.width as number || 0});
-            if(southWithProps)
+            if(southWithProps) {
                 sizeMap.set(southWithProps.props.id, {height: 0, width: layoutContextValue.get(props.id)?.width as number || 0});
+            }
             if(eastWithProps)
                 sizeMap.set(eastWithProps.props.id, {height: layoutSize.height - southHeight - northHeight, width: 0});
             if(westWithProps)
                 sizeMap.set(westWithProps.props.id, {height: layoutSize.height - southHeight- northHeight, width: 0});
-
             setComponentSizes(sizeMap);
         }
-    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents ,preferredComponentSizes, props.id])
-
-
+    }, [layoutContextValue, layoutRef, northRef, southRef, eastRef, westRef, constraintComponents, preferredComponentSizes, props.id])
 
     useLayoutEffect(() => {
         const layout: borderLayoutComponents = {};

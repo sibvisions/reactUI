@@ -71,7 +71,6 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
             //if the button is a Radiobutton or a Checkbox and the hTextPos is 1, the Radiobutton/Checkbox gets moved to the center of the component
             if ((className === "RadioButton" || className === "CheckBox") && hTextPos === 1) {
                 let alignment = window.getComputedStyle(child.parentElement).getPropertyValue('align-items')
-                console.log(alignment)
                 let labelElem = child.nextElementSibling as HTMLElement;
                 let labelWidth = labelElem.offsetWidth/2;
                 let childWidth = child.offsetWidth/2;
@@ -223,7 +222,6 @@ function getBtnBgdColor(borderPainted:boolean|undefined, background:string|undef
         if (background)
             return tinycolor(background).toString();
         else {
-            console.log('yo')
             return undefined;
         }
             

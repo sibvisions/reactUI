@@ -34,7 +34,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     useLayoutEffect(() => {
         if (panelRef.current) {
-            console.log('test')
             const sizeMap = new Map<string, CSSProperties>();
             //@ts-ignore
             const width = panelRef.current.nav.nextElementSibling.getBoundingClientRect().width;

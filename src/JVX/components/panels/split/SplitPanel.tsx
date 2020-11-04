@@ -8,6 +8,7 @@ type onResizeEvent = (firstSize: splitSize, secondSize: splitSize) => void;
 export type splitSize = { width: number, height: number }
 
 type SplitPanelProps = {
+    forwardedRef?: any
     leftComponent?: ReactNode
     rightComponent?: ReactNode
     onResizeStart?: onResizeEvent
@@ -20,10 +21,27 @@ type SplitPanelProps = {
 const SplitPanel: FC<SplitPanelProps> = (props) => {
 
     const [firstWidth, setFirstWidth] = useState<number | undefined>();
-    const positionRef = useRef<HTMLDivElement>(null);
     const firstRef = useRef<HTMLDivElement>(null);
     const secondRef = useRef<HTMLDivElement>(null);
     let absoluteWidthPosition = 0;
+
+    const addClassWhileDragging = () => {
+        if (firstRef.current && secondRef.current) {
+            const nodeListFirst = firstRef.current.querySelectorAll(".north, .west, .center, .east, .south");
+            const nodeListSecond = secondRef.current.querySelectorAll(".north, .west, .center, .east, .south")
+            nodeListFirst.forEach(node => node.classList.add('hideOnScroll'));
+            nodeListSecond.forEach(node => node.classList.add('hideOnScroll'));
+        }
+    }
+
+    const removeClassAfterDragging = () => {
+        if (firstRef.current && secondRef.current) {
+            const nodeListFirst = firstRef.current.querySelectorAll(".hideOnScroll");
+            const nodeListSecond = secondRef.current.querySelectorAll(".hideOnScroll");
+            nodeListFirst.forEach(node => node.classList.remove('hideOnScroll'));
+            nodeListSecond.forEach(node => node.classList.remove('hideOnScroll'))
+        }
+    }
 
     const callOnResize = () => {
         if (props.onResize && secondRef.current && firstRef.current) {
@@ -45,14 +63,15 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     const stopDrag = () => {
-        console.log('stopped dragging')
+        removeClassAfterDragging();
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("mousemove", dragging);
     }
 
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
-        if(positionRef.current){
-            const size = positionRef.current.getBoundingClientRect();
+        addClassWhileDragging();
+        if(props.forwardedRef.current){
+            const size = props.forwardedRef.current.getBoundingClientRect();
             absoluteWidthPosition = size.x;
         }
         document.addEventListener("mouseup", stopDrag);
@@ -62,7 +81,6 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     //Touch ----------------------
 
     const stopTouchDrag = () => {
-        console.log('stopped touch')
         document.removeEventListener("touchend", stopTouchDrag);
         document.removeEventListener("touchmove", touchDragging);
     }
@@ -76,8 +94,8 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-        if(positionRef.current){
-            const size = positionRef.current.getBoundingClientRect();
+        if(props.forwardedRef.current){
+            const size = props.forwardedRef.current.getBoundingClientRect();
             absoluteWidthPosition = size.x;
         }
         document.addEventListener("touchend", stopTouchDrag);
@@ -91,7 +109,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
 
     return(
-        <div className={"splitPanel"} ref={positionRef}>
+        <div className={"splitPanel"} ref={props.forwardedRef}>
             <div ref={firstRef} className={"first"} style={{width: firstWidth}}>
                 {props.leftComponent}
             </div>

@@ -59,17 +59,17 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             }
             return false
         });
-        if (foundData.length === 1) {                     
+        if (!text) {
+            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context) : null);
+        }
+        else if (foundData.length === 1) {                     
             if (props.cellEditor) {
                 for (let i = 0; i < Object.values(foundData[0]).length; i++) {
                     newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];
                 }
             }
                 setText(newVal);
-                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.clearColumns, newVal, lastValue.current, context) : null);
-        }
-        else if (text === "") {
-            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.clearColumns, null, lastValue.current, context) : null);
+                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context) : null);
         }
         else {
             setText(lastValue.current)
@@ -86,6 +86,15 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             }
         }
     })
+
+    useEffect(() => {
+        return () => {
+            if (props.id === "") {
+                if (text !== null)
+                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context) : null);
+            }
+        }
+    },[text])
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
@@ -178,8 +187,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 let element:any = {};
                 Object.values(record).forEach((data:any, index:any) => {
                     if(data !== null) {
-                        if (props.cellEditor?.clearColumns !== undefined) {
-                            element[props.cellEditor.clearColumns[index]] = data;
+                        if (props.cellEditor?.linkReference.columnNames !== undefined) {
+                            element[props.cellEditor.linkReference.columnNames[index]] = data;
                         }
                     } 
                 });

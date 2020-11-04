@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, ReactElement, useContext, useMemo, useState} from "react";
+import React, {CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
 import SplitPanel, {splitSize} from "./SplitPanel";
 import useComponents from "../../zhooks/useComponents";
 import ChildWithProps from "../../util/ChildWithProps";
@@ -34,9 +34,19 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
     const firstChild = getChildByConstraint("FIRST_COMPONENT");
     const secondChild = getChildByConstraint("SECOND_COMPONENT");
     const sizeValue = useContext(LayoutContext);
+    const splitRef = useRef(null);
+    const {onLoadCallback, id} = props
+
+    useLayoutEffect(() => {
+        if (splitRef.current) {
+            //@ts-ignore
+            const size = splitRef.current.getBoundingClientRect();
+            if(onLoadCallback)
+                onLoadCallback(id, size.height, size.width);
+        }
+    }, [id, onLoadCallback])
 
     const handleResize = (firstSize: splitSize, secondSize: splitSize) => {
-
         const sizeMap = new Map<string, CSSProperties>();
         const firstProps = (firstChild as ChildWithProps);
         const secondProps = (secondChild as ChildWithProps);
@@ -47,10 +57,10 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
         setComponentSizes(sizeMap);
     }
 
-
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
+                forwardedRef={splitRef}
                 trigger={sizeValue}
                 onTrigger={handleResize}
                 onResize={handleResize}
