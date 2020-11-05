@@ -24,9 +24,14 @@ import UIText from "../components/text/UIText";
 import UITextArea from "../components/text/UITextArea";
 import UIPassword from "../components/text/UIPassword";
 import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
+import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
+}
+
+export const createGroupPanel: FC<Panel> = (props) => {
+    return <UIGroupPanel {...props} key={props.id}/>
 }
 
 export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
@@ -146,7 +151,7 @@ export const createEditor: FC<IEditor> = ( props ) => {
 
 const classNameMapper = new Map<string, Function>()
     .set("Panel", createPanel)
-    .set("GroupPanel", createPanel)
+    .set("GroupPanel", createGroupPanel)
     .set("ScrollPanel", createPanel)
     .set("SplitPanel", createSplitPanel)
     .set("Button", createButton)

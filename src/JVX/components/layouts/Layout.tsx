@@ -1,14 +1,22 @@
-import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {CSSProperties, FC, ReactElement, useLayoutEffect, useRef} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import FlowLayout from "./FlowLayout";
-import useComponents from "../zhooks/useComponents";
-import useProperties from "../zhooks/useProperties";
-import {LayoutContext} from "../../LayoutContext";
-import {Panel} from "../panels/panel/UIPanel";
+import {ComponentSize} from "../zhooks/useComponents";
 
 
-const Layout: FC<Panel> = (props) => {
+export interface ILayout{
+    id: string
+    layout: string,
+    layoutData: string,
+    components: Array<ReactElement>
+    preferredCompSizes: Map<string, ComponentSize> | undefined
+    style: CSSProperties,
+    onLoad: Function | undefined
+}
+
+
+const Layout: FC<ILayout> = (props) => {
     if(props.layout.includes("FormLayout"))
         return <FormLayout {...props}/>
     else if(props.layout.includes("BorderLayout"))
@@ -23,25 +31,28 @@ export default Layout
 
 
 
-const DummyLayout: FC<Panel> = (baseProps) => {
+const DummyLayout: FC<ILayout> = (baseProps) => {
 
-    const layoutSize = useRef<HTMLDivElement>(null);
-    const [children] = useComponents(baseProps.id);
-    const layoutValue = useContext(LayoutContext);
-    const [props] = useProperties<Panel>(baseProps.id, baseProps);
+    const {
+        components,
+        style,
+        id,
+        onLoad
+    } = baseProps
+
+    const layoutSize = useRef<HTMLSpanElement>(null);
 
     useLayoutEffect(() => {
-        if(layoutSize.current && props.onLoadCallback){
+        if(layoutSize.current && onLoad){
             const size = layoutSize.current.getBoundingClientRect();
-
-            props.onLoadCallback(props.id, size.height, size.width);
+            onLoad(id, size.height, size.width);
         }
-    }, [layoutSize, props]);
+    }, [id, onLoad]);
 
 
     return(
-        <span id={props.id} ref={layoutSize} style={layoutValue.get(props.id)}>
-            {children}
+        <span ref={layoutSize} style={style}>
+            {components}
         </span>
     )
 }

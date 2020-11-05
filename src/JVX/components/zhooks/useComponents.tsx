@@ -1,8 +1,7 @@
 import {ReactElement, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
-type ComponentSize = {
-    id: string
+export type ComponentSize = {
     width: number,
     height: number
 }
@@ -16,7 +15,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
         const componentHasLoaded = (compId: string, height: number, width: number)=> {
-            tempSizes.set(compId, {id: compId, width: width, height: height});
+            tempSizes.set(compId, {width: width, height: height});
             if(tempSizes.size === components.length){
                 setPreferredSizes(tempSizes);
             }
@@ -46,28 +45,28 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
 
 
     useEffect(() => {
-       context.contentStore.subscribeToParentChange(id, () => {
-           const newComponents = buildComponents();
+        context.contentStore.subscribeToParentChange(id, () => {
+            const newComponents = buildComponents();
 
-           const cl = new Array<ReactElement>();
-           newComponents.forEach(nc => {
-               let alreadyAdded = false
-               components.forEach(oc => {
-                   if(nc.props.id === oc.props.id){
-                       alreadyAdded = true
-                       cl.push(oc);
-                   }
-               });
-               if(!alreadyAdded){
-                   cl.push(nc);
-               }
-           });
-           setComponents(cl);
-       });
+            const cl = new Array<ReactElement>();
+            newComponents.forEach(nc => {
+                let alreadyAdded = false
+                components.forEach(oc => {
+                    if(nc.props.id === oc.props.id){
+                        alreadyAdded = true
+                        cl.push(oc);
+                    }
+                });
+                if(!alreadyAdded){
+                    cl.push(nc);
+                }
+            });
+            setComponents(cl);
+        });
 
-       return () => {
-           context.contentStore.unsubscribeFromParentChange(id);
-       }
+        return () => {
+            context.contentStore.unsubscribeFromParentChange(id);
+        }
     }, [context.contentStore, id, components]);
 
 

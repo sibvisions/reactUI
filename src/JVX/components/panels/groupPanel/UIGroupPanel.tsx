@@ -1,33 +1,29 @@
 import React, {FC, useContext} from "react";
-import Layout from "../../layouts/Layout";
-import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
-import useComponents, {ComponentSize} from "../../zhooks/useComponents";
+import useComponents from "../../zhooks/useComponents";
+import Layout from "../../layouts/Layout";
+import {Panel} from "../panel/UIPanel";
 
-export interface Panel extends BaseComponent{
-    orientation: number,
-    layout: string,
-    layoutData: string,
-    "mobile.autoclose": boolean,
-    "screen.title"?: string,
-    text?: string
-}
-
-const UIPanel: FC<Panel> = (baseProps) => {
+const UIGroupPanel: FC<Panel> = (baseProps) => {
 
     const layoutContext = useContext(LayoutContext);
     const [props] = useProperties(baseProps.id, baseProps);
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
 
-    const getStyle = () => {
-        const s = layoutContext.get(baseProps.id) || {}
 
+    const getStyle = () => {
+        const s = {...layoutContext.get(baseProps.id) || {}}
+        s.top = undefined;
+        s.left = undefined;
+        console.log(s.height);
+        (s.width as number) -= 10;
+        (s.height as number) -= 10;
         return s
     }
 
     return(
-        <div>
+        <div style={{...layoutContext.get(baseProps.id), border:"5px solid black"}}>
             <Layout
                 id={baseProps.id}
                 layoutData={props.layoutData}
@@ -35,8 +31,10 @@ const UIPanel: FC<Panel> = (baseProps) => {
                 onLoad={baseProps.onLoadCallback}
                 preferredCompSizes={preferredComponentSizes}
                 components={components}
-                style={getStyle()}/>
+                style={{...getStyle(), overflow:"scroll" }}/>
         </div>
+
     )
 }
-export default UIPanel
+
+export default UIGroupPanel
