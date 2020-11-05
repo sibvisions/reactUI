@@ -576,7 +576,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback){
-                        onLayoutCallback(id, preferredHeight, preferredWidth);
+                        if(baseProps.id.includes("GP"))
+                            onLayoutCallback(id, preferredHeight+10, preferredWidth);
+                        else
+                            onLayoutCallback(id, preferredHeight, preferredWidth);
                     }
                     setCalculatedStyle( {
                         style: {
