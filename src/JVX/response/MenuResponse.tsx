@@ -1,15 +1,13 @@
 import BaseResponse from "./BaseResponse";
 
 type serverMenuButtons = {
+    componentId: string,
     group: string,
+    text: string,
     image: string,
-    action: {
-        componentId: string,
-        label: string
-    }
 }
 interface MenuResponse extends BaseResponse{
     componentId: string,
-    items: Array<serverMenuButtons>
+    entries: Array<serverMenuButtons>
 }
 export default MenuResponse

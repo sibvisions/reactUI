@@ -1,19 +1,7 @@
 interface LoginRequest {
-    clientId: string | undefined;
-    loginData : {
-        userName: {
-            componentId: string | undefined,
-            text: string | undefined
-        },
-        password:{
-            componentId: string | undefined,
-            text: string | undefined
-        },
-        action: {
-            componentId: string | undefined,
-            label: string | undefined
-        }
-    },
+    clientId: string | undefined
+    username: string | undefined
+    password: string | undefined
     createAuthKey: boolean
 }
 export default LoginRequest;

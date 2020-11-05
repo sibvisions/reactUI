@@ -16,8 +16,8 @@ const Login: FC = () => {
     const loginSubmit = (props: FormEvent<HTMLFormElement>) => {
         props.preventDefault();
         let loginRequestBody = createLoginRequest();
-        loginRequestBody.loginData.userName.text= username;
-        loginRequestBody.loginData.password.text= password;
+        loginRequestBody.username= username;
+        loginRequestBody.password= password;
         context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN);
     }
 

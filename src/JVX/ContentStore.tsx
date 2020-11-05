@@ -214,7 +214,7 @@ class ContentStore{
         let groupsString= Array<string>();
         let groups = Array<MenuItemCustom>();
         //Make out distinct groups
-        menuResponse.items.forEach(parent => {
+        menuResponse.entries.forEach(parent => {
             if(groupsString.indexOf(parent.group) === -1) {
                 groupsString.push(parent.group)
                 groups.push({label: parent.group, items: Array<MenuItemCustom>()})
@@ -222,11 +222,11 @@ class ContentStore{
         });
         //Add SubMenus to parents
         groups.forEach(parent => {
-            menuResponse.items.forEach(subMenu => {
+            menuResponse.entries.forEach(subMenu => {
                 if(parent.label===subMenu.group) {
                     const item:MenuItemCustom = {
-                        label: subMenu.action.label,
-                        componentId: subMenu.action.componentId
+                        label: subMenu.text,
+                        componentId: subMenu.componentId
                     }
 
                     // @ts-ignore

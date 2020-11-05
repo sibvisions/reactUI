@@ -48,20 +48,8 @@ export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
     const req: LoginRequest = {
         clientId: values?.clientId || getClientId(),
         createAuthKey: values?.createAuthKey || true,
-        loginData: {
-            userName: {
-                componentId: values?.loginData.userName.componentId || "UserName",
-                text: values?.loginData.userName.text
-            },
-            password: {
-                componentId: values?.loginData.password.componentId || "Password",
-                text: values?.loginData.password.text
-            },
-            action: {
-                componentId: values?.loginData.action.componentId || "OK",
-                label: values?.loginData.action.label || "Anmelden"
-            }
-        }
+        username: values?.username,
+        password: values?.password,
     }
     return req;
 }
