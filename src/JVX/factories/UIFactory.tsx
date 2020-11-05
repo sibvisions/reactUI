@@ -24,7 +24,7 @@ import UIText from "../components/text/UIText";
 import UITextArea from "../components/text/UITextArea";
 import UIPassword from "../components/text/UIPassword";
 import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
-import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
+import UIGroupPanel from "../components/panels/grouppanel/UIGroupPanel";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>

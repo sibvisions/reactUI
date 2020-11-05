@@ -69,8 +69,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
-            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context))}
-            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context))}
+            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
         />
     )
 }

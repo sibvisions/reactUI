@@ -137,19 +137,21 @@ const UITable: FC<TableProps> = (baseProps) => {
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore
-            tableRef.current.table.style.setProperty('table-layout', 'auto');
-            //@ts-ignore
-            const theader =tableRef.current.table.querySelectorAll('th')
-            let tempSizes = new Map<any, string>()
-            theader.forEach((node:any) => {
-                tempSizes.set(node, window.getComputedStyle(node).width);
-            });
-            //@ts-ignore
-            tableRef.current.table.style.setProperty('table-layout', 'fixed');
-            theader.forEach((node:any) => {
-                node.style.setProperty('width', tempSizes.get(node))
-            })
-
+            if (tableRef.current.table) {
+                //@ts-ignore
+                tableRef.current.table.style.setProperty('table-layout', 'auto');
+                //@ts-ignore
+                const theader = tableRef.current.table.querySelectorAll('th')
+                let tempSizes = new Map<any, string>()
+                theader.forEach((node: any) => {
+                    tempSizes.set(node, window.getComputedStyle(node).width);
+                });
+                //@ts-ignore
+                tableRef.current.table.style.setProperty('table-layout', 'fixed');
+                theader.forEach((node: any) => {
+                    node.style.setProperty('width', tempSizes.get(node))
+                })
+            }
         }
     })
 
@@ -174,7 +176,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     metaData={metaData}
                     resource={context.server.RESOURCE_URL}
                 />}
-                style={{width: '1%', whiteSpace: 'nowrap', lineHeight: '14px'}}
+                style={{whiteSpace: 'nowrap', lineHeight: '14px'}}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div className="loading-text" style={{height: 30}} />}/>
         }
@@ -215,7 +217,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
 
     return(
-       <div ref={wrapRef} style={{width:"min-content", ...layoutContext.get(props.id)}}>
+       <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
            <DataTable
                ref={tableRef}
                className="jvxTable"

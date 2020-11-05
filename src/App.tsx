@@ -70,13 +70,14 @@ const App: FC = () => {
             if(authKey){
                 startUpRequest.authKey = authKey;
             }
+            context.contentStore.notifyAppNameChanged(context.server.APP_NAME);
             startUpRequest.deviceMode = "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
             context.server.showToast = msg
         })
-    }, [context.server]);
+    }, [context.server, context.contentStore]);
 
     const msg = (messageObj: ToastMessage) => {
         if (toastRef.current) {

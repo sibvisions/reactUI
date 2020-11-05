@@ -43,7 +43,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         inputRef.current.inputEl.setAttribute('maxlength', length);
         //@ts-ignore
         inputRef.current.inputEl.onkeydown = (event) => {
-            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context));
+            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server));
             //@ts-ignore
             if (inputRef.current.inputEl.value.length === inputRef.current.inputEl.maxLength) {
                 return false;
@@ -92,7 +92,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             value={value}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context))}
+            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server))}
             disabled={!props.cellEditor_editable_}
         />
     )

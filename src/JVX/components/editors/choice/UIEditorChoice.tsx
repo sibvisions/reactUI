@@ -68,7 +68,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             else {
                 newIndex++;
             }
-            sendSetValues(props.dataRow, props.name, props.columnName, allowedValues[newIndex], undefined, context)
+            sendSetValues(props.dataRow, props.name, props.columnName, allowedValues[newIndex], undefined, context.server)
         }
     }
 

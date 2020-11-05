@@ -93,7 +93,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
                 checked={checked}
                 onChange={() => {
                     setChecked(!checked)
-                    sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(getBooleanValue(checked), cbxType), undefined, context)
+                    sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(getBooleanValue(checked), cbxType), undefined, context.server)
                 }} 
             />
             <label className="jvxEditorCheckbox-label" htmlFor={id}>{props.cellEditor?.text}</label>

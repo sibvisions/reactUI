@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef} from "react";
 import './UILabel.scss'
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
@@ -14,18 +14,12 @@ const UILabel: FC<uiLabel> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
-
-    const [text, setText] = useState(props.text)
-
     
     const {onLoadCallback, id} = baseProps;
     const lblAlignments = checkAlignments(props);
     const lblFont = getFont(props.font);
 
     useLayoutEffect(() => {
-        if (props.text.includes("<html>")) {
-            setText(props.text.replace('<html>', '').replace('</html>', ''))
-        }
         if(labelRef.current && onLoadCallback){
             const size = labelRef.current.getBoundingClientRect();
             onLoadCallback(id, size.height, size.width);
@@ -34,7 +28,7 @@ const UILabel: FC<uiLabel> = (baseProps) => {
 
 
     return(
-        <span ref={labelRef} dangerouslySetInnerHTML={{__html: text}} className="jvxLabel" style={layoutValue.get(props.id) ? {
+        <span ref={labelRef} dangerouslySetInnerHTML={{__html: props.text}} className="jvxLabel" style={layoutValue.get(props.id) ? {
             justifyContent: lblAlignments.ha,
             alignItems: lblAlignments.va,
             backgroundColor: props.background,

@@ -7,11 +7,9 @@ import React, {
     useRef,
     useState
 } from "react";
-import useComponents from "../zhooks/useComponents";
 import ChildWithProps from "../util/ChildWithProps";
 import {LayoutContext} from "../../LayoutContext"
 import "./BorderLayout.scss"
-import {Panel} from "../panels/panel/UIPanel";
 import {jvxContext} from "../../jvxProvider";
 import {ILayout} from "./Layout";
 
@@ -28,12 +26,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
     const {
         components,
-        layout,
-        layoutData,
         preferredCompSizes,
         style,
-        id,
-        onLoad
     } = baseProps
 
     const northRef = useRef<HTMLDivElement>(null);

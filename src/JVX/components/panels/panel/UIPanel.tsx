@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout";
 import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
-import useComponents, {ComponentSize} from "../../zhooks/useComponents";
+import useComponents from "../../zhooks/useComponents";
 
 export interface Panel extends BaseComponent{
     orientation: number,

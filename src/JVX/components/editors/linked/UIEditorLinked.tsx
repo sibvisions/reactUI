@@ -60,7 +60,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             return false
         });
         if (!text) {
-            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context) : null);
+            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server) : null);
         }
         else if (foundData.length === 1) {                     
             if (props.cellEditor) {
@@ -69,7 +69,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 }
             }
                 setText(newVal);
-                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context) : null);
+                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server) : null);
         }
         else {
             setText(lastValue.current)
@@ -91,13 +91,17 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         return () => {
             if (props.id === "") {
                 if (text !== null)
-                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context) : null);
+                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server) : null);
             }
         }
-    },[text])
+    },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name])
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
+            // @ts-ignore
+            inputRef.current.inputEl.style.setProperty('background-color', props.cellEditor_background_);
+            // @ts-ignore
+            inputRef.current.inputEl.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.container.getClientRects();
             onLoadCallback(id, size[0].height, size[0].width);

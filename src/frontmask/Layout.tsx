@@ -39,9 +39,26 @@ const Layout: FC = (props) => {
     const sizeRef = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext);
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
-
+    const [screenTitle, setScreenTitle] = useState('')
     const resizeRef = useRef<NodeJS.Timeout | undefined>();
     const deviceRef = useRef<NodeJS.Timeout>(setTimeout(() => {}, 100))
+
+    useLayoutEffect(() => {
+        context.contentStore.subscribeToAppName('x', (appName:string) => {
+            setScreenTitle(appName)
+        });
+
+        return () => {
+            context.contentStore.unsubscribeFromAppName('x')
+        }
+    }, [context.contentStore])
+
+    useLayoutEffect(() => {
+        if (props.children) {
+            //@ts-ignore
+            setScreenTitle(props.children.props["screen.title"])
+        }
+    }, [props.children])
 
     const doResize = () => {
         if(sizeRef.current){
@@ -99,19 +116,15 @@ const Layout: FC = (props) => {
         }
     }, [props.children])
 
-
-
     return(
         <div className={"layout " + context.theme}>
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
+                <div className="jvxHeader">{screenTitle}</div>
                 <div ref={sizeRef} className={"main"}>
                     {props.children}
                 </div>
             </LayoutContext.Provider>
-            {/* <div className="footer">
-                <h4>Fußzeile</h4>
-            </div> */}
         </div>
 
     )

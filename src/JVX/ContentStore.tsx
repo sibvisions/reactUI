@@ -21,6 +21,7 @@ class ContentStore{
     rowSelectionSubscriber = new Map<string, Array<Function>>();
     rowSelectionIndexSubscriber = new Map<string, Array<Function>>();
     dataChangeSubscriber = new Map<string, Array<{ displayRecords: number, fn: Function }>>();
+    appNameSubscriber = new Map<string, Function>()
 
     //DataProvider Maps
     dataProviderData = new Map<string, Array<any>>();
@@ -225,7 +226,6 @@ class ContentStore{
         groups.forEach(parent => {
             menuResponse.entries.forEach(subMenu => {
                 const iconData = parseIconData(undefined, subMenu.image)
-                console.log(iconData)
                 if(parent.label===subMenu.group) {
                     const item:MenuItemCustom = {
                         label: subMenu.text,
@@ -241,6 +241,11 @@ class ContentStore{
         this.menuSubject.next(groups);
     }
 
+    notifyAppNameChanged(appName:string) {
+        this.appNameSubscriber.forEach(subscriber => {
+            subscriber.apply(undefined, [appName])
+        })
+    }
 
     //Subscription Management
     subscribeToPropChange(id: string, fn: Function){
@@ -281,6 +286,10 @@ class ContentStore{
         }
     }
 
+    subscribeToAppName(id:string, fn: Function) {
+        this.appNameSubscriber.set(id, fn);
+    }
+
 
     unsubscribeFromDataChange(dataProvider: string, fn: Function){
         const subscriber = this.dataChangeSubscriber.get(dataProvider)
@@ -309,6 +318,10 @@ class ContentStore{
 
     unsubscribeFromPropChange(id: string){
         this.propertiesSubscriber.delete(id);
+    }
+
+    unsubscribeFromAppName(id: string) {
+        this.appNameSubscriber.delete(id)
     }
 
 

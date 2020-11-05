@@ -1,4 +1,5 @@
 import React, {FC, useContext} from "react";
+import './UIGroupPanel.scss'
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";
@@ -16,14 +17,14 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
         const s = {...layoutContext.get(baseProps.id) || {}}
         s.top = undefined;
         s.left = undefined;
-        console.log(s.height);
-        (s.width as number) -= 10;
-        (s.height as number) -= 10;
+        (s.width as number) -= 0;
+        (s.height as number) -= 28;
         return s
     }
 
     return(
-        <div style={{...layoutContext.get(baseProps.id), border:"5px solid black"}}>
+        <div style={{...layoutContext.get(baseProps.id)}}>
+            <div className="jvxGroupPanel-caption"><span>{props.text}</span></div>
             <Layout
                 id={baseProps.id}
                 layoutData={props.layoutData}
