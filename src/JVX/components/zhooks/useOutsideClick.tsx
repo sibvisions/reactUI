@@ -3,7 +3,7 @@ import { useEffect } from "react"
 const useOutsideClick = (ref:any, setEdit:Function) => {
     useEffect(() => {
         const handleClickOutside = (event:any) => {
-            if (ref.current && !ref.current.contains(event.target) && !event.target.classList.contains('p-autocomplete-item')) {
+            if (ref.current && !ref.current.contains(event.target) && !event.target.classList.contains('p-autocomplete-item') && !event.target.closest(".p-datepicker")) {
                 setEdit(false)
             }
         }

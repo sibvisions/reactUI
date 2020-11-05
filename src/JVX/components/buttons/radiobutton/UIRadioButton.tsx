@@ -29,10 +29,16 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
             if (props.horizontalTextPosition === 1) {
                 swapProps(btnRef.children[0] as HTMLElement, 'justify-content', 'align-items')
             }
+        }
+    },[props.horizontalTextPosition]);
+
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
             styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
         }
-    }, [btnData.btnBorderPainted, 
+    }, [btnData.btnBorderPainted,
         btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
         props.className, props.horizontalTextPosition, props.imageTextGap,
         props.style, props.verticalTextPosition, id])

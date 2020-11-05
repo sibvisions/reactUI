@@ -67,10 +67,10 @@ const UIToggleButton: FC<IButton> = (baseProps) => {
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <ToggleButton
-                className="jvxButton"
+                className={"jvxButton"  + (props.borderPainted === false ? " borderNotPainted" : "")}
                 style={{...btnData.style, backgroundColor: bgd, borderColor: bgd}}
-                //offLabel={props.text}
-                //onLabel={props.text}
+                offLabel={props.text}
+                onLabel={props.text}
                 offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 onIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 iconPos={btnData.iconPos}

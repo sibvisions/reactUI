@@ -168,8 +168,8 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
     }
     else if (borderOnMouseEntered) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background-color', color !== undefined ? color : "#007ad9");
-            obj.style.setProperty('border-color', color !== undefined ? color : "#007ad9");
+            obj.style.setProperty('background-color', color === 'white' ? color : "#007ad9");
+            obj.style.setProperty('border-color', color === 'white' ? color : "#007ad9");
             if (className === "PopupMenuButton") {
                 for (const child of obj.children) {
                     const castedChild = child as HTMLElement;
@@ -217,15 +217,10 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
     }
 }
 
-function getBtnBgdColor(borderPainted:boolean|undefined, background:string|undefined) {
-    if (borderPainted !== false) {
-        if (background)
-            return tinycolor(background).toString();
-        else {
-            return undefined;
-        }
-            
+function getBtnBgdColor(borderPainted: boolean | undefined, background: string | undefined) {
+    if (background)
+        return tinycolor(background).toString();
+    else {
+        return undefined;
     }
-    else
-        return tinycolor('white').toString();
 }

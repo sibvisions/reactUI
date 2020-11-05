@@ -26,8 +26,15 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            if (props.horizontalTextPosition === 1)
-                swapProps(btnRef.children[0] as HTMLElement, 'justify-content', 'align-items');
+            if (props.horizontalTextPosition === 1) {
+                swapProps(btnRef.children[0] as HTMLElement, 'justify-content', 'align-items')
+            }
+        }
+    },[props.horizontalTextPosition]);
+
+    useLayoutEffect(() => {
+        const btnRef = buttonRef.current;
+        if (btnRef) {
             styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
         }

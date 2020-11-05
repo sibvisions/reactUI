@@ -20,6 +20,12 @@ interface ICellEditorLinked extends ICellEditor{
         columnNames: string[]
         referencedColumnNames: string[]
     }
+    columnView: {
+        columnCount: number
+        columnNames: Array<string>
+        rowDefinitions: Array<any>
+
+    }
     clearColumns:Array<string>
     preferredEditorMode?: number
 }
@@ -59,17 +65,24 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             }
             return false
         });
+        console.log(foundData, text)
         if (!text) {
             onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server) : null);
         }
-        else if (foundData.length === 1) {                     
+        else if (foundData.length === 1) {                
             if (props.cellEditor) {
-                for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                    newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];
+                if (props.cellEditor.linkReference.columnNames.length > 1) {
+                    for (let i = 0; i < Object.values(foundData[0]).length; i++) {
+                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];
+                        console.log(newVal)
+                    }
+                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server) : null);
                 }
+                else
+                    onBlurCallback(baseProps, text, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, lastValue.current, context.server) : null);
             }
-                setText(newVal);
-                onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server) : null);
+                
+                
         }
         else {
             setText(lastValue.current)
@@ -94,14 +107,19 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server) : null);
             }
         }
-    },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name])
+    },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
 
     useLayoutEffect(() => {
-        if(onLoadCallback && inputRef.current){
+        if (inputRef.current) {
             // @ts-ignore
             inputRef.current.inputEl.style.setProperty('background-color', props.cellEditor_background_);
             // @ts-ignore
             inputRef.current.inputEl.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
+        }
+    });
+
+    useLayoutEffect(() => {
+        if(onLoadCallback && inputRef.current){
             // @ts-ignore
             const size: Array<DOMRect> = inputRef.current.container.getClientRects();
             onLoadCallback(id, size[0].height, size[0].width);
@@ -188,15 +206,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         let suggestions:any = []
         if (response.length > 0) {
             response.forEach((record:any) => {
-                let element:any = {};
-                Object.values(record).forEach((data:any, index:any) => {
-                    if(data !== null) {
-                        if (props.cellEditor?.linkReference.columnNames !== undefined) {
-                            element[props.cellEditor.linkReference.columnNames[index]] = data;
-                        }
-                    } 
-                });
-                suggestions.push(element)
+                let text = ""
+                if (props.cellEditor)
+                    text = record[props.cellEditor?.linkReference.referencedColumnNames[0]]
+                suggestions.push(text)
             });
         }
         return suggestions
@@ -225,7 +238,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             dropdown
-            field={props.columnName}
+            //field={props.columnName}
             completeMethod={onInputChange}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
