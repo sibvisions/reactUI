@@ -4,6 +4,7 @@ import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
+import { parseIconData } from "./components/compprops/ComponentProperties";
 
 class ContentStore{
 
@@ -223,10 +224,13 @@ class ContentStore{
         //Add SubMenus to parents
         groups.forEach(parent => {
             menuResponse.entries.forEach(subMenu => {
+                const iconData = parseIconData(undefined, subMenu.image)
+                console.log(iconData)
                 if(parent.label===subMenu.group) {
                     const item:MenuItemCustom = {
                         label: subMenu.text,
-                        componentId: subMenu.componentId
+                        componentId: subMenu.componentId,
+                        icon: iconData.icon
                     }
 
                     // @ts-ignore
