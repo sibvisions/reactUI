@@ -23,7 +23,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div style={{...layoutContext.get(baseProps.id)}}>
+        <div className="jvxGroupPanel" style={{...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
             <div className="jvxGroupPanel-caption"><span>{props.text}</span></div>
             <Layout
                 id={baseProps.id}

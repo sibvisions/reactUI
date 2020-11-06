@@ -13,7 +13,8 @@ tr.p-highlight{
     }
     .p-datatable-thead {
         >tr {
-            th {
+            >th {
+                color: inherit;
                 border-width: 0px 1px 1px 1px;
             }
         }

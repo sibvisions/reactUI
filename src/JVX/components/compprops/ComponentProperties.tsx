@@ -1,22 +1,8 @@
 import tinycolor from 'tinycolor2';
-import BaseComponent from '../BaseComponent';
 import Margins from '../layouts/models/Margins';
-import { Panel } from '../panels/panel/UIPanel';
 import Size from '../util/Size';
 import IconProps from './IconProps';
 import { UIFont } from './UIFont';
-
-export function  getPanelBgdColor(props:Panel, context:any) {
-    if (props.background)
-        return tinycolor(props.background);
-    else {
-        const parent:BaseComponent = context.contentStore.flatContent.get(props.parent);
-        if (parent !== undefined && parent.background)
-            return tinycolor(parent.background)
-        else
-            return undefined
-    }
-}
 
 export function getMargins(margins:string|Margins|undefined) {
     if (margins !== undefined)

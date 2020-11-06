@@ -2,4 +2,10 @@
     .p-inputtext {
         text-align: left;
     }
+    .p-inputtext, .p-button {
+        &:focus {
+            box-shadow: unset;
+            -webkit-box-shadow: unset;
+        }
+    }
 }

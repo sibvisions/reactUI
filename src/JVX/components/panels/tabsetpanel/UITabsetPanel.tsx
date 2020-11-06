@@ -5,7 +5,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {jvxContext} from "../../../jvxProvider";
 import useComponents from "../../zhooks/useComponents";
-import {getPanelBgdColor, parseIconData} from "../../compprops/ComponentProperties";
+import {parseIconData} from "../../compprops/ComponentProperties";
 import {Panel} from "../panel/UIPanel";
 import {createTabRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
@@ -96,7 +96,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         <LayoutContext.Provider value={componentSizes}>
             <TabView
                 ref={panelRef}
-                style={{ ...layoutValue.get(props.id), backgroundColor: getPanelBgdColor(props, context) }}
+                style={{ ...layoutValue.get(props.id), backgroundColor: props.background }}
                 activeIndex={props.selectedIndex}
                 onTabChange={event => {
                     if (event.index !== props.selectedIndex)

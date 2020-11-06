@@ -48,6 +48,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(100);
     const {onLoadCallback, id} = baseProps;
+    const alignments = checkCellEditorAlignments(props);
 
     const handleInput = () => {
         const newVal:any = {}
@@ -65,7 +66,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             }
             return false
         });
-        console.log(foundData, text)
         if (!text) {
             onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server) : null);
         }
@@ -73,9 +73,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             if (props.cellEditor) {
                 if (props.cellEditor.linkReference.columnNames.length > 1) {
                     for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];
-                        console.log(newVal)
-                    }
+                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    }
                     onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server) : null);
                 }
                 else
@@ -110,13 +108,41 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
 
     useLayoutEffect(() => {
-        if (inputRef.current) {
-            // @ts-ignore
-            inputRef.current.inputEl.style.setProperty('background-color', props.cellEditor_background_);
-            // @ts-ignore
-            inputRef.current.inputEl.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
+        const autoRef:any = inputRef.current
+
+        const addBoxShadow = (container:HTMLElement) => {
+            container.style.setProperty('box-shadow', '0 0 0 0.2rem #8dcdff');
         }
-    });
+
+        const removeBoxShadow = (container:HTMLElement) => {
+            container.style.removeProperty('box-shadow');
+        }
+
+        const setFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
+            inputEl.addEventListener("focus", () => addBoxShadow(container));
+            btn.addEventListener("focus", () => addBoxShadow(container));
+            inputEl.addEventListener("blur", () => removeBoxShadow(container));
+            btn.addEventListener("blur", () => removeBoxShadow(container));
+        }
+
+        const removeFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
+            inputEl.removeEventListener("focus", () => addBoxShadow(container));
+            btn.removeEventListener("focus", () => addBoxShadow(container));
+            inputEl.removeEventListener("blur", () => removeBoxShadow(container));
+            btn.removeEventListener("blur", () => removeBoxShadow(container))
+        }
+
+        if (autoRef) {
+            autoRef.inputEl.style.setProperty('background-color', props.cellEditor_background_);
+            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
+            autoRef.dropdownButton.element.tabIndex = -1;
+            setFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container);
+        }
+        return () => {
+            if (autoRef.dropdownButton)
+                removeFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container)
+        }
+    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
@@ -179,7 +205,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [firstRow, lastRow])
     
     useLayoutEffect(() => {
-        if (providedData.length )
+        if (providedData.length)
         if (inputRef.current) {
             setTimeout(() => {
                 let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
@@ -191,14 +217,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     }
                 }
             }, 0);
-            //@ts-ignore
-            if (inputRef.current.inputEl) {
-                const alignments = checkCellEditorAlignments(props);
-                //@ts-ignore
-                inputRef.current.inputEl.style['background-color'] = props.cellEditor_background_;
-                //@ts-ignore
-                inputRef.current.inputEl.style['text-align'] = alignments.ha;
-            }
         }
     });
 
