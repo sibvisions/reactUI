@@ -226,7 +226,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             response.forEach((record:any) => {
                 let text = ""
                 if (props.cellEditor)
-                    text = record[props.cellEditor?.linkReference.referencedColumnNames[0]]
+                    text = props.cellEditor.columnView ? record[props.cellEditor.columnView.columnNames[0]] : record[props.cellEditor?.linkReference.referencedColumnNames[0]]
                 suggestions.push(text)
             });
         }
