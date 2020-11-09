@@ -64,6 +64,9 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         const cellHA = props.cellEditor_horizontalAlignment_
         const cellVA = props.cellEditor_verticalAlignment_
 
+        imgCSS.maxWidth = "100%"
+        imgCSS.maxHeight = "100%"
+
         let ha = horizontalAlignment || cellHA;
         let va = verticalAlignment || cellVA;
 

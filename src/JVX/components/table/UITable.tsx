@@ -130,7 +130,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         if(wrapRef.current){
             const size = wrapRef.current.getBoundingClientRect();
             if(onLoadCallback)
-                onLoadCallback(id, 400, size.width);
+                onLoadCallback(id, 400, 0);
         }
     }, [id, onLoadCallback]);
 
@@ -187,14 +187,16 @@ const UITable: FC<TableProps> = (baseProps) => {
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(props.dataBook)?.primaryKeyColumns || ["ID"];
 
-        const selectReq = createSelectRowRequest();
-        selectReq.filter = {
-            columnNames: primaryKeys,
-            values: primaryKeys.map(pk => event.value[pk])
+        if(event.value){
+            const selectReq = createSelectRowRequest();
+            selectReq.filter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => event.value[pk])
+            }
+            selectReq.dataProvider = props.dataBook;
+            selectReq.componentId = props.name;
+            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW);
         }
-        selectReq.dataProvider = props.dataBook;
-        selectReq.componentId = props.name;
-        context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW);
     }
 
     const handleVirtualScroll = (event: {first: number, rows: number}) => {
