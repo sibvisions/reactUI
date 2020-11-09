@@ -9,6 +9,7 @@ import {buttonProps, styleButton} from "../buttons/ButtonStyling";
 import {createSetValueRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import { swapProps } from "../util/SwapProps";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
 export interface ICheckBox extends IButton {
     selected?: boolean;
@@ -46,12 +47,9 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            if (onLoadCallback) {
-                const size: DOMRect = btnRef.getBoundingClientRect();
-                onLoadCallback(id, size.height, size.width);
-            }
+            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
         }
-    }, [onLoadCallback, id]);
+    }, [onLoadCallback, id, props.preferredSize]);
 
     return (
         <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

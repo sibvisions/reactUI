@@ -1,4 +1,4 @@
-export function handleEnterKey(event:React.KeyboardEvent<HTMLInputElement>, sendSetValues:Function) {
+export function handleEnterKey(event:any, sendSetValues:Function) {
     if (event.key === "Enter") {
         sendSetValues();
     }

@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 import './UIEditorDate.scss'
 import {Calendar} from 'primereact/calendar';
 import {ICellEditor, IEditor} from "../IEditor";
@@ -10,6 +10,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import { parseDateFormatCell } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
@@ -17,7 +18,7 @@ interface ICellEditorDate extends ICellEditor{
 }
 
 export interface IEditorDate extends IEditor{
-    cellEditor?: ICellEditorDate
+    cellEditor: ICellEditorDate
 }
 
 const UIEditorDate: FC<IEditorDate> = (baseProps) => {
@@ -32,9 +33,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [value, setValue] = useState<Date|Date[]>();
     const {onLoadCallback, id} = baseProps;
 
-    const dateFormat = parseDateFormatCell(props.cellEditor?.dateFormat);
-    const showTime = props.cellEditor?.dateFormat?.includes("HH");
-    const timeOnly = props.cellEditor?.dateFormat === "HH:mm";
+    const dateFormat = parseDateFormatCell(props.cellEditor.dateFormat);
+    const showTime = props.cellEditor.dateFormat?.includes("HH");
+    const timeOnly = props.cellEditor.dateFormat === "HH:mm";
 
     const onSelectCallback = (submitValue:any) => {
         if (Array.isArray(submitValue)) {
@@ -66,8 +67,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && calender.current) {
             //@ts-ignore
-            const size: Array<DOMRect> = calender.current.container.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, calender.current.container, onLoadCallback)
         }
     },[onLoadCallback, id]);
 
@@ -76,6 +76,19 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         lastValue.current = selectedRow;
         
     },[selectedRow])
+
+    useEffect(() => {
+        if (calender.current) {
+            //@ts-ignore
+            calender.current.inputElement.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === "Enter") {
+                    console.log(value)
+                }
+            }
+        }
+    })
+
+    console.log(props)
 
     return(
         <Calendar
@@ -91,7 +104,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
              style={layoutValue.get(props.id) || baseProps.editorStyle}
              value={value}
              appendTo={document.body}
-             onChange={event => setValue(event.target.value)}
+             onChange={event => {console.log(event); setValue(event.target.value)}}
              onSelect={event => onSelectCallback(event.value)}
              disabled={!props.cellEditor_editable_}
         />

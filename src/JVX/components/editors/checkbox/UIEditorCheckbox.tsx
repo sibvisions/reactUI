@@ -8,6 +8,7 @@ import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorCheckbox extends ICellEditor{
     text?: string,
@@ -16,7 +17,7 @@ interface ICellEditorCheckbox extends ICellEditor{
 }
 
 export interface IEditorCheckbox extends IEditor{
-    cellEditor?: ICellEditorCheckbox
+    cellEditor: ICellEditorCheckbox
 }
 
 const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
@@ -66,15 +67,13 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         }
     }
 
-    const cbxType = getCbxType(props.cellEditor?.selectedValue)
+    const cbxType = getCbxType(props.cellEditor.selectedValue)
     const [checked, setChecked] = useState(getBooleanValue(selectedRow))
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
         if(onLoadCallback && cbxRef.current){
-            // @ts-ignore
-            const size: Array<DOMRect> = cbxRef.current.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, cbxRef.current, onLoadCallback)
         }
     },[onLoadCallback, id]);
 

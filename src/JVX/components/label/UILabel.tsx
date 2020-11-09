@@ -5,6 +5,7 @@ import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import {getFont} from "../compprops/ComponentProperties";
 import {checkAlignments} from "../compprops/CheckAlignments";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
 export interface uiLabel extends BaseComponent {
     text: string
@@ -21,10 +22,9 @@ const UILabel: FC<uiLabel> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback){
-            const size = labelRef.current.getBoundingClientRect();
-            onLoadCallback(id, size.height, size.width);
+            sendOnLoadCallback(id, props.preferredSize, labelRef.current, onLoadCallback)
         }
-    }, [onLoadCallback, id]);
+    }, [onLoadCallback, id, props.preferredSize]);
 
 
     return(

@@ -8,6 +8,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
@@ -38,12 +39,9 @@ const UIButton: FC<IButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            if (onLoadCallback) {
-                const size: DOMRect = btnRef.getBoundingClientRect();
-                onLoadCallback(id, size.height, size.width);
-            }
+            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
         }
-    }, [onLoadCallback, id]);
+    }, [onLoadCallback, id, props.preferredSize]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();

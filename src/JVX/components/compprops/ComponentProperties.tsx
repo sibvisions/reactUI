@@ -30,7 +30,7 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
         let splittedIconData:string[];
         let iconName:string;
         let iconSize:Size = {width: 14, height: 14};
-        let iconColor:tinycolor.Instance = tinycolor('white');
+        let iconColor:string|undefined = tinycolor(foreground).toString() || undefined;
 
         if (iconData.includes("FontAwesome")) {
             if (!iconData.includes(';')) {
@@ -38,9 +38,9 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
 
                 iconName = "fa fa-" + splittedIconData[0];
                 iconSize = {width: parseInt(splittedIconData[1]), height: parseInt(splittedIconData[2])};
-                iconColor = foreground ? tinycolor(foreground) : tinycolor('white');
+                iconColor = foreground ? tinycolor(foreground).toString() : undefined;
 
-                return {icon: iconName, size: iconSize, color: iconColor.toString()};
+                return {icon: iconName, size: iconSize, color: iconColor};
             }
             else {
                 splittedIconData = iconData.slice(iconData.indexOf('.') + 1).split(';');
@@ -55,7 +55,7 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
                         sizeFound = true;
                     }
                     else if (prop.includes("color")) {
-                        iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(',')));
+                        iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString();
                         colorFound = true;
                     }
                 });
@@ -63,15 +63,15 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
                 if (!sizeFound)
                     iconSize = {width: parseInt(iconData.slice(iconData.indexOf('.') + 1)[1]), height: parseInt(iconData.slice(iconData.indexOf('.') + 1)[2])}
                 if (!colorFound)
-                    iconColor = foreground ? tinycolor(foreground) : tinycolor('white');
-                return {icon: iconName, size: iconSize, color: iconColor.toString()}
+                    iconColor = foreground ? tinycolor(foreground).toString() : undefined;
+                return {icon: iconName, size: iconSize, color: iconColor}
             }
         }
         else {
             splittedIconData = iconData.split(',');
             iconName = splittedIconData[0];
             iconSize = {width: parseInt(splittedIconData[1]), height: parseInt(splittedIconData[2])};
-            return { icon: iconName, size: iconSize, color: iconColor.toString()};
+            return { icon: iconName, size: iconSize, color: iconColor};
         }
     }
     else {

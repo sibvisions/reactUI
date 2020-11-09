@@ -576,10 +576,21 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback){
-                        if(baseProps.id.includes("GP"))
+                        if (baseProps.preferredSize) {
+                            const size = baseProps.preferredSize.split(',');
+                            const width = parseInt(size[0]);
+                            const height = parseInt(size[1]);
+                            if (baseProps.id.includes("GP"))
+                                onLayoutCallback(id, height+28, width);
+                            else
+                                onLayoutCallback(id, height, width);
+                        }
+                        else {
+                            if(baseProps.id.includes("GP"))
                             onLayoutCallback(id, preferredHeight+28, preferredWidth);
                         else
                             onLayoutCallback(id, preferredHeight, preferredWidth);
+                        }
                     }
                     setCalculatedStyle( {
                         style: {

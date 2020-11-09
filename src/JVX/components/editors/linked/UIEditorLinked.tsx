@@ -13,6 +13,7 @@ import useDataProviderData from "../../zhooks/useDataProviderData";
 import * as _ from 'underscore'
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorLinked extends ICellEditor{
     linkReference: {
@@ -31,7 +32,7 @@ interface ICellEditorLinked extends ICellEditor{
 }
 
 export interface IEditorLinked extends IEditor{
-    cellEditor?: ICellEditorLinked
+    cellEditor: ICellEditorLinked
 }
 
 const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
@@ -41,7 +42,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
-    const [providedData] = useDataProviderData(baseProps.id, props.cellEditor?.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
     const lastValue = useRef<any>();
 
     const [text, setText] = useState(selectedRow)
@@ -58,22 +59,22 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 if (autoPanel) {
                     //@ts-ignore
                     if (autoPanel.children[0].children[0]) {
-                        console.log(autoPanel.children[0].children[0].getBoundingClientRect().height)
                         //@ts-ignore
                         autoPanel.children[0].style.height = (providedData.length * autoPanel.children[0].children[0].getBoundingClientRect().height)+'px';
-                        //@ts-ignore
-                        setItemHeight(autoPanel.children[0].children[0].getBoundingClientRect().height)
+                        if(itemHeight === 0) {
+                            //@ts-ignore
+                            setItemHeight(autoPanel.children[0].children[0].getBoundingClientRect().height)
+                        }
                     }
                 }
             }, 150);
         }
-    }, [providedData]);
+    });
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             // @ts-ignore
-            const size: Array<DOMRect> = inputRef.current.container.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current.container, onLoadCallback)
         }
     },[onLoadCallback, id]);
 
@@ -151,17 +152,17 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             return false
         });
         if (!text) {
-            onBlurCallback(baseProps, null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server) : null);
+            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server));
         }
         else if (foundData.length === 1) {                
             if (props.cellEditor) {
                 if (props.cellEditor.linkReference.columnNames.length > 1) {
                     for (let i = 0; i < Object.values(foundData[0]).length; i++) {
                         newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    }
-                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server) : null);
+                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server));
                 }
                 else
-                    onBlurCallback(baseProps, text, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, lastValue.current, context.server) : null);
+                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, lastValue.current, context.server));
             }
                 
                 
@@ -186,7 +187,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         return () => {
             if (props.id === "") {
                 if (text !== null)
-                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => props.cellEditor ? sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server) : null);
+                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server));
             }
         }
     },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
@@ -202,7 +203,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 elem.onscroll = _.throttle(() => {
                     let currFirstItem = elem.scrollTop / itemHeight;
                     let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemHeight;
-                    console.log(blockFetch)
                     if (currFirstItem < firstRow) {
                         setFirstRow(Math.floor(currFirstItem / 50) * 50);
                         setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
@@ -213,11 +213,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                         setLastRow(Math.ceil(currLastItem / 100) * 100);
                         elem.scrollTop = itemHeight * (currFirstItem + 3)
                     }
-                    if (!blockFetch && providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor?.linkReference.referencedDataBook || "")) {
-                        console.log('fetching')
+                    if (!blockFetch && providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor.linkReference.referencedDataBook || "")) {
                         blockFetch = true;
                         const fetchReq = createFetchRequest();
-                        fetchReq.dataProvider = props.cellEditor?.linkReference.referencedDataBook;
+                        fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
                         fetchReq.fromRow = providedData.length;
                         fetchReq.rowCount = 400;
                         context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
@@ -237,8 +236,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         if (response.length > 0) {
             response.forEach((record:any) => {
                 let text = ""
-                if (props.cellEditor)
-                    text = props.cellEditor.columnView ? record[props.cellEditor.columnView.columnNames[0]] : record[props.cellEditor?.linkReference.referencedColumnNames[0]]
+                if (props.cellEditor) {
+                    text = props.cellEditor.columnView ? record[props.cellEditor.columnView.columnNames[0]] : 
+                    (props.cellEditor.linkReference.referencedColumnNames.length > 1 ? record[props.cellEditor.linkReference.referencedColumnNames[1]] : record[props.cellEditor.linkReference.referencedColumnNames[0]])
+                }
+                    
                 suggestions.push(text)
             });
         }
@@ -246,9 +248,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }
 
     const onInputChange = (event:any) => {
-        context.contentStore.clearDataFromProvider(props.cellEditor?.linkReference.referencedDataBook||"")
+        context.contentStore.clearDataFromProvider(props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest()
-        filterReq.dataProvider = props.cellEditor?.linkReference?.referencedDataBook;
+        filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
         filterReq.value = event.query;
         context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
@@ -263,7 +265,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             dropdown
-            //field={props.columnName}
             completeMethod={onInputChange}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
@@ -271,6 +272,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 setText(event.target.value)
             }}
             onBlur={() => {
+                setFirstRow(0);
+                setLastRow(100)
                 handleInput();
             }}/>
     )

@@ -8,6 +8,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 type ToggleButtonEvent = {
     originalEvent: Event,
@@ -49,12 +50,9 @@ const UIToggleButton: FC<IButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            if (onLoadCallback) {
-                const size:DOMRect = btnRef.getBoundingClientRect();
-                onLoadCallback(id, size.height, size.width);
-            }
+            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
         }
-    },[onLoadCallback, id, checked])
+    },[onLoadCallback, id, props.preferredSize])
 
     const handleOnChange = (event:ToggleButtonEvent) => {
         const req = createPressButtonRequest();

@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import "./UIEditorNumber.scss"
 import {InputNumber} from "primereact/inputnumber";
 import {ICellEditor, IEditor} from "../IEditor";
@@ -10,6 +10,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorNumber extends ICellEditor{
     scale?: number,
@@ -19,7 +20,7 @@ interface ICellEditorNumber extends ICellEditor{
 }
 
 export interface IEditorNumber extends IEditor{
-    cellEditor?: ICellEditorNumber
+    cellEditor: ICellEditorNumber
 }
 
 const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
@@ -34,22 +35,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [value, setValue] = useState(parseInt(baseProps.text || ""));
     const {onLoadCallback, id} = baseProps;
 
-    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName);
-    const scaleDigits = cellEditorMetaData?.cellEditor?.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined;
-    const length = cellEditorMetaData?.cellEditor?.precision ? cellEditorMetaData?.cellEditor.precision : null
-
-    useEffect(() => {
-        //@ts-ignore
-        inputRef.current.inputEl.setAttribute('maxlength', length);
-        //@ts-ignore
-        inputRef.current.inputEl.onkeydown = (event) => {
-            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server));
-            //@ts-ignore
-            if (inputRef.current.inputEl.value.length === inputRef.current.inputEl.maxLength) {
-                return false;
-            }
-        }
-    });
+    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
+    const scaleDigits = useMemo(() => cellEditorMetaData?.cellEditor.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined, [cellEditorMetaData.cellEditor.scale]);
+    const length = useMemo(() => cellEditorMetaData?.cellEditor.precision ? cellEditorMetaData.cellEditor.precision+1 : null, [cellEditorMetaData.cellEditor.precision]);
 
     useLayoutEffect(() => {
         //@ts-ignore
@@ -63,8 +51,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && inputRef.current) {
             // @ts-ignore
-            const size: Array<DOMRect> = inputRef.current.element.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id]);
 
@@ -73,6 +60,18 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
+    useEffect(() => {
+        //@ts-ignore
+        inputRef.current.inputEl.setAttribute('maxlength', length);
+        //@ts-ignore
+        inputRef.current.inputEl.onkeydown = (event) => {
+            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server));
+            //@ts-ignore
+            if (inputRef.current.inputEl.value.length === inputRef.current.inputEl.maxLength) {
+                return false;
+            }
+        }
+    });
 
     useEffect(() => {
         if(baseProps.autoFocus) {

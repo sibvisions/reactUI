@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
 import './UIEditorText.scss'
 import {InputText} from "primereact/inputtext";
 import {ICellEditor, IEditor} from "../IEditor";
@@ -9,14 +9,19 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
-import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Password } from "primereact/password";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number
+    contentType?:string
+    length?:number
 }
 
 export interface IEditorText extends IEditor{
-    cellEditor?: ICellEditorText
+    cellEditor: ICellEditorText
     borderVisible?: boolean
 }
 
@@ -30,6 +35,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const lastValue = useRef<any>();
 
     const [text, setText] = useState(baseProps.text || "");
+    const cellEditorMetaData:IEditorText|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorText;
+    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData?.cellEditor.length])
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
@@ -39,7 +46,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             currElem.style.setProperty('background-color', props.cellEditor_background_);
             currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }
-    })
+    });
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
@@ -49,8 +56,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 currElem.classList.add("invisibleBorder");
             }
             // @ts-ignore
-            const size: Array<DOMRect> = inputRef.current.element.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.borderVisible]);
 
@@ -59,19 +65,55 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
-
-    return(
-        <InputText
+    if (props.cellEditor.contentType?.includes("multiline")) {
+        return (
+            <InputTextarea
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            className="jvxEditorText"
+            autoResize
+            className="jvxEditorTextarea"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
+            maxLength={length}
             disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
             onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
             onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
         />
-    )
+        )
+    }
+    else if (props.cellEditor.contentType?.includes("password")) {
+        return (
+            <Password
+            autoFocus={baseProps.autoFocus}
+            ref={inputRef}
+            className="jvxEditorPassword"
+            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            maxLength={length}
+            feedback={false}
+            disabled={!props.cellEditor_editable_}
+            value={text || ""}
+            onChange={event => setText(event.currentTarget.value)}
+            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+        />
+        )
+    }
+    else {
+        return(
+            <InputText
+                autoFocus={baseProps.autoFocus}
+                ref={inputRef}
+                className="jvxEditorText"
+                style={layoutValue.get(props.id) || baseProps.editorStyle}
+                maxLength={length}
+                disabled={!props.cellEditor_editable_}
+                value={text || ""}
+                onChange={event => setText(event.currentTarget.value)}
+                onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+                onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+            />
+        )
+    }
 }
 export default UIEditorText

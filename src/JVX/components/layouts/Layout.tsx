@@ -9,6 +9,7 @@ export interface ILayout{
     id: string
     layout: string,
     layoutData: string,
+    preferredSize?: string,
     components: Array<ReactElement>
     preferredCompSizes: Map<string, ComponentSize> | undefined
     style: CSSProperties,

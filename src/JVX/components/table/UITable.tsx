@@ -54,7 +54,6 @@ const CellEditor: FC<CellEditor> = (props) => {
                     columnName: props.colName,
                     id: "",
                     cellEditor_editable_:true,
-                    //onSubmit:() => {console.log('submitted'); setEdit(false)},
                     editorStyle: {width: "100%", height:"100%"},
                     autoFocus: true
                 }) || editor
@@ -128,9 +127,17 @@ const UITable: FC<TableProps> = (baseProps) => {
     //Report Size
     useEffect(() => {
         if(wrapRef.current){
-            const size = wrapRef.current.getBoundingClientRect();
-            if(onLoadCallback)
-                onLoadCallback(id, 400, 0);
+            if(onLoadCallback) {
+                if (props.preferredSize) {
+                    const size = props.preferredSize.split(',');
+                    const width = parseInt(size[0]);
+                    const height = parseInt(size[1]);
+                    onLoadCallback(id, height, width);
+                }
+                else
+                    onLoadCallback(id, 400, 0);
+            }
+                
         }
     }, [id, onLoadCallback]);
 

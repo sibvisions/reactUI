@@ -3,6 +3,7 @@ import {InputTextarea} from "primereact/inputtextarea";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
 const UITextArea: FC<BaseComponent> = (baseProps) => {
 
@@ -15,9 +16,7 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            // @ts-ignore
-            const size:Array<DOMRect> = inputRef.current.element.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current, onLoadCallback)
         }
     },[onLoadCallback, id])
 

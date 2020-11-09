@@ -9,6 +9,7 @@ import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 export interface IMenuButton extends IButton {
     popupMenu: string;
@@ -66,12 +67,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            if (onLoadCallback) {
-                const size: DOMRect = btnRef.getBoundingClientRect();
-                onLoadCallback(id, size.height, size.width);
-            }
+            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
         }
-    }, [onLoadCallback, id]);
+    }, [onLoadCallback, id, props.preferredSize]);
 
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

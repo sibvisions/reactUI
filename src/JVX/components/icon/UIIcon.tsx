@@ -5,6 +5,7 @@ import {jvxContext} from "../../jvxProvider";
 import useProperties from "../zhooks/useProperties";
 import {parseIconData} from "../compprops/ComponentProperties";
 import BaseComponent from "../BaseComponent";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
 const UIIcon: FC<BaseComponent> = (baseProps) => {
 
@@ -35,8 +36,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current){
             if (iconProps.icon?.includes('fa fa-')) {
-                const size:DOMRect = iconRef.current.getBoundingClientRect();
-                onLoadCallback(id, size.height, size.width);
+                sendOnLoadCallback(id, props.preferredSize, iconRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, iconProps.icon]);

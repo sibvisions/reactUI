@@ -9,13 +9,13 @@ import {sendSetValues} from "../../util/SendSetValues";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 
 interface ICellEditorChoice extends ICellEditor{
-    allowedValues?: string,
-    images?: string,
+    allowedValues: string,
+    images: string,
     preferredEditorMode?: number
 }
 
 export interface IEditorChoice extends IEditor{
-    cellEditor?: ICellEditorChoice
+    cellEditor: ICellEditorChoice
 }
 
 const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
@@ -26,9 +26,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
     const alignments = checkCellEditorAlignments(props);
 
-    const cellEditorMetaData:IEditorChoice|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName);
-    const allowedValues = cellEditorMetaData?.cellEditor?.allowedValues;
-    const images = cellEditorMetaData?.cellEditor?.images;
+    const cellEditorMetaData:IEditorChoice|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorChoice;
+    const allowedValues = cellEditorMetaData?.cellEditor.allowedValues;
+    const images = cellEditorMetaData?.cellEditor.images;
 
     const mergeObject = (keys:string|undefined, values:string|undefined) => {
         let mergedObj:any = {};
@@ -60,7 +60,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     const handleClick = () => {
-        let newIndex = allowedValues?.indexOf(selectedRow);
+        let newIndex = allowedValues.indexOf(selectedRow);
         if (allowedValues !== undefined && newIndex !== undefined) {
             if (allowedValues[newIndex+1] === undefined) {
                 newIndex = 0;

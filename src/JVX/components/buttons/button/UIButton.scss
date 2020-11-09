@@ -25,6 +25,8 @@
 }
 
 .hyperlink {
+    background-color: transparent !important;
+    border-color: transparent !important;
     .p-button-label {
         color: black;
         &:hover {
@@ -36,4 +38,7 @@
 .borderNotPainted {
     background-color: unset;
     border-color: unset;
+    >.jvxButton-icon {
+        color: black;
+    }
 }

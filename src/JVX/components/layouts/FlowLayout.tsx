@@ -73,7 +73,14 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         setPreferredSize({style: {height: height, width: width}, componentSize: preferredCompSizes || new Map<string, CSSProperties>()})
         //@ts-ignore
         if(onLoad) {
-            onLoad(id, height, width);
+            if (baseProps.preferredSize) {
+                const size = baseProps.preferredSize.split(',');
+                const width = parseInt(size[0]);
+                const height = parseInt(size[1]);
+                onLoad(id, height, width);
+            }
+            else
+                onLoad(id, height, width);
         }
 
     }, [preferredCompSizes, gaps, orientation, id, onLoad])

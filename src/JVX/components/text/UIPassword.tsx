@@ -3,6 +3,7 @@ import {Password} from "primereact/password";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
 const UIPassword: FC<BaseComponent> = (baseProps) => {
 
@@ -15,9 +16,7 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            // @ts-ignore
-            const size:DOMRect = inputRef.current.inputEl.getBoundingClientRect();
-            onLoadCallback(id, size.height, size.width);
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current, onLoadCallback)
         }
     },[onLoadCallback, id])
 
