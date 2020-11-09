@@ -47,8 +47,92 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [text, setText] = useState(selectedRow)
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(100);
+    const [itemHeight, setItemHeight] = useState(0);
     const {onLoadCallback, id} = baseProps;
     const alignments = checkCellEditorAlignments(props);
+
+    useLayoutEffect(() => {
+        if (inputRef.current) {
+            setTimeout(() => {
+                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
+                if (autoPanel) {
+                    //@ts-ignore
+                    if (autoPanel.children[0].children[0]) {
+                        console.log(autoPanel.children[0].children[0].getBoundingClientRect().height)
+                        //@ts-ignore
+                        autoPanel.children[0].style.height = (providedData.length * autoPanel.children[0].children[0].getBoundingClientRect().height)+'px';
+                        //@ts-ignore
+                        setItemHeight(autoPanel.children[0].children[0].getBoundingClientRect().height)
+                    }
+                }
+            }, 150);
+        }
+    }, [providedData]);
+
+    useLayoutEffect(() => {
+        if(onLoadCallback && inputRef.current){
+            // @ts-ignore
+            const size: Array<DOMRect> = inputRef.current.container.getClientRects();
+            onLoadCallback(id, size[0].height, size[0].width);
+        }
+    },[onLoadCallback, id]);
+
+    useLayoutEffect(() => {
+        if (inputRef.current) {
+            setTimeout(() => {
+                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
+                if (autoPanel) {
+                    let itemsList:HTMLCollection = document.getElementsByClassName("p-autocomplete-item");
+                    for (let i = 0; i < itemsList.length; i++) {
+                        //@ts-ignore
+                        itemsList[i].style.top = (autoPanel.children[0].children[0].getBoundingClientRect().height * firstRow)+'px'
+                    }
+                }
+            }, 150)
+        }
+    }, [firstRow, lastRow])
+
+    useLayoutEffect(() => {
+        setText(selectedRow);
+        lastValue.current = selectedRow;
+    }, [selectedRow])
+
+    useLayoutEffect(() => {
+        const autoRef:any = inputRef.current
+
+        const addBoxShadow = (container:HTMLElement) => {
+            container.style.setProperty('box-shadow', '0 0 0 0.2rem #8dcdff');
+        }
+
+        const removeBoxShadow = (container:HTMLElement) => {
+            container.style.removeProperty('box-shadow');
+        }
+
+        const setFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
+            inputEl.addEventListener("focus", () => addBoxShadow(container));
+            btn.addEventListener("focus", () => addBoxShadow(container));
+            inputEl.addEventListener("blur", () => removeBoxShadow(container));
+            btn.addEventListener("blur", () => removeBoxShadow(container));
+        }
+
+        const removeFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
+            inputEl.removeEventListener("focus", () => addBoxShadow(container));
+            btn.removeEventListener("focus", () => addBoxShadow(container));
+            inputEl.removeEventListener("blur", () => removeBoxShadow(container));
+            btn.removeEventListener("blur", () => removeBoxShadow(container))
+        }
+
+        if (autoRef) {
+            autoRef.inputEl.style.setProperty('background-color', props.cellEditor_background_);
+            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
+            autoRef.dropdownButton.element.tabIndex = -1;
+            setFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container);
+        }
+        return () => {
+            if (autoRef.dropdownButton)
+                removeFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container)
+        }
+    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
 
     const handleInput = () => {
         const newVal:any = {}
@@ -107,51 +191,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
 
-    useLayoutEffect(() => {
-        const autoRef:any = inputRef.current
-
-        const addBoxShadow = (container:HTMLElement) => {
-            container.style.setProperty('box-shadow', '0 0 0 0.2rem #8dcdff');
-        }
-
-        const removeBoxShadow = (container:HTMLElement) => {
-            container.style.removeProperty('box-shadow');
-        }
-
-        const setFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
-            inputEl.addEventListener("focus", () => addBoxShadow(container));
-            btn.addEventListener("focus", () => addBoxShadow(container));
-            inputEl.addEventListener("blur", () => removeBoxShadow(container));
-            btn.addEventListener("blur", () => removeBoxShadow(container));
-        }
-
-        const removeFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
-            inputEl.removeEventListener("focus", () => addBoxShadow(container));
-            btn.removeEventListener("focus", () => addBoxShadow(container));
-            inputEl.removeEventListener("blur", () => removeBoxShadow(container));
-            btn.removeEventListener("blur", () => removeBoxShadow(container))
-        }
-
-        if (autoRef) {
-            autoRef.inputEl.style.setProperty('background-color', props.cellEditor_background_);
-            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
-            autoRef.dropdownButton.element.tabIndex = -1;
-            setFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container);
-        }
-        return () => {
-            if (autoRef.dropdownButton)
-                removeFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container)
-        }
-    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
-
-    useLayoutEffect(() => {
-        if(onLoadCallback && inputRef.current){
-            // @ts-ignore
-            const size: Array<DOMRect> = inputRef.current.container.getClientRects();
-            onLoadCallback(id, size[0].height, size[0].width);
-        }
-    },[onLoadCallback, id]);
-
     const suggestionData = useMemo(() => {
         return providedData ? providedData.slice(firstRow, lastRow) : []
     }, [providedData, firstRow, lastRow])
@@ -161,19 +200,21 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         const handleScroll = (elem:HTMLElement) => {
             if (elem) {
                 elem.onscroll = _.throttle(() => {
-                    let currFirstItem = elem.scrollTop / elem.children[0].children[0].getBoundingClientRect().height;
-                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / elem.children[0].children[0].getBoundingClientRect().height;
+                    let currFirstItem = elem.scrollTop / itemHeight;
+                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemHeight;
+                    console.log(blockFetch)
                     if (currFirstItem < firstRow) {
                         setFirstRow(Math.floor(currFirstItem / 50) * 50);
                         setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
-                        elem.scrollTop = elem.children[0].children[0].getBoundingClientRect().height * (currLastItem - 3);
+                        elem.scrollTop = itemHeight * (currLastItem - 3);
                     }
                     if (currLastItem > lastRow) {
                         setFirstRow(Math.floor(currLastItem / 100) * 100);
                         setLastRow(Math.ceil(currLastItem / 100) * 100);
-                        elem.scrollTop = elem.children[0].children[0].getBoundingClientRect().height * (currFirstItem + 3)
+                        elem.scrollTop = itemHeight * (currFirstItem + 3)
                     }
-                    if (!blockFetch && providedData.length < (firstRow+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor?.linkReference.referencedDataBook || "")) {
+                    if (!blockFetch && providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor?.linkReference.referencedDataBook || "")) {
+                        console.log('fetching')
                         blockFetch = true;
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = props.cellEditor?.linkReference.referencedDataBook;
@@ -186,39 +227,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
-        },100);
-    }, [context, props, providedData, firstRow, lastRow])
+        },150);
+    }, [context, props, providedData, firstRow, lastRow, itemHeight])
 
-    useLayoutEffect(() => {
-        if (inputRef.current) {
-            setTimeout(() => {
-                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
-                if (autoPanel) {
-                    let itemsList:HTMLCollection = document.getElementsByClassName("p-autocomplete-item");
-                    for (let i = 0; i < itemsList.length; i++) {
-                        //@ts-ignore
-                        itemsList[i].style.top = (autoPanel.children[0].children[0].getBoundingClientRect().height * firstRow)+'px'
-                    }
-                }
-            }, 0)
-        }
-    }, [firstRow, lastRow])
     
-    useLayoutEffect(() => {
-        if (providedData.length)
-        if (inputRef.current) {
-            setTimeout(() => {
-                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
-                if (autoPanel) {
-                    //@ts-ignore
-                    if (autoPanel.children[0].children[0]) {
-                        //@ts-ignore
-                        autoPanel.children[0].style.height = (providedData.length * (autoPanel.children[0].children[0].getBoundingClientRect().height + 6.864))+'px';
-                    }
-                }
-            }, 0);
-        }
-    });
 
     const buildSuggestions = (response:any) => {
         let suggestions:any = []
@@ -241,11 +253,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.value = event.query;
         context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
     }
-
-    useLayoutEffect(() => {
-        setText(selectedRow);
-        lastValue.current = selectedRow;
-    }, [selectedRow])
 
     return (
         <AutoComplete
