@@ -21,7 +21,7 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div style={{overflow: "scroll"}}>
+        <div id={props.id} style={{...layoutContext.get(baseProps.id), overflow: "auto"}}>
             <Layout
                 id={baseProps.id}
                 layoutData={props.layoutData}
