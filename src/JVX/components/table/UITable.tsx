@@ -67,8 +67,8 @@ const CellEditor: FC<CellEditor> = (props) => {
                 if (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") {
                     const castedColumn = columnMetaData as IEditorChoice;
                     const cellIndex = castedColumn?.cellEditor?.allowedValues?.indexOf(props.cellData)
-                    if (castedColumn.cellEditor?.images && cellIndex !== undefined) {
-                        return <img className="jvxEditorChoice-img" alt="choice" src={props.resource + castedColumn?.cellEditor?.images[cellIndex]}/>
+                    if (castedColumn.cellEditor?.imageNames && cellIndex !== undefined) {
+                        return <img className="jvxEditorChoice-img" alt="choice" src={props.resource + castedColumn?.cellEditor?.imageNames[cellIndex]}/>
                     }
                 }
                 else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {

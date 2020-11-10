@@ -27,7 +27,7 @@ const UIPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div>
+        <div id={props.id}>
             <Layout
                 id={baseProps.id}
                 layoutData={props.layoutData}

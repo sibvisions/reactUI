@@ -99,9 +99,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             });
         }
 
+
         if(onLoad){
             onLoad(id, style.height, style.width);
         }
+
         return sizeMap;
     }, [preferredCompSizes, style, components])
 

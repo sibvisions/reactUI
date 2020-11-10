@@ -144,7 +144,7 @@ export const createEditor: FC<IEditor> = ( props ) => {
             return createEditorCheckbox((props as IEditorCheckbox));
         }
         else if (props.cellEditor.className === "LinkedCellEditor") {
-            return createEditorLinked((props as IEditorLinked))
+            return createEditorLinked((props as IEditorLinked));
         }
         else{
             return createDummy(props)
