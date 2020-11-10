@@ -47,30 +47,30 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     // eslint-disable-next-line
     },[components, panelRef.current]);
 
-    const buildTabRequest = useCallback((tabId:number) => {
+    const buildTabRequest = useCallback((tabId: number) => {
         const req = createTabRequest();
         req.componentId = props.name;
         req.index = tabId;
         return req
-    },[props.name])
+    }, [props.name])
 
-    const handleSelect = (tabId:number) => {
-        if(!closing.current)
+    const handleSelect = (tabId: number) => {
+        if (!closing.current)
             context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB);
         closing.current = false;
     }
 
     const buildTabs = useMemo(() => {
-        const handleClose = (tabId:number) => {
+        const handleClose = (tabId: number) => {
             context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB);
             closing.current = true
         }
 
-        let builtTabs:Array<JSX.Element> = [];
+        let builtTabs: Array<JSX.Element> = [];
         if (components) {
-            components.forEach((subject:any) => {
-                const subjectConstraints:string = subject.props.constraints;
-                let constraints:string[];
+            components.forEach((subject: any) => {
+                const subjectConstraints: string = subject.props.constraints;
+                let constraints: string[];
                 let icon = null;
                 if (subjectConstraints.includes("FontAwesome")) {
                     let splitConstIcon = subjectConstraints.slice(0, subjectConstraints.indexOf(";FontAwesome"));
@@ -80,17 +80,24 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 else
                     constraints = subjectConstraints.split(';');
                 let header = <span className="p-tabview-title">
-                    {constraints[2]} 
+                    {constraints[2]}
                     {constraints[1] === 'true' &&
-                        <button 
+                        <button
                             className="tabview-button pi pi-times"
-                            onClick={() => handleClose(subject.props.id)}/>}
+                            onClick={() => handleClose(subject.props.id)} />}
                 </span>
-                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? icon.icon : undefined}>{subject}</TabPanel>)
+                builtTabs.push(
+                    <TabPanel
+                        key={subject.props.id}
+                        disabled={constraints[0] === "false"}
+                        header={header}
+                        leftIcon={icon ? icon.icon : undefined}>
+                        {subject}
+                    </TabPanel>)
             });
         }
         return builtTabs;
-    }, [components, props.foreground, buildTabRequest, context.server])
+    }, [components, props.foreground, buildTabRequest, context.server]);
 
     return (
         <LayoutContext.Provider value={componentSizes}>

@@ -44,7 +44,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
     const [providedData] = useDataProviderData(baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
     const lastValue = useRef<any>();
-
+    const autoFocus = props.autoFocus ? true : false;
     const [text, setText] = useState(selectedRow)
     const [firstRow, setFirstRow] = useState(0);
     const [lastRow, setLastRow] = useState(100);
@@ -197,7 +197,14 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [providedData, firstRow, lastRow])
 
     useEffect(() => {
-        let blockFetch:boolean = false;
+        const sendFetchRequest = () => {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
+            fetchReq.fromRow = providedData.length;
+            fetchReq.rowCount = 400;
+            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
+        }
+        const fetches = _.once(() => sendFetchRequest());
         const handleScroll = (elem:HTMLElement) => {
             if (elem) {
                 elem.onscroll = _.throttle(() => {
@@ -213,13 +220,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                         setLastRow(Math.ceil(currLastItem / 100) * 100);
                         elem.scrollTop = itemHeight * (currFirstItem + 3)
                     }
-                    if (!blockFetch && providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor.linkReference.referencedDataBook || "")) {
-                        blockFetch = true;
-                        const fetchReq = createFetchRequest();
-                        fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
-                        fetchReq.fromRow = providedData.length;
-                        fetchReq.rowCount = 400;
-                        context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor.linkReference.referencedDataBook || "")) {
+                        fetches();
                     }
                 }, 100);
             }
@@ -258,7 +260,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     return (
         <AutoComplete
-            autoFocus={true}
+            autoFocus={autoFocus}
             appendTo={document.body}
             ref={inputRef}
             className="jvxEditorLinked"
@@ -272,6 +274,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 setText(event.target.value)
             }}
             onBlur={() => {
+                console.log('blur')
                 setFirstRow(0);
                 setLastRow(100)
                 handleInput();

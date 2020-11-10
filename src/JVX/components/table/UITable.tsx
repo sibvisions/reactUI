@@ -40,9 +40,10 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
     const wrapperRef = useRef(null)
-    useOutsideClick(wrapperRef, setEdit)
+    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
+    useOutsideClick(wrapperRef, setEdit, columnMetaData)
     return useMemo(() => {
-        const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
+        
         const decideEditor = () => {
             let editor = <div> {props.cellData} </div>
 
@@ -75,8 +76,10 @@ const CellEditor: FC<CellEditor> = (props) => {
                     const formattedDate = moment(props.cellData).format(parseDateFormatTable(castedColumn.cellEditor?.dateFormat))
                     if (formattedDate !== "Invalid date") 
                         return formattedDate
-                    else
+                    else {
                         return null
+                    }
+                        
                 }
                 else
                     return props.cellData
@@ -174,6 +177,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             return <Column
                 field={colName}
                 header={props.columnLabels[colIndex]}
+                key={colName}
                 headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis'}}
                 body={(rowData: any) => <CellEditor
                     name={props.name}
