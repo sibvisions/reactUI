@@ -41,11 +41,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
         if(preferredCompSizes){
             const constraintSizes: borderLayoutComponents = {
-                center: {height: style.height as number, width: style.width as number},
-                east: {height: style.height as number, width: 0},
-                west: {height: style.height as number, width: 0},
-                north: {height: 0, width: style.width as number},
-                south: {height: 0, width: style.width as number}
+                center: {height: 0, width: 0},
+                east: {height: 0, width: 0},
+                west: {height: 0, width: 0},
+                north: {height: 0, width: 0},
+                south: {height: 0, width: 0}
             }
 
             // Get preferredSizes
@@ -60,32 +60,53 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     constraintSizes.east = preferredSize;
                 else if(component.constraints === "West")
                     constraintSizes.west = preferredSize;
+                else if(component.constraints === "Center")
+                    constraintSizes.center = preferredSize;
             });
 
             // Build SizeMap
+
+            const getCenterHeight = () => {
+                let centerHeight = constraintSizes.center.height;
+                if(style.height)
+                    centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
+                return centerHeight
+            }
+            const getCenterWidth = () => {
+                let centerWidth = constraintSizes.center.width;
+                if(style.width)
+                    centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width;
+                return centerWidth
+            }
+            const getSouthTop = () => {
+                let southTop = constraintSizes.north.height + constraintSizes.center.height
+                if(style.height){
+                    southTop = style.height as number - constraintSizes.south.height;
+                }
+                return southTop;
+            }
 
             const northCSS: CSSProperties = {
                 position: "absolute",
                 top: 0,
                 left: 0,
-                width: style.width,
+                width: style.width || constraintSizes.north.width,
                 height: constraintSizes.north.height
             }
 
             const centerCSS: CSSProperties = {
                 position: "absolute",
                 top: constraintSizes.north.height,
-                left: 0,
-                width: constraintSizes.center.width - constraintSizes.east.width - constraintSizes.west.width,
-                height: constraintSizes.center.height - constraintSizes.north.height - constraintSizes.south.height,
-
+                left: constraintSizes.west.width,
+                width: getCenterWidth(),
+                height: getCenterHeight()
             }
 
             const southCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.center.height - constraintSizes.south.height,
+                top: getSouthTop(),
                 left: 0,
-                width: style.width,
+                width: style.width || constraintSizes.south.width,
                 height: constraintSizes.south.height,
             }
 
@@ -97,15 +118,17 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 else if(component.constraints === "Center")
                     sizeMap.set(component.id, centerCSS)
             });
+
+            if(onLoad && !style.width && !style.height){
+                const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]);
+                const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
+                onLoad(id, preferredHeight, preferredWidth)
+            }
         }
 
-
-        if(onLoad){
-            onLoad(id, style.height, style.width);
-        }
 
         return sizeMap;
-    }, [preferredCompSizes, style, components])
+    }, [preferredCompSizes, style.width, style.height, onLoad, components])
 
 
     return(
