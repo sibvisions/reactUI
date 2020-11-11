@@ -59,9 +59,9 @@ const UIButton: FC<IButton> = (baseProps) => {
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex as number}
                 onClick={onButtonPress}
+                disabled={props.enabled === false}
             />
         </span>
-        
     )
 }
 export default UIButton;

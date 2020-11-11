@@ -18,7 +18,7 @@ export interface IEditor extends BaseComponent{
     columnName: string,
     dataRow: string,
     eventFocusedGain?: boolean,
-    text?:string
+    text:string
     onSubmit?: Function
     editorStyle?: CSSProperties
     autoFocus?: boolean

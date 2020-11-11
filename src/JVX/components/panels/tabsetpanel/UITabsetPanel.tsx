@@ -19,6 +19,7 @@ import {parseIconData} from "../../compprops/ComponentProperties";
 import {Panel} from "../panel/UIPanel";
 import {createTabRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import IconProps from "../../compprops/IconProps";
 
 export interface ITabsetPanel extends Panel {
     selectedIndex: number;
@@ -75,7 +76,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             components.forEach((subject:any) => {
                 const subjectConstraints:string = subject.props.constraints;
                 let constraints:string[];
-                let icon = null;
+                let icon:IconProps;
                 if (subjectConstraints.includes("FontAwesome")) {
                     let splitConstIcon = subjectConstraints.slice(0, subjectConstraints.indexOf(";FontAwesome"));
                     constraints = splitConstIcon.split(';');
@@ -83,6 +84,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 }
                 else
                     constraints = subjectConstraints.split(';');
+                    icon = parseIconData(props.foreground, constraints[3])
                 let header = <span className="p-tabview-title">
                     {constraints[2]}
                     {constraints[1] === 'true' &&
@@ -90,7 +92,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                         className="tabview-button pi pi-times"
                         onClick={() => handleClose(subject.props.id)}/>}
                 </span>
-                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? icon.icon : undefined}>{subject}</TabPanel>)
+                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? subjectConstraints.includes("FontAwesome") ? icon.icon : context.server.RESOURCE_URL + icon.icon : undefined}>{subject}</TabPanel>)
             });
         }
         return builtTabs;

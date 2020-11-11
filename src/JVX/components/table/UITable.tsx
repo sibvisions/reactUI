@@ -138,7 +138,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     onLoadCallback(id, height, width);
                 }
                 else
-                    onLoadCallback(id, 400, 0);
+                    onLoadCallback(id, 400, 200);
             }
                 
         }

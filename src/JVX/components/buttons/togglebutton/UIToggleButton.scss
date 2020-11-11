@@ -1,0 +1,21 @@
+.p-togglebutton.p-button.p-highlight, .p-togglebutton.p-button.p-highlight:hover {
+    color:black
+}
+
+.p-togglebutton.p-button.p-highlight {
+    .p-button-icon-left {
+        color: #666666
+    }
+    .p-button-icon-right {
+        color: #666666
+    }
+}
+
+.p-togglebutton.p-button.p-highlight:hover {
+    .p-button-icon-left {
+        color: black
+    }
+    .p-button-icon-right {
+        color: black
+    }
+}

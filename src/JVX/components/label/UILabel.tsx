@@ -7,14 +7,10 @@ import {getFont} from "../compprops/ComponentProperties";
 import {checkAlignments} from "../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 
-export interface uiLabel extends BaseComponent {
-    text: string
-}
-
-const UILabel: FC<uiLabel> = (baseProps) => {
+const UILabel: FC<BaseComponent> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
     const layoutValue = useContext(LayoutContext);
-    const [props] = useProperties<uiLabel>(baseProps.id, baseProps);
+    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     
     const {onLoadCallback, id} = baseProps;
     const lblAlignments = checkAlignments(props);

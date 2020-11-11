@@ -11,12 +11,13 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
 
-    const [pwValue, setPwValue] = useState("");
+    const [pwValue, setPwValue] = useState(props.text);
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current, onLoadCallback)
+            //@ts-ignore
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current.inputEl, onLoadCallback)
         }
     },[onLoadCallback, id])
 

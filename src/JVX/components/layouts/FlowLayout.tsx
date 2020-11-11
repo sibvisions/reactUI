@@ -80,7 +80,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 onLoad(id, height, width);
             }
             else
-                onLoad(id, height, width);
+                onLoad(id, 200, 200);
         }
 
     }, [preferredCompSizes, gaps, orientation, id, onLoad])

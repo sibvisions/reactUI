@@ -2,7 +2,7 @@ import BaseComponent from "../components/BaseComponent";
 import React, {FC} from "react"
 import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
 import UIButton from "../components/buttons/button/UIButton";
-import UILabel, {uiLabel} from "../components/label/UILabel";
+import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
 import UIEditorImage, {IEditorImage} from "../components/editors/image/UIEditorImage";
 import {IEditor} from "../components/editors/IEditor";
@@ -15,7 +15,7 @@ import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEd
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import { IButton } from "../components/buttons/IButton";
-import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
+import UIToggleButton, { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
 import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
 import UIRadioButton, { IRadioButton } from "../components/buttons/radiobutton/UIRadioButton";
 import UICheckBox, { ICheckBox } from "../components/checkbox/UICheckBox";
@@ -47,7 +47,7 @@ export const createButton: FC<IButton> = (props) => {
     return <UIButton {...props} key={props.id}/>
 }
 
-export const createToggleButton: FC<IButton> = (props) => {
+export const createToggleButton: FC<IToggleButton> = (props) => {
     return <UIToggleButton {...props} key={props.id}/>
 }
 
@@ -63,7 +63,7 @@ export const createCheckBox: FC<ICheckBox> = (props) => {
     return <UICheckBox {...props} key={props.id}/>
 }
 
-export const createLabel: FC<uiLabel> = (props) => {
+export const createLabel: FC<BaseComponent> = (props) => {
     return <UILabel {...props} key={props.id}/>
 }
 

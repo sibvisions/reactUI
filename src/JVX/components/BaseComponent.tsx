@@ -23,5 +23,6 @@ interface BaseComponent{
     focusable?: boolean
     tabIndex?: number
     style?: string
+    text: string
 }
 export default BaseComponent

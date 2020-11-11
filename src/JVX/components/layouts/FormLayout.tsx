@@ -118,7 +118,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
                     let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
-                    if(autoSizeAnchors.length === autoSizeCount && preferredSize){
+                    //console.log(preferredSize)
+                    if(autoSizeAnchors.length === autoSizeCount && preferredSize !== undefined){
                         let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                         autoSizeAnchors.forEach(anchor => {
                             fixedSize += anchor.position;
@@ -133,7 +134,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
 
                     autoSizeAnchors = getAutoSizeAnchorsBetween(rightBottomAnchor, leftTopAnchor);
-                    if(autoSizeAnchors.length === autoSizeCount && preferredSize){
+                    if(autoSizeAnchors.length === autoSizeCount && preferredSize !== undefined){
                         let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                         autoSizeAnchors.forEach(anchor => {
                             fixedSize -= anchor.position;
@@ -157,6 +158,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             counter++;
                         }
                     });
+                    //console.log(autoSizeAnchors.length, counter)
                     return autoSizeAnchors.length - counter
                 }
 
@@ -198,6 +200,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
                     //CalculateAutoSize
                     componentProps.forEach(component => {
+                        //console.log(component.id)
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
                             const preferredSizeObj = preferredCompSizes.get(component.id);
@@ -211,6 +214,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                     //Finish AutoSize
                     componentProps.forEach(component => {
+                        //console.log(component.id)
                         const constraints = componentConstraints.get(component.id)
                         if(constraints){
                             let count: number
@@ -232,6 +236,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                         }
                     });
+                    //break;
                 }
                 let leftWidth = 0;
                 let rightWidth = 0;

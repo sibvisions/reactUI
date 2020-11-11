@@ -32,7 +32,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
                 onLoad={baseProps.onLoadCallback}
                 preferredCompSizes={preferredComponentSizes}
                 components={components}
-                style={{...getStyle(), overflow:"scroll" }}/>
+                style={{...getStyle()}}/>
         </div>
 
     )

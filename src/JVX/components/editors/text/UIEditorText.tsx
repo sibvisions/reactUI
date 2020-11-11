@@ -55,8 +55,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             if (props.borderVisible === false && !currElem.classList.contains("invisibleBorder")) {
                 currElem.classList.add("invisibleBorder");
             }
-            // @ts-ignore
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
+            if (props.cellEditor.contentType?.includes("password")) {
+                //@ts-ignore
+                sendOnLoadCallback(id, props.preferredSize, inputRef.current.inputEl, onLoadCallback)
+            }
+            else {
+                // @ts-ignore
+                sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
+            }
         }
     },[onLoadCallback, id, props.borderVisible]);
 

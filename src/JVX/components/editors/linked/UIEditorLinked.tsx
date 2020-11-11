@@ -143,7 +143,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 const colNames = props.cellEditor.linkReference.columnNames
                 const index = colNames.findIndex(col => col === props.columnName)
                 if (typeof text === "string") {
-                    return data[refColNames[index]].toLowerCase().includes(text.toLowerCase())
+                    return data[refColNames[index]].includes(text)
                 }
                 else if (typeof text === "object" && text !== null) {
                     return data[refColNames[index]] === text[colNames[index]]

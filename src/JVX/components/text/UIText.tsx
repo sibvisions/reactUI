@@ -11,12 +11,13 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
 
-    const [text, setText] = useState("");
+    const [text, setText] = useState(props.text);
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current, onLoadCallback)
+            //@ts-ignore
+            sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id])
 
