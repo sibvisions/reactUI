@@ -34,8 +34,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     const context = useContext(jvxContext);
 
 
-
-
     const componentSizes = useMemo(() => {
         const sizeMap = new Map<string, CSSProperties>();
 
@@ -67,7 +65,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             // Build SizeMap
 
             const getCenterHeight = () => {
-                let centerHeight = constraintSizes.center.height;
+                let centerHeight = Math.max(...[constraintSizes.center.height, constraintSizes.east.height, constraintSizes.west.height]);
                 if(style.height)
                     centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
                 return centerHeight;
@@ -78,23 +76,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width;
                 return centerWidth;
             }
-            const getWestHeight = () => {
-                let westHeight = constraintSizes.west.height;
-                if(style.height)
-                    westHeight = style.width as number - constraintSizes.south.height - constraintSizes.north.height;
-                return westHeight;
-            }
             const getEastLeft = () => {
                 let eastLeft = constraintSizes.west.width + constraintSizes.center.width;
                 if(style.width)
                     eastLeft = style.width as number - constraintSizes.east.width
                 return eastLeft;
-            }
-            const getEastHeight = () => {
-                let eastHeight = constraintSizes.east.height;
-                if(style.height)
-                    eastHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
-                return eastHeight;
             }
             const getSouthTop = () => {
                 let southTop = constraintSizes.north.height + constraintSizes.center.height
@@ -109,15 +95,17 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 top: 0,
                 left: 0,
                 width: style.width || constraintSizes.north.width,
-                height: constraintSizes.north.height
+                height: getCenterHeight() !== 0 ? constraintSizes.north.height : style.width
             }
+
+            console.log(getCenterHeight())
 
             const westCSS: CSSProperties = {
                 position: "absolute",
                 top: constraintSizes.north.height,
                 left: 0,
                 width: constraintSizes.west.width,
-                height: getWestHeight()
+                height: getCenterHeight()
             }
 
             const centerCSS: CSSProperties = {
@@ -133,7 +121,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 top: constraintSizes.north.height,
                 left: getEastLeft(),
                 width: constraintSizes.east.width,
-                height: getEastHeight()
+                height: getCenterHeight()
             }
 
             const southCSS: CSSProperties = {
@@ -166,7 +154,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
 
         return sizeMap;
-    }, [preferredCompSizes, style.width, style.height, onLoad, components])
+    }, [preferredCompSizes, style.width, style.height, onLoad, components, id, context.contentStore])
 
 
     return(

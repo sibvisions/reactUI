@@ -10,6 +10,7 @@ export type ComponentSize = {
 const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
 
     let tempSizes = new Map<string, ComponentSize>();
+    const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
 
     const buildComponents = (): Array<ReactElement> => {
         const children = context.contentStore.getChildren(id);
@@ -30,6 +31,10 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 }
             }
         }
+
+        if(children.length === 0 && !preferredSizes){
+            setPreferredSizes(new Map<string, ComponentSize>());
+        }
         children.forEach(child => {
             child.onLoadCallback = componentHasLoaded;
             const reactChild = componentHandler(child);
@@ -41,7 +46,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     }
     const context = useContext(jvxContext);
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
-    const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
+
 
 
     useEffect(() => {

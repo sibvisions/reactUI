@@ -46,7 +46,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         });
 
         if(onLoadCallback)
-            onLoadCallback(props.id, height, width)
+            onLoadCallback(props.id, 0, 0)
 
         setComponentSizes(sizeMap);
 

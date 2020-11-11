@@ -24,5 +24,6 @@ interface BaseComponent{
     tabIndex?: number
     style?: string
     text: string
+    indexOf: number;
 }
 export default BaseComponent
