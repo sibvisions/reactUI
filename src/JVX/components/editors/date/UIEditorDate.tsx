@@ -71,7 +71,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             //@ts-ignore
             sendOnLoadCallback(id, props.preferredSize, calender.current.container, onLoadCallback)
         }
-    },[onLoadCallback, id]);
+    },[onLoadCallback, id, props.preferredSize]);
 
     useLayoutEffect(() => {
         setValue(selectedRow ? new Date(selectedRow) : undefined);

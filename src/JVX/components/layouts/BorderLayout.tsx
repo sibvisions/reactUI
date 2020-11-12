@@ -9,6 +9,7 @@ import "./BorderLayout.scss"
 import {jvxContext} from "../../jvxProvider";
 import {ILayout} from "./Layout";
 import {ComponentSize} from "../zhooks/useComponents";
+import Margins from "./models/Margins";
 
 type borderLayoutComponents = {
     north: ComponentSize,
@@ -27,11 +28,13 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         style,
         onLoad,
         id,
+        layout
     } = baseProps
 
 
 
     const context = useContext(jvxContext);
+    const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4))
 
 
     const componentSizes = useMemo(() => {
@@ -68,18 +71,18 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 let centerHeight = Math.max(...[constraintSizes.center.height, constraintSizes.east.height, constraintSizes.west.height]);
                 if(style.height)
                     centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
-                return centerHeight;
+                return centerHeight - margins.marginTop - margins.marginBottom;
             }
             const getCenterWidth = () => {
                 let centerWidth = constraintSizes.center.width;
                 if(style.width)
                     centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width;
-                return centerWidth;
+                return centerWidth - margins.marginLeft - margins.marginRight;
             }
             const getEastLeft = () => {
                 let eastLeft = constraintSizes.west.width + constraintSizes.center.width;
                 if(style.width)
-                    eastLeft = style.width as number - constraintSizes.east.width
+                    eastLeft = style.width as number - constraintSizes.east.width - margins.marginRight
                 return eastLeft;
             }
             const getSouthTop = () => {
@@ -87,38 +90,36 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 if(style.height){
                     southTop = style.height as number - constraintSizes.south.height;
                 }
-                return southTop;
+                return southTop - margins.marginBottom;
             }
 
             const northCSS: CSSProperties = {
                 position: "absolute",
-                top: 0,
-                left: 0,
-                width: style.width || constraintSizes.north.width,
-                height: getCenterHeight() !== 0 ? constraintSizes.north.height : style.width
+                top: margins.marginTop,
+                left: margins.marginLeft,
+                width: (style.width as number || constraintSizes.north.width) - margins.marginLeft - margins.marginRight,
+                height: constraintSizes.north.height
             }
-
-            console.log(getCenterHeight())
 
             const westCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height,
-                left: 0,
+                top: constraintSizes.north.height+margins.marginTop,
+                left: margins.marginLeft,
                 width: constraintSizes.west.width,
                 height: getCenterHeight()
             }
 
             const centerCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height,
-                left: constraintSizes.west.width,
+                top: constraintSizes.north.height+margins.marginTop,
+                left: constraintSizes.west.width+margins.marginLeft,
                 width: getCenterWidth(),
                 height: getCenterHeight()
             }
 
             const eastCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height,
+                top: constraintSizes.north.height+margins.marginTop,
                 left: getEastLeft(),
                 width: constraintSizes.east.width,
                 height: getCenterHeight()
@@ -127,8 +128,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             const southCSS: CSSProperties = {
                 position: "absolute",
                 top: getSouthTop(),
-                left: 0,
-                width: style.width || constraintSizes.south.width,
+                left: margins.marginLeft,
+                width: (style.width as number || constraintSizes.south.width) - margins.marginLeft - margins.marginRight,
                 height: constraintSizes.south.height,
             }
 
@@ -154,7 +155,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
 
         return sizeMap;
-    }, [preferredCompSizes, style.width, style.height, onLoad, components, id, context.contentStore])
+    }, [preferredCompSizes, style.width, style.height, onLoad, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
 
 
     return(

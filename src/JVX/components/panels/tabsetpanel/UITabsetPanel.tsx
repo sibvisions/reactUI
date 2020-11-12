@@ -3,7 +3,6 @@ import React, {
     FC,
     useCallback,
     useContext,
-    useEffect,
     useLayoutEffect,
     useMemo,
     useRef,
@@ -38,7 +37,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     useLayoutEffect(() => {
         const sizeMap = new Map<string, CSSProperties>();
-        const external = layoutValue.get(props.id) || {width: 10, height: 10};
+        const external = layoutValue.get(id) || {width: 10, height: 10};
         const width = external.width as number;
         const height = external.height as number - 20;
         components.forEach((subject:any) => {
@@ -46,7 +45,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         });
 
         if(onLoadCallback)
-            onLoadCallback(props.id, 0, 0)
+            onLoadCallback(id, 0, 0)
 
         setComponentSizes(sizeMap);
 

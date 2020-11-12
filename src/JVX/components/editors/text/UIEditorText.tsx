@@ -36,7 +36,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const [text, setText] = useState(baseProps.text || "");
     const cellEditorMetaData:IEditorText|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorText;
-    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData?.cellEditor.length])
+    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData])
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
@@ -64,7 +64,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, props.borderVisible]);
+    },[onLoadCallback, id, props.borderVisible, props.cellEditor.contentType, props.preferredSize]);
 
     useLayoutEffect(() => {
         setText(selectedRow);
@@ -76,7 +76,6 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputTextarea
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            autoResize
             className="jvxEditorTextarea"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             maxLength={length}

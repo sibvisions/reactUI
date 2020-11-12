@@ -19,7 +19,7 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
             //@ts-ignore
             sendOnLoadCallback(id, props.preferredSize, inputRef.current.inputEl, onLoadCallback)
         }
-    },[onLoadCallback, id])
+    },[onLoadCallback, id, props.preferredSize])
 
     return (
         <Password ref={inputRef} value={pwValue||""} feedback={false} style={layoutValue.get(props.id)} onChange={event => setPwValue(event.currentTarget.value)} />

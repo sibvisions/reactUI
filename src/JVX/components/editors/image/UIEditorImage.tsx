@@ -64,8 +64,8 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         const cellHA = props.cellEditor_horizontalAlignment_
         const cellVA = props.cellEditor_verticalAlignment_
 
-        imgCSS.maxWidth = "100%"
-        imgCSS.maxHeight = "100%"
+        //imgCSS.maxWidth = "100%"
+        //imgCSS.maxHeight = "100%"
 
         let ha = horizontalAlignment || cellHA;
         let va = verticalAlignment || cellVA;
@@ -84,8 +84,11 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         else if(va === VERTICAL_ALIGNMENT.BOTTOM)
             spanCSS.alignItems = "flex-end";
 
-        if(va === VERTICAL_ALIGNMENT.STRETCH && ha === HORIZONTAL_ALIGNMENT.STRETCH)
+        if(va === VERTICAL_ALIGNMENT.STRETCH && ha === HORIZONTAL_ALIGNMENT.STRETCH) {
             imgCSS.width = "100%";
+            imgCSS.height = "100%";
+            imgCSS.objectFit = "contain"
+        }
         else if(ha === HORIZONTAL_ALIGNMENT.STRETCH) {
             spanCSS.flexFlow = "column";
             spanCSS.justifyContent = spanCSS.alignItems;

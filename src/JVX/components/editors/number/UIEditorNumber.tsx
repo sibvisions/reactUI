@@ -52,7 +52,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             // @ts-ignore
             sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
         }
-    },[onLoadCallback, id]);
+    },[onLoadCallback, id, props.preferredSize]);
 
     useLayoutEffect(() => {
         setValue(selectedRow);

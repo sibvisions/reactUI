@@ -18,6 +18,6 @@ const useOutsideClick = (ref: any, setEdit: Function, metaData: IEditor | undefi
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         }
-    }, [ref, setEdit])
+    }, [ref, setEdit, metaData])
 }
 export default useOutsideClick

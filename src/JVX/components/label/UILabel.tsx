@@ -24,7 +24,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
 
     return(
-        <span ref={labelRef} dangerouslySetInnerHTML={{__html: props.text}} className="jvxLabel" style={layoutValue.get(props.id) ? {
+        <span ref={labelRef} dangerouslySetInnerHTML={{__html: props.text}} className={"jvxLabel" + (props.text.includes("<html>") ? " jvxLabel-html" : "")} style={layoutValue.get(props.id) ? {
             justifyContent: lblAlignments.ha,
             alignItems: lblAlignments.va,
             backgroundColor: props.background,

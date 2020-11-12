@@ -16,9 +16,11 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
         const componentHasLoaded = (compId: string, height: number, width: number)=> {
+            const testComp = tempSizes.get(compId)
             tempSizes.set(compId, {width: width, height: height});
-            if(tempSizes.size === components.length){
-                setPreferredSizes(tempSizes);
+            console.log(testComp, compId)
+            if(tempSizes.size === components.length && (testComp?.height !== height || testComp?.width !== width)){
+                setPreferredSizes(new Map(tempSizes));
             }
 
             //Set Preferred Sizes of changed Components
@@ -52,7 +54,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     useEffect(() => {
         context.contentStore.subscribeToParentChange(id, () => {
             const newComponents = buildComponents();
-
             const cl = new Array<ReactElement>();
             newComponents.forEach(nc => {
                 let alreadyAdded = false

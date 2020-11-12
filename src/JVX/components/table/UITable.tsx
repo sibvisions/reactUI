@@ -102,7 +102,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 </div>
             )
         }
-    }, [edit, props.cellData, props.colName, props.dataProvider, props.metaData, props.resource, props.name]);
+    }, [edit, props.cellData, props.colName, props.dataProvider, props.resource, props.name, columnMetaData]);
 }
 
 const UITable: FC<TableProps> = (baseProps) => {
@@ -142,7 +142,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
                 
         }
-    }, [id, onLoadCallback]);
+    }, [id, onLoadCallback, props.preferredSize]);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
@@ -230,7 +230,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
 
     return(
-       <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
+       <div ref={wrapRef} style={{...layoutContext.get(props.id), height: layoutContext.get(props.id)?.height as number - 2, width: layoutContext.get(props.id)?.width as number - 2}}>
            <DataTable
                ref={tableRef}
                className="jvxTable"

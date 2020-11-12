@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, lazy, useContext, useMemo} from "react";
+import React, {CSSProperties, FC, useContext, useMemo} from "react";
 import {LayoutContext} from "../../LayoutContext";
 import Gaps from "./models/Gaps";
 import {ILayout} from "./Layout";
@@ -23,13 +23,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     const componentSizes = useMemo(() => {
         const sizeMap = new Map<string, CSSProperties>();
         const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-        gaps.horizontalGap = 20;
-        gaps.verticalGap = 20;
         const alignments =  layout.split(",");
         const outerHa = parseInt(alignments[8]);
         const outerVa = parseInt(alignments[9]);
         const innerAlignment = parseInt(alignments[10]);
-        const isRowOrientation = parseInt(alignments[7]) == ORIENTATION.HORIZONTAL
+        const isRowOrientation = parseInt(alignments[7]) === ORIENTATION.HORIZONTAL
 
         const componentProps = context.contentStore.getChildren(id).sort((a, b) =>{
             return a.indexOf - b.indexOf;
@@ -86,8 +84,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         alignmentLeft = (style.width as number) - widest;
                 }
             }
-
-            console.log(stretchValue)
 
             let relativeLeft = alignmentLeft;
             let relativeTop = alignmentTop;
@@ -160,7 +156,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
 
         return sizeMap;
-    }, [layout, preferredCompSizes, components, onLoad, id, style])
+    }, [layout, preferredCompSizes, onLoad, id, style, context.contentStore])
 
     return(
         <LayoutContext.Provider value={componentSizes}>

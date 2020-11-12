@@ -1,4 +1,4 @@
-import React, {FC, ReactNode, useLayoutEffect, useRef, useState} from "react";
+import React, {CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState} from "react";
 import "./SplitPanel.scss"
 import Throttle from "../../util/Throttle";
 import SplitImage from "../../../../assests/Split.png"
@@ -16,6 +16,7 @@ type SplitPanelProps = {
     onResizeEnd?: onResizeEvent
     trigger?: any
     onTrigger?: onResizeEvent
+    style?: CSSProperties
 }
 
 const SplitPanel: FC<SplitPanelProps> = (props) => {
@@ -109,7 +110,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
 
     return(
-        <div className={"splitPanel"} ref={props.forwardedRef}>
+        <div className={"splitPanel"} ref={props.forwardedRef} style={props.style}>
             <div ref={firstRef} className={"first"} style={{width: firstWidth}}>
                 {props.leftComponent}
             </div>

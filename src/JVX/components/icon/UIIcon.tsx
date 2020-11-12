@@ -39,7 +39,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 sendOnLoadCallback(id, props.preferredSize, iconRef.current, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, iconProps.icon]);
+    },[onLoadCallback, id, iconProps.icon, props.preferredSize]);
 
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
@@ -54,7 +54,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     }
 
     return (
-        <span ref={iconRef} className="jvxIcon" style={layoutValue.get(props.id)}>
+        <span ref={iconRef} className={"jvxIcon" + (props.name === "Validator" ? " jvxValidator" : "")} style={layoutValue.get(props.id)}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

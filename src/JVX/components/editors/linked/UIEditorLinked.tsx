@@ -76,7 +76,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             // @ts-ignore
             sendOnLoadCallback(id, props.preferredSize, inputRef.current.container, onLoadCallback)
         }
-    },[onLoadCallback, id]);
+    },[onLoadCallback, id, props.preferredSize]);
 
     useLayoutEffect(() => {
         if (inputRef.current) {

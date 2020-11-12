@@ -61,7 +61,7 @@ const Layout: FC = (props) => {
         else {
             setScreenTitle(context.server.APP_NAME)
         }
-    }, [props.children])
+    }, [props.children, context.server.APP_NAME])
 
     const doResize = () => {
         if(sizeRef.current){

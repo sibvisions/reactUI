@@ -19,7 +19,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
             //@ts-ignore
             sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
         }
-    },[onLoadCallback, id])
+    },[onLoadCallback, id, props.preferredSize])
 
     return (
         <InputText ref={inputRef} value={text||""} style={layoutValue.get(props.id)} onChange={event => setText(event.currentTarget.value)} />

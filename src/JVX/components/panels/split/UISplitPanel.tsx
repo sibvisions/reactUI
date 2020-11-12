@@ -60,6 +60,7 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
+                style={sizeValue.get(props.id)}
                 forwardedRef={splitRef}
                 trigger={sizeValue}
                 onTrigger={handleResize}
