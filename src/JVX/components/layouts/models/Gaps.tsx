@@ -1,11 +1,11 @@
 class Gaps{
+    verticalGap = 0;
     horizontalGap = 0;
-    vertical = 0;
 
     constructor(gapsArray? : Array<string>) {
         if(gapsArray){
-            this.horizontalGap = parseInt(gapsArray[0]);
-            this.vertical = parseInt(gapsArray[1]);
+            this.verticalGap = parseInt(gapsArray[0]);
+            this.horizontalGap = parseInt(gapsArray[1]);
         }
     }
 }

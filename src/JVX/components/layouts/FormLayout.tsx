@@ -305,7 +305,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 //Preferred Width
                 if(leftWidth !== 0 && rightWidth !== 0){
-                    let w = leftWidth + rightWidth + gaps.horizontalGap;
+                    let w = leftWidth + rightWidth + gaps.verticalGap;
                     if(w > preferredWidth){
                         preferredWidth = w;
                     }
@@ -342,7 +342,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 //Preferred Height
                 if(topHeight !== 0 && bottomHeight !== 0){
-                    let h = topHeight + bottomHeight + gaps.vertical;
+                    let h = topHeight + bottomHeight + gaps.horizontalGap;
                     if(h > preferredHeight){
                         preferredHeight = h;
                     }

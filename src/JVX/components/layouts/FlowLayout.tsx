@@ -19,22 +19,17 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     const context = useContext(jvxContext);
 
-    //Outer
-    //splitAlignments[8]) === HORIZONTAL_ALIGNMENT
-    //splitAlignments[9]) === VERTICAL_ALIGNMENT
-
-    //Inner
-    //splitAlignments[10]) === VERTICAL_ALIGNMENT
-
 
     const componentSizes = useMemo(() => {
         const sizeMap = new Map<string, CSSProperties>();
         const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
+        gaps.horizontalGap = 20;
+        gaps.verticalGap = 20;
         const alignments =  layout.split(",");
         const outerHa = parseInt(alignments[8]);
         const outerVa = parseInt(alignments[9]);
-        const bottom = parseInt(alignments[10]) === VERTICAL_ALIGNMENT.BOTTOM
-        const isRowOrientation = parseInt(alignments[7]) === ORIENTATION.HORIZONTAL
+        const innerAlignment = parseInt(alignments[10]);
+        const isRowOrientation = parseInt(alignments[7]) == ORIENTATION.HORIZONTAL
 
         const componentProps = context.contentStore.getChildren(id).sort((a, b) =>{
             return a.indexOf - b.indexOf;
@@ -48,8 +43,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let widest = 0;
 
             preferredCompSizes.forEach(componentSize => {
-                totalHeight += componentSize.height + gaps.vertical;
-                totalWidth += componentSize.width + gaps.horizontalGap;
+                totalHeight += componentSize.height + gaps.horizontalGap;
+                totalWidth += componentSize.width + gaps.verticalGap;
 
                 if(componentSize.height > tallest)
                     tallest = componentSize.height;
@@ -60,50 +55,39 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let alignmentTop = 0;
             let alignmentLeft = 0;
 
+            let stretchValue = 0;
+
             if(style.width && style.height){
                 if(isRowOrientation){
-                    switch (outerVa){
-                        case (VERTICAL_ALIGNMENT.CENTER): {
-                            alignmentTop = (style.height as number)/2 - tallest/2;
-                            break;
-                        }
-                        case (VERTICAL_ALIGNMENT.BOTTOM): {
-                            alignmentTop = (style.height as number) - tallest;
-                        }
-                    }
-                    switch (outerHa){
-                        case (HORIZONTAL_ALIGNMENT.CENTER): {
-                            alignmentLeft = (style.width as number)/2 - totalWidth/2;
-                            break;
-                        }
-                        case (HORIZONTAL_ALIGNMENT.RIGHT): {
-                            alignmentLeft = (style.width as number) - totalWidth;
-                            break;
-                        }
+                    if(outerVa === VERTICAL_ALIGNMENT.CENTER)
+                        alignmentTop = (style.height as number)/2 - tallest/2;
+                    else if(outerVa === VERTICAL_ALIGNMENT.BOTTOM)
+                        alignmentTop = (style.height as number) - tallest;
+
+                    if(outerHa === HORIZONTAL_ALIGNMENT.CENTER)
+                        alignmentLeft = (style.width as number)/2 - totalWidth/2;
+                    else if(outerHa === HORIZONTAL_ALIGNMENT.RIGHT)
+                        alignmentLeft = (style.width as number) - totalWidth;
+                    else if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
+                        stretchValue = (style.width as number - totalWidth + gaps.verticalGap) / componentProps.length
                     }
                 }
                 else{
-                    switch (outerVa){
-                        case (VERTICAL_ALIGNMENT.CENTER): {
-                            alignmentTop = (style.height as number)/2 - totalHeight/2;
-                            break;
-                        }
-                        case (VERTICAL_ALIGNMENT.BOTTOM): {
-                            alignmentTop = (style.height as number) - totalHeight;
-                        }
-                    }
-                    switch (outerHa){
-                        case (HORIZONTAL_ALIGNMENT.CENTER): {
-                            alignmentLeft = (style.width as number)/2 - widest/2;
-                            break;
-                        }
-                        case (HORIZONTAL_ALIGNMENT.RIGHT): {
-                            alignmentLeft = (style.width as number) - widest;
-                            break;
-                        }
-                    }
+                    if(outerVa === VERTICAL_ALIGNMENT.CENTER)
+                        alignmentTop = (style.height as number)/2 - totalHeight/2;
+                    else if(outerVa === VERTICAL_ALIGNMENT.BOTTOM)
+                        alignmentTop = (style.height as number) - totalHeight;
+                    else if(outerVa === VERTICAL_ALIGNMENT.STRETCH)
+                        stretchValue = (style.height as number - totalHeight + gaps.horizontalGap) / componentProps.length
+
+                    if(outerHa === HORIZONTAL_ALIGNMENT.CENTER)
+                        alignmentLeft = (style.width as number)/2 - widest/2;
+                    else if(outerHa === HORIZONTAL_ALIGNMENT.RIGHT)
+                        alignmentLeft = (style.width as number) - widest;
                 }
             }
+
+            console.log(stretchValue)
 
             let relativeLeft = alignmentLeft;
             let relativeTop = alignmentTop;
@@ -113,18 +97,42 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 let top = relativeTop;
                 let left = relativeLeft;
                 let height = size.height;
-                let width = size.width
+                let width = size.width;
 
                 // Orientation Position
                 if(isRowOrientation){
-                    relativeLeft += size.width + gaps.horizontalGap;
-                    if(bottom)
+                    if(innerAlignment === VERTICAL_ALIGNMENT.BOTTOM)
                         top += tallest - size.height;
+                    else if(innerAlignment === VERTICAL_ALIGNMENT.CENTER)
+                        top += (tallest - size.height)/2;
+                    else if(innerAlignment === VERTICAL_ALIGNMENT.STRETCH)
+                        height = tallest;
+
+                    if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH)
+                        width += stretchValue
+                    if(outerVa === VERTICAL_ALIGNMENT.STRETCH) {
+                        top = relativeTop;
+                        height = style.height as number || tallest;
+                    }
+
+                    relativeLeft += width + gaps.verticalGap;
                 }
                 else{
-                    if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH)
+                    if(innerAlignment === HORIZONTAL_ALIGNMENT.RIGHT)
+                        left += widest - size.width;
+                    if(innerAlignment === HORIZONTAL_ALIGNMENT.CENTER)
+                        left += (widest - size.width)/2;
+                    if(innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH)
+                        width = widest;
+
+                    if(outerVa === VERTICAL_ALIGNMENT.STRETCH)
+                        height += stretchValue;
+                    if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
+                        left = relativeLeft;
                         width = style.width as number || widest;
-                    relativeTop += size.height + gaps.vertical;
+                    }
+
+                    relativeTop += height + gaps.horizontalGap;
                 }
 
 
