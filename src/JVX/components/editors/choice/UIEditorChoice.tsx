@@ -6,7 +6,8 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
-import {createSetValueRequest} from "../../../factories/RequestFactory";
+import {createSetValuesRequest} from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
 interface ICellEditorChoice extends ICellEditor{
     allowedValues: Array<string>,
@@ -26,7 +27,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
     const alignments = checkCellEditorAlignments(props);
-
+    const {onLoadCallback, id} = baseProps;
 
 
     const validImages = useMemo(() => {
@@ -43,8 +44,20 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         return mergedValImg;
     }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
 
-
-    const {onLoadCallback, id} = baseProps;
+    const currentImageValue = useMemo(() => {
+        let validImage = "invalid"
+        if(selectedRow !== undefined)
+            validImage = selectedRow
+        else{
+            for(let value in validImages){
+                if(validImages[value] === props.cellEditor.defaultImageName){
+                    validImage = value;
+                    break;
+                }
+            }
+        }
+        return validImage;
+    }, [selectedRow, validImages])
 
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number
@@ -63,26 +76,19 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     const handleClick = () => {
-        const getValueOfDefault = () => {
-            for(let choice in validImages){
-                if(validImages[choice] === props.cellEditor.defaultImageName){
-                    return choice;
-                }
-            }
-        }
-
-        let currentRowValue = selectedRow
-        if(!currentRowValue)
-            currentRowValue = getValueOfDefault() || "NO_VALUE";
-
-        // const indexOfCurrentValue = validImages.
-
-        const setValReq = createSetValueRequest();
+        const setValReq = createSetValuesRequest();
         setValReq.componentId = props.name;
-        setValReq.value = currentRowValue
+        setValReq.columnNames = [props.columnName];
+        setValReq.dataProvider = props.dataRow;
 
+        const index = props.cellEditor.allowedValues.indexOf(currentImageValue)
 
-        // sendSetValues(props.dataRow, props.name, props.columnName, allowedValues[newIndex], undefined, context.server)
+        if(props.cellEditor.allowedValues.length > index+1)
+            setValReq.values = [props.cellEditor.allowedValues[index+1]];
+        else
+            setValReq.values = [props.cellEditor.allowedValues[0]];
+        context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
+
     }
 
     return (
@@ -92,7 +98,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 className="jvxEditorChoice-img"
                 alt=""
                 onClick={handleClick}
-                src={context.server.RESOURCE_URL + (selectedRow ? validImages[selectedRow]: props.cellEditor.defaultImageName)}
+                src={context.server.RESOURCE_URL + validImages[currentImageValue]}
                 onLoad={onChoiceLoaded}
             />
         </span>
