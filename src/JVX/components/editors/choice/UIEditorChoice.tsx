@@ -14,7 +14,6 @@ interface ICellEditorChoice extends ICellEditor{
     defaultImageName?: string
     imageNames: Array<string>,
     preferredEditorMode?: number,
-    images: Array<string>
 }
 
 export interface IEditorChoice extends IEditor{
@@ -42,10 +41,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             }
             return mergedObj;
         }
-        if (id !== "")
             mergedValImg = mergeObject(props.cellEditor.allowedValues, props.cellEditor.imageNames);
-        else
-            mergedValImg = mergeObject(props.cellEditor.allowedValues, props.cellEditor.images)
         return mergedValImg;
     }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
 
