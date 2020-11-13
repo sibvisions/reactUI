@@ -150,6 +150,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 else
                     onLoad(id, totalHeight, widest);
             }
+            else if (onLoad)
+                onLoad(id, 0, 0)                
         }
 
 

@@ -18,14 +18,19 @@ export interface ILayout{
 
 
 const Layout: FC<ILayout> = (props) => {
-    if(props.layout.includes("FormLayout"))
-        return <FormLayout {...props}/>
-    else if(props.layout.includes("BorderLayout"))
-        return <BorderLayout {...props}/>
-    else if(props.layout.includes("FlowLayout"))
-        return <FlowLayout {...props}/>
+    if (props.layout) {
+        if (props.layout.includes("FormLayout"))
+            return <FormLayout {...props} />
+        else if (props.layout.includes("BorderLayout"))
+            return <BorderLayout {...props} />
+        else if (props.layout.includes("FlowLayout"))
+            return <FlowLayout {...props} />
+        else
+            return <DummyLayout {...props} />
+    }
     else
-        return <DummyLayout {...props}/>
+        return <DummyLayout {...props} />
+
 }
 export default Layout
 
