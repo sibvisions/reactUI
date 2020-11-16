@@ -58,7 +58,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             }
         }
         return validImage;
-    }, [selectedRow, validImages])
+    }, [selectedRow, validImages, props.cellEditor.defaultImageName])
 
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height: number, width: number

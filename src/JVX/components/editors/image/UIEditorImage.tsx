@@ -1,11 +1,11 @@
-import React, {CSSProperties, FC, useContext, useEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useRef} from "react";
 import './UIEditorImage.scss'
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
-import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "../../layouts/models/ALIGNMENT";
 import useProperties from "../../zhooks/useProperties";
+import useImageStyle from "../../zhooks/useImageStyle";
 
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
@@ -26,6 +26,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     const {onLoadCallback, id} = baseProps
     const {verticalAlignment, horizontalAlignment} = props
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
 
     const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
 
@@ -58,49 +59,10 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         }
     }
 
-    const alignmentCss = useMemo(() => {
-        const spanCSS: CSSProperties = {};
-        const imgCSS: CSSProperties = {};
-        const cellHA = props.cellEditor_horizontalAlignment_
-        const cellVA = props.cellEditor_verticalAlignment_
-
-        //imgCSS.maxWidth = "100%"
-        //imgCSS.maxHeight = "100%"
-
-        let ha = horizontalAlignment || cellHA;
-        let va = verticalAlignment || cellVA;
-
-        if(ha === HORIZONTAL_ALIGNMENT.LEFT)
-            spanCSS.justifyContent = "flex-start";
-        else if(ha === HORIZONTAL_ALIGNMENT.CENTER)
-            spanCSS.justifyContent = "center";
-        else if(ha === HORIZONTAL_ALIGNMENT.RIGHT)
-            spanCSS.justifyContent = "flex-end";
-
-        if(va === VERTICAL_ALIGNMENT.TOP)
-            spanCSS.alignItems = "flex-start";
-        else if(va === VERTICAL_ALIGNMENT.CENTER)
-            spanCSS.alignItems = "center";
-        else if(va === VERTICAL_ALIGNMENT.BOTTOM)
-            spanCSS.alignItems = "flex-end";
-
-        if(va === VERTICAL_ALIGNMENT.STRETCH && ha === HORIZONTAL_ALIGNMENT.STRETCH) {
-            imgCSS.width = "100%";
-            imgCSS.height = "100%";
-            imgCSS.objectFit = "contain"
-        }
-        else if(ha === HORIZONTAL_ALIGNMENT.STRETCH) {
-            spanCSS.flexFlow = "column";
-            spanCSS.justifyContent = spanCSS.alignItems;
-            spanCSS.alignItems = "unset";
-        }
-        return {span: spanCSS, img: imgCSS};
-    }, [verticalAlignment, horizontalAlignment, props.cellEditor_verticalAlignment_, props.cellEditor_horizontalAlignment_])
-
     return(
-        <span className="jvxEditorImage" style={{...layoutValue.get(props.id), ...alignmentCss.span}}>
+        <span className="jvxEditorImage" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             <img
-                style={alignmentCss.img}
+                style={imageStyle.img}
                 ref={imageRef}
                 src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt={"could not be loaded"}

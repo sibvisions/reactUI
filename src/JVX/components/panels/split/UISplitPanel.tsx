@@ -21,7 +21,7 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
 
     const getChildByConstraint = (constraint: string): ReactElement | undefined => {
         return components.find((component) => {
-            const compProp = componentProps.find(value => value.id === component.props.id);
+            const compProp = componentProps.get(component.props.id);
             if(compProp)
                 return compProp.constraints === constraint;
 

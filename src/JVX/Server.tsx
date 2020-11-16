@@ -155,7 +155,7 @@ class Server{
     }
 
     processDataProviderChanged(changedProvider: DataProviderChangedResponse){
-        if(changedProvider.reload === -1){
+        if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
@@ -167,6 +167,13 @@ class Server{
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH
             )
+        }
+        else {
+            const fetchReq = createFetchRequest();
+            fetchReq.rowCount = 1;
+            fetchReq.fromRow = 0;
+            fetchReq.dataProvider = changedProvider.dataProvider;
+            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
         }
         this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
     }

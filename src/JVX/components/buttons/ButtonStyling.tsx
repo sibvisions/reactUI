@@ -119,14 +119,16 @@ export function styleButton(btnChildren:HTMLCollection, className:string, hTextP
 export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseEntered:boolean|undefined, color:string|undefined, checkedColor:string|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
     if (borderPainted) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background-color', tinycolor(color).darken(dark).toString());
-            obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
-            if (className === "PopupMenuButton") {
-                for (const child of obj.children) {
-                    const castedChild = child as HTMLElement;
-                    if (castedChild.tagName === "BUTTON")
-                        castedChild.style.setProperty('border-color', tinycolor(color).darken(dark).toString())
-                        
+            if (!checked) {
+                obj.style.setProperty('background-color', tinycolor(color).darken(dark).toString());
+                obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
+                if (className === "PopupMenuButton") {
+                    for (const child of obj.children) {
+                        const castedChild = child as HTMLElement;
+                        if (castedChild.tagName === "BUTTON")
+                            castedChild.style.setProperty('border-color', tinycolor(color).darken(dark).toString())
+                            
+                    }
                 }
             }
         }
@@ -168,6 +170,7 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
         }
     }
     else if (borderOnMouseEntered) {
+        console.log('yo')
         obj.onmouseover = () => {
             obj.style.setProperty('background-color', color === 'white' ? color : "#007ad9");
             obj.style.setProperty('border-color', color === 'white' ? color : "#007ad9");

@@ -68,7 +68,7 @@ module.exports = async () => {
                     }
                 },
                 {
-                    test: /\.s?[ac]ss$/i,
+                    test: /\.scss$/,
                     use: [
                         {
                             loader: MiniCssExtractPlugin.loader,

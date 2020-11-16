@@ -14,7 +14,10 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
 
     const getStyle = () => {
         const s = {...layoutContext.get(baseProps.id) || {}};
-
+        if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
+            s.top = undefined;
+            s.left = undefined;
+        }
         (s.width as number) -= 20;
         (s.height as number) -= 20;
         return s

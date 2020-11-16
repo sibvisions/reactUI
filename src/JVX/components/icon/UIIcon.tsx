@@ -6,6 +6,7 @@ import useProperties from "../zhooks/useProperties";
 import {parseIconData} from "../compprops/ComponentProperties";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import useImageStyle from "../zhooks/useImageStyle";
 
 const UIIcon: FC<BaseComponent> = (baseProps) => {
 
@@ -14,7 +15,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     const iconProps = parseIconData(props.foreground, props.image)
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
 
     const iconLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         let height:number, width:number;
@@ -45,16 +47,21 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
         if (icon) {
             if(icon.includes('fa fa-'))
                 return <i className={icon}/>
-            else
+            else {
                 return <img
-                    alt="icon"
-                    src={context.server.RESOURCE_URL + iconProps.icon}
-                    onLoad={iconLoaded}/>
+                alt="icon"
+                src={context.server.RESOURCE_URL + iconProps.icon}
+                style={imageStyle.img}
+                onLoad={iconLoaded}/>
+            }
+                
         }
     }
 
+    
+
     return (
-        <span ref={iconRef} className={"jvxIcon" + (props.name === "Validator" ? " jvxValidator" : "")} style={layoutValue.get(props.id)}>
+        <span ref={iconRef} className={"jvxIcon" + (props.name === "Validator" ? " jvxValidator" : "")} style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

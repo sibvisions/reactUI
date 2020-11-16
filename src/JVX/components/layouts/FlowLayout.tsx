@@ -29,9 +29,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const innerAlignment = parseInt(alignments[10]);
         const isRowOrientation = parseInt(alignments[7]) === ORIENTATION.HORIZONTAL
 
-        const componentProps = context.contentStore.getChildren(id).sort((a, b) =>{
-            return a.indexOf - b.indexOf;
-        });
+        const componentProps = context.contentStore.getChildren(id)
+
+        const componentPropsSorted = new Map([...componentProps.entries()].sort((a, b) => {return a[1].indexOf - b[1].indexOf}))
 
         if(preferredCompSizes){
             let totalHeight = 0;
@@ -67,7 +67,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     else if(outerHa === HORIZONTAL_ALIGNMENT.RIGHT)
                         alignmentLeft = (style.width as number) - totalWidth;
                     else if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
-                        stretchValue = (style.width as number - totalWidth + gaps.verticalGap) / componentProps.length
+                        stretchValue = (style.width as number - totalWidth + gaps.verticalGap) / componentProps.size
                     }
                 }
                 else{
@@ -76,7 +76,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     else if(outerVa === VERTICAL_ALIGNMENT.BOTTOM)
                         alignmentTop = (style.height as number) - totalHeight;
                     else if(outerVa === VERTICAL_ALIGNMENT.STRETCH)
-                        stretchValue = (style.height as number - totalHeight + gaps.horizontalGap) / componentProps.length
+                        stretchValue = (style.height as number - totalHeight + gaps.horizontalGap) / componentProps.size
 
                     if(outerHa === HORIZONTAL_ALIGNMENT.CENTER)
                         alignmentLeft = (style.width as number)/2 - widest/2;
@@ -87,7 +87,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             let relativeLeft = alignmentLeft;
             let relativeTop = alignmentTop;
-            componentProps.forEach(component => {
+            componentPropsSorted.forEach(component => {
                 const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
 
                 let top = relativeTop;

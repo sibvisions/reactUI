@@ -85,13 +85,15 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                     constraints = subjectConstraints.split(';');
                     icon = parseIconData(props.foreground, constraints[3])
                 let header = <span className="p-tabview-title">
+                    {!subjectConstraints.includes("FontAwesome") &&
+                    <span className="jvxTabset-tabicon" style={{backgroundImage: "url('" + context.server.RESOURCE_URL + icon.icon + "')", height: icon.size?.height, width: icon.size?.width}} />}
                     {constraints[2]}
                     {constraints[1] === 'true' &&
                     <button
                         className="tabview-button pi pi-times"
                         onClick={() => handleClose(subject.props.id)}/>}
                 </span>
-                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? subjectConstraints.includes("FontAwesome") ? icon.icon : context.server.RESOURCE_URL + icon.icon : undefined}>{subject}</TabPanel>)
+                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? subjectConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{subject}</TabPanel>)
             });
         }
         return builtTabs;

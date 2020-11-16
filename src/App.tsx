@@ -14,7 +14,7 @@ import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
 import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
-import {HashRouter, Route, Switch} from "react-router-dom";
+import {Route, Switch, useHistory} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
 
 
@@ -31,8 +31,10 @@ export const toastContext = createContext<Function>(() => {})
 const App: FC = () => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
+    const history = useHistory()
 
     useLayoutEffect(() => {
+        history.replace("/home")
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
         fetch('config.json')
@@ -77,7 +79,7 @@ const App: FC = () => {
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
             context.server.showToast = msg
         })
-    }, [context.server, context.contentStore]);
+    }, [context.server, context.contentStore, history]);
 
     const msg = (messageObj: ToastMessage) => {
         if (toastRef.current) {
@@ -86,7 +88,7 @@ const App: FC = () => {
     }
 
     return (
-        <HashRouter>
+        <>
             <Toast ref={toastRef} position="top-right"/>
             <toastContext.Provider value={msg}>
                 <Switch>
@@ -104,7 +106,7 @@ const App: FC = () => {
                     </Route>
                 </Switch>   
             </toastContext.Provider>
-      </HashRouter>
+        </>
   );
 }
 export default App;

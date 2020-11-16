@@ -1,6 +1,4 @@
-:root {
-    --icon: unset;
-}
+$testVar: unset;
 
 .jvxButton {
     display: inline-flex;
@@ -35,10 +33,24 @@
     }
 }
 
-.borderNotPainted {
+.borderNotPainted, .borderNotPainted:enabled:hover {
     background-color: unset;
     border-color: unset;
-    >.jvxButton-icon {
+    >.jvxButton-icon, >.p-button-label {
         color: black;
     }
+}
+
+.borderNotPainted:enabled:hover {
+    >.p-button-label {
+        text-decoration: underline;
+    }
+}
+
+.p-button-label {
+    flex: none;
+}
+
+:export {
+    testVar: $testVar
 }

@@ -116,6 +116,9 @@ body {
             background-color: inherit;
             border: inherit;
             padding-top: 8px;
+            .p-submenu-list {
+                z-index: 999;
+            }
              >.p-menubar-end {
                  .p-button{
                     color: white;

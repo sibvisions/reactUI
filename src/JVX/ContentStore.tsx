@@ -36,7 +36,6 @@ class ContentStore{
         let existingComponent: BaseComponent | undefined;
         //Update FlatContent
         componentsToUpdate.forEach(newComponent => {
-
             existingComponent = this.flatContent.get(newComponent.id) || this.removedContent.get(newComponent.id);
 
             if(this.removedContent.has(newComponent.id) && existingComponent){
@@ -68,8 +67,6 @@ class ContentStore{
             } else {
                 this.flatContent.set(newComponent.id, newComponent);
             }
-
-
         });
 
         //Properties
@@ -196,14 +193,14 @@ class ContentStore{
         return undefined;
     }
 
-    getChildren(parentId: string): Array<BaseComponent>{
+    getChildren(parentId: string): Map<string, BaseComponent>{
         const componentEntries = this.flatContent.entries();
-        const children = new Array<BaseComponent>();
+        const children = new Map<string, BaseComponent>();
 
         let entry = componentEntries.next();
         while (!entry.done){
             if(entry.value[1].parent === parentId && entry.value[1].visible !== false){
-                children.push(entry.value[1]);
+                children.set(entry.value[1].id, entry.value[1]);
             }
             entry = componentEntries.next();
         }

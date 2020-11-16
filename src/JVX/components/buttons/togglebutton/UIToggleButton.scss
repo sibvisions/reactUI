@@ -1,5 +1,8 @@
 .p-togglebutton.p-button.p-highlight, .p-togglebutton.p-button.p-highlight:hover {
-    color:black
+    background-color: darken(#dadada, 5%);
+    border-color: darken(#dadada, 5%);
+    color:black;
+    text-decoration: underline;
 }
 
 .p-togglebutton.p-button.p-highlight {

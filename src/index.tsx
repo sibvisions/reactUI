@@ -4,12 +4,15 @@ import './index.scss';
 import App from './App';
 import JVXProvider from "./JVX/jvxProvider";
 import * as serviceWorker from './serviceWorker';
+import { HashRouter } from 'react-router-dom';
 
 ReactDOM.render(
   // <React.StrictMode>
+    <HashRouter>
       <JVXProvider>
           <App />
-      </JVXProvider>,
+      </JVXProvider>
+    </HashRouter>,
   // </React.StrictMode>,
   document.getElementById('root')
 );

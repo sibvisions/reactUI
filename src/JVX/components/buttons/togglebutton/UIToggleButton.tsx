@@ -25,6 +25,7 @@ type ToggleButtonEvent = {
 
 export interface IToggleButton extends IButton {
     mousePressedImage: string;
+    selected: boolean
 }
 
 const UIToggleButton: FC<IToggleButton> = (baseProps) => {
@@ -36,8 +37,8 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
 
-    const [checked, setChecked] = useState<boolean>(false);
-    const btnBgdChecked = props.background ? tinycolor(props.background).darken(5).toString() : tinycolor("#dadada").darken(10).toString();
+    const [checked, setChecked] = useState<boolean>();
+    const btnBgdChecked = props.background ? tinycolor(props.background).darken(10).toString() : tinycolor("#dadada").darken(10).toString();
     const bgdColor = useRef<any>();
     const onIconData = parseIconData(props.foreground, props.mousePressedImage)
 
@@ -45,14 +46,26 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         const btnRef = buttonRef.current;
         if (btnRef) {
             if (!bgdColor.current)
-                bgdColor.current = btnData.style.backgroundColor ? btnData.style.backgroundColor : window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
+            bgdColor.current = btnData.style.backgroundColor ? btnData.style.backgroundColor : window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
+
+            if (!props.selected) {
+                if (!props.background) {
+                    (btnRef.children[0] as HTMLElement).style.removeProperty("background-color");
+                    (btnRef.children[0] as HTMLElement).style.removeProperty("border-color");
+                }
+                else {
+                    (btnRef.children[0] as HTMLElement).style.setProperty("background-color", bgdColor.current);
+                    (btnRef.children[0] as HTMLElement).style.setProperty("border-color", bgdColor.current);
+                }
+            }
+
             styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, 
-                bgdColor.current, btnBgdChecked, 5, btnData.btnBorderPainted, checked, true);
+                bgdColor.current, btnBgdChecked, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
     },[btnBgdChecked, btnData.btnBorderPainted, 
-        btnData.iconProps, btnData.style, checked, context.server.RESOURCE_URL,
+        btnData.iconProps, btnData.style, props.selected, context.server.RESOURCE_URL,
         id, props.borderOnMouseEntered, props.className, props.background,
         props.horizontalTextPosition, props.imageTextGap, props.style, props.verticalTextPosition])
 
@@ -67,7 +80,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         const req = createPressButtonRequest();
         req.componentId = props.name;
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
-        setChecked(event.value);
+        //setChecked(event.value);
     }
 
     return (
@@ -81,7 +94,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                 onIcon={btnData.iconProps ? onIconData.icon : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex as number}
-                checked={checked}
+                checked={props.selected}
                 onChange={event => handleOnChange(event)}
             />
         </span>

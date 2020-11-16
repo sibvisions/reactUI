@@ -10,6 +10,7 @@ import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import BaseComponent from "../../BaseComponent";
 
 export interface IMenuButton extends IButton {
     popupMenu: string;
@@ -27,7 +28,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     useEffect(() => {
-        const buildMenu = (foundItems:Array<any>) => {
+        const buildMenu = (foundItems:Map<string, BaseComponent>) => {
             let tempItems:Array<any> = [];
             foundItems.forEach(item => {
                 let iconProps = parseIconData(props.foreground, item.image);

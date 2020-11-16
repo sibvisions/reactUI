@@ -1,4 +1,4 @@
-import {ReactElement, useContext, useEffect, useState} from "react";
+import {ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler} from "../../factories/UIFactory";
 export type ComponentSize = {
@@ -9,17 +9,19 @@ export type ComponentSize = {
 
 const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
 
-    let tempSizes = new Map<string, ComponentSize>();
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
+    const context = useContext(jvxContext);
 
-    const buildComponents = (): Array<ReactElement> => {
+    const buildComponents = useCallback((): Array<ReactElement> => {
+        let tempSizes = new Map<string, ComponentSize>();
+        if (preferredSizes)
+            tempSizes = preferredSizes
         const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
         const componentHasLoaded = (compId: string, height: number, width: number)=> {
-            const testComp = tempSizes.get(compId)
+            const preferredComp = tempSizes.get(compId)
             tempSizes.set(compId, {width: width, height: height});
-            console.log(testComp, compId)
-            if(tempSizes.size === components.length && (testComp?.height !== height || testComp?.width !== width)){
+            if(tempSizes.size === children.size && (preferredComp?.height !== height || preferredComp?.width !== width)){
                 setPreferredSizes(new Map(tempSizes));
             }
 
@@ -34,9 +36,19 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             }
         }
 
-        if(children.length === 0 && !preferredSizes){
+        if(children.size === 0 && !preferredSizes){
             setPreferredSizes(new Map<string, ComponentSize>());
         }
+
+        if (tempSizes.size > children.size) {
+            tempSizes.forEach((value, key) => {
+                if(!children.has(key))
+                    tempSizes.delete(key)
+            });
+            if (tempSizes.size === children.size)
+                setPreferredSizes(new Map(tempSizes))
+        }
+
         children.forEach(child => {
             child.onLoadCallback = componentHasLoaded;
             const reactChild = componentHandler(child);
@@ -45,8 +57,8 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             }
         });
         return reactChildrenArray;
-    }
-    const context = useContext(jvxContext);
+    },[context.contentStore, id, preferredSizes]);
+    
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
 
 
@@ -73,7 +85,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         return () => {
             context.contentStore.unsubscribeFromParentChange(id);
         }
-    }, [context.contentStore, id, components]);
+    }, [context.contentStore, id, components, buildComponents ]);
 
 
 

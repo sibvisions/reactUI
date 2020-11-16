@@ -36,13 +36,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     const calculateLayout = useCallback((
         preferredCompSizes: Map<string, ComponentSize>,
-        componentProps: Array<BaseComponent>,
+        componentProps: Map<string, BaseComponent>,
         layout: string,
         layoutData: string,
         id: string,
         onLayoutCallback: Function | undefined,
         style: CSSProperties) => {
-
             const anchors = new Map<string, Anchor>();
             const componentConstraints = new Map<string, Constraints>();
 
@@ -232,7 +231,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                         }
                     });
-                    //break;
                 }
                 let leftWidth = 0;
                 let rightWidth = 0;
@@ -615,8 +613,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     useEffect(() => {
         const compProps = context.contentStore.getChildren(id);
-
-        if(preferredCompSizes)
+        if(preferredCompSizes && preferredCompSizes.size === compProps.size)
             calculateLayout(
                 preferredCompSizes,
                 compProps,
@@ -627,8 +624,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 style
             )
     }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, onLoad])
-
-
 
 
     return(
