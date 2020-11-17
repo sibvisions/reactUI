@@ -30,7 +30,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
-    const [components] = useComponents(baseProps.id)
+    const [components, preferredCompSizes] = useComponents(baseProps.id)
     const {onLoadCallback, id} = baseProps;
     const closing = useRef(false);
 
@@ -39,9 +39,11 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         const sizeMap = new Map<string, CSSProperties>();
         const external = layoutValue.get(id) || {width: 10, height: 10};
         const width = external.width as number;
-        const height = external.height as number - 20;
-        components.forEach((subject:any) => {
-            sizeMap.set(subject.props.id, {width, height})
+        const height = external.height as number - 31;
+        console.log(height, width, preferredCompSizes)
+        components.forEach((component:any) => {
+            console.log(layoutValue.get(component.props.id))
+            sizeMap.set(component.props.id, {width, height})
         });
 
         if(onLoadCallback)
@@ -49,7 +51,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
         setComponentSizes(sizeMap);
 
-    },[components, layoutValue, id, onLoadCallback]);
+    },[components, layoutValue, id, onLoadCallback, preferredCompSizes]);
 
     const buildTabRequest = useCallback((tabId:number) => {
         const req = createTabRequest();
@@ -72,28 +74,30 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
         let builtTabs:Array<JSX.Element> = [];
         if (components) {
-            components.forEach((subject:any) => {
-                const subjectConstraints:string = subject.props.constraints;
+            components.forEach((component:any) => {
+                console.log(component)
+                const componentConstraints:string = component.props.constraints;
                 let constraints:string[];
                 let icon:IconProps;
-                if (subjectConstraints.includes("FontAwesome")) {
-                    let splitConstIcon = subjectConstraints.slice(0, subjectConstraints.indexOf(";FontAwesome"));
+                if (componentConstraints.includes("FontAwesome")) {
+                    let splitConstIcon = componentConstraints.slice(0, componentConstraints.indexOf(";FontAwesome"));
                     constraints = splitConstIcon.split(';');
-                    icon = parseIconData(props.foreground, subjectConstraints.slice(subjectConstraints.indexOf(';FontAwesome')));
+                    icon = parseIconData(props.foreground, componentConstraints.slice(componentConstraints.indexOf(';FontAwesome')+1));
                 }
-                else
-                    constraints = subjectConstraints.split(';');
+                else {
+                    constraints = componentConstraints.split(';');
                     icon = parseIconData(props.foreground, constraints[3])
+                }
                 let header = <span className="p-tabview-title">
-                    {!subjectConstraints.includes("FontAwesome") &&
-                    <span className="jvxTabset-tabicon" style={{backgroundImage: "url('" + context.server.RESOURCE_URL + icon.icon + "')", height: icon.size?.height, width: icon.size?.width}} />}
+                    {(!componentConstraints.includes("FontAwesome") && icon.icon) &&
+                    <span className="jvxTabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
                     {constraints[2]}
                     {constraints[1] === 'true' &&
                     <button
                         className="tabview-button pi pi-times"
-                        onClick={() => handleClose(subject.props.id)}/>}
+                        onClick={() => handleClose(component.props.id)}/>}
                 </span>
-                builtTabs.push(<TabPanel key={subject.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? subjectConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{subject}</TabPanel>)
+                builtTabs.push(<TabPanel key={component.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
             });
         }
         return builtTabs;

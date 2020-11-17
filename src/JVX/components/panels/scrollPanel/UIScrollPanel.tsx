@@ -11,6 +11,7 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     const layoutContext = useContext(LayoutContext);
     const [props] = useProperties(baseProps.id, baseProps);
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
+    const {onLoadCallback, id} = baseProps;
 
     const getStyle = () => {
         const s = {...layoutContext.get(baseProps.id) || {}};
@@ -23,13 +24,19 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
         return s
     }
 
+    const reportSize = (height:number, width:number) => {
+        if (onLoadCallback) {
+                onLoadCallback(id, height+20, width+20)
+        }
+    }
+
     return(
         <div id={props.id} style={{...layoutContext.get(baseProps.id), overflow: "auto"}}>
             <Layout
-                id={baseProps.id}
+                id={id}
                 layoutData={props.layoutData}
                 layout={props.layout}
-                onLoad={baseProps.onLoadCallback}
+                reportSize={reportSize}
                 preferredCompSizes={preferredComponentSizes}
                 components={components}
                 style={getStyle()}/>

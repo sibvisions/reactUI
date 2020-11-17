@@ -13,7 +13,7 @@ export interface ILayout{
     components: Array<ReactElement>
     preferredCompSizes: Map<string, ComponentSize> | undefined
     style: CSSProperties,
-    onLoad: Function | undefined
+    reportSize: Function
 }
 
 
@@ -43,17 +43,17 @@ const DummyLayout: FC<ILayout> = (baseProps) => {
         components,
         style,
         id,
-        onLoad
+        reportSize
     } = baseProps
 
     const layoutSize = useRef<HTMLSpanElement>(null);
 
     useLayoutEffect(() => {
-        if(layoutSize.current && onLoad){
+        if(layoutSize.current && reportSize){
             const size = layoutSize.current.getBoundingClientRect();
-            onLoad(id, size.height, size.width);
+            reportSize(size.height, size.width);
         }
-    }, [id, onLoad]);
+    }, [id, reportSize]);
 
 
     return(

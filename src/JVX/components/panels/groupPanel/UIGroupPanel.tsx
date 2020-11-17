@@ -11,6 +11,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     const layoutContext = useContext(LayoutContext);
     const [props] = useProperties(baseProps.id, baseProps);
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
+    const {onLoadCallback, id} = baseProps;
 
 
     const getStyle = () => {
@@ -22,14 +23,20 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
         return s
     }
 
+    const reportSize = (height:number, width:number) => {
+        if (onLoadCallback) {
+            onLoadCallback(id, height+28, width)
+        }
+    }
+
     return(
         <div className="jvxGroupPanel" style={{...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
             <div className="jvxGroupPanel-caption"><span>{props.text}</span></div>
             <Layout
-                id={baseProps.id}
+                id={id}
                 layoutData={props.layoutData}
                 layout={props.layout}
-                onLoad={baseProps.onLoadCallback}
+                reportSize={reportSize}
                 preferredCompSizes={preferredComponentSizes}
                 components={components}
                 style={{...getStyle()}}/>

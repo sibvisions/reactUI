@@ -31,7 +31,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         preferredCompSizes,
         style,
         id,
-        onLoad
+        reportSize
     } = baseProps
 
     const calculateLayout = useCallback((
@@ -579,17 +579,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             const size = baseProps.preferredSize.split(',');
                             const width = parseInt(size[0]);
                             const height = parseInt(size[1]);
-                            if (baseProps.id.includes("GP"))
-                                onLayoutCallback(id, height+28, width);
-                            else
-                                onLayoutCallback(id, height, width);
+                            onLayoutCallback(height, width);
                         }
-                        else {
-                            if(baseProps.id.includes("GP"))
-                            onLayoutCallback(id, preferredHeight+28, preferredWidth);
-                        else
-                            onLayoutCallback(id, preferredHeight, preferredWidth);
-                        }
+                        else 
+                            onLayoutCallback(preferredHeight, preferredWidth);
                     }
                     setCalculatedStyle( {
                         style: {
@@ -608,7 +601,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             calculateAnchors();
             calculateTargetDependentAnchors();
             buildComponents();
-        }, [baseProps.id, baseProps.preferredSize]
+        }, [baseProps.preferredSize]
     );
 
     useEffect(() => {
@@ -620,10 +613,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 layout,
                 layoutData,
                 id,
-                onLoad,
+                reportSize,
                 style
             )
-    }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, onLoad])
+    }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, reportSize])
 
 
     return(

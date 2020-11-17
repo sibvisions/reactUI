@@ -1,5 +1,3 @@
-$testVar: unset;
-
 .jvxButton {
     display: inline-flex;
     height: inherit;
@@ -48,9 +46,8 @@ $testVar: unset;
 }
 
 .p-button-label {
-    flex: none;
-}
-
-:export {
-    testVar: $testVar
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    white-space: nowrap;
 }

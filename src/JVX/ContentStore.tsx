@@ -196,7 +196,6 @@ class ContentStore{
     getChildren(parentId: string): Map<string, BaseComponent>{
         const componentEntries = this.flatContent.entries();
         const children = new Map<string, BaseComponent>();
-
         let entry = componentEntries.next();
         while (!entry.done){
             if(entry.value[1].parent === parentId && entry.value[1].visible !== false){

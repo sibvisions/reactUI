@@ -26,7 +26,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         components,
         preferredCompSizes,
         style,
-        onLoad,
+        reportSize,
         id,
         layout
     } = baseProps
@@ -146,17 +146,16 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     sizeMap.set(component.id, eastCSS);
             });
 
-            if(onLoad && !style.width && !style.height){
+            if(reportSize && !style.width && !style.height){
                 const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]);
                 const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
-                onLoad(id, preferredHeight, preferredWidth)
+                reportSize(preferredHeight, preferredWidth)
             }
         }
 
 
         return sizeMap;
-    }, [preferredCompSizes, style.width, style.height, onLoad, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
-
+    }, [preferredCompSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
 
     return(
         <LayoutContext.Provider value={componentSizes}>

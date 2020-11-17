@@ -15,7 +15,7 @@ import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEd
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import { IButton } from "../components/buttons/IButton";
-import UIToggleButton, { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
+import /*UIToggleButton,*/ { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
 import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
 import UIRadioButton, { IRadioButton } from "../components/buttons/radiobutton/UIRadioButton";
 import UICheckBox, { ICheckBox } from "../components/checkbox/UICheckBox";

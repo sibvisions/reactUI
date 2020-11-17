@@ -14,7 +14,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         preferredCompSizes,
         style,
         id,
-        onLoad
+        reportSize
     } = baseProps
 
     const context = useContext(jvxContext);
@@ -89,7 +89,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let relativeTop = alignmentTop;
             componentPropsSorted.forEach(component => {
                 const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
-
                 let top = relativeTop;
                 let left = relativeLeft;
                 let height = size.height;
@@ -142,23 +141,19 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             });
 
-
-
-            if(onLoad && !style.width && !style.height){
+            if(reportSize && !style.width && !style.height){
                 if(isRowOrientation)
-                    onLoad(id, tallest, totalWidth);
+                    reportSize(tallest, totalWidth);
                 else
-                    onLoad(id, totalHeight, widest);
-            }
-            else if (onLoad)
-                onLoad(id, 0, 0)                
+                reportSize(totalHeight, widest);
+            }                     
         }
 
 
 
 
         return sizeMap;
-    }, [layout, preferredCompSizes, onLoad, id, style, context.contentStore])
+    }, [layout, preferredCompSizes, reportSize, id, style, context.contentStore])
 
     return(
         <LayoutContext.Provider value={componentSizes}>
