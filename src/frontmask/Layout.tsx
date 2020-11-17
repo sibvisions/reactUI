@@ -3,7 +3,7 @@ import React, {
     Children,
     CSSProperties,
     FC, useContext,
-    useEffect, useLayoutEffect,
+    useEffect, useLayoutEffect, useMemo,
     useRef,
     useState
 } from "react";
@@ -53,15 +53,18 @@ const Layout: FC = (props) => {
         }
     }, [context.contentStore])
 
-    useLayoutEffect(() => {
-        if (props.children) {
-            //@ts-ignore
-            setScreenTitle(props.children.props["screen.title"])
-        }
-        else {
-            setScreenTitle(context.server.APP_NAME)
-        }
-    }, [props.children, context.server.APP_NAME])
+    const screenTitleMemo = useMemo(() => {
+        let screenTitle = context.server.APP_NAME;
+        const a = props.children as {props: {"screen.title": string}}
+        if(a && a.props && a.props["screen.title"])
+            screenTitle = a.props["screen.title"];
+        if(!screenTitle)
+            screenTitle = window.location.hash.split("/")[1];
+
+
+        return screenTitle
+
+    }, [props.children])
 
     const doResize = () => {
         if(sizeRef.current){
@@ -123,7 +126,7 @@ const Layout: FC = (props) => {
         <div className={"layout " + context.theme}>
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
-                <div className="jvxHeader">{screenTitle}</div>
+                <div className="jvxHeader">{screenTitleMemo}</div>
                 <div ref={sizeRef} className={"main"}>
                     {props.children}
                 </div>

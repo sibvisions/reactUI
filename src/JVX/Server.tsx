@@ -2,7 +2,7 @@ import ContentStore from "./ContentStore"
 import * as queryString from "querystring";
 import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
-import MenuResponse from "./response/MenuResponse";
+import MenuResponse, {serverMenuButtons} from "./response/MenuResponse";
 import GenericResponse from "./response/GenericResponse";
 import CloseScreenResponse from "./response/CloseScreenResponse";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
@@ -12,7 +12,7 @@ import FetchResponse from "./response/FetchResponse";
 import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import ShowDocumentResponse from "./response/ShowDocumentResponse"
-import {createFetchRequest, createStartupRequest} from "./factories/RequestFactory";
+import {createFetchRequest, createOpenScreenRequest, createStartupRequest} from "./factories/RequestFactory";
 import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
@@ -123,7 +123,15 @@ class Server{
     }
 
     menu(menuData: MenuResponse){
-        this.contentStore.buildMenuBar(menuData);
+        menuData.entries.forEach(menuItem => {
+            menuItem.action = () => {
+                const openScreenReq = createOpenScreenRequest();
+                openScreenReq.componentId = menuItem.componentId;
+                this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+            }
+            this.contentStore.addMenuItem(menuItem);
+        });
+        this.contentStore.emitMenuUpdate();
     }
 
     //Dal

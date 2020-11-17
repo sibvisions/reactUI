@@ -1,17 +1,28 @@
-import MenuResponse from "./response/MenuResponse";
+import MenuResponse, {serverMenuButtons} from "./response/MenuResponse";
 import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
 import { parseIconData } from "./components/compprops/ComponentProperties";
+import {MapOperator} from "rxjs/internal/operators/map";
+import {FC, ReactElement} from "react";
+import {type} from "os";
+import {componentHandler} from "./factories/UIFactory";
+
+type MenuItem = {
+    componentId: string,
+    image: string,
+    text: string
+}
 
 class ContentStore{
 
     menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1);
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
-    invisibleContent = new Map<string, BaseComponent>();
+    customContent = new Map<string, Function>();
+    menuItems = new Map<string, Array<MenuItem>>();
 
     currentUser: UserData = new UserData();
 
@@ -21,7 +32,9 @@ class ContentStore{
     rowSelectionSubscriber = new Map<string, Array<Function>>();
     rowSelectionIndexSubscriber = new Map<string, Array<Function>>();
     dataChangeSubscriber = new Map<string, Array<{ displayRecords: number, fn: Function }>>();
-    appNameSubscriber = new Map<string, Function>()
+    appNameSubscriber = new Map<string, Function>();
+
+    MenuSubscriber = new Array<Function>();
 
     //DataProvider Maps
     dataProviderData = new Map<string, Array<any>>();
@@ -98,7 +111,7 @@ class ContentStore{
             });
         }
 
-        const window = this.getWindow(windowName);
+        const window = this.getWindowData(windowName);
         if(window){
             deleteChildren(window.id);
             this.flatContent.delete(window.id);
@@ -183,9 +196,16 @@ class ContentStore{
 
 
     //Getters
-    getWindow(windowName: string): BaseComponent | undefined{
-        const componentEntries = this.flatContent.entries();
+    getWindow(windowName: string): FC{
+        const windowData = this.getWindowData(windowName);
+        if(windowData)
+            return componentHandler(windowData);
+        else
+            return this.customContent.get(windowName)?.apply(undefined, []);
+    }
 
+    getWindowData(windowName: string): BaseComponent | undefined{
+        let componentEntries = this.flatContent.entries();
         let entry = componentEntries.next();
         while(!entry.done){
             if(entry.value[1].name === windowName){
@@ -212,34 +232,6 @@ class ContentStore{
 
 
     //Menu
-    buildMenuBar(menuResponse: MenuResponse){
-        let groupsString= Array<string>();
-        let groups = Array<MenuItemCustom>();
-        //Make out distinct groups
-        menuResponse.entries.forEach(parent => {
-            if(groupsString.indexOf(parent.group) === -1) {
-                groupsString.push(parent.group)
-                groups.push({label: parent.group, items: Array<MenuItemCustom>()})
-            }
-        });
-        //Add SubMenus to parents
-        groups.forEach(parent => {
-            menuResponse.entries.forEach(subMenu => {
-                const iconData = parseIconData(undefined, subMenu.image)
-                if(parent.label===subMenu.group) {
-                    const item:MenuItemCustom = {
-                        label: subMenu.text,
-                        componentId: subMenu.componentId,
-                        icon: iconData.icon
-                    }
-
-                    // @ts-ignore
-                    parent.items.push(item);
-                }
-            });
-        });
-        this.menuSubject.next(groups);
-    }
 
     notifyAppNameChanged(appName:string) {
         this.appNameSubscriber.forEach(subscriber => {
@@ -290,6 +282,14 @@ class ContentStore{
         this.appNameSubscriber.set(id, fn);
     }
 
+    subscribeToMenuChange(fn: Function){
+        this.MenuSubscriber.push(fn)
+    }
+
+
+    unsubscribeFromMenuChange(fn: Function){
+        this.MenuSubscriber.splice(this.MenuSubscriber.findIndex(value => value === fn), 1);
+    }
 
     unsubscribeFromDataChange(dataProvider: string, fn: Function){
         const subscriber = this.dataChangeSubscriber.get(dataProvider)
@@ -339,6 +339,26 @@ class ContentStore{
             indexSubscriber.forEach(sub => {
                 sub.apply(undefined, [selectedIndex]);
             });
+    }
+
+    emitMenuUpdate(){
+        this.MenuSubscriber.forEach(subFunction => {
+            subFunction.apply(undefined, [this.menuItems]);
+        });
+    }
+
+    //Custom Screens
+
+    addMenuItem(menuItem: serverMenuButtons){
+        const menuGroup = this.menuItems.get(menuItem.group);
+        if(menuGroup)
+            menuGroup.push(menuItem);
+        else
+            this.menuItems.set(menuItem.group, [menuItem]);
+    }
+
+    addCustomScreen(title: string, screenFactory: () => ReactElement){
+        this.customContent.set(title, screenFactory);
     }
 }
 export default ContentStore

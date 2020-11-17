@@ -14,13 +14,11 @@ const Home: FC = () => {
         if (componentId === "settings") {
             return <Settings />
         }
-        const window = context.contentStore.getWindow(componentId);
-        if(window){
-            const component = componentHandler(window);
-            return component;
-        }
-        return undefined;
+        return context.contentStore.getWindow(componentId);
     }
+
+
+    console.log(buildWindow())
 
     return(
         <Layout>

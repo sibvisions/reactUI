@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useLayoutEffect, useRef} from 'react';
+import React, {createContext, FC, useContext, useEffect, useLayoutEffect, useRef} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -16,6 +16,8 @@ import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
 import {HashRouter, Route, Switch} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
+import {serverMenuButtons} from "./JVX/response/MenuResponse";
+import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 
 
 
@@ -31,6 +33,23 @@ export const toastContext = createContext<Function>(() => {})
 const App: FC = () => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
+
+
+
+    useEffect(() => {
+        const a: serverMenuButtons = {
+            group: "None",
+            componentId: "",
+            image: "someIcon",
+            text: "Click Me",
+            action: () => {
+                window.location.hash = "/home/Custom_1";
+            }
+        }
+
+        context.contentStore.addCustomScreen("Custom_1", () => <CustomHelloScreen/>)
+        context.contentStore.addMenuItem(a);
+    }, [context.contentStore])
 
     useLayoutEffect(() => {
         const queryParams: queryType = queryString.parse(window.location.search);

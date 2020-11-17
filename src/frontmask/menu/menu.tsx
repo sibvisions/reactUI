@@ -3,7 +3,7 @@ import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react
 
 //Custom
 import './menu.scss';
-import {createLogoutRequest, createOpenScreenRequest} from "../../JVX/factories/RequestFactory";
+import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
@@ -13,20 +13,16 @@ import logo from '../../assests/sibvisionslogo.png'
 import {Menubar} from "primereact/menubar";
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
-import {Sidebar} from 'primereact/sidebar';
-import {TieredMenu} from 'primereact/tieredmenu';
 import {Button} from "primereact/button";
 import UserData from "../../JVX/model/UserData";
+import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
-    const [sbVisible, setSbVisible] = useState<boolean>(false);
     const slideRef = useRef<SlideMenu>(null)
 
     const profileMenu = useMemo(() => {
-
-        // Profile Menu
         const sendLogout = () => {
             const logoutRequest = createLogoutRequest();
             localStorage.removeItem("authKey")
@@ -87,40 +83,35 @@ const Menu: FC = () => {
     }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server])
 
     useEffect(()=> {
-        const menuSubscription= context.contentStore.menuSubject.subscribe((menuItems: Array<MenuItemCustom>) => {
-            menuItems.forEach(parent => {
-                parent.items?.forEach(setAction)
-            });
-            changeMenuItems(menuItems);
-        })
-        return (() => {
-            menuSubscription.unsubscribe();
-        });
-    });
-
-    const setAction = (item: MenuItemCustom | MenuItemCustom[]) => {
-        if(item instanceof Array){
-
-        } else {
-            item.command = (event) => {
-                let btnReq = createOpenScreenRequest();
-                if(item.componentId){
-                    btnReq.componentId = item.componentId;
-                    context.server.sendRequest(btnReq, REQUEST_ENDPOINTS.OPEN_SCREEN)
+        const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
+            const primeMenu = new Array<MenuItem>();
+            menuGroup.forEach((value, key) => {
+                const primeMenuItem: MenuItem = {
+                    label: key,
+                    items: value.map(menuItems => {
+                       const subMenuItem: MenuItem = {
+                           command: e => menuItems.action(),
+                           label: menuItems.text,
+                       }
+                       return subMenuItem
+                    })
                 }
-            }
+                primeMenu.push(primeMenuItem);
+            });
+            changeMenuItems(primeMenu)
         }
-    }
+        context.contentStore.subscribeToMenuChange(receiveNewMenuItems);
+        return () => {
+            context.contentStore.unsubscribeFromMenuChange(receiveNewMenuItems)
+        }
+    }, [context.contentStore]);
+
+
 
     return(
-        <>
-            <div className="topMenuBar p-grid">
-                <Menubar start={() => <img src={logo} alt="logo"/>} model={menuItems} className="p-col" end={() => profileMenu}/>
-            </div>
-            <Sidebar visible={sbVisible} position="left" onHide={() => setSbVisible(false)}>
-                <TieredMenu className="sidebar-menu" model={menuItems}/>
-            </Sidebar>
-        </>
+        <div className="topMenuBar p-grid">
+            <Menubar start={() => <img src={logo} alt="logo"/>} model={menuItems} className="p-col" end={() => profileMenu}/>
+        </div>
     )
 }
 export default Menu;

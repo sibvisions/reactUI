@@ -29,7 +29,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
                 id={baseProps.id}
                 layoutData={props.layoutData}
                 layout={props.layout}
-                onLoad={baseProps.onLoadCallback}
+                onLoad={props.onLoadCallback}
                 preferredCompSizes={preferredComponentSizes}
                 components={components}
                 style={{...getStyle()}}/>

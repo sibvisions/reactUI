@@ -11,6 +11,10 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
 
     let tempSizes = new Map<string, ComponentSize>();
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
+    const context = useContext(jvxContext);
+
+
+
 
     const buildComponents = (): Array<ReactElement> => {
         const children = context.contentStore.getChildren(id);
@@ -18,7 +22,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         const componentHasLoaded = (compId: string, height: number, width: number)=> {
             const testComp = tempSizes.get(compId)
             tempSizes.set(compId, {width: width, height: height});
-            console.log(testComp, compId)
             if(tempSizes.size === components.length && (testComp?.height !== height || testComp?.width !== width)){
                 setPreferredSizes(new Map(tempSizes));
             }
@@ -46,8 +49,11 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         });
         return reactChildrenArray;
     }
-    const context = useContext(jvxContext);
+
+
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
+
+
 
 
 
