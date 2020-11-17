@@ -26,6 +26,7 @@ import UIPassword from "../components/text/UIPassword";
 import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
 import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
+import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -47,8 +48,12 @@ export const createButton: FC<IButton> = (props) => {
     return <UIButton {...props} key={props.id}/>
 }
 
+// export const createToggleButton: FC<IToggleButton> = (props) => {
+//     return <UIToggleButton {...props} key={props.id}/>
+// }
+
 export const createToggleButton: FC<IToggleButton> = (props) => {
-    return <UIToggleButton {...props} key={props.id}/>
+    return <UIInputSwitch {...props} key={props.id}/>
 }
 
 export const createPopupMenuButton: FC<IMenuButton> = (props) => {

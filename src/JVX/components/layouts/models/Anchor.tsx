@@ -1,7 +1,6 @@
 export enum ORIENTATION {
     HORIZONTAL= 0,
     VERTICAL= 1
-
 }
 
 class Anchor{

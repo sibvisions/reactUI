@@ -10,6 +10,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.54",
+    "@types/radium": "^0.24.3",
     "@types/react": "^16.9.46",
     "@types/react-dom": "^16.9.8",
     "@types/react-router": "^5.1.8",

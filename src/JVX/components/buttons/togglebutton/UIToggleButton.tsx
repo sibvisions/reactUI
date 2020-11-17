@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import './UIToggleButton.scss';
 import tinycolor from 'tinycolor2';
 import {ToggleButton} from 'primereact/togglebutton';
@@ -23,6 +23,11 @@ type ToggleButtonEvent = {
     }
 }
 
+type ToggleButtonGradient = {
+    upperGradient: string,
+    lowerGradient: string
+}
+
 export interface IToggleButton extends IButton {
     mousePressedImage: string;
     selected: boolean
@@ -36,9 +41,9 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     const [props] = useProperties<IToggleButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
-
-    const [checked, setChecked] = useState<boolean>();
-    const btnBgdChecked = props.background ? tinycolor(props.background).darken(10).toString() : tinycolor("#dadada").darken(10).toString();
+    const btnBgdHover = props.background ? tinycolor(props.background).darken(5).toString() : tinycolor("#dadada").darken(5).toString();
+    const btnBgdChecked:ToggleButtonGradient = {upperGradient: props.background ? tinycolor(props.background).darken(25).toRgbString() : tinycolor("#dadada").darken(25).toRgbString(),
+                                                lowerGradient: props.background ? tinycolor(props.background).darken(4).toRgbString() : tinycolor("#dadada").darken(4).toRgbString()};
     const bgdColor = useRef<any>();
     const onIconData = parseIconData(props.foreground, props.mousePressedImage)
 
@@ -48,23 +53,23 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             if (!bgdColor.current)
             bgdColor.current = btnData.style.backgroundColor ? btnData.style.backgroundColor : window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
 
-            if (!props.selected) {
-                if (!props.background) {
-                    (btnRef.children[0] as HTMLElement).style.removeProperty("background-color");
-                    (btnRef.children[0] as HTMLElement).style.removeProperty("border-color");
-                }
-                else {
-                    (btnRef.children[0] as HTMLElement).style.setProperty("background-color", bgdColor.current);
-                    (btnRef.children[0] as HTMLElement).style.setProperty("border-color", bgdColor.current);
-                }
-            }
+            // if (!props.selected) {
+            //     if (!props.background) {
+            //         (btnRef.children[0] as HTMLElement).style.removeProperty("background-color");
+            //         (btnRef.children[0] as HTMLElement).style.removeProperty("border-color");
+            //     }
+            //     else {
+            //         (btnRef.children[0] as HTMLElement).style.setProperty("background-color", bgdColor.current);
+            //         (btnRef.children[0] as HTMLElement).style.setProperty("border-color", bgdColor.current);
+            //     }
+            // }
 
             styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, 
-                bgdColor.current, btnBgdChecked, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
+                bgdColor.current, btnBgdHover, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
-    },[btnBgdChecked, btnData.btnBorderPainted, 
+    },[btnBgdHover, btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, props.selected, context.server.RESOURCE_URL,
         id, props.borderOnMouseEntered, props.className, props.background,
         props.horizontalTextPosition, props.imageTextGap, props.style, props.verticalTextPosition])
@@ -83,11 +88,13 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         //setChecked(event.value);
     }
 
+    console.log(props.selected, id, btnData.style, btnBgdChecked)
+
     return (
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <ToggleButton
                 className={"jvxButton"  + (props.borderPainted === false ? " borderNotPainted" : "")}
-                style={{...btnData.style, backgroundColor: bgdColor.current, borderColor: bgdColor.current}}
+                style={{...btnData.style, background: props.selected ? "linear-gradient(to bottom, " + btnBgdChecked.upperGradient + " 2%, " + btnBgdChecked.lowerGradient + "98%)" : bgdColor.current, borderColor: bgdColor.current}}
                 offLabel={props.text}
                 onLabel={props.text}
                 offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}

@@ -9,6 +9,7 @@ import {jvxContext} from "../../../jvxProvider";
 export interface UISplitPanelProps extends BaseComponent{
     dividerAlignment: number,
     dividerPosition: number,
+    orientation: 0|1
 }
 
 const UISplitPanel: FC<UISplitPanelProps> = (props) => {
@@ -67,6 +68,8 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
                 onResize={handleResize}
                 leftComponent={firstChild}
                 rightComponent={secondChild}
+                dividerPosition={props.dividerPosition}
+                orientation={props.orientation}
             />
         </LayoutContext.Provider>
     )

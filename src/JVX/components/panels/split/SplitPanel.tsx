@@ -7,7 +7,14 @@ type onResizeEvent = (firstSize: splitSize, secondSize: splitSize) => void;
 
 export type splitSize = { width: number, height: number }
 
+export enum ORIENTATIONSPLIT {
+    HORIZONTAL= 1,
+    VERTICAL= 0
+}
+
 type SplitPanelProps = {
+    dividerPosition: number
+    orientation: 0|1
     forwardedRef?: any
     leftComponent?: ReactNode
     rightComponent?: ReactNode
@@ -21,28 +28,10 @@ type SplitPanelProps = {
 
 const SplitPanel: FC<SplitPanelProps> = (props) => {
 
-    const [firstWidth, setFirstWidth] = useState<number | undefined>();
+    const [firstPosition, setFirstPosition] = useState<number | undefined>(props.dividerPosition !== -1 ? props.dividerPosition : undefined);
     const firstRef = useRef<HTMLDivElement>(null);
     const secondRef = useRef<HTMLDivElement>(null);
-    let absoluteWidthPosition = 0;
-
-    const addClassWhileDragging = () => {
-        if (firstRef.current && secondRef.current) {
-            const nodeListFirst = firstRef.current.querySelectorAll(".north, .west, .center, .east, .south");
-            const nodeListSecond = secondRef.current.querySelectorAll(".north, .west, .center, .east, .south")
-            nodeListFirst.forEach(node => node.classList.add('hideOnScroll'));
-            nodeListSecond.forEach(node => node.classList.add('hideOnScroll'));
-        }
-    }
-
-    const removeClassAfterDragging = () => {
-        if (firstRef.current && secondRef.current) {
-            const nodeListFirst = firstRef.current.querySelectorAll(".hideOnScroll");
-            const nodeListSecond = secondRef.current.querySelectorAll(".hideOnScroll");
-            nodeListFirst.forEach(node => node.classList.remove('hideOnScroll'));
-            nodeListSecond.forEach(node => node.classList.remove('hideOnScroll'))
-        }
-    }
+    let absolutePosition = 0;
 
     const callOnResize = () => {
         if (props.onResize && secondRef.current && firstRef.current) {
@@ -56,24 +45,29 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     const dragging = (event: MouseEvent) => {
-        const newSeparatorPosition = event.clientX - 20 - absoluteWidthPosition;
+        let newSeparatorPosition
+        if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
+            newSeparatorPosition = event.clientX - 20 - absolutePosition;
+        else
+            newSeparatorPosition = event.clientY - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
             Throttle(callOnResize, 16.5)()
-            setFirstWidth(newSeparatorPosition);
+            setFirstPosition(newSeparatorPosition);
         }
     }
 
     const stopDrag = () => {
-        removeClassAfterDragging();
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("mousemove", dragging);
     }
 
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
-        addClassWhileDragging();
         if(props.forwardedRef.current){
-            const size = props.forwardedRef.current.getBoundingClientRect();
-            absoluteWidthPosition = size.x;
+            const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
+                absolutePosition = size.x;
+            else
+                absolutePosition = size.y;
         }
         document.addEventListener("mouseup", stopDrag);
         document.addEventListener("mousemove", dragging);
@@ -87,17 +81,20 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     }
 
     const touchDragging = (event: TouchEvent) => {
-         const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absoluteWidthPosition;
+         const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
             Throttle(callOnResize, 16.5)()
-            setFirstWidth(newSeparatorPosition);
+            setFirstPosition(newSeparatorPosition);
         }
     }
 
     const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
         if(props.forwardedRef.current){
-            const size = props.forwardedRef.current.getBoundingClientRect();
-            absoluteWidthPosition = size.x;
+            const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
+                absolutePosition = size.x;
+            else
+                absolutePosition = size.y;
         }
         document.addEventListener("touchend", stopTouchDrag);
         document.addEventListener("touchmove", touchDragging);
@@ -110,11 +107,11 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
 
     return(
-        <div className={"splitPanel"} ref={props.forwardedRef} style={props.style}>
-            <div ref={firstRef} className={"first"} style={{width: firstWidth}}>
+        <div className={"splitPanel " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSplit" : "vSplit")} ref={props.forwardedRef} style={props.style}>
+            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "firstH" : "firstV"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>
-            <div className={"separator"} style={{backgroundImage:"url("+ SplitImage +")"}}  onMouseDown={dragStart} onTouchStart={dragTouchStart}>
+            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSeperator" : "vSeperator")} style={{backgroundImage:"url("+ SplitImage +")"}}  onMouseDown={dragStart} onTouchStart={dragTouchStart}>
             </div>
             <div ref={secondRef} className={"second"}>
                 {props.rightComponent}
