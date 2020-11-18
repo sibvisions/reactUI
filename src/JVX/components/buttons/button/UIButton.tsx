@@ -38,9 +38,9 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
-        if (btnRef) {
+        if (btnRef)
             sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
-        }
+
     }, [onLoadCallback, id, props.preferredSize]);
 
     const onButtonPress = () => {

@@ -25,9 +25,8 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     }
 
     const reportSize = (height:number, width:number) => {
-        if (onLoadCallback) {
-                onLoadCallback(id, height+20, width+20)
-        }
+        if (onLoadCallback)
+            onLoadCallback(id, height+20, width+20)
     }
 
     return(

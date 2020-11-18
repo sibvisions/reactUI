@@ -52,7 +52,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 alt="icon"
                 src={context.server.RESOURCE_URL + iconProps.icon}
                 style={imageStyle.img}
-                onLoad={iconLoaded}/>
+                onLoad={iconLoaded}
+                onError={iconLoaded}/>
             }
                 
         }

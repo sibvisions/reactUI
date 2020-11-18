@@ -34,24 +34,30 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     const closing = useRef(false);
 
+    useLayoutEffect(() => {
+            const sizeMap = new Map<string, CSSProperties>();
+            const external = layoutValue.get(id) || {};
+            let width:number|undefined;
+            let height:number|undefined;
+            if (external.width && external.height) {
+                width = external.width as number;
+                height = external.height as number - 31;
+            }
+            components.forEach((component: any) => {
+                sizeMap.set(component.props.id, { width, height })
+            });
+            setComponentSizes(sizeMap);
+    }, [components, layoutValue, id]);
 
     useLayoutEffect(() => {
-        const sizeMap = new Map<string, CSSProperties>();
-        const external = layoutValue.get(id) || {width: 10, height: 10};
-        const width = external.width as number;
-        const height = external.height as number - 31;
-        console.log(height, width, preferredCompSizes)
-        components.forEach((component:any) => {
-            console.log(layoutValue.get(component.props.id))
-            sizeMap.set(component.props.id, {width, height})
-        });
-
-        if(onLoadCallback)
-            onLoadCallback(id, 0, 0)
-
-        setComponentSizes(sizeMap);
-
-    },[components, layoutValue, id, onLoadCallback, preferredCompSizes]);
+        if (onLoadCallback && preferredCompSizes) {
+            const selectedPanel = preferredCompSizes.get(components[props.selectedIndex].props.id);
+            if (selectedPanel) {
+                onLoadCallback(id, selectedPanel.height, selectedPanel.width)
+            }
+                
+        }
+    }, [id, preferredCompSizes, onLoadCallback, components, props.selectedIndex])
 
     const buildTabRequest = useCallback((tabId:number) => {
         const req = createTabRequest();
@@ -75,7 +81,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         let builtTabs:Array<JSX.Element> = [];
         if (components) {
             components.forEach((component:any) => {
-                console.log(component)
                 const componentConstraints:string = component.props.constraints;
                 let constraints:string[];
                 let icon:IconProps;

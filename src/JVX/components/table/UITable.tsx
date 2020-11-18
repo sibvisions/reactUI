@@ -121,6 +121,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const rows = 40;
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
     const firstRowIndex = useRef(0);
+    const estTableWidth = useRef(0);
 
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows*2
@@ -130,6 +131,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     //Report Size
     useEffect(() => {
         if(wrapRef.current){
+            console.log(estTableWidth.current, id)
             if(onLoadCallback) {
                 if (props.preferredSize) {
                     const size = props.preferredSize.split(',');
@@ -138,7 +140,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     onLoadCallback(id, height, width);
                 }
                 else
-                    onLoadCallback(id, 400, 200);
+                    onLoadCallback(id, 30*10, estTableWidth.current);
             }
                 
         }
@@ -148,19 +150,40 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (tableRef.current) {
             //@ts-ignore
             if (tableRef.current.table) {
+                //estTableWidth.current = 0
                 //@ts-ignore
-                tableRef.current.table.style.setProperty('table-layout', 'auto');
+                const theader = tableRef.current.table.querySelectorAll('th');
                 //@ts-ignore
-                const theader = tableRef.current.table.querySelectorAll('th')
-                let tempSizes = new Map<any, string>()
-                theader.forEach((node: any) => {
-                    tempSizes.set(node, window.getComputedStyle(node).width);
-                });
-                //@ts-ignore
-                tableRef.current.table.style.setProperty('table-layout', 'fixed');
-                theader.forEach((node: any) => {
-                    node.style.setProperty('width', tempSizes.get(node))
-                })
+                const trows = tableRef.current.table.querySelectorAll('tbody > tr');
+                let cellDataWidthList:Array<number> = [];
+                for (let i = 0; i < theader.length; i++) {
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2
+                }
+                for (let i = 0; i < (trows.length < 10 ? trows.length : 10); i++) {
+                    const cellDatas: NodeListOf<HTMLElement> = trows[i].querySelectorAll("td > .cellData");
+                    for (let j = 0; j < cellDatas.length; j++) {
+                        cellDatas[j].style.setProperty('display', 'inline-block');
+                        let tempWidth:number;
+                        if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[i].parentElement?.classList.contains('DateCellEditor'))
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 38;
+                        else
+                            tempWidth = cellDatas[j].getBoundingClientRect().width;
+                        //console.log(tempWidth, cellDataWidthList[j])
+                        if (tempWidth > cellDataWidthList[j] || cellDataWidthList[j] === undefined)
+                            cellDataWidthList[j] = tempWidth;
+                    }     
+                 }
+                 for (let i = 0; i < theader.length; i++) {
+                     //console.log(theader[i].getBoundingClientRect().width, cellDataWidthList[i], theader[i], theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2)
+                     const headerTextWidth = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2;
+                     if (cellDataWidthList[i] < headerTextWidth)
+                        theader[i].style.setProperty('width', headerTextWidth+'px')
+                    else
+                        theader[i].style.setProperty('width', cellDataWidthList[i]+'px');
+                 }
+                 cellDataWidthList.forEach(cellDataWidth => {
+                    estTableWidth.current += cellDataWidth
+                 })
             }
         }
     })

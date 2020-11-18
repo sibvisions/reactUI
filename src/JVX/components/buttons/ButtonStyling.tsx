@@ -170,7 +170,6 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
         }
     }
     else if (borderOnMouseEntered) {
-        console.log('yo')
         obj.onmouseover = () => {
             obj.style.setProperty('background-color', color === 'white' ? color : "#007ad9");
             obj.style.setProperty('border-color', color === 'white' ? color : "#007ad9");

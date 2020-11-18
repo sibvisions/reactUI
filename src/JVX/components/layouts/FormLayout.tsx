@@ -572,7 +572,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         });
                     }
                 });
-
+                //console.log(sizeMap, baseProps.id)
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback){
                         if (baseProps.preferredSize) {
@@ -581,8 +581,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             const height = parseInt(size[1]);
                             onLayoutCallback(height, width);
                         }
-                        else 
+                        else {
                             onLayoutCallback(preferredHeight, preferredWidth);
+                        }
+                            
                     }
                     setCalculatedStyle( {
                         style: {
