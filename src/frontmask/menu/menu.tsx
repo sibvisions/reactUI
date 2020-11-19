@@ -16,6 +16,7 @@ import {MenuItem} from "primereact/api";
 import {Button} from "primereact/button";
 import UserData from "../../JVX/model/UserData";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
+import { parseIconData } from "src/JVX/components/compprops/ComponentProperties";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);
@@ -90,16 +91,18 @@ const Menu: FC = () => {
                 const primeMenuItem: MenuItem = {
                     label: key,
                     items: value.map(menuItems => {
-                       const subMenuItem: MenuItem = {
+                       const iconData = parseIconData(undefined, menuItems.image)
+                       const subMenuItem: MenuItemCustom = {
                            command: e => menuItems.action(),
                            label: menuItems.text,
+                           componentId: menuItems.componentId,
+                           icon: iconData.icon
                        }
                        return subMenuItem
                     })
                 }
                 primeMenu.push(primeMenuItem);
             });
-            console.log(primeMenu)
             changeMenuItems(primeMenu)
         }
         receiveNewMenuItems(context.contentStore.mergedMenuItems);

@@ -24,7 +24,7 @@ const UIPanel: FC<Panel> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     const getStyle = () => {
-        const s = layoutContext.get(baseProps.id) || {}
+        const s = {...layoutContext.get(baseProps.id) || {}}
         if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
             s.top = undefined;
             s.left = undefined;
@@ -38,6 +38,8 @@ const UIPanel: FC<Panel> = (baseProps) => {
             sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
+
+    console.log(layoutContext.get(baseProps.id), id)
 
     return(
         <div id={props.id} style={{...layoutContext.get(baseProps.id), backgroundColor: props.background}}>

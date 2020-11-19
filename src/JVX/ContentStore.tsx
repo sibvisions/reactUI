@@ -351,20 +351,16 @@ class ContentStore{
 
     addMenuItem(menuItem: serverMenuButtons, fromServer:boolean){
         const menuGroup = fromServer ? this.serverMenuItems.get(menuItem.group) : this.customMenuItems.get(menuItem.group);
-        console.log(menuItem, fromServer, menuGroup)
         if(menuGroup)
             menuGroup.push(menuItem);
         else {
             fromServer ? this.serverMenuItems.set(menuItem.group, [menuItem]) : this.customMenuItems.set(menuItem.group, [menuItem]);
-            console.log(this.serverMenuItems, this.customMenuItems)
         }
         this.mergeMenuButtons();
     }
 
     mergeMenuButtons() {
-        console.log(this.serverMenuItems, this.customMenuItems)
         this.mergedMenuItems = new Map([...this.serverMenuItems, ...this.customMenuItems])
-        console.log(this.mergedMenuItems)
     }
 
     addCustomScreen(title: string, screenFactory: () => ReactElement){
