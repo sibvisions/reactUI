@@ -131,7 +131,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     //Report Size
     useEffect(() => {
         if(wrapRef.current){
-            console.log(estTableWidth.current, id)
             if(onLoadCallback) {
                 if (props.preferredSize) {
                     const size = props.preferredSize.split(',');
@@ -139,47 +138,46 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const height = parseInt(size[1]);
                     onLoadCallback(id, height, width);
                 }
-                else
-                    onLoadCallback(id, 30*10, estTableWidth.current);
+                else {
+                    onLoadCallback(id, providerData.length < 10 ? providerData.length*37+40 : 410, estTableWidth.current);
+                }
+                    
             }
                 
         }
-    }, [id, onLoadCallback, props.preferredSize]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length]);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore
             if (tableRef.current.table) {
-                //estTableWidth.current = 0
                 //@ts-ignore
                 const theader = tableRef.current.table.querySelectorAll('th');
                 //@ts-ignore
                 const trows = tableRef.current.table.querySelectorAll('tbody > tr');
                 let cellDataWidthList:Array<number> = [];
                 for (let i = 0; i < theader.length; i++) {
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+29
                 }
                 for (let i = 0; i < (trows.length < 10 ? trows.length : 10); i++) {
                     const cellDatas: NodeListOf<HTMLElement> = trows[i].querySelectorAll("td > .cellData");
                     for (let j = 0; j < cellDatas.length; j++) {
+                        console.log(cellDatas[j], cellDatas.length, trows.length)
                         cellDatas[j].style.setProperty('display', 'inline-block');
                         let tempWidth:number;
-                        if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[i].parentElement?.classList.contains('DateCellEditor'))
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 38;
+                        if (cellDatas[j] !== undefined) {
+                            if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
                         else
-                            tempWidth = cellDatas[j].getBoundingClientRect().width;
-                        //console.log(tempWidth, cellDataWidthList[j])
-                        if (tempWidth > cellDataWidthList[j] || cellDataWidthList[j] === undefined)
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
+                        if (tempWidth > cellDataWidthList[j])
                             cellDataWidthList[j] = tempWidth;
+                        }
+                        cellDatas[j].style.removeProperty('display')
                     }     
                  }
                  for (let i = 0; i < theader.length; i++) {
-                     //console.log(theader[i].getBoundingClientRect().width, cellDataWidthList[i], theader[i], theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2)
-                     const headerTextWidth = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+13.712*2;
-                     if (cellDataWidthList[i] < headerTextWidth)
-                        theader[i].style.setProperty('width', headerTextWidth+'px')
-                    else
-                        theader[i].style.setProperty('width', cellDataWidthList[i]+'px');
+                    theader[i].style.setProperty('width', cellDataWidthList[i]+'px');
                  }
                  cellDataWidthList.forEach(cellDataWidth => {
                     estTableWidth.current += cellDataWidth

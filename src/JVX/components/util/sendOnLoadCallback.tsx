@@ -1,10 +1,9 @@
-export function sendOnLoadCallback(id:string, preferredSize:string|undefined, ref:any, onLoadCallback:Function|undefined) {
+import Size from "./Size";
+
+export function sendOnLoadCallback(id:string, preferredSize:Size|undefined, maxSize:Size|undefined, minSize:Size|undefined, ref:any, onLoadCallback:Function|undefined) {
     if (onLoadCallback) {
         if (preferredSize) {
-            const prefSize = preferredSize.split(',');
-            const width = parseInt(prefSize[0]);
-            const height = parseInt(prefSize[1]);
-            onLoadCallback(id, height, width);
+            onLoadCallback(id, preferredSize.height, preferredSize.width);
         }
         else {
             const size: DOMRect = ref.getBoundingClientRect();

@@ -6,6 +6,7 @@ import useProperties from "../zhooks/useProperties";
 import {getFont} from "../compprops/ComponentProperties";
 import {checkAlignments} from "../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { parseJVxSize } from "../util/parseJVxSize";
 
 const UILabel: FC<BaseComponent> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
@@ -18,7 +19,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback){
-            sendOnLoadCallback(id, props.preferredSize, labelRef.current, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), labelRef.current, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize]);
 

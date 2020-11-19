@@ -11,6 +11,7 @@ import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface IMenuButton extends IButton {
     popupMenu: string;
@@ -68,7 +69,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize]);
 

@@ -7,6 +7,8 @@ import {parseIconData} from "../compprops/ComponentProperties";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import useImageStyle from "../zhooks/useImageStyle";
+import { parseJVxSize } from "../util/parseJVxSize";
+import Size from "../util/Size"
 
 const UIIcon: FC<BaseComponent> = (baseProps) => {
 
@@ -19,26 +21,25 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
 
     const iconLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        let height:number, width:number;
+        const prefSize:Size = {width: undefined, height: undefined}
         if (props.preferredSize) {
-            const size = props.preferredSize.split(",");
-            height = parseInt(size[1]);
-            width = parseInt(size[0]);
+            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            prefSize.height = parsedSize.height;
+            prefSize.width = parsedSize.width;
         } 
         else {
-            height = event.currentTarget.height;
-            width = event.currentTarget.width;
+            prefSize.height = event.currentTarget.height;
+            prefSize.width = event.currentTarget.width;
         }
-
         if (onLoadCallback) {
-            onLoadCallback(id, height, width);
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current){
             if (iconProps.icon?.includes('fa fa-')) {
-                sendOnLoadCallback(id, props.preferredSize, iconRef.current, onLoadCallback)
+                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, iconProps.icon, props.preferredSize]);

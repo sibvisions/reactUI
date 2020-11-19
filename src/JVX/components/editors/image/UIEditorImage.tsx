@@ -6,6 +6,9 @@ import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import useProperties from "../../zhooks/useProperties";
 import useImageStyle from "../../zhooks/useImageStyle";
+import Size from "../../util/Size";
+import { parseJVxSize } from "../../util/parseJVxSize";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
@@ -21,7 +24,6 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     const layoutValue = useContext(LayoutContext);
     const context = useContext(jvxContext);
-    const imageRef = useRef<HTMLImageElement>(null);
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
 
     const {onLoadCallback, id} = baseProps
@@ -32,38 +34,36 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     useEffect(() => {
         if (!props.cellEditor.defaultImageName) {
-            let height = 0, width = 0;
+            const prefSize:Size = {width: 0, height: 0}
             if (props.preferredSize) {
-                const size = props.preferredSize.split(',');
-                width = parseInt(size[0]);
-                height = parseInt(size[1]);
+                const parsedSize = parseJVxSize(props.preferredSize) as Size
+                prefSize.height = parsedSize.height;
+                prefSize.width = parsedSize.width;
             }
             if (onLoadCallback)
-                onLoadCallback(id, height, width)
+                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
         }
     },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize])
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        let height: number, width: number
+        const prefSize:Size = {width: undefined, height: undefined}
         if(props.preferredSize){
-            const size = props.preferredSize.split(",");
-            height = parseInt(size[1]);
-            width = parseInt(size[0]);
+            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            prefSize.height = parsedSize.height;
+            prefSize.width = parsedSize.width;
         } else {
-            height = event.currentTarget.height;
-            width = event.currentTarget.width;
+            prefSize.height = event.currentTarget.height;
+            prefSize.width = event.currentTarget.width;
         }
 
-        if(props.onLoadCallback){
-            props.onLoadCallback(props.id, height, width);
-        }
+        if(onLoadCallback)
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
     }
 
     return(
         <span className="jvxEditorImage" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             <img
                 style={imageStyle.img}
-                ref={imageRef}
                 src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt={"could not be loaded"}
                 onLoad={imageLoaded}

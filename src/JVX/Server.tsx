@@ -245,6 +245,7 @@ class Server{
         }
         startUpRequest.screenHeight = window.innerHeight;
         startUpRequest.screenWidth = window.innerWidth;
+        startUpRequest.deviceMode = "desktop";
         this.contentStore.flatContent.clear();
         this.contentStore.removedContent.clear();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);

@@ -9,6 +9,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 interface ICellEditorCheckbox extends ICellEditor{
     text?: string,
@@ -73,7 +74,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
 
     useLayoutEffect(() => {
         if(onLoadCallback && cbxRef.current){
-            sendOnLoadCallback(id, props.preferredSize, cbxRef.current, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), cbxRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize]);
 

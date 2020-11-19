@@ -9,6 +9,7 @@ import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
@@ -39,7 +40,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef)
-            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize]);
 

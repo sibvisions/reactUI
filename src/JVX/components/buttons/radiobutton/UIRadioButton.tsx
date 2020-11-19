@@ -10,6 +10,7 @@ import {createSetValueRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import { swapProps } from "../../util/SwapProps";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface IRadioButton extends IButton {
     selected?: boolean;
@@ -47,7 +48,7 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize]);
 

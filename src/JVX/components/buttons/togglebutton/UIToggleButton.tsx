@@ -11,6 +11,7 @@ import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseIconData } from "../../compprops/ComponentProperties";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 type ToggleButtonEvent = {
     originalEvent: Event,
@@ -77,7 +78,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            sendOnLoadCallback(id, props.preferredSize, btnRef, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize])
 

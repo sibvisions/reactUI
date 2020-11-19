@@ -69,7 +69,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && calender.current) {
             //@ts-ignore
-            sendOnLoadCallback(id, props.preferredSize, calender.current.container, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), calender.current.container, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize]);
 

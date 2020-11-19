@@ -13,6 +13,8 @@ interface BaseComponent{
     visible?: boolean
     constraints: string
     preferredSize?: string
+    maximumSize?: string
+    minimumSize?: string
     background?: string
     foreground?: string
     margins?: string|Margins

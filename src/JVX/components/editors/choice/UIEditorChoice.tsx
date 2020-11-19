@@ -8,6 +8,9 @@ import useRowSelect from "../../zhooks/useRowSelect";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import {createSetValuesRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import { parseJVxSize } from "../../util/parseJVxSize";
+import Size from "../../util/Size";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 
 interface ICellEditorChoice extends ICellEditor{
     allowedValues: Array<string>,
@@ -61,18 +64,18 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }, [selectedRow, validImages, props.cellEditor.defaultImageName])
 
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        let height: number, width: number
+        const prefSize:Size = {width: undefined, height: undefined}
         if(props.preferredSize){
-            const size = props.preferredSize.split(",");
-            height = parseInt(size[1]);
-            width = parseInt(size[0]);
+            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            prefSize.height = parsedSize.height;
+            prefSize.width = parsedSize.width;
         }
         else {
-            height = event.currentTarget.height;
-            width = event.currentTarget.width;
+            prefSize.height = event.currentTarget.height;
+            prefSize.width = event.currentTarget.width;
         }
         if(onLoadCallback){
-            onLoadCallback(id, height, width);
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
@@ -101,6 +104,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 onClick={handleClick}
                 src={context.server.RESOURCE_URL + validImages[currentImageValue]}
                 onLoad={onChoiceLoaded}
+                onError={onChoiceLoaded}
             />
         </span>
     )

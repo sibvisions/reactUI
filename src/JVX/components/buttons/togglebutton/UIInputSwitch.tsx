@@ -8,6 +8,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { IToggleButton } from "./UIToggleButton";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 const UIInputSwitch: FC<IToggleButton> = (baseProps) => {
     const inputRef = useRef<HTMLSpanElement>(null);
@@ -18,7 +19,7 @@ const UIInputSwitch: FC<IToggleButton> = (baseProps) => {
 
     useLayoutEffect(() => {
         if (inputRef.current)
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current, onLoadCallback)
     })
 
     const handleOnChange = () => {
