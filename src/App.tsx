@@ -18,6 +18,7 @@ import {HashRouter, Route, Switch} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
 import {serverMenuButtons} from "./JVX/response/MenuResponse";
 import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
+import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 
 
 
@@ -36,20 +37,14 @@ const App: FC = () => {
 
 
 
-    useEffect(() => {
-        const a: serverMenuButtons = {
-            group: "None",
-            componentId: "",
-            image: "someIcon",
-            text: "Click Me",
-            action: () => {
-                window.location.hash = "/home/Custom_1";
-            }
-        }
 
-        context.contentStore.addCustomScreen("Custom_1", () => <CustomHelloScreen/>)
-        context.contentStore.addMenuItem(a);
+    useEffect(() => {
+        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>)
+        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>)
     }, [context.contentStore])
+
+
+
 
     useLayoutEffect(() => {
         const queryParams: queryType = queryString.parse(window.location.search);

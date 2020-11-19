@@ -7,7 +7,7 @@ import MetaDataResponse from "./response/MetaDataResponse";
 import { parseIconData } from "./components/compprops/ComponentProperties";
 import {MapOperator} from "rxjs/internal/operators/map";
 import {FC, ReactElement} from "react";
-import {type} from "os";
+import {totalmem, type} from "os";
 import {componentHandler} from "./factories/UIFactory";
 
 type MenuItem = {
@@ -22,7 +22,7 @@ class ContentStore{
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
     customContent = new Map<string, Function>();
-    menuItems = new Map<string, Array<MenuItem>>();
+    menuItems = new Map<string, Array<serverMenuButtons>>();
 
     currentUser: UserData = new UserData();
 
@@ -47,9 +47,12 @@ class ContentStore{
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
         let existingComponent: BaseComponent | undefined;
-        //Update FlatContent
-        componentsToUpdate.forEach(newComponent => {
 
+        //check for ReplaceScreens
+        const filtered = componentsToUpdate.filter(component => !this.customContent.has(component.name));
+
+        //Update FlatContent
+        filtered.forEach(newComponent => {
             existingComponent = this.flatContent.get(newComponent.id) || this.removedContent.get(newComponent.id);
 
             if(this.removedContent.has(newComponent.id) && existingComponent){
@@ -57,6 +60,7 @@ class ContentStore{
                 this.flatContent.set(newComponent.id, existingComponent)
             }
 
+            //Notify Parent
             if(newComponent.parent || newComponent["~remove"] || newComponent["~destroy"] || newComponent.visible !== undefined || newComponent.constraints){
                 notifyList.push(existingComponent?.parent || "");
                 if(newComponent.parent){
@@ -86,17 +90,17 @@ class ContentStore{
         });
 
         //Properties
-        componentsToUpdate.forEach(value => {
+        filtered.forEach(value => {
             const existingComp = this.flatContent.get(value.id) || this.removedContent.get(value.id);
             const updateFunction = this.propertiesSubscriber.get(value.id);
             if(existingComp && updateFunction){
                 updateFunction(existingComp);
             }
         });
-        notifyList.filter(this.onlyUnique).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
-    onlyUnique(value: string, index: number, self: Array<string>) {
+    onlyUniqueFilter(value: string, index: number, self: Array<string>) {
         return self.indexOf(value) === index;
     }
 
@@ -196,7 +200,7 @@ class ContentStore{
 
 
     //Getters
-    getWindow(windowName: string): FC{
+    getWindow(windowName: string): ReactElement{
         const windowData = this.getWindowData(windowName);
         if(windowData)
             return componentHandler(windowData);
@@ -358,6 +362,26 @@ class ContentStore{
     }
 
     addCustomScreen(title: string, screenFactory: () => ReactElement){
+        this.customContent.set(title, screenFactory);
+    }
+
+    registerCustomOfflineScreen(title: string, group: string, screenFactory: () => ReactElement){
+        const menuButton: serverMenuButtons = {
+            group: group,
+
+            componentId: "",
+            image: "someIcon",
+            text: "Click Me",
+            action: () => {
+                window.location.hash = "/home/"+title;
+            }
+        }
+
+        this.addCustomScreen(title, screenFactory);
+        this.addMenuItem(menuButton);
+    }
+
+    registerReplaceScreen(title: string, screenFactory: () => ReactElement){
         this.customContent.set(title, screenFactory);
     }
 }

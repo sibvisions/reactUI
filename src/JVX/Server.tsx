@@ -2,7 +2,7 @@ import ContentStore from "./ContentStore"
 import * as queryString from "querystring";
 import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
-import MenuResponse, {serverMenuButtons} from "./response/MenuResponse";
+import MenuResponse from "./response/MenuResponse";
 import GenericResponse from "./response/GenericResponse";
 import CloseScreenResponse from "./response/CloseScreenResponse";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
@@ -248,6 +248,7 @@ class Server{
         startUpRequest.screenWidth = window.innerWidth;
         this.contentStore.flatContent.clear();
         this.contentStore.removedContent.clear();
+        this.contentStore.menuItems.clear();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})

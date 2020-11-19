@@ -100,7 +100,9 @@ const Menu: FC = () => {
             });
             changeMenuItems(primeMenu)
         }
+        receiveNewMenuItems(context.contentStore.menuItems);
         context.contentStore.subscribeToMenuChange(receiveNewMenuItems);
+
         return () => {
             context.contentStore.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
