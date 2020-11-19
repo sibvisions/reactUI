@@ -183,6 +183,6 @@ export const componentHandler = (component: BaseComponent) => {
     if(builder){
         return builder(component);
     } else {
-        return createDummy(component)
+        return <div> </div>
     }
 }

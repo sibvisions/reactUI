@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useLayoutEffect, useRef} from 'react';
+import React, {createContext, FC, useContext, useEffect, useLayoutEffect, useRef} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -16,6 +16,9 @@ import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
 import {Route, Switch, useHistory} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
+import {serverMenuButtons} from "./JVX/response/MenuResponse";
+import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
+import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 
 
 
@@ -32,6 +35,17 @@ const App: FC = () => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
     const history = useHistory()
+
+
+
+
+    useEffect(() => {
+        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>)
+        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>)
+    }, [context.contentStore])
+
+
+
 
     useLayoutEffect(() => {
         history.replace("/home")

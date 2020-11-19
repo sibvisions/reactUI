@@ -12,7 +12,7 @@ import FetchResponse from "./response/FetchResponse";
 import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import ShowDocumentResponse from "./response/ShowDocumentResponse"
-import {createFetchRequest, createStartupRequest} from "./factories/RequestFactory";
+import {createFetchRequest, createOpenScreenRequest, createStartupRequest} from "./factories/RequestFactory";
 import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
 import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
@@ -123,7 +123,15 @@ class Server{
     }
 
     menu(menuData: MenuResponse){
-        this.contentStore.buildMenuBar(menuData);
+        menuData.entries.forEach(menuItem => {
+            menuItem.action = () => {
+                const openScreenReq = createOpenScreenRequest();
+                openScreenReq.componentId = menuItem.componentId;
+                this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+            }
+            this.contentStore.addMenuItem(menuItem);
+        });
+        this.contentStore.emitMenuUpdate();
     }
 
     //Dal
@@ -248,6 +256,7 @@ class Server{
         startUpRequest.deviceMode = "desktop";
         this.contentStore.flatContent.clear();
         this.contentStore.removedContent.clear();
+        this.contentStore.menuItems.clear();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})
