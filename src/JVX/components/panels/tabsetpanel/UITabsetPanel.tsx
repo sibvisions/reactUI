@@ -19,6 +19,9 @@ import {Panel} from "../panel/UIPanel";
 import {createTabRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import IconProps from "../../compprops/IconProps";
+import Size from "../../util/Size";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface ITabsetPanel extends Panel {
     selectedIndex: number;
@@ -53,11 +56,12 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         if (onLoadCallback && preferredCompSizes) {
             const selectedPanel = preferredCompSizes.get(components[props.selectedIndex].props.id);
             if (selectedPanel) {
-                onLoadCallback(id, selectedPanel.height, selectedPanel.width)
+                const prefSize:Size = {height: selectedPanel.height, width: selectedPanel.width};
+                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
             }
                 
         }
-    }, [id, preferredCompSizes, onLoadCallback, components, props.selectedIndex])
+    }, [id, preferredCompSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
 
     const buildTabRequest = useCallback((tabId:number) => {
         const req = createTabRequest();

@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useRef} from "react";
+import React, {FC, useContext, useEffect} from "react";
 import './UIEditorImage.scss'
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -43,10 +43,10 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             if (onLoadCallback)
                 sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
         }
-    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize])
+    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize])
 
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        const prefSize:Size = {width: undefined, height: undefined}
+        const prefSize:Size = {width: 0, height: 0}
         if(props.preferredSize){
             const parsedSize = parseJVxSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;

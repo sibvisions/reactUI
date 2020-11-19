@@ -13,6 +13,7 @@ import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number
@@ -57,14 +58,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             }
             if (props.cellEditor.contentType?.includes("password")) {
                 //@ts-ignore
-                sendOnLoadCallback(id, props.preferredSize, inputRef.current.inputEl, onLoadCallback)
+                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.inputEl, onLoadCallback)
             }
             else {
                 // @ts-ignore
-                sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
+                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.element, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, props.borderVisible, props.cellEditor.contentType, props.preferredSize]);
+    },[onLoadCallback, id, props.borderVisible, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
         setText(selectedRow);

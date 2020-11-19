@@ -4,6 +4,9 @@ import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";
+import Size from "../../util/Size";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface Panel extends BaseComponent{
     orientation: number,
@@ -31,7 +34,8 @@ const UIPanel: FC<Panel> = (baseProps) => {
 
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
-            onLoadCallback(id, height, width)
+            const prefSize:Size = {height: height, width: width}
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 

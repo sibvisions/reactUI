@@ -4,6 +4,7 @@ import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { parseJVxSize } from "../util/parseJVxSize";
 
 const UIPassword: FC<BaseComponent> = (baseProps) => {
 
@@ -17,9 +18,9 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current.inputEl, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.inputEl, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize])
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
         <Password ref={inputRef} value={pwValue||""} feedback={false} style={layoutValue.get(props.id)} onChange={event => setPwValue(event.currentTarget.value)} />

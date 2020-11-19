@@ -5,6 +5,8 @@ import ChildWithProps from "../../util/ChildWithProps";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
 import {jvxContext} from "../../../jvxProvider";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface UISplitPanelProps extends BaseComponent{
     dividerAlignment: number,
@@ -40,12 +42,10 @@ const UISplitPanel: FC<UISplitPanelProps> = (props) => {
 
     useLayoutEffect(() => {
         if (splitRef.current) {
-            //@ts-ignore
-            const size = splitRef.current.getBoundingClientRect();
             if(onLoadCallback)
-                onLoadCallback(id, size.height, size.width);
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), splitRef.current, onLoadCallback);
         }
-    }, [id, onLoadCallback])
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize])
 
     const handleResize = (firstSize: splitSize, secondSize: splitSize) => {
         const sizeMap = new Map<string, CSSProperties>();

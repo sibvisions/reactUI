@@ -76,7 +76,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         if(onLoadCallback && cbxRef.current){
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), cbxRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
         <span

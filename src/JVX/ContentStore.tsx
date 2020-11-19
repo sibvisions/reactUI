@@ -20,7 +20,9 @@ class ContentStore{
     flatContent = new Map<string ,BaseComponent>();
     removedContent = new Map<string ,BaseComponent>();
     customContent = new Map<string, Function>();
-    menuItems = new Map<string, Array<serverMenuButtons>>();
+    serverMenuItems = new Map<string, Array<serverMenuButtons>>();
+    customMenuItems = new Map<string, Array<serverMenuButtons>>();
+    mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
     currentUser: UserData = new UserData();
 
     //Sub Maps
@@ -341,18 +343,28 @@ class ContentStore{
 
     emitMenuUpdate(){
         this.MenuSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [this.menuItems]);
+            subFunction.apply(undefined, [this.mergedMenuItems]);
         });
     }
 
     //Custom Screens
 
-    addMenuItem(menuItem: serverMenuButtons){
-        const menuGroup = this.menuItems.get(menuItem.group);
+    addMenuItem(menuItem: serverMenuButtons, fromServer:boolean){
+        const menuGroup = fromServer ? this.serverMenuItems.get(menuItem.group) : this.customMenuItems.get(menuItem.group);
+        console.log(menuItem, fromServer, menuGroup)
         if(menuGroup)
             menuGroup.push(menuItem);
-        else
-            this.menuItems.set(menuItem.group, [menuItem]);
+        else {
+            fromServer ? this.serverMenuItems.set(menuItem.group, [menuItem]) : this.customMenuItems.set(menuItem.group, [menuItem]);
+            console.log(this.serverMenuItems, this.customMenuItems)
+        }
+        this.mergeMenuButtons();
+    }
+
+    mergeMenuButtons() {
+        console.log(this.serverMenuItems, this.customMenuItems)
+        this.mergedMenuItems = new Map([...this.serverMenuItems, ...this.customMenuItems])
+        console.log(this.mergedMenuItems)
     }
 
     addCustomScreen(title: string, screenFactory: () => ReactElement){
@@ -372,7 +384,7 @@ class ContentStore{
         }
 
         this.addCustomScreen(title, screenFactory);
-        this.addMenuItem(menuButton);
+        this.addMenuItem(menuButton, false);
     }
 
     registerReplaceScreen(title: string, screenFactory: () => ReactElement){

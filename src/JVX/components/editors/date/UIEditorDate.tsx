@@ -12,6 +12,7 @@ import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import moment from "moment";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
@@ -71,7 +72,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             //@ts-ignore
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), calender.current.container, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
         setValue(selectedRow ? new Date(selectedRow) : undefined);

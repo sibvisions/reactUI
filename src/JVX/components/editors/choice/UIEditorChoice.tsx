@@ -64,7 +64,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }, [selectedRow, validImages, props.cellEditor.defaultImageName])
 
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        const prefSize:Size = {width: undefined, height: undefined}
+        const prefSize:Size = {width: 0, height: 0}
         if(props.preferredSize){
             const parsedSize = parseJVxSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;

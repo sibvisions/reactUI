@@ -71,7 +71,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         if (btnRef) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
-    }, [onLoadCallback, id, props.preferredSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

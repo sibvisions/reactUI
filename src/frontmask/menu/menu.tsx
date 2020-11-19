@@ -29,6 +29,7 @@ const Menu: FC = () => {
             context.contentStore.currentUser = new UserData()
             context.contentStore.flatContent.clear();
             context.contentStore.removedContent.clear();
+            context.contentStore.serverMenuItems.clear();
             context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT);
         }
         const slideOptions: Array<MenuItem> =
@@ -80,7 +81,7 @@ const Menu: FC = () => {
 
             </div>
         )
-    }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server])
+    }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server, context.contentStore.serverMenuItems])
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
@@ -98,9 +99,10 @@ const Menu: FC = () => {
                 }
                 primeMenu.push(primeMenuItem);
             });
+            console.log(primeMenu)
             changeMenuItems(primeMenu)
         }
-        receiveNewMenuItems(context.contentStore.menuItems);
+        receiveNewMenuItems(context.contentStore.mergedMenuItems);
         context.contentStore.subscribeToMenuChange(receiveNewMenuItems);
 
         return () => {

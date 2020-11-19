@@ -129,7 +129,7 @@ class Server{
                 openScreenReq.componentId = menuItem.componentId;
                 this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
             }
-            this.contentStore.addMenuItem(menuItem);
+            this.contentStore.addMenuItem(menuItem, true);
         });
         this.contentStore.emitMenuUpdate();
     }
@@ -256,7 +256,7 @@ class Server{
         startUpRequest.deviceMode = "desktop";
         this.contentStore.flatContent.clear();
         this.contentStore.removedContent.clear();
-        this.contentStore.menuItems.clear();
+        this.contentStore.serverMenuItems.clear();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})

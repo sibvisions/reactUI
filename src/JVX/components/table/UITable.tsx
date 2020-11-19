@@ -18,6 +18,9 @@ import { IEditorDate } from "../editors/date/UIEditorDate";
 import { parseDateFormatTable } from "../util/ParseDateFormats";
 import moment from "moment";
 import useOutsideClick from "../zhooks/useOutsideClick";
+import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { parseJVxSize } from "../util/parseJVxSize";
+import Size from "../util/Size";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -133,19 +136,17 @@ const UITable: FC<TableProps> = (baseProps) => {
         if(wrapRef.current){
             if(onLoadCallback) {
                 if (props.preferredSize) {
-                    const size = props.preferredSize.split(',');
-                    const width = parseInt(size[0]);
-                    const height = parseInt(size[1]);
-                    onLoadCallback(id, height, width);
+                    sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
-                    onLoadCallback(id, providerData.length < 10 ? providerData.length*37+40 : 410, estTableWidth.current);
+                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+40 : 410, width: estTableWidth.current}
+                    sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                     
             }
                 
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
         if (tableRef.current) {

@@ -1,13 +1,32 @@
 import Size from "./Size";
 
-export function sendOnLoadCallback(id:string, preferredSize:Size|undefined, maxSize:Size|undefined, minSize:Size|undefined, ref:any, onLoadCallback:Function|undefined) {
+function checkSizes(prefSize:Size, minSize:Size|undefined, maxSize:Size|undefined):Size {
+    let sizeToSend:Size = prefSize;
+    if (minSize) {
+        if (prefSize.width < minSize.width)
+            sizeToSend.width = minSize.width;
+        if (prefSize.height < minSize.height)
+            sizeToSend.height = minSize.height;
+    }
+    if (maxSize) {
+        if (maxSize.width < prefSize.width)
+            sizeToSend.width = maxSize.width;
+        if (maxSize.height < prefSize.height)
+            sizeToSend.height = maxSize.height
+    }
+    return sizeToSend
+}
+
+export function sendOnLoadCallback(id: string, preferredSize: Size | undefined, maxSize: Size | undefined, minSize: Size | undefined, ref: any, onLoadCallback: Function | undefined) {
     if (onLoadCallback) {
         if (preferredSize) {
-            onLoadCallback(id, preferredSize.height, preferredSize.width);
+            const sizeToSend:Size = checkSizes(preferredSize, minSize, maxSize);
+            onLoadCallback(id, sizeToSend.height, sizeToSend.width);
         }
         else {
-            const size: DOMRect = ref.getBoundingClientRect();
-            onLoadCallback(id, size.height, size.width);
+            const prefSize:Size = {width: ref.getBoundingClientRect().width, height: ref.getBoundingClientRect().height};
+            const sizeToSend:Size = checkSizes(prefSize, minSize, maxSize)
+            onLoadCallback(id, sizeToSend.height, sizeToSend.width);
         }
     }
 }

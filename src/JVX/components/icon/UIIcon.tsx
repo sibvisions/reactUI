@@ -21,7 +21,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
 
     const iconLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        const prefSize:Size = {width: undefined, height: undefined}
+        const prefSize:Size = {width: 0, height: 0}
         if (props.preferredSize) {
             const parsedSize = parseJVxSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;
@@ -42,7 +42,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, iconProps.icon, props.preferredSize]);
+    },[onLoadCallback, id, iconProps.icon, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {

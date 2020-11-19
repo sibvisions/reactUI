@@ -21,7 +21,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         if(labelRef.current && onLoadCallback){
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), labelRef.current, onLoadCallback)
         }
-    }, [onLoadCallback, id, props.preferredSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
 
     return(

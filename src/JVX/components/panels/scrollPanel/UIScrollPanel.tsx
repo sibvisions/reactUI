@@ -4,6 +4,9 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";
 import Layout from "../../layouts/Layout";
+import Size from "../../util/Size";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 const UIScrollPanel: FC<Panel> = (baseProps) => {
 
@@ -25,8 +28,10 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     }
 
     const reportSize = (height:number, width:number) => {
-        if (onLoadCallback)
-            onLoadCallback(id, height+20, width+20)
+        if (onLoadCallback) {
+            const prefSize:Size = {height: height+20, width: width+20};
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
+        }
     }
 
     return(

@@ -5,6 +5,9 @@ import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";
 import Layout from "../../layouts/Layout";
 import {Panel} from "../panel/UIPanel";
+import Size from "../../util/Size";
+import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 const UIGroupPanel: FC<Panel> = (baseProps) => {
 
@@ -25,7 +28,8 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
 
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
-            onLoadCallback(id, height+28, width)
+            const prefSize:Size = {height: height+28, width: width};
+            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 

@@ -39,10 +39,10 @@ const App: FC = () => {
 
 
 
-    useEffect(() => {
-        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>)
-        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>)
-    }, [context.contentStore])
+    // useEffect(() => {
+    //     context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>)
+    //     context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>)
+    // }, [context.contentStore])
 
 
 

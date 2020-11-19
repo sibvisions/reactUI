@@ -42,7 +42,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         if (btnRef)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
 
-    }, [onLoadCallback, id, props.preferredSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();

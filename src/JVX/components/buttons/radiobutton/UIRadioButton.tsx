@@ -50,7 +50,7 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
         if (btnRef) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
-    }, [onLoadCallback, id, props.preferredSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
         <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

@@ -14,6 +14,7 @@ import * as _ from 'underscore'
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { parseJVxSize } from "../../util/parseJVxSize";
 
 interface ICellEditorLinked extends ICellEditor{
     linkReference: {
@@ -74,9 +75,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             // @ts-ignore
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current.container, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.container, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
         if (inputRef.current) {

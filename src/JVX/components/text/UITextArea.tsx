@@ -4,6 +4,7 @@ import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { parseJVxSize } from "../util/parseJVxSize";
 
 const UITextArea: FC<BaseComponent> = (baseProps) => {
 
@@ -17,9 +18,9 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, props.preferredSize, inputRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.element, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize])
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
         <InputTextarea ref={inputRef} value={text||""} style={{...layoutValue.get(props.id), resize: 'none'}} onChange={event => setText(event.currentTarget.value)} />
