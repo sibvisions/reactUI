@@ -3,6 +3,7 @@ import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import FlowLayout from "./FlowLayout";
 import {ComponentSize} from "../zhooks/useComponents";
+import GridLayout from "./GridLayout";
 
 
 export interface ILayout{
@@ -25,6 +26,8 @@ const Layout: FC<ILayout> = (props) => {
             return <BorderLayout {...props} />
         else if (props.layout.includes("FlowLayout"))
             return <FlowLayout {...props} />
+        else if (props.layout.includes("GridLayout"))
+            return <GridLayout {...props} />
         else
             return <DummyLayout {...props} />
     }

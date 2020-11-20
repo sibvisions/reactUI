@@ -1,10 +1,10 @@
 class GridSize{
-    rows: string
-    columns: string
+    rows: number
+    columns: number
 
     constructor(gridString: Array<string>) {
-        this.rows = gridString[0];
-        this.columns  = gridString[1]
+        this.rows = parseInt(gridString[0]);
+        this.columns  = parseInt(gridString[1]);
     }
 }
 export default GridSize

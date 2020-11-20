@@ -151,6 +151,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
                 reportSize(preferredHeight, preferredWidth)
             }
+            else {
+                reportSize(style.height, style.width)
+            }
         }
 
 

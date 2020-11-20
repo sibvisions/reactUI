@@ -35,11 +35,10 @@ const UIPanel: FC<Panel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Size = {height: height, width: width}
+            //console.log(prefSize, id)
             sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
-
-    console.log(layoutContext.get(baseProps.id), id)
 
     return(
         <div id={props.id} style={{...layoutContext.get(baseProps.id), backgroundColor: props.background}}>

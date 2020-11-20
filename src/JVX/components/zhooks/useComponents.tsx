@@ -15,18 +15,19 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     const buildComponents = useCallback((): Array<ReactElement> => {
         let tempSizes = new Map<string, ComponentSize>();
         if (preferredSizes) {
-            preferredSizes.forEach((val, key) => {
-                if (!context.contentStore.flatContent.has(key))
-                    preferredSizes.delete(key)
-            });
             tempSizes = preferredSizes
+            tempSizes.forEach((val, key) => {
+                if (!context.contentStore.flatContent.has(key)) {
+                    tempSizes.delete(key)
+                }
+                    
+            });
         }
         const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
         const componentHasLoaded = (compId: string, height: number, width: number)=> {
             const preferredComp = tempSizes.get(compId)
             tempSizes.set(compId, {width: width, height: height});
-            //console.log(tempSizes.size, children.size, tempSizes, children, id, preferredComp)
             if((tempSizes.size === children.size || id.includes('TP')) && (preferredComp?.height !== height || preferredComp?.width !== width)){
                 setPreferredSizes(new Map(tempSizes));
             }

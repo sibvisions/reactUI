@@ -275,7 +275,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 setText(event.target.value)
             }}
             onBlur={() => {
-                console.log('blur')
                 setFirstRow(0);
                 setLastRow(100)
                 handleInput();

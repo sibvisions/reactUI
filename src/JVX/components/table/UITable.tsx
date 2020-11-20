@@ -124,7 +124,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const rows = 40;
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
     const firstRowIndex = useRef(0);
-    const estTableWidth = useRef(0);
+    const [estTableWidth, setEstTableWidth] = useState(0);
 
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows*2
@@ -139,14 +139,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                     sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
-                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+40 : 410, width: estTableWidth.current}
+                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+40 : 410, width: estTableWidth}
                     sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                     
             }
                 
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth]);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
@@ -163,7 +163,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 for (let i = 0; i < (trows.length < 10 ? trows.length : 10); i++) {
                     const cellDatas: NodeListOf<HTMLElement> = trows[i].querySelectorAll("td > .cellData");
                     for (let j = 0; j < cellDatas.length; j++) {
-                        console.log(cellDatas[j], cellDatas.length, trows.length)
                         cellDatas[j].style.setProperty('display', 'inline-block');
                         let tempWidth:number;
                         if (cellDatas[j] !== undefined) {
@@ -180,9 +179,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                  for (let i = 0; i < theader.length; i++) {
                     theader[i].style.setProperty('width', cellDataWidthList[i]+'px');
                  }
+                 let tempWidth:number = 0;
                  cellDataWidthList.forEach(cellDataWidth => {
-                    estTableWidth.current += cellDataWidth
-                 })
+                    tempWidth += cellDataWidth
+                 });
+                 setEstTableWidth(tempWidth)
             }
         }
     })

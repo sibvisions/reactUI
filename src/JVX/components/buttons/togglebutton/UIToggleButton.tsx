@@ -89,8 +89,6 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         //setChecked(event.value);
     }
 
-    console.log(props.selected, id, btnData.style, btnBgdChecked)
-
     return (
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <ToggleButton

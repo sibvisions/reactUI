@@ -19,7 +19,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     const context = useContext(jvxContext);
 
-
     const componentSizes = useMemo(() => {
         const sizeMap = new Map<string, CSSProperties>();
         const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
@@ -41,6 +40,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let widest = 0;
 
             preferredCompSizes.forEach(componentSize => {
+                console.log(componentSize)
                 totalHeight += componentSize.height + gaps.horizontalGap;
                 totalWidth += componentSize.width + gaps.verticalGap;
 
@@ -148,9 +148,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 reportSize(totalHeight, widest);
             }                     
         }
-
-
-
 
         return sizeMap;
     }, [layout, preferredCompSizes, reportSize, id, style, context.contentStore])
