@@ -415,12 +415,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
-                if(calcSize.width < preferredWidth){
-                    calcSize.width = preferredWidth;
-                }
-                if(calcSize.height < preferredHeight ){
-                    calcSize.height = preferredHeight;
-                }
+                // if(calcSize.width < preferredWidth){
+                //     calcSize.width = preferredWidth;
+                // }
+                // if(calcSize.height < preferredHeight ){
+                //     calcSize.height = preferredHeight;
+                // }
 
 
                 const lba = anchors.get("l");
@@ -586,6 +586,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                             
                     }
+                    console.log(style)
                     setCalculatedStyle( {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,

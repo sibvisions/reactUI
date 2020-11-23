@@ -26,6 +26,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const outerHa = parseInt(alignments[8]);
         const outerVa = parseInt(alignments[9]);
         const innerAlignment = parseInt(alignments[10]);
+        const autoWrap = alignments[11]
         const isRowOrientation = parseInt(alignments[7]) === ORIENTATION.HORIZONTAL
 
         const componentProps = context.contentStore.getChildren(id)
@@ -40,9 +41,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let widest = 0;
 
             preferredCompSizes.forEach(componentSize => {
-                console.log(componentSize)
-                totalHeight += componentSize.height + gaps.horizontalGap;
-                totalWidth += componentSize.width + gaps.verticalGap;
+                if (totalHeight + componentSize.height + gaps.horizontalGap <= (style.height as number))
+                    totalHeight += componentSize.height + gaps.horizontalGap;
+                if (totalWidth + componentSize.width + gaps.verticalGap <= (style.width as number))
+                    totalWidth += componentSize.width + gaps.verticalGap;
 
                 if(componentSize.height > tallest)
                     tallest = componentSize.height;
@@ -87,7 +89,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             let relativeLeft = alignmentLeft;
             let relativeTop = alignmentTop;
+
             componentPropsSorted.forEach(component => {
+                console.log(tallest)
                 const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
                 let top = relativeTop;
                 let left = relativeLeft;
@@ -110,6 +114,24 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         height = style.height as number || tallest;
                     }
 
+                    if (relativeLeft + width + gaps.verticalGap > (style.width as number) && autoWrap) {
+                        if (outerVa === VERTICAL_ALIGNMENT.CENTER || outerVa === VERTICAL_ALIGNMENT.TOP || outerVa === VERTICAL_ALIGNMENT.STRETCH) {
+                            top += tallest
+                            relativeTop += tallest
+                            relativeLeft = alignmentLeft;
+                            left = relativeLeft
+                        }
+                        else if (outerVa === VERTICAL_ALIGNMENT.BOTTOM) {
+                            componentPropsSorted.forEach(component => {
+                                const s = sizeMap.get(component.id)
+                                if (s)
+                                    (s.top as number) -= tallest
+                            })
+                            relativeLeft = alignmentLeft;
+                            left = relativeLeft
+                        }
+                    }
+
                     relativeLeft += width + gaps.verticalGap;
                 }
                 else{
@@ -129,7 +151,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
                     relativeTop += height + gaps.horizontalGap;
                 }
-
 
                 sizeMap.set(component.id,{
                     height: height,

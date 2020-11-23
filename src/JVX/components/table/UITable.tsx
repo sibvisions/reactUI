@@ -250,7 +250,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     //to subtract header Height
-    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined
+    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
     return(
        <div ref={wrapRef} style={{...layoutContext.get(props.id), height: layoutContext.get(props.id)?.height as number - 2, width: layoutContext.get(props.id)?.width as number - 2}}>

@@ -55,7 +55,6 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             ]
         }
-        console.log(primeChart)
         return primeChart
     },[props.data]);
 
@@ -102,8 +101,6 @@ const UIChart: FC<IChart> = (baseProps) => {
         if (chartRef.current)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), chartRef.current, onLoadCallback)
     })
-
-    console.log(chartType)
 
     return (
         <span ref={chartRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
