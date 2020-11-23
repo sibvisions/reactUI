@@ -56,17 +56,16 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 totalWidth = widest * gridSize.columns - margins.marginLeft - margins.marginRight;
                 totalHeight = tallest * gridSize.rows - margins.marginTop - margins.marginBottom;
             }
-            console.log(totalWidth, totalHeight, style)
 
             const fieldSize:Size = {width: totalWidth/gridSize.columns, height: totalHeight/gridSize.rows};
 
             componentProps.forEach(component => {
                 const componentConstraints = new CellConstraints(component.constraints);
+
                 const calculatedWidth = componentConstraints.gridWidth * (fieldSize.width - (gaps.horizontalGap / componentConstraints.gridWidth - gaps.horizontalGap / gridSize.columns));
                 const calculatedLeft = componentConstraints.gridX * (fieldSize.width - (gaps.horizontalGap - gaps.horizontalGap / gridSize.columns) + gaps.horizontalGap);
                 const calculatedHeight = componentConstraints.gridHeight * (fieldSize.height - (gaps.verticalGap / componentConstraints.gridHeight - gaps.verticalGap / gridSize.rows));
                 const calculatedTop = componentConstraints.gridY * (fieldSize.height - (gaps.verticalGap - gaps.verticalGap / gridSize.rows) + gaps.verticalGap);
-
                 sizeMap.set(component.id, {
                     height: calculatedHeight,
                     width: calculatedWidth,
@@ -75,7 +74,6 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                     position: "absolute"
                 });
             });
-
             if (reportSize && !style.width && !style.height)
                 reportSize(totalHeight, totalWidth);
             
