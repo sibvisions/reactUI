@@ -42,7 +42,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             preferredCompSizes.forEach(componentSize => {
                 if (totalHeight + componentSize.height + gaps.horizontalGap <= (style.height as number))
-                    totalHeight += componentSize.height + gaps.horizontalGap;
+                totalHeight += componentSize.height + gaps.horizontalGap;
                 if (totalWidth + componentSize.width + gaps.verticalGap <= (style.width as number))
                     totalWidth += componentSize.width + gaps.verticalGap;
 
@@ -89,9 +89,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             let relativeLeft = alignmentLeft;
             let relativeTop = alignmentTop;
+            let test = 0;
 
             componentPropsSorted.forEach(component => {
-                console.log(tallest)
                 const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
                 let top = relativeTop;
                 let left = relativeLeft;
@@ -114,7 +114,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         height = style.height as number || tallest;
                     }
 
-                    if (relativeLeft + width + gaps.verticalGap > (style.width as number) && autoWrap) {
+                    if (relativeLeft + width + gaps.horizontalGap > (style.width as number) && autoWrap) {
                         if (outerVa === VERTICAL_ALIGNMENT.CENTER || outerVa === VERTICAL_ALIGNMENT.TOP || outerVa === VERTICAL_ALIGNMENT.STRETCH) {
                             top += tallest
                             relativeTop += tallest
@@ -147,6 +147,65 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
                         left = relativeLeft;
                         width = style.width as number || widest;
+                    }
+
+                    if (test !== 0) {
+                        width = test - gaps.horizontalGap
+                    }
+
+                    //console.log(totalHeight, relativeTop, style.height)
+
+                    if (relativeTop + height + gaps.verticalGap > (style.height as number) && autoWrap) {
+                        console.log('yo')
+                        if (outerHa === HORIZONTAL_ALIGNMENT.CENTER) {
+                            componentPropsSorted.forEach(component => {
+                                    const s = sizeMap.get(component.id)
+                                    if (s) {
+                                        (s.left as number) -= widest/2;
+                                    }
+                            })
+                            left += widest/2
+                            relativeLeft += widest/2
+                            relativeTop = alignmentTop;
+                            top = relativeTop;
+                        }
+                        else if (outerHa === HORIZONTAL_ALIGNMENT.LEFT) {
+                            left += widest;
+                            relativeLeft += widest
+                            relativeTop = alignmentTop;
+                            top = relativeTop;
+                        }
+                        else if (outerHa === HORIZONTAL_ALIGNMENT.RIGHT) {
+                            componentPropsSorted.forEach(component => {
+                                const s = sizeMap.get(component.id)
+                                if (s) {
+                                    (s.left as number) -= widest;
+                                }
+                            });
+                            relativeTop = alignmentTop;
+                            top = relativeTop;
+                        }
+                        else if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
+                            componentPropsSorted.forEach(component => {
+                                const s = sizeMap.get(component.id)
+                                if (s) {
+                                    (s.width as number) = (s.width as number)/2;
+                                    test = (s.width as number)
+                                }
+                            });
+                            relativeTop = alignmentTop;
+                            top = relativeTop;
+                            width = test - gaps.horizontalGap
+                            if (relativeLeft === 0) {
+                                relativeLeft += widest + gaps.horizontalGap
+                            }
+                                
+                            else {
+                                relativeLeft += relativeLeft
+                            }
+                                
+                            left = relativeLeft
+                        }
                     }
 
                     relativeTop += height + gaps.horizontalGap;
