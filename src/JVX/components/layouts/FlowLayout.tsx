@@ -36,21 +36,33 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         if(preferredCompSizes){
             let totalHeight = 0;
             let tallest = 0;
+            let heightGrid = 0
 
             let totalWidth = 0;
             let widest = 0;
 
+            let anzColumns = 1;
+
             preferredCompSizes.forEach(componentSize => {
                 if (totalHeight + componentSize.height + gaps.horizontalGap <= (style.height as number))
-                totalHeight += componentSize.height + gaps.horizontalGap;
+                    totalHeight += componentSize.height + gaps.horizontalGap;
                 if (totalWidth + componentSize.width + gaps.verticalGap <= (style.width as number))
                     totalWidth += componentSize.width + gaps.verticalGap;
+
+                heightGrid += componentSize.height + gaps.horizontalGap;
+
+                if (heightGrid > (style.height as number)) {
+                    heightGrid = componentSize.height
+                    anzColumns++;
+                }
 
                 if(componentSize.height > tallest)
                     tallest = componentSize.height;
                 if(componentSize.width > widest)
                     widest = componentSize.width;
             });
+
+            console.log(anzColumns)
 
             let alignmentTop = 0;
             let alignmentLeft = 0;
@@ -156,7 +168,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     //console.log(totalHeight, relativeTop, style.height)
 
                     if (relativeTop + height + gaps.verticalGap > (style.height as number) && autoWrap) {
-                        console.log('yo')
                         if (outerHa === HORIZONTAL_ALIGNMENT.CENTER) {
                             componentPropsSorted.forEach(component => {
                                     const s = sizeMap.get(component.id)
