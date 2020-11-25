@@ -5,6 +5,8 @@ import {ILayout} from "./Layout";
 import {jvxContext} from "../../jvxProvider";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
 import {ORIENTATION} from "./models/Anchor";
+import {FlowGrid} from "./models/FlowGrid";
+import Size from "../util/Size";
 
 const FlowLayout: FC<ILayout> = (baseProps) => {
 
@@ -34,210 +36,176 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const componentPropsSorted = new Map([...componentProps.entries()].sort((a, b) => {return a[1].indexOf - b[1].indexOf}))
 
         if(preferredCompSizes){
-            let totalHeight = 0;
-            let tallest = 0;
-            let heightGrid = 0
 
-            let totalWidth = 0;
-            let widest = 0;
-
-            let anzColumns = 1;
-
-            preferredCompSizes.forEach(componentSize => {
-                if (totalHeight + componentSize.height + gaps.horizontalGap <= (style.height as number))
-                    totalHeight += componentSize.height + gaps.horizontalGap;
-                if (totalWidth + componentSize.width + gaps.verticalGap <= (style.width as number))
-                    totalWidth += componentSize.width + gaps.verticalGap;
-
-                heightGrid += componentSize.height + gaps.horizontalGap;
-
-                if (heightGrid > (style.height as number)) {
-                    heightGrid = componentSize.height
-                    anzColumns++;
-                }
-
-                if(componentSize.height > tallest)
-                    tallest = componentSize.height;
-                if(componentSize.width > widest)
-                    widest = componentSize.width;
-            });
-
-            console.log(anzColumns)
-
-            let alignmentTop = 0;
-            let alignmentLeft = 0;
-
-            let stretchValue = 0;
-
-            if(style.width && style.height){
-                if(isRowOrientation){
-                    if(outerVa === VERTICAL_ALIGNMENT.CENTER)
-                        alignmentTop = (style.height as number)/2 - tallest/2;
-                    else if(outerVa === VERTICAL_ALIGNMENT.BOTTOM)
-                        alignmentTop = (style.height as number) - tallest;
-
-                    if(outerHa === HORIZONTAL_ALIGNMENT.CENTER)
-                        alignmentLeft = (style.width as number)/2 - totalWidth/2;
-                    else if(outerHa === HORIZONTAL_ALIGNMENT.RIGHT)
-                        alignmentLeft = (style.width as number) - totalWidth;
-                    else if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
-                        stretchValue = (style.width as number - totalWidth + gaps.verticalGap) / componentProps.size
-                    }
-                }
-                else{
-                    if(outerVa === VERTICAL_ALIGNMENT.CENTER)
-                        alignmentTop = (style.height as number)/2 - totalHeight/2;
-                    else if(outerVa === VERTICAL_ALIGNMENT.BOTTOM)
-                        alignmentTop = (style.height as number) - totalHeight;
-                    else if(outerVa === VERTICAL_ALIGNMENT.STRETCH)
-                        stretchValue = (style.height as number - totalHeight + gaps.horizontalGap) / componentProps.size
-
-                    if(outerHa === HORIZONTAL_ALIGNMENT.CENTER)
-                        alignmentLeft = (style.width as number)/2 - widest/2;
-                    else if(outerHa === HORIZONTAL_ALIGNMENT.RIGHT)
-                        alignmentLeft = (style.width as number) - widest;
+            const getAlignmentFactor = (alignment:number) => {
+                switch (alignment) {
+                    case HORIZONTAL_ALIGNMENT.LEFT:
+                    case VERTICAL_ALIGNMENT.TOP:
+                        return 0;
+                    case HORIZONTAL_ALIGNMENT.CENTER:
+                        return 0.5;
+                    case HORIZONTAL_ALIGNMENT.RIGHT:
+                    case VERTICAL_ALIGNMENT.BOTTOM:
+                        return 1;
+                    default:
+                        console.error('Invalid alignment: ' + alignment);
+                        return 0;
                 }
             }
 
-            let relativeLeft = alignmentLeft;
-            let relativeTop = alignmentTop;
-            let test = 0;
+            const calculateGrid = ():FlowGrid => {
+                let calcHeight = 0;
+                let calcWidth = 0;
 
-            componentPropsSorted.forEach(component => {
-                const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
-                let top = relativeTop;
-                let left = relativeLeft;
-                let height = size.height;
-                let width = size.width;
+                let width = 0;
+                let height = 0;
 
-                // Orientation Position
-                if(isRowOrientation){
-                    if(innerAlignment === VERTICAL_ALIGNMENT.BOTTOM)
-                        top += tallest - size.height;
-                    else if(innerAlignment === VERTICAL_ALIGNMENT.CENTER)
-                        top += (tallest - size.height)/2;
-                    else if(innerAlignment === VERTICAL_ALIGNMENT.STRETCH)
-                        height = tallest;
+                let anzRows = 1;
+                let anzCols = 1;
 
-                    if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH)
-                        width += stretchValue
-                    if(outerVa === VERTICAL_ALIGNMENT.STRETCH) {
-                        top = relativeTop;
-                        height = style.height as number || tallest;
-                    }
+                let bFirst = true;
 
-                    if (relativeLeft + width + gaps.horizontalGap > (style.width as number) && autoWrap) {
-                        if (outerVa === VERTICAL_ALIGNMENT.CENTER || outerVa === VERTICAL_ALIGNMENT.TOP || outerVa === VERTICAL_ALIGNMENT.STRETCH) {
-                            top += tallest
-                            relativeTop += tallest
-                            relativeLeft = alignmentLeft;
-                            left = relativeLeft
-                        }
-                        else if (outerVa === VERTICAL_ALIGNMENT.BOTTOM) {
-                            componentPropsSorted.forEach(component => {
-                                const s = sizeMap.get(component.id)
-                                if (s)
-                                    (s.top as number) -= tallest
-                            })
-                            relativeLeft = alignmentLeft;
-                            left = relativeLeft
-                        }
-                    }
+                componentPropsSorted.forEach(component => {
+                    if (component.visible !== false) {
+                        const prefSize = preferredCompSizes.get(component.id) || { width: 0, height: 0 };
 
-                    relativeLeft += width + gaps.verticalGap;
-                }
-                else{
-                    if(innerAlignment === HORIZONTAL_ALIGNMENT.RIGHT)
-                        left += widest - size.width;
-                    if(innerAlignment === HORIZONTAL_ALIGNMENT.CENTER)
-                        left += (widest - size.width)/2;
-                    if(innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH)
-                        width = widest;
+                        if (isRowOrientation) {
+                            if (!bFirst)
+                                calcWidth += gaps.horizontalGap;
+                            calcWidth += prefSize.width;
+                            height = Math.max(height, prefSize.height);
 
-                    if(outerVa === VERTICAL_ALIGNMENT.STRETCH)
-                        height += stretchValue;
-                    if(outerHa === HORIZONTAL_ALIGNMENT.STRETCH){
-                        left = relativeLeft;
-                        width = style.width as number || widest;
-                    }
-
-                    if (test !== 0) {
-                        width = test - gaps.horizontalGap
-                    }
-
-                    //console.log(totalHeight, relativeTop, style.height)
-
-                    if (relativeTop + height + gaps.verticalGap > (style.height as number) && autoWrap) {
-                        if (outerHa === HORIZONTAL_ALIGNMENT.CENTER) {
-                            componentPropsSorted.forEach(component => {
-                                    const s = sizeMap.get(component.id)
-                                    if (s) {
-                                        (s.left as number) -= widest/2;
-                                    }
-                            })
-                            left += widest/2
-                            relativeLeft += widest/2
-                            relativeTop = alignmentTop;
-                            top = relativeTop;
-                        }
-                        else if (outerHa === HORIZONTAL_ALIGNMENT.LEFT) {
-                            left += widest;
-                            relativeLeft += widest
-                            relativeTop = alignmentTop;
-                            top = relativeTop;
-                        }
-                        else if (outerHa === HORIZONTAL_ALIGNMENT.RIGHT) {
-                            componentPropsSorted.forEach(component => {
-                                const s = sizeMap.get(component.id)
-                                if (s) {
-                                    (s.left as number) -= widest;
-                                }
-                            });
-                            relativeTop = alignmentTop;
-                            top = relativeTop;
-                        }
-                        else if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
-                            componentPropsSorted.forEach(component => {
-                                const s = sizeMap.get(component.id)
-                                if (s) {
-                                    (s.width as number) = (s.width as number)/2;
-                                    test = (s.width as number)
-                                }
-                            });
-                            relativeTop = alignmentTop;
-                            top = relativeTop;
-                            width = test - gaps.horizontalGap
-                            if (relativeLeft === 0) {
-                                relativeLeft += widest + gaps.horizontalGap
+                            if (!bFirst && autoWrap && (style.width as number) > 0 && calcWidth > (style.width as number)) {
+                                calcWidth = prefSize.width;
+                                anzRows++;
                             }
-                                
-                            else {
-                                relativeLeft += relativeLeft
+                            else if (bFirst)
+                                bFirst = false;
+                            width = Math.max(width, calcWidth);
+                        }
+                        else {
+                            if (!bFirst)
+                                calcHeight += gaps.verticalGap;
+                            calcHeight += prefSize.height;
+                            width = Math.max(width, prefSize.width);
+
+                            if (!bFirst && autoWrap && (style.height as number) > 0 && calcHeight > (style.height as number)) {
+                                calcHeight = prefSize.height;
+                                anzCols++;
                             }
-                                
-                            left = relativeLeft
+                            else if (bFirst)
+                                bFirst = false;
+                            height = Math.max(height, calcHeight);
                         }
                     }
-
-                    relativeTop += height + gaps.horizontalGap;
-                }
-
-                sizeMap.set(component.id,{
-                    height: height,
-                    width: width,
-                    left: left,
-                    top: top,
-                    position: "absolute"
                 });
+                const grid:FlowGrid = {columns: anzCols, rows: anzRows, gridWidth: width, gridHeight: height}
+                return grid;
+            }
 
-            });
+            const flowLayoutInfo = calculateGrid();
+            const prefSize:Size = {width: flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1),
+                                   height: flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)};
+            let left:number;
+            let width:number;
+
+            if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
+                left = 0;
+                width = (style.width as number);
+            }
+            else {
+                left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa);
+                width = prefSize.width;
+            }
+
+            let top:number;
+            let height:number;
+
+            if (outerVa === VERTICAL_ALIGNMENT.STRETCH) {
+                top = 0;
+                height = (style.height as number);
+            }
+            else {
+                top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa);
+                height = prefSize.height;
+            }
+
+            let fW = Math.max(1, width);
+            let fPW = Math.max(1, prefSize.width);
+            let fH = Math.max(1, height);
+            let fPH = Math.max(1, prefSize.height);
+            let x = 0;
+            let y = 0;
+
+            let bFirst = true;
+            componentPropsSorted.forEach(component => {
+                if (component.visible !== false) {
+                    const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
+
+                    if (isRowOrientation) {
+                        if (!bFirst && autoWrap && (style.width as number) > 0 && x + size.width > (style.width as number)) {
+                            x = 0;
+                            y += (flowLayoutInfo.gridHeight + gaps.verticalGap) * fH / fPH;
+                        }
+                        else if (bFirst)
+                            bFirst = false;
+
+                        if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
+                            sizeMap.set(component.id, {
+                                left: left + x * fW / fPW, 
+                                top: top + y, 
+                                width: size.width * fW / fPW, 
+                                height: flowLayoutInfo.gridHeight * fH / fPH,
+                                position: "absolute"}
+                            );
+                        }
+                        else {
+                            sizeMap.set(component.id, {
+                                left: left + x * fW / fPW,
+                                top: top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH,
+                                width: size.width * fW / fPW,
+                                height: size.height * fH / fPH,
+                                position: "absolute"}
+                            );
+                        }
+
+                        x += size.width + gaps.horizontalGap;
+                    }
+                    else {
+                        if (!bFirst && autoWrap && (style.height as number) > 0 && y + size.height > (style.height as number)) {
+                            y = 0;
+                            x += (flowLayoutInfo.gridWidth + gaps.horizontalGap) * fW / fPW;
+                        }
+                        else if (bFirst)
+                            bFirst = false;
+                        
+                        if (innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
+                            sizeMap.set(component.id, {
+                                left: left + x,
+                                top: top + y * fH / fPH,
+                                width: flowLayoutInfo.gridWidth * fW / fPW,
+                                height: size.height * fH / fPH,
+                                position: "absolute"}
+                            );
+                        }
+                        else {
+                            sizeMap.set(component.id, {
+                                left: left + x + ((flowLayoutInfo.gridWidth - size.width) * getAlignmentFactor(innerAlignment)) * fW / fPW,
+                                top: top + y * fH / fPH,
+                                width: size.width * fW / fPW,
+                                height: size.height * fH / fPH,
+                                position: "absolute"}
+                            );
+                        }
+
+                        y += size.height + gaps.verticalGap
+                    }
+                }
+            })
 
             if(reportSize && !style.width && !style.height){
-                if(isRowOrientation)
-                    reportSize(tallest, totalWidth);
-                else
-                reportSize(totalHeight, widest);
-            }                     
+                reportSize(flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth);
+            }               
         }
 
         return sizeMap;

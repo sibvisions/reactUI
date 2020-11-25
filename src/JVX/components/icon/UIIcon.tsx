@@ -32,6 +32,10 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             prefSize.width = event.currentTarget.width;
         }
         if (onLoadCallback) {
+            //@ts-ignore
+            iconRef.current.children[0].style.setProperty('height', prefSize.height+'px');
+            //@ts-ignore
+            iconRef.current.children[0].style.setProperty('width', prefSize.width+'px');
             sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }

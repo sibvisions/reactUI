@@ -20,7 +20,7 @@ const UIInputSwitch: FC<IToggleButton> = (baseProps) => {
     useLayoutEffect(() => {
         if (inputRef.current)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current, onLoadCallback)
-    })
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     const handleOnChange = () => {
         const req = createPressButtonRequest();

@@ -586,7 +586,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                             
                     }
-                    console.log(style)
                     setCalculatedStyle( {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,

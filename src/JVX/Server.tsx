@@ -176,13 +176,6 @@ class Server{
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH
             )
         }
-        else {
-            const fetchReq = createFetchRequest();
-            fetchReq.rowCount = 1;
-            fetchReq.fromRow = 0;
-            fetchReq.dataProvider = changedProvider.dataProvider;
-            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
-        }
         this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
     }
 

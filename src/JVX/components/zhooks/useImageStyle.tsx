@@ -14,12 +14,16 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         let horizontalAlignment = ha || cellHA;
         let verticalAlignment = va || cellVA;
 
+        console.log(horizontalAlignment, verticalAlignment)
+
         if (horizontalAlignment === HORIZONTAL_ALIGNMENT.LEFT)
             spanCSS.justifyContent = "flex-start";
         else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.CENTER)
             spanCSS.justifyContent = "center";
         else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.RIGHT)
             spanCSS.justifyContent = "flex-end";
+        else
+            spanCSS.justifyContent = "center"
 
         if (verticalAlignment === VERTICAL_ALIGNMENT.TOP)
             spanCSS.alignItems = "flex-start";
@@ -27,6 +31,8 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
             spanCSS.alignItems = "center";
         else if (verticalAlignment === VERTICAL_ALIGNMENT.BOTTOM)
             spanCSS.alignItems = "flex-end";
+        else
+            spanCSS.alignItems = "center"
 
         if (verticalAlignment === VERTICAL_ALIGNMENT.STRETCH && horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
             imgCSS.width = "100%";
