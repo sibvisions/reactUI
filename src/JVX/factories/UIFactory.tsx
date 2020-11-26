@@ -28,6 +28,7 @@ import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
+import UIMap, {IMap} from "../components/map/UIMap";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -133,6 +134,10 @@ export const createChart: FC<IChart> = (props) => {
     return <UIChart {...props} key={props.id}/>
 }
 
+export const createMap: FC<IMap> = (props) => {
+    return <UIMap {...props} key={props.id}/>
+}
+
 export const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
@@ -183,6 +188,7 @@ const classNameMapper = new Map<string, Function>()
     .set("PasswordField", createPassword)
     .set("TabsetPanel", createTabsetPanel)
     .set("Chart", createChart)
+    .set("Map", createMap)
 
 export const componentHandler = (component: BaseComponent) => {
     const builder = classNameMapper.get(component.className);

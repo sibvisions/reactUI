@@ -8,8 +8,8 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {parseJVxSize} from "../../util/parseJVxSize";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
