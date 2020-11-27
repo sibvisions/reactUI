@@ -4,21 +4,23 @@ import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
-import {parseJVxSize} from "../util/parseJVxSize";
+import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
-import { MapContainer, Marker, MarkerProps, Polygon, Popup, TileLayer, useMap, useMapEvent } from "react-leaflet";
+import {MapContainer, Marker, MarkerProps, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import Size from "../util/Size";
 import { createFetchRequest } from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
-import { LatLngExpression } from "leaflet";
+import {LatLngExpression, PolylineOptions} from "leaflet";
 import L from 'leaflet'
+import tinycolor from 'tinycolor2';
 
 export interface IMap extends BaseComponent {
+    center: string
     groupDataBook: string
     pointsDataBook: string
     pointSelectionEnabled: boolean
-    poinSelectionLockedOnCenter: boolean
+    pointSelectionLockedOnCenter: boolean
+    zoomLevel: number
 }
 
 type MapPoint = {
@@ -39,6 +41,8 @@ const UIMap: FC<IMap> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
     const {onLoadCallback, id} = props;
+    const centerPosition = parseJVxLocation(props.center);
+    const startZoom = 19 - props.zoomLevel;
 
     useLayoutEffect(() => {
         if (onLoadCallback && mapRef.current) {
@@ -47,13 +51,15 @@ const UIMap: FC<IMap> = (baseProps) => {
             
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    console.log(centerPosition)
+
     //Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,
     //set a default preferredSize (100x100) the layout can use to calculate. 
     if (layoutValue.has(id)) {
         return (
             <div ref={mapRef} style={layoutValue.get(id)}>
-                <MapContainer center={[48.2082, 16.3738]} zoom={11} scrollWheelZoom={false} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
-                    <UIMapTest {...props}/>
+                <MapContainer center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
+                    <UIMapTest {...props} zoomLevel={startZoom}/>
                 </MapContainer>
             </div>
         )
@@ -68,10 +74,16 @@ export default UIMap
 
 const UIMapTest: FC<IMap> = (props) => {
     const map = useMap();
+    const markerRefs = useRef<any>([]);
     const context = useContext(jvxContext);
     const [providedGroupData] = useDataProviderData(props.id, props.groupDataBook);
     const [providedPointData] = useDataProviderData(props.id, props.pointsDataBook);
-    const selectedMarker:MapPoint = providedPointData.slice(-1).pop();
+    const [selectedMarker, setSelectedMarker] = useState<any>()
+    const defaultOptions:PolylineOptions = {
+        color: tinycolor("rgba (200, 0, 0, 210)").toHexString(),
+        fillColor: tinycolor("rgba (202, 39, 41, 41)").toHexString()
+    }
+        
 
     const groupsSorted = useMemo(() => {
         const groupMap:Array<any> = []
@@ -108,24 +120,26 @@ const UIMapTest: FC<IMap> = (props) => {
         }
         sendFetchRequest(props.groupDataBook);
         sendFetchRequest(props.pointsDataBook);
-    },[]);
+    },[context.server, props.groupDataBook, props.pointsDataBook]);
 
     useEffect(() => {
-        console.log(selectedMarker)
-        if (selectedMarker)
-            map.setView(new L.LatLng(selectedMarker.LATITUDE, selectedMarker.LONGITUDE), 11)
-        else
-            map.setView(new L.LatLng(48.2082, 16.3738), 11)
-    },[selectedMarker]);
+        if (markerRefs.current) {
+            setSelectedMarker(markerRefs.current.slice(-1).pop())
+        }
+            
+    },[providedPointData])
+
+    useEffect(() => {
+        if (selectedMarker && !props.center)
+            map.setView(selectedMarker.getLatLng(), props.zoomLevel);     
+    },[selectedMarker, map]);
 
     const onMove = useCallback((e) => {
-        console.log(L.marker, map.getCenter(), map)
-        
-    },[map]);
+           if (props.pointSelectionLockedOnCenter && selectedMarker)
+              selectedMarker.setLatLng(map.getCenter());
+    },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
 
     useMapEvent('move', onMove);
-
-    console.log(providedPointData)
 
     return (
         <>
@@ -133,18 +147,24 @@ const UIMapTest: FC<IMap> = (props) => {
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {
-                providedPointData.map((point: MapPoint, index: number) => {
+                providedPointData.map((point: MapPoint, i: number) => {
                     if (point.LATITUDE !== null && point.LONGITUDE !== null) {
                         const markerProps: MarkerProps = { position: [point.LATITUDE, point.LONGITUDE] }
                         if (point.MARKER_IMAGE)
                             markerProps.icon = new L.Icon({ iconUrl: context.server.RESOURCE_URL + point.MARKER_IMAGE, iconAnchor: [8, 16] })
-                        return <Marker {...markerProps} />
+                        return <Marker 
+                                    ref={el => markerRefs.current[i] = el} 
+                                    position={[point.LATITUDE, point.LONGITUDE]} 
+                                    icon={new L.Icon({ 
+                                        iconUrl: context.server.RESOURCE_URL + (point.MARKER_IMAGE ? point.MARKER_IMAGE : "/com/sibvisions/rad/ui/swing/ext/images/map_defaultmarker.png"),
+                                        iconAnchor: point.MARKER_IMAGE ? [8, 16] : [12.5, 41]
+                                    })} />
                     }
                 })
             }
             {
                 groupsSorted.map((group) => {
-                    return <Polygon positions={group.positions} />
+                    return <Polygon positions={group.positions} pathOptions={defaultOptions} />
                 })
             }
         </>
