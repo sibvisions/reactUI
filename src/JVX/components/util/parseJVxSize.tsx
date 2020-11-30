@@ -1,4 +1,4 @@
-import JVxLocation from "./JvxLocation";
+import JVxLocation from "./JVxLocation";
 import Size from "./Size";
 
 export function parseJVxSize(size:string|undefined):Size|undefined {

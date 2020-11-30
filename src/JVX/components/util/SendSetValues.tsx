@@ -12,6 +12,7 @@ export function sendSetValues(dataProvider:string, name:string, columnName:strin
     }
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];
 
-    lastValue = value;
+    if (lastValue)
+        lastValue = value;
     server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUES);
 }
