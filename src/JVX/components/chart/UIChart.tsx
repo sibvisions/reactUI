@@ -2,7 +2,6 @@ import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import './UIChart.scss'
 import {Chart} from 'primereact/chart';
 import tinycolor from 'tinycolor2';
-import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
@@ -25,7 +24,6 @@ enum CHART_STYLES {
 
 const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef(null);
-    const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IChart>(baseProps.id, baseProps);
     const {onLoadCallback, id} = baseProps;
@@ -56,7 +54,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             ]
         }
         return primeChart
-    },[props.data]);
+    },[props.data, props.chartStyle, props.yColumnLabels]);
 
     const getMaxDataVal = () => {
         let tempArray:Array<number> = [];

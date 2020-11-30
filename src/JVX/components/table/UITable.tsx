@@ -150,43 +150,67 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     useLayoutEffect(() => {
         if (tableRef.current) {
+            let cellDataWidthList:Array<number> = [];
+
+            const goThroughCellData = (trows:any, index:number) => {
+                const cellDatas:NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cellData");
+                        for (let j = 0; j < cellDatas.length; j++) {
+                            cellDatas[j].style.setProperty('display', 'inline-block');
+                            let tempWidth:number;
+                            if (cellDatas[j] !== undefined) {
+                                if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
+                                tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
+                            else
+                                tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
+                            if (tempWidth > cellDataWidthList[j])
+                                cellDataWidthList[j] = tempWidth;
+                            }
+                            cellDatas[j].style.removeProperty('display')
+                        } 
+            }
+
             //@ts-ignore
             if (tableRef.current.table) {
                 //@ts-ignore
                 const theader = tableRef.current.table.querySelectorAll('th');
                 //@ts-ignore
                 const trows = tableRef.current.table.querySelectorAll('tbody > tr');
-                let cellDataWidthList:Array<number> = [];
-                for (let i = 0; i < theader.length; i++) {
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width+29
-                }
-                for (let i = 0; i < (trows.length < 10 ? trows.length : 10); i++) {
-                    const cellDatas: NodeListOf<HTMLElement> = trows[i].querySelectorAll("td > .cellData");
-                    for (let j = 0; j < cellDatas.length; j++) {
-                        cellDatas[j].style.setProperty('display', 'inline-block');
-                        let tempWidth:number;
-                        if (cellDatas[j] !== undefined) {
-                            if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
-                        else
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
-                        if (tempWidth > cellDataWidthList[j])
-                            cellDataWidthList[j] = tempWidth;
-                        }
-                        cellDatas[j].style.removeProperty('display')
-                    }     
-                 }
-                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width', cellDataWidthList[i]+'px');
-                 }
+                for (let i = 0; i < theader.length; i++)
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 29;
+                for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
+                    goThroughCellData(trows, i);
+                 for (let i = 0; i < theader.length; i++)
+                    theader[i].style.setProperty('width', cellDataWidthList[i]+  'px');
                  let tempWidth:number = 0;
                  cellDataWidthList.forEach(cellDataWidth => {
                     tempWidth += cellDataWidth
                  });
                  setEstTableWidth(tempWidth)
             }
+            else {
+                //@ts-ignore
+                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
+                //@ts-ignore
+                const tColGroup = tableRef.current.container.querySelector('.p-datatable-scrollable-body-table > colgroup');
+                const tCols = tColGroup.querySelectorAll('col')
+                for (let i = 0; i < theader.length; i++)
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 29;
+                //@ts-ignore
+                const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
+                for (let i = 0; i < 20; i++)
+                    goThroughCellData(trows, i)
+                for (let i = 0; i < theader.length; i++) {
+                    theader[i].style.setProperty('width', cellDataWidthList[i] + 'px')
+                    tCols[i].style.setProperty('width', cellDataWidthList[i] + 'px')
+                }
+                let tempWidth:number = 0;
+                 cellDataWidthList.forEach(cellDataWidth => {
+                    tempWidth += cellDataWidth
+                 });
+                 setEstTableWidth(tempWidth+17)
+            }
         }
-    })
+    },[])
 
     useLayoutEffect(() => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))

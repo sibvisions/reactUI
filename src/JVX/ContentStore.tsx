@@ -1,10 +1,9 @@
-import MenuResponse, {serverMenuButtons} from "./response/MenuResponse";
+import {serverMenuButtons} from "./response/MenuResponse";
 import {ReplaySubject} from "rxjs";
 import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
-import { parseIconData } from "./components/compprops/ComponentProperties";
 import {ReactElement} from "react";
 import {componentHandler} from "./factories/UIFactory";
 

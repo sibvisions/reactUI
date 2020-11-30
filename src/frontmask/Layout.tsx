@@ -21,11 +21,6 @@ import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
 
-
-
-
-
-
 type queryType = {
     appName?: string,
     userName?: string,
@@ -64,7 +59,7 @@ const Layout: FC = (props) => {
 
         return screenTitle
 
-    }, [props.children])
+    }, [props.children, context.server.APP_NAME])
 
     const doResize = () => {
         if(sizeRef.current){
