@@ -28,7 +28,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const alignments = checkCellEditorAlignments(props);
     const {onLoadCallback, id} = baseProps;
 

@@ -13,5 +13,6 @@ enum REQUEST_ENDPOINTS  {
     SET_VALUES = "/api/dal/setValues",
     SELECT_TAB = "/api/comp/selectTab",
     CLOSE_TAB = "/api/comp/closeTab",
+    SAVE = "/api/dal/save"
 }
 export default REQUEST_ENDPOINTS

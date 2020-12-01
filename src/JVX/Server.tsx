@@ -136,13 +136,14 @@ class Server{
 
     //Dal
     processRowSelection(selectedRowIndex: number | undefined, dataProvider: string){
+        const compId = dataProvider.split('/')[1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== undefined) {
-            const selectedRow = this.contentStore.getDataRow(dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(dataProvider, selectedRow, selectedRowIndex);
-            this.contentStore.emitRowSelect(dataProvider);
+            const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
+            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex);
+            this.contentStore.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
-            this.contentStore.clearSelectedRow(dataProvider);
-            this.contentStore.emitRowSelect(dataProvider);
+            this.contentStore.clearSelectedRow(compId, dataProvider);
+            this.contentStore.emitRowSelect(compId, dataProvider);
         }
     }
 
@@ -154,17 +155,21 @@ class Server{
             });
             return data;
         });
-        this.contentStore.dataProviderFetched.set(fetchData.dataProvider, fetchData.isAllFetched);
+        const compId = fetchData.dataProvider.split('/')[1];
+        const tempMap:Map<string, boolean> = new Map<string, boolean>();
+        tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
+        this.contentStore.dataProviderFetched.set(compId, tempMap);
         if(fetchData.records.length !== 0)
-            this.contentStore.updateDataProviderData(fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         else
-            this.contentStore.notifyDataChange(fetchData.dataProvider);
+            this.contentStore.notifyDataChange(compId, fetchData.dataProvider);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
     processDataProviderChanged(changedProvider: DataProviderChangedResponse){
+        const compId = changedProvider.dataProvider.split('/')[1];
         if(changedProvider.reload === -1) {
-            this.contentStore.clearDataFromProvider(changedProvider.dataProvider);
+            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
@@ -179,8 +184,16 @@ class Server{
         this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
     }
 
-    processMetaData(metaData: MetaDataResponse){
-        this.contentStore.dataProviderMetaData.set(metaData.dataProvider, metaData);
+    processMetaData(metaData: MetaDataResponse) {
+        const compId = metaData.dataProvider.split('/')[1];
+        const existingMap = this.contentStore.dataProviderMetaData.get(compId);
+        if (existingMap)
+            existingMap.set(metaData.dataProvider, metaData);
+        else {
+            const tempMap:Map<string, MetaDataResponse> = new Map<string, MetaDataResponse>();
+            tempMap.set(metaData.dataProvider, metaData)
+            this.contentStore.dataProviderMetaData.set(compId, tempMap);
+        }
     }
 
     //Down- & UpLoad

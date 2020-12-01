@@ -16,8 +16,8 @@ type MenuItem = {
 class ContentStore{
 
     menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1);
-    flatContent = new Map<string ,BaseComponent>();
-    removedContent = new Map<string ,BaseComponent>();
+    flatContent = new Map<string, BaseComponent>();
+    removedContent = new Map<string, BaseComponent>();
     customContent = new Map<string, Function>();
     serverMenuItems = new Map<string, Array<serverMenuButtons>>();
     customMenuItems = new Map<string, Array<serverMenuButtons>>();
@@ -27,19 +27,17 @@ class ContentStore{
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
     parentSubscriber = new Map<string, Function>();
-    rowSelectionSubscriber = new Map<string, Array<Function>>();
-    rowSelectionIndexSubscriber = new Map<string, Array<Function>>();
-    dataChangeSubscriber = new Map<string, Array<{ displayRecords: number, fn: Function }>>();
+    rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
+    dataChangeSubscriber = new Map<string, Map<string, Array<{ displayRecords: number, fn: Function }>>>();
     appNameSubscriber = new Map<string, Function>();
 
     MenuSubscriber = new Array<Function>();
 
     //DataProvider Maps
-    dataProviderData = new Map<string, Array<any>>();
-    dataProviderMetaData = new Map<string, MetaDataResponse>();
-    dataProviderFetched = new Map<string, boolean>();
-    dataProviderSelectedRow = new Map<string, any>();
-    dataProviderSelectedRowIndex = new Map<string, number>();
+    dataProviderData = new Map<string, Map<string, Array<any>>>();
+    dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
+    dataProviderFetched = new Map<string, Map<string, boolean>>();
+    dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
@@ -102,20 +100,28 @@ class ContentStore{
 
 
     closeScreen(windowName: string){
-        const deleteChildren = (parentId: string) => {
-            const children = this.getChildren(parentId);
-
-            children.forEach(child => {
-                deleteChildren(child.id);
-                this.flatContent.delete(child.id);
-            });
-        }
-
         const window = this.getWindowData(windowName);
         if(window){
-            deleteChildren(window.id);
-            this.flatContent.delete(window.id);
+            this.cleanUp(window.id, window.name);
         }
+    }
+
+    deleteChildren(parentId:string) {
+        const children = this.getChildren(parentId);
+        children.forEach(child => {
+            this.deleteChildren(child.id);
+            this.flatContent.delete(child.id);
+        });
+    }
+
+    cleanUp(id:string, name:string) {
+        this.deleteChildren(id);
+        this.flatContent.delete(id);
+        this.dataProviderData.delete(name);
+        this.dataProviderMetaData.delete(name);
+        this.dataProviderFetched.delete(name);
+        this.dataProviderSelectedRow.delete(name);
+        this.rowSelectionSubscriber.delete(name);
     }
 
     reset(){
@@ -130,36 +136,42 @@ class ContentStore{
 
 
     //Data Provider Management
-    updateDataProviderData(dataProvider: string, newDataSet: Array<any>, to: number, from: number){
-        const existingData = this.dataProviderData.get(dataProvider);
-        if(existingData){
-            if(existingData.length <= from){
-                existingData.push(...newDataSet)
-            } else {
-                let newDataSetIndex = 0;
-                for(let i = to; i <= from; i++){
-                    existingData[i] = newDataSet[newDataSetIndex];
-                    newDataSetIndex++;
+    updateDataProviderData(compId:string, dataProvider: string, newDataSet: Array<any>, to: number, from: number){
+        const existingMap = this.dataProviderData.get(compId);
+        if (existingMap) {
+            const existingData = existingMap.get(dataProvider);
+            if(existingData){
+                if(existingData.length <= from){
+                    existingData.push(...newDataSet)
+                } else {
+                    let newDataSetIndex = 0;
+                    for(let i = to; i <= from; i++){
+                        existingData[i] = newDataSet[newDataSetIndex];
+                        newDataSetIndex++;
+                    }
                 }
+            }
+            else {
+                existingMap.set(dataProvider, newDataSet)
             }
         }
         else{
-            this.dataProviderData.set(dataProvider, newDataSet);
+            const dataMap:Map<string, any[]> = new Map()
+            dataMap.set(dataProvider, newDataSet)
+            this.dataProviderData.set(compId, dataMap);
         }
-
-        this.notifyDataChange(dataProvider)
+        this.notifyDataChange(compId, dataProvider)
     }
 
-    notifyDataChange(dataProvider: string) {
+    notifyDataChange(compId:string, dataProvider: string) {
         //Notify
-        this.dataChangeSubscriber.get(dataProvider)?.forEach(value => {
+        this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(value => {
             value.fn.apply(undefined, []);
         });
     }
 
-    getData(dataProvider: string, from?: number, to?: number): Array<any>{
-        const dataArray = this.dataProviderData.get(dataProvider);
-
+    getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
+        const dataArray = this.dataProviderData.get(compId)?.get(dataProvider);
         if(from !== undefined && to !== undefined){
             return dataArray?.slice(from, to) || [];
         }
@@ -167,8 +179,8 @@ class ContentStore{
         return  dataArray || []
     }
 
-    getDataRow(dataProvider: string, indexOfRow: number) : any{
-        const data = this.getData(dataProvider);
+    getDataRow(compId:string, dataProvider: string, indexOfRow: number) : any{
+        const data = this.getData(compId, dataProvider);
         const dataRow = data[indexOfRow];
         if(dataRow)
             return dataRow;
@@ -176,22 +188,28 @@ class ContentStore{
             return undefined
     }
 
-    getSelectedIndex(dataProvider: string) : number{
-        return this.dataProviderSelectedRowIndex.get(dataProvider) || -1
+    // getSelectedIndex(dataProvider: string) : number{
+    //     return this.dataProviderSelectedRowIndex.get(dataProvider) || -1
+    // }
+
+    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index: number) {
+        const existingMapRow = this.dataProviderSelectedRow.get(compId);
+        if (existingMapRow) {
+            existingMapRow.set(dataProvider, dataRow);
+        }
+        else {
+            const tempMapRow:Map<string, any> = new Map<string, any>();
+            tempMapRow.set(dataProvider, dataRow);
+            this.dataProviderSelectedRow.set(compId, tempMapRow);
+        }
     }
 
-    setSelectedRow(dataProvider: string, dataRow: any, index: number){
-        this.dataProviderSelectedRow.set(dataProvider, dataRow);
-        this.dataProviderSelectedRowIndex.set(dataProvider, index)
+    clearSelectedRow(compId:string, dataProvider: string) {
+        this.dataProviderSelectedRow.get(compId)?.delete(dataProvider);
     }
 
-    clearSelectedRow(dataProvider: string){
-        this.dataProviderSelectedRow.delete(dataProvider);
-        this.dataProviderSelectedRowIndex.delete(dataProvider);
-    }
-
-    clearDataFromProvider(dataProvider: string){
-        this.dataProviderData.delete(dataProvider);
+    clearDataFromProvider(compId:string, dataProvider: string){
+        this.dataProviderData.get(compId)?.delete(dataProvider);
     }
 
 
@@ -229,6 +247,15 @@ class ContentStore{
         return children;
     }
 
+    getComponentId(id:string) {
+        let comp:BaseComponent|undefined = this.flatContent.get(id)
+        if (comp) {
+            while (comp?.parent) 
+                comp = this.flatContent.get(comp?.parent)
+        }
+        return comp?.name
+    }
+
 
     //Menu
 
@@ -247,33 +274,36 @@ class ContentStore{
         this.parentSubscriber.set(id, fn);
     }
 
-    subscribeToRowSelection(dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionSubscriber.get(dataProvider);
-        if(subscriber){
-            subscriber.push(fn);
-        } else {
-            this.rowSelectionSubscriber.set(dataProvider, new Array<Function>(fn));
+    subscribeToRowSelection(compId:string, dataProvider: string, fn: Function) {
+        const existingMap = this.rowSelectionSubscriber.get(compId);
+        if (existingMap) {
+            const subscriber = existingMap.get(dataProvider);
+            if(subscriber)
+                subscriber.push(fn);
+            else
+                existingMap.set(dataProvider, new Array<Function>(fn));
         }
+        else {
+            const tempMap:Map<string, Function[]> = new Map<string, Function[]>();
+            tempMap.set(dataProvider, new Array<Function>(fn));
+            this.rowSelectionSubscriber.set(compId, tempMap);
+        }
+
     }
 
-    subscribeToRowIndexSelection(dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionIndexSubscriber.get(dataProvider);
-        const selectedIndex = this.dataProviderSelectedRowIndex.get(dataProvider);
-        if(selectedIndex !== undefined)
-            fn.apply(undefined, [selectedIndex])
-        if(subscriber){
-            subscriber.push(fn);
-        } else {
-            this.rowSelectionIndexSubscriber.set(dataProvider, new Array<Function>(fn));
+    subscribeToDataChange(compId:string, dataProvider: string, fn: Function, displayRecords= 50){
+        const existingMap = this.dataChangeSubscriber.get(compId);
+        if (existingMap) {
+            const subscriber = existingMap.get(dataProvider);
+            if(subscriber)
+                subscriber.push({fn: fn, displayRecords: displayRecords});
+            else
+                existingMap.set(dataProvider, new Array<{ displayRecords: number, fn: Function}>({fn: fn, displayRecords: displayRecords}));
         }
-    }
-
-    subscribeToDataChange(dataProvider: string, fn: Function, displayRecords= 50){
-        const subscriber = this.dataChangeSubscriber.get(dataProvider);
-        if(subscriber){
-            subscriber.push({fn: fn, displayRecords: displayRecords});
-        } else {
-            this.dataChangeSubscriber.set(dataProvider, new Array<{ displayRecords: number, fn: Function}>({fn: fn, displayRecords: displayRecords}));
+        else {
+            const tempMap:Map<string, Array<{ displayRecords: number, fn: Function }>> = new Map();
+            tempMap.set(dataProvider, new Array<{displayRecords: number, fn: Function}>({fn: fn, displayRecords: displayRecords}));
+            this.dataChangeSubscriber.set(compId, tempMap);
         }
     }
 
@@ -290,22 +320,15 @@ class ContentStore{
         this.MenuSubscriber.splice(this.MenuSubscriber.findIndex(value => value === fn), 1);
     }
 
-    unsubscribeFromDataChange(dataProvider: string, fn: Function){
-        const subscriber = this.dataChangeSubscriber.get(dataProvider)
+    unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function){
+        const subscriber = this.dataChangeSubscriber.get(compId)?.get(dataProvider)
         if(subscriber){
             subscriber.splice(subscriber.findIndex(value => value.fn === fn),1);
         }
     }
 
-    unsubscribeFromRowSelection(dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionSubscriber.get(dataProvider)
-        if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
-        }
-    }
-
-    unsubscribeFromRowIndexSelection(dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionSubscriber.get(dataProvider)
+    unsubscribeFromRowSelection(compId:string, dataProvider: string, fn: Function){
+        const subscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider)
         if(subscriber){
             subscriber.splice(subscriber.findIndex(value => value === fn),1);
         }
@@ -325,18 +348,12 @@ class ContentStore{
 
 
     //Events
-    emitRowSelect(dataProvider: string){
-        const rowSubscriber = this.rowSelectionSubscriber.get(dataProvider);
-        const indexSubscriber = this.rowSelectionIndexSubscriber.get(dataProvider);
-        const selectedRow = this.dataProviderSelectedRow.get(dataProvider);
-        const selectedIndex = this.dataProviderSelectedRowIndex.get(dataProvider);
+    emitRowSelect(compId:string, dataProvider: string){
+        const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
+        const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
         if(rowSubscriber)
             rowSubscriber.forEach(sub => {
                 sub.apply(undefined, [selectedRow]);
-            });
-        if(indexSubscriber)
-            indexSubscriber.forEach(sub => {
-                sub.apply(undefined, [selectedIndex]);
             });
     }
 

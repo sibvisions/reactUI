@@ -3,7 +3,7 @@ import useDataProviderData from "../../JVX/components/zhooks/useDataProviderData
 import { Chart } from 'primereact/chart';
 
 const CustomChartScreen: FC = () => {
-    const [data] = useDataProviderData("old", "JVxMobileDemo/Cha-OL/chartData#0");
+    const [data] = useDataProviderData("Cha-OL", "old", "JVxMobileDemo/Cha-OL/chartData#0");
 
 
     const chartData = useMemo(() => {

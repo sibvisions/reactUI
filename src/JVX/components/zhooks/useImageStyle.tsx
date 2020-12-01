@@ -8,13 +8,8 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         const cellHA = cha
         const cellVA = cva
 
-        //imgCSS.maxWidth = "100%"
-        //imgCSS.maxHeight = "100%"
-
         let horizontalAlignment = ha || cellHA;
         let verticalAlignment = va || cellVA;
-
-        console.log(horizontalAlignment, verticalAlignment)
 
         if (horizontalAlignment === HORIZONTAL_ALIGNMENT.LEFT)
             spanCSS.justifyContent = "flex-start";

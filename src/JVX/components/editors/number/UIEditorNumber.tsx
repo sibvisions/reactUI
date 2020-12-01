@@ -30,7 +30,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const inputRef = useRef<InputNumber>(null);
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
 
     const [value, setValue] = useState(parseInt(baseProps.text || ""));
@@ -38,6 +39,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     const scaleDigits = useMemo(() => props.cellEditor.scale !== undefined ? (props.cellEditor.scale < 0 ? 2 : props.cellEditor.scale) : undefined, [props.cellEditor.scale]);
     const length = useMemo(() => props.cellEditor.precision ? props.cellEditor.precision+1 : null, [props.cellEditor.precision]);
+
+    console.log(scaleDigits, length)
 
     useLayoutEffect(() => {
         //@ts-ignore

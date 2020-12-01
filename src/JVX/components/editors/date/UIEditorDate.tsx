@@ -29,7 +29,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
 
     const [value, setValue] = useState<Date|Date[]>();

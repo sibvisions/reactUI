@@ -10,6 +10,7 @@ import SetValuesRequest from "../request/SetValuesRequest";
 import FilterRequest from "../request/FilterRequest";
 import SetValueRequest from "../request/SetValueRequest";
 import TabRequest from "../request/TabRequest";
+import SaveRequest from "../request/SaveRequest";
 
 
 
@@ -142,6 +143,15 @@ export const createTabRequest = (values?: TabRequest): TabRequest => {
         componentId: values?.componentId,
         index: values?.index
     };
-    return req
+    return req;
+}
+
+export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
+    const req:SaveRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider,
+        onlySelected: values?.onlySelected
+    };
+    return req;
 }
 

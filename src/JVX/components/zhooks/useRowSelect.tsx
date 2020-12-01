@@ -1,17 +1,17 @@
 import {useContext, useEffect, useMemo, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 
-const useRowSelect = (dataProvider: string, column?: string) => {
+const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
 
     const context = useContext(jvxContext);
     const currentlySelectedRow = useMemo(() => {
-        const sr = context.contentStore.dataProviderSelectedRow.get(dataProvider)
+        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
         if(column && sr)
             return sr[column];
         else
             return sr;
 
-    }, [context.contentStore, dataProvider, column])
+    }, [context.contentStore, dataProvider, column, compId])
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
 
 
@@ -22,11 +22,11 @@ const useRowSelect = (dataProvider: string, column?: string) => {
             else
                 setSelectedRow(newRow);
         }
-        context.contentStore.subscribeToRowSelection(dataProvider, onRowSelection);
+        context.contentStore.subscribeToRowSelection(compId, dataProvider, onRowSelection);
         return () => {
-            context.contentStore.unsubscribeFromRowSelection(dataProvider, onRowSelection);
+            context.contentStore.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
         }
-    }, [context.contentStore, dataProvider, column])
+    }, [context.contentStore, dataProvider, column, compId])
 
     return [selectedRow];
 }

@@ -155,8 +155,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 reportSize(style.height, style.width)
             }
         }
-
-
         return sizeMap;
     }, [preferredCompSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
 

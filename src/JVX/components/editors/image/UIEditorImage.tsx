@@ -25,12 +25,12 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const context = useContext(jvxContext);
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
-
+    const compId = context.contentStore.getComponentId(props.id) as string;
     const {onLoadCallback, id} = baseProps
     const {verticalAlignment, horizontalAlignment} = props
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
 
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
 
     useEffect(() => {
         if (!props.cellEditor.defaultImageName) {

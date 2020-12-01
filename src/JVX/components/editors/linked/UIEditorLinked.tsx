@@ -42,8 +42,19 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
-    const [providedData] = useDataProviderData(baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
+    
+    const getLinkedCompId = ():string => {
+        if (props.id) {
+            return context.contentStore.getComponentId(props.id) as string
+        }
+        else {
+            return props.dataRow.split('/')[1];
+        }
+    }
+
+    const compId = getLinkedCompId()
+    const [providedData] = useDataProviderData(compId, baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
     const autoFocus = props.autoFocus ? true : false;
     const [text, setText] = useState(selectedRow)
@@ -221,7 +232,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                         setLastRow(Math.ceil(currLastItem / 100) * 100);
                         elem.scrollTop = itemHeight * (currFirstItem + 3)
                     }
-                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(props.cellEditor.linkReference.referencedDataBook || "")) {
+                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
                         fetches();
                     }
                 }, 100);
@@ -230,7 +241,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
         },150);
-    }, [context, props, providedData, firstRow, lastRow, itemHeight])
+    }, [context, props, providedData, firstRow, lastRow, itemHeight, compId])
 
     
 
@@ -251,7 +262,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }
 
     const onInputChange = (event:any) => {
-        context.contentStore.clearDataFromProvider(props.cellEditor.linkReference.referencedDataBook||"")
+        context.contentStore.clearDataFromProvider(compId, props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest()
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;

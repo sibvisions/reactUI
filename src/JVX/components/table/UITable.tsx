@@ -118,8 +118,9 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //Custom Hooks
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-    const [providerData] = useDataProviderData(baseProps.id, props.dataBook);
-    const [selectedRow] = useRowSelect(props.dataBook);
+    const compId = context.contentStore.getComponentId(props.id) as string
+    const [providerData] = useDataProviderData(compId, baseProps.id, props.dataBook);
+    const [selectedRow] = useRowSelect(compId, props.dataBook);
 
     const rows = 40;
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
@@ -218,8 +219,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
 
     const columns = useMemo(() => {
-        const metaData = context.contentStore.dataProviderMetaData.get(props.dataBook);
-
+        const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
         return props.columnNames.map((colName, colIndex) => {
             return <Column
                 field={colName}
@@ -240,10 +240,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
 
         )
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId])
 
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
-        const primaryKeys = context.contentStore.dataProviderMetaData.get(props.dataBook)?.primaryKeyColumns || ["ID"];
+        const primaryKeys = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook)?.primaryKeyColumns || ["ID"];
 
         if(event.value){
             const selectReq = createSelectRowRequest();
@@ -259,7 +259,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const handleVirtualScroll = (event: {first: number, rows: number}) => {
         const slicedProviderData = providerData.slice(event.first, event.first+event.rows);
-        const isAllFetched = context.contentStore.dataProviderFetched.get(props.dataBook);
+        const isAllFetched = context.contentStore.dataProviderFetched.get(compId)?.get(props.dataBook);
         firstRowIndex.current = event.first;
         if((providerData.length < event.first+(event.rows*2)) && !isAllFetched) {
             const fetchReq = createFetchRequest();
@@ -275,6 +275,8 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
+
+    //console.log(layoutContext.get(id)?.height as number)
 
     return(
        <div ref={wrapRef} style={{...layoutContext.get(props.id), height: layoutContext.get(props.id)?.height as number - 2, width: layoutContext.get(props.id)?.width as number - 2}}>

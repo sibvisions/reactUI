@@ -32,11 +32,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
-    const [selectedRow] = useRowSelect(props.dataRow, props.columnName);
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
-
     const [text, setText] = useState(baseProps.text || "");
-    const cellEditorMetaData:IEditorText|undefined = context.contentStore.dataProviderMetaData.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorText;
+    const cellEditorMetaData:IEditorText|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorText;
     const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData])
     const {onLoadCallback, id} = baseProps;
 

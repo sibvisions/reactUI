@@ -8,14 +8,14 @@ import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 import {MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import { createFetchRequest } from "src/JVX/factories/RequestFactory";
+import {createFetchRequest, createSaveRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import {LatLngExpression, PolylineOptions} from "leaflet";
 import L from 'leaflet'
 import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
-import { parseIconData } from "../compprops/ComponentProperties";
-import { sendSetValues } from "../util/SendSetValues";
+import {parseIconData} from "../compprops/ComponentProperties";
+import {sendSetValues} from "../util/SendSetValues";
 
 export interface IMap extends BaseComponent {
     center?: string
@@ -72,14 +72,22 @@ const UIMapConsumer: FC<IMap> = (props) => {
     const map = useMap();
     const markerRefs = useRef<any>([]);
     const context = useContext(jvxContext);
-    const [providedGroupData] = useDataProviderData(props.id, props.groupDataBook);
-    const [providedPointData] = useDataProviderData(props.id, props.pointsDataBook);
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    const [providedGroupData] = useDataProviderData(compId, props.id, props.groupDataBook);
+    const [providedPointData] = useDataProviderData(compId, props.id, props.pointsDataBook);
     const [selectedMarker, setSelectedMarker] = useState<any>()
     const options:PolylineOptions = {
         color: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
         fillOpacity: 1.0
     }
+
+    const sendSaveRequest = useCallback((dataProvider:string, onlySelected:boolean) => {
+        const req = createSaveRequest();
+        req.dataProvider = dataProvider;
+        req.onlySelected = onlySelected;
+        context.server.sendRequest(req, REQUEST_ENDPOINTS.SAVE);
+    },[context.server]);
 
     const groupsSorted = useMemo(() => {
         const groupMap:Array<any> = []
@@ -153,16 +161,19 @@ const UIMapConsumer: FC<IMap> = (props) => {
     },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
 
     const onMoveEnd = useCallback((e) => {
-        if (props.pointSelectionLockedOnCenter && selectedMarker)
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server)
-    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
+        if (props.pointSelectionLockedOnCenter && selectedMarker) {
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server);
+            sendSaveRequest(props.pointsDataBook, true)
+        }
+    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
 
     const onClick = useCallback((e) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], undefined, context.server)
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], undefined, context.server);
+            sendSaveRequest(props.pointsDataBook, true)
         }
-    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
+    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
 
     useMapEvent('move', onMove);
     useMapEvent('moveend', onMoveEnd)
@@ -184,6 +195,7 @@ const UIMapConsumer: FC<IMap> = (props) => {
                         iconData = parseIconData(undefined, props.marker);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}
+                        key={props.id + "-Marker-" + i}
                         position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE,
                         props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE]}
                         icon={new L.Icon({
@@ -194,8 +206,8 @@ const UIMapConsumer: FC<IMap> = (props) => {
                 })
             }
             {
-                groupsSorted.map((group) => {
-                    return <Polygon positions={group.positions} pathOptions={options} />
+                groupsSorted.map((group, i) => {
+                    return <Polygon key={props.id + "-Group-" + i} positions={group.positions} pathOptions={options} />
                 })
             }
         </>
