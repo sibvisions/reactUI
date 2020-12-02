@@ -8,14 +8,18 @@ import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 import {MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import {createFetchRequest, createSaveRequest} from "src/JVX/factories/RequestFactory";
+import {createSaveRequest} from "src/JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
-import {LatLngExpression, PolylineOptions} from "leaflet";
+import {PolylineOptions} from "leaflet";
 import L from 'leaflet'
 import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
 import {parseIconData} from "../compprops/ComponentProperties";
 import {sendSetValues} from "../util/SendSetValues";
+import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
+import { sortGroupDataOSM } from "../util/mapUtils/SortGroupData";
+import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
+import { sendSaveRequest } from "../util/SendSaveRequest";
 
 export interface IMap extends BaseComponent {
     center?: string
@@ -33,7 +37,7 @@ export interface IMap extends BaseComponent {
     zoomLevel?: number
 }
 
-const UIMap: FC<IMap> = (baseProps) => {
+const UIMapOSM: FC<IMap> = (baseProps) => {
 
     const mapRef = useRef(null);
     const layoutValue = useContext(LayoutContext);
@@ -55,7 +59,7 @@ const UIMap: FC<IMap> = (baseProps) => {
         return (
             <div ref={mapRef} style={layoutValue.get(id)}>
                 <MapContainer center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
-                    <UIMapConsumer {...props} zoomLevel={startZoom}/>
+                    <UIMapOSMConsumer {...props} zoomLevel={startZoom}/>
                 </MapContainer>
             </div>
         )
@@ -66,9 +70,9 @@ const UIMap: FC<IMap> = (baseProps) => {
     
 
 }
-export default UIMap
+export default UIMapOSM
 
-const UIMapConsumer: FC<IMap> = (props) => {
+const UIMapOSMConsumer: FC<IMap> = (props) => {
     const map = useMap();
     const markerRefs = useRef<any>([]);
     const context = useContext(jvxContext);
@@ -82,40 +86,9 @@ const UIMapConsumer: FC<IMap> = (props) => {
         fillOpacity: 1.0
     }
 
-    const sendSaveRequest = useCallback((dataProvider:string, onlySelected:boolean) => {
-        const req = createSaveRequest();
-        req.dataProvider = dataProvider;
-        req.onlySelected = onlySelected;
-        context.server.sendRequest(req, REQUEST_ENDPOINTS.SAVE);
-    },[context.server]);
-
     const groupsSorted = useMemo(() => {
-        const groupMap:Array<any> = []
-        providedGroupData.forEach((groupPoint:any) => {
-            const foundGroup = groupMap.find(existingGroup => {
-                if (props.groupColumnName) {
-                    return existingGroup.GROUP === groupPoint[props.groupColumnName];
-                }
-                else
-                    return existingGroup.GROUP === groupPoint.GROUP
-            });
-            if (foundGroup) {
-                const tempArray:LatLngExpression = [props.latitudeColumnName ? groupPoint[props.latitudeColumnName] : groupPoint.LATITUDE, 
-                                                    props.longitudeColumnName ? groupPoint[props.longitudeColumnName] : groupPoint.LONGITUDE];
-                foundGroup.positions.push(tempArray);
-            }
-            else {
-                const temp:any = {
-                    GROUP: props.groupColumnName ? groupPoint[props.groupColumnName] : groupPoint.GROUP, 
-                    positions: [
-                        [props.latitudeColumnName ? groupPoint[props.latitudeColumnName] : groupPoint.LATITUDE, 
-                         props.longitudeColumnName ? groupPoint[props.longitudeColumnName] : groupPoint.LONGITUDE]]
-                };
-                groupMap.push(temp);
-            }
-        })
-        return groupMap
-    }, [providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName]);
+        return sortGroupDataOSM(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
+    },[providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName]);
 
     useEffect(() => {
         
@@ -128,14 +101,7 @@ const UIMapConsumer: FC<IMap> = (props) => {
             shadowUrl: require("leaflet/dist/images/marker-shadow.png")
           });
 
-          const sendFetchRequest = (dataProvider:string) => {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = dataProvider;
-            fetchReq.fromRow = 0;
-            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
-        }
-        sendFetchRequest(props.groupDataBook);
-        sendFetchRequest(props.pointsDataBook);
+        sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
     useEffect(() => {
@@ -163,7 +129,7 @@ const UIMapConsumer: FC<IMap> = (props) => {
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server);
-            sendSaveRequest(props.pointsDataBook, true)
+            sendSaveRequest(props.pointsDataBook, true, context.server)
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
 
@@ -171,7 +137,7 @@ const UIMapConsumer: FC<IMap> = (props) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], undefined, context.server);
-            sendSaveRequest(props.pointsDataBook, true)
+            sendSaveRequest(props.pointsDataBook, true, context.server)
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
 
@@ -186,13 +152,7 @@ const UIMapConsumer: FC<IMap> = (props) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {
                 providedPointData.map((point: any, i: number) => {
-                    let iconData:string|IconProps = "/com/sibvisions/rad/ui/swing/ext/images/map_defaultmarker.png"
-                    if (props.markerImageColumnName && point[props.markerImageColumnName])
-                        iconData = point[props.markerImageColumnName];
-                    else if(point.MARKER_IMAGE)
-                        iconData = point.MARKER_IMAGE
-                    else if (props.marker)
-                        iconData = parseIconData(undefined, props.marker);
+                    let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}
                         key={props.id + "-Marker-" + i}

@@ -37,8 +37,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [value, setValue] = useState(parseInt(baseProps.text || ""));
     const {onLoadCallback, id} = baseProps;
 
-    const scaleDigits = useMemo(() => props.cellEditor.scale !== undefined ? (props.cellEditor.scale < 0 ? 2 : props.cellEditor.scale) : undefined, [props.cellEditor.scale]);
-    const length = useMemo(() => props.cellEditor.precision ? props.cellEditor.precision+1 : null, [props.cellEditor.precision]);
+    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
+    console.log(cellEditorMetaData)
+    const scaleDigits = useMemo(() => cellEditorMetaData.cellEditor.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined, [cellEditorMetaData.cellEditor.scale]);
+    const length = useMemo(() => cellEditorMetaData.cellEditor.precision ? (scaleDigits === 0 ? cellEditorMetaData.cellEditor.precision : cellEditorMetaData.cellEditor.precision+1) : null, [cellEditorMetaData.cellEditor.precision]);
 
     console.log(scaleDigits, length)
 

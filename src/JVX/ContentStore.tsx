@@ -138,6 +138,7 @@ class ContentStore{
     //Data Provider Management
     updateDataProviderData(compId:string, dataProvider: string, newDataSet: Array<any>, to: number, from: number){
         const existingMap = this.dataProviderData.get(compId);
+        console.log(existingMap)
         if (existingMap) {
             const existingData = existingMap.get(dataProvider);
             if(existingData){

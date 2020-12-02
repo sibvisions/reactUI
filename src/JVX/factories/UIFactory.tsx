@@ -28,7 +28,8 @@ import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
-import UIMap, {IMap} from "../components/map/UIMap";
+import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
+import UIMapGoogle from "../components/map/UIMapGoogle";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -135,7 +136,8 @@ export const createChart: FC<IChart> = (props) => {
 }
 
 export const createMap: FC<IMap> = (props) => {
-    return <UIMap {...props} key={props.id}/>
+    //return <UIMapGoogle {...props} key={props.id}/>
+    return <UIMapOSM {...props} key={props.id}/>
 }
 
 export const createEditor: FC<IEditor> = ( props ) => {
