@@ -16,7 +16,7 @@ import {MenuItem} from "primereact/api";
 import {Button} from "primereact/button";
 import UserData from "../../JVX/model/UserData";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
-import { parseIconData } from "src/JVX/components/compprops/ComponentProperties";
+import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);

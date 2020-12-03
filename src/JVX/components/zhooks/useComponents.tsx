@@ -1,6 +1,6 @@
 import {ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
-import {componentHandler} from "../../factories/UIFactory";
+import {componentHandler, createCustomComponentWrapper} from "../../factories/UIFactory";
 export type ComponentSize = {
     width: number,
     height: number
@@ -17,7 +17,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         if (preferredSizes) {
             tempSizes = preferredSizes
             tempSizes.forEach((val, key) => {
-                if (!context.contentStore.flatContent.has(key)) {
+                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key)) {
                     tempSizes.delete(key)
                 }
                     
@@ -57,8 +57,15 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         }
 
         children.forEach(child => {
+            let reactChild;
             child.onLoadCallback = componentHasLoaded;
-            const reactChild = componentHandler(child);
+            if (!context.contentStore.replacedContent.has(child.id))
+                reactChild = componentHandler(child);
+            else {
+                let test = context.contentStore.customContent.get(child.name as string)?.apply(undefined, []);
+                reactChild = createCustomComponentWrapper(child, test);
+            }
+                
             if(reactChild){
                 reactChildrenArray.push(reactChild);
             }

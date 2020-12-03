@@ -8,13 +8,10 @@ import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 import {MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import {createSaveRequest} from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
 import {PolylineOptions} from "leaflet";
 import L from 'leaflet'
 import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
-import {parseIconData} from "../compprops/ComponentProperties";
 import {sendSetValues} from "../util/SendSetValues";
 import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
 import { sortGroupDataOSM } from "../util/mapUtils/SortGroupData";
@@ -129,17 +126,17 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server);
-            sendSaveRequest(props.pointsDataBook, true, context.server)
+            setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
         }
-    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
+    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
 
     const onClick = useCallback((e) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], undefined, context.server);
-            sendSaveRequest(props.pointsDataBook, true, context.server)
+            setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
         }
-    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, sendSaveRequest])
+    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
 
     useMapEvent('move', onMove);
     useMapEvent('moveend', onMoveEnd)

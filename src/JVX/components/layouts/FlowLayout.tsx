@@ -33,7 +33,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
         const componentProps = context.contentStore.getChildren(id)
 
-        const componentPropsSorted = new Map([...componentProps.entries()].sort((a, b) => {return a[1].indexOf - b[1].indexOf}))
+        const componentPropsSorted = new Map([...componentProps.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}))
 
         if(preferredCompSizes){
 

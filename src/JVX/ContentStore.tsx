@@ -19,6 +19,8 @@ class ContentStore{
     flatContent = new Map<string, BaseComponent>();
     removedContent = new Map<string, BaseComponent>();
     customContent = new Map<string, Function>();
+    removedCustomContent = new Map<string, BaseComponent>();
+    replacedContent = new Map<string, BaseComponent>();
     serverMenuItems = new Map<string, Array<serverMenuButtons>>();
     customMenuItems = new Map<string, Array<serverMenuButtons>>();
     mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
@@ -39,21 +41,31 @@ class ContentStore{
     dataProviderFetched = new Map<string, Map<string, boolean>>();
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
+    GM_API_KEY:string = "";
+
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
         let existingComponent: BaseComponent | undefined;
 
         //check for ReplaceScreens
-        const filtered = componentsToUpdate.filter(component => !this.customContent.has(component.name));
+        // const noCustom = componentsToUpdate.filter(component => !this.customContent.has(component.name||""));
+        // const replaced = componentsToUpdate.filter(component => this.customContent.has(component.name||""));
 
         //Update FlatContent
-        filtered.forEach(newComponent => {
-            existingComponent = this.flatContent.get(newComponent.id) || this.removedContent.get(newComponent.id);
+        componentsToUpdate.forEach(newComponent => {
+            const isCustom:boolean = this.customContent.has(newComponent.name as string);
+            existingComponent = this.flatContent.get(newComponent.id) || this.replacedContent.get(newComponent.id) ||this.removedContent.get(newComponent.id);
 
             if(this.removedContent.has(newComponent.id) && existingComponent){
-                this.removedContent.delete(newComponent.id);
-                this.flatContent.set(newComponent.id, existingComponent)
+                if (!isCustom) {
+                    this.removedContent.delete(newComponent.id);
+                    this.flatContent.set(newComponent.id, existingComponent);
+                }
+                else {
+                    this.removedCustomContent.delete(newComponent.id);
+                    this.replacedContent.set(newComponent.id, existingComponent);
+                }
             }
 
             //Notify Parent
@@ -65,11 +77,20 @@ class ContentStore{
             }
 
             if((newComponent["~remove"] || newComponent["~destroy"]) && existingComponent){
-                this.flatContent.delete(newComponent.id);
-                if(newComponent["~remove"])
-                    this.removedContent.set(newComponent.id, existingComponent);
-                else
-                    this.removedContent.delete(newComponent.id);
+                if (!isCustom) {
+                    this.flatContent.delete(newComponent.id);
+                    if(newComponent["~remove"])
+                        this.removedContent.set(newComponent.id, existingComponent);
+                    else
+                        this.removedContent.delete(newComponent.id);
+                }
+                else {
+                    this.replacedContent.delete(newComponent.id);
+                    if (newComponent["~remove"])
+                        this.removedCustomContent.set(newComponent.id, existingComponent);
+                    else
+                        this.removedCustomContent.delete(newComponent.id);
+                }
             }
 
             // Add new Component or updated Properties
@@ -78,14 +99,19 @@ class ContentStore{
                     // @ts-ignore
                     existingComponent[newPropName] = newComponent[newPropName]
                 }
-            } else {
+            } 
+            else if (!isCustom)
                 this.flatContent.set(newComponent.id, newComponent);
+            else {
+                const newComp:BaseComponent = {id: newComponent.id, parent: newComponent.parent, constraints: newComponent.constraints, name: newComponent.name,
+                                               preferredSize: newComponent.preferredSize, minimumSize: newComponent.minimumSize, maximumSize: newComponent.maximumSize};
+                this.replacedContent.set(newComponent.id, newComp)
             }
         });
 
         //Properties
-        filtered.forEach(value => {
-            const existingComp = this.flatContent.get(value.id) || this.removedContent.get(value.id);
+        componentsToUpdate.forEach(value => {
+            const existingComp = this.flatContent.get(value.id) || this.replacedContent.get(value.id) || this.removedContent.get(value.id);
             const updateFunction = this.propertiesSubscriber.get(value.id);
             if(existingComp && updateFunction){
                 updateFunction(existingComp);
@@ -114,14 +140,16 @@ class ContentStore{
         });
     }
 
-    cleanUp(id:string, name:string) {
-        this.deleteChildren(id);
-        this.flatContent.delete(id);
-        this.dataProviderData.delete(name);
-        this.dataProviderMetaData.delete(name);
-        this.dataProviderFetched.delete(name);
-        this.dataProviderSelectedRow.delete(name);
-        this.rowSelectionSubscriber.delete(name);
+    cleanUp(id:string, name:string|undefined) {
+        if (name) {
+            this.deleteChildren(id);
+            this.flatContent.delete(id);
+            this.dataProviderData.delete(name);
+            this.dataProviderMetaData.delete(name);
+            this.dataProviderFetched.delete(name);
+            this.dataProviderSelectedRow.delete(name);
+            this.rowSelectionSubscriber.delete(name);
+        }
     }
 
     reset(){
@@ -138,7 +166,6 @@ class ContentStore{
     //Data Provider Management
     updateDataProviderData(compId:string, dataProvider: string, newDataSet: Array<any>, to: number, from: number){
         const existingMap = this.dataProviderData.get(compId);
-        console.log(existingMap)
         if (existingMap) {
             const existingData = existingMap.get(dataProvider);
             if(existingData){
@@ -189,10 +216,6 @@ class ContentStore{
             return undefined
     }
 
-    // getSelectedIndex(dataProvider: string) : number{
-    //     return this.dataProviderSelectedRowIndex.get(dataProvider) || -1
-    // }
-
     setSelectedRow(compId:string, dataProvider: string, dataRow: any, index: number) {
         const existingMapRow = this.dataProviderSelectedRow.get(compId);
         if (existingMapRow) {
@@ -236,7 +259,8 @@ class ContentStore{
     }
 
     getChildren(parentId: string): Map<string, BaseComponent>{
-        const componentEntries = this.flatContent.entries();
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const componentEntries = mergedContent.entries();
         const children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
         while (!entry.done){
@@ -402,6 +426,10 @@ class ContentStore{
 
     registerReplaceScreen(title: string, screenFactory: () => ReactElement){
         this.customContent.set(title, screenFactory);
+    }
+
+    registerCustomComponent(title:string, compFactory: () => ReactElement) {
+        this.customContent.set(title, compFactory);
     }
 }
 export default ContentStore

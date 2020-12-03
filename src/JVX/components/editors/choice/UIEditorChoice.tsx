@@ -50,7 +50,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
 
     const currentImageValue = useMemo(() => {
-        let validImage = "invalid"
+        let validImage = "invalid";
+        console.log(selectedRow)
         if(selectedRow !== undefined)
             validImage = selectedRow
         else{
@@ -95,6 +96,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
 
     }
+
+    console.log(validImages, currentImageValue)
 
     return (
         <span className="jvxEditorChoice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>

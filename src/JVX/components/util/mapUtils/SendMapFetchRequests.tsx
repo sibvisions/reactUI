@@ -1,5 +1,5 @@
-import { createFetchRequest } from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import { createFetchRequest } from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
 export function sendMapFetchRequests(groupDataProvider:string, pointDataProvider:string, server:any) {
     const sendFetchRequest = (dataProvider:string) => {

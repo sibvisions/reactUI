@@ -1,8 +1,8 @@
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
-import Server from "src/JVX/Server";
+import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import Server from "../../Server";
 import {createSetValuesRequest} from "../../factories/RequestFactory";
 
-export function sendSetValues(dataProvider:string, name:string, columnName:string|string[], value:string|number|boolean|Array<any>|null, lastValue:any, server:Server) {
+export function sendSetValues(dataProvider:string, name:string|undefined, columnName:string|string[], value:string|number|boolean|Array<any>|null, lastValue:any, server:Server) {
     const req = createSetValuesRequest();
     req.dataProvider = dataProvider;
     req.componentId = name;

@@ -6,8 +6,8 @@ import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {buttonProps, styleButton} from "../ButtonStyling";
-import {createSetValueRequest} from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import {createSetValueRequest} from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import { swapProps } from "../../util/SwapProps";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
@@ -37,7 +37,7 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
         }
     }, [btnData.btnBorderPainted,

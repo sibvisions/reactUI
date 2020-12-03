@@ -65,9 +65,9 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             //     }
             // }
 
-            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, 
+            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, 
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className as string, props.borderOnMouseEntered, 
                 bgdColor.current, btnBgdHover, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
     },[btnBgdHover, btnData.btnBorderPainted, 

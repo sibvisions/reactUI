@@ -6,8 +6,8 @@ interface BaseComponent{
     onLoadCallback?: LoadCallBack
     id: string,
     parent?: string
-    name: string,
-    className: string,
+    name?: string,
+    className?: string,
     "~remove"?: boolean
     "~destroy"?: boolean
     visible?: boolean
@@ -25,7 +25,7 @@ interface BaseComponent{
     focusable?: boolean
     tabIndex?: number
     style?: string
-    text: string
-    indexOf: number;
+    text?: string
+    indexOf?: number;
 }
 export default BaseComponent

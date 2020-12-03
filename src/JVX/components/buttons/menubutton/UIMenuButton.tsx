@@ -56,10 +56,10 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         const btnRef = buttonRef.current;
         let bgdColor = btnData.style.backgroundColor;
         if (btnRef) {
-            styleButton(btnRef.children[0].children, props.className, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
+            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             if (!bgdColor)
                 bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+            addHoverEffect(btnRef.children[0] as HTMLElement, props.className as string, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
     },[btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, context.server.RESOURCE_URL,

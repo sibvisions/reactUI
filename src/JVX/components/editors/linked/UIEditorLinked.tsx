@@ -7,8 +7,8 @@ import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
-import { createFetchRequest, createFilterRequest } from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import useDataProviderData from "../../zhooks/useDataProviderData";
 import * as _ from 'underscore'
 import { onBlurCallback } from "../../util/OnBlurCallback";

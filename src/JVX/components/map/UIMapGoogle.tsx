@@ -15,6 +15,8 @@ import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
 import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
+import { isContext } from "vm";
+import ContentStore from "src/JVX/ContentStore";
 
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     
@@ -63,7 +65,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     useEffect(() => {
         loadGoogleMaps(() => {
             setMapReady(true);
-        });
+        }, context.contentStore);
     },[]);
 
     //Fetch Data (Groups, Points)
@@ -172,12 +174,12 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 }
 export default UIMapGoogle
 
-const loadGoogleMaps = (callback:any) => {
+const loadGoogleMaps = (callback:any, contentStore:ContentStore) => {
 	const existingScript = document.getElementById('googleMaps');
 
 	if (!existingScript) {
 		const script = document.createElement('script');
-		script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCsVoYv9dv-FKqjVvRoZdgXEnil0VyPq7o&libraries=places';
+		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + contentStore.GM_API_KEY + '&libraries=places';
 		script.id = 'googleMaps';
 		document.body.appendChild(script);
 

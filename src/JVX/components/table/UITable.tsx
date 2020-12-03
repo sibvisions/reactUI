@@ -192,8 +192,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
                 //@ts-ignore
-                const tColGroup = tableRef.current.container.querySelector('.p-datatable-scrollable-body-table > colgroup');
-                const tCols = tColGroup.querySelectorAll('col')
+                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
+                const tCols1 = tColGroup[0].querySelectorAll('col');
+                const tCols2 = tColGroup[1].querySelectorAll('col');
                 for (let i = 0; i < theader.length; i++)
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 29;
                 //@ts-ignore
@@ -201,8 +202,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 for (let i = 0; i < 20; i++)
                     goThroughCellData(trows, i)
                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width', cellDataWidthList[i] + 'px')
-                    tCols[i].style.setProperty('width', cellDataWidthList[i] + 'px')
+                    theader[i].style.setProperty('width', cellDataWidthList[i] + 'px');
+                    tCols1[i].style.setProperty('width', cellDataWidthList[i] + 'px');
+                    tCols2[i].style.setProperty('width', cellDataWidthList[i] + 'px');
                 }
                 let tempWidth:number = 0;
                  cellDataWidthList.forEach(cellDataWidth => {
@@ -227,7 +229,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 key={colName}
                 headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis'}}
                 body={(rowData: any) => <CellEditor
-                    name={props.name}
+                    name={props.name as string}
                     colName={colName}
                     dataProvider={props.dataBook}
                     cellData={rowData[colName]}
@@ -273,6 +275,22 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     }
 
+    const handleColResize = (e:any) => {
+        if (tableRef.current) {
+            //@ts-ignore
+            if (tableRef.current.container) {
+                //@ts-ignore
+                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
+                const tCols1 = tColGroup[0].querySelectorAll('col');
+                const tCols2 = tColGroup[1].querySelectorAll('col');
+                for (let i = 0; i < tCols1.length; i++) {
+                    tCols2[i].style.setProperty('width', (parseFloat(tCols1[i].style.width) + 8) +'px')
+                }
+
+            }
+        }
+    }
+
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
@@ -282,6 +300,7 @@ const UITable: FC<TableProps> = (baseProps) => {
        <div ref={wrapRef} style={{...layoutContext.get(props.id), height: layoutContext.get(props.id)?.height as number - 2, width: layoutContext.get(props.id)?.width as number - 2}}>
            <DataTable
                ref={tableRef}
+               onColumnResizeEnd={handleColResize}
                className="jvxTable"
                scrollable={virtualEnabled}
                lazy={virtualEnabled}

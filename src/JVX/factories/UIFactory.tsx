@@ -30,6 +30,7 @@ import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
 import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
 import UIMapGoogle from "../components/map/UIMapGoogle";
+import UICustomComponentWrapper, { ICustomComponentWrapper } from "../components/customComp/UICustomComponentWrapper";
 
 export const createPanel: FC<Panel> = (props) => {
     return <UIPanel {...props} key={props.id}/>
@@ -140,6 +141,10 @@ export const createMap: FC<IMap> = (props) => {
     return <UIMapOSM {...props} key={props.id}/>
 }
 
+export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, customComp) => {
+    return <UICustomComponentWrapper {...props} component={customComp} key={props.id}/>
+}
+
 export const createEditor: FC<IEditor> = ( props ) => {
     if(props.cellEditor){
         if(props.cellEditor.className === "ImageViewer"){
@@ -193,7 +198,7 @@ const classNameMapper = new Map<string, Function>()
     .set("Map", createMap)
 
 export const componentHandler = (component: BaseComponent) => {
-    const builder = classNameMapper.get(component.className);
+    const builder = classNameMapper.get(component.className as string);
     if(builder){
         return builder(component);
     } else {

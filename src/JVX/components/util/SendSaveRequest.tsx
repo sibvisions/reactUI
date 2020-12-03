@@ -1,6 +1,6 @@
-import { createSaveRequest } from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
-import Server from "src/JVX/Server";
+import { createSaveRequest } from "../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import Server from "../../Server";
 
 export function sendSaveRequest(dataProvider:string, onlySelected:boolean, server:Server) {
     const req = createSaveRequest();

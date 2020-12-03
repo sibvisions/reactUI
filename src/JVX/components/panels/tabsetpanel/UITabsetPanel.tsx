@@ -1,13 +1,4 @@
-import React, {
-    CSSProperties,
-    FC,
-    useCallback,
-    useContext,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState
-} from "react"
+import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
 import './UITabsetPanel.scss'
 import {TabView,TabPanel} from 'primereact/tabview';
 import {LayoutContext} from "../../../LayoutContext";
@@ -16,8 +7,8 @@ import {jvxContext} from "../../../jvxProvider";
 import useComponents from "../../zhooks/useComponents";
 import {parseIconData} from "../../compprops/ComponentProperties";
 import {Panel} from "../panel/UIPanel";
-import {createTabRequest} from "src/JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "src/JVX/request/REQUEST_ENDPOINTS";
+import {createTabRequest} from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import IconProps from "../../compprops/IconProps";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
