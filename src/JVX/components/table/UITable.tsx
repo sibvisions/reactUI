@@ -140,7 +140,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
-                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+40 : 410, width: estTableWidth}
+                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+44 : 410, width: estTableWidth}
                     sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                     
@@ -238,7 +238,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 />}
                 style={{whiteSpace: 'nowrap', lineHeight: '14px'}}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
-                loadingBody={() => <div className="loading-text" style={{height: 30}} />}/>
+                loadingBody={() => <div className="loading-text" style={{height: 30}} />}
+                sortable/>
         }
 
         )
@@ -314,7 +315,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                value={virtualRows}
                selection={selectedRow}
                selectionMode={"single"}
-               onSelectionChange={handleRowSelection}>
+               onSelectionChange={handleRowSelection}
+               removableSort>
                {columns}
            </DataTable>
        </div>

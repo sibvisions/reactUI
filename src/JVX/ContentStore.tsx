@@ -42,6 +42,7 @@ class ContentStore{
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
     GM_API_KEY:string = "";
+    LOGO:string = "";
 
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){

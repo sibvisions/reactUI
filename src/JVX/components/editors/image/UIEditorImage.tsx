@@ -9,6 +9,7 @@ import useImageStyle from "../../zhooks/useImageStyle";
 import Size from "../../util/Size";
 import { parseJVxSize } from "../../util/parseJVxSize";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
@@ -25,7 +26,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const context = useContext(jvxContext);
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const {onLoadCallback, id} = baseProps
     const {verticalAlignment, horizontalAlignment} = props
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);

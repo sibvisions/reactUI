@@ -17,6 +17,7 @@ import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
 import { isContext } from "vm";
 import ContentStore from "src/JVX/ContentStore";
+import { buttonProps } from "../buttons/ButtonStyling";
 
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     
@@ -65,7 +66,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     useEffect(() => {
         loadGoogleMaps(() => {
             setMapReady(true);
-        }, context.contentStore);
+        }, props.apiKey as string);
     },[]);
 
     //Fetch Data (Groups, Points)
@@ -76,8 +77,9 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     //Add Data to Map
     useEffect(() => {
         if (!dataSet && providedPointData.length && providedGroupData.length) {
-            console.log(providedPointData, providedGroupData)
+            
             if (mapInnerRef.current) {
+                console.log(providedPointData, providedGroupData)
                 //@ts-ignore
                 const map = mapInnerRef.current.map
                 const latColName = props.latitudeColumnName;
@@ -139,7 +141,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             const onDragEnd = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], undefined, context.server);
-                    sendSaveRequest(props.pointsDataBook, true, context.server);
+                    setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
                 }
             }
 
@@ -147,7 +149,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], undefined, context.server);
-                    sendSaveRequest(props.pointsDataBook, true, context.server);
+                    setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
                 }
             }
 
@@ -162,7 +164,8 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     },[selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName,
        props.name, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter,
-       props.pointsDataBook])
+       props.pointsDataBook]
+    );
 
     if (mapReady === false)
         return <div ref={mapWrapperRef} style={{width: '100px', height: '100px'}}/>
@@ -174,12 +177,12 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 }
 export default UIMapGoogle
 
-const loadGoogleMaps = (callback:any, contentStore:ContentStore) => {
+const loadGoogleMaps = (callback:any, key:string) => {
 	const existingScript = document.getElementById('googleMaps');
 
 	if (!existingScript) {
 		const script = document.createElement('script');
-		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + contentStore.GM_API_KEY + '&libraries=places';
+		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=places';
 		script.id = 'googleMaps';
 		document.body.appendChild(script);
 

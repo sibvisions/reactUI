@@ -19,6 +19,7 @@ import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
 
 export interface IMap extends BaseComponent {
+    apiKey?: string
     center?: string
     fillColor?: string
     groupDataBook: string
@@ -31,6 +32,7 @@ export interface IMap extends BaseComponent {
     pointsDataBook: string
     pointSelectionEnabled?: boolean
     pointSelectionLockedOnCenter?: boolean
+    tileProvider?: string
     zoomLevel?: number
 }
 

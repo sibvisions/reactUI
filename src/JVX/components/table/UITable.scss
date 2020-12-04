@@ -17,6 +17,9 @@ tr.p-highlight{
             >th {
                 color: inherit;
                 border-width: 0px 1px 1px 1px;
+                .pi-sort-alt {
+                    display: none;
+                }
             }
         }
     }

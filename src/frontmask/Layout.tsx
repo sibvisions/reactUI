@@ -50,9 +50,9 @@ const Layout: FC = (props) => {
 
     const screenTitleMemo = useMemo(() => {
         let screenTitle = context.server.APP_NAME;
-        const a = props.children as {props: {"screen.title": string}}
-        if(a && a.props && a.props["screen.title"])
-            screenTitle = a.props["screen.title"];
+        const a = props.children as {props: {screen_title_: string}}
+        if(a && a.props && a.props.screen_title_)
+            screenTitle = a.props.screen_title_;
         if(!screenTitle)
             screenTitle = window.location.hash.split("/")[1];
 

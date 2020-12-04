@@ -113,11 +113,9 @@ const Menu: FC = () => {
         }
     }, [context.contentStore]);
 
-
-
     return(
         <div className="topMenuBar p-grid">
-            <Menubar start={() => <img src={logo} alt="logo"/>} model={menuItems} className="p-col" end={() => profileMenu}/>
+            <Menubar start={() => <img src={process.env.PUBLIC_URL + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu}/>
         </div>
     )
 }

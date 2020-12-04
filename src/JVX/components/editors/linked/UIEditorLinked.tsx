@@ -15,6 +15,7 @@ import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorLinked extends ICellEditor{
     linkReference: {
@@ -42,17 +43,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
-    
-    const getLinkedCompId = ():string => {
-        if (props.id) {
-            return context.contentStore.getComponentId(props.id) as string
-        }
-        else {
-            return props.dataRow.split('/')[1];
-        }
-    }
-
-    const compId = getLinkedCompId()
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [providedData] = useDataProviderData(compId, baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();

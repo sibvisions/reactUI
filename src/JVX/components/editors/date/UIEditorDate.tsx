@@ -13,6 +13,7 @@ import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import moment from "moment";
 import { parseJVxSize } from "../../util/parseJVxSize";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
@@ -29,7 +30,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
 

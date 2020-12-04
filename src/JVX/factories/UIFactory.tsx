@@ -137,8 +137,10 @@ export const createChart: FC<IChart> = (props) => {
 }
 
 export const createMap: FC<IMap> = (props) => {
-    //return <UIMapGoogle {...props} key={props.id}/>
-    return <UIMapOSM {...props} key={props.id}/>
+    if (props.tileProvider === "google")
+        return <UIMapGoogle {...props} key={props.id}/>
+    else
+        return <UIMapOSM {...props} key={props.id}/>
 }
 
 export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, customComp) => {

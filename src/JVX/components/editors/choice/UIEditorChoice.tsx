@@ -11,6 +11,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import { parseJVxSize } from "../../util/parseJVxSize";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorChoice extends ICellEditor{
     allowedValues: Array<string>,
@@ -28,7 +29,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const alignments = checkCellEditorAlignments(props);
     const {onLoadCallback, id} = baseProps;
@@ -51,7 +52,6 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        console.log(selectedRow)
         if(selectedRow !== undefined)
             validImage = selectedRow
         else{
@@ -97,7 +97,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     }
 
-    console.log(validImages, currentImageValue)
+    console.log(props.dataRow)
 
     return (
         <span className="jvxEditorChoice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>

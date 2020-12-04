@@ -71,7 +71,8 @@ const App: FC = () => {
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseURL;
             context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
-            context.contentStore.GM_API_KEY = data.gmAPIKey
+            context.contentStore.GM_API_KEY = data.gmAPIKey;
+            context.contentStore.LOGO = data.logo;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
 

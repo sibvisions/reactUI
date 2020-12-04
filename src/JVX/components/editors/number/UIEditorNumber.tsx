@@ -12,6 +12,7 @@ import {onBlurCallback} from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorNumber extends ICellEditor{
     scale?: number,
@@ -30,7 +31,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     const inputRef = useRef<InputNumber>(null);
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
 
@@ -38,7 +39,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
-    console.log(cellEditorMetaData)
     const scaleDigits = useMemo(() => cellEditorMetaData.cellEditor.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined, [cellEditorMetaData.cellEditor.scale]);
     const length = useMemo(() => cellEditorMetaData.cellEditor.precision ? (scaleDigits === 0 ? cellEditorMetaData.cellEditor.precision : cellEditorMetaData.cellEditor.precision+1) : null, [cellEditorMetaData.cellEditor.precision, scaleDigits]);
 

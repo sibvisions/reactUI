@@ -10,6 +10,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
+import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorCheckbox extends ICellEditor{
     text?: string,
@@ -27,7 +28,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IEditorCheckbox>(baseProps.id, baseProps)
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const alignments = checkCellEditorAlignments(props);
 

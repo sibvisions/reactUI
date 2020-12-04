@@ -13,7 +13,7 @@ export interface Panel extends BaseComponent{
     layout: string,
     layoutData: string,
     "mobile.autoclose": boolean,
-    "screen.title"?: string,
+    screen_title_?: string,
 }
 
 const UIPanel: FC<Panel> = (baseProps) => {
