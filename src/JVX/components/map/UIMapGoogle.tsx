@@ -15,9 +15,6 @@ import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
 import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
-import { isContext } from "vm";
-import ContentStore from "src/JVX/ContentStore";
-import { buttonProps } from "../buttons/ButtonStyling";
 
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     
@@ -67,7 +64,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         loadGoogleMaps(() => {
             setMapReady(true);
         }, props.apiKey as string);
-    },[]);
+    },[props.apiKey]);
 
     //Fetch Data (Groups, Points)
     useEffect(() => {
@@ -102,7 +99,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 
     }, [providedPointData, groupsSorted, props.longitudeColumnName, props.latitudeColumnName, 
         polyColors.strokeColor, polyColors.fillColor, context.server.RESOURCE_URL, 
-        props.marker, props.markerImageColumnName, dataSet]
+        props.marker, props.markerImageColumnName, dataSet, providedGroupData]
     );
 
     //At Start set center or set point if pointSelectionLockedOnCenter

@@ -7,14 +7,12 @@ import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
-import logo from '../../assests/sibvisionslogo.png'
 
 //Prime
 import {Menubar} from "primereact/menubar";
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
 import {Button} from "primereact/button";
-import UserData from "../../JVX/model/UserData";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
 
@@ -27,10 +25,7 @@ const Menu: FC = () => {
         const sendLogout = () => {
             const logoutRequest = createLogoutRequest();
             localStorage.removeItem("authKey")
-            context.contentStore.currentUser = new UserData()
-            context.contentStore.flatContent.clear();
-            context.contentStore.removedContent.clear();
-            context.contentStore.serverMenuItems.clear();
+            context.contentStore.reset();
             context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT);
         }
         const slideOptions: Array<MenuItem> =
@@ -82,7 +77,7 @@ const Menu: FC = () => {
 
             </div>
         )
-    }, [slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server, context.contentStore.serverMenuItems])
+    }, [slideRef, context.server, context.contentStore])
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {

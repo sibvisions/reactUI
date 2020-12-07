@@ -6,6 +6,7 @@ import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
 import {ReactElement} from "react";
 import {componentHandler} from "./factories/UIFactory";
+import {Panel} from './components/panels/panel/UIPanel'
 
 type MenuItem = {
     componentId: string,
@@ -25,6 +26,7 @@ class ContentStore{
     customMenuItems = new Map<string, Array<serverMenuButtons>>();
     mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
     currentUser: UserData = new UserData();
+    navigationNames = new Map<string, string>();
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
@@ -34,6 +36,7 @@ class ContentStore{
     appNameSubscriber = new Map<string, Function>();
 
     MenuSubscriber = new Array<Function>();
+    popupSubscriber = new Array<Function>();
 
     //DataProvider Maps
     dataProviderData = new Map<string, Map<string, Array<any>>>();
@@ -48,10 +51,6 @@ class ContentStore{
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
         let existingComponent: BaseComponent | undefined;
-
-        //check for ReplaceScreens
-        // const noCustom = componentsToUpdate.filter(component => !this.customContent.has(component.name||""));
-        // const replaced = componentsToUpdate.filter(component => this.customContent.has(component.name||""));
 
         //Update FlatContent
         componentsToUpdate.forEach(newComponent => {
@@ -108,6 +107,22 @@ class ContentStore{
                                                preferredSize: newComponent.preferredSize, minimumSize: newComponent.minimumSize, maximumSize: newComponent.maximumSize};
                 this.replacedContent.set(newComponent.id, newComp)
             }
+            
+            const newCompAsPanel = (newComponent as Panel);
+
+            if (newCompAsPanel.screen_navigationName_) {
+                let increment:number|string = 0;
+                for (let value of this.navigationNames.values()) {
+                    if (value.replace(/\s\d+$/, '') === newCompAsPanel.screen_navigationName_)
+                        increment++
+                }
+                if (increment === 0 || (increment === 1 && this.navigationNames.has(newCompAsPanel.name as string)))
+                    increment = ''
+                this.setNavigationName(newCompAsPanel.name as string, newCompAsPanel.screen_navigationName_ as string + increment.toString())
+            }
+
+            if ((newComponent as Panel).screen_modal_) 
+                this.popupSubscriber[0].apply(undefined, [(newComponent as Panel).screen_navigationName_]);
         });
 
         //Properties
@@ -129,6 +144,7 @@ class ContentStore{
     closeScreen(windowName: string){
         const window = this.getWindowData(windowName);
         if(window){
+            console.log(window)
             this.cleanUp(window.id, window.name);
         }
     }
@@ -144,6 +160,7 @@ class ContentStore{
     cleanUp(id:string, name:string|undefined) {
         if (name) {
             this.deleteChildren(id);
+            console.log('cleanup')
             this.flatContent.delete(id);
             this.dataProviderData.delete(name);
             this.dataProviderMetaData.delete(name);
@@ -161,8 +178,16 @@ class ContentStore{
         this.dataProviderMetaData.clear();
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
+        this.navigationNames.clear();
     }
 
+    setNavigationName(compId:string, navName:string) {
+        let existingMap = this.navigationNames.get(compId);
+        if (existingMap)
+            existingMap = navName;
+        else
+            this.navigationNames.set(compId, navName);
+    }
 
     //Data Provider Management
     updateDataProviderData(compId:string, dataProvider: string, newDataSet: Array<any>, to: number, from: number){
@@ -338,9 +363,16 @@ class ContentStore{
     }
 
     subscribeToMenuChange(fn: Function){
-        this.MenuSubscriber.push(fn)
+        this.MenuSubscriber.push(fn);
     }
 
+    subscribeToPopupChange(fn: Function) {
+        this.popupSubscriber.push(fn);
+    }
+
+    unsubscribeFromPopupChange(fn: Function) {
+        this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn));
+    }
 
     unsubscribeFromMenuChange(fn: Function){
         this.MenuSubscriber.splice(this.MenuSubscriber.findIndex(value => value === fn), 1);

@@ -112,13 +112,13 @@ const App: FC = () => {
                     <Route exact path={"/login"}>
                         <Login />
                     </Route>
-                    <Route exact  path={"/home/:componentId"}>
+                    <Route exact path={"/home/:componentId"}>
                         <Home />
                     </Route>
                     <Route exact path={"/settings"}>
                         <Settings />
                     </Route>
-                    <Route  path={"/home"}>
+                    <Route path={"/home"}>
                         <Home />
                     </Route>
                 </Switch>   

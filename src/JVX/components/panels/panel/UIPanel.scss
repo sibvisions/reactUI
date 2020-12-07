@@ -1,0 +1,17 @@
+.p-dialog {
+    .p-dialog-header {
+        background: #ffffff;
+        color: #495057;
+        padding: 1.5rem;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        .p-dialog-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+    }
+    .p-dialog-content {
+        padding: 0;
+        overflow-y: hidden;
+    }
+}

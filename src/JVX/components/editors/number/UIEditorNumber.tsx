@@ -42,8 +42,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const scaleDigits = useMemo(() => cellEditorMetaData.cellEditor.scale !== undefined ? (cellEditorMetaData.cellEditor.scale < 0 ? 2 : cellEditorMetaData.cellEditor.scale) : undefined, [cellEditorMetaData.cellEditor.scale]);
     const length = useMemo(() => cellEditorMetaData.cellEditor.precision ? (scaleDigits === 0 ? cellEditorMetaData.cellEditor.precision : cellEditorMetaData.cellEditor.precision+1) : null, [cellEditorMetaData.cellEditor.precision, scaleDigits]);
 
-    console.log(scaleDigits, length)
-
     useLayoutEffect(() => {
         //@ts-ignore
         let currElem = inputRef.current.inputEl;

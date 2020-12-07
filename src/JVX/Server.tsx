@@ -18,6 +18,7 @@ import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
 import SessionExpiredResponse from "./response/SessionExpiredResponse";
 import ErrorResponse from "./response/ErrorResponse";
+import {Panel} from "./components/panels/panel/UIPanel"
 
 type queryType = {
     appName?: string,
@@ -260,9 +261,7 @@ class Server{
         startUpRequest.screenHeight = window.innerHeight;
         startUpRequest.screenWidth = window.innerWidth;
         startUpRequest.deviceMode = "desktop";
-        this.contentStore.flatContent.clear();
-        this.contentStore.removedContent.clear();
-        this.contentStore.serverMenuItems.clear();
+        this.contentStore.reset();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})
@@ -283,19 +282,24 @@ class Server{
            if(response.name === RESPONSE_NAMES.USER_DATA){
                if(highestPriority < 1){
                    highestPriority = 1;
-                   routeTo="home";
+                   routeTo = "home";
                }
            }
            else if(response.name === RESPONSE_NAMES.SCREEN_GENERIC){
                 const GResponse = (response as GenericResponse);
-                if(!GResponse.update){
+                const firstComp = (GResponse.changedComponents[0] as Panel)
+                if(!GResponse.update && !firstComp.screen_modal_) {
                     if(highestPriority < 2){
                         highestPriority = 2;
-                        routeTo = "home/"+GResponse.componentId;
+                        routeTo = "home/" + this.contentStore.navigationNames.get(GResponse.componentId);
                     }
                 }
            }
-           else if(response.name === RESPONSE_NAMES.CLOSE_SCREEN){
+           else if(response.name === RESPONSE_NAMES.CLOSE_SCREEN) {
+               const CSResponse = (response as CloseScreenResponse);
+               for (let [key, val] of this.contentStore.flatContent.entries()) {
+                   console.log(val)
+               }
                if(highestPriority < 1){
                    highestPriority = 1;
                    routeTo = "home";

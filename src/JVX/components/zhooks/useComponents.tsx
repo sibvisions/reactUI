@@ -20,7 +20,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key)) {
                     tempSizes.delete(key)
                 }
-                    
             });
         }
         const children = context.contentStore.getChildren(id);
@@ -75,8 +74,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
 
-
-
     useEffect(() => {
         context.contentStore.subscribeToParentChange(id, () => {
             const newComponents = buildComponents();
@@ -100,8 +97,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             context.contentStore.unsubscribeFromParentChange(id);
         }
     }, [context.contentStore, id, components, buildComponents]);
-
-
 
     return [components, preferredSizes];
 }
