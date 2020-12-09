@@ -96,9 +96,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
 
     }
-
-    console.log(props.dataRow)
-
+    
     return (
         <span className="jvxEditorChoice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>
             <img

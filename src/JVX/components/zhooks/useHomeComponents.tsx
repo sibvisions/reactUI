@@ -16,16 +16,11 @@ const useHomeComponents = (componentId:string) => {
             compKey = key
         }
         if (context.contentStore.getWindow(compKey))
-        tempArray.push(context.contentStore.getWindow(compKey));
+            tempArray.push(context.contentStore.getWindow(compKey));
         return tempArray
     },[context.contentStore])
 
     const [homeChildren, setHomeChildren] = useState<Array<ReactElement>>(buildWindow(componentId));
-
-    useEffect(() => {
-        if (componentId)
-            setHomeChildren(buildWindow(componentId))
-    },[buildWindow, componentId])
 
     useEffect(() => {
         const buildHomeChildren = (compKey:string) => {
@@ -39,14 +34,26 @@ const useHomeComponents = (componentId:string) => {
             });
             setHomeChildren(cl);
         }
-        context.contentStore.subscribeToPopupChange((compKey:string) => {
-            buildHomeChildren(compKey)
+
+        const removeHomeChild = (compKey:string) => {
+            const cl = new Array<ReactElement>();
+            homeChildren.forEach(hc => {
+                if (hc.props.screen_navigationName_ !== compKey)
+                    cl.push(hc)
+            });
+            setHomeChildren(cl);
+        }
+        context.contentStore.subscribeToPopupChange((compKey:string, remove:boolean) => {
+            if (remove)
+                removeHomeChild(compKey);
+            else
+                buildHomeChildren(compKey);
         });
 
         return () => {
             context.contentStore.unsubscribeFromPopupChange(buildHomeChildren)
         }
-    },[context.contentStore, buildWindow, homeChildren])
+    },[context.contentStore, buildWindow, homeChildren]);
 
     return homeChildren
 }

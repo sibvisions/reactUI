@@ -1,5 +1,4 @@
 import React, {FC, ReactElement, useContext, useLayoutEffect, useRef} from "react";
-import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
@@ -11,7 +10,6 @@ export interface ICustomComponentWrapper extends BaseComponent {
 
 const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     const wrapperRef = useRef(null);
-    const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<ICustomComponentWrapper>(baseProps.id, baseProps)
     const {onLoadCallback} = props;
@@ -20,8 +18,6 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
         if (wrapperRef.current)
             sendOnLoadCallback(props.id, undefined, undefined, undefined, wrapperRef.current, onLoadCallback);
     });
-
-    console.log(props)
 
     return (
         <span ref={wrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

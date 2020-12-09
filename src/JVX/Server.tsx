@@ -19,6 +19,7 @@ import DownloadResponse from "./response/DownloadResponse";
 import SessionExpiredResponse from "./response/SessionExpiredResponse";
 import ErrorResponse from "./response/ErrorResponse";
 import {Panel} from "./components/panels/panel/UIPanel"
+import RestartResponse from "./response/RestartResponse";
 
 type queryType = {
     appName?: string,
@@ -72,7 +73,7 @@ class Server{
         .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
-        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        //.set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
         .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -82,7 +83,8 @@ class Server{
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
         .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))
         .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this))
-        .set(RESPONSE_NAMES.ERROR, this.showError.bind(this));
+        .set(RESPONSE_NAMES.ERROR, this.showError.bind(this))
+        .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -119,9 +121,9 @@ class Server{
         this.contentStore.updateContent(genericData.changedComponents);
     }
 
-    closeScreen(closeScreenData: CloseScreenResponse){
-        this.contentStore.closeScreen(closeScreenData.componentId);
-    }
+    // closeScreen(closeScreenData: CloseScreenResponse){
+    //     this.contentStore.closeScreen(closeScreenData.componentId);
+    // }
 
     menu(menuData: MenuResponse){
         menuData.entries.forEach(menuItem => {
@@ -273,6 +275,11 @@ class Server{
         console.error(errData.details)
     }
 
+    showRestart(reData: RestartResponse) {
+        this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info});
+        console.warn(reData.info);
+    }
+
     //Decides if and where to the user should be routed based on all responses
     routingDecider(responses: Array<BaseResponse>){
         let routeTo: string | undefined;
@@ -297,10 +304,15 @@ class Server{
            }
            else if(response.name === RESPONSE_NAMES.CLOSE_SCREEN) {
                const CSResponse = (response as CloseScreenResponse);
-               for (let [key, val] of this.contentStore.flatContent.entries()) {
-                   console.log(val)
+               let wasPopup:boolean = false;
+               for (let entry of this.contentStore.flatContent.entries()) {
+                   if (entry[1].name === CSResponse.componentId) {
+                       this.contentStore.closeScreen(entry[1].name);
+                       if ((entry[1] as Panel).screen_modal_)
+                            wasPopup = true;
+                   }
                }
-               if(highestPriority < 1){
+               if(highestPriority < 1 && !wasPopup){
                    highestPriority = 1;
                    routeTo = "home";
                }

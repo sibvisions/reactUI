@@ -67,10 +67,7 @@ const Layout: FC = (props) => {
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                if (childWithProps.props.screen_modal_)
-                sizeMap.set(childWithProps.props.id, {width: size.width*0.9, height: size.height*0.9});
-            else
-                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
+                    sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
             setComponentSize(sizeMap);
         }
@@ -114,9 +111,7 @@ const Layout: FC = (props) => {
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                if (childWithProps.props.screen_modal_)
-                    sizeMap.set(childWithProps.props.id, {width: size.width*0.9, height: size.height*0.9});
-                else
+                console.log(childWithProps)
                     sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
             setComponentSize(sizeMap);

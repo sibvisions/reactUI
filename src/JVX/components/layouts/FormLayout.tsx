@@ -16,6 +16,8 @@ import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import BaseComponent from "../BaseComponent";
 import {ILayout} from "./Layout";
+import { parseJVxSize } from "../util/parseJVxSize";
+import Size from "../util/Size";
 
 
 const FormLayout: FC<ILayout> = (baseProps) => {
@@ -31,7 +33,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         preferredCompSizes,
         style,
         id,
-        reportSize
+        reportSize,
+        screen_modal_
     } = baseProps
 
     const calculateLayout = useCallback((
@@ -41,7 +44,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         layoutData: string,
         id: string,
         onLayoutCallback: Function | undefined,
-        style: CSSProperties) => {
+        style: CSSProperties,
+        popup?: boolean) => {
             const anchors = new Map<string, Anchor>();
             const componentConstraints = new Map<string, Constraints>();
 
@@ -576,6 +580,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback){
                         if (baseProps.preferredSize) {
+                            console.log(baseProps.preferredSize)
                             const size = baseProps.preferredSize.split(',');
                             const width = parseInt(size[0]);
                             const height = parseInt(size[1]);
@@ -590,8 +595,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
-                            left:  style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
-                            top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
+                            left:  popup ? 0 : style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
+                            top:  popup ? 0 : style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
                         },
                         componentSizes: sizeMap
@@ -616,9 +621,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 layoutData,
                 id,
                 reportSize,
-                style
+                style,
+                screen_modal_
             )
-    }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, reportSize])
+    }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, reportSize, screen_modal_])
 
 
     return(

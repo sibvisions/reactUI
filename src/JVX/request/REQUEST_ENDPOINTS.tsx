@@ -2,6 +2,7 @@ enum REQUEST_ENDPOINTS  {
     STARTUP = "/api/startup",
     LOGIN = "/api/v2/login",
     LOGOUT = "/api/logout",
+    CLOSE_SCREEN = "/api/closeScreen",
     PRESS_BUTTON = "/api/v2/pressButton",
     OPEN_SCREEN = "/api/v2/openScreen",
     DEVICE_STATUS = "/api/deviceStatus",

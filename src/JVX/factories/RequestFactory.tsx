@@ -11,6 +11,7 @@ import FilterRequest from "../request/FilterRequest";
 import SetValueRequest from "../request/SetValueRequest";
 import TabRequest from "../request/TabRequest";
 import SaveRequest from "../request/SaveRequest";
+import CloseScreenRequest from "../request/CloseScreenRequest";
 
 
 
@@ -155,3 +156,10 @@ export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
     return req;
 }
 
+export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScreenRequest => {
+    const req:CloseScreenRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    };
+    return req;
+}

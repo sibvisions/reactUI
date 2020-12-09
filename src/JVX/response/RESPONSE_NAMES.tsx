@@ -13,6 +13,7 @@ enum RESPONSE_NAMES{
     DAL_DATA_PROVIDER_CHANGED="dal.dataProviderChanged",
     SHOW_DOCUMENT="showDocument",
     SESSION_EXPIRED="message.sessionexpired",
-    ERROR="message.error"
+    ERROR="message.error",
+    RESTART="restart"
 }
 export default RESPONSE_NAMES

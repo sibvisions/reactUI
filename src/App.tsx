@@ -109,18 +109,10 @@ const App: FC = () => {
             <Toast ref={toastRef} position="top-right"/>
             <toastContext.Provider value={msg}>
                 <Switch>
-                    <Route exact path={"/login"}>
-                        <Login />
-                    </Route>
-                    <Route exact path={"/home/:componentId"}>
-                        <Home />
-                    </Route>
-                    <Route exact path={"/settings"}>
-                        <Settings />
-                    </Route>
-                    <Route path={"/home"}>
-                        <Home />
-                    </Route>
+                    <Route exact path={"/login"} render={() => <Login />}/>
+                    <Route exact path={"/home/:componentId"} render={props => <Home key={props.match.params.componentId} />} />
+                    <Route exact path={"/settings"} render={() => <Settings />}/>
+                    <Route path={"/home"} render={() => <Home key={'homeBlank'} />} />
                 </Switch>   
             </toastContext.Provider>
         </>

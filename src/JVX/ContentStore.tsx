@@ -122,7 +122,7 @@ class ContentStore{
             }
 
             if ((newComponent as Panel).screen_modal_) 
-                this.popupSubscriber[0].apply(undefined, [(newComponent as Panel).screen_navigationName_]);
+                this.popupSubscriber[0].apply(undefined, [(newComponent as Panel).screen_navigationName_, false]);
         });
 
         //Properties
@@ -144,7 +144,6 @@ class ContentStore{
     closeScreen(windowName: string){
         const window = this.getWindowData(windowName);
         if(window){
-            console.log(window)
             this.cleanUp(window.id, window.name);
         }
     }
@@ -158,9 +157,11 @@ class ContentStore{
     }
 
     cleanUp(id:string, name:string|undefined) {
+        console.log('cleanup')
         if (name) {
+            if ((this.flatContent.get(id) as Panel).screen_modal_)
+                this.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
             this.deleteChildren(id);
-            console.log('cleanup')
             this.flatContent.delete(id);
             this.dataProviderData.delete(name);
             this.dataProviderMetaData.delete(name);
@@ -371,7 +372,7 @@ class ContentStore{
     }
 
     unsubscribeFromPopupChange(fn: Function) {
-        this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn));
+        this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn), 1);
     }
 
     unsubscribeFromMenuChange(fn: Function){

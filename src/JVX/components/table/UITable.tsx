@@ -27,6 +27,7 @@ export interface TableProps extends BaseComponent{
     columnLabels: Array<string>,
     columnNames: Array<string>,
     dataBook: string,
+    tableHeaderVisible?: boolean
 }
 
 type CellEditor = {
@@ -140,14 +141,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                     sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
-                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37+44 : 410, width: estTableWidth}
+                    const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+2}
                     sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                     
             }
                 
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
@@ -227,7 +228,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 field={colName}
                 header={props.columnLabels[colIndex]}
                 key={colName}
-                headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis'}}
+                headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined}}
                 body={(rowData: any) => <CellEditor
                     name={props.name as string}
                     colName={colName}
@@ -243,7 +244,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
 
         )
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible])
 
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook)?.primaryKeyColumns || ["ID"];
@@ -298,7 +299,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     //console.log(layoutContext.get(id)?.height as number)
 
     return(
-       <div ref={wrapRef} style={{...layoutContext.get(props.id), height: layoutContext.get(props.id)?.height as number - 2, width: layoutContext.get(props.id)?.width as number - 2}}>
+       <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
            <DataTable
                ref={tableRef}
                onColumnResizeEnd={handleColResize}
