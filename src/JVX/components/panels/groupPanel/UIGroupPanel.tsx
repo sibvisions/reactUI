@@ -15,10 +15,17 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     const [props] = useProperties(baseProps.id, baseProps);
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
     const {onLoadCallback, id} = baseProps;
+    const prefSize = parseJVxSize(props.preferredSize);
 
 
     const getStyle = () => {
-        const s = {...layoutContext.get(baseProps.id) || {}}
+        let s:React.CSSProperties;
+        if (props.screen_modal_ && prefSize)
+            s = {...layoutContext.get(id), height: prefSize.height, width: prefSize.width}
+        else if (props.screen_modal_)
+            s = {...layoutContext.get(id), height: undefined, width: undefined}
+        else
+            s = {...layoutContext.get(id) || {}}
         s.top = undefined;
         s.left = undefined;
         (s.width as number) -= 0;
@@ -34,7 +41,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div className="jvxGroupPanel" style={{...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
+        <div className="jvxGroupPanel" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
             <div className="jvxGroupPanel-caption"><span>{props.text}</span></div>
             <Layout
                 id={id}

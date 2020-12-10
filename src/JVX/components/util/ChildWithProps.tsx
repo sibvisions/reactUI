@@ -4,6 +4,7 @@ interface ChildWithProps {
         constraints: string,
         isVisible?: boolean
         screen_modal_?:boolean
+        screen_title_?:string
     }
 }
 export default ChildWithProps

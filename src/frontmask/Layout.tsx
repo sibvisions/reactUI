@@ -50,13 +50,15 @@ const Layout: FC = (props) => {
 
     const screenTitleMemo = useMemo(() => {
         let screenTitle = context.server.APP_NAME;
-        const a = props.children as {props: {screen_title_: string}}
-        if(a && a.props && a.props.screen_title_)
-            screenTitle = a.props.screen_title_;
+        Children.forEach(props.children,child => {
+            const childWithProps = (child as ChildWithProps);
+            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
+                screenTitle = childWithProps.props.screen_title_;
+        })
+            
         if(!screenTitle)
             screenTitle = window.location.hash.split("/")[1];
-
-
+            
         return screenTitle
 
     }, [props.children, context.server.APP_NAME])
@@ -111,12 +113,13 @@ const Layout: FC = (props) => {
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                console.log(childWithProps)
-                    sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
+                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
             setComponentSize(sizeMap);
         }
     }, [props.children])
+
+    //console.log(props.children)
 
     return(
         <div className={"layout " + context.theme}>

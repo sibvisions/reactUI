@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import Layout from "../Layout";
 import {useParams} from "react-router-dom";
-import useHomeComponents from "src/JVX/components/zhooks/useHomeComponents";
+import useHomeComponents from "../../JVX/components/zhooks/useHomeComponents";
 
 
 const Home: FC = () => {

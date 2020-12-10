@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useRef, useState} from "react";
 
 //Custom
 import './menu.scss';
@@ -21,7 +21,7 @@ const Menu: FC = () => {
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const slideRef = useRef<SlideMenu>(null)
 
-    const profileMenu = useMemo(() => {
+    const profileMenu = () => {
         const sendLogout = () => {
             const logoutRequest = createLogoutRequest();
             localStorage.removeItem("authKey")
@@ -77,7 +77,7 @@ const Menu: FC = () => {
 
             </div>
         )
-    }, [slideRef, context.server, context.contentStore])
+    }
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
@@ -108,9 +108,11 @@ const Menu: FC = () => {
         }
     }, [context.contentStore]);
 
+    console.log(process.env.PUBLIC_URL)
+
     return(
         <div className="topMenuBar p-grid">
-            <Menubar start={() => <img src={process.env.PUBLIC_URL + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu}/>
+            <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/>
         </div>
     )
 }

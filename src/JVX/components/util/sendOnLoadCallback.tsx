@@ -19,10 +19,8 @@ function checkSizes(prefSize:Size, minSize:Size|undefined, maxSize:Size|undefine
 
 export function sendOnLoadCallback(id: string, preferredSize: Size | undefined, maxSize: Size | undefined, minSize: Size | undefined, ref: any, onLoadCallback: Function | undefined) {
     if (onLoadCallback) {
-        console.log(preferredSize, id)
         if (preferredSize) {
             const sizeToSend:Size = checkSizes(preferredSize, minSize, maxSize);
-            console.log(sizeToSend.height, sizeToSend.width)
             onLoadCallback(id, sizeToSend.height, sizeToSend.width);
         }
         else {

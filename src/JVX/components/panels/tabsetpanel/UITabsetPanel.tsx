@@ -15,7 +15,7 @@ import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
 
 export interface ITabsetPanel extends Panel {
-    selectedIndex: number;
+    selectedIndex?: number;
 }
 
 const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
@@ -27,6 +27,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const [components, preferredCompSizes] = useComponents(baseProps.id)
     const {onLoadCallback, id} = baseProps;
     const closing = useRef(false);
+    const prefSize = parseJVxSize(props.preferredSize);
 
     useLayoutEffect(() => {
             const sizeMap = new Map<string, CSSProperties>();
@@ -44,8 +45,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     }, [components, layoutValue, id]);
 
     useLayoutEffect(() => {
-        if (onLoadCallback && preferredCompSizes) {
-            const selectedPanel = preferredCompSizes.get(components[props.selectedIndex].props.id);
+        if (onLoadCallback && preferredCompSizes && props.selectedIndex !== -1) {
+            const selectedPanel = preferredCompSizes.get(components[(props.selectedIndex as number)].props.id);
             if (selectedPanel) {
                 const prefSize:Size = {height: selectedPanel.height, width: selectedPanel.width};
                 sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
@@ -107,7 +108,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         <LayoutContext.Provider value={componentSizes}>
             <TabView
                 ref={panelRef}
-                style={{ ...layoutValue.get(props.id) , backgroundColor: props.background }}
+                style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutValue.get(baseProps.id), backgroundColor: props.background}}
                 activeIndex={props.selectedIndex}
                 onTabChange={event => {
                     if (event.index !== props.selectedIndex)

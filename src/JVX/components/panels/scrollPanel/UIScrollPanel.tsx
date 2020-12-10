@@ -15,9 +15,16 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     const [props] = useProperties(baseProps.id, baseProps);
     const [components, preferredComponentSizes] = useComponents(baseProps.id);
     const {onLoadCallback, id} = baseProps;
+    const prefSize = parseJVxSize(props.preferredSize);
 
     const getStyle = () => {
-        const s = {...layoutContext.get(baseProps.id) || {}};
+        let s:React.CSSProperties;
+        if (props.screen_modal_ && prefSize)
+            s = {...layoutContext.get(id), height: prefSize.height, width: prefSize.width}
+        else if (props.screen_modal_)
+            s = {...layoutContext.get(id), height: undefined, width: undefined}
+        else
+            s = {...layoutContext.get(id) || {}}
         if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
             s.top = undefined;
             s.left = undefined;
@@ -35,7 +42,7 @@ const UIScrollPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div id={props.id} style={{...layoutContext.get(baseProps.id), overflow: "auto"}}>
+        <div id={props.id} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width, overflow: 'auto'} : {...layoutContext.get(baseProps.id), overflow: 'auto'}}>
             <Layout
                 id={id}
                 layoutData={props.layoutData}

@@ -31,17 +31,27 @@ import UIChart, { IChart } from "../components/chart/UIChart";
 import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
 import UIMapGoogle from "../components/map/UIMapGoogle";
 import UICustomComponentWrapper, { ICustomComponentWrapper } from "../components/customComp/UICustomComponentWrapper";
+import UIPopupWrapper, { IPopup } from "../components/panels/popup/UIPopupWrapper";
 
-export const createPanel: FC<Panel> = (props) => {
-    return <UIPanel {...props} key={props.id}/>
+export const createPanel: FC<IPopup|Panel> = (props) => {
+    if (props.screen_modal_)
+        return <UIPopupWrapper {...props} render={<UIPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
+    else
+        return <UIPanel {...props} key={props.id}/>
 }
 
-export const createGroupPanel: FC<Panel> = (props) => {
-    return <UIGroupPanel {...props} key={props.id}/>
+export const createGroupPanel: FC<IPopup|Panel> = (props) => {
+    if (props.screen_modal_)
+        return <UIPopupWrapper {...props} render={<UIGroupPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
+    else
+        return <UIGroupPanel {...props} key={props.id}/>
 }
 
-export const createScrollPanel: FC<Panel> = (props) => {
-    return <UIScrollPanel {...props} key={props.id}/>
+export const createScrollPanel: FC<IPopup|Panel> = (props) => {
+    if (props.screen_modal_)
+        return <UIPopupWrapper {...props} render={<UIScrollPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
+    else
+        return <UIScrollPanel {...props} key={props.id}/>
 }
 
 export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
@@ -128,8 +138,11 @@ export const createPassword: FC<BaseComponent> = (props) => {
     return <UIPassword {...props} key={props.id}/>
 }
 
-export const createTabsetPanel: FC<ITabsetPanel> = (props) => {
-    return <UITabsetPanel {...props} key={props.id}/>
+export const createTabsetPanel: FC<ITabsetPanel|IPopup> = (props) => {
+    if (props.screen_modal_)
+        return <UIPopupWrapper {...props} render={<UITabsetPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
+    else
+        return <UITabsetPanel {...props} key={props.id}/>
 }
 
 export const createChart: FC<IChart> = (props) => {
@@ -201,7 +214,7 @@ const classNameMapper = new Map<string, Function>()
 
 export const componentHandler = (component: BaseComponent) => {
     const builder = classNameMapper.get(component.className as string);
-    if(builder){
+    if(builder) {
         return builder(component);
     } else {
         return <div> </div>

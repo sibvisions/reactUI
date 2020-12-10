@@ -17,6 +17,8 @@ const useHomeComponents = (componentId:string) => {
         }
         if (context.contentStore.getWindow(compKey))
             tempArray.push(context.contentStore.getWindow(compKey));
+        if (context.contentStore.customContent.has(compId))
+            tempArray.push(context.contentStore.getWindow(compId));
         return tempArray
     },[context.contentStore])
 
@@ -25,6 +27,7 @@ const useHomeComponents = (componentId:string) => {
     useEffect(() => {
         const buildHomeChildren = (compKey:string) => {
             const newHomeChildren = buildWindow(compKey);
+            console.log(newHomeChildren)
             const cl = new Array<ReactElement>();
             homeChildren.forEach(hc => {
                 cl.push(hc);

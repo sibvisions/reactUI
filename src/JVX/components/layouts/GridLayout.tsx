@@ -83,8 +83,6 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         return sizeMap
     },[layout, preferredCompSizes, reportSize, id, style, context.contentStore])
 
-    console.log(componentSizes)
-
     return (
         <LayoutContext.Provider value={componentSizes}>
             <div style={{...calculatedStyle}}>

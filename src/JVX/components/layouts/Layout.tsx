@@ -14,8 +14,7 @@ export interface ILayout{
     components: Array<ReactElement>
     preferredCompSizes: Map<string, ComponentSize> | undefined
     style: CSSProperties,
-    reportSize: Function,
-    screen_modal_?: boolean
+    reportSize: Function
 }
 
 

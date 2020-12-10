@@ -157,7 +157,6 @@ class ContentStore{
     }
 
     cleanUp(id:string, name:string|undefined) {
-        console.log('cleanup')
         if (name) {
             if ((this.flatContent.get(id) as Panel).screen_modal_)
                 this.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
@@ -180,6 +179,9 @@ class ContentStore{
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
         this.navigationNames.clear();
+        this.serverMenuItems.clear();
+        this.customMenuItems.clear();
+        this.mergedMenuItems.clear();
     }
 
     setNavigationName(compId:string, navName:string) {

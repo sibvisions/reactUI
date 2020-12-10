@@ -76,7 +76,6 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         if (!dataSet && providedPointData.length && providedGroupData.length) {
             
             if (mapInnerRef.current) {
-                console.log(providedPointData, providedGroupData)
                 //@ts-ignore
                 const map = mapInnerRef.current.map
                 const latColName = props.latitudeColumnName;
@@ -85,7 +84,6 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     const marker = new google.maps.Marker({position: {lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE}, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon)});
                     marker.setMap(map);
-                    console.log(marker, i)
                     if (i === providedPointData.length - 1)
                         setSelectedMarker(marker);
                 });
