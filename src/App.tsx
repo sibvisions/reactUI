@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useLayoutEffect, /*useEffect,*/ useRef} from 'react';
+import React, {createContext, FC, useContext, useLayoutEffect, useEffect, useRef} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -17,8 +17,9 @@ import * as queryString from "querystring";
 import {Route, Switch, useHistory} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
 // import {serverMenuButtons} from "./JVX/response/MenuResponse";
-// import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
-// import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
+//import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
+//import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
+import {ICustomContent} from "./MiddleMan"
 
 
 
@@ -31,7 +32,7 @@ type queryType = {
 
 export const toastContext = createContext<Function>(() => {})
 
-const App: FC = () => {
+const App: FC<ICustomContent> = (props) => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
     const history = useHistory()
@@ -41,6 +42,20 @@ const App: FC = () => {
     //     context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
     //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
     // }, [context.contentStore]);
+
+    useEffect(() => {
+        props.customScreens?.forEach(customScreen => {
+            context.contentStore.registerCustomOfflineScreen(customScreen.screenName, customScreen.menuGroup, customScreen.screenFactory);
+        });
+
+        props.replaceScreens?.forEach(replaceScreen => {
+            context.contentStore.registerReplaceScreen(replaceScreen.screenToReplace, replaceScreen.screenFactory);
+        });
+
+        props.customComponents?.forEach(replaceComponent => {
+            context.contentStore.registerCustomComponent(replaceComponent.componentName, replaceComponent.compFactory);
+        })
+    },[context.contentStore])
 
     useLayoutEffect(() => {
         history.replace("/home")
@@ -89,6 +104,8 @@ const App: FC = () => {
             startUpRequest.screenWidth = window.innerWidth;
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
             context.server.showToast = msg
+        }).catch(() => {
+            msg({severity: 'error', summary: 'config.json file could not be loaded. Make sure there is a config.json file in your public folder.', life: 5000});
         })
     }, [context.server, context.contentStore, history]);
 

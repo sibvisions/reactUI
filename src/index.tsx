@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
-import App from './App';
-import JVXProvider from "./JVX/jvxProvider";
 import * as serviceWorker from './serviceWorker';
-import { HashRouter } from 'react-router-dom';
 import MiddleMan from './MiddleMan';
 
 export default ReactDOM.render(

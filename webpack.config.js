@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 let inputObj = {};
 
@@ -33,13 +34,15 @@ async function tsFilesToInput(dir) {
     }
 }
 
-module.exports = async () => {
+module.exports = () => {
     return {
-        entry: await tsFilesToInput('./src'),
+        //entry: await tsFilesToInput('./src'),
+        entry: './src/moduleIndex.ts',
         output: {
+            filename: 'moduleIndex.js',
             path: path.resolve(__dirname, 'dist'),
-            filename: '[name].js',
-            library: ['JVXReactUI', '[name]'],
+            //filename: '[name].js',
+            library: 'JVXReactUI',
             libraryTarget: 'umd'
         },
         devtool: 'inline-source-map',
@@ -47,6 +50,13 @@ module.exports = async () => {
             new MiniCssExtractPlugin({
                 filename: '[name].css',
                 chunkFilename: '[id].css'
+            }),
+            new CircularDependencyPlugin({
+                exclude: /a\.js|node_modules/,
+                include: /dir/,
+                failOnError: true,
+                allowAsyncCycles: false,
+                cwd: process.cwd(),
             }),
             new CleanWebpackPlugin()
         ],
@@ -103,7 +113,10 @@ module.exports = async () => {
             ]
         },
         resolve: {
-            extensions: ['.tsx', '.ts', '.js', '.json']
+            extensions: ['.tsx', '.ts', '.js', '.json'],
+            alias: {
+                react: path.resolve('./node_modules/react')
+            }
         },
         externals: {
             react: "react",

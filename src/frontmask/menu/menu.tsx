@@ -108,8 +108,6 @@ const Menu: FC = () => {
         }
     }, [context.contentStore]);
 
-    console.log(process.env.PUBLIC_URL)
-
     return(
         <div className="topMenuBar p-grid">
             <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/>

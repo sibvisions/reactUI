@@ -14,7 +14,7 @@ type MenuItem = {
     text: string
 }
 
-class ContentStore{
+export default class ContentStore{
 
     menuSubject = new ReplaySubject<Array<MenuItemCustom>>(1);
     flatContent = new Map<string, BaseComponent>();
@@ -46,6 +46,10 @@ class ContentStore{
 
     GM_API_KEY:string = "";
     LOGO:string = "";
+
+    constructor() {
+
+    }
 
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
@@ -468,4 +472,3 @@ class ContentStore{
         this.customContent.set(title, compFactory);
     }
 }
-export default ContentStore

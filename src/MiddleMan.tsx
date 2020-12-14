@@ -1,15 +1,26 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect, useRef} from 'react';
+import './index.scss';
 import App from './App';
 import JVXProvider from "./JVX/jvxProvider";
 import { HashRouter } from 'react-router-dom';
+import CustomScreenType from './JVX/customTypes/CustomScreenType';
+import ReplaceScreenType from './JVX/customTypes/ReplaceScreenType';
+import CustomComponentType from './JVX/customTypes/CustomComponentType';
 
-const MiddleMan: FC = () => {
+export interface ICustomContent {
+    customScreens?: Array<CustomScreenType>
+    replaceScreens?: Array<ReplaceScreenType>
+    customComponents?: Array<CustomComponentType>
+}
+
+const MiddleMan: FC<ICustomContent> = (props) => {
+
     return (
         <HashRouter>
             <JVXProvider>
-                <App />
+                <App {...props}/>
             </JVXProvider>
         </HashRouter>
     )
 }
-export default MiddleMan
+export default MiddleMan;
