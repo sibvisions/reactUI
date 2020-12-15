@@ -8,7 +8,7 @@ import MenuItemCustom from "../../primeExtension/MenuItemCustom";
 import {jvxContext} from "../../JVX/jvxProvider";
 
 //Prime
-import {Menubar} from "primereact/menubar";
+import { PanelMenu } from 'primereact/panelmenu';
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
 import {Button} from "primereact/button";
@@ -47,23 +47,27 @@ const Menu: FC = () => {
 
         const image = () => {
             if(context.contentStore.currentUser.profileImage){
-                return (
+                return (              
                     <img
+                        className="profileImage"
                         alt={"profileImage"}
                         onClick={event => slideRef.current?.show(event)}
                         src={"data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage}
-                        style={context.contentStore.currentUser.profileImage ? {height:50, width:50, borderRadius: 25} : undefined}
                     />
                 )
             } else {
-                return undefined
+                return (
+                    <span className="profileCircle">
+                        <i className="noProfileImage fa fa-user"/>
+                    </span>
+                )
             }
         }
 
         return(
-            <div className="profileMenu" style={{display: "flex"}}>
+            <div className="profileMenu">
                 <Button
-                    className={"p-button-secondary p-button-text"}
+                    className="profileName"
                     label={context.contentStore.currentUser.displayName}
                     icon="pi pi-angle-down"
                     iconPos="right"
@@ -107,9 +111,23 @@ const Menu: FC = () => {
         }
     }, [context.contentStore]);
 
+    const handleToggleClick = () => {
+        console.log('toggler has been clicked')
+    }
+
     return(
-        <div className="topMenuBar">
-            <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/>
+        <div className="menu">
+            <div className="topMenuBar">
+                <div className="logoWrap">
+                    <img className="logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
+                </div>
+                <i onClick={handleToggleClick} className="menuToggler pi pi-bars" />
+                {profileMenu()}
+                {/* <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/> */}
+            </div>
+            <div className="menuWrap">
+                <PanelMenu model={menuItems} />
+            </div>
         </div>
     )
 }

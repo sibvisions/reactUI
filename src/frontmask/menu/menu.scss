@@ -42,106 +42,86 @@ body {
     .topMenuBar {
         height: 70px;
         display: flex;
+        align-items: center;
         width: 100%;
-        -webkit-box-shadow: $shadow;
-        -moz-box-shadow: $shadow;
-        box-shadow: $shadow;
-        &.p-grid {
-            margin: 0;
-        }
-        .logo-topmenu {
-            display: flex;
-            height: 100%;
-            align-items: center;
-        }
-        .logo-topmenu {
-            padding-top: 35px;
-            padding-left: 50px;
-        }
+        position: fixed;
         img {
             width: 190px;
             height: 40px;
             border-radius: 5%;
-            margin-left: 5px;
         }
-        .p-menubar-button {
-            text-decoration: unset;
-            margin-left: 5px;
+        .logoWrap {
+            display: flex;
+            background-color: white;
+            height: 100%;
+            padding: 0 25px;
+            .logo {
+                align-self: center;
+            }
+        }
+        .menuToggler {
+            color:white;
+            padding: 0 10px;
+            font-size: 25px;
             &:hover {
-                background: unset;
-            }
-            >i {
-                font-weight: bold;
-                font-size: 1.5em;
+                color:rgb(165, 165, 165);
+                cursor: pointer;
             }
         }
-
-        .p-menubar:not(.p-menubar-mobile-active) {
-            .p-menubar-root-list {
-                >.p-menuitem {
-                    border-bottom: 4px solid transparent;
+        .profileMenu {
+            display: flex;
+            flex-direction: row;
+            flex-flow: nowrap;
+            align-items: center;
+            height: 100%;
+            margin-left: auto;
+            padding-right: 10px;
+            .profileName {
+                background-color: transparent;
+                border-color: transparent;
+                color:white;
+                padding: 0.429rem 0.6rem;
+                &:hover {
+                    background-color: transparent;
+                    border-color: transparent;
+                    color:rgb(165, 165, 165);
+                }
+                &:focus {
+                    box-shadow: none;
+                    -webkit-box-shadow: none;
                 }
             }
-
-            .p-menuitem.p-menuitem-active
-            > .p-submenu-list {
-                >.p-menuitem {
-                    >.p-menuitem-link {
-                        background-color: inherit;
-                        >.p-menuitem-text {
-                            color: black
-                        }
-                    }
-                }
-                >.p-menuitem.p-menuitem-active {
-                    >.p-menuitem-link {
-                        background-color: inherit;
-                    }
-                    >.p-menuitem-link:hover {
-                        background-color: #eaeaea
-                    }
-                }
-                .p-menuitem-link:hover {
-                    .p-menuitem-text{
-                        background-color: inherit
-                    }
-                }
-                .p-menuitem:hover {
-                    border-bottom: none;
-                }
-             }
-        }
-
-        .p-menubar {
-            background-color: inherit;
-            border: inherit;
-            padding-top: 8px;
-            .p-submenu-list {
-                z-index: 999;
+            .profileImage {
+                width: 35px;
+                border-radius: 50%;
             }
-             >.p-menubar-end {
-                 .p-button{
-                    color: white;
-                    border-bottom: 4px solid transparent;
-                    .p-button-icon-right {
-                        margin-left: 0.5rem;
-                    }
-                 }
-                 .p-slidemenu-rootlist {
-                     width: 100% !important;
-                 }
-             }
+            .profileCircle {
+                background-color: white;
+                border-radius: 50%;
+                width: 35px;
+                .noProfileImage {
+                    font-size: 35px;
+                    margin-left: 5px;
+                }
+            }
         }
     }
-    .profile {
-        margin-top: -12px;
-        padding-right: 50px;
-    }
-    .p-sidebar {
-        background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgba(246,246,246,1) 74%, rgba(233,233,233,1) 91%);
-        .sidebar-menu {
-            border: none;
-            margin-top: 25px;
+    .menuWrap {
+        position: fixed;
+        height: 100%;
+        width: 240px;
+        padding-top: 70px;
+        .p-panelmenu {
+            .p-panelmenu-header {
+                .p-panelmenu-header-link {
+                    border: none;
+                }
+                &.p-highlight {
+                    > a {
+                        background-color: #dbdbdb;
+                    }
+                }
+            }
         }
     }
 }

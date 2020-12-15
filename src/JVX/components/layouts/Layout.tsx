@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, ReactElement, useLayoutEffect, useRef} from "react";
+import React, {CSSProperties, FC, ReactElement} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import FlowLayout from "./FlowLayout";
@@ -37,32 +37,3 @@ const Layout: FC<ILayout> = (props) => {
 
 }
 export default Layout
-
-
-
-
-const DummyLayout: FC<ILayout> = (baseProps) => {
-
-    const {
-        components,
-        style,
-        id,
-        reportSize
-    } = baseProps
-
-    const layoutSize = useRef<HTMLSpanElement>(null);
-
-    useLayoutEffect(() => {
-        if(layoutSize.current && reportSize){
-            const size = layoutSize.current.getBoundingClientRect();
-            reportSize(size.height, size.width);
-        }
-    }, [id, reportSize]);
-
-
-    return(
-        <span ref={layoutSize} style={style}>
-            {components}
-        </span>
-    )
-}

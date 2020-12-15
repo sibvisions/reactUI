@@ -122,7 +122,6 @@ const Layout: FC = (props) => {
         <div className={"layout " + context.theme}>
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
-                <div className="jvxHeader">{screenTitleMemo}</div>
                 <div ref={sizeRef} className={"main"}>
                     {props.children}
                 </div>
