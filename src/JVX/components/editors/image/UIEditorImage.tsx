@@ -1,5 +1,4 @@
 import React, {FC, useContext, useEffect} from "react";
-import './UIEditorImage.scss'
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import useRowSelect from "../../zhooks/useRowSelect";

@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
-import './UIChart.scss'
 import {Chart} from 'primereact/chart';
 import tinycolor from 'tinycolor2';
 import {LayoutContext} from "../../LayoutContext";

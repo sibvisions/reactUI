@@ -1,5 +1,4 @@
 import React, {FC, useContext} from "react";
-import './UIGroupPanel.scss'
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";

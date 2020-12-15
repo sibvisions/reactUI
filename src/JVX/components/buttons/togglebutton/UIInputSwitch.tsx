@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
-import './UIToggleButton.scss';
 import {InputSwitch} from 'primereact/inputswitch';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";

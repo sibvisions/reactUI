@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
-import './UIRadioButton.scss'
 import {RadioButton} from 'primereact/radiobutton';
 import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";

@@ -1,5 +1,4 @@
 import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
-import './UIEditorDate.scss'
 import {Calendar} from 'primereact/calendar';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";

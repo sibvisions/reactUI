@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
-import './UIButton.scss';
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";

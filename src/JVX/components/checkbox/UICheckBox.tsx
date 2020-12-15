@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
-import './UICheckBox.scss'
 import {Checkbox} from 'primereact/checkbox';
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";

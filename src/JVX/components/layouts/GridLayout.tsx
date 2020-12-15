@@ -85,11 +85,11 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
     return (
         <LayoutContext.Provider value={componentSizes}>
-            <div style={{...calculatedStyle}}>
+            <div style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>
     )
 
 }
-export default GridLayout
+export default GridLayout;

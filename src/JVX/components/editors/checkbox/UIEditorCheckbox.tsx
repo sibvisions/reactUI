@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
-import './UIEditorCheckbox.scss'
 import {Checkbox} from 'primereact/checkbox';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";

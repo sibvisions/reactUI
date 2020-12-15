@@ -1,5 +1,4 @@
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import "./UIEditorNumber.scss"
 import {InputNumber} from "primereact/inputnumber";
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";

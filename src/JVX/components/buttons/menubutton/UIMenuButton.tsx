@@ -1,5 +1,4 @@
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import './UIMenuButton.scss';
 import {SplitButton} from "primereact/splitbutton";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";

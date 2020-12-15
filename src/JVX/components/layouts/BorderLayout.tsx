@@ -1,11 +1,5 @@
-import React, {
-    CSSProperties,
-    FC,
-    useContext,
-    useMemo,
-} from "react";
+import React, {CSSProperties, FC, useContext, useMemo} from "react";
 import {LayoutContext} from "../../LayoutContext"
-import "./BorderLayout.scss"
 import {jvxContext} from "../../jvxProvider";
 import {ILayout} from "./Layout";
 import {ComponentSize} from "../zhooks/useComponents";

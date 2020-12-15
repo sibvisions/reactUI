@@ -1,5 +1,4 @@
 import React, {FC, useContext} from "react";
-import './UIPanel.scss'
 import Layout from "../../layouts/Layout";
 import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";

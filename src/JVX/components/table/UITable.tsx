@@ -3,7 +3,6 @@ import BaseComponent from "../BaseComponent";
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
 
-import "./UITable.scss";
 import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import {Column} from "primereact/column";

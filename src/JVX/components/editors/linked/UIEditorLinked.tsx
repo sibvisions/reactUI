@@ -1,5 +1,4 @@
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import './UIEditorLinked.scss'
 import { AutoComplete } from 'primereact/autocomplete';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";

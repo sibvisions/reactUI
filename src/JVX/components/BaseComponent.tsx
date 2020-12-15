@@ -12,6 +12,7 @@ interface BaseComponent{
     "~destroy"?: boolean
     visible?: boolean
     constraints: string
+    bounds?: string
     preferredSize?: string
     maximumSize?: string
     minimumSize?: string

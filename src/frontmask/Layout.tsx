@@ -10,7 +10,6 @@ import React, {
 
 //Components
 import Menu from "./menu/menu";
-import "./Layout.scss"
 
 //Utils
 import ChildWithProps from "../JVX/components/util/ChildWithProps";
@@ -118,8 +117,6 @@ const Layout: FC = (props) => {
             setComponentSize(sizeMap);
         }
     }, [props.children])
-
-    //console.log(props.children)
 
     return(
         <div className={"layout " + context.theme}>

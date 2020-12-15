@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
-import './UIIcon.scss'
 import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import useProperties from "../zhooks/useProperties";

@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useRef} from 'react';
+import React, {FC} from 'react';
 import './index.scss';
 import App from './App';
 import JVXProvider from "./JVX/jvxProvider";

@@ -2,7 +2,6 @@
 import React, {FC, useContext, useEffect, useRef, useState} from "react";
 
 //Custom
-import './menu.scss';
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import MenuItemCustom from "../../primeExtension/MenuItemCustom";
@@ -62,7 +61,7 @@ const Menu: FC = () => {
         }
 
         return(
-            <div style={{display: "flex"}}>
+            <div className="profileMenu" style={{display: "flex"}}>
                 <Button
                     className={"p-button-secondary p-button-text"}
                     label={context.contentStore.currentUser.displayName}
@@ -109,7 +108,7 @@ const Menu: FC = () => {
     }, [context.contentStore]);
 
     return(
-        <div className="topMenuBar p-grid">
+        <div className="topMenuBar">
             <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/>
         </div>
     )

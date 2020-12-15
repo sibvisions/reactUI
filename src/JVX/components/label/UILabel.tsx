@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useRef} from "react";
-import './UILabel.scss'
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";

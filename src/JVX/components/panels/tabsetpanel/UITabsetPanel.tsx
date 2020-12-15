@@ -1,5 +1,4 @@
 import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
-import './UITabsetPanel.scss'
 import {TabView,TabPanel} from 'primereact/tabview';
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";

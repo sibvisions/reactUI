@@ -1,5 +1,4 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
-import './UIToggleButton.scss';
 import tinycolor from 'tinycolor2';
 import {ToggleButton} from 'primereact/togglebutton';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";

@@ -1,7 +1,5 @@
 import React, {CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState} from "react";
-import "./SplitPanel.scss"
 import Throttle from "../../util/Throttle";
-import SplitImage from "../../../../assests/Split.png"
 
 type onResizeEvent = (firstSize: splitSize, secondSize: splitSize) => void;
 
@@ -111,7 +109,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
             <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "firstH" : "firstV"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>
-            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSeperator" : "vSeperator")} style={{backgroundImage:"url("+ SplitImage +")"}}  onMouseDown={dragStart} onTouchStart={dragTouchStart}>
+            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSeperator" : "vSeperator")} onMouseDown={dragStart} onTouchStart={dragTouchStart}>
             </div>
             <div ref={secondRef} className={"second"}>
                 {props.rightComponent}

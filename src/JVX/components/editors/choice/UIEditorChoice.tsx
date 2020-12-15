@@ -1,5 +1,4 @@
 import React, {FC, useContext, useMemo, useRef} from "react";
-import "./UIEditorChoice.scss"
 import {ICellEditor, IEditor} from "../IEditor";
 import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";

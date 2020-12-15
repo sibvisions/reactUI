@@ -1,5 +1,4 @@
 import React, {FC, FormEvent, useContext, useState} from "react";
-import "./login.scss"
 
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";

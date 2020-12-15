@@ -47,10 +47,6 @@ export default class ContentStore{
     GM_API_KEY:string = "";
     LOGO:string = "";
 
-    constructor() {
-
-    }
-
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
         const notifyList = new Array<string>();
