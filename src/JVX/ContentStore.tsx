@@ -34,6 +34,7 @@ export default class ContentStore{
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
     dataChangeSubscriber = new Map<string, Map<string, Array<{ displayRecords: number, fn: Function }>>>();
     appNameSubscriber = new Map<string, Function>();
+    menuCollapseSubscriber = new Map<string, Function>();
 
     MenuSubscriber = new Array<Function>();
     popupSubscriber = new Array<Function>();
@@ -44,7 +45,6 @@ export default class ContentStore{
     dataProviderFetched = new Map<string, Map<string, boolean>>();
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
-    GM_API_KEY:string = "";
     LOGO:string = "";
 
     //Content
@@ -373,6 +373,10 @@ export default class ContentStore{
         this.popupSubscriber.push(fn);
     }
 
+    subscribeToMenuCollapse(id:string, fn: Function) {
+        this.menuCollapseSubscriber.set(id, fn);
+    }
+
     unsubscribeFromPopupChange(fn: Function) {
         this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn), 1);
     }
@@ -407,6 +411,10 @@ export default class ContentStore{
         this.appNameSubscriber.delete(id)
     }
 
+    unsubscribeFromMenuCollapse(id:string) {
+        this.menuCollapseSubscriber.delete(id);
+    }
+
 
     //Events
     emitRowSelect(compId:string, dataProvider: string){
@@ -422,6 +430,12 @@ export default class ContentStore{
         this.MenuSubscriber.forEach(subFunction => {
             subFunction.apply(undefined, [this.mergedMenuItems]);
         });
+    }
+
+    emitMenuCollapse() {
+        this.menuCollapseSubscriber.forEach(subFunction => {
+            subFunction.apply(undefined, []);
+        })
     }
 
     //Custom Screens

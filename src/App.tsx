@@ -17,8 +17,8 @@ import * as queryString from "querystring";
 import {Route, Switch, useHistory} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
 // import {serverMenuButtons} from "./JVX/response/MenuResponse";
-//import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
-//import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
+import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
+import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
 
 
@@ -37,11 +37,11 @@ const App: FC<ICustomContent> = (props) => {
     const toastRef = useRef<Toast>(null);
     const history = useHistory()
 
-    // useEffect(() => {
-    //     context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
-    //     context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-    //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
-    // }, [context.contentStore]);
+    useEffect(() => {
+        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
+        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
+        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+    }, [context.contentStore]);
 
     useEffect(() => {
         props.customScreens?.forEach(customScreen => {
@@ -55,7 +55,7 @@ const App: FC<ICustomContent> = (props) => {
         props.customComponents?.forEach(replaceComponent => {
             context.contentStore.registerCustomComponent(replaceComponent.componentName, replaceComponent.compFactory);
         })
-    },[context.contentStore])
+    },[context.contentStore]);
 
     useLayoutEffect(() => {
         history.replace("/home")
@@ -80,7 +80,6 @@ const App: FC<ICustomContent> = (props) => {
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseURL;
             context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
-            context.contentStore.GM_API_KEY = data.gmAPIKey;
             context.contentStore.LOGO = data.logo;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;

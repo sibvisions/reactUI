@@ -19,6 +19,7 @@ import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 //Context
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
+import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
 
 type queryType = {
     appName?: string,
@@ -32,6 +33,7 @@ const Layout: FC = (props) => {
 
     const sizeRef = useRef<HTMLDivElement>(null);
     const context = useContext(jvxContext);
+    const menuCollapsed = useMenuCollapser('layout');
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
     const [screenTitle, setScreenTitle] = useState('')
     const resizeRef = useRef<NodeJS.Timeout | undefined>();
@@ -106,6 +108,10 @@ const Layout: FC = (props) => {
        }
     });
 
+    useEffect(() => {
+        console.log(sizeRef.current, menuCollapsed)
+    })
+
     useLayoutEffect(() => {
         if(sizeRef.current){
             const size = sizeRef.current.getBoundingClientRect();
@@ -116,13 +122,13 @@ const Layout: FC = (props) => {
             });
             setComponentSize(sizeMap);
         }
-    }, [props.children])
+    }, [props.children, menuCollapsed])
 
     return(
         <div className={"layout " + context.theme}>
             <Menu/>
             <LayoutContext.Provider value={componentSize}>
-                <div ref={sizeRef} className={"main"}>
+                <div ref={sizeRef} className={"main" + (menuCollapsed ? " expanded" : "")}>
                     {props.children}
                 </div>
             </LayoutContext.Provider>

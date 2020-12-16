@@ -265,23 +265,27 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                                 bottomBorderUsed = true;
                             }
                             if(constraint.leftAnchor.getBorderAnchor().name === "l" && constraint.rightAnchor.getBorderAnchor().name === "r"){
-                                let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + (preferredComponentSize.width as number);
-                                if(w > preferredWidth){
-                                    preferredWidth = w;
-                                }
-                                if(w > minimumWidth){
-                                    minimumWidth = w;
+                                if (!constraint.leftAnchor.autoSize || !constraint.rightAnchor.autoSize) {
+                                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + (preferredComponentSize.width as number);
+                                    if(w > preferredWidth){
+                                        preferredWidth = w;
+                                    }
+                                    if(w > minimumWidth){
+                                        minimumWidth = w;
+                                    }
                                 }
                                 leftBorderUsed = true;
                                 rightBorderUsed = true;
                             }
                             if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
-                                let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + (preferredComponentSize.height as number);
-                                if(h > preferredHeight){
-                                    preferredHeight = h;
-                                }
-                                if(h > minimumHeight){
-                                    minimumHeight = h;
+                                if (!constraint.topAnchor.autoSize || !constraint.bottomAnchor.autoSize) {
+                                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + (preferredComponentSize.height as number);
+                                    if(h > preferredHeight){
+                                        preferredHeight = h;
+                                    }
+                                    if(h > minimumHeight){
+                                        minimumHeight = h;
+                                    }
                                 }
                                 topBorderUsed = true;
                                 bottomBorderUsed = true;

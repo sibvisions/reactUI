@@ -29,10 +29,32 @@
   font-size: 25px;
 }
 
-.main{
-  margin: 70px 0px 0px 240px;
+.main {
+  //margin: 70px 0px 0px 240px;
   flex: 1;
   overflow-y: hidden;
   background-color: white;
   border-radius: 5px;
+  animation: shrink 0.5s ease-in-out;
+}
+
+.expanded {
+  //margin: 70px 0px 0px 80px;
+  animation: expand 0.5s ease-in-out;
+}
+
+@keyframes expand {
+  0% {margin-left: 240px;}
+  25% {margin-left: 200px;}
+  50% {margin-left: 160px;}
+  75% {margin-left: 120px;}
+  100% {margin-left: 80px;}
+}
+
+@keyframes shrink {
+  0% {margin-left: 240px;}
+  25% {margin-left: 200px;}
+  50% {margin-left: 160px;}
+  75% {margin-left: 120px;}
+  100% {margin-left: 80px;}
 }

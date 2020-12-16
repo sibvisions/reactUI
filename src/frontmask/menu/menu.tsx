@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 //Custom
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
@@ -9,18 +9,21 @@ import {jvxContext} from "../../JVX/jvxProvider";
 
 //Prime
 import { PanelMenu } from 'primereact/panelmenu';
+import { Menubar } from 'primereact/menubar';
 import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
-import {Button} from "primereact/button";
+
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
+import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
 
 const Menu: FC = () => {
     const context = useContext(jvxContext);
+    const menuCollapsed = useMenuCollapser('menu');
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const slideRef = useRef<SlideMenu>(null)
 
-    const profileMenu = () => {
+    const profileMenu = useMemo(() => {
         const sendLogout = () => {
             const logoutRequest = createLogoutRequest();
             localStorage.removeItem("authKey")
@@ -30,57 +33,35 @@ const Menu: FC = () => {
         const slideOptions: Array<MenuItem> =
             [
                 {
-                    label: "Settings",
-                    icon: "pi pi-cog",
-                    command: () => {
-                        context.server.routingDecider([{name: "settings"}])
-                    }
-                },
-                {
-                    label: "Logout",
-                    icon: "pi pi-power-off",
-                    command(e: { originalEvent: Event; item: MenuItem }) {
-                        sendLogout()
-                    }
+                    label: context.contentStore.currentUser.displayName,
+                    icon: context.contentStore.currentUser.profileImage ? 'profileImage' : 'noProfileImage fa fa-user',
+                    items: [
+                        {
+                            label: "Settings",
+                            icon: "pi pi-cog",
+                            command: () => {
+                                context.server.routingDecider([{ name: "settings" }])
+                            }
+                        },
+                        {
+                            label: "Logout",
+                            icon: "pi pi-power-off",
+                            command(e: { originalEvent: Event; item: MenuItem }) {
+                                sendLogout()
+                            }
+                        }
+                    ]
                 }
             ]
 
-        const image = () => {
-            if(context.contentStore.currentUser.profileImage){
-                return (              
-                    <img
-                        className="profileImage"
-                        alt={"profileImage"}
-                        onClick={event => slideRef.current?.show(event)}
-                        src={"data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage}
-                    />
-                )
-            } else {
-                return (
-                    <span className="profileCircle">
-                        <i className="noProfileImage fa fa-user"/>
-                    </span>
-                )
-            }
-        }
-
         return(
             <div className="profileMenu">
-                <Button
-                    className="profileName"
-                    label={context.contentStore.currentUser.displayName}
-                    icon="pi pi-angle-down"
-                    iconPos="right"
-                    onClick={event => slideRef.current?.show(event)}/>
-                <SlideMenu
+                <Menubar
                     ref={slideRef}
-                    model={slideOptions}
-                    popup={true}/>
-                { image() }
-
+                    model={slideOptions}/>
             </div>
         )
-    }
+    },[slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server]);
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
@@ -111,8 +92,14 @@ const Menu: FC = () => {
         }
     }, [context.contentStore]);
 
+    useEffect(() => {
+        if (document.querySelector('.profileImage') && context.contentStore.currentUser.profileImage)
+            (document.querySelector('.profileImage') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
+    },[profileMenu])
+
+
     const handleToggleClick = () => {
-        console.log('toggler has been clicked')
+        context.contentStore.emitMenuCollapse();
     }
 
     return(
@@ -122,10 +109,10 @@ const Menu: FC = () => {
                     <img className="logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
                 </div>
                 <i onClick={handleToggleClick} className="menuToggler pi pi-bars" />
-                {profileMenu()}
+                {profileMenu}
                 {/* <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/> */}
             </div>
-            <div className="menuWrap">
+            <div className={"menuWrap" + (menuCollapsed ? " collapsed" : "")}>
                 <PanelMenu model={menuItems} />
             </div>
         </div>
