@@ -57,21 +57,35 @@ body {
             width: 100%;
             position: fixed;
             z-index: 20;
-            img {
-                width: 190px;
-                height: 40px;
-                border-radius: 5%;
-            }
             .logoWrap {
+                width: 240px;
                 display: flex;
                 background-color: white;
                 height: 100%;
                 padding: 0 25px;
                 .logo {
+                    width: 190px;
+                    height: 40px;
+                    border-radius: 5%;
                     align-self: center;
+                    -webkit-transition: 0.5s ease-in-out;
+                    -moz-transition: 0.5s ease-in-out;
+                    -o-transition: 0.5s ease-in-out;
+                    transition: 0.5s ease-in-out;
                 }
                 border-bottom: 1px solid;
                 border-color: rgba(120,130,140,.13);
+                -webkit-transition: 0.5s ease-in-out;
+                -moz-transition: 0.5s ease-in-out;
+                -o-transition: 0.5s ease-in-out;
+                transition: 0.5s ease-in-out;
+                &.collapsed {
+                    width: 80px;
+                    padding: 0 10px;
+                    .logo {
+                        width: 60px;
+                    }
+                }
             }
             .menuToggler {
                 padding: 0 10px;
@@ -89,21 +103,6 @@ body {
                     padding: 0;
                     border: none;
                     background-color: transparent;
-                    // .p-menuitem.p-menuitem.p-menuitem-active {
-                    //     > .p-submenu-list {
-                    //         >.p-menuitem {
-                    //             >.p-menuitem-link {
-                    //                 background-color: inherit;
-                    //                 >.p-menuitem-text {
-                    //                     color: black;
-                    //                 }
-                    //                 &:hover {
-                    //                     background-color: #eaeaea;
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
                     .profileImage{
                         background-size: 40px 40px;
                         display: inline-block;
@@ -159,6 +158,11 @@ body {
                         &:hover {
                             color: black;
                         }
+                        .p-menuitem-text {
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                        }
                     }
                     &.p-highlight {
                         
@@ -185,10 +189,13 @@ body {
         }
         .collapsed {
             width: 80px;
-            -webkit-transition: width 0.5s ease-in-out;
-            -moz-transition: width 0.5s ease-in-out;
-            -o-transition: width 0.5s ease-in-out;
-            transition: width 0.5s ease-in-out;
+            .p-panelmenu-panel {
+                display: flex;
+                justify-content: center;
+                .p-menuitem-text {
+                    display: none;
+                }
+            }
         }
     }
 }

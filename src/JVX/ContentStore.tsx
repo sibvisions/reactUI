@@ -46,6 +46,7 @@ export default class ContentStore{
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
     LOGO:string = "";
+    menuCollapsed:boolean = false;
 
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
@@ -436,6 +437,7 @@ export default class ContentStore{
         this.menuCollapseSubscriber.forEach(subFunction => {
             subFunction.apply(undefined, []);
         })
+        this.menuCollapsed = !this.menuCollapsed;
     }
 
     //Custom Screens

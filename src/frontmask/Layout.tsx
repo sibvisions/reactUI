@@ -1,12 +1,5 @@
 //React
-import React, {
-    Children,
-    CSSProperties,
-    FC, useContext,
-    useEffect, useLayoutEffect, useMemo,
-    useRef,
-    useState
-} from "react";
+import React, {Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 //Components
 import Menu from "./menu/menu";
@@ -19,7 +12,9 @@ import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 //Context
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
+
 import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
+import useResponsiveBreakpoints from "src/JVX/components/zhooks/useResponsiveBreakpoints";
 
 type queryType = {
     appName?: string,
@@ -32,8 +27,20 @@ type queryType = {
 const Layout: FC = (props) => {
 
     const sizeRef = useRef<HTMLDivElement>(null);
+    const menuRef = useRef(null);
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('layout');
+
+    const minusTenArray = (start:number, end:number) => {
+        const dataArray:number[] = []
+        while (start >= end) {
+            dataArray.push(start);
+            start -= 10;
+        }
+        return dataArray;
+    }
+
+    const menuSize = useResponsiveBreakpoints(menuRef, minusTenArray(240, 80))
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
     const [screenTitle, setScreenTitle] = useState('')
     const resizeRef = useRef<NodeJS.Timeout | undefined>();
@@ -49,32 +56,18 @@ const Layout: FC = (props) => {
         }
     }, [context.contentStore])
 
-    const screenTitleMemo = useMemo(() => {
-        let screenTitle = context.server.APP_NAME;
-        Children.forEach(props.children,child => {
-            const childWithProps = (child as ChildWithProps);
-            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
-                screenTitle = childWithProps.props.screen_title_;
-        })
-            
-        if(!screenTitle)
-            screenTitle = window.location.hash.split("/")[1];
-            
-        return screenTitle
-
-    }, [props.children, context.server.APP_NAME])
-
-    const doResize = () => {
+    const doResize = useCallback(() => {
         if(sizeRef.current){
             const size = sizeRef.current.getBoundingClientRect();
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                    sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
+                console.log(size.width)
+                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
             setComponentSize(sizeMap);
         }
-    }
+    },[props.children])
 
     const handleResize = () => {
         if(resizeRef.current){
@@ -100,35 +93,46 @@ const Layout: FC = (props) => {
     }
 
     useEffect(() => {
-       window.addEventListener("resize", handleResize);
-       window.addEventListener("resize", handleDeviceStatus);
-       return () => {
-           window.removeEventListener("resize", handleDeviceStatus)
-           window.removeEventListener("resize", handleResize);
-       }
+        const currSizeRef = sizeRef.current
+        window.addEventListener("resize", handleResize);
+        window.addEventListener("resize", handleDeviceStatus);
+        if (currSizeRef) {
+            currSizeRef.addEventListener("transitionstart", () => {
+                currSizeRef.classList.add('disable')
+            });
+            currSizeRef.addEventListener("transitionend", () => {
+                setTimeout(() => {
+                    currSizeRef.classList.remove('disable')
+                }, 0)
+            });
+        }
+
+        return () => {
+            window.removeEventListener("resize", handleDeviceStatus)
+            window.removeEventListener("resize", handleResize);
+            if (currSizeRef) {
+                currSizeRef.removeEventListener("transitionstart", () => {
+                    currSizeRef.classList.add('disable')
+                });
+                currSizeRef.removeEventListener("transitionend", () => {
+                    setTimeout(() => {
+                        currSizeRef.classList.remove('disable')
+                    }, 0)
+                });
+            }
+
+        }
     });
 
-    useEffect(() => {
-        console.log(sizeRef.current, menuCollapsed)
-    })
-
     useLayoutEffect(() => {
-        if(sizeRef.current){
-            const size = sizeRef.current.getBoundingClientRect();
-            const sizeMap = new Map<string, CSSProperties>();
-            Children.forEach(props.children,child => {
-                const childWithProps = (child as ChildWithProps);
-                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
-            });
-            setComponentSize(sizeMap);
-        }
-    }, [props.children, menuCollapsed])
+        doResize();
+    }, [props.children, doResize, menuSize])
 
     return(
         <div className={"layout " + context.theme}>
-            <Menu/>
+            <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
-                <div ref={sizeRef} className={"main" + (menuCollapsed ? " expanded" : "")}>
+                <div ref={sizeRef} className={"main" + (menuCollapsed  ? " layout-expanded" : "")}>
                     {props.children}
                 </div>
             </LayoutContext.Provider>

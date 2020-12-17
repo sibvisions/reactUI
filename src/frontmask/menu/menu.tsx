@@ -17,11 +17,16 @@ import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
 import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
 
-const Menu: FC = () => {
+interface IMenu {
+    forwardedRef?: any
+}
+
+const Menu: FC<IMenu> = ({forwardedRef}) => {
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('menu');
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const slideRef = useRef<SlideMenu>(null)
+    const menuClassList = forwardedRef.current?.classList
 
     const profileMenu = useMemo(() => {
         const sendLogout = () => {
@@ -61,7 +66,7 @@ const Menu: FC = () => {
                     model={slideOptions}/>
             </div>
         )
-    },[slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server]);
+    },[slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server, menuClassList]);
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
@@ -105,14 +110,14 @@ const Menu: FC = () => {
     return(
         <div className="menu">
             <div className="topMenuBar">
-                <div className="logoWrap">
+                <div className={"logoWrap" + (menuCollapsed ? " collapsed" : "")}>
                     <img className="logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
                 </div>
                 <i onClick={handleToggleClick} className="menuToggler pi pi-bars" />
                 {profileMenu}
                 {/* <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/> */}
             </div>
-            <div className={"menuWrap" + (menuCollapsed ? " collapsed" : "")}>
+            <div ref={forwardedRef} className={"menuWrap" + (menuCollapsed ? " collapsed" : "")}>
                 <PanelMenu model={menuItems} />
             </div>
         </div>

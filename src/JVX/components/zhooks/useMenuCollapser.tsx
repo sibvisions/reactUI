@@ -3,14 +3,11 @@ import {jvxContext} from "../../jvxProvider";
 
 const useMenuCollapser = (id:string) => {
     const context = useContext(jvxContext);
-    const [menuCollapsed, setMenuCollapsed] = useState<boolean|undefined>(undefined);
+    const [menuCollapsed, setMenuCollapsed] = useState<boolean|undefined>(context.contentStore.menuCollapsed);
 
     useEffect(() => {
         context.contentStore.subscribeToMenuCollapse(id, () => {
-            if (menuCollapsed === undefined)
-                setMenuCollapsed(true);
-            else
-                setMenuCollapsed(!menuCollapsed);
+            setMenuCollapsed(!menuCollapsed);
         });
         return () => {
             context.contentStore.unsubscribeFromMenuCollapse(id);
