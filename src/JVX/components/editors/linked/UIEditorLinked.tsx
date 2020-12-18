@@ -265,7 +265,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             autoFocus={autoFocus}
             appendTo={document.body}
             ref={inputRef}
-            className="jvxEditorLinked"
+            className="jvx-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             dropdown

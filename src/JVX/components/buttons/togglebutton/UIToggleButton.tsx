@@ -91,7 +91,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     return (
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <ToggleButton
-                className={"jvxButton"  + (props.borderPainted === false ? " borderNotPainted" : "")}
+                className={"jvx-button"  + (props.borderPainted === false ? " border-notpainted" : "")}
                 style={{...btnData.style, background: props.selected ? "linear-gradient(to bottom, " + btnBgdChecked.upperGradient + " 2%, " + btnBgdChecked.lowerGradient + "98%)" : bgdColor.current, borderColor: bgdColor.current}}
                 offLabel={props.text}
                 onLabel={props.text}

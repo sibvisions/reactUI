@@ -90,7 +90,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 }
                 let header = <span className="p-tabview-title">
                     {(!componentConstraints.includes("FontAwesome") && icon.icon) &&
-                    <span className="jvxTabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
+                    <span className="jvx-tabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
                     {constraints[2]}
                     {constraints[1] === 'true' &&
                     <button

@@ -97,10 +97,10 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
     
     return (
-        <span className="jvxEditorChoice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>
+        <span className="jvx-editor-choice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>
             <img
                 ref={btnRef}
-                className="jvxEditorChoice-img"
+                className="jvx-editor-choice-img"
                 alt=""
                 onClick={handleClick}
                 src={context.server.RESOURCE_URL + validImages[currentImageValue]}

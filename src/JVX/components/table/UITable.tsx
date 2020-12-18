@@ -71,7 +71,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     const castedColumn = columnMetaData as IEditorChoice;
                     const cellIndex = castedColumn?.cellEditor.allowedValues?.indexOf(props.cellData)
                     if (castedColumn.cellEditor?.imageNames && cellIndex !== undefined) {
-                        return <img className="jvxEditorChoice-img" alt="choice" src={props.resource + castedColumn?.cellEditor?.imageNames[cellIndex]}/>
+                        return <img className="jvx-editor-choice-img" alt="choice" src={props.resource + castedColumn?.cellEditor?.imageNames[cellIndex]}/>
                     }
                 }
                 else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {
@@ -94,7 +94,7 @@ const CellEditor: FC<CellEditor> = (props) => {
 
         if (!edit) {
             return (
-                <div className={"cellData"} style={{height: 30}} onDoubleClick={event => setEdit(true)}>
+                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => setEdit(true)}>
                     {showCellData()}
                 </div>
             )
@@ -302,7 +302,7 @@ const UITable: FC<TableProps> = (baseProps) => {
            <DataTable
                ref={tableRef}
                onColumnResizeEnd={handleColResize}
-               className="jvxTable"
+               className="jvx-table"
                scrollable={virtualEnabled}
                lazy={virtualEnabled}
                virtualScroll={virtualEnabled}

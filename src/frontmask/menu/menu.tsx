@@ -26,7 +26,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     const menuCollapsed = useMenuCollapser('menu');
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const slideRef = useRef<SlideMenu>(null)
-    const menuClassList = forwardedRef.current?.classList
+    const currUser = context.contentStore.currentUser;
 
     const profileMenu = useMemo(() => {
         const sendLogout = () => {
@@ -38,8 +38,8 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
         const slideOptions: Array<MenuItem> =
             [
                 {
-                    label: context.contentStore.currentUser.displayName,
-                    icon: context.contentStore.currentUser.profileImage ? 'profileImage' : 'noProfileImage fa fa-user',
+                    label: currUser.displayName,
+                    icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fa fa-user',
                     items: [
                         {
                             label: "Settings",
@@ -60,13 +60,13 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             ]
 
         return(
-            <div className="profileMenu">
+            <div className="profile-menu">
                 <Menubar
                     ref={slideRef}
                     model={slideOptions}/>
             </div>
         )
-    },[slideRef , context.contentStore.currentUser, context.contentStore.flatContent, context.contentStore.removedContent, context.server, menuClassList]);
+    },[slideRef, currUser, context.server, context.contentStore]);
 
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
@@ -98,9 +98,9 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     }, [context.contentStore]);
 
     useEffect(() => {
-        if (document.querySelector('.profileImage') && context.contentStore.currentUser.profileImage)
-            (document.querySelector('.profileImage') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
-    },[profileMenu])
+        if (document.querySelector('.profile-image') && context.contentStore.currentUser.profileImage)
+            (document.querySelector('.profile-image') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
+    },[profileMenu, context.contentStore.currentUser.profileImage])
 
 
     const handleToggleClick = () => {
@@ -109,15 +109,14 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
 
     return(
         <div className="menu">
-            <div className="topMenuBar">
-                <div className={"logoWrap" + (menuCollapsed ? " collapsed" : "")}>
-                    <img className="logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
+            <div className="menu-topbar">
+                <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
+                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
                 </div>
-                <i onClick={handleToggleClick} className="menuToggler pi pi-bars" />
+                <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
                 {profileMenu}
-                {/* <Menubar start={() => <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" style={{marginRight: '20px'}}/>} model={menuItems} className="p-col" end={() => profileMenu()}/> */}
             </div>
-            <div ref={forwardedRef} className={"menuWrap" + (menuCollapsed ? " collapsed" : "")}>
+            <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
                 <PanelMenu model={menuItems} />
             </div>
         </div>

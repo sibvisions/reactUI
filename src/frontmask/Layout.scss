@@ -23,12 +23,6 @@
   flex-direction: column;
 }
 
-.jvxHeader {
-  margin-top: 3px;
-  margin-left: 10px;
-  font-size: 25px;
-}
-
 .main {
   margin-top: 70px;
   flex: 1;
@@ -49,6 +43,6 @@
   transition: margin-left 0.5s ease-in-out;
 }
 
-.disable {
+.transition-disable-overflow {
   overflow-x: hidden;
 }

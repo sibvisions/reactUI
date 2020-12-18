@@ -105,11 +105,11 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
 
     return(
-        <div className={"splitPanel " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSplit" : "vSplit")} ref={props.forwardedRef} style={props.style}>
-            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "firstH" : "firstV"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
+        <div className={"jvx-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
+            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-h" : "first-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>
-            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "hSeperator" : "vSeperator")} onMouseDown={dragStart} onTouchStart={dragTouchStart}>
+            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-seperator" : "v-seperator")} onMouseDown={dragStart} onTouchStart={dragTouchStart}>
             </div>
             <div ref={secondRef} className={"second"}>
                 {props.rightComponent}

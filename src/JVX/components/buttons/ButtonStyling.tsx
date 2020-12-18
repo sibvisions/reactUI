@@ -87,7 +87,7 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
         }
         if (iconProps) {
             if (child.classList.value.includes(iconProps.icon)) {
-                child.classList.add("jvxButton-icon")
+                child.classList.add("jvx-button-icon")
                 child.style.setProperty('width', iconProps.size.width+'px');
                 child.style.setProperty('height', iconProps.size.height+'px');
                 child.style.setProperty('font-size', iconProps.size.height+'px');

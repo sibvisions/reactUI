@@ -66,7 +66,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     
 
     return (
-        <span ref={iconRef} className={"jvxIcon" + (props.name === "Validator" ? " jvxValidator" : "")} style={{...layoutValue.get(props.id), ...imageStyle.span}}>
+        <span ref={iconRef} className={"jvx-icon" + (props.name === "Validator" ? " jvx-validator" : "")} style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

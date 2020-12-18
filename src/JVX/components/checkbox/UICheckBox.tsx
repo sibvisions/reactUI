@@ -53,7 +53,7 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
 
     return (
         <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span className="jvxCheckBox" style={btnData.style}>
+            <span className="jvx-checkbox" style={btnData.style}>
                 <Checkbox
                     inputId={props.id}
                     style={{order: btnData.iconPos === 'left' ? 1 : 2}}

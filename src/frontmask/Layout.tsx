@@ -98,25 +98,25 @@ const Layout: FC = (props) => {
         window.addEventListener("resize", handleDeviceStatus);
         if (currSizeRef) {
             currSizeRef.addEventListener("transitionstart", () => {
-                currSizeRef.classList.add('disable')
+                currSizeRef.classList.add('transition-disable-overflow');
             });
             currSizeRef.addEventListener("transitionend", () => {
                 setTimeout(() => {
-                    currSizeRef.classList.remove('disable')
+                    currSizeRef.classList.remove('transition-disable-overflow');
                 }, 0)
             });
         }
 
         return () => {
-            window.removeEventListener("resize", handleDeviceStatus)
+            window.removeEventListener("resize", handleDeviceStatus);
             window.removeEventListener("resize", handleResize);
             if (currSizeRef) {
                 currSizeRef.removeEventListener("transitionstart", () => {
-                    currSizeRef.classList.add('disable')
+                    currSizeRef.classList.add('transition-disable-overflow');
                 });
                 currSizeRef.removeEventListener("transitionend", () => {
                     setTimeout(() => {
-                        currSizeRef.classList.remove('disable')
+                        currSizeRef.classList.remove('transition-disable-overflow');
                     }, 0)
                 });
             }

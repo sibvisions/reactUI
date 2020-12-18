@@ -1,4 +1,4 @@
-.jvxButton {
+.jvx-button {
     display: inline-flex;
     height: inherit;
     width: inherit;
@@ -31,15 +31,15 @@
     }
 }
 
-.borderNotPainted, .borderNotPainted:enabled:hover {
+.border-notpainted, .border-notpainted:enabled:hover {
     background-color: unset;
     border-color: unset;
-    >.jvxButton-icon, >.p-button-label {
+    >.jvx-button-icon, >.p-button-label {
         color: black;
     }
 }
 
-.borderNotPainted:enabled:hover {
+.border-notpainted:enabled:hover {
     >.p-button-label {
         text-decoration: underline;
     }

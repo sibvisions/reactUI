@@ -52,7 +52,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return(
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
-                className={"jvxButton" + (props.borderPainted === false ? " borderNotPainted" : "")}
+                className={"jvx-button" + (props.borderPainted === false ? " border-notpainted" : "")}
                 style={btnData.style}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}

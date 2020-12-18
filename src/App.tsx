@@ -55,7 +55,7 @@ const App: FC<ICustomContent> = (props) => {
         props.customComponents?.forEach(replaceComponent => {
             context.contentStore.registerCustomComponent(replaceComponent.componentName, replaceComponent.compFactory);
         })
-    },[context.contentStore]);
+    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents]);
 
     useLayoutEffect(() => {
         history.replace("/home")

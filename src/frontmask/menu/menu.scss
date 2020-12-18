@@ -5,30 +5,32 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
 
 @mixin themable($theme-name, $theme-map) {
     .#{$theme-name} {
-        .topMenuBar {
+        .menu-topbar {
             background-color: map-get($theme-map, "topBar");
             .p-menubar:not(.p-menubar-mobile-active) {
-                .p-menuitem-link, >.p-menubar-root-list .p-menuitem-link .p-menuitem-text, .p-menuitem-link .p-submenu-icon {
-                    color: map-get($theme-map, "fgdColor");
-                }
-                >.p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover,
-                >.p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover,
-                >.p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-                    background-color: map-get($theme-map, "topBar");
-                    color: map-get($theme-map, "fgdColor");
-                }
-                .p-menuitem, .p-menuitem-active {
-                    .p-menuitem-link {
-                        &:hover {
-                            .p-menuitem-text, .p-submenu-icon {
-                                color: map-get($theme-map, "hover");
+                > .p-menubar-root-list {
+                    .p-menuitem-link, >.p-menuitem >.p-menuitem-link .p-menuitem-text, .p-menuitem-link .p-submenu-icon {
+                        color: map-get($theme-map, "fgdColor");
+                    }
+                    > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover,
+                    > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover,
+                    > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
+                        background-color: map-get($theme-map, "topBar");
+                        color: map-get($theme-map, "fgdColor");
+                    }
+                    > .p-menuitem, >.p-menubar-root-list > .p-menuitem-active {
+                        >.p-menuitem-link {
+                            &:hover {
+                                .p-menuitem-text, .p-submenu-icon {
+                                    color: map-get($theme-map, "hover");
+                                }
+                                
                             }
-                            
                         }
                     }
                 }
             }
-            .menuToggler {
+            .menu-toggler {
                 color: map-get($theme-map, "fgdColor");
                 &:hover {
                     color:map-get($theme-map, "hover");
@@ -50,20 +52,20 @@ body {
             box-shadow: none !important;
             -webkit-box-shadow: none !important;
         }
-        .topMenuBar {
+        .menu-topbar {
             height: 70px;
             display: flex;
             align-items: center;
             width: 100%;
             position: fixed;
             z-index: 20;
-            .logoWrap {
+            .menu-logo-wrapper {
                 width: 240px;
                 display: flex;
                 background-color: white;
                 height: 100%;
                 padding: 0 25px;
-                .logo {
+                .menu-logo {
                     width: 190px;
                     height: 40px;
                     border-radius: 5%;
@@ -79,19 +81,20 @@ body {
                 -moz-transition: 0.5s ease-in-out;
                 -o-transition: 0.5s ease-in-out;
                 transition: 0.5s ease-in-out;
-                &.collapsed {
+                &.menu-collapsed {
                     width: 80px;
                     padding: 0 10px;
-                    .logo {
+                    .menu-logo {
                         width: 60px;
+                        height: unset;
                     }
                 }
             }
-            .menuToggler {
+            .menu-toggler {
                 padding: 0 10px;
                 font-size: 25px;
             }
-            .profileMenu {
+            .profile-menu {
                 display: flex;
                 flex-direction: row;
                 flex-flow: nowrap;
@@ -103,14 +106,14 @@ body {
                     padding: 0;
                     border: none;
                     background-color: transparent;
-                    .profileImage{
+                    .profile-image{
                         background-size: 40px 40px;
                         display: inline-block;
                         width: 40px !important;
                         height: 40px !important;
                         border-radius: 50%;
                     }
-                    .noProfileImage {
+                    .profile-image-null {
                         background-color: white;
                         width: 40px;
                         height: 40px;
@@ -119,7 +122,7 @@ body {
                 }
             }
         }
-        .menuWrap {
+        .menu-panelmenu-wrapper {
             position: fixed;
             height: 100%;
             width: 240px;
@@ -187,7 +190,7 @@ body {
                 }
             }
         }
-        .collapsed {
+        .menu-collapsed {
             width: 80px;
             .p-panelmenu-panel {
                 display: flex;

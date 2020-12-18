@@ -53,7 +53,7 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
 
     return (
         <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span className="jvxRadioButton" style={btnData.style}>
+            <span className="jvx-radiobutton" style={btnData.style}>
                 <RadioButton 
                     inputId={props.id}
                     style={{order: btnData.iconPos === 'left' ? 1 : 2}}

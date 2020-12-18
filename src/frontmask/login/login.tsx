@@ -21,29 +21,29 @@ const Login: FC = () => {
     }
 
     return(
-        <div className={"loginContainer"}>
-            <form onSubmit={loginSubmit} className={"loginForm"}>
-                <div className={"p-fluid"}>
-                    <div className={"p-field"}>
-                        <label htmlFor={"username"}>Username: </label>
+        <div className="login-container">
+            <form onSubmit={loginSubmit} className="login-form">
+                <div className="p-fluid">
+                    <div className="p-field">
+                        <label htmlFor="username">Username: </label>
                         <InputText
                             value={username}
-                            id={"username"}
-                            type={"text"}
-                            autoComplete={"username"}
+                            id="username"
+                            type="text"
+                            autoComplete="username"
                             onChange={(userEvent: React.ChangeEvent<HTMLInputElement>) => changeUsername(userEvent.target.value)}/>
                     </div>
-                    <div className={"p-field"}>
-                        <label htmlFor={"password"}>Password: </label>
+                    <div className="p-field">
+                        <label htmlFor="password">Password: </label>
                         <InputText
                             value={password}
-                            id={"password"}
-                            type={"password"}
-                            autoComplete={"current-password"}
+                            id="password"
+                            type="password"
+                            autoComplete="current-password"
                             onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => changePassword(passEvent.target.value)}/>
                     </div>
                 </div>
-                <Button type={"submit"} className={"p-primary logInButton"} label={"Log in"}/>
+                <Button type="submit" className="p-primary login-button" label="Log in"/>
             </form>
         </div>
     )

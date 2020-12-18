@@ -53,8 +53,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         if(onLoadCallback && inputRef.current){
             //@ts-ignore
             const currElem = inputRef.current.element
-            if (props.borderVisible === false && !currElem.classList.contains("invisibleBorder")) {
-                currElem.classList.add("invisibleBorder");
+            if (props.borderVisible === false && !currElem.classList.contains("invisible-border")) {
+                currElem.classList.add("invisible-border");
             }
             if (props.cellEditor.contentType?.includes("password")) {
                 //@ts-ignore
@@ -77,7 +77,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputTextarea
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            className="jvxEditorTextarea"
+            className="jvx-editor-textarea"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             maxLength={length}
             disabled={!props.cellEditor_editable_}
@@ -93,7 +93,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <Password
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            className="jvxEditorPassword"
+            className="jvx-editor-password"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             maxLength={length}
             feedback={false}
@@ -110,7 +110,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputText
                 autoFocus={baseProps.autoFocus}
                 ref={inputRef}
-                className="jvxEditorText"
+                className="jvx-editor-text"
                 style={layoutValue.get(props.id) || baseProps.editorStyle}
                 maxLength={length}
                 disabled={!props.cellEditor_editable_}

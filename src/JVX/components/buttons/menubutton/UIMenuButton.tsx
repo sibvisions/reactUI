@@ -76,7 +76,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
                 ref={menuRef}
-                className={"jvxPopupMenuButton"  + (props.borderPainted === false ? " borderNotPainted" : "")}
+                className={"jvx-popupmenubutton"  + (props.borderPainted === false ? " border-notpainted" : "")}
                 style={{...btnData.style, borderRadius: '3px'}}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
