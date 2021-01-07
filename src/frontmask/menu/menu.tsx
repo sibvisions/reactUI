@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 
 //Custom
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
@@ -15,7 +15,7 @@ import {MenuItem} from "primereact/api";
 
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
-import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
+import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
 
 interface IMenu {
     forwardedRef?: any
@@ -25,8 +25,19 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('menu');
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
+    const [screenTitle, setScreenTitle] = useState<string>("");
     const slideRef = useRef<SlideMenu>(null)
     const currUser = context.contentStore.currentUser;
+
+    useEffect(() => {
+        context.contentStore.subscribeToAppName('x', (appName:string) => {
+            setScreenTitle(appName)
+        });
+
+        return () => {
+            context.contentStore.unsubscribeFromAppName('x');
+        }
+    })
 
     const profileMenu = useMemo(() => {
         const sendLogout = () => {
@@ -74,6 +85,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             menuGroup.forEach((value, key) => {
                 const primeMenuItem: MenuItem = {
                     label: key,
+                    icon: undefined,
                     items: value.map(menuItems => {
                        const iconData = parseIconData(undefined, menuItems.image)
                        const subMenuItem: MenuItemCustom = {
@@ -102,6 +114,37 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             (document.querySelector('.profile-image') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
     },[profileMenu, context.contentStore.currentUser.profileImage])
 
+    useEffect(() => {
+        if (forwardedRef.current) {
+            const menuRef = forwardedRef.current;
+            const hoverExpand = () => {
+                if (menuRef.classList.contains("menu-collapsed")) {
+                    menuRef.classList.remove("menu-collapsed");
+                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.remove("menu-collapsed")
+                }
+                
+            }
+            const hoverCollapse = () => {
+                if (!forwardedRef.current.classList.contains("menu-collapsed")) {
+                    menuRef.classList.add("menu-collapsed");
+                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.add("menu-collapsed")
+                }
+            }
+    
+            if (menuCollapsed) {
+                menuRef.addEventListener('mouseover', hoverExpand);
+                menuRef.addEventListener('mouseout', hoverCollapse);
+            }
+            else {
+                menuRef.removeEventListener('mouseover', hoverExpand);
+                menuRef.removeEventListener('mouseout', hoverCollapse);
+            }
+            return () => {
+                menuRef.removeEventListener('mouseover', hoverExpand);
+                menuRef.removeEventListener('mouseout', hoverCollapse);
+            }
+        }
+    },[menuCollapsed, forwardedRef]);
 
     const handleToggleClick = () => {
         context.contentStore.emitMenuCollapse();
@@ -114,6 +157,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
                 </div>
                 <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
+                <span className="menu-screen-title">{screenTitle}</span>
                 {profileMenu}
             </div>
             <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>

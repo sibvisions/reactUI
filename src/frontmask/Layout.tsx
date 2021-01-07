@@ -1,5 +1,5 @@
 //React
-import React, {Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 
 //Components
 import Menu from "./menu/menu";
@@ -13,8 +13,8 @@ import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
 
-import useMenuCollapser from "src/JVX/components/zhooks/useMenuCollapser";
-import useResponsiveBreakpoints from "src/JVX/components/zhooks/useResponsiveBreakpoints";
+import useMenuCollapser from "../JVX/components/zhooks/useMenuCollapser";
+import useResponsiveBreakpoints from "../JVX/components/zhooks/useResponsiveBreakpoints";
 
 type queryType = {
     appName?: string,
@@ -40,21 +40,25 @@ const Layout: FC = (props) => {
         return dataArray;
     }
 
-    const menuSize = useResponsiveBreakpoints(menuRef, minusTenArray(240, 80))
+    const menuSize = useResponsiveBreakpoints(menuRef, minusTenArray(240, 80), menuCollapsed)
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
-    const [screenTitle, setScreenTitle] = useState('')
     const resizeRef = useRef<NodeJS.Timeout | undefined>();
     const deviceRef = useRef<NodeJS.Timeout>(setTimeout(() => {}, 100))
 
-    useLayoutEffect(() => {
-        context.contentStore.subscribeToAppName('x', (appName:string) => {
-            setScreenTitle(appName)
-        });
+    useEffect(() => {
+        let screenTitle = context.server.APP_NAME;
+        Children.forEach(props.children,child => {
+            const childWithProps = (child as ChildWithProps);
+            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
+                screenTitle = childWithProps.props.screen_title_;
+        })
+            
+        if(!screenTitle)
+            screenTitle = window.location.hash.split("/")[1];
+            
+        context.contentStore.notifyAppNameChanged(screenTitle)
 
-        return () => {
-            context.contentStore.unsubscribeFromAppName('x')
-        }
-    }, [context.contentStore])
+    }, [props.children, context.server.APP_NAME, context.contentStore])
 
     const doResize = useCallback(() => {
         if(sizeRef.current){
@@ -62,7 +66,6 @@ const Layout: FC = (props) => {
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                console.log(size.width)
                 sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
             setComponentSize(sizeMap);

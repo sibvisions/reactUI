@@ -4,44 +4,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 
-let inputObj = {};
-
-async function tsFilesToInput(dir) {
-    try {
-        const files = await fs.promises.readdir(dir);
-        for (const file of files) {
-            const filePath = (process.platform === 'win32') ? path.win32.join(dir, file) : path.posix.join(dir, file);
-            const stat = await fs.promises.stat(filePath)
-            if (stat.isFile() && path.extname(filePath) === '.tsx') {
-                let correctedPath
-                if (process.platform === 'win32') {
-                    correctedPath = filePath.replace(/\\/g, '/');
-                }
-                else {
-                    correctedPath = filePath;
-                }
-                let inputKey = correctedPath.split('src/').pop().split('.')[0];
-                inputObj[inputKey] = './' + correctedPath.split(/(?=src)/).pop();
-            }
-            else if (stat.isDirectory()) {
-                await tsFilesToInput(filePath);
-            }
-        }
-        return inputObj
-    }
-    catch (e) {
-        console.error("THROWN ERROR", e)
-    }
-}
-
 module.exports = () => {
     return {
-        //entry: await tsFilesToInput('./src'),
         entry: './src/moduleIndex.ts',
         output: {
             filename: 'moduleIndex.js',
             path: path.resolve(__dirname, 'dist'),
-            //filename: '[name].js',
             library: 'JVXReactUI',
             libraryTarget: 'umd'
         },

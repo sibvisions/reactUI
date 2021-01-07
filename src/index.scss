@@ -27,13 +27,27 @@
 @import './JVX/components/panels/split/SplitPanel.scss';
 @import './JVX/components/panels/tabsetpanel/UITabsetPanel.scss';
 @import './JVX/components/table/UITable.scss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Roboto', sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 16px;
+    font-size: 14px;
     margin: 0;
     background-color: #f4f4f4;
     color: #495057;
+}
+
+.p-component {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+.login-container {
+    background-image: url("assests/Login.webP");
+}
+
+.separator {
+    background-image: url('assests/Split.png');
 }

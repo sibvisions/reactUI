@@ -94,6 +94,11 @@ body {
                 padding: 0 10px;
                 font-size: 25px;
             }
+            .menu-screen-title {
+                color:white;
+                font-size: 25px;
+                font-weight: bold;
+            }
             .profile-menu {
                 display: flex;
                 flex-direction: row;
@@ -154,6 +159,11 @@ body {
             }
             .p-panelmenu {
                 .p-panelmenu-header {
+                    > a {
+                        .p-panelmenu-icon {
+                            display: none;
+                        }
+                    }
                     .p-panelmenu-header-link {
                         background-color: white;
                         border: none;
@@ -192,13 +202,6 @@ body {
         }
         .menu-collapsed {
             width: 80px;
-            .p-panelmenu-panel {
-                display: flex;
-                justify-content: center;
-                .p-menuitem-text {
-                    display: none;
-                }
-            }
         }
     }
 }
