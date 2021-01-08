@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 //Custom
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
@@ -120,28 +120,32 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             const hoverExpand = () => {
                 if (menuRef.classList.contains("menu-collapsed")) {
                     menuRef.classList.remove("menu-collapsed");
-                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.remove("menu-collapsed")
+                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.remove("menu-collapsed");
+                    (document.getElementsByClassName('fadeout')[0] as HTMLElement).style.setProperty('display', 'none');
                 }
                 
             }
             const hoverCollapse = () => {
                 if (!forwardedRef.current.classList.contains("menu-collapsed")) {
                     menuRef.classList.add("menu-collapsed");
-                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.add("menu-collapsed")
+                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.add("menu-collapsed");
+                    (document.getElementsByClassName('fadeout')[0] as HTMLElement).style.removeProperty('display');
+                    if (menuRef.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
+                        menuRef.querySelector('.p-highlight > .p-panelmenu-header-link').click();
                 }
             }
     
             if (menuCollapsed) {
                 menuRef.addEventListener('mouseover', hoverExpand);
-                menuRef.addEventListener('mouseout', hoverCollapse);
+                menuRef.addEventListener('mouseleave', hoverCollapse);
             }
             else {
                 menuRef.removeEventListener('mouseover', hoverExpand);
-                menuRef.removeEventListener('mouseout', hoverCollapse);
+                menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
             return () => {
                 menuRef.removeEventListener('mouseover', hoverExpand);
-                menuRef.removeEventListener('mouseout', hoverCollapse);
+                menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
     },[menuCollapsed, forwardedRef]);
@@ -156,12 +160,15 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
                 </div>
-                <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
-                <span className="menu-screen-title">{screenTitle}</span>
-                {profileMenu}
+                <div className={"menu-upper" + (menuCollapsed ? " upper-collapsed" : "")}>
+                    <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
+                    <span className="menu-screen-title">{screenTitle}</span>
+                    {profileMenu}
+                </div>
             </div>
             <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
                 <PanelMenu model={menuItems} />
+                {menuCollapsed && <div className="fadeout"></div>}
             </div>
         </div>
     )
