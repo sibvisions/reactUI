@@ -80,7 +80,8 @@ const App: FC<ICustomContent> = (props) => {
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseURL;
             context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
-            context.contentStore.LOGO = data.logo;
+            context.contentStore.LOGO_BIG = data.logoBig;
+            context.contentStore.LOGO_SMALL = data.logoSmall ? data.logoSmall : data.logoBig;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
 

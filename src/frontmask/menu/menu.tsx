@@ -19,14 +19,19 @@ import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
 
 interface IMenu {
     forwardedRef?: any
+    initMenuSize: Function
 }
 
-const Menu: FC<IMenu> = ({forwardedRef}) => {
+const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('menu');
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const [screenTitle, setScreenTitle] = useState<string>("");
-    const slideRef = useRef<SlideMenu>(null)
+    const [firstRender, setFirstRender] = useState(false)
+    const menuButtonPressed = useRef<boolean>(false);
+    const slideRef = useRef<SlideMenu>(null);
+    const menuLogoRef = useRef<HTMLDivElement>(null);
+    const fadeRef = useRef<HTMLDivElement>(null);
     const currUser = context.contentStore.currentUser;
 
     useEffect(() => {
@@ -112,7 +117,25 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     useEffect(() => {
         if (document.querySelector('.profile-image') && context.contentStore.currentUser.profileImage)
             (document.querySelector('.profile-image') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
-    },[profileMenu, context.contentStore.currentUser.profileImage])
+    },[profileMenu, context.contentStore.currentUser.profileImage]);
+
+    useEffect(() => {
+        const checkWindowSize = () => {
+            if (window.innerWidth <= 1170 && !menuButtonPressed.current)
+                context.contentStore.emitMenuCollapse(0);
+            else if (window.innerWidth > 1170 && !menuButtonPressed.current)
+                context.contentStore.emitMenuCollapse(1);
+        }
+        checkWindowSize();
+        initMenuSize();
+        if (!firstRender)
+            setFirstRender(true)
+        window.addEventListener("resize", checkWindowSize);
+        return () => {
+            window.removeEventListener("resize", checkWindowSize);
+        }
+        // eslint-disable-next-line
+    },[context.contentStore, firstRender])
 
     useEffect(() => {
         if (forwardedRef.current) {
@@ -120,16 +143,21 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             const hoverExpand = () => {
                 if (menuRef.classList.contains("menu-collapsed")) {
                     menuRef.classList.remove("menu-collapsed");
-                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.remove("menu-collapsed");
-                    (document.getElementsByClassName('fadeout')[0] as HTMLElement).style.setProperty('display', 'none');
+                    if (menuLogoRef.current && fadeRef.current) {
+                        menuLogoRef.current.classList.remove("menu-collapsed");
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_BIG;
+                        fadeRef.current.style.setProperty('display', 'none');
+                    }
                 }
-                
             }
             const hoverCollapse = () => {
                 if (!forwardedRef.current.classList.contains("menu-collapsed")) {
                     menuRef.classList.add("menu-collapsed");
-                    document.getElementsByClassName('menu-logo-wrapper')[0].classList.add("menu-collapsed");
-                    (document.getElementsByClassName('fadeout')[0] as HTMLElement).style.removeProperty('display');
+                    if (menuLogoRef.current && fadeRef.current) {
+                        menuLogoRef.current.classList.add("menu-collapsed");
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_SMALL;
+                        fadeRef.current.style.removeProperty('display');
+                    }
                     if (menuRef.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
                         menuRef.querySelector('.p-highlight > .p-panelmenu-header-link').click();
                 }
@@ -148,17 +176,18 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
-    },[menuCollapsed, forwardedRef]);
+    },[menuCollapsed, forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL]);
 
     const handleToggleClick = () => {
-        context.contentStore.emitMenuCollapse();
+        menuButtonPressed.current = !menuButtonPressed.current;
+        context.contentStore.emitMenuCollapse(2);
     }
 
     return(
         <div className="menu">
             <div className="menu-topbar">
-                <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
-                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO} alt="logo" />
+                <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")} ref={menuLogoRef}>
+                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>
                 <div className={"menu-upper" + (menuCollapsed ? " upper-collapsed" : "")}>
                     <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
@@ -168,7 +197,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
             </div>
             <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
                 <PanelMenu model={menuItems} />
-                {menuCollapsed && <div className="fadeout"></div>}
+                {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
             </div>
         </div>
     )

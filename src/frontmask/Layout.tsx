@@ -133,7 +133,7 @@ const Layout: FC = (props) => {
 
     return(
         <div className={"layout " + context.theme}>
-            <Menu forwardedRef={menuRef}/>
+            <Menu forwardedRef={menuRef} initMenuSize={handleResize}/>
             <LayoutContext.Provider value={componentSize}>
                 <div ref={sizeRef} className={"main" + (menuCollapsed  ? " layout-expanded" : "")}>
                     {props.children}

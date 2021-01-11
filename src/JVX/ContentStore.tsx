@@ -45,7 +45,8 @@ export default class ContentStore{
     dataProviderFetched = new Map<string, Map<string, boolean>>();
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
-    LOGO:string = "";
+    LOGO_BIG:string = "";
+    LOGO_SMALL:string = "";
     menuCollapsed:boolean = false;
 
     //Content
@@ -433,11 +434,16 @@ export default class ContentStore{
         });
     }
 
-    emitMenuCollapse() {
+    emitMenuCollapse(collapseVal:number) {
         this.menuCollapseSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, []);
+            subFunction.apply(undefined, [collapseVal]);
         })
-        this.menuCollapsed = !this.menuCollapsed;
+        if (collapseVal === 0 && !this.menuCollapsed)
+            this.menuCollapsed = true;
+        else if (collapseVal === 1 && this.menuCollapsed)
+            this.menuCollapsed = false;
+        else if (collapseVal === 2)
+            this.menuCollapsed = !this.menuCollapsed;
     }
 
     //Custom Screens
