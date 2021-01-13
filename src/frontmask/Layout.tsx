@@ -97,31 +97,30 @@ const Layout: FC = (props) => {
 
     useEffect(() => {
         const currSizeRef = sizeRef.current
-        window.addEventListener("resize", handleResize);
+        const resizeListenerCall = () => {
+            let resizeTimer
+            if (currSizeRef)
+                currSizeRef.classList.add("transition-disable-overflow");
+            handleResize();
+            clearTimeout(resizeTimer)
+            resizeTimer = setTimeout(() => {
+                if (currSizeRef)
+                    currSizeRef.classList.remove("transition-disable-overflow")
+            },23)
+        }
+        window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
         if (currSizeRef) {
-            currSizeRef.addEventListener("transitionstart", () => {
-                currSizeRef.classList.add('transition-disable-overflow');
-            });
-            currSizeRef.addEventListener("transitionend", () => {
-                setTimeout(() => {
-                    currSizeRef.classList.remove('transition-disable-overflow');
-                }, 0)
-            });
+            currSizeRef.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
+            currSizeRef.addEventListener("transitionend", () => setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0));
         }
 
         return () => {
             window.removeEventListener("resize", handleDeviceStatus);
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("resize", resizeListenerCall);
             if (currSizeRef) {
-                currSizeRef.removeEventListener("transitionstart", () => {
-                    currSizeRef.classList.add('transition-disable-overflow');
-                });
-                currSizeRef.removeEventListener("transitionend", () => {
-                    setTimeout(() => {
-                        currSizeRef.classList.remove('transition-disable-overflow');
-                    }, 0)
-                });
+                currSizeRef.removeEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
+                currSizeRef.removeEventListener("transitionend", () => setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0));
             }
 
         }
@@ -133,9 +132,9 @@ const Layout: FC = (props) => {
 
     return(
         <div className={"layout " + context.theme}>
-            <Menu forwardedRef={menuRef} initMenuSize={handleResize}/>
+            <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
-                <div ref={sizeRef} className={"main" + (menuCollapsed  ? " layout-expanded" : "")}>
+                <div ref={sizeRef} className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
                     {props.children}
                 </div>
             </LayoutContext.Provider>

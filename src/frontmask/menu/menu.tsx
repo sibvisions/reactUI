@@ -1,5 +1,5 @@
 //React
-import React, {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 
 //Custom
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
@@ -16,23 +16,31 @@ import {MenuItem} from "primereact/api";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
 import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
+import useWindowObserver from "../../JVX/components/zhooks/useWindowObserver";
+import useIsMount from "../../JVX/components/zhooks/useIsMount";
 
 interface IMenu {
     forwardedRef?: any
-    initMenuSize: Function
 }
 
-const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
+const Menu: FC<IMenu> = ({forwardedRef}) => {
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('menu');
+    const windowSize = useWindowObserver();
+    const isMount = useIsMount();
     const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
     const [screenTitle, setScreenTitle] = useState<string>("");
-    const [firstRender, setFirstRender] = useState(false)
-    const menuButtonPressed = useRef<boolean>(false);
     const slideRef = useRef<SlideMenu>(null);
     const menuLogoRef = useRef<HTMLDivElement>(null);
+    const menuLogoMiniRef = useRef<HTMLDivElement>(null);
     const fadeRef = useRef<HTMLDivElement>(null);
+    const isMountRef = useRef<boolean>(); //ref to not get a warning in useEffect where isMount should be used...
     const currUser = context.contentStore.currentUser;
+
+    const closeOpenedMenuPanel = useCallback(() => {
+        if (forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
+            forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+    },[forwardedRef])
 
     useEffect(() => {
         context.contentStore.subscribeToAppName('x', (appName:string) => {
@@ -120,32 +128,35 @@ const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
     },[profileMenu, context.contentStore.currentUser.profileImage]);
 
     useEffect(() => {
-        const checkWindowSize = () => {
-            if (window.innerWidth <= 1170 && !menuButtonPressed.current)
-                context.contentStore.emitMenuCollapse(0);
-            else if (window.innerWidth > 1170 && !menuButtonPressed.current)
-                context.contentStore.emitMenuCollapse(1);
+        isMountRef.current = isMount;
+    },[isMount])
+
+    useEffect(() => {
+        if (!isMountRef.current) {
+            if (context.contentStore.menuModeAuto) {
+                context.contentStore.setMenuModeAuto(false)
+            }
+            else {
+                if (windowSize === 0)
+                    context.contentStore.emitMenuCollapse(0);
+                else
+                    context.contentStore.emitMenuCollapse(1);
+            }
         }
-        checkWindowSize();
-        initMenuSize();
-        if (!firstRender)
-            setFirstRender(true)
-        window.addEventListener("resize", checkWindowSize);
-        return () => {
-            window.removeEventListener("resize", checkWindowSize);
-        }
-        // eslint-disable-next-line
-    },[context.contentStore, firstRender])
+    },[context.contentStore, windowSize])
 
     useEffect(() => {
         if (forwardedRef.current) {
             const menuRef = forwardedRef.current;
             const hoverExpand = () => {
                 if (menuRef.classList.contains("menu-collapsed")) {
+                    menuRef.classList.add("menu-hover")
                     menuRef.classList.remove("menu-collapsed");
-                    if (menuLogoRef.current && fadeRef.current) {
+                    if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
+                        menuLogoRef.current.classList.add("menu-hover")
                         menuLogoRef.current.classList.remove("menu-collapsed");
                         (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_BIG;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_BIG;
                         fadeRef.current.style.setProperty('display', 'none');
                     }
                 }
@@ -153,13 +164,15 @@ const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
             const hoverCollapse = () => {
                 if (!forwardedRef.current.classList.contains("menu-collapsed")) {
                     menuRef.classList.add("menu-collapsed");
-                    if (menuLogoRef.current && fadeRef.current) {
+                    menuRef.classList.remove("menu-hover")
+                    if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
                         menuLogoRef.current.classList.add("menu-collapsed");
+                        menuLogoRef.current.classList.remove("menu-hover");
                         (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_SMALL;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');
                     }
-                    if (menuRef.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
-                        menuRef.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+                    closeOpenedMenuPanel();
                 }
             }
     
@@ -176,10 +189,11 @@ const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
                 menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
-    },[menuCollapsed, forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL]);
+    },[menuCollapsed, forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
 
     const handleToggleClick = () => {
-        menuButtonPressed.current = !menuButtonPressed.current;
+        closeOpenedMenuPanel();
+        context.contentStore.setMenuModeAuto(!context.contentStore.menuModeAuto)
         context.contentStore.emitMenuCollapse(2);
     }
 
@@ -189,13 +203,16 @@ const Menu: FC<IMenu> = ({forwardedRef, initMenuSize}) => {
                 <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")} ref={menuLogoRef}>
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>
-                <div className={"menu-upper" + (menuCollapsed ? " upper-collapsed" : "")}>
+                <div className={"menu-upper" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " upper-collapsed" : "")}>
                     <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
                     <span className="menu-screen-title">{screenTitle}</span>
                     {profileMenu}
                 </div>
             </div>
             <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
+                <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
+                    <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
+                </div>
                 <PanelMenu model={menuItems} />
                 {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
             </div>

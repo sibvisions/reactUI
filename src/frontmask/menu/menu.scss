@@ -9,13 +9,13 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
             background-color: map-get($theme-map, "topBar");
             .p-menubar:not(.p-menubar-mobile-active) {
                 > .p-menubar-root-list {
-                    .p-menuitem-link, >.p-menuitem >.p-menuitem-link .p-menuitem-text, .p-menuitem-link .p-submenu-icon {
+                    .p-menuitem-text, .p-submenu-icon {
                         color: map-get($theme-map, "fgdColor");
                     }
                     > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover,
                     > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover,
                     > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-                        background-color: map-get($theme-map, "topBar");
+                        background: map-get($theme-map, "topBar");
                         color: map-get($theme-map, "fgdColor");
                     }
                     > .p-menuitem, >.p-menubar-root-list > .p-menuitem-active {
@@ -24,7 +24,6 @@ $shadow: 0px 2px 5px 0px rgba(0,0,0,0.42);
                                 .p-menuitem-text, .p-submenu-icon {
                                     color: map-get($theme-map, "hover");
                                 }
-                                
                             }
                         }
                     }
@@ -60,9 +59,10 @@ body {
             position: fixed;
             z-index: 20;
             .menu-logo-wrapper {
+                background: rgb(232,232,232);
+                background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
                 width: 240px;
                 display: flex;
-                background-color: white;
                 height: 70px;
                 padding: 0 25px;
                 position: fixed;
@@ -88,7 +88,6 @@ body {
                     .menu-logo {
                         width: 60px;
                         height: unset;
-                        transition: none;
                     }
                 }
             }
@@ -109,6 +108,7 @@ body {
             .menu-toggler {
                 padding: 0 10px;
                 font-size: 25px;
+                transition: none;
             }
             .menu-screen-title {
                 color:white;
@@ -130,6 +130,9 @@ body {
                     .p-menubar-root-list {
                         .p-submenu-list {
                             width: 100%;
+                            .p-menuitem-text {
+                                color: #333333
+                            }
                         }
                     }
                     .profile-image{
@@ -158,10 +161,14 @@ body {
             border-right: 1px solid;
             border-color: rgba(120,130,140,.13);
             overflow-y: auto;
+            overflow-x: hidden;
             -webkit-transition: 0.5s ease-in-out;
             -moz-transition: 0.5s ease-in-out;
             -o-transition: 0.5s ease-in-out;
             transition: 0.5s ease-in-out;
+            &.transition-disable-overflow {
+                overflow: hidden;
+            }
             &::-webkit-scrollbar {
                 width: 7px;
             }
@@ -182,7 +189,11 @@ body {
                 .p-panelmenu-header {
                     > a {
                         .p-panelmenu-icon {
-                            display: none;
+                            position: absolute;
+                            left: 200px;
+                            order: 1;
+                            margin-left: 0.5rem;
+                            margin-right: 0;
                         }
                     }
                     .p-panelmenu-header-link {
@@ -220,9 +231,18 @@ body {
                     }
                 }
             }
+            .menu-logo-mini-wrapper {
+                display: flex;
+                padding-left: 0.857rem;
+                align-items: center;
+                .menu-logo-mini {
+                    max-height: 0px;
+                    transition: max-height 0.5s ease-out;
+                }
+            }
             .fadeout {
                 height: 100%;
-                padding-top: 70px;
+                margin-top: 70px;
                 position: absolute;
                 width: 20px;
                 top: 0;
@@ -251,7 +271,6 @@ body {
     to   { opacity: 1; }
 }
 
-/* Firefox < 16 */
 @-moz-keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
@@ -270,6 +289,31 @@ body {
 @-o-keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+@keyframes slideout {
+    from { max-width: 80px; }
+    to   { max-width: 0px; }
+}
+
+@-moz-keyframes slideout {
+    from { max-width: 80px; }
+    to   { max-width: 0px; }
+}
+
+@-webkit-keyframes slideout {
+    from { max-width: 80px; }
+    to   { max-width: 0px; }
+}
+
+@-ms-keyframes slideout {
+    from { max-width: 80px; }
+    to   { max-width: 0px; }
+}
+
+@-o-keyframes slideout {
+    from { max-width: 80px; }
+    to   { max-width: 0px; }
 }
 
 
@@ -318,10 +362,26 @@ body {
     }
 }
 
-@media screen and (max-width: 660px) {
+@media screen and (max-width: 600px) {
     body {
         .menu {
             .menu-topbar {
+                .menu-logo-wrapper {
+                    visibility: hidden;
+                    width: 0px;
+                    padding:0;
+                    &.menu-collapsed, &.menu-hover {
+                        width: 0px;
+                        padding:0;
+                    }
+                    .menu-logo {
+                        height: unset;
+                        width: 0px;
+                    }
+                }
+                .upper-collapsed.upper-collapsed {
+                    margin-left: 0px;
+                }
                 .profile-menu {
                     padding-right: 0;
                     .p-menubar {
@@ -345,6 +405,34 @@ body {
                             }
                         }
                     }
+                }
+            }
+            .menu-panelmenu-wrapper {
+                &.menu-hover {
+                    .menu-logo-mini-wrapper {
+                        width: 190px;
+                    }
+                }
+                &.menu-collapsed {
+                    .menu-logo-mini-wrapper {
+                        .menu-logo-mini{
+                            width: 60px;
+                        }
+                    }
+                }
+                .menu-logo-mini-wrapper {
+                    height: 60px;
+                    .menu-logo-mini {
+                        width: 190px;
+                        max-height: 60px;
+                        -webkit-transition: 0.5s ease-in-out;
+                        -moz-transition: 0.5s ease-in-out;
+                        -o-transition: 0.5s ease-in-out;
+                        transition: 0.5s ease-in-out;
+                    }
+                }
+                .fadeout {
+                    margin-top: 130px;
                 }
             }
         }

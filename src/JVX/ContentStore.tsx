@@ -47,7 +47,9 @@ export default class ContentStore{
 
     LOGO_BIG:string = "";
     LOGO_SMALL:string = "";
-    menuCollapsed:boolean = false;
+    menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
+    menuModeAuto:boolean = false;
+    menuOverlaying:boolean = true;
 
     //Content
     updateContent(componentsToUpdate: Array<BaseComponent>){
@@ -306,19 +308,24 @@ export default class ContentStore{
     getComponentId(id:string) {
         let comp:BaseComponent|undefined = this.flatContent.get(id)
         if (comp) {
-            while (comp?.parent) 
+            while (comp?.parent) {
                 comp = this.flatContent.get(comp?.parent)
+            }
+                
         }
         return comp?.name
     }
 
 
     //Menu
-
     notifyAppNameChanged(appName:string) {
         this.appNameSubscriber.forEach(subscriber => {
             subscriber.apply(undefined, [appName])
         })
+    }
+
+    setMenuModeAuto(value:boolean) {
+        this.menuModeAuto = value;
     }
 
     //Subscription Management

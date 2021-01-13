@@ -1,5 +1,5 @@
 import React, {CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState} from "react";
-import Throttle from "../../util/Throttle";
+import * as _ from 'underscore'
 
 type onResizeEvent = (firstSize: splitSize, secondSize: splitSize) => void;
 
@@ -49,7 +49,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
         else
             newSeparatorPosition = event.clientY - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            Throttle(callOnResize, 16.5)()
+            _.throttle(callOnResize, 30)()
             setFirstPosition(newSeparatorPosition);
         }
     }
@@ -81,7 +81,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
     const touchDragging = (event: TouchEvent) => {
          const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            Throttle(callOnResize, 16.5)()
+            _.throttle(callOnResize, 30)()
             setFirstPosition(newSeparatorPosition);
         }
     }

@@ -63,13 +63,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     },[selectedRow]);
 
     useEffect(() => {
+        const curRef = inputRef.current
         //@ts-ignore
-        inputRef.current.inputEl.setAttribute('maxlength', length);
+        curRef.inputEl.setAttribute('maxlength', length);
         //@ts-ignore
         inputRef.current.inputEl.onkeydown = (event) => {
             handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server));
             //@ts-ignore
-            if (inputRef.current.inputEl.value.length === inputRef.current.inputEl.maxLength) {
+            if (curRef.inputEl.value.length === curRef.inputEl.maxLength) {
                 return false;
             }
         }
