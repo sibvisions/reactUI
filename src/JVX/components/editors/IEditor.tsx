@@ -22,5 +22,7 @@ export interface IEditor extends BaseComponent{
     onSubmit?: Function
     editorStyle?: CSSProperties
     autoFocus?: boolean
+    nullable?: boolean
+    readonly?: boolean
 
 }

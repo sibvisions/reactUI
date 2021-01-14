@@ -15,7 +15,7 @@ import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEd
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import { IButton } from "../components/buttons/IButton";
-import /*UIToggleButton,*/ { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
+import UIToggleButton, { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
 import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
 import UIRadioButton, { IRadioButton } from "../components/buttons/radiobutton/UIRadioButton";
 import UICheckBox, { ICheckBox } from "../components/checkbox/UICheckBox";
@@ -26,7 +26,7 @@ import UIPassword from "../components/text/UIPassword";
 import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
 import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
-import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
+//import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
 import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
 import UIMapGoogle from "../components/map/UIMapGoogle";
@@ -62,13 +62,13 @@ export const createButton: FC<IButton> = (props) => {
     return <UIButton {...props} key={props.id}/>
 }
 
-// export const createToggleButton: FC<IToggleButton> = (props) => {
-//     return <UIToggleButton {...props} key={props.id}/>
-// }
-
 export const createToggleButton: FC<IToggleButton> = (props) => {
-    return <UIInputSwitch {...props} key={props.id}/>
+    return <UIToggleButton {...props} key={props.id}/>
 }
+
+// export const createToggleButton: FC<IToggleButton> = (props) => {
+//     return <UIInputSwitch {...props} key={props.id}/>
+// }
 
 export const createPopupMenuButton: FC<IMenuButton> = (props) => {
     return <UIMenuButton {...props} key={props.id}/>

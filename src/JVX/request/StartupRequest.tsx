@@ -10,6 +10,7 @@ interface StartupRequest {
     osName?: string
     osVersion?: string
     technology: string
+    language?:string
 
     screenWidth?: number
     screenHeight?: number

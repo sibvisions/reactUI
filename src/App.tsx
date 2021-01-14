@@ -84,6 +84,7 @@ const App: FC<ICustomContent> = (props) => {
             context.contentStore.LOGO_SMALL = data.logoSmall ? data.logoSmall : data.logoBig;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
+            startUpRequest.language = data.language;
 
             if(queryParams.appName && queryParams.baseUrl){
                 startUpRequest.applicationName = queryParams.appName;

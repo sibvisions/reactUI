@@ -16,7 +16,14 @@
     .p-tabview-nav {
         li {
             .p-tabview-nav-link {
-                  padding: 0.429rem 0.5rem;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0px 24px;
+                height: 48px;
+                min-width: 160px;
+                position: relative;
+                overflow: hidden;
             }
             .jvx-tabset-tabicon {
                 display: inline-block;
@@ -30,10 +37,22 @@
     padding: 0;
     border: none;
     background-color: transparent;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
+    color: var(--tabsetXColor);
+    position: absolute;
+    right: 10px;
+    top: 18.5px;
     &:hover {
         font-weight: bold;
-        color: red
+        color: black;
+        opacity: 1;
     }
 }
+
+@keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }

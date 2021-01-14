@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
@@ -9,6 +9,7 @@ import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
+import { addRippleEffect, removeRippleEffect } from "../../util/RippleEffect";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
@@ -42,6 +43,19 @@ const UIButton: FC<IButton> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        if (buttonRef) {
+            //@ts-ignore
+            addRippleEffect(undefined, buttonRef.current.children[0], context.contentStore.menuCollapsed)
+        }
+        return () => {
+            if (buttonRef) {
+                //@ts-ignore
+                removeRippleEffect(undefined, buttonRef.current.children[0])
+            }
+        }
+    })
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();

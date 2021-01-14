@@ -154,13 +154,13 @@ const UITable: FC<TableProps> = (baseProps) => {
             let cellDataWidthList:Array<number> = [];
 
             const goThroughCellData = (trows:any, index:number) => {
-                const cellDatas:NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cellData");
+                const cellDatas:NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cell-data");
                         for (let j = 0; j < cellDatas.length; j++) {
                             cellDatas[j].style.setProperty('display', 'inline-block');
                             let tempWidth:number;
                             if (cellDatas[j] !== undefined) {
                                 if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
-                                tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
+                                    tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
                             else
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
                             if (tempWidth > cellDataWidthList[j])
@@ -177,7 +177,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 const trows = tableRef.current.table.querySelectorAll('tbody > tr');
                 for (let i = 0; i < theader.length; i++)
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 29;
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
                     goThroughCellData(trows, i);
                  for (let i = 0; i < theader.length; i++)
@@ -219,13 +219,13 @@ const UITable: FC<TableProps> = (baseProps) => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
-
     const columns = useMemo(() => {
         const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
         return props.columnNames.map((colName, colIndex) => {
+            console.log()
             return <Column
                 field={colName}
-                header={props.columnLabels[colIndex]}
+                header={props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
                 key={colName}
                 headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined}}
                 body={(rowData: any) => <CellEditor
@@ -279,7 +279,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const handleColResize = (e:any) => {
         if (tableRef.current) {
             //@ts-ignore
-            if (tableRef.current.container) {
+            if (!tableRef.current.table) {
                 //@ts-ignore
                 const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
                 const tCols1 = tColGroup[0].querySelectorAll('col');

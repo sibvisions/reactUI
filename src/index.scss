@@ -29,14 +29,22 @@
 @import './JVX/components/table/UITable.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
+:root {
+    --tabsetXColor: #cdcfd1;
+    --standardBgdColor: white;
+    --standardTextColor: #495057;
+    --standardFont: 'Roboto', sans-serif;
+    --menuBorderColor: rgba(120,130,140,.13);
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--standardFont);
     font-weight: 400;
     font-style: normal;
     font-size: 14px;
     margin: 0;
-    background-color: #f4f4f4;
-    color: #495057;
+    background: var(--standardBgdColor);
+    color: var(--standardTextColor);
 }
 
 .p-component {
@@ -51,3 +59,11 @@ body {
 .separator {
     background-image: url('assests/Split.png');
 }
+
+span.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 600ms linear;
+    background-color: rgba(177, 177, 177, 0.7);
+  }

@@ -79,7 +79,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         if (btnRef) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize])
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     const handleOnChange = (event:ToggleButtonEvent) => {
         const req = createPressButtonRequest();
