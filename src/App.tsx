@@ -20,6 +20,7 @@ import { checkProperties } from './JVX/components/util/CheckProperties';
 import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
+import PrimeReact from 'primereact/api';
 
 
 
@@ -36,6 +37,7 @@ const App: FC<ICustomContent> = (props) => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
     const history = useHistory()
+    PrimeReact.ripple = true
 
     useEffect(() => {
         context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);

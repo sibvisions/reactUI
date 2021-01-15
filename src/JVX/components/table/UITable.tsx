@@ -27,6 +27,7 @@ export interface TableProps extends BaseComponent{
     columnNames: Array<string>,
     dataBook: string,
     tableHeaderVisible?: boolean
+    autoResize?: boolean
 }
 
 type CellEditor = {

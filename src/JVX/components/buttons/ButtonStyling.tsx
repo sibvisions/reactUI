@@ -4,18 +4,19 @@ import {checkAlignments} from "../compprops/CheckAlignments";
 import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
 import IconProps from '../compprops/IconProps';
 import {IButton} from "./IButton";
+import { ToggleButtonGradient } from './togglebutton/UIToggleButton';
 
-export function buttonProps(props:IButton): {iconPos:string, tabIndex:number|string, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
+export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
     const margins = getMargins(props.margins);
     const font = getFont(props.font);
     return {
         iconPos: (props.horizontalTextPosition === 0 || (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0)) ? "right" : "left",
-        tabIndex: props.focusable !== false ? (props.tabIndex ? props.tabIndex : props.className === "ToggleButton" ? 0 : "0") : props.className === "ToggleButton" ? -1 : "-1",
+        tabIndex: props.focusable !== false ? (props.tabIndex ? props.tabIndex : 0) : -1,
         style: {
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
             justifyContent: checkAlignments(props).ha,
             alignItems: checkAlignments(props).va,
-            backgroundColor: getBtnBgdColor(props.borderPainted, props.background),
+            background: getBtnBgdColor(props.borderPainted, props.background),
             color: props.foreground ? tinycolor(props.foreground).toString() : undefined,
             borderColor: getBtnBgdColor(props.borderPainted, props.background),
             paddingTop: margins ? margins.marginTop : undefined,
@@ -83,7 +84,8 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
                 }
             }
             let gapPos = getGapPos(hTextPos, vTextPos);
-            child.style.setProperty('margin-' + gapPos, (imgTextGap ? imgTextGap : 4)+'px');
+            if (!child.classList.contains('p-ink'))
+                child.style.setProperty('margin-' + gapPos, (imgTextGap ? imgTextGap : 4)+'px');
         }
         if (iconProps) {
             if (child.classList.value.includes(iconProps.icon)) {
@@ -100,27 +102,39 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
     }
 }
 
-export function styleButton(btnChildren:HTMLCollection, className:string, hTextPos:number|undefined, vTextPos:number|undefined, 
+function fontColorForBgd(btn:Element, btnStyle:CSSProperties) {
+    const colorString:string = window.getComputedStyle(btn).getPropertyValue('background-color')
+    const rgb = colorString.substring(colorString.indexOf('(')+1, colorString.indexOf(')')).replaceAll(' ', '').split(',');
+    const colorNotSet = (window.getComputedStyle(btn).getPropertyValue('background-color') === 'rgba(0, 0, 0, 0)' && !btnStyle.background) ? true : false;
+    const brightness = Math.round(((parseInt(rgb[0]) * 299) +
+                      (parseInt(rgb[1]) * 587) +
+                      (parseInt(rgb[2]) * 114)) / 1000);
+    const textColor = (brightness > 126 || colorNotSet) ? 'black' : 'white';
+    (btn as HTMLElement).style.setProperty('color', textColor);
+}
+
+export function styleButton(btn:Element, className:string, hTextPos:number|undefined, vTextPos:number|undefined, 
     imgTextGap:number|undefined, btnStyle:CSSProperties, iconProps:IconProps, resource:string) {
     if (className === "PopupMenuButton") {
-        for (let btnChild of btnChildren) {
+        for (let btnChild of btn.children) {
             styleMenuButton(btnChild as HTMLElement, btnStyle);
             for (let child of btnChild.children)
                 styleButtonContent(child as HTMLElement, className, hTextPos, vTextPos, imgTextGap, iconProps, resource);
         }
     }
     else {
-        for (let child of btnChildren) {
+        fontColorForBgd(btn, btnStyle);
+        for (let child of btn.children) {
             styleButtonContent(child as HTMLElement, className, hTextPos, vTextPos, imgTextGap, iconProps, resource)
         }
     }
 }
 
-export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseEntered:boolean|undefined, color:string|undefined, checkedColor:string|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
+export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseEntered:boolean|undefined, color:string|undefined, checkedColor:ToggleButtonGradient|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
     if (borderPainted) {
         obj.onmouseover = () => {
             if (!checked) {
-                obj.style.setProperty('background-color', tinycolor(color).darken(dark).toString());
+                obj.style.setProperty('background', tinycolor(color).darken(dark).toString());
                 obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
                 if (className === "PopupMenuButton") {
                     for (const child of obj.children) {
@@ -131,21 +145,15 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
                     }
                 }
             }
+            else if (checkedColor) {
+                obj.style.setProperty('background', "linear-gradient(to bottom, " + checkedColor.upperGradient + " 2%, " + checkedColor.lowerGradient + "98%)" );
+                obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
+            }
         }
         obj.onmouseout = () => {
-            if (checked && checkedColor !== null) {
+            if (!checked) {
                 if (!bgdSet) {
-                    obj.style.removeProperty('background-color');
-                    obj.style.removeProperty('border-color');
-                }
-                else {
-                    obj.style.setProperty('background-color', checkedColor.toString());
-                    obj.style.setProperty('border-color', checkedColor.toString());
-                }
-            }
-            else {
-                if (!bgdSet) {
-                    obj.style.removeProperty('background-color');
+                    obj.style.removeProperty('background');
                     obj.style.removeProperty('border-color');
                     if (className === "PopupMenuButton") {
                         for (const child of obj.children) {
@@ -156,7 +164,7 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
                     }
                 }
                 else {
-                    obj.style.setProperty('background-color', color ? color : null)
+                    obj.style.setProperty('background', color ? color : null)
                     obj.style.setProperty('border-color', color ? color : null)
                     if (className === "PopupMenuButton") {
                         for (const child of obj.children) {
@@ -171,7 +179,7 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
     }
     else if (borderOnMouseEntered) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background-color', color === 'white' ? color : "#007ad9");
+            obj.style.setProperty('background', color === 'white' ? color : "#007ad9");
             obj.style.setProperty('border-color', color === 'white' ? color : "#007ad9");
             if (className === "PopupMenuButton") {
                 for (const child of obj.children) {
@@ -182,19 +190,9 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
             }
         }
         obj.onmouseout = () => {
-            if (checked && checkedColor !== null) {
+            if (!checked) {
                 if (!bgdSet) {
-                    obj.style.removeProperty('background-color');
-                    obj.style.removeProperty('border-color');
-                }
-                else {
-                    obj.style.setProperty('background-color', checkedColor.toString());
-                    obj.style.setProperty('border-color', checkedColor.toString());
-                }
-            }
-            else {
-                if (!bgdSet) {
-                    obj.style.removeProperty('background-color');
+                    obj.style.removeProperty('background');
                     obj.style.removeProperty('border-color');
                     if (className === "PopupMenuButton") {
                         for (const child of obj.children) {
@@ -205,7 +203,7 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
                     }
                 }
                 else {
-                    obj.style.setProperty('background-color', color ? color : null);
+                    obj.style.setProperty('background', color ? color : null);
                     obj.style.setProperty('border-color', color ? color : null);
                     if (className === "PopupMenuButton") {
                         for (const child of obj.children) {

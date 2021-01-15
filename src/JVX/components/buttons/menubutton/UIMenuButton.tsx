@@ -55,7 +55,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         const btnRef = buttonRef.current;
         let bgdColor = btnData.style.backgroundColor;
         if (btnRef) {
-            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
+            styleButton(btnRef.children[0], props.className as string, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             if (!bgdColor)
                 bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
             addHoverEffect(btnRef.children[0] as HTMLElement, props.className as string, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
@@ -80,7 +80,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 style={{...btnData.style, borderRadius: '3px'}}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
-                tabIndex={btnData.tabIndex as string}
+                tabIndex={btnData.tabIndex}
                 model={items}
                 //@ts-ignore
                 onClick={() => menuRef.current.show()} />

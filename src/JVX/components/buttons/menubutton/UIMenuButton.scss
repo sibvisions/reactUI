@@ -1,5 +1,5 @@
 .jvx-popupmenubutton {
-    background-color: #007ad9;
+    background: #007ad9;
     border-color: #007ad9;
     color: white;
     display: inline-flex;
@@ -15,7 +15,7 @@
         transition: unset;
         &:enabled {
             &:hover {
-                background-color: unset;
+                background: unset;
                 border-color: unset;
                 color: unset;
             }

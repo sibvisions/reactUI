@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import {Button} from "primereact/button";
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
@@ -9,7 +9,6 @@ import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
-import { addRippleEffect, removeRippleEffect } from "../../util/RippleEffect";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
@@ -24,9 +23,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         const btnRef = buttonRef.current;
         let bgdColor = btnData.style.backgroundColor;
         if (btnRef) {
-            if (props.style?.includes('hyperlink'))
-                btnRef.children[0].classList.add('hyperlink');
-            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
+            styleButton(btnRef.children[0], props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
             if (!bgdColor)
                 bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
@@ -44,19 +41,6 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useEffect(() => {
-        if (buttonRef) {
-            //@ts-ignore
-            addRippleEffect(undefined, buttonRef.current.children[0], context.contentStore.menuCollapsed)
-        }
-        return () => {
-            if (buttonRef) {
-                //@ts-ignore
-                removeRippleEffect(undefined, buttonRef.current.children[0])
-            }
-        }
-    })
-
     const onButtonPress = () => {
         const req = createPressButtonRequest();
         req.componentId = props.name;
@@ -66,12 +50,12 @@ const UIButton: FC<IButton> = (baseProps) => {
     return(
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
-                className={"jvx-button" + (props.borderPainted === false ? " border-notpainted" : "")}
+                className={"jvx-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
                 style={btnData.style}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 iconPos={btnData.iconPos}
-                tabIndex={btnData.tabIndex as number}
+                tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}
                 disabled={props.enabled === false}
             />

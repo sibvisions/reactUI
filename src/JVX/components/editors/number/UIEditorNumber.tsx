@@ -45,7 +45,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         //@ts-ignore
         let currElem = inputRef.current.inputEl;
         if(currElem){
-            currElem.style.setProperty('background-color', props.cellEditor_background_);
+            currElem.style.setProperty('background', props.cellEditor_background_);
             currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }
     })

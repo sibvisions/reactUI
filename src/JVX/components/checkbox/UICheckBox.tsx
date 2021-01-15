@@ -36,7 +36,7 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
         if (btnRef) {
-            styleButton(btnRef.children[0].children, props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
+            styleButton(btnRef.children[0], props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
                 props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
         }
     }, [btnData.btnBorderPainted, 

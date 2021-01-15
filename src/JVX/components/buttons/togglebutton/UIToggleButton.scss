@@ -1,22 +1,19 @@
-.p-togglebutton.p-button.p-highlight, .p-togglebutton.p-button.p-highlight:hover {
-    color:black;
-}
-
-.p-togglebutton.p-button.p-highlight {
-    .p-button-icon-left {
-        color: #666666
+.p-togglebutton {
+    &.p-button, &.p-button.p-highlight {
+        background: #dadada;
+        border-color: #dadada;
     }
-    .p-button-icon-right {
-        color: #666666
-    }
-}
-
-.p-togglebutton.p-button.p-highlight:hover {
-    .p-button-icon-left {
-        color: black
-    }
-    .p-button-icon-right {
-        color: black
+    &.p-button.p-highlight {
+        color: black;
+        &:hover {
+            color: black;
+            .p-button-icon-left, .p-button-icon-right {
+                color: black
+            }
+        }
+        .p-button-icon-left, .p-button-icon-right {
+            color: #666666
+        }
     }
 }
 

@@ -126,7 +126,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
 
         if (autoRef) {
-            autoRef.inputEl.style.setProperty('background-color', props.cellEditor_background_);
+            autoRef.inputEl.style.setProperty('background', props.cellEditor_background_);
             autoRef.inputEl.style.setProperty('text-align', alignments.ha);
             autoRef.dropdownButton.element.tabIndex = -1;
             setFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container);

@@ -61,7 +61,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             //@ts-ignore
             for (let child of calender.current.container.children) {
                 if (child.tagName === 'INPUT') {
-                    child.style.setProperty('background-color', props.cellEditor_background_)
+                    child.style.setProperty('background', props.cellEditor_background_)
                     child.style.setProperty('text-align', alignments?.ha)
                 }
             }

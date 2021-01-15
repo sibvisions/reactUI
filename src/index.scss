@@ -59,11 +59,3 @@ body {
 .separator {
     background-image: url('assests/Split.png');
 }
-
-span.ripple {
-    position: absolute;
-    border-radius: 50%;
-    transform: scale(0);
-    animation: ripple 600ms linear;
-    background-color: rgba(177, 177, 177, 0.7);
-  }

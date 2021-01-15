@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
 import {TabView,TabPanel} from 'primereact/tabview';
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
@@ -12,7 +12,6 @@ import IconProps from "../../compprops/IconProps";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
-import { addRippleEffect, removeRippleEffect } from "../../util/RippleEffect";
 
 export interface ITabsetPanel extends Panel {
     selectedIndex?: number;
@@ -54,37 +53,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 
         }
     }, [id, preferredCompSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
-
-    useEffect(() => {
-        addRippleEffect('p-tabview-nav-link', undefined, context.contentStore.menuCollapsed);
-        return () => removeRippleEffect('p-tabview-nav-link', undefined)
-        // const createRipple = (event:any) => {
-        //     const tab:HTMLAnchorElement = event.currentTarget as HTMLAnchorElement;
-        //     const circle:HTMLSpanElement = document.createElement("span");
-        //     const diameter = Math.max(tab.clientWidth, tab.clientHeight);
-        //     const radius = diameter / 2;
-        //     circle.style.width = circle.style.height = diameter + 'px';
-        //     circle.style.left = (event.clientX - (tab.offsetLeft + radius + (context.contentStore.menuCollapsed ? 80 : 240))) + 'px';
-        //     circle.style.top = (event.clientY - (tab.offsetTop + radius + 70)) + 'px';
-        //     circle.classList.add('ripple');
-        //     const ripple = tab.getElementsByClassName("ripple")[0];
-        //     if (ripple)
-        //         ripple.remove();
-        //     tab.appendChild(circle);
-        // }
-
-        // const tabs = document.getElementsByClassName("p-tabview-nav-link");
-        // for (const tab of tabs) {
-        //     if (!tab.parentElement?.classList.contains('p-disabled'))
-        //         tab.addEventListener('click', createRipple);
-        // }
-
-        // return () => {
-        //     for (const tab of tabs) {
-        //         tab.removeEventListener('click', createRipple);
-        //     }
-        // }
-    })
 
     const buildTabRequest = useCallback((tabId:number) => {
         const req = createTabRequest();

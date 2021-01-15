@@ -5,7 +5,7 @@
 @mixin themable($theme-name, $theme-map) {
     .#{$theme-name} {
         .menu-topbar {
-            background-color: map-get($theme-map, "topBar");
+            background: map-get($theme-map, "topBar");
             .p-menubar:not(.p-menubar-mobile-active) {
                 > .p-menubar-root-list {
                     .p-menuitem-text, .p-submenu-icon {
@@ -113,7 +113,7 @@ body {
                 .p-menubar {
                     padding: 0;
                     border: none;
-                    background-color: transparent;
+                    background: transparent;
                     .p-menubar-root-list {
                         .p-submenu-list {
                             width: 100%;
@@ -130,7 +130,7 @@ body {
                         border-radius: 50%;
                     }
                     .profile-image-null {
-                        background-color: white;
+                        background: white;
                         width: 40px;
                         height: 40px;
                         border-radius: 50%;
@@ -143,7 +143,7 @@ body {
             height: 100%;
             width: 240px;
             padding-top: 70px;
-            background-color: white;
+            background: white;
             z-index: 10;
             border-right: 1px solid;
             border-color: var(--menuBorderColor);
@@ -159,13 +159,13 @@ body {
                 height: 70px;
             }
             &::-webkit-scrollbar-track {
-                background-color: #ffffff; 
+                background: white; 
             }
             &::-webkit-scrollbar-thumb {
-                background-color: rgb(230, 230, 230);
+                background: rgb(230, 230, 230);
                 border-radius: 10px;
                 &:hover {
-                    background-color: rgb(202, 202, 202);
+                    background: rgb(202, 202, 202);
                 }
             }
             .p-panelmenu {
@@ -180,7 +180,7 @@ body {
                         }
                     }
                     .p-panelmenu-header-link {
-                        background-color: white;
+                        background: white;
                         border: none;
                         color: #495057;
                         &:hover {
@@ -195,7 +195,7 @@ body {
                         
                         > a {
                             color: black;
-                            background-color: white;
+                            background: white;
                         }
                     }
                 }

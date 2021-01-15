@@ -20,19 +20,8 @@
     }
 }
 
-.hyperlink {
-    background-color: transparent !important;
-    border-color: transparent !important;
-    .p-button-label {
-        color: black;
-        &:hover {
-            text-decoration: underline;   
-        }
-    }
-}
-
 .border-notpainted, .border-notpainted:enabled:hover {
-    background-color: unset;
+    background: unset;
     border-color: unset;
     >.jvx-button-icon, >.p-button-label {
         color: black;
