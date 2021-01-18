@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import tinycolor from 'tinycolor2';
 import {ToggleButton} from 'primereact/togglebutton';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
@@ -62,7 +62,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     },[btnBgdHover, btnData.btnBorderPainted, 
         btnData.iconProps, btnData.style, props.selected, context.server.RESOURCE_URL,
         id, props.borderOnMouseEntered, props.className, props.background,
-        props.horizontalTextPosition, props.imageTextGap, props.style, props.verticalTextPosition])
+        props.horizontalTextPosition, props.imageTextGap, props.style, props.verticalTextPosition, btnBgdChecked])
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;

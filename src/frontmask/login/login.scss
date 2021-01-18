@@ -1,18 +1,47 @@
 .login-container{
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
-}
-
-.login-form{
-  padding: 50px;
-  background: rgba(235,235,235, 0.8);
-  border-radius: 10px;
-}
-
-.login-button{
-  width: 100%;
+  .login-form{
+    background: var(--loginContainerBgd);
+    width: 400px;
+    border-radius: 6px;
+    text-align: center;
+    .login-logo-wrapper {
+      padding: 30px 40px 1rem;
+      background: rgba(255, 255, 255, 0.65);
+      border-top-right-radius: 6px;
+      border-top-left-radius: 6px;
+      .login-logo {
+        width: 100%;
+      }
+    }
+    .p-fluid {
+      padding: 1rem 40px 30px;
+      .p-field {
+        margin-bottom: 1.5rem;
+      }
+      .p-float-label {
+        label {
+          color: var(--loginPlaceholderColor);
+        }
+        input:focus ~label, input.p-filled ~label, 
+        textarea:focus ~label, textarea.p-filled ~label,
+        .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label{
+          top: 10px;
+          font-size: 8px;
+        }
+      }
+      .login-button{
+        padding: 0.5rem 7px;
+        width: 100%;
+        .p-button-icon-left {
+          margin-right: -1rem;
+        }
+      }
+    }
+  }
 }

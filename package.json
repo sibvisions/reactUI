@@ -51,7 +51,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && rimraf build/config.json", 
     "bundle": "webpack -c ./webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

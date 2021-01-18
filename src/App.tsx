@@ -82,11 +82,19 @@ const App: FC<ICustomContent> = (props) => {
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseURL;
             context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
-            context.contentStore.LOGO_BIG = data.logoBig;
-            context.contentStore.LOGO_SMALL = data.logoSmall ? data.logoSmall : data.logoBig;
+            if (data.logoBig)
+                context.contentStore.LOGO_BIG = data.logoBig;
+            if (data.logoSmall)
+                context.contentStore.LOGO_SMALL = data.logoSmall;
+            else if (data.logoBig)
+                context.contentStore.LOGO_SMALL = data.logoBig;
+            if (data.logoLogin)
+                context.contentStore.LOGO_LOGIN = data.logoLogin;
+            else if (data.logoBig)
+                context.contentStore.LOGO_LOGIN = data.logoBig;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
-            startUpRequest.language = data.language;
+            startUpRequest.language = data.language ? data.language : 'de';
 
             if(queryParams.appName && queryParams.baseUrl){
                 startUpRequest.applicationName = queryParams.appName;
@@ -102,7 +110,7 @@ const App: FC<ICustomContent> = (props) => {
                 startUpRequest.authKey = authKey;
             }
             context.contentStore.notifyAppNameChanged(context.server.APP_NAME);
-            startUpRequest.deviceMode = "desktop";
+            startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);

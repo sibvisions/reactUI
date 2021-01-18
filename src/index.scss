@@ -30,6 +30,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
+    --loginContainerBgd: rgba(255, 255, 255, 0.75);
+    --loginPlaceholderColor: #bcc0c4;
     --tabsetXColor: #cdcfd1;
     --standardBgdColor: white;
     --standardTextColor: #495057;
@@ -53,9 +55,9 @@ body {
 }
 
 .login-container {
-    background-image: url("assests/Login.webP");
+    background-image: url("assests/login.webP");
 }
 
 .separator {
-    background-image: url('assests/Split.png');
+    background-image: url('assests/split.png');
 }
