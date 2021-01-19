@@ -1,18 +1,19 @@
 //React
-import React, {createContext, FC, useContext, useLayoutEffect, useEffect, useRef} from 'react';
+import React, {createContext, FC, useContext, useLayoutEffect, useEffect, useRef, useState} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
 import {jvxContext} from "./JVX/jvxProvider";
 import {createStartupRequest} from "./JVX/factories/RequestFactory";
 
-//prime
+//3rdParty
 import {Toast, ToastMessage} from 'primereact/toast';
+import {Helmet} from "react-helmet";
 
 //UI
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
-import Settings from "./frontmask/settings/Settings"
+//import Settings from "./frontmask/settings/Settings"
 import * as queryString from "querystring";
 import {Route, Switch, useHistory} from "react-router-dom";
 import { checkProperties } from './JVX/components/util/CheckProperties';
@@ -37,13 +38,14 @@ const App: FC<ICustomContent> = (props) => {
     const context = useContext(jvxContext);
     const toastRef = useRef<Toast>(null);
     const history = useHistory()
+    const [appName, setAppName] = useState<string>();
     PrimeReact.ripple = true
 
-    useEffect(() => {
-        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
-        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-        //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
-    }, [context.contentStore]);
+    // useEffect(() => {
+    //     context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
+    //     context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
+    //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+    // }, [context.contentStore]);
 
     useEffect(() => {
         props.customScreens?.forEach(customScreen => {
@@ -59,7 +61,7 @@ const App: FC<ICustomContent> = (props) => {
         })
     },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         history.replace("/home")
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
@@ -109,6 +111,7 @@ const App: FC<ICustomContent> = (props) => {
             if(authKey){
                 startUpRequest.authKey = authKey;
             }
+            setAppName(context.server.APP_NAME);
             context.contentStore.notifyAppNameChanged(context.server.APP_NAME);
             startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
             startUpRequest.screenHeight = window.innerHeight;
@@ -128,12 +131,15 @@ const App: FC<ICustomContent> = (props) => {
 
     return (
         <>
+            <Helmet>
+                <title>{appName ? appName : "VisionX Web"}</title>
+            </Helmet>
             <Toast ref={toastRef} position="top-right"/>
             <toastContext.Provider value={msg}>
                 <Switch>
                     <Route exact path={"/login"} render={() => <Login />}/>
                     <Route exact path={"/home/:componentId"} render={props => <Home key={props.match.params.componentId} />} />
-                    <Route exact path={"/settings"} render={() => <Settings />}/>
+                    {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                     <Route path={"/home"} render={() => <Home key={'homeBlank'} />} />
                 </Switch>   
             </toastContext.Provider>

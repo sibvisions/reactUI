@@ -1,5 +1,5 @@
-import React, {ReactElement, useCallback, useContext, useEffect, useState} from "react"
-import Settings from "../../../frontmask/settings/Settings";
+import {ReactElement, useCallback, useContext, useEffect, useState} from "react"
+//import Settings from "../../../frontmask/settings/Settings";
 import { jvxContext } from "../../jvxProvider";
 
 const useHomeComponents = (componentId:string) => {
@@ -8,9 +8,9 @@ const useHomeComponents = (componentId:string) => {
     const buildWindow = useCallback((compId:string):Array<ReactElement> => {
         let compKey = "";
         let tempArray: Array<ReactElement> = [];
-        if (compId === "settings") {
-            tempArray.push(<Settings/>)
-        }
+        // if (compId === "settings") {
+        //     tempArray.push(<Settings/>)
+        // }
         for (let [key, value] of context.contentStore.navigationNames.entries()) {
             if (value === compId)
             compKey = key

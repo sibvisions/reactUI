@@ -131,7 +131,7 @@ const Layout: FC = (props) => {
     }, [props.children, doResize, menuSize])
 
     return(
-        <div className={"layout " + context.theme}>
+        <div className={"layout"}>
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
                 <div ref={sizeRef} className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>

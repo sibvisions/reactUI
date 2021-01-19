@@ -30,28 +30,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
-    --loginContainerBgd: rgba(255, 255, 255, 0.75);
-    --loginPlaceholderColor: #bcc0c4;
-    --tabsetXColor: #cdcfd1;
     --standardBgdColor: white;
     --standardTextColor: #495057;
+
     --standardFont: 'Roboto', sans-serif;
+    --standardFontSize: 14px;
+
+    --menuTopBar: #4f5965;
+    --menuFgdColor: white;
+    --menuHoverColor: rgb(165, 165, 165);
     --menuBorderColor: rgba(120,130,140,.13);
+
+    --loginContainerBgd: rgba(255, 255, 255, 0.75);
+    --loginLogoBgd: rgba(255, 255, 255, 0.65);
+    --loginPlaceholderColor: #bcc0c4;
+
+    --tabsetXColor: #cdcfd1;
 }
 
 body {
-    font-family: var(--standardFont);
-    font-weight: 400;
-    font-style: normal;
-    font-size: 14px;
-    margin: 0;
     background: var(--standardBgdColor);
     color: var(--standardTextColor);
+    font-family: var(--standardFont);
+    font-size: var(--standardFontSize);
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
 }
 
 .p-component {
-    font-family: 'Roboto', sans-serif;
-    font-size: 14px;
+    font-family: var(--standardFont);
+    font-size: var(--standardFontSize);
 }
 
 .login-container {

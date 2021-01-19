@@ -65,13 +65,13 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                     label: currUser.displayName,
                     icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fa fa-user',
                     items: [
-                        {
-                            label: "Settings",
-                            icon: "pi pi-cog",
-                            command: () => {
-                                context.server.routingDecider([{ name: "settings" }])
-                            }
-                        },
+                        // {
+                        //     label: "Settings",
+                        //     icon: "pi pi-cog",
+                        //     command: () => {
+                        //         context.server.routingDecider([{ name: "settings" }])
+                        //     }
+                        // },
                         {
                             label: "Logout",
                             icon: "pi pi-power-off",
@@ -137,8 +137,11 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 context.contentStore.setMenuModeAuto(false)
             }
             else {
-                if (windowSize === 0)
+                if (windowSize === 0) {
+                    closeOpenedMenuPanel();
                     context.contentStore.emitMenuCollapse(0);
+                }
+                    
                 else
                     context.contentStore.emitMenuCollapse(1);
             }
@@ -155,8 +158,8 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
                         menuLogoRef.current.classList.add("menu-hover")
                         menuLogoRef.current.classList.remove("menu-collapsed");
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_BIG;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_BIG;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
                         fadeRef.current.style.setProperty('display', 'none');
                     }
                 }
@@ -168,8 +171,8 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
                         menuLogoRef.current.classList.add("menu-collapsed");
                         menuLogoRef.current.classList.remove("menu-hover");
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_SMALL;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = context.contentStore.LOGO_SMALL;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');
                     }
                     closeOpenedMenuPanel();
