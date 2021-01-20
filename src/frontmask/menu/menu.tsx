@@ -149,15 +149,13 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     },[context.contentStore, windowSize])
 
     useEffect(() => {
+        const testRef = document.getElementsByClassName("menu")[0] as HTMLElement;
         if (forwardedRef.current) {
             const menuRef = forwardedRef.current;
             const hoverExpand = () => {
-                if (menuRef.classList.contains("menu-collapsed")) {
-                    menuRef.classList.add("menu-hover")
-                    menuRef.classList.remove("menu-collapsed");
+                if (testRef.classList.contains("menu-collapsed")) {
+                    testRef.classList.remove("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        menuLogoRef.current.classList.add("menu-hover")
-                        menuLogoRef.current.classList.remove("menu-collapsed");
                         (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
                         (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
                         fadeRef.current.style.setProperty('display', 'none');
@@ -165,12 +163,10 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 }
             }
             const hoverCollapse = () => {
-                if (!forwardedRef.current.classList.contains("menu-collapsed")) {
-                    menuRef.classList.add("menu-collapsed");
-                    menuRef.classList.remove("menu-hover")
+                if (!testRef.classList.contains("menu-collapsed")) {
+                    testRef.classList.add("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
                         menuLogoRef.current.classList.add("menu-collapsed");
-                        menuLogoRef.current.classList.remove("menu-hover");
                         (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
                         (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');
@@ -201,18 +197,18 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     }
 
     return(
-        <div className="menu">
-            <div className="menu-topbar">
-                <div className={"menu-logo-wrapper" + (menuCollapsed ? " menu-collapsed" : "")} ref={menuLogoRef}>
+        <div className={"menu" + (menuCollapsed ? " menu-collapsed" : "")}>
+            <div className={"menu-topbar"}>
+                <div className="menu-logo-wrapper" ref={menuLogoRef}>
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>
-                <div className={"menu-upper" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " upper-collapsed" : "")}>
+                <div className="menu-upper">
                     <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
                     <span className="menu-screen-title">{screenTitle}</span>
                     {profileMenu}
                 </div>
             </div>
-            <div ref={forwardedRef} className={"menu-panelmenu-wrapper" + (menuCollapsed ? " menu-collapsed" : "")}>
+            <div ref={forwardedRef} className="menu-panelmenu-wrapper">
                 <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                     <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>

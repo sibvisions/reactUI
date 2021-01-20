@@ -41,11 +41,11 @@ const App: FC<ICustomContent> = (props) => {
     const [appName, setAppName] = useState<string>();
     PrimeReact.ripple = true
 
-    // useEffect(() => {
-    //     context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
-    //     context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-    //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
-    // }, [context.contentStore]);
+    useEffect(() => {
+        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
+        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
+        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+    }, [context.contentStore]);
 
     useEffect(() => {
         props.customScreens?.forEach(customScreen => {
