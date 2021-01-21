@@ -166,7 +166,6 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 if (!testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.add("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        menuLogoRef.current.classList.add("menu-collapsed");
                         (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
                         (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');

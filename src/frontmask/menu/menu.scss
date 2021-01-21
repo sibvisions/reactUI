@@ -44,11 +44,12 @@
 // @include themable('light', $theme-light);
 // @include themable('blue', $theme-blue);
 
+//Css-Class Variables
 //Position and display for topbar elements.
 %topbar-pos-dis {
     position: fixed;
     display: flex;
-    height: 70px;
+    height: var(--menuHeight);
 }
 
 //Styling for profile image in menubar
@@ -58,38 +59,12 @@
     border-radius: 50%;
 }
 
-//Menu-transitions
-%menu-transition {
+//Mixin for menu-transitions
+@mixin menuTransitions() {
     -webkit-transition: 0.5s ease-in-out;
     -moz-transition: 0.5s ease-in-out;
     -o-transition: 0.5s ease-in-out;
     transition: 0.5s ease-in-out;
-}
-
-//Animation for fadeout div
-@keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@-moz-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@-webkit-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@-ms-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@-o-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
 }
 
 //No blue borders on focus
@@ -113,50 +88,53 @@
 .menu-collapsed {
     //Set new widths and hide overflow because menu overflows on y axis
     .menu-logo-wrapper, .menu-panelmenu-wrapper {
-        width: 80px;
+        width: var(--menuCollapsedWidth);
         overflow: hidden;
         .menu-logo {
-            width: 60px;
+            width: var(--menuLogoCollapsedWidth);
         }
     }
     //Set margin to adapt to new widths
     .menu-upper {
-        margin-left: 80px;
+        margin-left: var(--menuCollapsedWidth);
     }
     .p-panelmenu {
         .p-panelmenu-header {
             //Set padding for better display
             > a {
-                padding: 0.857rem 0.2rem 0.857rem 1rem;
+                padding: 0.75rem 0.2rem 0.75rem var(--menuCollapsePaddingLeft);
             }
         }
-    } 
+    }
+    .menu-logo-mini {
+        width: var(--menuLogoCollapsedWidth);
+    }
 }
 
 //Styling topbar-logo-wrapper
 .menu-logo-wrapper {
     @extend %topbar-pos-dis;
-    @extend %menu-transition;
-    width: 240px;
+    @include menuTransitions();
+    width: var(--menuWidth);
     justify-content: center;
-    background: rgb(232,232,232);
-    background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
-    border-bottom: 1px solid;
-    border-color: var(--menuBorderColor);
+    background: var(--menuLogoBgdColor);
+    background: var(--menuLogoBgdColorGrad);
+    border-bottom: 1px solid var(--menuBorderColor);
 }
 
-//align to center so logo is properly positioned and other styling
+//Align to center, so logo is properly positioned and other styling
 .menu-logo {
-    @extend %menu-transition;
+    @include menuTransitions();
     align-self: center;
-    width: 190px;
+    width: var(--menuLogoWidth);
     border-radius: 5%;
+    max-height: var(--menuLogoHeight);
 }
 
 //Styling for top bar part next to logo, flex-grow, so the profile is on the far right
 .menu-upper {
-    @extend %menu-transition;
-    margin-left: 240px;
+    @include menuTransitions();
+    margin-left: var(--menuWidth);
     display: flex;
     flex-grow: 1;
     align-items: center;
@@ -183,6 +161,7 @@
 //Margin-left, so the profile is on the far right
 .profile-menu {
     margin-left: auto;
+    margin-right: 10px;
 }
 
 .p-menubar {
@@ -222,7 +201,7 @@
 }
 .profile-image-null {
     @extend %profile-image;
-    background: white;
+    background: var(--menuProfileBgdColor);
     text-align: center;
     &::before {
         font-size: 38px;
@@ -231,30 +210,42 @@
 
 //Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
-    @extend %menu-transition;
+    @include menuTransitions();
     @include styledScrollbar();
     position: fixed;
-    padding-top: 70px;
+    padding-top: var(--menuHeight);
     z-index: 10;
     height: 100%;
-    width: 240px;
+    width: var(--menuWidth);
     border-right: 1px solid var(--menuBorderColor);
     overflow-x: hidden;
 }
 
 //Logo in Menu should only be displayed when screen < 600px, transition for smoothness
 .menu-logo-mini-wrapper, .menu-logo-mini {
+    @include menuTransitions();
+}
+
+.menu-logo-mini-wrapper {
+    display: flex;
+    align-items: center;
+    height: 0;
+    padding-left: var(--menuCollapsePaddingLeft);
+}
+
+.menu-logo-mini {
     max-height: 0px;
-    transition: max-height 0.5s ease-out;
+    width: var(--menuLogoWidth);
 }
 
 //Fadeout div for not readable text if collapsed
 .fadeout {
+    @include menuTransitions();
     position: absolute;
     top: 0;
-    left: 60px;
-    width: 20px;
-    margin-top: 70px;
+    left: var(--menuFadeoutLeft);
+    width: var(--menuFadeoutWidth);
+    margin-top: var(--menuHeight);
     height: 100%;
     background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%); 
     background-image: linear-gradient(90deg,  rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
@@ -272,16 +263,16 @@
             //Positioning of menu-arrow
             .p-panelmenu-icon {
                 position: absolute;
-                left: 210px;
+                left: calc(var(--menuWidth) - 30px);
                 margin-right: 0;
             }
         }
         .p-panelmenu-header-link {
-            background: white;
+            background: var(--menuPanelHeaderBgd);
             border: none;
-            color: #495057;
+            color: var(--menuPanelHeaderColor);
             &:hover {
-                color: black;
+                color: var(--menuPanelHeaderColorHover);
             }
             //When text is longer don't break
             .p-menuitem-text {
@@ -291,22 +282,21 @@
         //Selected menupoint styling
         &.p-highlight {
             > a {
-                color: black;
-                background: white;
+                background: var(--menuPanelHeaderBgd);
+                color: var(--menuPanelHeaderColorHover);
             }
         }
     }
     .p-panelmenu-content {
         border: none;
-        //Menu sub points little more to the right
-        .p-menuitem-link {
-            padding: 0.857rem 0.857rem 0.857rem 1.5rem;
-            .p-menuitem-icon, .p-menuitem-text {
-                color: #495057;
-            }
-            &:hover {
-                .p-menuitem-icon, .p-menuitem-text {
-                    color: black;
+        .p-menuitem {
+            //Menu sub points little more to the right
+            .p-menuitem-link:not(.p-disabled) {
+                padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+                &:hover {
+                    .p-menuitem-icon, .p-menuitem-text {
+                        color: var(--menuPanelHeaderColorHover);
+                    }
                 }
             }
         }
@@ -334,92 +324,90 @@
                 border: 1px solid #c8c8c8;
                 li {
                     a {
-                        padding-left: 0.857rem;
+                        padding: 0.75rem;
                     }
-                }
-            }
-            >.p-menuitem {
-                >.p-menuitem-link {
-                    >.p-submenu-icon {
-                        margin-left: 0.5rem;
-                    }
-                }
-            }
-        }
-    } 
-}
-
-@media screen and (max-width: 600px) {
-    body {
-        .menu {
-            .menu-topbar {
-                .menu-logo-wrapper {
-                    visibility: hidden;
-                    width: 0px;
-                    padding:0;
-                    &.menu-collapsed {
-                        width: 0px;
-                        padding:0;
-                    }
-                    .menu-logo {
-                        height: unset;
-                        width: 0px;
-                    }
-                }
-                .menu-upper {
-                    margin-left: 0px;
-                }
-                .profile-menu {
-                    padding-right: 0;
-                    .p-menubar {
-                        .p-menubar-root-list {
-                            .p-submenu-list {
-                                left: -90px;
-                                width: 150px;
-                            }
-                            >.p-menuitem {
-                                >.p-menuitem-link {
-                                    .p-menuitem-icon {
-                                        margin-right: 0;
-                                    }
-                                    .p-menuitem-text {
-                                        display: none;
-                                    }
-                                    >.p-submenu-icon {
-                                        display: none;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .menu-panelmenu-wrapper {
-                &.menu-collapsed {
-                    .menu-logo-mini-wrapper {
-                        .menu-logo-mini{
-                            width: 60px;
-                        }
-                    }
-                }
-                .menu-logo-mini-wrapper {
-                    display: flex;
-                    padding-left: 0.857rem;
-                    align-items: center;
-                    max-height: 60px;
-                    .menu-logo-mini {
-                        width: 190px;
-                        max-height: 60px;
-                        -webkit-transition: 0.5s ease-in-out;
-                        -moz-transition: 0.5s ease-in-out;
-                        -o-transition: 0.5s ease-in-out;
-                        transition: 0.5s ease-in-out;
-                    }
-                }
-                .fadeout {
-                    margin-top: 130px;
                 }
             }
         }
     }
+}
+
+@media screen and (max-width: 600px) {
+    //Don't show the logo wrapper ever, width 0 for transition
+    .menu-logo-wrapper {
+        &, .menu-collapsed & {
+            visibility: hidden;
+            width: 0px;
+        }
+    }
+
+    //Colored part of menu always on the left side
+    .menu-upper {
+        &, .menu-collapsed & {
+            margin-left: 0px;
+        }
+    }
+
+    //In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
+    .p-menubar {
+        .p-menubar-root-list {
+            .p-submenu-list {
+                left: -91px;
+                width: 163px;
+            }
+            >.p-menuitem {
+                >.p-menuitem-link {
+                    .p-menuitem-icon {
+                        margin-right: 0;
+                    }
+                    .p-menuitem-text, .p-submenu-icon {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    //Show logo-mini-wrapper
+    .menu-logo-mini-wrapper {
+        height: var(--menuLogoHeight);
+    }
+
+    //Mini logo displaying and styling
+    .menu-logo-mini {
+        @include menuTransitions();
+        width: var(--menuLogoWidth);
+        max-height: var(--menuLogoHeight);
+    }
+
+    //Fadeout position needs to be adjusted.
+    .fadeout {
+        margin-top: calc(var(--menuHeight) + var(--menuLogoHeight));
+    }
+}
+
+//Animation for fadeout div
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }

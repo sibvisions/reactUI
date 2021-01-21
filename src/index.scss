@@ -36,10 +36,25 @@
     --standardFont: 'Roboto', sans-serif;
     --standardFontSize: 14px;
 
+    --menuWidth: 240px;
+    --menuCollapsedWidth: 80px;
+    --menuCollapsePaddingLeft: 0.75rem;
+    --menuHeight: 70px;
+    --menuLogoWidth: 190px;
+    --menuLogoCollapsedWidth: 60px;
+    --menuLogoHeight: 60px;
+    --menuFadeoutWidth: 20px;
+    --menuFadeoutLeft: calc(var(--menuCollapsedWidth) - var(--menuFadeoutWidth));
     --menuTopBar: #4f5965;
     --menuFgdColor: white;
     --menuHoverColor: rgb(165, 165, 165);
     --menuBorderColor: rgba(120,130,140,.13);
+    --menuLogoBgdColor: rgb(232,232,232);
+    --menuLogoBgdColorGrad: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+    --menuProfileBgdColor: white;
+    --menuPanelHeaderBgd: white;
+    --menuPanelHeaderColor: #495057;
+    --menuPanelHeaderColorHover: black;
 
     --loginContainerBgd: rgba(255, 255, 255, 0.75);
     --loginLogoBgd: rgba(255, 255, 255, 0.65);
