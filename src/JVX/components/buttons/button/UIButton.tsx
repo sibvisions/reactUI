@@ -50,7 +50,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return(
         <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
-                className={"jvx-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
+                className={"rc-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
                 style={btnData.style}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}

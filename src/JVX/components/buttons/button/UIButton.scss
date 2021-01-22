@@ -1,37 +1,21 @@
-.jvx-button {
-    display: inline-flex;
+.rc-button {
     height: inherit;
     width: inherit;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
     padding: 5px 10px 5px 10px;
-    .p-button-icon-left {
-        margin-right: unset;
-    }
-    .p-button-icon-right {
-        margin-left: unset;
-    }
-}
-
-.p-button-icon-only {
-    .p-button-label {
-        display: none;
+    &.p-button-icon-only {
+        width: unset;
+        padding: unset;
     }
 }
 
 .border-notpainted, .border-notpainted:enabled:hover {
-    background: unset;
-    border-color: unset;
-    >.jvx-button-icon, >.p-button-label {
-        color: black;
-    }
+    background: transparent;
+    border-color: transparent;
+    color: black;
 }
 
 .border-notpainted:enabled:hover {
-    >.p-button-label {
-        text-decoration: underline;
-    }
+    border-color: black;
 }
 
 .p-button-label {

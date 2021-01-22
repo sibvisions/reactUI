@@ -57,8 +57,14 @@
     --menuPanelHeaderColorHover: black;
 
     --loginContainerBgd: rgba(255, 255, 255, 0.75);
+    --loginFormWidth: 400px;
+    --loginFormTBPadding: 30px;
+    --loginFormLRPadding: 40px;
+    --loginFormLogoGap: 1rem;
     --loginLogoBgd: rgba(255, 255, 255, 0.65);
     --loginPlaceholderColor: #bcc0c4;
+
+    --btnDefaultBgd: #2196F3;
 
     --tabsetXColor: #cdcfd1;
 }

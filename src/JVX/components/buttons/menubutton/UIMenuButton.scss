@@ -1,14 +1,11 @@
-.jvx-popupmenubutton {
-    background: #007ad9;
-    border-color: #007ad9;
-    color: white;
-    display: inline-flex;
+.rc-popupmenubutton {
+    background: var(--btnDefaultBgd);
+    border-color: var(--btnDefaultBgd);
     height: inherit;
     width: inherit;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 0;
+    border-radius: 3px;
     .p-button {
         background: inherit;
         border-color: inherit;

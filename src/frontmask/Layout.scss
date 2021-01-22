@@ -1,26 +1,26 @@
+%layout-transition {
+  -webkit-transition: margin-left 0.5s ease-in-out;
+  -moz-transition: margin-left 0.5s ease-in-out;
+  -o-transition: margin-left 0.5s ease-in-out;
+  transition: margin-left 0.5s ease-in-out;
+}
+
 .layout{
   height: 100vh;
   display: flex;
-  flex-direction: column;
 }
 
 .main {
-  margin-top: 70px;
+  @extend %layout-transition;
+  margin-top: var(--menuHeight);
+  margin-left: var(--menuWidth);
   flex: 1;
   overflow-y: hidden;
-  margin-left: 240px;
-  -webkit-transition: margin-left 0.5s ease-in-out;
-  -moz-transition: margin-left 0.5s ease-in-out;
-  -o-transition: margin-left 0.5s ease-in-out;
-  transition: margin-left 0.5s ease-in-out;
 }
 
 .layout-expanded {
-  margin-left: 80px;
-  -webkit-transition: margin-left 0.5s ease-in-out;
-  -moz-transition: margin-left 0.5s ease-in-out;
-  -o-transition: margin-left 0.5s ease-in-out;
-  transition: margin-left 0.5s ease-in-out;
+  @extend %layout-transition;
+  margin-left: var(--menuCollapsedWidth);
 }
 
 .transition-disable-overflow {

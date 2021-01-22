@@ -5,43 +5,49 @@
   align-items: center;
   background-size: cover;
   background-repeat: no-repeat;
-  .login-form{
-    background: var(--loginContainerBgd);
-    width: 400px;
-    border-radius: 6px;
-    text-align: center;
-    .login-logo-wrapper {
-      padding: 30px 40px 1rem;
-      background: var(--loginLogoBgd);
-      border-top-right-radius: 6px;
-      border-top-left-radius: 6px;
-      .login-logo {
-        width: 100%;
-      }
-    }
-    .p-fluid {
-      padding: 1rem 40px 30px;
-      .p-field {
-        margin-bottom: 1.5rem;
-      }
-      .p-float-label {
-        label {
-          color: var(--loginPlaceholderColor);
-        }
-        input:focus ~label, input.p-filled ~label, 
-        textarea:focus ~label, textarea.p-filled ~label,
-        .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label{
-          top: 10px;
-          font-size: 8px;
-        }
-      }
-      .login-button{
-        padding: 0.5rem 7px;
-        width: 100%;
-        .p-button-icon-left {
-          margin-right: -1rem;
-        }
-      }
-    }
+}
+
+.login-form{
+  width: var(--loginFormWidth);
+  text-align: center;
+  background: var(--loginContainerBgd);  
+  border-radius: 6px;
+}
+
+.login-logo-wrapper {
+  padding: var(--loginFormTBPadding) var(--loginFormLRPadding) var(--loginFormLogoGap);
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  background: var(--loginLogoBgd);
+}
+
+.login-logo {
+  width: 100%;
+}
+
+.p-fluid {
+  padding: var(--loginFormLogoGap) var(--loginFormLRPadding) var(--loginFormTBPadding);
+}
+
+.p-field {
+  margin-bottom: 1.5rem;
+}
+
+.p-float-label {
+  label {
+    color: var(--loginPlaceholderColor);
+  }
+  input:focus ~label, input.p-filled ~label, 
+  textarea:focus ~label, textarea.p-filled ~label,
+  .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label{
+    top: 10px;
+    font-size: 8px;
+  }
+}
+
+.login-button{
+  padding: 0.5rem;
+  .p-button-icon-left {
+    margin-right: -1rem;
   }
 }

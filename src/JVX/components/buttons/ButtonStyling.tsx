@@ -89,7 +89,7 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
         }
         if (iconProps) {
             if (child.classList.value.includes(iconProps.icon)) {
-                child.classList.add("jvx-button-icon")
+                child.classList.add("rc-button-icon")
                 child.style.setProperty('width', iconProps.size.width+'px');
                 child.style.setProperty('height', iconProps.size.height+'px');
                 child.style.setProperty('font-size', iconProps.size.height+'px');
@@ -103,18 +103,21 @@ function styleButtonContent(child:HTMLElement, className:string, hTextPos:number
 }
 
 function fontColorForBgd(btn:Element, btnStyle:CSSProperties) {
-    const colorString:string = window.getComputedStyle(btn).getPropertyValue('background-color')
-    const rgb = colorString.substring(colorString.indexOf('(')+1, colorString.indexOf(')')).replaceAll(' ', '').split(',');
-    const colorNotSet = (window.getComputedStyle(btn).getPropertyValue('background-color') === 'rgba(0, 0, 0, 0)' && !btnStyle.background) ? true : false;
-    const brightness = Math.round(((parseInt(rgb[0]) * 299) +
-                      (parseInt(rgb[1]) * 587) +
-                      (parseInt(rgb[2]) * 114)) / 1000);
-    const textColor = (brightness > 126 || colorNotSet) ? 'black' : 'white';
-    (btn as HTMLElement).style.setProperty('color', textColor);
+    if (!btn.classList.contains('border-notpainted')) {
+        const colorString:string = window.getComputedStyle(btn).getPropertyValue('background-color')
+        const rgb = colorString.substring(colorString.indexOf('(')+1, colorString.indexOf(')')).replaceAll(' ', '').split(',');
+        const colorNotSet = (window.getComputedStyle(btn).getPropertyValue('background-color') === 'rgba(0, 0, 0, 0)' && !btnStyle.background) ? true : false;
+        const brightness = Math.round(((parseInt(rgb[0]) * 299) +
+                          (parseInt(rgb[1]) * 587) +
+                          (parseInt(rgb[2]) * 114)) / 1000);
+        const textColor = (brightness > 126 || colorNotSet) ? 'black' : 'white';
+        (btn as HTMLElement).style.setProperty('color', textColor);
+    }
 }
 
 export function styleButton(btn:Element, className:string, hTextPos:number|undefined, vTextPos:number|undefined, 
     imgTextGap:number|undefined, btnStyle:CSSProperties, iconProps:IconProps, resource:string) {
+    fontColorForBgd(btn, btnStyle);
     if (className === "PopupMenuButton") {
         for (let btnChild of btn.children) {
             styleMenuButton(btnChild as HTMLElement, btnStyle);
@@ -123,7 +126,6 @@ export function styleButton(btn:Element, className:string, hTextPos:number|undef
         }
     }
     else {
-        fontColorForBgd(btn, btnStyle);
         for (let child of btn.children) {
             styleButtonContent(child as HTMLElement, className, hTextPos, vTextPos, imgTextGap, iconProps, resource)
         }
@@ -131,6 +133,7 @@ export function styleButton(btn:Element, className:string, hTextPos:number|undef
 }
 
 export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseEntered:boolean|undefined, color:string|undefined, checkedColor:ToggleButtonGradient|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
+    const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     if (borderPainted) {
         obj.onmouseover = () => {
             if (!checked) {
@@ -179,13 +182,13 @@ export function addHoverEffect(obj:HTMLElement, className:string, borderOnMouseE
     }
     else if (borderOnMouseEntered) {
         obj.onmouseover = () => {
-            obj.style.setProperty('background', color === 'white' ? color : "#007ad9");
-            obj.style.setProperty('border-color', color === 'white' ? color : "#007ad9");
+            obj.style.setProperty('background', color === 'white' ? color : btnDefaultBgd);
+            obj.style.setProperty('border-color', color === 'white' ? color : btnDefaultBgd);
             if (className === "PopupMenuButton") {
                 for (const child of obj.children) {
                     const castedChild = child as HTMLElement;
                     if (castedChild.tagName === "BUTTON")
-                        castedChild.style.setProperty('border-color', color !== undefined ? color : "#007ad9");
+                        castedChild.style.setProperty('border-color', color !== undefined ? color : btnDefaultBgd);
                 }
             }
         }
