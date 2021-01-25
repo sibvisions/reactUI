@@ -3,41 +3,35 @@
     border-color: var(--btnDefaultBgd);
     height: inherit;
     width: inherit;
-    justify-content: center;
-    align-items: center;
     border-radius: 3px;
-    .p-button {
-        background: inherit;
-        border-color: inherit;
-        transition: unset;
-        &:enabled {
-            &:hover {
-                background: unset;
-                border-color: unset;
-                color: unset;
-            }
-        }
-        &:focus {
-            box-shadow: unset;
-            -webkit-box-shadow: unset;
-        }
-        .p-button-label {
-            flex: unset
+    &:hover {
+        .p-splitbutton-defaultbutton, .p-splitbutton-menubutton {
+            background: inherit;
+            border-color: inherit;
+            color: inherit;
         }
     }
-    .p-splitbutton-defaultbutton, .p-splitbutton-menubutton{
-        height: inherit;
-        color: inherit;
-        border-color: inherit;
+    &:focus-within {
+        box-shadow: 0 0 0 0.2rem #8dcdff;
+        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
-    .p-splitbutton-defaultbutton {
-        display: inherit;
-        justify-content: inherit;
-        align-items: inherit;
-        padding: 5px 0px 5px 10px;
+}
+
+.p-splitbutton-defaultbutton, .p-splitbutton-menubutton {
+    background: inherit;
+    border-color: inherit;
+    color: inherit;
+    &:focus {
+        box-shadow: unset;
+        -webkit-box-shadow: unset;
     }
-    .p-splitbutton-menubutton {
-        width: 38px;
-        padding: 5px 10px 5px 0px;
-    }
+}
+
+.p-splitbutton-defaultbutton {
+    padding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+}
+
+.p-button.p-splitbutton-menubutton {
+    width: var(--menuBtnIconWidth);
+    padding: var(--btnPTB) var(--btnPLR) var(--btnPTB) 0px;
 }

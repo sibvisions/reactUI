@@ -7,7 +7,6 @@ import {IButton} from "../buttons/IButton";
 import {buttonProps, styleButton} from "../buttons/ButtonStyling";
 import {createSetValueRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import { swapProps } from "../util/SwapProps";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 
@@ -23,15 +22,8 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     const [props] = useProperties<ICheckBox>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
-
-    useLayoutEffect(() => {
-        const btnRef = buttonRef.current;
-        if (btnRef) {
-            if (props.horizontalTextPosition === 1) {
-                swapProps(btnRef.children[0] as HTMLElement, 'justify-content', 'align-items')
-            }
-        }
-    },[props.horizontalTextPosition]);
+    const cbJustify = btnData.style.justifyContent || 'flex-start';
+    const cbAlign = btnData.style.alignItems || 'center';
 
     useLayoutEffect(() => {
         const btnRef = buttonRef.current;
@@ -52,8 +44,8 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
-        <span ref={buttonRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span className="jvx-checkbox" style={btnData.style}>
+        <span ref={buttonRef} style={layoutValue.get(props.id) ? {...layoutValue.get(props.id), display: 'inline-flex', justifyContent: cbJustify, alignItems: cbAlign} : {position: "absolute"}}>
+            <span className="rc-checkbox" style={{flexDirection: btnData.style.flexDirection}}>
                 <Checkbox
                     inputId={props.id}
                     style={{order: btnData.iconPos === 'left' ? 1 : 2}}

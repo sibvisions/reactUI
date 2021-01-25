@@ -71,13 +71,13 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
+    
     return (
         <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
                 ref={menuRef}
                 className={"rc-popupmenubutton"  + (props.borderPainted === false ? " border-notpainted" : "")}
-                style={{...btnData.style}}
+                style={{...btnData.style, padding: '0'}}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 tabIndex={btnData.tabIndex}

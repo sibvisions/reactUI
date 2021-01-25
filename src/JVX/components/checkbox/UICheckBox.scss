@@ -1,8 +1,7 @@
-.jvx-checkbox {
+.rc-checkbox {
     display: inline-flex;
-    height: inherit;
-    width: inherit;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+}
+
+.p-checkbox {
+    align-self: center;
 }

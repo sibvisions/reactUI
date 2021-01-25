@@ -1,28 +1,26 @@
 .p-togglebutton {
-    &.p-button, &.p-button.p-highlight {
+    &.p-button:not(.p-disabled):not(.p-highlight) {
         background: #dadada;
         border-color: #dadada;
-    }
-    &.p-button.p-highlight {
-        color: black;
         &:hover {
-            color: black;
             .p-button-icon-left, .p-button-icon-right {
                 color: black
-            }
+            } 
         }
+    }
+    &.p-button.p-highlight, &.p-button.p-highlight:hover {
         .p-button-icon-left, .p-button-icon-right {
-            color: #666666
+            color: black
         }
     }
 }
 
-.jvx-inputswitch {
+.rc-inputswitch {
     display: inline-flex;
     justify-content: center;
     align-items: center;
 }
 
-.jvx-inputswitch-label {
+.rc-inputswitch-label {
     margin-right: 4px;
 }

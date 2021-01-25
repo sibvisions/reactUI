@@ -28,8 +28,8 @@ const UIInputSwitch: FC<IToggleButton> = (baseProps) => {
     }
 
     return (
-        <span className="jvx-inputswitch" ref={inputRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
-            <span className="jvx-inputswitch-label">{props.text}</span>
+        <span className="rc-inputswitch" ref={inputRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
+            <span className="rc-inputswitch-label">{props.text}</span>
             <InputSwitch checked={props.selected} onChange={handleOnChange} />
         </span>
     )

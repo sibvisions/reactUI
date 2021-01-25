@@ -1,7 +1,7 @@
 .rc-button {
     height: inherit;
     width: inherit;
-    padding: 5px 10px 5px 10px;
+    padding: var(--btnPTB) var(--btnPLR);
     &.p-button-icon-only {
         width: unset;
         padding: unset;
@@ -11,11 +11,11 @@
 .border-notpainted, .border-notpainted:enabled:hover {
     background: transparent;
     border-color: transparent;
-    color: black;
+    color: var(--btnNoBorderPaintedColor);
 }
 
 .border-notpainted:enabled:hover {
-    border-color: black;
+    border-color: var(--btnNoBorderPaintedColor);
 }
 
 .p-button-label {
