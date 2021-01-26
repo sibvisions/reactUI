@@ -3,9 +3,17 @@
     width: inherit;
     padding: var(--btnPTB) var(--btnPLR);
     &.p-button-icon-only {
-        width: unset;
+        width: inherit;
         padding: unset;
     }
+}
+
+.bright {
+    color: white;
+}
+
+.dark {
+    color: black;
 }
 
 .border-notpainted, .border-notpainted:enabled:hover {
@@ -23,4 +31,10 @@
     text-overflow: ellipsis;
     display: block;
     white-space: nowrap;
+}
+
+.p-button-icon-only {
+    .rc-button-icon {
+        margin: 0 !important;
+    }
 }

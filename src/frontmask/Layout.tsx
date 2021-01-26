@@ -112,7 +112,10 @@ const Layout: FC = (props) => {
         window.addEventListener("resize", handleDeviceStatus);
         if (currSizeRef) {
             currSizeRef.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
-            currSizeRef.addEventListener("transitionend", () => setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0));
+            currSizeRef.addEventListener("transitionend", () => {
+                setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
+                doResize();
+            });
         }
 
         return () => {
@@ -120,11 +123,15 @@ const Layout: FC = (props) => {
             window.removeEventListener("resize", resizeListenerCall);
             if (currSizeRef) {
                 currSizeRef.removeEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
-                currSizeRef.removeEventListener("transitionend", () => setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0));
+                currSizeRef.removeEventListener("transitionend", () => {
+                    setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0);
+                    doResize();
+                });
             }
 
         }
-    });
+    // eslint-disable-next-line
+    },[]);
 
     useLayoutEffect(() => {
         doResize();

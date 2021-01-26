@@ -38,7 +38,7 @@
 
     --menuWidth: 240px;
     --menuCollapsedWidth: 80px;
-    --menuCollapsePaddingLeft: 0.75rem;
+    --menuCollapsePaddingLeft: 1rem;
     --menuHeight: 70px;
     --menuLogoWidth: 190px;
     --menuLogoCollapsedWidth: 60px;
@@ -52,6 +52,7 @@
     --menuLogoBgdColor: rgb(232,232,232);
     --menuLogoBgdColorGrad: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
     --menuProfileBgdColor: white;
+    --menuPanelWrapperBgd: white;
     --menuPanelHeaderBgd: white;
     --menuPanelHeaderColor: #495057;
     --menuPanelHeaderColorHover: black;
@@ -68,6 +69,10 @@
     --btnPTB: 5px;
     --btnPLR: 10px;
     --btnNoBorderPaintedColor: black;
+    --btnColorBright: white;
+    --btnColorDark: black;
+
+    --tglBtnDefaultBgd: #dadada;
 
     --menuBtnIconWidth: 38px;
 

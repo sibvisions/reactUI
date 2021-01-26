@@ -1,18 +1,20 @@
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 import {Button} from "primereact/button";
+import tinycolor from 'tinycolor2';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 
 const UIButton: FC<IButton> = (baseProps) => {
 
-    const buttonRef = useRef<HTMLSpanElement>(null);
+    const buttonRef = useRef<any>(null)
+    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
@@ -20,22 +22,18 @@ const UIButton: FC<IButton> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     useLayoutEffect(() => {
-        const btnRef = buttonRef.current;
-        let bgdColor = btnData.style.backgroundColor;
-        if (btnRef) {
-            styleButton(btnRef.children[0], props.className as string, props.horizontalTextPosition, props.verticalTextPosition, 
-                props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
-            if (!bgdColor)
-                bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className as string, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+        if (buttonRef.current) {
+            const btnRef = buttonRef.current.element;
+            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+            if (btnData.iconProps.icon)
+                renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
+            addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
-    }, [btnData.btnBorderPainted, props.background,
-        btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
-        props.className, props.horizontalTextPosition, props.imageTextGap,
-        props.style, props.verticalTextPosition, id, props.borderOnMouseEntered])
+    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
 
     useLayoutEffect(() => {
-        const btnRef = buttonRef.current;
+        const btnRef = buttonWrapperRef.current;
         if (btnRef)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
 
@@ -48,8 +46,9 @@ const UIButton: FC<IButton> = (baseProps) => {
     }
 
     return(
-        <span ref={buttonRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+        <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
+                ref={buttonRef}
                 className={"rc-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
                 style={btnData.style}
                 label={props.text}

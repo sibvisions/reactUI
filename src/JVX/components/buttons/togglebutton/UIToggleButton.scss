@@ -1,16 +1,33 @@
 .p-togglebutton {
     &.p-button:not(.p-disabled):not(.p-highlight) {
-        background: #dadada;
-        border-color: #dadada;
+        background: var(--tglBtnDefaultBgd);
+        border-color: var(--tglBtnDefaultBgd);
         &:hover {
-            .p-button-icon-left, .p-button-icon-right {
-                color: black
-            } 
+            &.dark {
+                .p-button-icon-left, .p-button-icon-right {
+                    color: black;
+                } 
+            }
+            &.bright {
+                .p-button-icon-left, .p-button-icon-right {
+                    color: white;
+                } 
+            }
         }
     }
     &.p-button.p-highlight, &.p-button.p-highlight:hover {
-        .p-button-icon-left, .p-button-icon-right {
-            color: black
+        border-color: var(--tglBtnDefaultBgd);
+        &.dark {
+            color: black;
+            .p-button-icon-left, .p-button-icon-right {
+                color: black;
+            }
+        }
+        &.bright {
+            color: white;
+            .p-button-icon-left, .p-button-icon-right {
+                color: white;
+            }
         }
     }
 }

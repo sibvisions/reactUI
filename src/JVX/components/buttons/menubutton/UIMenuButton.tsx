@@ -1,12 +1,13 @@
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {SplitButton} from "primereact/splitbutton";
+import tinycolor from 'tinycolor2';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, styleButton} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, renderButtonIcon, setMenuButtonPadding} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
@@ -18,8 +19,8 @@ export interface IMenuButton extends IButton {
 
 const UIMenuButton: FC<IMenuButton> = (baseProps) => {
 
-    const buttonRef = useRef<HTMLSpanElement>(null);
-    const menuRef = useRef(null);
+    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
+    const buttonRef = useRef<any>(null);
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
     const [props] = useProperties<IMenuButton>(baseProps.id, baseProps);
@@ -52,30 +53,29 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     },[context.contentStore, context.server, props])
 
     useLayoutEffect(() => {
-        const btnRef = buttonRef.current;
-        let bgdColor = btnData.style.backgroundColor;
-        if (btnRef) {
-            styleButton(btnRef.children[0], props.className as string, props.horizontalTextPosition, props.verticalTextPosition, props.imageTextGap, btnData.style, btnData.iconProps, context.server.RESOURCE_URL);
-            if (!bgdColor)
-                bgdColor = window.getComputedStyle(btnRef.children[0]).getPropertyValue('background-color');
-            addHoverEffect(btnRef.children[0] as HTMLElement, props.className as string, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+        if (buttonRef.current) {
+            const btnRef = buttonRef.current
+            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+            setMenuButtonPadding(btnRef.defaultButton, btnData.style.padding?.toString().split(' '))
+            if (btnData.iconProps.icon)
+                renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
+            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
+            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
-    },[btnData.btnBorderPainted, 
-        btnData.iconProps, btnData.style, context.server.RESOURCE_URL,
-        props.className, props.horizontalTextPosition, props.imageTextGap, props.background,
-        props.style, props.verticalTextPosition, id, props.borderOnMouseEntered, layoutValue])
+
+    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
 
     useLayoutEffect(() => {
-        const btnRef = buttonRef.current;
+        const btnRef = buttonWrapperRef.current;
         if (btnRef) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
     
     return (
-        <span ref={buttonRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
+        <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
-                ref={menuRef}
+                ref={buttonRef}
                 className={"rc-popupmenubutton"  + (props.borderPainted === false ? " border-notpainted" : "")}
                 style={{...btnData.style, padding: '0'}}
                 label={props.text}
@@ -83,7 +83,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 tabIndex={btnData.tabIndex}
                 model={items}
                 //@ts-ignore
-                onClick={() => menuRef.current.show()} />
+                onClick={() => buttonRef.current.show()} />
         </span>
     )
 }

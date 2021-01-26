@@ -1,5 +1,5 @@
 //React
-import React, {createContext, FC, useContext, useLayoutEffect, useEffect, useRef, useState} from 'react';
+import React, {createContext, FC, useContext, useEffect, useRef, useState} from 'react';
 
 //Custom
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
@@ -44,7 +44,7 @@ const App: FC<ICustomContent> = (props) => {
     useEffect(() => {
         context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
         context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+        //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
     }, [context.contentStore]);
 
     useEffect(() => {
