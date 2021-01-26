@@ -29,7 +29,6 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     const rbAlign = btnData.style.alignItems || 'center';
 
     useLayoutEffect(() => {
-        console.log(labelRef.current, rbRef.current)
         const lblRef = labelRef.current;
         const radioRef = rbRef.current
         if (lblRef && radioRef) {
