@@ -40,8 +40,8 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     }
 
     return(
-        <div className="jvx-panel-group" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
-            <div className="jvx-panel-group-caption"><span>{props.text}</span></div>
+        <div className="rc-panel-group" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
+            <div className="rc-panel-group-caption"><span>{props.text}</span></div>
             <Layout
                 id={id}
                 layoutData={props.layoutData}

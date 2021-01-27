@@ -61,7 +61,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     }
 
     return(
-        <span className="jvx-editor-image" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
+        <span className="rc-editor-image" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             <img
                 style={imageStyle.img}
                 src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}

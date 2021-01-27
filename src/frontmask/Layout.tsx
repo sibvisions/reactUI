@@ -27,7 +27,7 @@ type queryType = {
 const Layout: FC = (props) => {
 
     const sizeRef = useRef<HTMLDivElement>(null);
-    const menuRef = useRef(null);
+    const menuRef = useRef<any>(null);
     const context = useContext(jvxContext);
     const menuCollapsed = useMenuCollapser('layout');
 
@@ -110,9 +110,9 @@ const Layout: FC = (props) => {
         }
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
-        if (currSizeRef) {
-            currSizeRef.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
-            currSizeRef.addEventListener("transitionend", () => {
+        if (menuRef && currSizeRef) {
+            menuRef.current.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
+            menuRef.current.addEventListener("transitionend", () => {
                 setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
                 doResize();
             });

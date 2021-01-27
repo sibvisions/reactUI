@@ -86,7 +86,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     return (
         <InputNumber
             ref={inputRef}
-            className="jvx-editor-number"
+            className="rc-editor-number"
             mode="decimal"
             useGrouping={false}
             minFractionDigits={scaleDigits}

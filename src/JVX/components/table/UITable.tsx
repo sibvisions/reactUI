@@ -303,7 +303,7 @@ const UITable: FC<TableProps> = (baseProps) => {
            <DataTable
                ref={tableRef}
                onColumnResizeEnd={handleColResize}
-               className="jvx-table"
+               className="rc-table"
                scrollable={virtualEnabled}
                lazy={virtualEnabled}
                virtualScroll={virtualEnabled}

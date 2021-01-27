@@ -82,7 +82,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     return (
         <span
             ref={cbxRef}
-            className="jvx-editor-checkbox"
+            className="rc-editor-checkbox"
             style={{
                 ...layoutValue.get(props.id) || baseProps.editorStyle,
                 backgroundColor: props.cellEditor_background_,
@@ -97,7 +97,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
                     sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(getBooleanValue(checked), cbxType), undefined, context.server)
                 }} 
             />
-            <label className="jvx-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
+            <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
         </span>
     )
 }

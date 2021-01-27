@@ -260,6 +260,9 @@
                 margin-right: 0;
             }
         }
+        &:not(.p-highlight):not(.p-disabled) > a:hover {
+            color: var(--menuPanelHeaderColorHover);
+        }
         .p-panelmenu-header-link {
             background: var(--menuPanelHeaderBgd);
             border: none;
@@ -274,7 +277,7 @@
         }
         //Selected menupoint styling
         &.p-highlight {
-            > a {
+            > a, &:not(.p-disabled) > a:hover {
                 background: var(--menuPanelHeaderBgd);
                 color: var(--menuPanelHeaderColorHover);
             }

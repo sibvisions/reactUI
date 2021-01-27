@@ -77,7 +77,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputTextarea
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            className="jvx-editor-textarea"
+            className="rc-editor-textarea"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             maxLength={length}
             disabled={!props.cellEditor_editable_}
@@ -93,7 +93,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <Password
             autoFocus={baseProps.autoFocus}
             ref={inputRef}
-            className="jvx-editor-password"
+            className="rc-editor-password"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             maxLength={length}
             feedback={false}
@@ -110,7 +110,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputText
                 autoFocus={baseProps.autoFocus}
                 ref={inputRef}
-                className="jvx-editor-text"
+                className="rc-editor-text"
                 style={layoutValue.get(props.id) || baseProps.editorStyle}
                 maxLength={length}
                 disabled={!props.cellEditor_editable_}

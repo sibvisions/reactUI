@@ -1,11 +1,37 @@
-.jvx-editor-linked {
+.rc-editor-linked {
     .p-inputtext {
         text-align: left;
+    }
+    &:focus-within {
+        box-shadow: 0 0 0 0.2rem #8dcdff;
+        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     .p-inputtext, .p-button {
         &:focus {
             box-shadow: unset;
             -webkit-box-shadow: unset;
         }
+    }
+}
+
+.p-autocomplete-panel {
+    .p-autocomplete-items {
+        animation: pulse 0.7s infinite ease-in-out;
+        padding: 0;
+        .p-autocomplete-item {
+            background: white;
+        }
+    }
+}
+
+@keyframes pulse {
+    0% {
+        background: rgba(165, 165, 165, 0.1)
+    }
+    50% {
+        background: rgba(165, 165, 165, 0.3)
+    }
+    100% {
+        background: rgba(165, 165, 165, 0.1)
     }
 }

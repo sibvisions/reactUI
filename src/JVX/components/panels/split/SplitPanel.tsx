@@ -105,7 +105,7 @@ const SplitPanel: FC<SplitPanelProps> = (props) => {
 
 
     return(
-        <div className={"jvx-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
+        <div className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
             <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-h" : "first-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>

@@ -55,25 +55,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const alignments = checkCellEditorAlignments(props);
 
     useLayoutEffect(() => {
-        if (inputRef.current) {
-            setTimeout(() => {
-                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
-                if (autoPanel) {
-                    //@ts-ignore
-                    if (autoPanel.children[0].children[0]) {
-                        //@ts-ignore
-                        autoPanel.children[0].style.height = (providedData.length * autoPanel.children[0].children[0].getBoundingClientRect().height)+'px';
-                        if(itemHeight === 0) {
-                            //@ts-ignore
-                            setItemHeight(autoPanel.children[0].children[0].getBoundingClientRect().height)
-                        }
-                    }
-                }
-            }, 150);
-        }
-    });
-
-    useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             // @ts-ignore
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.container, onLoadCallback)
@@ -81,61 +62,108 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
+        const autoRef:any = inputRef.current
+        if (autoRef) {
+            autoRef.inputEl.style.setProperty('background', props.cellEditor_background_);
+            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
+            autoRef.dropdownButton.element.tabIndex = -1;
+        }
+    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
+
+    useEffect(() => {
+        setText(selectedRow);
+        lastValue.current = selectedRow;
+    }, [selectedRow])
+
+    useEffect(() => {
         if (inputRef.current) {
             setTimeout(() => {
                 let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
                 if (autoPanel) {
-                    let itemsList:HTMLCollection = document.getElementsByClassName("p-autocomplete-item");
-                    for (let i = 0; i < itemsList.length; i++) {
+                    //@ts-ignore
+                    if (autoPanel.children[0].children[0]) {
                         //@ts-ignore
-                        itemsList[i].style.top = (autoPanel.children[0].children[0].getBoundingClientRect().height * firstRow)+'px'
+                        autoPanel.children[0].style.height = Math.ceil(providedData.length * parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))+'px';
+                        if(itemHeight === 0) {
+                            //@ts-ignore
+                            setItemHeight(parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))
+                        }
                     }
+                }
+            }, 150);
+        }
+    },[providedData, id, itemHeight]);
+
+    useEffect(() => {
+        if (inputRef.current) {
+            setTimeout(() => {
+                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
+                if (autoPanel) {
+                    let itemsList:Array<any> = [...document.getElementsByClassName("p-autocomplete-item")];
+                    itemsList.map(element => element.style.top = (parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height) * firstRow)+'px');
                 }
             }, 150)
         }
     }, [firstRow, lastRow])
 
-    useLayoutEffect(() => {
-        setText(selectedRow);
-        lastValue.current = selectedRow;
-    }, [selectedRow])
-
-    useLayoutEffect(() => {
-        const autoRef:any = inputRef.current
-
-        const addBoxShadow = (container:HTMLElement) => {
-            container.style.setProperty('box-shadow', '0 0 0 0.2rem #8dcdff');
+    useEffect(() => {
+        const sendFetchRequest = () => {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
+            fetchReq.fromRow = providedData.length;
+            fetchReq.rowCount = 400;
+            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
         }
-
-        const removeBoxShadow = (container:HTMLElement) => {
-            container.style.removeProperty('box-shadow');
+        const fetches = _.once(() => sendFetchRequest());
+        const handleScroll = (elem:HTMLElement) => {
+            if (elem) {
+                elem.onscroll = _.debounce(() => {
+                    let currFirstItem = elem.scrollTop / itemHeight;
+                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemHeight;
+                    if (currFirstItem < firstRow) {
+                        setFirstRow(Math.floor(currFirstItem / 50) * 50);
+                        setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
+                        elem.scrollTop = itemHeight * (currLastItem - 3);
+                    }
+                    if (currLastItem > lastRow) {
+                        setFirstRow(Math.floor(currLastItem / 100) * 100);
+                        setLastRow(Math.ceil(currLastItem / 100) * 100);
+                        elem.scrollTop = itemHeight * (currFirstItem + 3)
+                    }
+                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
+                        fetches();
+                    }
+                }, 150);
+            }
         }
+        setTimeout(() => {
+            handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
+        },150);
+    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, itemHeight, compId])
 
-        const setFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
-            inputEl.addEventListener("focus", () => addBoxShadow(container));
-            btn.addEventListener("focus", () => addBoxShadow(container));
-            inputEl.addEventListener("blur", () => removeBoxShadow(container));
-            btn.addEventListener("blur", () => removeBoxShadow(container));
+    useEffect(() => {
+        if (inputRef.current) {
+            //@ts-ignore
+            inputRef.current.inputEl.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === "Enter") {
+                    handleInput();
+                }
+            }
         }
+    });
 
-        const removeFocus = (inputEl:HTMLElement, btn:HTMLElement, container:HTMLElement) => {
-            inputEl.removeEventListener("focus", () => addBoxShadow(container));
-            btn.removeEventListener("focus", () => addBoxShadow(container));
-            inputEl.removeEventListener("blur", () => removeBoxShadow(container));
-            btn.removeEventListener("blur", () => removeBoxShadow(container))
-        }
-
-        if (autoRef) {
-            autoRef.inputEl.style.setProperty('background', props.cellEditor_background_);
-            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
-            autoRef.dropdownButton.element.tabIndex = -1;
-            setFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container);
-        }
+    useEffect(() => {
         return () => {
-            if (autoRef.dropdownButton)
-                removeFocus(autoRef.inputEl, autoRef.dropdownButton.element, autoRef.container)
+            if (props.id === "") {
+                if (text !== null)
+                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server));
+            }
         }
-    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
+    },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
+
+    const suggestionData = useMemo(() => {
+        return providedData ? providedData.slice(firstRow, lastRow) : []
+    }, [providedData, firstRow, lastRow])
 
     const handleInput = () => {
         const newVal:any = {}
@@ -174,67 +202,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     }
 
-    useEffect(() => {
-        if (inputRef.current) {
-            //@ts-ignore
-            inputRef.current.inputEl.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
-                if (event.key === "Enter") {
-                    handleInput();
-                }
-            }
-        }
-    })
-
-    useEffect(() => {
-        return () => {
-            if (props.id === "") {
-                if (text !== null)
-                onBlurCallback(baseProps, text ? text[props.columnName] : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text ? text : null, lastValue.current, context.server));
-            }
-        }
-    },[text, baseProps, context.server, props.cellEditor, props.columnName, props.dataRow, props.id, props.name]);
-
-    const suggestionData = useMemo(() => {
-        return providedData ? providedData.slice(firstRow, lastRow) : []
-    }, [providedData, firstRow, lastRow])
-
-    useEffect(() => {
-        const sendFetchRequest = () => {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
-            fetchReq.fromRow = providedData.length;
-            fetchReq.rowCount = 400;
-            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
-        }
-        const fetches = _.once(() => sendFetchRequest());
-        const handleScroll = (elem:HTMLElement) => {
-            if (elem) {
-                elem.onscroll = _.throttle(() => {
-                    let currFirstItem = elem.scrollTop / itemHeight;
-                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemHeight;
-                    if (currFirstItem < firstRow) {
-                        setFirstRow(Math.floor(currFirstItem / 50) * 50);
-                        setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
-                        elem.scrollTop = itemHeight * (currLastItem - 3);
-                    }
-                    if (currLastItem > lastRow) {
-                        setFirstRow(Math.floor(currLastItem / 100) * 100);
-                        setLastRow(Math.ceil(currLastItem / 100) * 100);
-                        elem.scrollTop = itemHeight * (currFirstItem + 3)
-                    }
-                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
-                        fetches();
-                    }
-                }, 100);
-            }
-        }
-        setTimeout(() => {
-            handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
-        },150);
-    }, [context, props, providedData, firstRow, lastRow, itemHeight, compId])
-
-    
-
     const buildSuggestions = (response:any) => {
         let suggestions:any = []
         if (response.length > 0) {
@@ -265,7 +232,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             autoFocus={autoFocus}
             appendTo={document.body}
             ref={inputRef}
-            className="jvx-editor-linked"
+            className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             disabled={!props.cellEditor_editable_}
             dropdown
@@ -276,8 +243,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 setText(event.target.value)
             }}
             onBlur={() => {
-                setFirstRow(0);
-                setLastRow(100)
+                if (document.querySelector(".p-autocomplete-panel")) {
+                    (document.querySelector(".p-autocomplete-dropdown") as HTMLElement).click()
+                    setFirstRow(0);
+                    setLastRow(100)
+                }
                 handleInput();
             }}/>
     )

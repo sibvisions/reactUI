@@ -109,7 +109,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     return(
         <Calendar
              ref={calender}
-             className="jvx-editor-date"
+             className="rc-editor-text"
              monthNavigator={true}
              yearNavigator={true}
              yearRange="1900:2030"
