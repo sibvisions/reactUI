@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, renderButtonIcon, setMenuButtonPadding} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
@@ -27,6 +27,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const btnData = useMemo(() => buttonProps(props), [props]);
     const [items, setItems] = useState<Array<any>>();
     const {onLoadCallback, id} = baseProps;
+    const btnJustify = btnData.style.justifyContent || "center";
+    const btnAlign = btnData.style.alignItems || "center";
 
     useEffect(() => {
         const buildMenu = (foundItems:Map<string, BaseComponent>) => {
@@ -56,7 +58,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
             let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
-            setMenuButtonPadding(btnRef.defaultButton, btnData.style.padding?.toString().split(' '))
+            btnRef.defaultButton.style.setProperty('justify-content', btnJustify);
+            btnRef.defaultButton.style.setProperty('align-items', btnAlign);
+            btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
             if (btnData.iconProps.icon)
                 renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");

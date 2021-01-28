@@ -25,15 +25,15 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     const [props] = useProperties<ICheckBox>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
-    const cbJustify = btnData.style.justifyContent || 'flex-start';
-    const cbAlign = btnData.style.alignItems || 'center';
+    const cbJustify = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');;
+    const cbAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
 
     useLayoutEffect(() => {
         const lblRef = labelRef.current
         const checkRef = cbRef.current;
         if (checkRef && lblRef) {
             let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
-            renderRadioCheck(checkRef.element, lblRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+            renderRadioCheck(checkRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
         }
     }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
@@ -46,8 +46,8 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
-        <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? {...layoutValue.get(props.id), display: 'inline-flex', justifyContent: cbJustify, alignItems: cbAlign} : {position: "absolute"}}>
-            <span className="rc-checkbox" style={btnData.style}>
+        <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+            <span className="rc-checkbox" style={{...btnData.style, justifyContent: cbJustify, alignItems: cbAlign}}>
                 <Checkbox
                     ref={cbRef}
                     inputId={props.id}

@@ -45,9 +45,9 @@ export default class ContentStore{
     dataProviderFetched = new Map<string, Map<string, boolean>>();
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
-    LOGO_BIG:string = "/assets/sibvisionslogo_190.png";
-    LOGO_SMALL:string = "/assets/sib.png";
-    LOGO_LOGIN:string = "/assets/sib_visions_320.png"
+    LOGO_BIG:string = "/assets/logo_big.png";
+    LOGO_SMALL:string = "/assets/logo_small.png";
+    LOGO_LOGIN:string = "/assets/logo_login.png"
     menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
     menuModeAuto:boolean = false;
     menuOverlaying:boolean = true;

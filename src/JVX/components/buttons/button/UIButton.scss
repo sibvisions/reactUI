@@ -6,14 +6,26 @@
         width: inherit;
         padding: unset;
     }
+    .p-button-icon-left {
+        margin-right: 0;
+    }
+    .p-button-icon-right {
+        margin-left: 0;
+    }
 }
 
 .bright {
     color: white;
+    &:enabled:hover {
+        color: rgb(250, 250, 250);
+    }
 }
 
 .dark {
-    color: black;
+    color: var(--standardTextColor);
+    &:enabled:hover {
+        color: black;
+    }
 }
 
 .border-notpainted, .border-notpainted:enabled:hover {
@@ -31,6 +43,7 @@
     text-overflow: ellipsis;
     display: block;
     white-space: nowrap;
+    flex: unset;
 }
 
 .p-button-icon-only {

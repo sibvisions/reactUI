@@ -14,8 +14,8 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, st
         tabIndex: props.focusable !== false ? (props.tabIndex ? props.tabIndex : 0) : -1,
         style: {
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
-            justifyContent: checkAlignments(props).ha,
-            alignItems: checkAlignments(props).va,
+            justifyContent: props.horizontalTextPosition !== 1 ? checkAlignments(props).ha : checkAlignments(props).va,
+            alignItems: props.horizontalTextPosition !== 1 ? checkAlignments(props).va : checkAlignments(props).ha,
             background: props.background ? tinycolor(props.background).toString() : undefined,
             borderColor: props.background ? tinycolor(props.background).toString() : undefined,
             color: props.foreground ? tinycolor(props.foreground).toString() : undefined,
@@ -46,10 +46,21 @@ function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
     }
 }
 
+export function centerElem(centerElem:HTMLElement, labelElem:HTMLElement, hAlign:number|undefined) {
+    let labelWidth = labelElem.offsetWidth/2;
+    let centerWidth = centerElem.offsetWidth/2;
+        if (hAlign === 0 || (!hAlign && !centerElem.classList.contains('rc-button-icon')))
+            centerElem.style.setProperty('margin-left', labelWidth-centerWidth + 'px')
+        else if (hAlign === 2)
+            centerElem.style.setProperty('margin-right', labelWidth-centerWidth + 'px')
+}
+
 export function renderRadioCheck(btnElement:HTMLElement, lblElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
     btnElement.style.setProperty('margin-' + getGapPos(props.horizontalTextPosition, props.verticalTextPosition), '4px');
+    if (props.horizontalTextPosition === 1)
+        centerElem(btnElement, lblElement, props.horizontalAlignment)
     if (iconProps.icon)
-        renderButtonIcon(lblElement, props, iconProps, resource);
+        renderButtonIcon(lblElement.children[0] as HTMLElement, props, iconProps, resource);
 }
 
 export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
@@ -71,8 +82,9 @@ export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconPro
 export function setMenuButtonPadding(defaultButton:HTMLElement, padding:string[]|undefined) {
     if (padding) {
         defaultButton.style.setProperty('padding-top', padding[0]);
+        defaultButton.style.setProperty('padding-right', padding[1]);
         defaultButton.style.setProperty('padding-bottom', padding[2]);
-        defaultButton.style.setProperty('padding-left', padding[1]);
+        defaultButton.style.setProperty('padding-left', padding[3]);
     }
 }
 

@@ -25,15 +25,15 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     const [props] = useProperties<IRadioButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
-    const rbJustify = btnData.style.justifyContent || 'flex-start';
-    const rbAlign = btnData.style.alignItems || 'center';
+    const rbJustify = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');
+    const rbAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
 
     useLayoutEffect(() => {
         const lblRef = labelRef.current;
         const radioRef = rbRef.current
         if (lblRef && radioRef) {
             let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
-            renderRadioCheck(radioRef.element, lblRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+            renderRadioCheck(radioRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
         }
     }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
@@ -46,8 +46,8 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
-        <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? {...layoutValue.get(props.id), display: 'inline-flex', justifyContent: rbJustify, alignItems: rbAlign} : {position: "absolute"}}>
-            <span className="rc-radiobutton" style={btnData.style}>
+        <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+            <span className="rc-radiobutton" style={{...btnData.style, justifyContent: rbJustify, alignItems: rbAlign}}>
                 <RadioButton
                     ref={rbRef}
                     inputId={props.id}

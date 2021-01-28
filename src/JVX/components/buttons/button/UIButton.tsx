@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, centerElem, renderButtonIcon} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 
@@ -20,13 +20,18 @@ const UIButton: FC<IButton> = (baseProps) => {
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
+    const btnJustify = btnData.style.justifyContent || "center";
+    const btnAlign = btnData.style.alignItems || "center";
 
     useLayoutEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current.element;
             let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
-            if (btnData.iconProps.icon)
+            if (btnData.iconProps.icon) {
                 renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+                if (props.horizontalTextPosition === 1)
+                    centerElem(btnRef.children[0], btnRef.children[1], props.horizontalAlignment)
+            }
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
             addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
@@ -50,7 +55,7 @@ const UIButton: FC<IButton> = (baseProps) => {
             <Button
                 ref={buttonRef}
                 className={"rc-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
-                style={btnData.style}
+                style={{...btnData.style, justifyContent: btnJustify, alignItems: btnAlign}}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 iconPos={btnData.iconPos}

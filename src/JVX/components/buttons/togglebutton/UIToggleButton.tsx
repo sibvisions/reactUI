@@ -7,7 +7,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, centerElem, renderButtonIcon} from "../ButtonStyling";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { parseJVxSize } from "../../util/parseJVxSize";
@@ -46,14 +46,19 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     const btnBgdChecked:ToggleButtonGradient = {upperGradient: props.background ? tinycolor(props.background).darken(25).toRgbString() : tinycolor("#dadada").darken(25).toRgbString(),
                                                 lowerGradient: props.background ? tinycolor(props.background).darken(4).toRgbString() : tinycolor("#dadada").darken(4).toRgbString()};
     const onIconData = parseIconData(props.foreground, props.mousePressedImage)
+    const btnJustify = btnData.style.justifyContent || "center";
+    const btnAlign = btnData.style.alignItems || "center";
     //const [checked, setChecked] = useState(props.selected);
 
     useLayoutEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current.container;
             let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--tglBtnDefaultBgd');
-            if (btnData.iconProps.icon)
+            if (btnData.iconProps.icon) {
                 renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+                if (props.horizontalTextPosition === 1)
+                    centerElem(btnRef.children[0], btnRef.children[1], props.horizontalAlignment)
+            }
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
             addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered,
             bgdColor, btnBgdChecked, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
@@ -81,7 +86,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             <ToggleButton
                 ref={buttonRef}
                 className={"rc-button"  + (props.borderPainted === false ? " border-notpainted" : "")}
-                style={{...btnData.style, background: props.selected ? "linear-gradient(to bottom, " + btnBgdChecked.upperGradient + " 2%, " + btnBgdChecked.lowerGradient + "98%)" : props.background ? props.background : undefined}}
+                style={{...btnData.style, background: props.selected ? "linear-gradient(to bottom, " + btnBgdChecked.upperGradient + " 2%, " + btnBgdChecked.lowerGradient + "98%)" : props.background ? props.background : undefined, justifyContent: btnJustify, alignItems: btnAlign}}
                 offLabel={props.text}
                 onLabel={props.text}
                 offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
