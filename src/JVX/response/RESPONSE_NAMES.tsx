@@ -14,6 +14,7 @@ enum RESPONSE_NAMES{
     SHOW_DOCUMENT="showDocument",
     SESSION_EXPIRED="message.sessionexpired",
     ERROR="message.error",
-    RESTART="restart"
+    RESTART="restart",
+    APPLICATION_PARAMETERS = "applicationParameters",
 }
 export default RESPONSE_NAMES

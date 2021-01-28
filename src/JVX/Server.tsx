@@ -84,7 +84,8 @@ class Server{
         .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))
         .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this))
         .set(RESPONSE_NAMES.ERROR, this.showError.bind(this))
-        .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this));
+        .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this))
+        .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this));
 
 
     responseHandler(responses: Array<BaseResponse>){
@@ -101,6 +102,10 @@ class Server{
     //Application MetaData
     applicationMetaData(metaData: ApplicationMetaData){
         sessionStorage.setItem("clientId", metaData.clientId);
+    }
+
+    applicationParameters(appParams:any) {
+        console.log(appParams)
     }
 
     userData(userData: UserDataResponse){

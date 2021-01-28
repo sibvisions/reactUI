@@ -79,15 +79,6 @@ export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconPro
     }
 }
 
-export function setMenuButtonPadding(defaultButton:HTMLElement, padding:string[]|undefined) {
-    if (padding) {
-        defaultButton.style.setProperty('padding-top', padding[0]);
-        defaultButton.style.setProperty('padding-right', padding[1]);
-        defaultButton.style.setProperty('padding-bottom', padding[2]);
-        defaultButton.style.setProperty('padding-left', padding[3]);
-    }
-}
-
 export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|undefined, color:string, checkedColor:ToggleButtonGradient|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
     const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     if (borderPainted) {

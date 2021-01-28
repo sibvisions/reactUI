@@ -116,6 +116,9 @@ const App: FC<ICustomContent> = (props) => {
             startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
+            if (props.customStartupProps?.length) {
+                props.customStartupProps.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
+            }
             context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
             context.server.showToast = msg
         }).catch(() => {
