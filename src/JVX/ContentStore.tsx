@@ -7,6 +7,7 @@ import MetaDataResponse from "./response/MetaDataResponse";
 import {ReactElement} from "react";
 import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
+import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 
 type MenuItem = {
     componentId: string,
@@ -27,6 +28,7 @@ export default class ContentStore{
     mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
     currentUser: UserData = new UserData();
     navigationNames = new Map<string, string>();
+    customProperties = new Map<string, any>();
 
     //Sub Maps
     propertiesSubscriber = new Map<string, Function>();
@@ -496,5 +498,15 @@ export default class ContentStore{
 
     registerCustomComponent(title:string, compFactory: () => ReactElement) {
         this.customContent.set(title, compFactory);
+    }
+
+    handleCustomProperties(property:string, value:any) {
+        const customPropValue = this.customProperties.get(property);
+        if (customPropValue && value === null) {
+            this.customProperties.delete(property);
+        }
+        else {
+            this.customProperties.set(property, value);
+        }
     }
 }

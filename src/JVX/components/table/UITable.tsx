@@ -223,7 +223,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     const columns = useMemo(() => {
         const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
         return props.columnNames.map((colName, colIndex) => {
-            console.log()
             return <Column
                 field={colName}
                 header={props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
@@ -296,7 +295,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
-    //console.log(layoutContext.get(id)?.height as number)
 
     return(
        <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>

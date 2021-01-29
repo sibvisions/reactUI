@@ -140,14 +140,14 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     sizeMap.set(component.id, eastCSS);
             });
 
-            if(reportSize && !style.width && !style.height){
+            if(reportSize && !style.width && !style.height) {
                 const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]);
                 const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
                 reportSize(preferredHeight, preferredWidth)
             }
-            else {
-                reportSize(style.height, style.width)
-            }
+            // else {
+            //     reportSize(style.height, style.width)
+            // }
         }
         return sizeMap;
     }, [preferredCompSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])

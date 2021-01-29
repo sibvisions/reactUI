@@ -28,7 +28,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const outerHa = parseInt(alignments[8]);
         const outerVa = parseInt(alignments[9]);
         const innerAlignment = parseInt(alignments[10]);
-        const autoWrap = alignments[11]
+        const autoWrap = (alignments[11] === 'true')
         const isRowOrientation = parseInt(alignments[7]) === ORIENTATION.HORIZONTAL
 
         const componentProps = context.contentStore.getChildren(id)
@@ -68,7 +68,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 componentPropsSorted.forEach(component => {
                     if (component.visible !== false) {
                         const prefSize = preferredCompSizes.get(component.id) || { width: 0, height: 0 };
-
                         if (isRowOrientation) {
                             if (!bFirst)
                                 calcWidth += gaps.horizontalGap;

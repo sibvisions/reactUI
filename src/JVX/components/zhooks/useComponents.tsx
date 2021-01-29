@@ -61,7 +61,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             if (!context.contentStore.replacedContent.has(child.id)) {
                 reactChild = componentHandler(child);
             }
-                
             else {
                 let test = context.contentStore.customContent.get(child.name as string)?.apply(undefined, []);
                 reactChild = createCustomComponentWrapper(child, test);

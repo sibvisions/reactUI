@@ -4,7 +4,7 @@
     padding: var(--btnPTB) var(--btnPLR);
     &.p-button-icon-only {
         width: inherit;
-        padding: unset;
+        padding: var(--btnPTB) var(--btnPLR);
     }
     .p-button-icon-left {
         margin-right: 0;

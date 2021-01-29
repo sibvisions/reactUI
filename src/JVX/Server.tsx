@@ -20,6 +20,7 @@ import SessionExpiredResponse from "./response/SessionExpiredResponse";
 import ErrorResponse from "./response/ErrorResponse";
 import {Panel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
+import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 
 type queryType = {
     appName?: string,
@@ -104,8 +105,11 @@ class Server{
         sessionStorage.setItem("clientId", metaData.clientId);
     }
 
-    applicationParameters(appParams:any) {
-        console.log(appParams)
+    applicationParameters(appParams:ApplicationParametersResponse) {
+        for (const [key, value] of Object.entries(appParams)) {
+            if (key !== "name")
+                this.contentStore.handleCustomProperties(key, value);
+        }
     }
 
     userData(userData: UserDataResponse){

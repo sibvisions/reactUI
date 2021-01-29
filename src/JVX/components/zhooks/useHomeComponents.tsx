@@ -27,7 +27,6 @@ const useHomeComponents = (componentId:string) => {
     useEffect(() => {
         const buildHomeChildren = (compKey:string) => {
             const newHomeChildren = buildWindow(compKey);
-            console.log(newHomeChildren)
             const cl = new Array<ReactElement>();
             homeChildren.forEach(hc => {
                 cl.push(hc);

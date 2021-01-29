@@ -89,7 +89,6 @@ export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|und
             }
             else if (checkedColor) {
                 obj.style.setProperty('background', "linear-gradient(to bottom, " + checkedColor.upperGradient + " 2%, " + checkedColor.lowerGradient + "98%)" );
-                console.log(color)
                 obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
             }
         }

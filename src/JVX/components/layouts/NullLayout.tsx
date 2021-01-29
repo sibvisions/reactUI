@@ -25,7 +25,6 @@ const NullLayout: FC<ILayout> = (baseProps) => {
 
             componentProps.forEach(component => {
                 const compBounds = new Bounds((component.bounds as string).split(','));
-                console.log(compBounds)
                 if (compBounds.top + compBounds.height > deepest)
                     deepest = compBounds.top + compBounds.height;
                 if (compBounds.left + compBounds.width > furthest)
