@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
 import {Checkbox} from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import {jvxContext} from "../../jvxProvider";
@@ -25,18 +25,9 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
     const [props] = useProperties<ICheckBox>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
+    const cbDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
     const cbJustify = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');;
     const cbAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
-
-    useLayoutEffect(() => {
-        const lblRef = labelRef.current
-        const checkRef = cbRef.current;
-        if (checkRef && lblRef) {
-            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
-            renderRadioCheck(checkRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
-        }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
 
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
@@ -44,6 +35,18 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        const lblRef = labelRef.current
+        const checkRef = cbRef.current;
+        if (checkRef && lblRef) {
+            let bgdColor = btnData.style.background as string || cbDefaultBgd;
+            renderRadioCheck(checkRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
+            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
+        }
+    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, cbDefaultBgd])
+
+
 
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
@@ -63,8 +66,7 @@ const UICheckBox: FC<ICheckBox> = (baseProps) => {
                 />
                 <label ref={labelRef} className="p-radiobutton-label" htmlFor={props.id} style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
                     {btnData.iconProps.icon !== undefined &&
-                        //@ts-ignore
-                        <i className={btnData.iconProps.icon} style={{height:btnData.iconProps.size.height, width: btnData.iconProps.size.width, color: btnData.iconProps.color, marginRight: '4px'}}/>
+                        <i className={btnData.iconProps.icon}/>
                     }
                     {props.text}
                 </label>

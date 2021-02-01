@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
 import {Button} from "primereact/button";
 import tinycolor from 'tinycolor2';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
@@ -20,13 +20,21 @@ const UIButton: FC<IButton> = (baseProps) => {
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
+    const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     const btnJustify = btnData.style.justifyContent || "center";
     const btnAlign = btnData.style.alignItems || "center";
 
     useLayoutEffect(() => {
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current.element;
-            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+            let bgdColor = btnData.style.background as string || btnDefaultBgd;
             if (btnData.iconProps.icon) {
                 renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
                 if (props.horizontalTextPosition === 1)
@@ -35,14 +43,7 @@ const UIButton: FC<IButton> = (baseProps) => {
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
             addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
-
-    useLayoutEffect(() => {
-        const btnRef = buttonWrapperRef.current;
-        if (btnRef)
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
-
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnDefaultBgd]);
 
     const onButtonPress = () => {
         const req = createPressButtonRequest();

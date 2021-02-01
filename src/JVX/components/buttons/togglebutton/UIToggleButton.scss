@@ -1,11 +1,23 @@
 .p-togglebutton {
     &.p-button:not(.p-disabled):not(.p-highlight) {
-        background: var(--tglBtnDefaultBgd);
-        border-color: var(--tglBtnDefaultBgd);
+        background: var(--btnDefaultBgd);
+        border-color: var(--btnDefaultBgd);
+        &.dark {
+            color: var(--btnColorDark);
+            &.p-button-icon-left, .p-button-icon-right {
+                color: var(--btnColorDark);
+            } 
+        }
+        &.bright {
+            color: var(--btnColorBright);
+            .p-button-icon-left, .p-button-icon-right {
+                color: var(--btnColorBright);
+            } 
+        }
         &:hover {
             &.dark {
                 .p-button-icon-left, .p-button-icon-right {
-                    color: black;
+                    color: var(--btnColorDark);
                 } 
             }
             &.bright {
@@ -16,7 +28,7 @@
         }
     }
     &.p-button.p-highlight, &.p-button.p-highlight:hover {
-        border-color: var(--tglBtnDefaultBgd);
+        border-color: var(--btnDefaultBgd);
         &.dark {
             color: black;
             .p-button-icon-left, .p-button-icon-right {

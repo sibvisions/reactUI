@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef, /*useState*/} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
 import tinycolor from 'tinycolor2';
 import {ToggleButton} from 'primereact/togglebutton';
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
@@ -23,11 +23,6 @@ type ToggleButtonEvent = {
     }
 }
 
-export interface ToggleButtonGradient {
-    upperGradient: string,
-    lowerGradient: string
-}
-
 export interface IToggleButton extends IButton {
     mousePressedImage: string;
     selected: boolean
@@ -42,43 +37,73 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     const [props] = useProperties<IToggleButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
-    const btnBgdHover = props.background ? tinycolor(props.background).darken(5).toString() : tinycolor("#dadada").darken(5).toString();
-    const btnBgdChecked:ToggleButtonGradient = {upperGradient: props.background ? tinycolor(props.background).darken(25).toRgbString() : tinycolor("#dadada").darken(25).toRgbString(),
-                                                lowerGradient: props.background ? tinycolor(props.background).darken(4).toRgbString() : tinycolor("#dadada").darken(4).toRgbString()};
+    const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+    const btnBgdHover = props.background ? tinycolor(props.background).darken(5).toString() : tinycolor(btnDefaultBgd).darken(5).toString();
+    const btnBgdChecked = props.background ? tinycolor(props.background).darken(10).toString() : tinycolor(btnDefaultBgd).darken(10).toString();
     const onIconData = parseIconData(props.foreground, props.mousePressedImage)
     const btnJustify = btnData.style.justifyContent || "center";
     const btnAlign = btnData.style.alignItems || "center";
-    //const [checked, setChecked] = useState(props.selected);
 
     useLayoutEffect(() => {
-        if (buttonRef.current) {
-            const btnRef = buttonRef.current.container;
-            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--tglBtnDefaultBgd');
-            if (btnData.iconProps.icon) {
-                renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
-                if (props.horizontalTextPosition === 1)
-                    centerElem(btnRef.children[0], btnRef.children[1], props.horizontalAlignment)
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef) {
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+        }
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        const handleMouseImagePressed = (elem:HTMLElement) => {
+            if (onIconData.icon?.includes('fa fa-')) {
+                elem.classList.remove((btnData.iconProps.icon as string).substring(3));
+                elem.classList.add(onIconData.icon.substring(3));
             }
-            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
-            addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered,
+            else
+                elem.style.setProperty('background-image', 'url(' + context.server.RESOURCE_URL + onIconData.icon + ')');
+        }
+
+        const handleMouseImageReleased = (elem:HTMLElement) => {
+            if (onIconData.icon?.includes('fa fa-')) {
+                elem.classList.remove(onIconData.icon.substring(3));
+                elem.classList.add((btnData.iconProps.icon as string).substring(3))
+            }
+            else
+                elem.style.setProperty('background-image', 'url(' + context.server.RESOURCE_URL + btnData.iconProps.icon + ')');
+        }
+
+        const btnRef = buttonRef.current
+        if (buttonRef.current) {
+            const btnContainer = buttonRef.current.container;
+            let bgdColor = btnData.style.background as string || btnDefaultBgd;
+            if (btnData.iconProps.icon) {
+                const iconElement = btnContainer.children[0] as HTMLElement;
+                renderButtonIcon(iconElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+                if (props.horizontalTextPosition === 1)
+                    centerElem(btnContainer.children[0], btnContainer.children[1], props.horizontalAlignment)
+                if (onIconData.icon) {
+                    btnContainer.addEventListener('mousedown', () => handleMouseImagePressed(iconElement));
+                    btnContainer.addEventListener('mouseup', () => handleMouseImageReleased(iconElement));
+                    btnContainer.addEventListener('mouseout', () => handleMouseImageReleased(iconElement));
+                }
+            }
+            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnContainer.classList.add("bright") : btnContainer.classList.add("dark");
+            addHoverEffect(btnContainer as HTMLElement, props.borderOnMouseEntered,
             bgdColor, btnBgdChecked, 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
-
-    },[btnBgdHover, btnData.btnBorderPainted, btnData.iconProps, 
-        btnData.style, props, context.server.RESOURCE_URL, btnBgdChecked])
-
-    useLayoutEffect(() => {
-        const btnRef = buttonWrapperRef.current;
-        if (btnRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
+        return () => {
+            if (btnRef && btnData.iconProps.icon && onIconData.icon) {
+                const btnContainer = btnRef.container;
+                const iconElement = btnContainer.children[0] as HTMLElement
+                btnContainer.removeEventListener('mousedown', () => handleMouseImagePressed(iconElement));
+                btnContainer.removeEventListener('mouseup', () => handleMouseImageReleased(iconElement));
+                btnContainer.removeEventListener('mouseout', () => handleMouseImageReleased(iconElement));
+            }
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
+    },[props.selected, btnDefaultBgd, btnBgdHover, btnData.btnBorderPainted, btnData.iconProps, btnData.style, props, context.server.RESOURCE_URL, btnBgdChecked, onIconData.icon]);
 
     const handleOnChange = (event:ToggleButtonEvent) => {
         const req = createPressButtonRequest();
         req.componentId = props.name;
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
-        //setChecked(event.value);
     }
 
     return (
@@ -86,11 +111,12 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             <ToggleButton
                 ref={buttonRef}
                 className={"rc-button"  + (props.borderPainted === false ? " border-notpainted" : "")}
-                style={{...btnData.style, background: props.selected ? "linear-gradient(to bottom, " + btnBgdChecked.upperGradient + " 2%, " + btnBgdChecked.lowerGradient + "98%)" : props.background ? props.background : undefined, justifyContent: btnJustify, alignItems: btnAlign}}
+                style={{...btnData.style, background: props.selected ? btnBgdChecked : 
+                        props.background ? props.background : btnDefaultBgd, justifyContent: btnJustify, alignItems: btnAlign}}
                 offLabel={props.text}
                 onLabel={props.text}
                 offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
-                onIcon={onIconData.icon ? onIconData.icon : btnData.iconProps.icon}
+                onIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}

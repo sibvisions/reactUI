@@ -27,8 +27,16 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const btnData = useMemo(() => buttonProps(props), [props]);
     const [items, setItems] = useState<Array<any>>();
     const {onLoadCallback, id} = baseProps;
+    const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     const btnJustify = btnData.style.justifyContent || "center";
     const btnAlign = btnData.style.alignItems || "center";
+
+    useLayoutEffect(() => {
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef) {
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+        }
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
         const buildMenu = (foundItems:Map<string, BaseComponent>) => {
@@ -54,10 +62,10 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         buildMenu(context.contentStore.getChildren(props.popupMenu));
     },[context.contentStore, context.server, props])
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
-            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+            let bgdColor = btnData.style.background as string || btnDefaultBgd;
             btnRef.defaultButton.style.setProperty('justify-content', btnJustify);
             btnRef.defaultButton.style.setProperty('align-items', btnAlign);
             btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
@@ -67,14 +75,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
 
-    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
-
-    useLayoutEffect(() => {
-        const btnRef = buttonWrapperRef.current;
-        if (btnRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
-        }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnAlign, btnJustify, btnDefaultBgd])
     
     return (
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

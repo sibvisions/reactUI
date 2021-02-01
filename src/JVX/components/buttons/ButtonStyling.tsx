@@ -4,7 +4,6 @@ import {checkAlignments} from "../compprops/CheckAlignments";
 import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
 import IconProps from '../compprops/IconProps';
 import {IButton} from "./IButton";
-import { ToggleButtonGradient } from './togglebutton/UIToggleButton';
 
 export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
     const margins = getMargins(props.margins);
@@ -74,22 +73,23 @@ export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconPro
     }
     iconElement.style.setProperty('font-size', iconProps.size?.height+'px');
     iconElement.style.setProperty('color', iconProps.color ? iconProps.color : null);
-    if (!iconElement.classList.value.includes('fa')) {
+    if (!iconElement.classList.value.includes('fa fa-')) {
         iconElement.style.setProperty('background-image', 'url(' + resource + iconProps.icon + ')');
     }
 }
 
-export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|undefined, color:string, checkedColor:ToggleButtonGradient|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
+export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|undefined, color:string, checkedColor:string|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
     const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     if (borderPainted) {
         obj.onmouseover = () => {
             if (!checked) {
+                console.log(color)
                 obj.style.setProperty('background', tinycolor(color).darken(dark).toString());
                 obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
             }
             else if (checkedColor) {
-                obj.style.setProperty('background', "linear-gradient(to bottom, " + checkedColor.upperGradient + " 2%, " + checkedColor.lowerGradient + "98%)" );
-                obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
+                obj.style.setProperty('background', checkedColor);
+                obj.style.setProperty('border-color', checkedColor);
             }
         }
         obj.onmouseout = () => {

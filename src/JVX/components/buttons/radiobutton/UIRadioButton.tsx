@@ -1,4 +1,4 @@
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef} from "react";
 import {RadioButton} from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import {jvxContext} from "../../../jvxProvider";
@@ -25,25 +25,26 @@ const UIRadioButton: FC<IRadioButton> = (baseProps) => {
     const [props] = useProperties<IRadioButton>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
+    const rbDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
     const rbJustify = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');
     const rbAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
 
     useLayoutEffect(() => {
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef) {
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+        }
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
         const lblRef = labelRef.current;
         const radioRef = rbRef.current
         if (lblRef && radioRef) {
-            let bgdColor = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
+            let bgdColor = btnData.style.background as string || rbDefaultBgd;
             renderRadioCheck(radioRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
             (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
         }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL])
-
-    useLayoutEffect(() => {
-        const btnRef = buttonWrapperRef.current;
-        if (btnRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
-        }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, rbDefaultBgd])
 
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
