@@ -36,7 +36,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [value, setValue] = useState<Date|Date[]>();
     const {onLoadCallback, id} = baseProps;
 
-    const dateFormat = parseDateFormatCell(props.cellEditor.dateFormat);
+    const dateFormat = parseDateFormatCell(props.cellEditor.dateFormat, selectedRow);
     const showTime = props.cellEditor.dateFormat?.includes("HH");
     const timeOnly = props.cellEditor.dateFormat === "HH:mm";
 
