@@ -77,7 +77,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 }
                 else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {
                     const castedColumn = columnMetaData as IEditorDate;
-                    const formattedDate = moment(props.cellData).format(parseDateFormatTable(castedColumn.cellEditor?.dateFormat))
+                    const formattedDate = moment(props.cellData).format(parseDateFormatTable(castedColumn.cellEditor?.dateFormat, props.cellData))
                     if (formattedDate !== "Invalid date") 
                         return formattedDate
                     else {

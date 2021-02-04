@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {Calendar} from 'primereact/calendar';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -32,11 +32,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
-
-    const [value, setValue] = useState<Date|Date[]>();
     const {onLoadCallback, id} = baseProps;
-
-    const dateFormat = parseDateFormatCell(props.cellEditor.dateFormat, selectedRow);
+    const dateFormat = useMemo(() => parseDateFormatCell(props.cellEditor.dateFormat, selectedRow), [selectedRow, props.cellEditor.dateFormat]);
     const showTime = props.cellEditor.dateFormat?.includes("HH");
     const timeOnly = props.cellEditor.dateFormat === "HH:mm";
 
@@ -48,10 +45,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             })
             onBlurCallback(baseProps, tempArray, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, tempArray, lastValue.current, context.server))
         }
-        else {
-            setValue(submitValue)
+        else
             onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, lastValue.current, context.server))
-        }
     }
 
     useLayoutEffect(() => {
@@ -75,23 +70,20 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useLayoutEffect(() => {
-        setValue(selectedRow ? new Date(selectedRow) : undefined);
+    useEffect(() => {
         lastValue.current = selectedRow;
-        
     },[selectedRow])
 
     const handleDateInput = () => {
         let inputDate:Date = new Date()
         if (showTime) {
             //@ts-ignore
-            inputDate = moment(calender.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calender.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         else {
             //@ts-ignore
-            inputDate = moment(calender.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calender.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
-        setValue(inputDate)
         onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), lastValue.current, context.server));
     }
 
@@ -104,7 +96,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 }
             }
         }
-    })
+    });
 
     return(
         <Calendar
@@ -118,7 +110,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
              timeOnly={timeOnly}
              showIcon={true}
              style={layoutValue.get(props.id) || baseProps.editorStyle}
-             value={value}
+             value={new Date(selectedRow)}
              appendTo={document.body}
              onSelect={event => onSelectCallback(event.value)}
              onBlur={handleDateInput}
