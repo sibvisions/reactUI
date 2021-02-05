@@ -213,7 +213,6 @@ function mapToClientFormat(dateFormat:string, value:any, prime:boolean) {
 
 export function parseDateFormatCell(dateFormat:string|undefined, value:any) {
     const momentString = mapToClientFormat(dateFormat as string, value, false);
-    console.log(mapToClientFormat(momentString, value, true))
     return mapToClientFormat(momentString, value, true);
 }
 
