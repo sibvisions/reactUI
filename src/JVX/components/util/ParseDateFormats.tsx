@@ -192,7 +192,7 @@ function mapPartMoment(dateFormat:string, value:any) {
 function mapToClientFormat(dateFormat:string, value:any, prime:boolean) {
     let mappedString = ''
     let part:any = ''
-    const regexp = prime ? /[^\[\]]+|(\[[^\[\]]*])/g : /[^']+|('[^']*')/g;
+    const regexp = prime ? /[^[\]]+|(\[[^[\]]*])/g : /[^']+|('[^']*')/g;
     while (part = regexp.exec(dateFormat)) {
         part = part[0]
         if (prime) {
@@ -218,4 +218,8 @@ export function parseDateFormatCell(dateFormat:string|undefined, value:any) {
 
 export function parseDateFormatTable(dateFormat:string|undefined, value:any) {
     return mapToClientFormat(dateFormat as string, value, false);
+}
+
+export function getMomentValue(dateFormat:string|undefined, value:any) {
+    return moment(value).format(mapToClientFormat(dateFormat as string, value, false));
 }

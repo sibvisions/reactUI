@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {Calendar} from 'primereact/calendar';
 import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
@@ -6,7 +6,7 @@ import useProperties from "../../zhooks/useProperties";
 import useRowSelect from "../../zhooks/useRowSelect";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
-import { parseDateFormatCell, parseDateFormatTable } from "../../util/ParseDateFormats";
+import { getMomentValue, parseDateFormatCell, parseDateFormatTable } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
@@ -16,6 +16,12 @@ import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
+    isAmPmEditor: boolean,
+    isDateEditor: boolean,
+    isHourEditor: boolean,
+    isMinuteEditor: boolean,
+    isSecondEditor: boolean,
+    isTimeEditor: boolean,
     preferredEditorMode?: number
 }
 
@@ -32,17 +38,25 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
-    const lastChange = useRef<any>(selectedRow);
     const {onLoadCallback, id} = baseProps;
-    const dateFormat = useMemo(() => parseDateFormatCell(props.cellEditor.dateFormat, selectedRow), [selectedRow, props.cellEditor.dateFormat]);
-    const checkCharsInFormat = (format:string, chars:string[], include:boolean) => {
-        const replacedFormat = format.replaceAll(/'.*?'/g, '')
-        return include ? chars.some(el => replacedFormat.includes(el)) : !chars.some(el => replacedFormat.includes(el))
-    }
-    const showTime = checkCharsInFormat(props.cellEditor.dateFormat as string, ['H', 'k', 'K', 'h', 'm', 's', 'S'], true);
-    const showSeconds = checkCharsInFormat(props.cellEditor.dateFormat as string, ['s'], true);
-    const showMillisec = checkCharsInFormat(props.cellEditor.dateFormat as string, ['S'], true);
-    const timeOnly = checkCharsInFormat(props.cellEditor.dateFormat as string, ['G', 'y', 'Y', 'M', 'w', 'W', 'D', 'd', 'F', 'E', 'u'], false);
+    const dateFormat = useMemo(() => props.cellEditor_editable_ ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : "", [selectedRow, props.cellEditor.dateFormat, props.cellEditor_editable_]);
+    const showTime = props.cellEditor.isTimeEditor;
+    const showSeconds = props.cellEditor.isSecondEditor;
+    const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
+    const valueLength = useMemo(() => getMomentValue(props.cellEditor.dateFormat, selectedRow).length, [props.cellEditor.dateFormat, selectedRow])
+
+    const overridePrime = useCallback(() => {
+        if (props.cellEditor_editable_) {
+            if (timeOnly) {
+                //@ts-ignore
+                setTimeout(() => calender.current.inputElement.value = dateFormat.replaceAll("'", ''),0)
+            }
+            else if (showTime) {
+                //@ts-ignore
+                setTimeout(() => calender.current.inputElement.value = getMomentValue(props.cellEditor.dateFormat, selectedRow).substring(0, valueLength), 0);
+            }
+        }
+    },[timeOnly, showTime, selectedRow, valueLength, dateFormat, props.cellEditor.dateFormat, props.cellEditor_editable_])
 
     const onSelectCallback = (submitValue:any) => {
         if (Array.isArray(submitValue)) {
@@ -54,6 +68,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
         else
             onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, lastValue.current, context.server));
+        overridePrime()
     }
 
     useLayoutEffect(() => {
@@ -92,17 +107,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             inputDate = moment(calender.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), lastValue.current, context.server));
-    }
-
-    const removePrimeTime = (value:string) => {
-        if (showMillisec && showSeconds)
-            return value.substring(0, value.length - 13);
-        else if (showMillisec && !showSeconds)
-            return value.substring(0, value.length - 7);
-        else if (showSeconds)
-            return value.substring(0, value.length - 9);
-        else
-            return value.substring(0, value.length - 6);
+        overridePrime()
     }
 
     useEffect(() => {
@@ -113,14 +118,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     handleDateInput()
                 }
             }
-            if (timeOnly) {
-                //@ts-ignore
-                calender.current.inputElement.value = dateFormat.replaceAll("'", '')
-            }
-            else if (showTime) {
-                //@ts-ignore
-                calender.current.inputElement.value = removePrimeTime(calender.current.inputElement.value);
-            }
+            overridePrime()
         }
     });
 
@@ -134,29 +132,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             dateFormat={dateFormat}
             showTime={showTime}
             showSeconds={showSeconds}
-            showMillisec={showMillisec}
             timeOnly={timeOnly}
+            hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
             showIcon={true}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             value={new Date(selectedRow)}
             appendTo={document.body}
-            onSelect={event => onSelectCallback(event.value)}
+            onChange={event => onSelectCallback(event.value)}
             onBlur={handleDateInput}
-            onChange={(e) => {
-                console.log(e)
-                if (calender.current && showTime) {
-                    setTimeout(() => {
-                        if (e.value !== null && lastChange.current === (e.value as Date).getTime()) {
-                            //@ts-ignore
-                            calender.current.inputElement.value = removePrimeTime(calender.current.inputElement.value);
-                        }
-                    },0)
-                }
-                setTimeout(() => {
-                    if (e.value !== null)
-                        lastChange.current = (e.value as Date).getTime()
-                }, 0)
-            }}
             disabled={!props.cellEditor_editable_}
         />
     )

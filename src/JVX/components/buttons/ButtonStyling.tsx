@@ -83,7 +83,6 @@ export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|und
     if (borderPainted) {
         obj.onmouseover = () => {
             if (!checked) {
-                console.log(color)
                 obj.style.setProperty('background', tinycolor(color).darken(dark).toString());
                 obj.style.setProperty('border-color', tinycolor(color).darken(dark).toString());
             }

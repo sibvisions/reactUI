@@ -22,9 +22,6 @@ import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
 import PrimeReact from 'primereact/api';
-import moment from 'moment';
-
-
 
 type queryType = {
     appName?: string,
@@ -125,7 +122,7 @@ const App: FC<ICustomContent> = (props) => {
         }).catch(() => {
             msg({severity: 'error', summary: 'config.json file could not be loaded. Make sure there is a config.json file in your public folder.', life: 5000});
         })
-    }, [context.server, context.contentStore, history]);
+    }, [context.server, context.contentStore, history, props.customStartupProps]);
 
     const msg = (messageObj: ToastMessage) => {
         if (toastRef.current) {
