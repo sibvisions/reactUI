@@ -39,7 +39,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
     const {onLoadCallback, id} = baseProps;
-    const dateFormat = useMemo(() => props.cellEditor_editable_ ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : "", [selectedRow, props.cellEditor.dateFormat, props.cellEditor_editable_]);
+    const [dateFormat, setDateFormat] = useState(parseDateFormatCell(props.cellEditor.dateFormat, selectedRow))
     const showTime = props.cellEditor.isTimeEditor;
     const showSeconds = props.cellEditor.isSecondEditor;
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
@@ -122,6 +122,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
     });
 
+    useEffect(() => {
+        if (props.cellEditor_editable_)
+            setTimeout(() => setDateFormat(parseDateFormatCell(props.cellEditor.dateFormat, selectedRow)),75)
+        else
+            setDateFormat("")
+    })
+
     return(
         <Calendar
             ref={calender}
@@ -136,7 +143,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
             showIcon={true}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
-            value={new Date(selectedRow)}
+            value={selectedRow ? new Date(selectedRow) : undefined}
             appendTo={document.body}
             onChange={event => onSelectCallback(event.value)}
             onBlur={handleDateInput}

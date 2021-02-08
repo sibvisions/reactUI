@@ -220,6 +220,29 @@ const UITable: FC<TableProps> = (baseProps) => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
+    useEffect(() => {
+        const currTable = tableRef.current;
+        const resizeStart = (elem:Element) => {
+            elem.parentElement?.style.setProperty('pointer-events', 'none');
+        }
+        if (currTable) {
+            //@ts-ignore
+            const resizerCollection:HTMLCollection = currTable.container.getElementsByClassName("p-column-resizer");
+            for (let resizer of resizerCollection) {
+                resizer.addEventListener('mousedown', () => resizeStart(resizer));
+            }
+        }
+        return () => {
+            if (currTable) {
+                //@ts-ignore
+                const resizerCollection:HTMLCollection = currTable.container.getElementsByClassName("p-column-resizer");
+                for (let resizer of resizerCollection) {
+                    resizer.removeEventListener('mousedown', () => resizeStart(resizer));
+                }
+            }
+        }
+    },[])
+
     const columns = useMemo(() => {
         const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
         return props.columnNames.map((colName, colIndex) => {
@@ -273,10 +296,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         } else {
             setVirtualRows(slicedProviderData);
         }
-
     }
 
     const handleColResize = (e:any) => {
+        e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
             //@ts-ignore
             if (!tableRef.current.table) {
@@ -294,7 +317,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
-
 
     return(
        <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
