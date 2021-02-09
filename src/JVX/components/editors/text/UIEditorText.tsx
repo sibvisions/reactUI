@@ -17,7 +17,6 @@ import { getEditorCompId } from "../../util/GetEditorCompId";
 
 interface ICellEditorText extends ICellEditor{
     preferredEditorMode?: number
-    contentType?:string
     length?:number
 }
 

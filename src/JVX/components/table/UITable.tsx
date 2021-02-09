@@ -20,6 +20,7 @@ import useOutsideClick from "../zhooks/useOutsideClick";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import Size from "../util/Size";
+import { IEditorText } from "../editors/text/UIEditorText";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -82,8 +83,13 @@ const CellEditor: FC<CellEditor> = (props) => {
                         return formattedDate
                     else {
                         return null
-                    }
-                        
+                    }     
+                }
+                else if (columnMetaData?.cellEditor?.className === "TextCellEditor" && columnMetaData.cellEditor.contentType === "text/plain;password") {
+                    if (props.cellData)
+                        return '\u25CF'.repeat(props.cellData.length)
+                    else
+                        return null
                 }
                 else
                     return props.cellData

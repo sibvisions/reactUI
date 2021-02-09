@@ -3,6 +3,7 @@ import {CSSProperties} from "react";
 
 export interface ICellEditor{
     className: string,
+    contentType?: string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
     directCellEditor?: boolean,
