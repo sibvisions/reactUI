@@ -10,17 +10,12 @@ import {DataTable} from "primereact/datatable";
 import {createFetchRequest, createSelectRowRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import useRowSelect from "../zhooks/useRowSelect";
-import {createEditor} from "../../factories/UIFactory";
 import MetaDataResponse from "../../response/MetaDataResponse";
-import { IEditorChoice } from "../editors/choice/UIEditorChoice";
-import { IEditorDate } from "../editors/date/UIEditorDate";
-import { parseDateFormatTable } from "../util/ParseDateFormats";
-import moment from "moment";
 import useOutsideClick from "../zhooks/useOutsideClick";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import Size from "../util/Size";
-import { IEditorText } from "../editors/text/UIEditorText";
+import { cellRenderer, displayEditor } from "./CellDisplaying";
 
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -48,67 +43,16 @@ const CellEditor: FC<CellEditor> = (props) => {
     const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
     useOutsideClick(wrapperRef, setEdit, columnMetaData)
     return useMemo(() => {
-        
-        const decideEditor = () => {
-            let editor = <div> {props.cellData} </div>
-
-            if(columnMetaData){
-                editor = createEditor({
-                    ...columnMetaData,
-                    name:props.name,
-                    dataRow:props.dataProvider,
-                    columnName: props.colName,
-                    id: "",
-                    cellEditor_editable_:true,
-                    editorStyle: {width: "100%", height:"100%"},
-                    autoFocus: true
-                }) || editor
-            }
-            return editor
-        }
-
-        const showCellData = () => {
-            if (props.cellData !== undefined) {
-                if (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") {
-                    const castedColumn = columnMetaData as IEditorChoice;
-                    const cellIndex = castedColumn?.cellEditor.allowedValues?.indexOf(props.cellData)
-                    if (castedColumn.cellEditor?.imageNames && cellIndex !== undefined) {
-                        return <img className="jvx-editor-choice-img" alt="choice" src={props.resource + castedColumn?.cellEditor?.imageNames[cellIndex]}/>
-                    }
-                }
-                else if (columnMetaData?.cellEditor?.className === "DateCellEditor") {
-                    const castedColumn = columnMetaData as IEditorDate;
-                    const formattedDate = moment(props.cellData).format(parseDateFormatTable(castedColumn.cellEditor?.dateFormat, props.cellData))
-                    if (formattedDate !== "Invalid date") 
-                        return formattedDate
-                    else {
-                        return null
-                    }     
-                }
-                else if (columnMetaData?.cellEditor?.className === "TextCellEditor" && columnMetaData.cellEditor.contentType === "text/plain;password") {
-                    if (props.cellData)
-                        return '\u25CF'.repeat(props.cellData.length)
-                    else
-                        return null
-                }
-                else
-                    return props.cellData
-            }
-            else
-                return null
-            
-        }
-
         if (!edit) {
             return (
-                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => setEdit(true)}>
-                    {showCellData()}
+                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageCellEditor" ? setEdit(true) : undefined}>
+                    {cellRenderer(columnMetaData, props.cellData, props.resource)}
                 </div>
             )
         } else {
             return (
                 <div ref={wrapperRef} style={{height: 30}}>
-                    {decideEditor()}
+                    {displayEditor(columnMetaData, props)}
                 </div>
             )
         }

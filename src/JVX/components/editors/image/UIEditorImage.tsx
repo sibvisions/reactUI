@@ -65,7 +65,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             <img
                 style={imageStyle.img}
                 src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
-                alt={"could not be loaded"}
+                alt="could not be loaded"
                 onLoad={imageLoaded}
                 onError={e => (e.target as HTMLImageElement).style.display = 'none'}
             />

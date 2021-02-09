@@ -52,6 +52,16 @@ tr.p-highlight{
                 &.NumberCellEditor {
                     text-align: right;
                 }
+                &.ImageCellEditor {
+                    >.cell-data {
+                        padding: 0;
+                        vertical-align: middle;
+                        text-align: center;
+                        .rc-table-image {
+                            height: inherit;
+                        }
+                    }
+                }
                 >.cell-data{
                     padding: 6.5px 8.688px;
                     overflow: hidden;

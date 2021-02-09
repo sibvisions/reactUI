@@ -33,8 +33,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     const lastValue = useRef<any>();
-
-    const [value, setValue] = useState(parseInt(baseProps.text || ""));
     const {onLoadCallback, id} = baseProps;
 
     const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
@@ -58,7 +56,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
-        setValue(selectedRow);
         lastValue.current = selectedRow;
     },[selectedRow]);
 
@@ -68,7 +65,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         curRef.inputEl.setAttribute('maxlength', length);
         //@ts-ignore
         inputRef.current.inputEl.onkeydown = (event) => {
-            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server));
+            handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, lastValue.current, context.server));
             //@ts-ignore
             if (curRef.inputEl.value.length === curRef.inputEl.maxLength) {
                 return false;
@@ -91,10 +88,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             useGrouping={false}
             minFractionDigits={scaleDigits}
             maxFractionDigits={scaleDigits}
-            value={value}
+            value={selectedRow}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
-            onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server))}
+            onChange={event => onBlurCallback(baseProps, selectedRow, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, event.value, lastValue.current, context.server))}
+            onBlur={() => onBlurCallback(baseProps, selectedRow, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, lastValue.current, context.server))}
             disabled={!props.cellEditor_editable_}
         />
     )
