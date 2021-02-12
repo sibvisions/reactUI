@@ -41,20 +41,17 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     useLayoutEffect(() => {
         //@ts-ignore
-        let currElem = inputRef.current.element;
+        const currElem = inputRef.current.element
         if(currElem){
+            if (props.borderVisible === false && !currElem.classList.contains("invisible-border"))
+                currElem.classList.add("invisible-border");
             currElem.style.setProperty('background', props.cellEditor_background_);
             currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }
     });
 
     useLayoutEffect(() => {
-        if(onLoadCallback && inputRef.current){
-            //@ts-ignore
-            const currElem = inputRef.current.element
-            if (props.borderVisible === false && !currElem.classList.contains("invisible-border")) {
-                currElem.classList.add("invisible-border");
-            }
+        if(onLoadCallback && inputRef.current) {
             if (props.cellEditor.contentType?.includes("password")) {
                 //@ts-ignore
                 sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.inputEl, onLoadCallback)
@@ -64,7 +61,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.element, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, props.borderVisible, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useLayoutEffect(() => {
         setText(selectedRow);

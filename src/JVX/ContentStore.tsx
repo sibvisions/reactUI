@@ -49,7 +49,8 @@ export default class ContentStore{
 
     LOGO_BIG:string = "/assets/logo_big.png";
     LOGO_SMALL:string = "/assets/logo_small.png";
-    LOGO_LOGIN:string = "/assets/logo_login.png"
+    LOGO_LOGIN:string = "/assets/logo_login.png";
+    locale:string = "de-DE";
     menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
     menuModeAuto:boolean = false;
     menuOverlaying:boolean = true;
@@ -300,7 +301,12 @@ export default class ContentStore{
         const children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
         while (!entry.done){
-            if(entry.value[1].parent === parentId && entry.value[1].visible !== false){
+            if (parentId.includes("TP")) {
+                if(entry.value[1].parent === parentId) {
+                    children.set(entry.value[1].id, entry.value[1]);
+                }
+            }
+            else if(entry.value[1].parent === parentId && entry.value[1].visible !== false){
                 children.set(entry.value[1].id, entry.value[1]);
             }
             entry = componentEntries.next();

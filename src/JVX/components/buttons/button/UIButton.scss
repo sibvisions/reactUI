@@ -45,6 +45,6 @@
 
 .p-button-icon-only {
     .rc-button-icon {
-        margin: 0 !important;
+        margin: calc(var(--btnPTB) * -1) calc(var(--btnPLR) * -1) !important;
     }
 }

@@ -61,7 +61,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const autoRef:any = inputRef.current
         if (autoRef) {
             autoRef.inputEl.style.setProperty('background', props.cellEditor_background_);
