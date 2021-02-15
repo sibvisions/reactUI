@@ -12,6 +12,7 @@ import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
 import { getEditorCompId } from "../../util/GetEditorCompId";
+import { getDecimalLength, getGrouping, getMinimumIntDigits, getNumberLength, getScaleDigits } from "../../util/NumberProperties";
 
 interface ICellEditorNumber extends ICellEditor{
     numberFormat: string,
@@ -26,7 +27,7 @@ export interface IEditorNumber extends IEditor{
     scale: number,
 }
 
-interface ScaleType {
+export interface ScaleType {
     minScale:number,
     maxScale:number,
 }
@@ -43,38 +44,22 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const lastValue = useRef<any>();
     const {onLoadCallback, id} = baseProps;
 
-    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
+    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.
+    get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
 
-    const scaleDigits:ScaleType = useMemo(() => {
-        let count = props.cellEditor.numberFormat.includes('.') ? (props.cellEditor.numberFormat.split('.')[1].match(/0/g) || []).length : 0;
-        return cellEditorMetaData.scale === -1 ? {minScale: count, maxScale:20} : {minScale: count, maxScale: cellEditorMetaData.scale}
-    }, [cellEditorMetaData.scale, props.cellEditor.numberFormat]);
+    const scaleDigits:ScaleType = useMemo(() => getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale),
+    [cellEditorMetaData.scale, props.cellEditor.numberFormat]);
 
-    const useGrouping = props.cellEditor.numberFormat?.includes(',');
+    const useGrouping = getGrouping(props.cellEditor.numberFormat);
 
-    const prefixLength = useMemo(() => {
-        let count = (props.cellEditor.numberFormat.split('.')[0].match(/0/g) || []).length;
-        return '0'.repeat(count - (selectedRow ? selectedRow.toString().length : 0))
-    },[props.cellEditor.numberFormat, selectedRow]);
+    const prefixLength = useMemo(() => getMinimumIntDigits(props.cellEditor.numberFormat, selectedRow),
+    [props.cellEditor.numberFormat, selectedRow]);
 
-    const length = useMemo(() => {
-        let returnLength:number|undefined = undefined;
-        if (scaleDigits.maxScale === 0)
-            returnLength = cellEditorMetaData.precision;
-        else if (cellEditorMetaData.precision !== 0 && cellEditorMetaData.scale !== -1)
-            returnLength = cellEditorMetaData.precision+1;
-        if (useGrouping && returnLength)
-            returnLength += Math.floor((cellEditorMetaData.precision - cellEditorMetaData.scale)/4)
-        if (prefixLength && returnLength)
-            returnLength += prefixLength.length
-        return returnLength
-    }, [cellEditorMetaData.precision, cellEditorMetaData.scale, scaleDigits, useGrouping, prefixLength]);
+    const length = useMemo(() => getNumberLength(scaleDigits, cellEditorMetaData.precision, cellEditorMetaData.scale, useGrouping, prefixLength), 
+    [cellEditorMetaData.precision, cellEditorMetaData.scale, scaleDigits, useGrouping, prefixLength]);
 
     const decimalLength = useMemo(() => {
-        if (cellEditorMetaData.precision > 0)
-            return cellEditorMetaData.precision - cellEditorMetaData.scale
-        else
-            return undefined
+        getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale);
     },[cellEditorMetaData.precision, cellEditorMetaData.scale]);
 
     useLayoutEffect(() => {
@@ -101,8 +86,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     const handleKeyDown = (e:any) => {
         const curRef = inputRef.current
-        //@ts-ignore
-        console.log(curRef.inputEl.value.length, length)
         handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, lastValue.current, context.server));
         //@ts-ignore
         if (curRef.inputEl.value.length === curRef.inputEl.maxLength || (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + e.key).toString().length > decimalLength && curRef.inputEl.selectionStart <= (value ? value.toString().indexOf('.') : 0))) {
@@ -110,8 +93,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             return false;
         }
     }
-
-    console.log(selectedRow, prefixLength)
 
     return (
         <InputNumber

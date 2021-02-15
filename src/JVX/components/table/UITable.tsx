@@ -40,13 +40,14 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     const [edit, setEdit] = useState(false);
     const wrapperRef = useRef(null)
+    const context = useContext(jvxContext);
     const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
     useOutsideClick(wrapperRef, setEdit, columnMetaData)
     return useMemo(() => {
         if (!edit) {
             return (
                 <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageCellEditor" ? setEdit(true) : undefined}>
-                    {cellRenderer(columnMetaData, props.cellData, props.resource)}
+                    {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
                 </div>
             )
         } else {

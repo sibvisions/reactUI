@@ -6,6 +6,8 @@ import { IEditor } from "../editors/IEditor";
 import { parseDateFormatTable } from "../util/ParseDateFormats";
 import moment from "moment";
 import { createEditor } from "../../factories/UIFactory";
+import { IEditorNumber } from "../editors/number/UIEditorNumber";
+import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../util/NumberProperties";
 
 export function displayEditor(metaData:IEditor|undefined, props:any) {
     let editor = <div>{props.cellData}</div>
@@ -24,7 +26,7 @@ export function displayEditor(metaData:IEditor|undefined, props:any) {
     return editor
 }
 
-export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:string) {
+export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:string, locale:string) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
             if (metaData.cellEditor.className === "ChoiceCellEditor") {
@@ -47,9 +49,21 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                 else
                     return null
             }
-            else if (metaData.cellEditor.className === "ImageCellEditor") {
+            else if (metaData.cellEditor.className === "ImageViewer") {
                 const castedColumn = metaData as IEditorImage
                 return <img className="rc-table-image" src={cellData ? "data:image/jpeg;base64," + cellData : resource + castedColumn.cellEditor.defaultImageName} alt="could not be loaded"/>
+            }
+            else if (metaData.cellEditor.className === "NumberCellEditor") {
+                const castedColumn = metaData as IEditorNumber;
+                if (cellData === null)
+                    return null
+                return Intl.NumberFormat(locale, 
+                    {
+                        useGrouping: getGrouping(castedColumn.cellEditor.numberFormat),
+                        minimumIntegerDigits: getMinimumIntDigits(castedColumn.cellEditor.numberFormat, cellData)?.length,
+                        minimumFractionDigits: getScaleDigits(castedColumn.cellEditor.numberFormat, castedColumn.scale).minScale,
+                        maximumFractionDigits: getScaleDigits(castedColumn.cellEditor.numberFormat, castedColumn.scale).maxScale
+                    }).format(cellData);
             }
             else
                 return cellData;
