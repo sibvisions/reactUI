@@ -44,22 +44,22 @@
 // @include themable('light', $theme-light);
 // @include themable('blue', $theme-blue);
 
-//Css-Class Variables
-//Position and display for topbar elements.
+/// Css-Class Variables
+/// Position and display for topbar elements.
 %topbar-pos-dis {
     position: fixed;
     display: flex;
     height: var(--menuHeight);
 }
 
-//Styling for profile image in menubar
+/// Styling for profile image in menubar
 %profile-image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
 }
 
-//Mixin for menu-transitions
+/// Mixin for menu-transitions
 @mixin menuTransitions() {
     -webkit-transition: 0.5s ease-in-out;
     -moz-transition: 0.5s ease-in-out;
@@ -67,7 +67,7 @@
     transition: 0.5s ease-in-out;
 }
 
-//No blue borders on focus
+/// No blue borders on focus
 .menu {
     :focus {
         box-shadow: none !important;
@@ -75,7 +75,7 @@
     }
 }
 
-//Topbar styling
+/// Topbar styling
 .menu-topbar {
     @extend %topbar-pos-dis;
     z-index: 20;
@@ -84,9 +84,9 @@
     background: var(--menuTopBar);
 }
 
-//When menu is collapsed
+/// When menu is collapsed
 .menu-collapsed {
-    //Set new widths and hide overflow because menu overflows on y axis
+    /// Set new widths and hide overflow because menu overflows on y axis
     .menu-logo-wrapper, .menu-panelmenu-wrapper {
         width: var(--menuCollapsedWidth);
         overflow: hidden;
@@ -94,7 +94,7 @@
             width: var(--menuLogoCollapsedWidth);
         }
     }
-    //Set margin to adapt to new widths
+    /// Set margin to adapt to new widths
     .menu-upper {
         margin-left: var(--menuCollapsedWidth);
     }
@@ -103,7 +103,7 @@
     }
 }
 
-//Styling topbar-logo-wrapper
+/// Styling topbar-logo-wrapper
 .menu-logo-wrapper {
     @extend %topbar-pos-dis;
     @include menuTransitions();
@@ -114,7 +114,7 @@
     border-bottom: 1px solid var(--menuBorderColor);
 }
 
-//Align to center, so logo is properly positioned and other styling
+/// Align to center, so logo is properly positioned and other styling
 .menu-logo {
     @include menuTransitions();
     align-self: center;
@@ -123,7 +123,7 @@
     max-height: var(--menuLogoHeight);
 }
 
-//Styling for top bar part next to logo, flex-grow, so the profile is on the far right
+/// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
 .menu-upper {
     @include menuTransitions();
     margin-left: var(--menuWidth);
@@ -132,7 +132,7 @@
     align-items: center;
 }
 
-//Menu-toggler styling
+/// Menu-toggler styling
 .menu-toggler {
     padding: 0 10px;
     color: var(--menuFgdColor);
@@ -143,27 +143,27 @@
     }
 }
 
-//Menu-screen-title styling
+/// Menu-screen-title styling
 .menu-screen-title {
     color: var(--menuFgdColor);
     font-size: 22px;
     font-weight: bold;
 }
 
-//Margin-left, so the profile is on the far right
+/// Margin-left, so the profile is on the far right
 .profile-menu {
     margin-left: auto;
     margin-right: 10px;
 }
 
 .p-menubar {
-    //Removes default primereact menubar style
+    /// Removes default primereact menubar style
     padding: 0;
     border: none;
     background: var(--menuTopBar);
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
-            //Sets menubar style on hover and active for text, subicon color and background
+            /// Sets menubar style on hover and active for text, subicon color and background
             > .p-menuitem-link:not(.p-disabled) {
                 background: var(--menuTopBar);
                 color: var(--menuFgdColor);
@@ -179,14 +179,14 @@
                 }
             }
         }
-        //Primereact sets a default width which is way too big
+        /// Primereact sets a default width which is way too big
         .p-submenu-list {
             width: 100%;
         }
     }
 }
 
-//Profile-image styling
+/// Profile-image styling
 .profile-image {
     @extend %profile-image;
     background-size: 40px 40px;
@@ -200,7 +200,7 @@
     }
 }
 
-//Panelmenu-wrapper styling & positioning
+/// Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
     @include menuTransitions();
     @include styledScrollbar();
@@ -214,7 +214,7 @@
     background: var(--menuPanelWrapperBgd)
 }
 
-//Logo in Menu should only be displayed when screen < 600px, transition for smoothness
+/// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
 .menu-logo-mini-wrapper, .menu-logo-mini {
     @include menuTransitions();
 }
@@ -231,7 +231,7 @@
     width: var(--menuLogoWidth);
 }
 
-//Fadeout div for not readable text if collapsed
+/// Fadeout div for not readable text if collapsed
 .fadeout {
     @include menuTransitions();
     position: absolute;
@@ -249,7 +249,7 @@
     animation: fadein 1s;
 }
 
-//Panelmenu styling, nesting needed because primereact nesting
+/// Panelmenu styling, nesting needed because primereact nesting
 .p-panelmenu {
     .p-panelmenu-header {
         > a {
@@ -270,12 +270,12 @@
             &:hover {
                 color: var(--menuPanelHeaderColorHover);
             }
-            //When text is longer don't break
+            /// When text is longer don't break
             .p-menuitem-text {
                 white-space: nowrap;
             }
         }
-        //Selected menupoint styling
+        /// Selected menupoint styling
         &.p-highlight {
             > a, &:not(.p-disabled) > a:hover {
                 background: var(--menuPanelHeaderBgd);
@@ -286,7 +286,7 @@
     .p-panelmenu-content {
         border: none;
         .p-menuitem {
-            //Menu sub points little more to the right
+            /// Menu sub points little more to the right
             .p-menuitem-link:not(.p-disabled) {
                 padding: 0.75rem 0.75rem 0.75rem 1.5rem;
                 &:hover {
@@ -301,18 +301,18 @@
 
 @media screen and (max-width: 960px) {
     .p-menubar {
-        //Primereact wants to show a button instead of the menu we don't want that
+        /// Primereact wants to show a button instead of the menu we don't want that
         .p-menubar-button {
             display: none;
         }
-        //Initial to undo Primereact changes
+        /// Initial to undo Primereact changes
         .p-menubar-root-list {
             position:initial;
             display: initial;
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
-            //Submenu styling needed because primereact button menu looks different we have to redesign
+            /// Submenu styling needed because primereact button menu looks different we have to redesign
             .p-submenu-list {
                 position: absolute;
                 -webkit-box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
@@ -329,7 +329,7 @@
 }
 
 @media screen and (max-width: 600px) {
-    //Don't show the logo wrapper ever, width 0 for transition
+    /// Don't show the logo wrapper ever, width 0 for transition
     .menu-logo-wrapper {
         &, .menu-collapsed & {
             visibility: hidden;
@@ -340,14 +340,14 @@
         }
     }
 
-    //Colored part of menu always on the left side
+    /// Colored part of menu always on the left side
     .menu-upper {
         &, .menu-collapsed & {
             margin-left: 0px;
         }
     }
 
-    //In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
+    /// In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
     .p-menubar {
         .p-menubar-root-list {
             .p-submenu-list {
@@ -367,25 +367,25 @@
         }
     }
 
-    //Show logo-mini-wrapper
+    /// Show logo-mini-wrapper
     .menu-logo-mini-wrapper {
         height: var(--menuLogoHeight);
     }
 
-    //Mini logo displaying and styling
+    /// Mini logo displaying and styling
     .menu-logo-mini {
         @include menuTransitions();
         width: var(--menuLogoWidth);
         max-height: var(--menuLogoHeight);
     }
 
-    //Fadeout position needs to be adjusted.
+    /// Fadeout position needs to be adjusted.
     .fadeout {
         margin-top: calc(var(--menuHeight) + var(--menuLogoHeight));
     }
 }
 
-//Animation for fadeout div
+/// Animation for fadeout div
 @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }

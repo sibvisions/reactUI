@@ -1,22 +1,31 @@
-import React, {FC, FormEvent, useContext, useState} from "react";
+/** React imports */
+import React, {FC, useContext, useState} from "react";
 
+/** 3rd Party imports */
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
+
+/** Other imports */
 import {jvxContext} from "../../JVX/jvxProvider";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import {createLoginRequest} from "../../JVX/factories/RequestFactory";
 
-
+/** Component which handles logging in */
 const Login: FC = () => {
-    const [username, changeUsername] = useState<string>("");
-    const [password, changePassword] = useState<string>("");
+    /** Current state of username */
+    const [username, setUsername] = useState<string>("");
+    /** Current state of password */
+    const [password, setPassword] = useState<string>("");
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
-    const loginSubmit = (props: FormEvent<HTMLFormElement>) => {
-        props.preventDefault();
+    /**
+     * Sends a loginrequest to the server when the loginform is submitted.
+     */
+    const loginSubmit = () => {
         let loginRequestBody = createLoginRequest();
-        loginRequestBody.username= username;
-        loginRequestBody.password= password;
+        loginRequestBody.username = username;
+        loginRequestBody.password = password;
         context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN);
     }
 
@@ -34,7 +43,7 @@ const Login: FC = () => {
                             id="username"
                             type="text"
                             autoComplete="username"
-                            onChange={(userEvent: React.ChangeEvent<HTMLInputElement>) => changeUsername(userEvent.target.value)}/>
+                            onChange={(userEvent: React.ChangeEvent<HTMLInputElement>) => setUsername(userEvent.target.value)}/>
                         <label htmlFor="username">Username </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
@@ -44,7 +53,7 @@ const Login: FC = () => {
                             id="password"
                             type="password"
                             autoComplete="current-password"
-                            onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => changePassword(passEvent.target.value)}/>
+                            onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => setPassword(passEvent.target.value)}/>
                         <label htmlFor="password">Password </label>
                     </div>
                     <Button type="submit" className="p-primary login-button" label="Login" icon="pi pi-lock-open"/>

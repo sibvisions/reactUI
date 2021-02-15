@@ -56,7 +56,7 @@ const Layout: FC = (props) => {
         if(!screenTitle)
             screenTitle = window.location.hash.split("/")[1];
             
-        context.contentStore.notifyAppNameChanged(screenTitle)
+        context.contentStore.notifyScreenNameChanged(screenTitle)
 
     }, [props.children, context.server.APP_NAME, context.contentStore])
 

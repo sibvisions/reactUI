@@ -1,3 +1,4 @@
+/** Exporting components and hooks to be used as library */
 export {default as UIButton} from './JVX/components/buttons/button/UIButton';
 export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';
 export {default as UIRadioButton} from './JVX/components/buttons/radiobutton/UIRadioButton';

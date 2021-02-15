@@ -1,58 +1,88 @@
-//React
+/** React imports */
 import React, {FC, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 
-//Custom
-import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
-import MenuItemCustom from "../../primeExtension/MenuItemCustom";
-import {jvxContext} from "../../JVX/jvxProvider";
-
-//Prime
+/** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
-import {SlideMenu} from "primereact/slidemenu";
 import {MenuItem} from "primereact/api";
 
-import {serverMenuButtons} from "../../JVX/response/MenuResponse";
-import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
+/** Hook imports */
 import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
 import useWindowObserver from "../../JVX/components/zhooks/useWindowObserver";
-import useIsMount from "../../JVX/components/zhooks/useIsMount";
 
+/** Other imports */
+import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
+import {jvxContext} from "../../JVX/jvxProvider";
+import {serverMenuButtons} from "../../JVX/response/MenuResponse";
+import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
+
+/** Extends the PrimeReact MenuItem with componentId */
+export interface MenuItemCustom extends MenuItem{
+    componentId?: string
+}
+
+/** Interface to receive a forwarded reference */
 interface IMenu {
     forwardedRef?: any
 }
 
+/**
+ * Manu component builds and displays the menu for reactUI, consists of a topbar with a profile-menu and a sidebar with panel-menu.
+ * @param forwardedRef - receives a reference so the reference can be used in other components
+ */
 const Menu: FC<IMenu> = ({forwardedRef}) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Value if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
+    /** If menu should be collapsed based on windowsize */
     const windowSize = useWindowObserver();
-    const isMount = useIsMount();
-    const [menuItems, changeMenuItems] = useState<Array<MenuItemCustom>>();
+    /** Current state of menu items */
+    const [menuItems, setMenuItems] = useState<Array<MenuItemCustom>>();
+    /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
-    const slideRef = useRef<SlideMenu>(null);
+    /** Reference for profile menu element */
+    const profileRef = useRef<Menubar>(null);
+    /** Reference for logo container element*/
     const menuLogoRef = useRef<HTMLDivElement>(null);
+    /** Reference for logo container when devicemode is mini */
     const menuLogoMiniRef = useRef<HTMLDivElement>(null);
+    /** Reference for fadeout element when menu is collapsed */
     const fadeRef = useRef<HTMLDivElement>(null);
-    const isMountRef = useRef<boolean>(); //ref to not get a warning in useEffect where isMount should be used...
+    /** Current logged in user */
     const currUser = context.contentStore.currentUser;
 
+    /**
+     * Triggers a click on an opened menu panel to close it, 
+     * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
+     */
     const closeOpenedMenuPanel = useCallback(() => {
         if (forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
             forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
     },[forwardedRef])
 
+    /** 
+     * The menu subscribes to the screen name, so everytime the screen name changes the state of the menu screen title,
+     * will get updated.
+     *  @returns unsubscribing from the screen name on unmounting
+     */
     useEffect(() => {
-        context.contentStore.subscribeToAppName('x', (appName:string) => {
+        context.contentStore.subscribeToScreenName('x', (appName:string) => {
             setScreenTitle(appName)
         });
 
         return () => {
-            context.contentStore.unsubscribeFromAppName('x');
+            context.contentStore.unsubscribeFromScreenName('x');
         }
-    })
+    });
 
+    /**
+     * Builds the profile menu
+     * @returns the profile menu
+     */
     const profileMenu = useMemo(() => {
+        /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
         const sendLogout = () => {
             const logoutRequest = createLogoutRequest();
             localStorage.removeItem("authKey")
@@ -86,12 +116,16 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
         return(
             <div className="profile-menu">
                 <Menubar
-                    ref={slideRef}
+                    ref={profileRef}
                     model={slideOptions}/>
             </div>
         )
-    },[slideRef, currUser, context.server, context.contentStore]);
+    },[profileRef, currUser, context.server, context.contentStore]);
 
+    /** 
+     * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems
+     * @returns unsubscribing from menuchanges on unmount
+     */
     useEffect(()=> {
         const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
             const primeMenu = new Array<MenuItem>();
@@ -112,7 +146,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 }
                 primeMenu.push(primeMenuItem);
             });
-            changeMenuItems(primeMenu)
+            setMenuItems(primeMenu)
         }
         receiveNewMenuItems(context.contentStore.mergedMenuItems);
         context.contentStore.subscribeToMenuChange(receiveNewMenuItems);
@@ -122,22 +156,19 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
         }
     }, [context.contentStore]);
 
+    /** Sets the image of the profile-image element to the profileImage of the current user */
     useEffect(() => {
         if (document.querySelector('.profile-image') && context.contentStore.currentUser.profileImage)
             (document.querySelector('.profile-image') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
     },[profileMenu, context.contentStore.currentUser.profileImage]);
 
+    /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
-        isMountRef.current = isMount;
-    },[isMount])
-
-    useEffect(() => {
-        if (!isMountRef.current) {
             if (context.contentStore.menuModeAuto) {
                 context.contentStore.setMenuModeAuto(false)
             }
             else {
-                if (windowSize === 0) {
+                if (!windowSize) {
                     closeOpenedMenuPanel();
                     context.contentStore.emitMenuCollapse(0);
                 }
@@ -145,9 +176,14 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                 else
                     context.contentStore.emitMenuCollapse(1);
             }
-        }
     },[context.contentStore, windowSize])
 
+    /**
+     * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,
+     * the menu expands, the logo switches to the big logo and fadeout div display is set to none. On leaving menu 
+     * collapses, logo is small and fadeout is displayed.
+     * @returns removing eventlisteners on unmount
+     */
     useEffect(() => {
         const testRef = document.getElementsByClassName("menu")[0] as HTMLElement;
         if (forwardedRef.current) {
@@ -189,6 +225,12 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
         }
     },[menuCollapsed, forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
 
+    /** 
+     * Handles the click on the menu-toggler. It closes a currently opened panel and switches
+     * menuModeAuto which means, if true the menu will collapse/expand based on window size if
+     * false the menu will be locked in its position.
+     * It also notifies the contentstore that the menu has been collapsed
+     */
     const handleToggleClick = () => {
         closeOpenedMenuPanel();
         context.contentStore.setMenuModeAuto(!context.contentStore.menuModeAuto)

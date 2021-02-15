@@ -1,28 +1,28 @@
-//React
-import React, {createContext, FC, useContext, useEffect, useRef, useState} from 'react';
+/** React imports */
+import React, {FC, useContext, useEffect, useRef, useState} from 'react';
 
-//Custom
-import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
-import {jvxContext} from "./JVX/jvxProvider";
-import {createStartupRequest} from "./JVX/factories/RequestFactory";
-
-//3rdParty
+/** 3rd Party imports */
 import {Toast, ToastMessage} from 'primereact/toast';
+import PrimeReact from 'primereact/api';
+import * as queryString from "querystring";
 import {Helmet} from "react-helmet";
+import {Route, Switch, useHistory} from "react-router-dom";
 
-//UI
+/** UI imports */
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
 //import Settings from "./frontmask/settings/Settings"
-import * as queryString from "querystring";
-import {Route, Switch, useHistory} from "react-router-dom";
-import { checkProperties } from './JVX/components/util/CheckProperties';
-// import {serverMenuButtons} from "./JVX/response/MenuResponse";
+
+/** Other imports */
+import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
+import {jvxContext} from "./JVX/jvxProvider";
+import {createStartupRequest} from "./JVX/factories/RequestFactory";
+import {checkProperties} from './JVX/components/util/CheckProperties';
 import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
-import PrimeReact from 'primereact/api';
 
+/** Types for querystring parsing */
 type queryType = {
     appName?: string,
     userName?: string,
@@ -30,21 +30,30 @@ type queryType = {
     baseUrl?: string
 }
 
-export const toastContext = createContext<Function>(() => {})
-
+/**
+ * This component manages the start and routing of the application.
+ * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
+ */
 const App: FC<ICustomContent> = (props) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Toast reference to use the show method of toast */
     const toastRef = useRef<Toast>(null);
+    /** History of react-router-dom */
     const history = useHistory()
+    /** State of the current app-name to display it in the header */
     const [appName, setAppName] = useState<string>();
+    /** PrimeReact ripple effect */
     PrimeReact.ripple = true
 
+    /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     useEffect(() => {
         context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
         context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
         //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
     }, [context.contentStore]);
 
+    /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
         props.customScreens?.forEach(customScreen => {
             context.contentStore.registerCustomOfflineScreen(customScreen.screenName, customScreen.menuGroup, customScreen.screenFactory);
@@ -59,6 +68,11 @@ const App: FC<ICustomContent> = (props) => {
         })
     },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents]);
 
+    /**
+     * On reload navigate to home, fetch config.json if some fields are not configured, warns user with toast.
+     * Sets StartupRequest-, Server- and Contentstore properties based on config file or queryString (URL)
+     * Sets Appname for header, and sends StartupRequest.
+     */
     useEffect(() => {
         history.replace("/home")
         const queryParams: queryType = queryString.parse(window.location.search);
@@ -110,7 +124,7 @@ const App: FC<ICustomContent> = (props) => {
                 startUpRequest.authKey = authKey;
             }
             setAppName(context.server.APP_NAME);
-            context.contentStore.notifyAppNameChanged(context.server.APP_NAME);
+            context.contentStore.notifyScreenNameChanged(context.server.APP_NAME);
             startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
@@ -124,6 +138,10 @@ const App: FC<ICustomContent> = (props) => {
         })
     }, [context.server, context.contentStore, history, props.customStartupProps]);
 
+    /**
+     * Method to show a toast
+     * @param {ToastMessage} messageObj - PrimeReact ToastMessage object which contains display information for toast
+     */
     const msg = (messageObj: ToastMessage) => {
         if (toastRef.current) {
             toastRef.current.show(messageObj)
@@ -136,14 +154,12 @@ const App: FC<ICustomContent> = (props) => {
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
             <Toast ref={toastRef} position="top-right"/>
-            <toastContext.Provider value={msg}>
                 <Switch>
                     <Route exact path={"/login"} render={() => <Login />}/>
                     <Route exact path={"/home/:componentId"} render={props => <Home key={props.match.params.componentId} />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                     <Route path={"/home"} render={() => <Home key={'homeBlank'} />} />
                 </Switch>   
-            </toastContext.Provider>
         </>
   );
 }

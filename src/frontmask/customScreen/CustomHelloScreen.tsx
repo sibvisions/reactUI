@@ -1,12 +1,10 @@
+/** React imports */
 import React, {FC} from "react";
 
-type customProps = {
-
-}
-
-const CustomHelloScreen: FC = (props) => {
-
-
+/**
+ * Small component used as an example for customscreen or customcomponent.
+ */
+const CustomHelloScreen: FC = () => {
 
     return(
         <div>

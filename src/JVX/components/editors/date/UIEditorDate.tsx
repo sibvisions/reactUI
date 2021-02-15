@@ -127,7 +127,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             setTimeout(() => setDateFormat(parseDateFormatCell(props.cellEditor.dateFormat, selectedRow)),75)
         else
             setDateFormat("")
-    })
+    }, [props.cellEditor_editable_, props.cellEditor.dateFormat, selectedRow])
 
     return(
         <Calendar

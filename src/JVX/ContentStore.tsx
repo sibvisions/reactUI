@@ -1,13 +1,12 @@
 import {serverMenuButtons} from "./response/MenuResponse";
 import {ReplaySubject} from "rxjs";
-import MenuItemCustom from "../primeExtension/MenuItemCustom";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
 import {ReactElement} from "react";
 import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
-import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
+import { MenuItemCustom } from "../frontmask/menu/menu";
 
 type MenuItem = {
     componentId: string,
@@ -35,7 +34,7 @@ export default class ContentStore{
     parentSubscriber = new Map<string, Function>();
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
     dataChangeSubscriber = new Map<string, Map<string, Array<{ displayRecords: number, fn: Function }>>>();
-    appNameSubscriber = new Map<string, Function>();
+    screenNameSubscriber = new Map<string, Function>();
     menuCollapseSubscriber = new Map<string, Function>();
 
     MenuSubscriber = new Array<Function>();
@@ -327,9 +326,9 @@ export default class ContentStore{
 
 
     //Menu
-    notifyAppNameChanged(appName:string) {
-        this.appNameSubscriber.forEach(subscriber => {
-            subscriber.apply(undefined, [appName])
+    notifyScreenNameChanged(screenName:string) {
+        this.screenNameSubscriber.forEach(subscriber => {
+            subscriber.apply(undefined, [screenName])
         })
     }
 
@@ -379,8 +378,8 @@ export default class ContentStore{
         }
     }
 
-    subscribeToAppName(id:string, fn: Function) {
-        this.appNameSubscriber.set(id, fn);
+    subscribeToScreenName(id:string, fn: Function) {
+        this.screenNameSubscriber.set(id, fn);
     }
 
     subscribeToMenuChange(fn: Function){
@@ -425,8 +424,8 @@ export default class ContentStore{
         this.propertiesSubscriber.delete(id);
     }
 
-    unsubscribeFromAppName(id: string) {
-        this.appNameSubscriber.delete(id)
+    unsubscribeFromScreenName(id: string) {
+        this.screenNameSubscriber.delete(id)
     }
 
     unsubscribeFromMenuCollapse(id:string) {

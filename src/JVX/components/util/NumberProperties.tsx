@@ -6,7 +6,7 @@ export function getGrouping(numberFormat:string) {
 
 export function getMinimumIntDigits(numberFormat:string, value:any) {
     let count = (numberFormat.split('.')[0].match(/0/g) || []).length;
-    if (count - (value ? value.toString().length : 0) > 0)
+    if (count - (value ? value.toString().length : 0) > 1)
         return '0'.repeat(count - (value ? value.toString().length : 0))
     else
         return undefined;

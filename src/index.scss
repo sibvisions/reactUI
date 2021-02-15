@@ -1,3 +1,4 @@
+/// importing other stylesheets needed for bundling
 @import '~primereact/resources/themes/saga-blue/theme.css';
 @import '~primereact/resources/primereact.css';
 @import '~primeicons/primeicons.css';
@@ -28,53 +29,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
+    /// Standard background of the application
     --standardBgdColor: white;
+    /// Standard text-color
     --standardTextColor: #495057;
-
+    /// Standard font
     --standardFont: 'Roboto', sans-serif;
+    /// Standard font-size
     --standardFontSize: 14px;
 
+    /// Menu-width when extended
     --menuWidth: 240px;
+    /// Menu-width when collapsed
     --menuCollapsedWidth: 80px;
+    /// Left padding when menu is collpased
     --menuCollapsePaddingLeft: 1rem;
+    /// Topbar height
     --menuHeight: 70px;
+    /// Logo width when expanded
     --menuLogoWidth: 190px;
+    /// Logo width when collapsed
     --menuLogoCollapsedWidth: 60px;
+    /// Logo height
     --menuLogoHeight: 60px;
+    /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
     --menuFadeoutWidth: 20px;
+    /// Fadeout positioning
     --menuFadeoutLeft: calc(var(--menuCollapsedWidth) - var(--menuFadeoutWidth));
+    /// Background of topbar
     --menuTopBar: #4f5965;
+    /// Foreground of topbar
     --menuFgdColor: white;
+    /// Topbar foreground color when hovering 
     --menuHoverColor: rgb(165, 165, 165);
+    /// Color for menu borders
     --menuBorderColor: rgba(120,130,140,.13);
+    /// Logo background
     --menuLogoBgdColor: rgb(232,232,232);
     --menuLogoBgdColorGrad: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+    /// Backgroud color of profile image when there is no image set
     --menuProfileBgdColor: white;
+    /// Menu background
     --menuPanelWrapperBgd: white;
+    /// Background for each panel of panelmenu
     --menuPanelHeaderBgd: white;
+    /// Foreground color for each panel of panelmenu
     --menuPanelHeaderColor: #495057;
+    /// Foreground color when a panel is hovered or active
     --menuPanelHeaderColorHover: black;
 
+    /// Login container background
     --loginContainerBgd: rgba(255, 255, 255, 0.75);
+    /// Login form width
     --loginFormWidth: 400px;
+    /// Login form top bottom padding
     --loginFormTBPadding: 30px;
+    /// Login form left right padding
     --loginFormLRPadding: 40px;
+    /// Login form gap between logo and inputfields
     --loginFormLogoGap: 1rem;
+    /// Login form logo background
     --loginLogoBgd: rgba(255, 255, 255, 0.65);
+    /// Login inputfields placeholder color
     --loginPlaceholderColor: #bcc0c4;
 
+    /// Button default background
     --btnDefaultBgd: #2196F3;
+    /// Button default top bottom padding
     --btnPTB: 5px;
+    /// Button default left right padding
     --btnPLR: 10px;
+    /// Button foreground when no border painted
     --btnNoBorderPaintedColor: black;
+    /// Button foreground when button background is dark
     --btnColorBright: white;
+    /// Button foreground when button background is bright
     --btnColorDark: black;
 
+    /// Menubutton split width
     --menuBtnIconWidth: 38px;
 
+    /// Tabset closable 'x' foreground
     --tabsetXColor: #cdcfd1;
 }
 
+/// setting standard values for body
 body {
     background: var(--standardBgdColor);
     color: var(--standardTextColor);
@@ -85,11 +124,13 @@ body {
     margin: 0;
 }
 
+/// Overriding PrimeReact font-family and font-size
 .p-component {
     font-family: var(--standardFont);
     font-size: var(--standardFontSize);
 }
 
+/// Image in this file because image won't be displayed
 .login-container {
     background-image: url("assests/login.webP");
 }

@@ -28,6 +28,7 @@
     "file-loader": "^6.1.1",
     "font-awesome": "^4.7.0",
     "history": "^5.0.0",
+    "jsdoc": "^3.6.6",
     "leaflet": "^1.7.1",
     "mini-css-extract-plugin": "^1.3.3",
     "moment": "^2.29.1",
@@ -58,6 +59,7 @@
     "build": "react-scripts build && rimraf build/config.json",
     "bundle": "webpack -c ./webpack.config.js",
     "test": "react-scripts test",
+    "createdoc": "jsdoc src -r -d docs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

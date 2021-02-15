@@ -57,7 +57,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 </div>
             )
         }
-    }, [edit, props.cellData, props.colName, props.dataProvider, props.resource, props.name, columnMetaData]);
+    }, [edit, props, context.contentStore.locale, columnMetaData]);
 }
 
 const UITable: FC<TableProps> = (baseProps) => {

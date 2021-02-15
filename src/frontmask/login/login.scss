@@ -37,6 +37,7 @@
   label {
     color: var(--loginPlaceholderColor);
   }
+  /// Position and Size of floatlabel placeholder
   input:focus ~label, input.p-filled ~label, 
   textarea:focus ~label, textarea.p-filled ~label,
   .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label{
@@ -46,7 +47,7 @@
 }
 
 .login-button{
-  padding: 0.5rem;
+  padding-left: 0.5rem;
   .p-button-icon-left {
     margin-right: -1rem;
   }

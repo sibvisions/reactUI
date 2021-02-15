@@ -1,9 +1,15 @@
+/** React imports */
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+/** scss */
 import './index.scss';
+
+/** Other imports */
 import * as serviceWorker from './serviceWorker';
 import MiddleMan from './MiddleMan';
 
+/** Rendering the application */
 export default ReactDOM.render(
   // <React.StrictMode>
   <MiddleMan/>,
