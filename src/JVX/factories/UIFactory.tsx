@@ -14,11 +14,11 @@ import UIEditorDate, { IEditorDate } from "../components/editors/date/UIEditorDa
 import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEditorChoice";
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
-import { IButton } from "../components/buttons/IButton";
+import { IButton, IButtonSelectable } from "../components/buttons/IButton";
 import UIToggleButton, { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
 import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
-import UIRadioButton, { IRadioButton } from "../components/buttons/radiobutton/UIRadioButton";
-import UICheckBox, { ICheckBox } from "../components/checkbox/UICheckBox";
+import UIRadioButton from "../components/buttons/radiobutton/UIRadioButton";
+import UICheckBox from "../components/checkbox/UICheckBox";
 import UIIcon from "../components/icon/UIIcon";
 import UIText from "../components/text/UIText";
 import UITextArea from "../components/text/UITextArea";
@@ -74,11 +74,11 @@ export const createPopupMenuButton: FC<IMenuButton> = (props) => {
     return <UIMenuButton {...props} key={props.id}/>
 }
 
-export const createRadioButton: FC<IRadioButton> = (props) => {
+export const createRadioButton: FC<IButtonSelectable> = (props) => {
     return <UIRadioButton {...props} key={props.id}/>
 }
 
-export const createCheckBox: FC<ICheckBox> = (props) => {
+export const createCheckBox: FC<IButtonSelectable> = (props) => {
     return <UICheckBox {...props} key={props.id}/>
 }
 

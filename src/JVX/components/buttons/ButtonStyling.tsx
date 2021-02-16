@@ -1,10 +1,19 @@
+/** React imports */
 import {CSSProperties} from 'react';
+
+/** 3rd Party imports */
 import tinycolor from 'tinycolor2';
+
+/** Other imports */
 import {checkAlignments} from "../compprops/CheckAlignments";
 import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
 import IconProps from '../compprops/IconProps';
 import {IButton} from "./IButton";
 
+/**
+ * @param props - buttonproperties received by the server
+ * @returns data on how the button should be displayed
+ */
 export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
     const margins = getMargins(props.margins);
     const font = getFont(props.font);
@@ -30,6 +39,12 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, st
     }
 }
 
+/**
+ * When a Button has an icon, the label and icon are seperated by a margin this function determines on which position the margin is
+ * @param hTextPos - horizontalTextPosition of the button label
+ * @param vTextPos  - verticalTextPosition of the button label 
+ * @returns the position for the gap between label and icon
+ */
 function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
     if (hTextPos === 0) {
         return 'left'
@@ -45,6 +60,12 @@ function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
     }
 }
 
+/**
+ * Centers an element relative to the measured length of another element
+ * @param centerElem - the element to be centered
+ * @param labelElem - label element
+ * @param hAlign - horizontalAlignment of button
+ */
 export function centerElem(centerElem:HTMLElement, labelElem:HTMLElement, hAlign:number|undefined) {
     let labelWidth = labelElem.offsetWidth/2;
     let centerWidth = centerElem.offsetWidth/2;
@@ -54,6 +75,14 @@ export function centerElem(centerElem:HTMLElement, labelElem:HTMLElement, hAlign
             centerElem.style.setProperty('margin-right', labelWidth-centerWidth + 'px')
 }
 
+/**
+ * Sets styling of RadioButtons and Checkboxes
+ * @param btnElement - element of the RadioButton or CheckBox
+ * @param lblElement - label element
+ * @param props - properties of the RadioButton or CheckBox
+ * @param iconProps - properties of the icon
+ * @param resource - resource string to get images
+ */
 export function renderRadioCheck(btnElement:HTMLElement, lblElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
     btnElement.style.setProperty('margin-' + getGapPos(props.horizontalTextPosition, props.verticalTextPosition), '4px');
     if (props.horizontalTextPosition === 1)
@@ -62,6 +91,13 @@ export function renderRadioCheck(btnElement:HTMLElement, lblElement:HTMLElement,
         renderButtonIcon(lblElement.children[0] as HTMLElement, props, iconProps, resource);
 }
 
+/**
+ * Sets the styling of an icon for a button
+ * @param iconElement - the element which contains the icon
+ * @param props - properties of the button
+ * @param iconProps - properties of the icon
+ * @param resource  - resource strong to get images
+ */
 export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
     iconElement.classList.add("rc-button-icon")
     const gapPos = iconElement.tagName === 'SPAN' ? getGapPos(props.horizontalTextPosition, props.verticalTextPosition) : 'right';
@@ -78,6 +114,17 @@ export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconPro
     }
 }
 
+/**
+ * Adds a hover effect to buttons through mouseevents
+ * @param obj - the button which receives the hover effect
+ * @param borderOnMouseEntered - if border should appear on mouse enter
+ * @param color - the original color of the button
+ * @param checkedColor - color if the button is checked (togglebutton) null if not togglebutton
+ * @param dark - the percentage of how much the hovered color should be darker
+ * @param borderPainted  - if the border of the button is painted
+ * @param checked - if a togglebutton is checked undefined if not togglebutton
+ * @param bgdSet - if there is a background set by the server
+ */
 export function addHoverEffect(obj:HTMLElement, borderOnMouseEntered:boolean|undefined, color:string, checkedColor:string|null, dark: number, borderPainted:boolean, checked:boolean|undefined, bgdSet:boolean) {
     const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
     if (borderPainted) {

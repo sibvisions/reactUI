@@ -3,9 +3,9 @@
         background: var(--btnDefaultBgd);
         border-color: var(--btnDefaultBgd);
         &.dark {
-            color: var(--btnColorDark);
+            color: var(--standardTextColor);
             &.p-button-icon-left, .p-button-icon-right {
-                color: var(--btnColorDark);
+                color: var(--standardTextColor);
             } 
         }
         &.bright {
@@ -17,7 +17,7 @@
         &:hover {
             &.dark {
                 .p-button-icon-left, .p-button-icon-right {
-                    color: var(--btnColorDark);
+                    color: var(--standardTextColor);
                 } 
             }
             &.bright {

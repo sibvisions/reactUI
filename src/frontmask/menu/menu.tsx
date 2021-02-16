@@ -34,9 +34,9 @@ interface IMenu {
 const Menu: FC<IMenu> = ({forwardedRef}) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
-    /** Value if the manu is collpased or expanded */
+    /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
-    /** If menu should be collapsed based on windowsize */
+    /** Flag if menu should be collapsed based on windowsize */
     const windowSize = useWindowObserver();
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItemCustom>>();

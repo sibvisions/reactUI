@@ -1,11 +1,8 @@
-.rc-button {
+/// Inherit height and width from parent who has set it by the layout
+.rc-button, .p-button-icon-only {
     height: inherit;
     width: inherit;
     padding: var(--btnPTB) var(--btnPLR);
-    &.p-button-icon-only {
-        width: inherit;
-        padding: var(--btnPTB) var(--btnPLR);
-    }
     .p-button-icon-left {
         margin-right: 0;
     }
@@ -14,35 +11,40 @@
     }
 }
 
+/// If the button is dark set the foreground to white
 .bright {
-    color: white;
+    color: var(--btnColorBright);
     &:enabled:hover {
-        color: rgb(250, 250, 250);
+        color: var(--btnColorBright);
     }
 }
 
+/// If the button is bright set the foreground to a darker color
 .dark {
     color: var(--standardTextColor);
     &:enabled:hover {
-        color: black;
+        color: var(--standardTextColor);
     }
 }
 
+/// When the border is not painted background and border are transparent an the color is set to standard
 .border-notpainted, .border-notpainted:enabled:hover {
     background: transparent;
     border-color: transparent;
-    color: var(--btnNoBorderPaintedColor);
+    color: var(--standardTextColor);
 }
 
+/// Show that a button without border is hovered
 .border-notpainted:enabled:hover {
     border-color: var(--btnNoBorderPaintedColor);
 }
 
 .p-button-label {
-    display: block;
     flex: unset;
 }
 
+/// When there is only an icon it is possible that the padding for the button is to big and the icon is not displayed,
+/// margin minus padding displays the icon
 .p-button-icon-only {
     .rc-button-icon {
         margin: calc(var(--btnPTB) * -1) calc(var(--btnPLR) * -1) !important;

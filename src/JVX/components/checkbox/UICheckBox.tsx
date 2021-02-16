@@ -4,25 +4,21 @@ import tinycolor from 'tinycolor2';
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import useProperties from "../zhooks/useProperties";
-import {IButton} from "../buttons/IButton";
+import {IButtonSelectable} from "../buttons/IButton";
 import {buttonProps, renderRadioCheck} from "../buttons/ButtonStyling";
 import {createSetValueRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 
-export interface ICheckBox extends IButton {
-    selected?: boolean;
-}
-
-const UICheckBox: FC<ICheckBox> = (baseProps) => {
+const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
 
     const cbRef = useRef<any>(null);
     const labelRef = useRef<any>(null);
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
     const context = useContext(jvxContext);
     const layoutValue = useContext(LayoutContext);
-    const [props] = useProperties<ICheckBox>(baseProps.id, baseProps);
+    const [props] = useProperties<IButtonSelectable>(baseProps.id, baseProps);
     const btnData = useMemo(() => buttonProps(props), [props]);
     const {onLoadCallback, id} = baseProps;
     const cbDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');

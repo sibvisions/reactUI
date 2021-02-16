@@ -99,12 +99,10 @@
     --btnPTB: 5px;
     /// Button default left right padding
     --btnPLR: 10px;
-    /// Button foreground when no border painted
+    /// Button border when no border painted on hover
     --btnNoBorderPaintedColor: black;
     /// Button foreground when button background is dark
     --btnColorBright: white;
-    /// Button foreground when button background is bright
-    --btnColorDark: black;
 
     /// Menubutton split width
     --menuBtnIconWidth: 38px;

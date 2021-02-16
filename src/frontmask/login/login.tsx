@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useContext, useState} from "react";
+import React, {FC, FormEvent, useContext, useState} from "react";
 
 /** 3rd Party imports */
 import {InputText} from "primereact/inputtext";
@@ -22,7 +22,8 @@ const Login: FC = () => {
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
      */
-    const loginSubmit = () => {
+    const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         let loginRequestBody = createLoginRequest();
         loginRequestBody.username = username;
         loginRequestBody.password = password;

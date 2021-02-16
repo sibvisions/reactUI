@@ -1,37 +1,45 @@
-//React
+/** React imports */
 import React, {Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 
-//Components
+/** 3rd Party imports */
+import * as _ from 'underscore'
+
+/** UI imports */
 import Menu from "./menu/menu";
 
-//Utils
-import ChildWithProps from "../JVX/components/util/ChildWithProps";
-import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
-import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
-
-//Context
-import {jvxContext} from "../JVX/jvxProvider";
-import {LayoutContext} from "../JVX/LayoutContext";
-
+/** Hook imports */
 import useMenuCollapser from "../JVX/components/zhooks/useMenuCollapser";
 import useResponsiveBreakpoints from "../JVX/components/zhooks/useResponsiveBreakpoints";
 
-type queryType = {
-    appName?: string,
-    userName?: string,
-    password?: string,
-    baseUrl?: string
-}
+/** Other imports */
+import ChildWithProps from "../JVX/components/util/ChildWithProps";
+import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
+import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
+import {jvxContext} from "../JVX/jvxProvider";
+import {LayoutContext} from "../JVX/LayoutContext";
 
-
+/**
+ * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
+ * @param props - the children components
+ */
 const Layout: FC = (props) => {
 
+    /** Reference for the screen-container */
     const sizeRef = useRef<HTMLDivElement>(null);
+    /** Reference for the menu component */
     const menuRef = useRef<any>(null);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('layout');
 
-    const minusTenArray = (start:number, end:number) => {
+    /**
+     * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
+     * @param start - Biggest possible size of menu
+     * @param end - Smallest possible size of menu
+     * @returns an Array with 10 step values between start and end
+     */
+    const getMenuSizeArray = (start:number, end:number) => {
         const dataArray:number[] = []
         while (start >= end) {
             dataArray.push(start);
@@ -40,26 +48,18 @@ const Layout: FC = (props) => {
         return dataArray;
     }
 
-    const menuSize = useResponsiveBreakpoints(menuRef, minusTenArray(240, 80), menuCollapsed)
+    /** Current state of menu size */
+    const menuSize = useResponsiveBreakpoints(menuRef, 
+    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')), 
+    parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth'))), menuCollapsed);
+
+    /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
-    const resizeRef = useRef<NodeJS.Timeout | undefined>();
-    const deviceRef = useRef<NodeJS.Timeout>(setTimeout(() => {}, 100))
 
-    useEffect(() => {
-        let screenTitle = context.server.APP_NAME;
-        Children.forEach(props.children,child => {
-            const childWithProps = (child as ChildWithProps);
-            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
-                screenTitle = childWithProps.props.screen_title_;
-        })
-            
-        if(!screenTitle)
-            screenTitle = window.location.hash.split("/")[1];
-            
-        context.contentStore.notifyScreenNameChanged(screenTitle)
-
-    }, [props.children, context.server.APP_NAME, context.contentStore])
-
+    /** 
+     * When the window resizes, the screen-container will measure itself and set its size, 
+     * setting this size will recalculate the layouts
+     */
     const doResize = useCallback(() => {
         if(sizeRef.current){
             const size = sizeRef.current.getBoundingClientRect();
@@ -72,41 +72,40 @@ const Layout: FC = (props) => {
         }
     },[props.children])
 
-    const handleResize = () => {
-        if(resizeRef.current){
-            return;
+    /** Using underscore throttle for throttling resize event */
+    const handleResize = _.throttle(doResize, 23);
+
+    /** Using underscore debounce to debounce sending the current devicestatus (screen-container height and width) to the server */
+    const handleDeviceStatus = _.debounce(() => {
+        const deviceStatusReq = createDeviceStatusRequest();
+        if(sizeRef.current){
+            const mainSize = sizeRef.current.getBoundingClientRect();
+            deviceStatusReq.screenHeight = mainSize.height;
+            deviceStatusReq.screenWidth = mainSize.width;
+            context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
         }
-        resizeRef.current = setTimeout(() => {
-            doResize();
-            resizeRef.current = undefined
-        }, 23);
-    };
+    },150);
 
-    const handleDeviceStatus = () => {
-        clearTimeout(deviceRef.current);
-        deviceRef.current = setTimeout(() => {
-            const deviceStatusReq = createDeviceStatusRequest();
-            if(sizeRef.current){
-                const mainSize = sizeRef.current.getBoundingClientRect();
-                deviceStatusReq.screenHeight = mainSize.height;
-                deviceStatusReq.screenWidth = mainSize.width;
-                context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
-            }
-        }, 150)
-    }
+    /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
+    useLayoutEffect(() => {
+        doResize();
+    }, [props.children, doResize, menuSize])
 
+    /** 
+     * Resize event handling, resize measuring and adding disable overflow while resizing to disable flickering scrollbar 
+     * @returns remove eventListeners
+     */
     useEffect(() => {
         const currSizeRef = sizeRef.current
+        const resizeTimer = _.debounce(() => {
+            if (currSizeRef)
+                currSizeRef.classList.remove("transition-disable-overflow")
+        },150);
         const resizeListenerCall = () => {
-            let resizeTimer
             if (currSizeRef)
                 currSizeRef.classList.add("transition-disable-overflow");
             handleResize();
-            clearTimeout(resizeTimer)
-            resizeTimer = setTimeout(() => {
-                if (currSizeRef)
-                    currSizeRef.classList.remove("transition-disable-overflow")
-            },23)
+            resizeTimer();
         }
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
@@ -133,9 +132,16 @@ const Layout: FC = (props) => {
     // eslint-disable-next-line
     },[]);
 
-    useLayoutEffect(() => {
-        doResize();
-    }, [props.children, doResize, menuSize])
+    /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
+    useEffect(() => {
+        let screenTitle = context.server.APP_NAME;
+        Children.forEach(props.children,child => {
+            const childWithProps = (child as ChildWithProps);
+            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
+                screenTitle = childWithProps.props.screen_title_;
+        })      
+        context.contentStore.notifyScreenNameChanged(screenTitle)
+    }, [props.children, context.server.APP_NAME, context.contentStore])
 
     return(
         <div className={"layout"}>

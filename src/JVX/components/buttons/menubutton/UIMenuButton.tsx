@@ -1,11 +1,18 @@
+/** React imports */
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+
+/** 3rd Party imports */
 import {SplitButton} from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
+
+/** Hook imports */
+import useProperties from "../../zhooks/useProperties";
+
+/** Other imports */
 import {createPressButtonRequest} from "../../../factories/RequestFactory";
 import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
-import useProperties from "../../zhooks/useProperties";
 import {IButton} from "../IButton";
 import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
@@ -13,24 +20,40 @@ import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
 import { parseJVxSize } from "../../util/parseJVxSize";
 
+/** Interface for MenuButton */
 export interface IMenuButton extends IButton {
     popupMenu: string;
 }
 
+/**
+ * This component displays a Button which contains a dropdown menu
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIMenuButton: FC<IMenuButton> = (baseProps) => {
-
-    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
+    /** Reference for the button element */
     const buttonRef = useRef<any>(null);
+    /** Reference for the span that is wrapping the button containing layout information */
+    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMenuButton>(baseProps.id, baseProps);
+    /** Information on how to display the button, refreshes everytime the props change */
     const btnData = useMemo(() => buttonProps(props), [props]);
-    const [items, setItems] = useState<Array<any>>();
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-    const btnDefaultBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
-    const btnJustify = btnData.style.justifyContent || "center";
-    const btnAlign = btnData.style.alignItems || "center";
+    /** Button Background either server set or default */
+    const btnBgd = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+    /** Server set or default horizontal alignment */
+    const btnHAlign = btnData.style.justifyContent || "center";
+    /** Server set or default vertical alignment */
+    const btnVAlign = btnData.style.alignItems || "center";
+    /** Current state of the menuitems */
+    const [items, setItems] = useState<Array<any>>();
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
@@ -38,6 +61,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Builds the menuitems and sets the state */
     useEffect(() => {
         const buildMenu = (foundItems:Map<string, BaseComponent>) => {
             let tempItems:Array<any> = [];
@@ -50,6 +74,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                         color: iconProps.color
                     },
                     color: iconProps.color,
+                    /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: () => {
                         const req = createPressButtonRequest();
                         req.componentId = item.name;
@@ -62,20 +87,20 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         buildMenu(context.contentStore.getChildren(props.popupMenu));
     },[context.contentStore, context.server, props])
 
+    /** Apply all server sent styling and add a custom hover effect to the menubutton */
     useEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
-            let bgdColor = btnData.style.background as string || btnDefaultBgd;
-            btnRef.defaultButton.style.setProperty('justify-content', btnJustify);
-            btnRef.defaultButton.style.setProperty('align-items', btnAlign);
+            btnRef.defaultButton.style.setProperty('justify-content', btnHAlign);
+            btnRef.defaultButton.style.setProperty('align-items', btnVAlign);
             btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
             if (btnData.iconProps.icon)
                 renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(bgdColor).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
-            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, bgdColor, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
+            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
 
-    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnAlign, btnJustify, btnDefaultBgd])
+    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd])
     
     return (
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

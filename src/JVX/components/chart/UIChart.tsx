@@ -1,18 +1,33 @@
+/** React imports */
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+
+/** 3rd Party imports */
 import {Chart} from 'primereact/chart';
 import tinycolor from 'tinycolor2';
-import {LayoutContext} from "../../LayoutContext";
+
+/** Hook imports */
 import useProperties from "../zhooks/useProperties";
+
+/** Other imports */
+import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 
+/** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
     chartStyle: number
     data: Array<Array<any>>
     yColumnLabels: Array<string>
 }
 
+/** 
+ * enum for different Chartstyles 
+ * 0 = Line
+ * 1 = Area
+ * 2 = Bars
+ * 3 = Pie
+ */
 enum CHART_STYLES {
     LINES=0,
     AREAS=1,
@@ -21,12 +36,24 @@ enum CHART_STYLES {
 
 }
 
+/**
+ * This component displays charts with various styles
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIChart: FC<IChart> = (baseProps) => {
+    /** Reference for the span that is wrapping the chart containing layout information */
     const chartRef = useRef(null);
+    /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IChart>(baseProps.id, baseProps);
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
+    /**
+     * Chart type to be displayed
+     * @returns the chart type
+     */
     const chartType = useMemo(() => {
         switch (props.chartStyle) {
             case CHART_STYLES.LINES: case CHART_STYLES.AREAS: return "line";
@@ -35,6 +62,10 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     },[props.chartStyle])
 
+
+    /**
+     * @returns the data of a chart and how it should be displayed
+     */
     const chartData = useMemo(() => {
         const singleColor = tinycolor.random().toHexString();
         const primeChart = {
@@ -43,7 +74,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 {
                     label: props.yColumnLabels[0],
                     data: props.data.map(dataRow => dataRow[0]),
-                    backgroundColor: props.chartStyle === CHART_STYLES.PIE ? props.data.map(dataRow => tinycolor.random().toHexString()): singleColor,
+                    backgroundColor: props.chartStyle === CHART_STYLES.PIE ? props.data.map(() => tinycolor.random().toHexString()): singleColor,
                     borderColor: props.chartStyle !== CHART_STYLES.PIE ? singleColor : undefined,
                     fill: props.chartStyle === CHART_STYLES.AREAS ? true : false,
                     lineTension: 0,
@@ -94,6 +125,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (chartRef.current)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), chartRef.current, onLoadCallback)
