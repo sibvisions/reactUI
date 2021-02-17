@@ -53,6 +53,21 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<any>>();
 
+    /** Apply all server sent styling and add a custom hover effect to the menubutton */
+    useLayoutEffect(() => {
+        if (buttonRef.current) {
+            const btnRef = buttonRef.current
+            btnRef.defaultButton.style.setProperty('justify-content', btnHAlign);
+            btnRef.defaultButton.style.setProperty('align-items', btnVAlign);
+            btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
+            if (btnData.iconProps.icon)
+                renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
+            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
+            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+        }
+
+    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd]);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
@@ -86,21 +101,6 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
         buildMenu(context.contentStore.getChildren(props.popupMenu));
     },[context.contentStore, context.server, props])
-
-    /** Apply all server sent styling and add a custom hover effect to the menubutton */
-    useEffect(() => {
-        if (buttonRef.current) {
-            const btnRef = buttonRef.current
-            btnRef.defaultButton.style.setProperty('justify-content', btnHAlign);
-            btnRef.defaultButton.style.setProperty('align-items', btnVAlign);
-            btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
-            if (btnData.iconProps.icon)
-                renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
-            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
-        }
-
-    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd])
     
     return (
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>

@@ -1,50 +1,58 @@
-import React, {FC, useContext, useEffect} from "react";
-import {ICellEditor, IEditor} from "../IEditor";
-import {LayoutContext} from "../../../LayoutContext";
+/** React imports */
+import React, {FC, useContext, useEffect, useLayoutEffect} from "react";
+
+/** Hook imports */
 import useRowSelect from "../../zhooks/useRowSelect";
-import {jvxContext} from "../../../jvxProvider";
 import useProperties from "../../zhooks/useProperties";
 import useImageStyle from "../../zhooks/useImageStyle";
-import Size from "../../util/Size";
-import { parseJVxSize } from "../../util/parseJVxSize";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { getEditorCompId } from "../../util/GetEditorCompId";
 
+/** Other imports */
+import {ICellEditor, IEditor} from "../IEditor";
+import {LayoutContext} from "../../../LayoutContext";
+import {jvxContext} from "../../../jvxProvider";
+import Size from "../../util/Size";
+import {parseJVxSize} from "../../util/parseJVxSize";
+import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {getEditorCompId} from "../../util/GetEditorCompId";
+
+/** Interface for cellEditor property of ImageViewer */
 interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
     preserveAspectRatio: boolean
 }
 
+/** Interface for ImageViewer */
 export interface IEditorImage extends IEditor{
     cellEditor: ICellEditorImage
     placeholderVisible: boolean,
 }
 
+/**
+ *  This component displays an image
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIEditorImage: FC<IEditorImage> = (baseProps) => {
-
-    const layoutValue = useContext(LayoutContext);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Use context for the positioning, size informations of the layout */
+    const layoutValue = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
+    /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
+    /** The current state of the value for the selected row of the databook sent by the server */
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+    /** Extracting alignments from props */
     const {verticalAlignment, horizontalAlignment} = props
+    /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
 
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
-
-    useEffect(() => {
-        if (!props.cellEditor.defaultImageName) {
-            const prefSize:Size = {width: 0, height: 0}
-            if (props.preferredSize) {
-                const parsedSize = parseJVxSize(props.preferredSize) as Size
-                prefSize.height = parsedSize.height;
-                prefSize.width = parsedSize.width;
-            }
-            if (onLoadCallback)
-                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
-        }
-    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize])
-
+    /**
+     * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
+     * @param event - image load event
+     */
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Size = {width: 0, height: 0}
         if(props.preferredSize){

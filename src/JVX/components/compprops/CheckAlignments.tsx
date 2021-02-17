@@ -1,8 +1,15 @@
+/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { IEditor } from "../editors/IEditor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
 import Alignments from "./Alignments";
 
+/**
+ * Translates the server sent number alignments into flexbox alignments
+ * @param pha - server sent horizontal alignment
+ * @param pva - server sent vertical alignment
+ * @returns Alignments in flexbox alignment strings
+ */
 function translateAlignments(pha:number|undefined, pva:number|undefined) {
     let ha:string|undefined;
     let va:string|undefined;
@@ -28,6 +35,12 @@ function translateAlignments(pha:number|undefined, pva:number|undefined) {
     return {ha, va}
 }
 
+/**
+ * Returns alignments for CellEditors. cellEditor_ has priority over cellEditor.
+ * if there are no Alignments set undefined is returned
+ * @param props - Properties of CellEditor
+ * @returns Horizontal- and verticalalignment of CellEditor or undefined if none are set
+ */
 export function checkCellEditorAlignments(props:IEditor) {
     if (props.cellEditor) {
         if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor_verticalAlignment_ !== undefined)
@@ -38,15 +51,19 @@ export function checkCellEditorAlignments(props:IEditor) {
             return translateAlignments(props.cellEditor.horizontalAlignment, props.cellEditor_verticalAlignment_);
         else if (props.cellEditor.horizontalAlignment !== undefined && props.cellEditor.verticalAlignment !== undefined)
             return translateAlignments(props.cellEditor.horizontalAlignment, props.cellEditor.verticalAlignment);
-        else {
+        else
             return translateAlignments(undefined, undefined);
-        }
             
     }
     else
         return translateAlignments(undefined, undefined)
 }
 
+/**
+ * Returns alignments for components which are not CellEditors
+ * @param props - Properties of component
+ * @returns Horizontal- and verticalalignment for components which are no CellEditors
+ */
 export function checkAlignments(props:BaseComponent):Alignments {
     if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined)
         return translateAlignments(props.horizontalAlignment, props.verticalAlignment);

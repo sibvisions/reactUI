@@ -44,16 +44,8 @@ const UIButton: FC<IButton> = (baseProps) => {
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
 
-    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
-    useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
-        if (wrapperRef)
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
-
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
     /** Apply all server sent styling and add a custom hover effect to the button */
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current.element;
             if (btnData.iconProps.icon) {
@@ -66,6 +58,15 @@ const UIButton: FC<IButton> = (baseProps) => {
             addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
         }
     }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnBgd]);
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    useLayoutEffect(() => {
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef)
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = () => {

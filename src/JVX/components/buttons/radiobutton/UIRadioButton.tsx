@@ -19,7 +19,7 @@ import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 
 /**
- * This component displays a radiobutton and its label
+ * This component displays a RadioButton and its label
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
@@ -46,6 +46,16 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     /** Server set or default vertical alignment */
     const rbVAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
 
+    /** Apply all server sent styling for RadioButton */
+    useLayoutEffect(() => {
+        const lblRef = labelRef.current;
+        const radioRef = rbRef.current
+        if (lblRef && radioRef) {
+            renderRadioCheck(radioRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
+            (btnData.btnBorderPainted && tinycolor(rbBgd).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
+        }
+    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, rbBgd]);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
@@ -53,16 +63,6 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** Apply all server sent styling for RadioButton */
-    useEffect(() => {
-        const lblRef = labelRef.current;
-        const radioRef = rbRef.current
-        if (lblRef && radioRef) {
-            renderRadioCheck(radioRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(rbBgd).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
-        }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, rbBgd])
 
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

@@ -52,20 +52,12 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
 
-    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
-    useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
-        }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** 
+        /** 
      * Adding eventListener for mouse pressing to display the mousePressImage received by the server
      * apply all server sent styling and add a custom hover effect to the ToggleButton
      * @returns removing eventListeners on unmount
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
         const handleMouseImagePressed = (elem:HTMLElement) => {
             if (pressedIconData.icon?.includes('fa fa-')) {
                 elem.classList.remove((btnData.iconProps.icon as string).substring(3));
@@ -112,6 +104,14 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             }
         }
     },[props.selected, btnBgd, btnData.btnBorderPainted, btnData.iconProps, btnData.style, props, context.server.RESOURCE_URL, pressedIconData.icon]);
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    useLayoutEffect(() => {
+        const wrapperRef = buttonWrapperRef.current;
+        if (wrapperRef) {
+            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+        }
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = () => {

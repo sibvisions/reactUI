@@ -64,6 +64,7 @@ const UIChart: FC<IChart> = (baseProps) => {
 
 
     /**
+     * Returns the data of a chart and how it should be displayed
      * @returns the data of a chart and how it should be displayed
      */
     const chartData = useMemo(() => {
@@ -86,6 +87,11 @@ const UIChart: FC<IChart> = (baseProps) => {
         return primeChart
     },[props.data, props.chartStyle, props.yColumnLabels]);
 
+    
+    /**
+     * Returns the maximum value of the data
+     * @returns max value of data
+     */
     const getMaxDataVal = () => {
         let tempArray:Array<number> = [];
         props.data.forEach(dataRow => {
@@ -94,6 +100,11 @@ const UIChart: FC<IChart> = (baseProps) => {
         return Math.max(...tempArray)
     }
 
+    /**
+     * Returns options for display mostly for legend and axes
+     * @param style - chartstyle pie, bar...
+     * @returns options for display
+     */
     const options = (style:number) => {
         if (style === CHART_STYLES.PIE)
             return {
@@ -129,7 +140,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     useLayoutEffect(() => {
         if (chartRef.current)
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), chartRef.current, onLoadCallback)
-    })
+    },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
         <span ref={chartRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>

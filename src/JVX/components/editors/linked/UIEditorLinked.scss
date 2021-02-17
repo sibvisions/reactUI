@@ -2,10 +2,12 @@
     .p-inputtext {
         text-align: left;
     }
+    /// When either of the children is focused, display a blue shadow to show the button is focused
     &:focus-within {
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
+    /// Unset focus shadow because not the whole editor is focused but only either inputfield or button
     .p-inputtext, .p-button {
         &:focus {
             box-shadow: unset;
@@ -14,6 +16,7 @@
     }
 }
 
+/// Lazyloading loading animation
 .p-autocomplete-panel {
     .p-autocomplete-items {
         animation: pulse 0.7s infinite ease-in-out;
