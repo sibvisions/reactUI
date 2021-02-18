@@ -104,6 +104,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale);
     },[cellEditorMetaData.precision, cellEditorMetaData.scale]);
 
+    /** Set inputfield style properties set maxlength attribute */
     useLayoutEffect(() => {
         //@ts-ignore
         let currElem = numberRef.current.inputEl;
@@ -114,6 +115,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         }
     })
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && numberRef.current) {
             // @ts-ignore
@@ -121,11 +123,16 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
     useLayoutEffect(() => {
         setValue(selectedRow)
         lastValue.current = selectedRow;
     },[selectedRow]);
 
+    /**
+     * When enter is pressed "submit" the value. When the value reaches the max length, disable keyboard inputs
+     * @param e 
+     */
     const handleKeyDown = (e:any) => {
         const curRef = numberRef.current
         handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, lastValue.current, context.server));

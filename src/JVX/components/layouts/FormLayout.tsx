@@ -1,4 +1,7 @@
+/** React imports */
 import React, {CSSProperties, FC, useCallback, useContext, useEffect, useState} from "react";
+
+/** Other imports */
 import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
@@ -10,13 +13,19 @@ import {jvxContext} from "../../jvxProvider";
 import BaseComponent from "../BaseComponent";
 import {ILayout} from "./Layout";
 
-
+/**
+ * The FormLayout is a simple to use Layout which allows complex forms.
+ * Calculations are taken from "JVxFormLayout"
+ * @param baseProps - the properties sent by the Layout component
+ */
 const FormLayout: FC<ILayout> = (baseProps) => {
 
-    // React Hooks
+    /** Current state of the calculatedStyle by the FormLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext)
 
+    /** Extract variables from baseprops */
     const {
         components,
         layout,
@@ -25,56 +34,82 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         style,
         id,
         reportSize
-    } = baseProps
+    } = baseProps;
 
+    /** 
+     * Function which lays out the container
+     * @param preferredCompSizes - the preferredSizes of all Childcomponents
+     * @param children - the Childcomponents of the layout
+     * @param layout - contains data about the layout like gaps, alignments etc.
+     * @param layoutData - contains data about the anchors and constraints
+     * @param onLayoutCallback - callback used to report the layouts size
+     * @param style - contains the style properties for size of the parent layout
+     */
     const calculateLayout = useCallback((
         preferredCompSizes: Map<string, ComponentSize>,
-        componentProps: Map<string, BaseComponent>,
+        children: Map<string, BaseComponent>,
         layout: string,
         layoutData: string,
-        id: string,
         onLayoutCallback: Function | undefined,
         style: CSSProperties) => {
+            /** Map for the Anchors of the layout, key is the Anchor-name and value is the Anchor */
             const anchors = new Map<string, Anchor>();
+            /** 
+             * Map for the Constraints of the Childcomponents, key is the id of the compoonent
+             * value is the Constraint
+             */
             const componentConstraints = new Map<string, Constraints>();
-
-            const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4))
+            /** Margins */
+            const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
+            /** Horizontal- and vertical Gap */
             const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
+            /** Extracted alignments string */
             const alignments = layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8);
+            /** Horizontal alignment */
             const horizontalAlignment =  parseInt(alignments[0]);
+            /** Vertical alignment */
             const verticalAlignment = parseInt(alignments[1]);
 
+            /** True, if the left border is used by another anchor. */ 
             let leftBorderUsed = false;
+            /** True, if the right border is used by another anchor. */ 
             let rightBorderUsed = false;
+            /** True, if the top border is used by another anchor. */ 
             let topBorderUsed = false;
+            /** True, if the bottom border is used by another anchor. */ 
             let bottomBorderUsed = false;
-
+            /** The preferred width */
             let preferredWidth: number = 0;
+            /** The preferred height */
             let preferredHeight: number = 0;
+            /** The minimum height */
             let minimumHeight: number = 0;
+            /** The minimum width */
             let minimumWidth: number = 0;
 
+            /** True, if the target dependent anchors should be calculated again. */
             let calculatedTargetDependentAnchors = false;
 
+            /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
                 anchors.clear(); componentConstraints.clear();
-                //Parse Home info and set Anchors
+                /** Parse layout info and fill Anchors-Map */
                 const splitAnchors: Array<string> = layoutData.split(";");
                 splitAnchors.forEach(anchorData => {
                     const name = anchorData.substring(0, anchorData.indexOf(","));
                     anchors.set(name, new Anchor(anchorData));
                 });
-                //Establish related Anchors
+                /** Establish related Anchors */
                 anchors.forEach(value => {
                     value.relatedAnchor = anchors.get(value.relatedAnchorName);
                 });
-                //Build Constraints of Children
-                componentProps.forEach(component => {
+                /** Build Constraints of Childcomponents and fill Constraints-Map */
+                children.forEach(component => {
                     const anchorNames = component.constraints.split(";");
-                    //Get Anchors
+                    /** Get Anchors */
                     const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
                     const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
-                    //Set Constraint
+                    /** Fill Constraints-Map */
                     if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                         componentConstraints.set(component.id, constraint);
@@ -82,8 +117,14 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
             }
 
+            /** Calculate all Autosize anchors */
             const calculateAnchors = () =>  {
-
+                /**
+                 * Gets all auto size anchors between start and end anchor
+                 * @param startAnchor - start anchor
+                 * @param endAnchor - end anchor
+                 * @returns all auto size anchors between start and end anchor.
+                 */
                 const getAutoSizeAnchorsBetween = (startAnchor: Anchor, endAnchor: Anchor): Array<Anchor> => {
                     const autoSizeAnchors = Array<Anchor>();
                     let startAnchorIntern : Anchor | undefined = startAnchor
@@ -94,13 +135,18 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         startAnchorIntern = startAnchorIntern.relatedAnchor;
                     }
 
-                    //If the anchors are not dependent on each other return an empty array!!
+                    /** If the anchors are not dependent on each other return an empty array! */
                     if(!startAnchorIntern){
                         autoSizeAnchors.length = 0;
                     }
                     return autoSizeAnchors;
                 }
 
+                /**
+                 * Init component auto size position of anchor.
+                 * @param startAnchor - start anchor
+                 * @param endAnchor - end anchor
+                 */
                 const initAutoSizeRelative = (startAnchor: Anchor, endAnchor: Anchor) => {
                     const autosizeAnchors = getAutoSizeAnchorsBetween(startAnchor, endAnchor);
                     autosizeAnchors.forEach(value => {
@@ -108,6 +154,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     });
                 }
 
+                /**
+                 * Calculates the preferred size of component auto size anchors.
+                 * @param leftTopAnchor - the left or top anchor
+                 * @param rightBottomAnchor - the right or bottom anchor
+                 * @param preferredSize - the preferred size
+                 * @param autoSizeCount - the amount of autoSizeCount
+                 */
                 const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
                     let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
                     if(autoSizeAnchors.length === autoSizeCount && preferredSize !== undefined){
@@ -140,6 +193,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 }
 
+                /**
+                 * Marks all touched Autosize anchors as calculated
+                 * @param leftTopAnchor - the left or top anchor
+                 * @param rightBottomAnchor - the right or bottom anchor
+                 * @returns amount of autosize anchors left
+                 */
                 const finishAutoSizeCalculation = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor): number => {
                     const autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
                     let counter = 0;
@@ -152,6 +211,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     return autoSizeAnchors.length - counter
                 }
 
+                /**
+                 * clears auto size position of anchors
+                 */
                 const clearAutoSize = () => {
                     anchors.forEach(anchor => {
                         anchor.relative = anchor.autoSize;
@@ -165,7 +227,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 clearAutoSize();
 
-                //Init autosize Anchor position
+                /** Init autosize Anchor position */
                 anchors.forEach(anchor => {
                     if(anchor.relatedAnchor && anchor.relatedAnchor.autoSize){
                         const relatedAutoSizeAnchor = anchor.relatedAnchor;
@@ -175,8 +237,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
 
-                //Init autosize Anchors
-                componentProps.forEach(component => {
+                /** Init autosize Anchors */
+                children.forEach(component => {
                     const constraint = componentConstraints.get(component.id);
                     if(constraint && constraint.rightAnchor && constraint.leftAnchor && constraint.bottomAnchor && constraint.topAnchor){
                         initAutoSizeRelative(constraint.leftAnchor, constraint.rightAnchor);
@@ -186,10 +248,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
 
-                //AutoSize calculations
+                /** AutoSize calculations */
                 for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
-                    //CalculateAutoSize
-                    componentProps.forEach(component => {
+                    children.forEach(component => {
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
                             const preferredSizeObj = preferredCompSizes.get(component.id);
@@ -201,25 +262,29 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     });
                     autoSizeCount = 100000;
 
-                    //Finish AutoSize
-                    componentProps.forEach(component => {
+                    /** Finish AutoSize */
+                    children.forEach(component => {
                         const constraints = componentConstraints.get(component.id)
                         if(constraints){
                             let count: number
+                            /** 
+                             * Finish AutoSize calculation for each constraint count is the autosize anchors left.
+                             * Leaves loop when there are no unfinished autosize anchors left
+                             */
                             count = finishAutoSizeCalculation(constraints.leftAnchor, constraints.rightAnchor);
-                            if(count > 0 && count < autoSizeCount){
+                            if (count > 0 && count < autoSizeCount) {
                                 autoSizeCount = count;
                             }
                             count = finishAutoSizeCalculation(constraints.rightAnchor, constraints.leftAnchor);
-                            if(count > 0 && count < autoSizeCount){
+                            if (count > 0 && count < autoSizeCount) {
                                 autoSizeCount = count;
                             }
                             count = finishAutoSizeCalculation(constraints.topAnchor, constraints.bottomAnchor);
-                            if(count > 0 && count < autoSizeCount){
+                            if (count > 0 && count < autoSizeCount) {
                                 autoSizeCount = count;
                             }
                             count = finishAutoSizeCalculation(constraints.bottomAnchor, constraints.topAnchor);
-                            if(count > 0 && count < autoSizeCount){
+                            if (count > 0 && count < autoSizeCount) {
                                 autoSizeCount = count;
                             }
                         }
@@ -230,8 +295,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 let topHeight = 0;
                 let bottomHeight = 0;
 
-                //Anchor Positions of Children
-                componentProps.forEach(component => {
+                /** Calculate preferredSize */
+                children.forEach(component => {
                     if(component.visible !== false){
                         const constraint = componentConstraints.get(component.id);
                         const preferredComponentSize = preferredCompSizes.get(component.id);
@@ -294,7 +359,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
 
-                //Preferred Width
+                /** Preferred width */
                 if(leftWidth !== 0 && rightWidth !== 0){
                     let w = leftWidth + rightWidth + gaps.verticalGap;
                     if(w > preferredWidth){
@@ -331,7 +396,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
 
 
-                //Preferred Height
+                /** Preferred height */
                 if(topHeight !== 0 && bottomHeight !== 0){
                     let h = topHeight + bottomHeight + gaps.horizontalGap;
                     if(h > preferredHeight){
@@ -368,7 +433,14 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 calculatedTargetDependentAnchors = true
             }
 
+            /** Calculates all target size dependent anchors. This can only be done after the target has his correct size. */
             const calculateTargetDependentAnchors = () => {
+                /**
+                 * Calculates the preferred size of relative anchors.
+                 * @param leftTopAnchor - left or top anchor
+                 * @param rightBottomAnchor - right or bottom anchor
+                 * @param preferredSize - the preferred size
+                 */
                 const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
                     if(leftTopAnchor.relative){
                         const rightBottom = rightBottomAnchor.getRelativeAnchor();
@@ -402,12 +474,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 }
 
-                //Set from Server
+                /** Set from server */
                 const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
                 const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
 
 
-                //Available Size
+                /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
                 if(calcSize.width < preferredWidth){
@@ -509,7 +581,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     tba.position -= margins.marginTop;
                     bba.position -= margins.marginTop;
 
-                    componentProps.forEach(component => {
+                    children.forEach(component => {
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
                             const preferredComponentSize = preferredCompSizes.get(component.id);
@@ -547,9 +619,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     borderConstraint = new Constraints(tba, lba, bba, rba);
                 }
 
+                /** Map which contains component ids as key and positioning and sizing properties as value */
                 const sizeMap = new Map<string, CSSProperties>();
 
-                componentProps.forEach(component => {
+                /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
+                children.forEach(component => {
                     const constraint = componentConstraints.get(component.id);
 
                     if(constraint && marginConstraint && borderConstraint) {
@@ -568,17 +642,20 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback){
+                        /** If the layout has a preferredSize set, report it */
                         if (baseProps.preferredSize) {
                             const size = baseProps.preferredSize.split(',');
                             const width = parseInt(size[0]);
                             const height = parseInt(size[1]);
                             onLayoutCallback(height, width);
                         }
+                        /** Report the preferredSize to the parent layout */
                         else {
                             onLayoutCallback(preferredHeight, preferredWidth);
                         }
                             
                     }
+                    /** Set the state of the calculated Style */
                     setCalculatedStyle( {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
@@ -592,6 +669,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 }
             }
 
+            /** Call the calculating functions */
             setAnchorsAndConstraints();
             calculateAnchors();
             calculateTargetDependentAnchors();
@@ -600,14 +678,18 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     );
 
     useEffect(() => {
-        const compProps = context.contentStore.getChildren(id);
-        if(preferredCompSizes && preferredCompSizes.size === compProps.size)
+        /** Gets the Childcomponents of the layout */
+        const children = context.contentStore.getChildren(id);
+        /** 
+         * If preferredCompSizes is set (every component in this layout reported its preferred size) 
+         * and the preferredCompSize is the same as children size calculate the layout 
+         */
+        if(preferredCompSizes && preferredCompSizes.size === children.size)
             calculateLayout(
                 preferredCompSizes,
-                compProps,
+                children,
                 layout,
                 layoutData,
-                id,
                 reportSize,
                 style
             )
@@ -615,6 +697,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
 
     return(
+        /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
             <div style={{...calculatedStyle?.style}}>
                 {components}

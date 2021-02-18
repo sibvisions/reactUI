@@ -1,37 +1,60 @@
 /* global google */
+/** React imports */
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+
+/** 3rd Party imports */
 import {GMap} from 'primereact/gmap';
-import {jvxContext} from "../../jvxProvider";
-import {LayoutContext} from "../../LayoutContext";
+import tinycolor from 'tinycolor2';
+
+/** Hook imports */
 import useProperties from "../zhooks/useProperties";
 import useDataProviderData from "../zhooks/useDataProviderData";
+
+/** Other imports */
+import {jvxContext} from "../../jvxProvider";
+import {LayoutContext} from "../../LayoutContext";
 import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
 import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
 import {sendSetValues} from "../util/SendSetValues";
 import { IMap } from "./UIMapOSM";
 import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
 import { sortGroupDataGoogle } from "../util/mapUtils/SortGroupData";
-import tinycolor from 'tinycolor2';
 import IconProps from "../compprops/IconProps";
 import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
 
+/**
+ * This component displays a map view with Google Maps
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIMapGoogle: FC<IMap> = (baseProps) => {
-    
-    //Hooks, Variables
+    /** Reference for the div that is wrapping the map containing layout information */
     const mapWrapperRef = useRef(null);
-    const mapInnerRef = useRef(null)
+    /** Reference for the map element */
+    const mapInnerRef = useRef(null);
+    /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
-    const [selectedMarker, setSelectedMarker] = useState<google.maps.Marker>()
+    /** The marker used for the point Selection.*/
+    const [selectedMarker, setSelectedMarker] = useState<google.maps.Marker>();
+    /** The state if the maps data has already been set */
     const [dataSet, setDataSet] = useState<boolean>(false);
-    const [props] = useProperties<IMap>(baseProps.id, baseProps);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
+    const [props] = useProperties<IMap>(baseProps.id, baseProps);
+    /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+    /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(compId, props.id, props.groupDataBook);
+    /** The provided data for points/markers */
     const [providedPointData] = useDataProviderData(compId, props.id, props.pointsDataBook);
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
+    /** The center position of the map */
     const centerPosition = parseJVxLocation(props.center);
+    /** Options for map controls/display */
     const options = {
         center: centerPosition ? { lat: centerPosition.latitude, lng: centerPosition.longitude} : { lat: 0, lng: 0 },
         disableDefaultUI: true,
@@ -44,53 +67,61 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         zoom: props.zoomLevel || 9,
         zoomControl: true
     };
+    /** Colors for polygon filling and polygon lines */
     const polyColors = {
         strokeColor: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
     }
+    /**
+     * Returns an array with the server sent groups sorted
+     */
     const groupsSorted = useMemo(() => {
         return sortGroupDataGoogle(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
     },[providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName]);
 
-    //Size reporting
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && mapWrapperRef.current) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), mapWrapperRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    //Load Map
+    /** Call the loadGoogleMaps function pass function to set Map ready and API key sent by server */
     useEffect(() => {
         loadGoogleMaps(() => {
             setMapReady(true);
         }, props.apiKey as string);
     },[props.apiKey]);
 
-    //Fetch Data (Groups, Points)
+    /** Fetch Mapdata from server */
     useEffect(() => {
         sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
-    //Add Data to Map
+    /** Adding the data to the Map */
     useEffect(() => {
-        if (!dataSet && providedPointData.length && providedGroupData.length) {
-            
+        /** If data is not already set */
+        if (!dataSet) {
             if (mapInnerRef.current) {
                 //@ts-ignore
                 const map = mapInnerRef.current.map
                 const latColName = props.latitudeColumnName;
                 const lngColname = props.longitudeColumnName;
-                providedPointData.forEach((point, i) => {
-                    let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
-                    const marker = new google.maps.Marker({position: {lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE}, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon)});
-                    marker.setMap(map);
-                    if (i === providedPointData.length - 1)
-                        setSelectedMarker(marker);
-                });
-                groupsSorted.forEach((group) => {
-                    const polygon = new google.maps.Polygon({paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor});
-                    polygon.setMap(map)
-                });
+                if (providedPointData.length) {
+                    providedPointData.forEach((point, i) => {
+                        let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
+                        const marker = new google.maps.Marker({position: {lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE}, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon)});
+                        marker.setMap(map);
+                        if (i === providedPointData.length - 1)
+                            setSelectedMarker(marker);
+                    });
+                }
+                if (providedGroupData.length) {
+                    groupsSorted.forEach((group) => {
+                        const polygon = new google.maps.Polygon({paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor});
+                        polygon.setMap(map)
+                    });
+                }
                 setDataSet(true)
             }
         }

@@ -1,11 +1,11 @@
 import {ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler, createCustomComponentWrapper} from "../../factories/UIFactory";
+
 export type ComponentSize = {
     width: number,
     height: number
 }
-
 
 const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
 

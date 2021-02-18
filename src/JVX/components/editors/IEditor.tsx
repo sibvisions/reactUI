@@ -1,6 +1,7 @@
 import BaseComponent from "../BaseComponent";
 import {CSSProperties} from "react";
 
+/** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
     className: string,
     contentType?: string,
@@ -9,6 +10,7 @@ export interface ICellEditor{
     directCellEditor?: boolean,
 }
 
+/** Base Interface for CellEditors */
 export interface IEditor extends BaseComponent{
     cellEditor?: ICellEditor,
     cellEditor_editable_:boolean,
