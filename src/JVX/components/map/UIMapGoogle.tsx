@@ -72,8 +72,10 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         strokeColor: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
     }
+    
     /**
      * Returns an array with the server sent groups sorted
+     * @returns array with the server sent groups sorted
      */
     const groupsSorted = useMemo(() => {
         return sortGroupDataGoogle(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
@@ -107,6 +109,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 const map = mapInnerRef.current.map
                 const latColName = props.latitudeColumnName;
                 const lngColname = props.longitudeColumnName;
+                /** If there are marker/points, create the marker at the position with the correct icon, if it is the last marker, set it as selectedMarker */
                 if (providedPointData.length) {
                     providedPointData.forEach((point, i) => {
                         let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
@@ -116,6 +119,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                             setSelectedMarker(marker);
                     });
                 }
+                /** If there are groups, create a poligon */
                 if (providedGroupData.length) {
                     groupsSorted.forEach((group) => {
                         const polygon = new google.maps.Polygon({paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor});
@@ -131,7 +135,10 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         props.marker, props.markerImageColumnName, dataSet, providedGroupData]
     );
 
-    //At Start set center or set point if pointSelectionLockedOnCenter
+    /** 
+     *  At start set center to selectedMarker position
+     *  if pointSelectionLockedOnCenter the selectedMarker will always be in the center 
+     */
     useEffect(() => {
         if (mapInnerRef.current) {
             //@ts-ignore
@@ -145,12 +152,16 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     })
 
-    //Event Handling
+    /** 
+     * Adds eventlisteners to the map
+     * @returns removes the eventlisteners
+     */
     useEffect(() => {
         if (mapInnerRef.current) {
             //@ts-ignore
             const map = mapInnerRef.current.map
 
+            /** If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server */
             const onClick = (e:any) => {
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
@@ -159,11 +170,13 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 }
             }
 
+            /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
             const onDrag = () => {
                  if (selectedMarker && props.pointSelectionLockedOnCenter)
                      selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
             }
 
+            /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
             const onDragEnd = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], undefined, context.server);
@@ -171,6 +184,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 }
             }
 
+            /** Change position of selectedMarker to center when zoom is changed and locked on center is enabled */
             const onZoomChanged = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
@@ -193,6 +207,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
        props.pointsDataBook]
     );
 
+    /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
         return <div ref={mapWrapperRef} style={{width: '100px', height: '100px'}}/>
     return (
@@ -203,6 +218,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 }
 export default UIMapGoogle
 
+/** function to load Google Maps */
 const loadGoogleMaps = (callback:any, key:string) => {
 	const existingScript = document.getElementById('googleMaps');
 

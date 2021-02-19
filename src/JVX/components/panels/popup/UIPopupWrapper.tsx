@@ -1,17 +1,29 @@
+/** React imports */
 import React, {FC, ReactElement, useContext} from "react";
-import { Panel } from "../panel/UIPanel";
+
+/** 3rd Party imports */
 import { Dialog } from 'primereact/dialog';
+
+/** Other imports */
+import { Panel } from "../panel/UIPanel";
 import { jvxContext } from "../../../jvxProvider";
 import { createCloseScreenRequest } from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
+/** Interface for Popup */
 export interface IPopup extends Panel {
     render: ReactElement;
 }
 
+/**
+ * Component which is a wrapper for a Panel if it is a PopupPanel
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIPopupWrapper: FC<IPopup> = (baseProps) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
+    /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
         const csRequest = createCloseScreenRequest();
         csRequest.componentId = baseProps.name;

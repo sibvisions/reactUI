@@ -1,16 +1,23 @@
+/** React imports */
 import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import {jvxContext} from "../../jvxProvider";
-import {LayoutContext} from "../../LayoutContext";
-import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
-import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
-import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
-import BaseComponent from "../BaseComponent";
+
+/** 3rd Party imports */
 import {MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import {PolylineOptions} from "leaflet";
 import L from 'leaflet'
 import tinycolor from 'tinycolor2';
+
+/** Hook imports */
+import useProperties from "../zhooks/useProperties";
+import useDataProviderData from "../zhooks/useDataProviderData";
+
+/** Other imports */
+import {jvxContext} from "../../jvxProvider";
+import {LayoutContext} from "../../LayoutContext";
+import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
+import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
+import BaseComponent from "../BaseComponent";
 import IconProps from "../compprops/IconProps";
 import {sendSetValues} from "../util/SendSetValues";
 import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
@@ -18,6 +25,7 @@ import { sortGroupDataOSM } from "../util/mapUtils/SortGroupData";
 import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
 
+/** Interface for Map components */
 export interface IMap extends BaseComponent {
     apiKey?: string
     center?: string
@@ -36,15 +44,26 @@ export interface IMap extends BaseComponent {
     zoomLevel?: number
 }
 
+/**
+ * This component displays a map view with OpenStreetMap using leaflet. 
+ * This part of the map will cover positioning and size reporting and wraps the actual map
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UIMapOSM: FC<IMap> = (baseProps) => {
-
+    /** Reference for the map element */
     const mapRef = useRef(null);
+    /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
+    /** The center position of the map */
     const centerPosition = parseJVxLocation(props.center);
+    /** Start zoom value is switched in Google and OSM */
     const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 0);
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && mapRef.current) {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), mapRef.current, onLoadCallback);
@@ -52,8 +71,10 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
             
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    //Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,
-    //set a default preferredSize (100x100) the layout can use to calculate. 
+    /** 
+     * Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,
+     * set a default preferredSize (100x100) the layout can use to calculate. 
+     */
     if (layoutValue.has(id)) {
         return (
             <div ref={mapRef} style={layoutValue.get(id)}>
@@ -71,26 +92,43 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
 }
 export default UIMapOSM
 
+/**
+ * This component displays a map view with OpenStreetMap using leaflet.
+ * This part of the map, displays the map, adds data, sends requests to the server etc.
+ * @param props - props received by container map component
+ */
 const UIMapOSMConsumer: FC<IMap> = (props) => {
+    /** Leaflet hook to get map instance */
     const map = useMap();
+    /** Reference for markers */
     const markerRefs = useRef<any>([]);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+    /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(compId, props.id, props.groupDataBook);
+    /** The provided data for points/markers */
     const [providedPointData] = useDataProviderData(compId, props.id, props.pointsDataBook);
-    const [selectedMarker, setSelectedMarker] = useState<any>()
+    /** The marker used for the point Selection.*/
+    const [selectedMarker, setSelectedMarker] = useState<any>();
+    /** Colors for polygon filling and polygon lines */
     const options:PolylineOptions = {
         color: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
         fillOpacity: 1.0
     }
 
+    /**
+     * Returns an array with the server sent groups sorted
+     * @returns array with the server sent groups sorted
+     */
     const groupsSorted = useMemo(() => {
         return sortGroupDataOSM(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
     },[providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName]);
 
+    /** Fetch Mapdata from server and set new default icon because leaflets default doesn't show */
     useEffect(() => {
-        
         //@ts-ignore
         delete L.Icon.Default.prototype._getIconUrl;
 
@@ -103,6 +141,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
+    /** Set the last marker as selectedMarker */
     useEffect(() => {
         if (markerRefs.current) {
             setSelectedMarker(markerRefs.current.slice(-1).pop())
@@ -110,6 +149,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             
     },[providedPointData])
 
+    /** If there is no center set, set center to selectedMarker Position, if locked on center selectedMarker position is always center */
     useEffect(() => {
         if (selectedMarker) {
             if (!props.center)
@@ -120,11 +160,13 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             
     },[selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
 
+    /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
     const onMove = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker)
             selectedMarker.setLatLng(map.getCenter());
     },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
 
+    /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server);
@@ -132,6 +174,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
 
+    /** If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server */
     const onClick = useCallback((e) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
@@ -150,6 +193,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {
+                /** Build markers with icon */
                 providedPointData.map((point: any, i: number) => {
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     return <Marker
@@ -165,6 +209,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
                 })
             }
             {
+                /** Build poligons */
                 groupsSorted.map((group, i) => {
                     return <Polygon key={props.id + "-Group-" + i} positions={group.positions} pathOptions={options} />
                 })

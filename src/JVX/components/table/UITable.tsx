@@ -1,22 +1,29 @@
+/** React imports */
 import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
-import BaseComponent from "../BaseComponent";
-import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
 
-import {LayoutContext} from "../../LayoutContext";
-import {jvxContext} from "../../jvxProvider";
+/** 3rd Party imports */
 import {Column} from "primereact/column";
 import {DataTable} from "primereact/datatable";
+
+/** Hook imports */
+import useProperties from "../zhooks/useProperties";
+import useDataProviderData from "../zhooks/useDataProviderData";
+import useRowSelect from "../zhooks/useRowSelect";
+import useOutsideClick from "../zhooks/useOutsideClick";
+
+/** Other imports */
+import BaseComponent from "../BaseComponent";
+import {LayoutContext} from "../../LayoutContext";
+import {jvxContext} from "../../jvxProvider";
 import {createFetchRequest, createSelectRowRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import useRowSelect from "../zhooks/useRowSelect";
 import MetaDataResponse from "../../response/MetaDataResponse";
-import useOutsideClick from "../zhooks/useOutsideClick";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import Size from "../util/Size";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 
+/** Interface for Table */
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
     columnLabels: Array<string>,
@@ -26,6 +33,7 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean
 }
 
+/** Type for CellEditor */
 type CellEditor = {
     name: string
     cellData: any,
@@ -35,14 +43,22 @@ type CellEditor = {
     resource: string
 }
 
-
+/**
+ * This component displays either just the value of the cell or an in-cell editor
+ * @param props - props received by Table
+ */
 const CellEditor: FC<CellEditor> = (props) => {
-
+    /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);
-    const wrapperRef = useRef(null)
+    /** Reference for element wrapping the cell value/editor */
+    const wrapperRef = useRef(null);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Metadata of the columns */
     const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
-    useOutsideClick(wrapperRef, setEdit, columnMetaData)
+    /** Hook which detects if there was a click outside of the element (to close editor) */
+    useOutsideClick(wrapperRef, setEdit, columnMetaData);
+    /** Either return the correctly rendered value or a in-cell editor */
     return useMemo(() => {
         if (!edit) {
             return (
@@ -60,31 +76,44 @@ const CellEditor: FC<CellEditor> = (props) => {
     }, [edit, props, context.contentStore.locale, columnMetaData]);
 }
 
+/**
+ * This component displays a DataTable
+ * @param baseProps - Initial properties sent by the server for this component
+ */
 const UITable: FC<TableProps> = (baseProps) => {
-
-    //React Hook
+    /** Reference for the div wrapping the Table */
     const wrapRef = useRef<HTMLDivElement>(null);
-    const tableRef = useRef(null)
-    const layoutContext = useContext(LayoutContext);
+    /** Reference for the Table */
+    const tableRef = useRef(null);
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
-
-    //Custom Hooks
+    /** Use context for the positioning, size informations of the layout */
+    const layoutContext = useContext(LayoutContext);
+    /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-    const compId = context.contentStore.getComponentId(props.id) as string
+    /** ComponentId of the screen */
+    const compId = context.contentStore.getComponentId(props.id) as string;
+    /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, baseProps.id, props.dataBook);
+    /** The current state of the value for the selected row of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook);
-
+    /** The amount of virtual rows loaded */
     const rows = 40;
+    /** The virtual rows filled with data */
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
+    /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
+    /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
+    /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows*2
     },[providerData.length])
-
+    /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
-    //Report Size
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if(wrapRef.current){
             if(onLoadCallback) {
@@ -92,54 +121,64 @@ const UITable: FC<TableProps> = (baseProps) => {
                     sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
+                    /** If the provided data is more than 10, send a fixed height if less, calculate the height */
                     const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+2}
                     sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
-                }
-                    
-            }
-                
+                }  
+            }    
         }
     }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
 
+    /** Determine the estimated width of the table */
     useLayoutEffect(() => {
         if (tableRef.current) {
             let cellDataWidthList:Array<number> = [];
-
+            /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows:any, index:number) => {
                 const cellDatas:NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cell-data");
                         for (let j = 0; j < cellDatas.length; j++) {
+                            /** disable auto table layout it needs to be enabled later for column resizing */
                             cellDatas[j].style.setProperty('display', 'inline-block');
                             let tempWidth:number;
                             if (cellDatas[j] !== undefined) {
+                                /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
                                 if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
                                     tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
+                            /** Add 32 pixel to its measured width to display editor properly */
                             else
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
+                            /** If the measured width is greater than the current widest width for the column, replace it */
                             if (tempWidth > cellDataWidthList[j])
                                 cellDataWidthList[j] = tempWidth;
                             }
+                            /** remove inline block */
                             cellDatas[j].style.removeProperty('display')
                         } 
             }
 
+            /** If there is no lazy loading */
             //@ts-ignore
             if (tableRef.current.table) {
                 //@ts-ignore
                 const theader = tableRef.current.table.querySelectorAll('th');
                 //@ts-ignore
                 const trows = tableRef.current.table.querySelectorAll('tbody > tr');
+                /** First set width of headers for columns then rows */
                 for (let i = 0; i < theader.length; i++)
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
                     goThroughCellData(trows, i);
-                 for (let i = 0; i < theader.length; i++)
+                /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
+                for (let i = 0; i < theader.length; i++)
                     theader[i].style.setProperty('width', cellDataWidthList[i]+  'px');
-                 let tempWidth:number = 0;
-                 cellDataWidthList.forEach(cellDataWidth => {
+                    let tempWidth:number = 0;
+                    cellDataWidthList.forEach(cellDataWidth => {
                     tempWidth += cellDataWidth
-                 });
-                 setEstTableWidth(tempWidth)
+                });
+                /** set EstTableWidth for size reporting */
+                setEstTableWidth(tempWidth)
             }
+            /** If there is lazyloading do the same thing as above but set width not only for header but for column groups and header */
             else {
                 //@ts-ignore
                 const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
@@ -167,10 +206,12 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     },[])
 
+    /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => {
         setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
     }, [providerData])
 
+    /** When a resized column got smaller, it sometimes interpreted the mouseup as click to sort the column so the pointer-events got disabled while resizing columns */
     useEffect(() => {
         const currTable = tableRef.current;
         const resizeStart = (elem:Element) => {
@@ -194,6 +235,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     },[])
 
+    /** Building the columns */
     const columns = useMemo(() => {
         const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
         return props.columnNames.map((colName, colIndex) => {
@@ -219,6 +261,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         )
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible])
 
+    /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook)?.primaryKeyColumns || ["ID"];
 
@@ -234,6 +277,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    /** 
+     * When the virtual scroll occurs, set the firstRow index to the current first row of the virtual scroll and check if more data needs to be loaded,
+     * if yes, fetch data, no set virtual rows to the next bunch of datarows
+     */
     const handleVirtualScroll = (event: {first: number, rows: number}) => {
         const slicedProviderData = providerData.slice(event.first, event.first+event.rows);
         const isAllFetched = context.contentStore.dataProviderFetched.get(compId)?.get(props.dataBook);
@@ -249,6 +296,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    /** When column-resizing stops, enable pointer-events for sorting, and adjust the width of resize */
     const handleColResize = (e:any) => {
         e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
