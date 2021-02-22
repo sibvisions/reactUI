@@ -1,5 +1,8 @@
-import ContentStore from "./ContentStore"
+/** 3rd Party imports */
 import * as queryString from "querystring";
+
+/** Other imports */
+import ContentStore from "./ContentStore"
 import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
 import BaseResponse from "./response/BaseResponse";
 import MenuResponse from "./response/MenuResponse";
@@ -22,6 +25,7 @@ import {Panel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 
+/** Type for query */
 type queryType = {
     appName?: string,
     userName?: string,
@@ -29,17 +33,36 @@ type queryType = {
     baseUrl?: string
 }
 
-class Server{
+/** Server class sends requests and handles responses */
+class Server {
+
+    /**
+     * @constructor constructs server instance
+     * @param store - contentstore instance
+     */
     constructor(store: ContentStore) {
         this.contentStore = store
     }
 
+    /** Application name */
     APP_NAME = ""
+    /** Base url for requests */
     BASE_URL = ""
+    /** Resource url for receiving images etc. */
     RESOURCE_URL = ""
+    /** Contentstore instance */
     contentStore: ContentStore;
+    /**
+     * Function to show a toast
+     * @param message - message to show
+     */
     showToast = (message: any) => {};
  
+    /**
+     * Sends a request to the server and handles its response
+     * @param request - the request to send
+     * @param endpoint - the endpoint to send the request to
+     */
     sendRequest(request: any, endpoint: string){
         let reqOpt: RequestInit = {
             method: 'POST',
@@ -52,7 +75,12 @@ class Server{
             .catch(error => console.error(error));
     }
 
-    timeoutRequest(promise: Promise<any>, ms: number){
+    /**
+     * Returns a promise which times out and throws an error after given ms
+     * @param promise - the promise
+     * @param ms - the ms to wait before a timeout
+     */
+    timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
                 reject(new Error("timeOut"))
@@ -69,6 +97,7 @@ class Server{
         });
     }
 
+    /** A Map which checks which function needs to be called when a response is received */
     responseMap = new Map<string, Function>()
         .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
         .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
@@ -88,7 +117,10 @@ class Server{
         .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this));
 
-
+    /**
+     * Calls the correct functions based on the responses received and then calls the routing decider
+     * @param responses - the responses received
+     */
     responseHandler(responses: Array<BaseResponse>){
         responses.forEach((responseObject: BaseResponse) => {
             const mapper = this.responseMap.get(responseObject.name);
@@ -100,11 +132,18 @@ class Server{
         this.routingDecider(responses);
     }
 
-    //Application MetaData
+    /**
+     * Sets the clientId in the sessionStorage
+     * @param metaData - the applicationMetaDataResponse
+     */
     applicationMetaData(metaData: ApplicationMetaData){
         sessionStorage.setItem("clientId", metaData.clientId);
     }
 
+    /**
+     * Calls contentStores handleCustomProperties for every applicationParameter 
+     * @param appParams - the applicationParametersResponse
+     */
     applicationParameters(appParams:ApplicationParametersResponse) {
         for (const [key, value] of Object.entries(appParams)) {
             if (key !== "name")
@@ -112,20 +151,35 @@ class Server{
         }
     }
 
+    /**
+     * Sets the currentUser in contentStore
+     * @param userData - the userDataResponse
+     */
     userData(userData: UserDataResponse){
         this.contentStore.currentUser = userData;
     }
 
+    /**
+     * Sets the authKey in localStorage
+     * @param authData - the authenticationDataResponse
+     */
     authenticationData(authData: AuthenticationDataResponse){
         localStorage.setItem("authKey", authData.authKey);
     }
 
+    /**
+     * Resets the contentStore
+     * @param login - the loginDataResponse
+     */
     login(login: any){
         this.contentStore.reset();
     }
 
 
-    //Content Responses
+    /**
+     * Calls the contentStore updateContent function 
+     * @param genericData - the genericResponse
+     */
     generic(genericData: GenericResponse){
         this.contentStore.updateContent(genericData.changedComponents);
     }
@@ -134,6 +188,10 @@ class Server{
     //     this.contentStore.closeScreen(closeScreenData.componentId);
     // }
 
+    /**
+     * Sets the menuAction for each menuData and passes it to the contentstore and then triggers its update
+     * @param menuData - the menuResponse
+     */
     menu(menuData: MenuResponse){
         menuData.entries.forEach(menuItem => {
             menuItem.action = () => {
@@ -147,9 +205,15 @@ class Server{
     }
 
     //Dal
-    processRowSelection(selectedRowIndex: number | undefined, dataProvider: string){
+    /**
+     * Sets the selectedRow, if selectedRowIndex === -1 clear selectedRow and trigger selectedRow update
+     * @param selectedRowIndex - the index of the selectedRow
+     * @param dataProvider - the dataprovider
+     */
+    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string){
         const compId = dataProvider.split('/')[1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== undefined) {
+            /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex);
             this.contentStore.emitRowSelect(compId, dataProvider);
@@ -159,7 +223,12 @@ class Server{
         }
     }
 
-    processFetch(fetchData: FetchResponse){
+    /**
+     * Builds the data and then tells contentStore to update its dataProviderData
+     * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
+     * @param fetchData - the fetchResponse
+     */
+    processFetch(fetchData: FetchResponse) {
         const builtData = fetchData.records.map(record => {
             const data : any = {}
             fetchData.columnNames.forEach((columnName, index) => {
@@ -178,6 +247,12 @@ class Server{
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
+    /**
+     * Fetches new data from the server depending on reload property:
+     * if reload is -1 clear the current data for this dataprovider from the contentstore and re-fetch it
+     * if reload is a number fetch from the reload value one row
+     * @param changedProvider - the dataProviderChangedResponse
+     */
     processDataProviderChanged(changedProvider: DataProviderChangedResponse){
         const compId = changedProvider.dataProvider.split('/')[1];
         if(changedProvider.reload === -1) {
@@ -190,12 +265,15 @@ class Server{
             fetchReq.rowCount = 1;
             fetchReq.fromRow = changedProvider.reload;
             fetchReq.dataProvider = changedProvider.dataProvider;
-            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH
-            )
+            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
         }
         this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
     }
 
+    /**
+     * Checks if some metaData already exists for this compId and either sets new/updated metaData in existing map or creates new map for metadata
+     * @param metaData - the metaDataResponse
+     */
     processMetaData(metaData: MetaDataResponse) {
         const compId = metaData.dataProvider.split('/')[1];
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
@@ -210,6 +288,10 @@ class Server{
 
     //Down- & UpLoad
 
+    /**
+     * Opens a fileSelectDialog and sends the selected file to the server
+     * @param uploadData - the uploadResponse
+     */
     upload(uploadData: UploadResponse){
         const inputElem = document.createElement('input');
         inputElem.type = 'file';
@@ -233,6 +315,10 @@ class Server{
         }
     }
 
+    /**
+     * Downloads the file
+     * @param downloadData - the downloadResponse
+     */
     download(downloadData: DownloadResponse){
         const a = document.createElement('a');
         a.href = downloadData.url.split(';')[0];
@@ -240,7 +326,10 @@ class Server{
         a.click();
     }
 
-    //Show Document
+    /**
+     * Opens a link
+     * @param showData - the showDocumentResponse
+     */
     showDocument(showData: ShowDocumentResponse) {
         const a = document.createElement('a');
         a.style.display = 'none';
@@ -252,6 +341,10 @@ class Server{
         document.body.removeChild(a);
     }
 
+    /**
+     * When the session expires send a new startupRequest to the server like in app and reset the contentStore
+     * @param expData - the sessionExpiredResponse
+     */
     sessionExpired(expData: SessionExpiredResponse) {
         const queryParams: queryType = queryString.parse(window.location.search);
         const startUpRequest = createStartupRequest();
@@ -279,17 +372,28 @@ class Server{
         console.error(expData.title)
     }
 
+    /**
+     * Shows a toast with the error message
+     * @param errData - the errorResponse
+     */
     showError(errData: ErrorResponse) {
         this.showToast({severity: 'error', summary: errData.message});
         console.error(errData.details)
     }
 
+    /**
+     * Shows a toast that the site needs to be reloaded
+     * @param reData - the restartResponse
+     */
     showRestart(reData: RestartResponse) {
         this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info});
         console.warn(reData.info);
     }
 
-    //Decides if and where to the user should be routed based on all responses
+    /**
+     * Decides if and where to the user should be routed based on all responses 
+     * @param responses - the response array
+     */
     routingDecider(responses: Array<BaseResponse>){
         let routeTo: string | undefined;
         let highestPriority = 0;

@@ -1,3 +1,4 @@
+/** Interface for LoginRequest */
 interface LoginRequest {
     clientId: string | undefined
     username: string | undefined

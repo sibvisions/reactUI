@@ -54,7 +54,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
-    /** The current state of the value for the selected row of the databook sent by the server */
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -95,7 +95,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
      * @param submitValue 
      */
     const onSelectCallback = (submitValue:any) => {
-        onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, lastValue.current, context.server));
+        onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, context.server));
         overridePrime()
     }
 
@@ -140,7 +140,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             //@ts-ignore
             inputDate = moment(calendar.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
-        onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), lastValue.current, context.server));
+        onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), context.server));
         overridePrime()
     }
 

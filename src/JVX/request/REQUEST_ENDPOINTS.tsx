@@ -1,3 +1,4 @@
+/** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS  {
     STARTUP = "/api/startup",
     LOGIN = "/api/v2/login",

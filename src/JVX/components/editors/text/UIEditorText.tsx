@@ -50,7 +50,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
-    /** The current state of the value for the selected row of the databook sent by the server */
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);
@@ -110,8 +110,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
-            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
-            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
         />
         )
     }
@@ -127,8 +127,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             disabled={!props.cellEditor_editable_}
             value={text || ""}
             onChange={event => setText(event.currentTarget.value)}
-            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
-            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
         />
         )
     }
@@ -143,8 +143,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 disabled={!props.cellEditor_editable_}
                 value={text || ""}
                 onChange={event => setText(event.currentTarget.value)}
-                onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
-                onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, lastValue.current, context.server))}
+                onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+                onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
             />
         )
     }

@@ -84,7 +84,7 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                 return Intl.NumberFormat(locale, 
                     {
                         useGrouping: getGrouping(castedColumn.cellEditor.numberFormat),
-                        minimumIntegerDigits: getMinimumIntDigits(castedColumn.cellEditor.numberFormat, cellData)?.length,
+                        minimumIntegerDigits: getMinimumIntDigits(castedColumn.cellEditor.numberFormat),
                         minimumFractionDigits: getScaleDigits(castedColumn.cellEditor.numberFormat, castedColumn.scale).minScale,
                         maximumFractionDigits: getScaleDigits(castedColumn.cellEditor.numberFormat, castedColumn.scale).maxScale
                     }).format(cellData);

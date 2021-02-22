@@ -1,3 +1,4 @@
+/** Interface for FilterRequest */
 interface FilterRequest {
     clientId: string,
     dataProvider: string|undefined,

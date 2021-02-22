@@ -47,9 +47,9 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.id, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.id, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
     /** The center position of the map */
@@ -165,7 +165,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             const onClick = (e:any) => {
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latLng.lat(), e.latLng.lng()], undefined, context.server);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latLng.lat(), e.latLng.lng()], context.server);
                     sendSaveRequest(props.pointsDataBook, true, context.server)
                 }
             }
@@ -179,7 +179,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
             const onDragEnd = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], undefined, context.server);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server);
                     setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
                 }
             }
@@ -188,7 +188,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             const onZoomChanged = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], undefined, context.server);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server);
                     setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
                 }
             }

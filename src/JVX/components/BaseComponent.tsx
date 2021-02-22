@@ -1,7 +1,9 @@
+/** Other imports */
 import { UIFont } from "./compprops/UIFont";
 import Margins from "./layouts/models/Margins";
 import LoadCallBack from "./util/LoadCallBack";
 
+/** Interface for BaseComponent every components possible properties */
 interface BaseComponent{
     onLoadCallback?: LoadCallBack
     id: string,

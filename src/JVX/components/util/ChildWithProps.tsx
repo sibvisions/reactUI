@@ -1,3 +1,4 @@
+/** Interface for rendered components with properties */
 interface ChildWithProps {
     props: {
         id: string,

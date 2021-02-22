@@ -1,3 +1,4 @@
+/** Interface for SelectRowRequest */
 interface SelectRowRequest {
     clientId: string,
     componentId: string | undefined,

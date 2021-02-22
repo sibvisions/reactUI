@@ -1,5 +1,10 @@
+/** 3rd Party imports */
 import moment from 'moment-timezone'
 
+/** 
+ * List to map tokens from moment to PrimeReact calendar tokens if they are not supported by PrimeReact (which is a lot), 
+ * format them with moment and put the value between single quotes
+*/
 const mapListPrime:any = {
     N: (val:any) => "'" + moment(val).format('N') + "'",
     Y: () => 'yy',
@@ -43,6 +48,7 @@ const mapListPrime:any = {
     ZZ: (val:any) => "'" + moment(val).format('ZZ')
 }
 
+/** List to map tokens from Java SimpleDateFormat to moment*/
 const mapListMoment:any = {
     G: () => 'N', 
     y: (format:string, char:string) => formatYear(format, char, 'Y'), 
@@ -68,6 +74,12 @@ const mapListMoment:any = {
     X: (format:string, char:string, val:any) => mapTimeZoneX(format, char, val)
 }
 
+/**
+ * Returns the amount of times the given char is repeated (no other character between)
+ * @param dateFormat - part of the dateFormat
+ * @param char - the char to find
+ * @returns the amount of times the given char is repeated
+ */
 function countJavaChar(dateFormat:string, char:string) {
     let i = 0
     while (dateFormat[i] === char) {
@@ -76,11 +88,25 @@ function countJavaChar(dateFormat:string, char:string) {
     return i;
 }
 
+/**
+ * Returns leading zeros in brackets (for literal text) for moment
+ * @param repeats - amount of leading zeros
+ * @returns leading zeros in brackets (for literal text) for moment
+ */
 function addLeadingZeros(repeats:number) {
     return '[' + '0'.repeat(repeats) + ']';
 }
 
+/**
+ * Returns a part of the date format with the mapped moment tokens from Java tokens
+ * @param format - the date format
+ * @param jChar - the given Java SimpleDateFormat token
+ * @param mChar - the moment token
+ * @param maxCount - the max possible amount for a token before leading zeros are added
+ * @returns a part of the date format with the mapped moment tokens from Java tokens
+ */
 function mapJavaToMoment(format:string, jChar:string, mChar:string, maxCount:number) {
+    /** Day name e.g. "Monday" if bigger than maxCount 4 because no leading zeros */
     if (jChar === 'E') {
         if (countJavaChar(format, jChar) > maxCount)
             return mChar.repeat(4);
@@ -88,6 +114,7 @@ function mapJavaToMoment(format:string, jChar:string, mChar:string, maxCount:num
             return mChar.repeat(maxCount);
     }
     else if (countJavaChar(format, jChar) > maxCount)
+        /** Month name e.g. "January" no leading zeros */
         if (mChar === 'M')
             return mChar.repeat(maxCount)
         else
@@ -96,18 +123,33 @@ function mapJavaToMoment(format:string, jChar:string, mChar:string, maxCount:num
         return mChar.repeat(countJavaChar(format, jChar));
 }
 
+/**
+ * Returns the part of the date format for year
+ * @param format - the date format
+ * @param char - the Java char
+ * @param replaceChar - the moment char
+ */
 function formatYear(format:string, char:string, replaceChar:string) {
     if (countJavaChar(format, char) !== 3 && countJavaChar(format, char) < 5)
         return replaceChar.repeat(countJavaChar(format, char));
+    /** If count is 3 in Java the year has 4 digits */
     else if (countJavaChar(format, char) === 3)
         return replaceChar.repeat(4);
     else
         return addLeadingZeros(countJavaChar(format, char)-4) + replaceChar.repeat(4)
 }
 
+/**
+ * Returns the part of the format for day of year
+ * @param format - the date format
+ * @param char - the Java char
+ * @param val - the current date value
+ */
 function formatDayOfYear(format:string, char:string, val:any) {
+    /** If the count of char is 2 and the value is < 10 add a leading zero otherwise 09 would be 9 */
     if (countJavaChar(format, char) === 2 && parseInt(moment(val).format('DDD')) < 10)
         return addLeadingZeros(countJavaChar(format, char)-1) + 'DDD'
+    /** no leading zeros 1 is 1, 10 is 10, 100 is 100 */
     else if (countJavaChar(format, char) === 3)
         return 'DDDD'
     else if (countJavaChar(format, char) > 3)
@@ -116,7 +158,15 @@ function formatDayOfYear(format:string, char:string, val:any) {
         return 'DDD'
 }
 
+/**
+ * Returns the mapping of the Java 'K' token. because moment doesn't support it return it in brackets
+ * @param format - the date format
+ * @param char - the Java char
+ * @param val - the current date value
+ * @returns the mapping of the Java 'K' token
+ */
 function mapHourK(format:string, char:string, val:any) {
+    /** Substract 1 hour from 'hh' because according to SimpleDateFormat docs 'K' is 0-11 am/pm and 'hh' is 1-12 am/pm */
     if (countJavaChar(format, char) > 2)
         return addLeadingZeros(countJavaChar(format, char)-2) + '[' + moment(val).subtract(1, 'hour').format('hh') + ']';
     else if (countJavaChar(format,char) === 2)
@@ -125,6 +175,12 @@ function mapHourK(format:string, char:string, val:any) {
         return '[' + moment(val).subtract(1, 'hour').format('h') + ']';
 }
 
+/**
+ * Returns the mapping of the Java 'Z' token
+ * @param format - the date format
+ * @param char - the Java char
+ * @param val - the current date value
+ */
 function mapTimeZoneX(format:string, char:string, val:any) {
     if (countJavaChar(format, char) === 1)
         return '[' + moment(val).format('Z').substring(0, 2) + ']';
@@ -134,9 +190,14 @@ function mapTimeZoneX(format:string, char:string, val:any) {
         return 'Z'
 }
 
-function getWeekIndexInMonth(day:any) {
-    const startOfMonth = moment(day).startOf('month');
-    const endOfMonth = moment(day).endOf('month');
+/**
+ * Returns the index of the week in its month in brackets. E.g. 22.02.2021 is in the forth week of the month => returns 4
+ * @param value - the date value
+ * @returns the index of the week in its month
+ */
+function getWeekIndexInMonth(value:any) {
+    const startOfMonth = moment(value).startOf('month');
+    const endOfMonth = moment(value).endOf('month');
   
     let currentMomentDate = moment(startOfMonth);
     const weeks = [];
@@ -144,9 +205,15 @@ function getWeekIndexInMonth(day:any) {
       weeks.push(currentMomentDate.week());
       currentMomentDate.add(1, "weeks").startOf("week");
     }
-    return '[' + weeks.indexOf(moment(day).week()+1).toString() + ']'
+    return '[' + weeks.indexOf(moment(value).week()+1).toString() + ']'
 }
 
+/**
+ * Returns the given part of the format as PrimeReact tokens
+ * @param format - the part of the date format
+ * @param value - the current value
+ * @returns the given part of the format as PrimeReact tokens
+ */
 function mapPartPrime(format:string, value:any) {
     let i = 0
     let startIndex:number = -1;
@@ -164,6 +231,15 @@ function mapPartPrime(format:string, value:any) {
     return appendToPrimeString(format, startIndex, i, resultString, value);
 }
 
+/**
+ * Returns a string of the moment tokens mapped to the PrimeReact tokens
+ * @param format - the part of the date format
+ * @param startIndex - the index to start from
+ * @param currentIndex - the current index
+ * @param resultString - the current resultString of the part to map
+ * @param value - the current date value
+ * @returns a string of the moment tokens mapped to the PrimeReact tokens
+ */
 function appendToPrimeString(format:string, startIndex:number, currentIndex:number, resultString:string, value:any) {
     if (startIndex !== -1) {
         let tempString = format.substring(startIndex, currentIndex);
@@ -176,11 +252,18 @@ function appendToPrimeString(format:string, startIndex:number, currentIndex:numb
     return resultString;
 }
 
+/**
+ * Returns a string of the Java tokens mapped to moment tokens
+ * @param dateFormat - the part of the date format
+ * @param value - the current date value
+ * @returns a string of the Java tokens mapped to moment tokens
+ */
 function mapPartMoment(dateFormat:string, value:any) {
     let resultString:string = "";
     for (let i = 0; i < dateFormat.length; i++) {
         if (mapListMoment[dateFormat[i]]) {
             resultString += mapListMoment[dateFormat[i]].apply(undefined, [dateFormat.substring(i), dateFormat[i], value]);
+            /** Increase index to skip already mapped chars */
             i += countJavaChar(dateFormat.substring(i), dateFormat[i]) - 1;
         }
         else
@@ -189,19 +272,29 @@ function mapPartMoment(dateFormat:string, value:any) {
     return resultString;
 }
 
+/**
+ * Returns the complete mapped string for either PrimeReact or moment
+ * @param dateFormat - the date format
+ * @param value - the current value
+ * @param prime - true, if the format should be mapped to PrimeReact
+ * @returns the complete mapped string for either PrimeReact or moment
+ */
 function mapToClientFormat(dateFormat:string, value:any, prime:boolean) {
     let mappedString = ''
     let part:any = ''
+    /** RegExp to part tokens from literal strings in the format '[]' in moment "'" in Java */
     const regexp = prime ? /[^[\]]+|(\[[^[\]]*])/g : /[^']+|('[^']*')/g;
     while (part = regexp.exec(dateFormat)) {
         part = part[0]
         if (prime) {
+            /** If the part has literal text by moment, put it in single quotes else map it */
             if (part.match(/\[(.*?)\]/))
                 mappedString += "'" + part.substring(1, part.length - 1) + "'";
             else
                 mappedString += mapPartPrime(part, value);
         }
         else {
+            /** If the part has literal text b Java, put it in brackets else map it */
             if (part.match(/'(.*?)'/))
                 mappedString += '[' + part.substring(1, part.length - 1) + ']';
             else
@@ -211,15 +304,33 @@ function mapToClientFormat(dateFormat:string, value:any, prime:boolean) {
     return mappedString;
 }
 
+/**
+ * Returns the mapped date format for PrimeReact calendar
+ * @param dateFormat - the date format
+ * @param value - the current value
+ * @returns the mapped date format for PrimeReact calendar
+ */
 export function parseDateFormatCell(dateFormat:string|undefined, value:any) {
     const momentString = mapToClientFormat(dateFormat as string, value, false);
     return mapToClientFormat(momentString, value, true);
 }
 
+/**
+ * Returns the mapped date format for moment
+ * @param dateFormat - the date format
+ * @param value - the current value
+ * @returns the mapped date format for moment
+ */
 export function parseDateFormatTable(dateFormat:string|undefined, value:any) {
     return mapToClientFormat(dateFormat as string, value, false);
 }
 
+/**
+ * Returns the moment date
+ * @param dateFormat - the date format
+ * @param value - the current value
+ * @returns the moment date
+ */
 export function getMomentValue(dateFormat:string|undefined, value:any) {
     return moment(value).format(mapToClientFormat(dateFormat as string, value, false));
 }

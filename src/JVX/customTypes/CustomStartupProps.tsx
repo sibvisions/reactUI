@@ -1,3 +1,4 @@
+/** Interface for CustomStartupProperties */
 interface CustomStartupProps {
     [key:string]: any
 }

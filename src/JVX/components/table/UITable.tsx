@@ -94,8 +94,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The data provided by the databook */
-    const [providerData] = useDataProviderData(compId, baseProps.id, props.dataBook);
-    /** The current state of the value for the selected row of the databook sent by the server */
+    const [providerData] = useDataProviderData(compId, props.dataBook);
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook);
     /** The amount of virtual rows loaded */
     const rows = 40;

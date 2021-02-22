@@ -1,3 +1,4 @@
+/** Interface for BaseResponse */
 interface BaseResponse {
     name: string;
 }

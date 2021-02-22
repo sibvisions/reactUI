@@ -1,3 +1,4 @@
+/** Interface for LogoutRequest */
 interface LogoutRequest {
     clientId: string
 }

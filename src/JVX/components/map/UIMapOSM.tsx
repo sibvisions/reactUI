@@ -107,9 +107,9 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.id, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.id, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<any>();
     /** Colors for polygon filling and polygon lines */
@@ -169,7 +169,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], undefined, context.server);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server);
             setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
@@ -178,7 +178,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const onClick = useCallback((e) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], undefined, context.server);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], context.server);
             setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])

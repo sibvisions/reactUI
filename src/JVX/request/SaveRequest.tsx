@@ -1,3 +1,4 @@
+/** Interface for SaveRequest */
 interface SaveRequest {
     clientId?: string
     dataProvider?: string

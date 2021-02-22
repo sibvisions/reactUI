@@ -1,3 +1,4 @@
+/** Interface for DeviceStatusRequest */
 interface DeviceStatusRequest{
     clientId: string,
     screenWidth: number,

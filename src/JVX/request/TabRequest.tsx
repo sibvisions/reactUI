@@ -1,3 +1,4 @@
+/** Interface for TabRequest */
 interface TabRequest {
     clientId?: string,
     componentId?: string,

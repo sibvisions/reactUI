@@ -19,7 +19,7 @@ import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
-import {getDecimalLength, getGrouping, getMinimumIntDigits, getNumberLength, getScaleDigits} from "../../util/NumberProperties";
+import {getDecimalLength, getGrouping, getMinimumIntDigits, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
 
 /** Interface for cellEditor property of NumberCellEditor */
 interface ICellEditorNumber extends ICellEditor{
@@ -58,7 +58,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
-    /** The current state of the value for the selected row of the databook sent by the server */
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Current state value of input element */
     const [value, setValue] = useState<number>(selectedRow);
@@ -86,7 +86,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefixLength = useMemo(() => getMinimumIntDigits(props.cellEditor.numberFormat, selectedRow),
+    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, selectedRow),
     [props.cellEditor.numberFormat, selectedRow]);
 
     /** 
@@ -135,7 +135,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
      */
     const handleKeyDown = (e:any) => {
         const curRef = numberRef.current
-        handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, lastValue.current, context.server));
+        handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, context.server));
         //@ts-ignore
         if (curRef.inputEl.value.length === curRef.inputEl.maxLength || (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + e.key).toString().length > decimalLength && curRef.inputEl.selectionStart <= (value ? value.toString().indexOf('.') : 0))) {
             e.preventDefault();
@@ -155,7 +155,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             value={value}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, lastValue.current, context.server))}
+            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
             disabled={!props.cellEditor_editable_}
             onKeyDown={handleKeyDown}
         />

@@ -17,7 +17,7 @@ import Login from "./frontmask/login/login";
 import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
 import {jvxContext} from "./JVX/jvxProvider";
 import {createStartupRequest} from "./JVX/factories/RequestFactory";
-import {checkProperties} from './JVX/components/util/CheckProperties';
+import {checkEmptyConfProperties} from './JVX/components/util/CheckProperties';
 import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
@@ -80,7 +80,7 @@ const App: FC<ICustomContent> = (props) => {
         fetch('config.json')
         .then((r) => r.json())
         .then((data) => {
-            const emptyConfProps = checkProperties(data);
+            const emptyConfProps = checkEmptyConfProperties(data);
             if (emptyConfProps.length > 0) {
                 let propsToPrint = ""
                 emptyConfProps.forEach((emptyProp:string) => {

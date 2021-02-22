@@ -1,5 +1,7 @@
+/** Other imports */
 import BaseResponse from "./BaseResponse";
 
+/** Interface for serverMenuButtons */
 export type serverMenuButtons = {
     componentId: string,
     group: string,
@@ -7,6 +9,8 @@ export type serverMenuButtons = {
     image: string,
     action: Function,
 }
+
+/** Interface for ManuResponse */
 interface MenuResponse extends BaseResponse{
     componentId: string,
     entries: Array<serverMenuButtons>

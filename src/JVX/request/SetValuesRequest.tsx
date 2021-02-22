@@ -1,3 +1,4 @@
+/** Interface for SetValuesRequest */
 interface SetValuesRequest{
     clientId: string | undefined,
     componentId: string | undefined,

@@ -1,3 +1,4 @@
+/** Request imports */
 import StartupRequest from "../request/StartupRequest";
 import LoginRequest from "../request/LoginRequest";
 import PressButtonRequest from "../request/PressButtonRequest";
@@ -14,11 +15,19 @@ import SaveRequest from "../request/SaveRequest";
 import CloseScreenRequest from "../request/CloseScreenRequest";
 
 
-
+/**
+ * Returns the ClientId from the local storage
+ * @returns the ClientId from the local storage
+ */
 const getClientId = (): string => {
     return sessionStorage.getItem("clientId") || "ClientIdNotFound"
 }
 
+/**
+ * Returns a StartupRequest object with either values which can be overwritten or properties as parameters
+ * @param values - properties for the startupRequest
+ * @returns a StartupRequest object
+ */
 export const createStartupRequest = (values?: StartupRequest): StartupRequest => {
     const req: StartupRequest = {
         layoutMode: values?.layoutMode || "generic",
@@ -46,6 +55,11 @@ export const createStartupRequest = (values?: StartupRequest): StartupRequest =>
     return  req;
 }
 
+/**
+ * Returns a loginRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the loginRequest
+ * @returns a loginRequest object
+ */
 export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
     const req: LoginRequest = {
         clientId: values?.clientId || getClientId(),
@@ -56,6 +70,11 @@ export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
     return req;
 }
 
+/**
+ * Returns a pressButtonRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the pressButtonRequest
+ * @returns a pressButtonRequest object
+ */
 export const createPressButtonRequest = (values?: PressButtonRequest): PressButtonRequest => {
     const req: PressButtonRequest = {
         clientId: values?.clientId || getClientId(),
@@ -64,6 +83,11 @@ export const createPressButtonRequest = (values?: PressButtonRequest): PressButt
     return req;
 }
 
+/**
+ * Returns a openScreenRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the openScreenRequest
+ * @returns a openScreenRequest object
+ */
 export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenRequest => {
     const req: OpenScreenRequest = {
         clientId: values?.clientId || getClientId(),
@@ -72,6 +96,11 @@ export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenR
     return req;
 }
 
+/**
+ * Returns a logoutRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the logoutRequest
+ * @returns a logoutRequest object
+ */
 export const createLogoutRequest = (values?: LogoutRequest): LogoutRequest => {
     const req: LogoutRequest = {
         clientId: values?.clientId || getClientId()
@@ -79,6 +108,11 @@ export const createLogoutRequest = (values?: LogoutRequest): LogoutRequest => {
     return req;
 }
 
+/**
+ * Returns a deviceStatusRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the deviceStatusRequest
+ * @returns a deviceStatusRequest object
+ */
 export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceStatusRequest => {
     const req: DeviceStatusRequest = {
         clientId: getClientId(),
@@ -88,6 +122,11 @@ export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceS
     return req;
 }
 
+/**
+ * Returns a selectRowRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the selectRowRequest
+ * @returns a selectRowRequest object
+ */
 export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequest => {
     const req: SelectRowRequest = {
         clientId: values?.clientId || getClientId(),
@@ -98,6 +137,11 @@ export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequ
     return req
 }
 
+/**
+ * Returns a fetchRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the fetchRequest
+ * @returns a fetchRequest object
+ */
 export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
     const req: FetchRequest = {
         clientId: values?.clientId || getClientId(),
@@ -108,6 +152,11 @@ export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
     return req;
 }
 
+/**
+ * Returns a filterRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the filterRequest
+ * @returns a filterRequest object
+ */
 export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
     const req: FilterRequest = {
         clientId: values?.clientId || getClientId(),
@@ -118,6 +167,11 @@ export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
     return req;
 }
 
+/**
+ * Returns a setValueRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the setValueRequest
+ * @returns a setValueRequest object
+ */
 export const createSetValueRequest = (values?: SetValueRequest): SetValueRequest => {
     const req: SetValueRequest = {
         clientId: values?.clientId || getClientId(),
@@ -127,6 +181,11 @@ export const createSetValueRequest = (values?: SetValueRequest): SetValueRequest
     return req;
 }
 
+/**
+ * Returns a setValuesRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the setValuesRequest
+ * @returns a setValuesRequest object
+ */
 export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequest => {
     const req: SetValuesRequest = {
         clientId: values?.clientId || getClientId(),
@@ -138,6 +197,11 @@ export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequ
     return req;
 }
 
+/**
+ * Returns a tabRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the tabRequest
+ * @returns a tabRequest object
+ */
 export const createTabRequest = (values?: TabRequest): TabRequest => {
     const req:TabRequest = {
         clientId: values?.clientId || getClientId(),
@@ -147,6 +211,11 @@ export const createTabRequest = (values?: TabRequest): TabRequest => {
     return req;
 }
 
+/**
+ * Returns a saveRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the saveRequest
+ * @returns a saveRequest object
+ */
 export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
     const req:SaveRequest = {
         clientId: values?.clientId || getClientId(),
@@ -156,6 +225,11 @@ export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
     return req;
 }
 
+/**
+ * Returns a closeScreenRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the closeScreenRequest
+ * @returns a closeScreenRequest object
+ */
 export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScreenRequest => {
     const req:CloseScreenRequest = {
         clientId: values?.clientId || getClientId(),

@@ -1,5 +1,7 @@
+/** Other imports */
 import BaseResponse from "./BaseResponse";
 
+/** Interface for DataProviderChangedResponse */
 interface DataProviderChangedResponse extends BaseResponse{
     dataProvider: string,
     insertEnabled?: boolean,

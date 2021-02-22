@@ -1,3 +1,4 @@
+/** Enum for ResponseNames */
 enum RESPONSE_NAMES{
     APPLICATION_META_DATA="applicationMetaData",
     USER_DATA="userData",

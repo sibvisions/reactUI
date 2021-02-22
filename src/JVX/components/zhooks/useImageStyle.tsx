@@ -1,6 +1,17 @@
+/** React imports */
 import { CSSProperties, useMemo } from "react";
+
+/** Other imports */
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
 
+/**
+ * This hook returns css style properties for images based on their alignments
+ * @param ha - "normal" horizontal alignment
+ * @param va - "normal" vertical alignment
+ * @param cha - cellEditor horizontal alignment
+ * @param cva -cellEditor vertical alignment
+ * @returns css style properties for images
+ */
 const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number | undefined, cva: number | undefined) => {
     const imageAlignments = useMemo(() => {
         const spanCSS: CSSProperties = {};

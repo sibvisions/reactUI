@@ -13,7 +13,7 @@ import useDataProviderData from "../../JVX/components/zhooks/useDataProviderData
  */
 const CustomChartScreen: FC = () => {
     /** Data received by Dataproviderhook */
-    const [data] = useDataProviderData("Cha-OL", "old", "JVxMobileDemo/Cha-OL/chartData#0");
+    const [data] = useDataProviderData("Cha-OL", "JVxMobileDemo/Cha-OL/chartData#0");
 
     /**
      * Builds the chart-object based on data of dataprovider

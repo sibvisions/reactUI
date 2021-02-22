@@ -1,6 +1,17 @@
+/** React imports */
 import { useEffect } from "react"
+
+/** Other imports */
 import { IEditor } from "../editors/IEditor"
 
+/**
+ * This hook adds a clickListener to the document, when a LinkedCellEditor or a DateCellEditor is opened while in-cell editing,
+ *  to check if there was a click outside of the given ref.
+ * @param ref - The reference which will be checked
+ * @param setEdit - a function to set the state of edit in in-cell editing
+ * @param metaData - metaData of cell
+ * @returns removes clickListener
+ */
 const useOutsideClick = (ref: any, setEdit: Function, metaData: IEditor | undefined) => {
     useEffect(() => {
         const handleClickOutside = (event: any) => {

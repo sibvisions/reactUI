@@ -1,3 +1,4 @@
+/** Interface for FetchRequest */
 interface FetchRequest{
     clientId: string,
     dataProvider: string | undefined,

@@ -45,7 +45,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     const [props] = useProperties<IEditorCheckbox>(baseProps.id, baseProps)
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
-    /** The current state of the value for the selected row of the databook sent by the server */
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Alignments for CellEditor */
     const alignments = checkCellEditorAlignments(props);
@@ -134,7 +134,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
                 checked={checked}
                 onChange={() => {
                     setChecked(!checked)
-                    sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), undefined, context.server)
+                    sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server)
                 }} 
             />
             <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>

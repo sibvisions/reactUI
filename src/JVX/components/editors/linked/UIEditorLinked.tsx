@@ -62,8 +62,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(compId, baseProps.id, props.cellEditor.linkReference.referencedDataBook||"");
-    /** The current state of the value for the selected row of the databook sent by the server */
+    const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -223,7 +223,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         });
         /** If the text is empty, send null to the server */
         if (!text) {
-            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, lastValue.current, context.server));
+            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, context.server));
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -238,11 +238,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     for (let i = 0; i < Object.values(foundData[0]).length; i++) {
                         console.log(props.cellEditor.linkReference.columnNames[i], Object.values(foundData[0])[i], foundData[0])
                         newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    }
-                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, lastValue.current, context.server));
+                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, context.server));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else
-                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, lastValue.current, context.server));
+                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, context.server));
             }
         
         }
