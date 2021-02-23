@@ -164,8 +164,8 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
-            if (context.contentStore.menuModeAuto) {
-                context.contentStore.setMenuModeAuto(false)
+            if (!context.contentStore.menuModeAuto) {
+                context.contentStore.setMenuModeAuto(true)
             }
             else {
                 if (!windowSize) {

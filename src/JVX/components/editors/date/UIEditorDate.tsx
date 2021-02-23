@@ -61,33 +61,40 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Current state of dateFormat for PrimeReact Calendar */
-    const [dateFormat, setDateFormat] = useState(parseDateFormatCell(props.cellEditor.dateFormat, selectedRow))
+    const [dateFormat, setDateFormat] = useState(selectedRow ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : "")
     /** Wether the DateCellEditor is a time-editor */
     const showTime = props.cellEditor.isTimeEditor;
     /** Wether the DateCellEditor should show seconds */
     const showSeconds = props.cellEditor.isSecondEditor;
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
-    /** Length of the date value */
-    const valueLength = useMemo(() => getMomentValue(props.cellEditor.dateFormat, selectedRow).length, [props.cellEditor.dateFormat, selectedRow])
 
     /**
      * If time is displayed, PrimeReact ALWAYS puts the time after the date, but in our case the time could be anywhere
      * so we have to get rid of their time
      */
     const overridePrime = useCallback(() => {
-        if (props.cellEditor_editable_) {
+        if (props.cellEditor_editable_ && selectedRow) {
             if (timeOnly) {
                 /** Set value to just the dateformat without ' to remove PrimeReact time */
-                //@ts-ignore
-                setTimeout(() => calendar.current.inputElement.value = dateFormat.replaceAll("'", ''),0)
+                setTimeout(() => {
+                    if (calendar.current) {
+                        //@ts-ignore
+                        calendar.current.inputElement.value = dateFormat.replaceAll("'", '')
+                    }
+                },0)
             }
             else if (showTime) {
-                //@ts-ignore
-                setTimeout(() => calendar.current.inputElement.value = getMomentValue(props.cellEditor.dateFormat, selectedRow), 0);
+                setTimeout(() => {
+                    if (calendar.current) {
+                        //@ts-ignore
+                        calendar.current.inputElement.value = selectedRow ? getMomentValue(props.cellEditor.dateFormat, selectedRow) : ""
+                    }
+                    
+                }, 0);
             }
         }
-    },[timeOnly, showTime, selectedRow, valueLength, dateFormat, props.cellEditor.dateFormat, props.cellEditor_editable_])
+    },[timeOnly, showTime, selectedRow, dateFormat, props.cellEditor.dateFormat, props.cellEditor_editable_])
 
     /**
      * When a date is selected in the Datepicker call the onBlurCallBack function to send the value to the server
@@ -166,10 +173,10 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
      */
     useEffect(() => {
         if (props.cellEditor_editable_)
-            setTimeout(() => setDateFormat(parseDateFormatCell(props.cellEditor.dateFormat, selectedRow)),75)
+            setTimeout(() => setDateFormat(selectedRow ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : ""),75)
         else
             setDateFormat("")
-    }, [props.cellEditor_editable_, props.cellEditor.dateFormat, selectedRow])
+    }, [props.cellEditor_editable_, props.cellEditor.dateFormat, selectedRow]);
 
     return(
         <Calendar

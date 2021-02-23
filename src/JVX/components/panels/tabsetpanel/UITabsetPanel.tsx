@@ -73,7 +73,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      */
     useLayoutEffect(() => {
-        if (onLoadCallback && preferredCompSizes && props.selectedIndex !== -1) {
+        if (onLoadCallback && preferredCompSizes && preferredCompSizes.size > 0 && props.selectedIndex !== -1) {
             const selectedPanel = preferredCompSizes.get(components[(props.selectedIndex as number)].props.id);
             if (selectedPanel) {
                 const prefSize:Size = {height: selectedPanel.height, width: selectedPanel.width};
@@ -147,7 +147,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             });
         }
         return builtTabs;
-    }, [components, props.foreground, buildTabRequest, context.server])
+    }, [components, props.foreground, buildTabRequest, context.server]);
 
     return (
         <LayoutContext.Provider value={componentSizes}>

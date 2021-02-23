@@ -84,6 +84,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             child.onLoadCallback = componentHasLoaded;
             if (!context.contentStore.replacedContent.has(child.id))
                 reactChild = componentHandler(child);
+                
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
             else {
                 let customComp = context.contentStore.customContent.get(child.name as string)?.apply(undefined, []);
@@ -101,12 +102,12 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
 
     /**
-     * Subscribes to parent changes
-     * @returns unsubscribes from parent changes
+     * Subscribes the parent to childcomponent changes
+     * @returns unsubscribes from childcomponent changes
      */
     useEffect(() => {
         context.contentStore.subscribeToParentChange(id, () => {
-            /** New Components of a parent when it changes */
+            /** New Components when component changes */
             const newComponents = buildComponents();
             /** Contains the components */
             const cl = new Array<ReactElement>();

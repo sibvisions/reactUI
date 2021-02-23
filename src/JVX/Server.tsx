@@ -215,7 +215,7 @@ class Server {
         if(selectedRowIndex !== -1 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex);
+            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow);
             this.contentStore.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
             this.contentStore.clearSelectedRow(compId, dataProvider);
