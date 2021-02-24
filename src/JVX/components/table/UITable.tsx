@@ -62,7 +62,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     return useMemo(() => {
         if (!edit) {
             return (
-                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageCellEditor" ? setEdit(true) : undefined}>
+                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
                     {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
                 </div>
             )

@@ -255,10 +255,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 }
             })
 
-            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) report the size */
-            if(reportSize && !style.width && !style.height){
+            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
+            if((reportSize && !style.width && !style.height) || (flowLayoutInfo.gridHeight !== style.height || flowLayoutInfo.gridWidth !== style.width)){
                 reportSize(flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth);
-            }               
+            }
         }
 
         return sizeMap;

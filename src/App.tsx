@@ -68,6 +68,16 @@ const App: FC<ICustomContent> = (props) => {
         })
     },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents]);
 
+    /** Default values for translation */
+    useEffect(() => {
+        context.contentStore.translation
+        .set("Username", "Username")
+        .set("Password", "Password")
+        .set("Login", "Login")
+        .set("Logout", "Logout")
+        .set("Settings", "Settings");
+    },[])
+
     /**
      * On reload navigate to home, fetch config.json if some fields are not configured, warns user with toast.
      * Sets StartupRequest-, Server- and Contentstore properties based on config file or queryString (URL)

@@ -20,6 +20,7 @@
     "@types/react-transition-group": "^4.4.0",
     "@types/tinycolor2": "^1.4.2",
     "@types/underscore": "^1.10.24",
+    "@types/xml2js": "^0.4.8",
     "chart.js": "^2.9.4",
     "circular-dependency-plugin": "^5.2.2",
     "classnames": "^2.2.6",
@@ -52,7 +53,8 @@
     "tinycolor2": "^1.4.2",
     "ts-loader": "^8.0.5",
     "typescript": "^3.7.5",
-    "underscore": "^1.11.0"
+    "underscore": "^1.11.0",
+    "xml2js": "^0.4.23"
   },
   "scripts": {
     "start": "react-scripts start",

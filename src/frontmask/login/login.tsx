@@ -5,10 +5,14 @@ import React, {FC, FormEvent, useContext, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 
+/** Hook imports */
+import useTranslation from "../../JVX/components/zhooks/useTranslation";
+
 /** Other imports */
 import {jvxContext} from "../../JVX/jvxProvider";
 import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import {createLoginRequest} from "../../JVX/factories/RequestFactory";
+
 
 /** Component which handles logging in */
 const Login: FC = () => {
@@ -18,6 +22,8 @@ const Login: FC = () => {
     const [password, setPassword] = useState<string>("");
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
+    /** Current state of translations */
+    const translations = useTranslation()
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
@@ -45,7 +51,7 @@ const Login: FC = () => {
                             type="text"
                             autoComplete="username"
                             onChange={(userEvent: React.ChangeEvent<HTMLInputElement>) => setUsername(userEvent.target.value)}/>
-                        <label htmlFor="username">Username </label>
+                        <label htmlFor="username">{translations.get("Username")} </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-key" />
@@ -55,9 +61,9 @@ const Login: FC = () => {
                             type="password"
                             autoComplete="current-password"
                             onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => setPassword(passEvent.target.value)}/>
-                        <label htmlFor="password">Password </label>
+                        <label htmlFor="password">{translations.get("Password")} </label>
                     </div>
-                    <Button type="submit" className="p-primary login-button" label="Login" icon="pi pi-lock-open"/>
+                    <Button type="submit" className="p-primary login-button" label={translations.get("Login")} icon="pi pi-lock-open"/>
                 </div>
                 
             </form>

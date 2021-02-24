@@ -103,8 +103,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                     position: "absolute"
                 });
             });
-            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) report the size */
-            if (reportSize && !style.width && !style.height)
+            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
+            if ((reportSize && !style.width && !style.height) || (totalHeight !== style.height || totalWidth !== style.width))
                 reportSize(totalHeight, totalWidth);
             /** Set the state of the calculated Style */
             setCalculatedStyle({height: totalHeight, width: totalWidth, left: style.left || margins.marginLeft, top: style.top || margins.marginTop, position: 'relative'});

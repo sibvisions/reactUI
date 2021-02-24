@@ -69,8 +69,8 @@ const NullLayout: FC<ILayout> = (baseProps) => {
                 deepest = style.height as number;
             }
 
-            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) report the size */
-            if (reportSize && !style.width && !style.height)
+            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
+            if ((reportSize && !style.width && !style.height) || (deepest !== style.height || furthest !== style.width))
                 reportSize(deepest, furthest);
             /** Set the state of the calculated Style */
             setCalculatedStyle({height: deepest, width: furthest, left: style.left || 0, top: style.top || 0, position: 'relative'})

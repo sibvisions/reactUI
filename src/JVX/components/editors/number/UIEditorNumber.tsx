@@ -19,7 +19,7 @@ import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
-import {getDecimalLength, getGrouping, getMinimumIntDigits, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
+import {getDecimalLength, getGrouping, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
 
 /** Interface for cellEditor property of NumberCellEditor */
 interface ICellEditorNumber extends ICellEditor{

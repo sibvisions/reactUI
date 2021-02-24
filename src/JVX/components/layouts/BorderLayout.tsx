@@ -190,10 +190,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     sizeMap.set(component.id, eastCSS);
             });
 
-            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) report the size */
-            if(reportSize && !style.width && !style.height) {
-                const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]);
-                const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
+            const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]);
+            const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height;
+            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
+            if((reportSize && !style.width && !style.height) || (preferredHeight !== style.height || preferredWidth !== style.width)) {
                 reportSize(preferredHeight, preferredWidth)
             }
         }

@@ -37,6 +37,7 @@ import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
 import UIMapGoogle from "../components/map/UIMapGoogle";
 import UICustomComponentWrapper, { ICustomComponentWrapper } from "../components/customComp/UICustomComponentWrapper";
 import UIPopupWrapper, { IPopup } from "../components/panels/popup/UIPopupWrapper";
+import UITree, { ITree } from "../components/tree/UITree";
 
 /**
  * Returns a Panel as component as popup or normal
@@ -292,8 +293,18 @@ export const createMap: FC<IMap> = (props) => {
 }
 
 /**
+ * Returns a Tree as component
+ * @param props - properties sent by the server
+ * @returns a tree as component
+ */
+export const createTree: FC<ITree> = (props) => {
+    return <UITree {...props} key={props.id}/>
+}
+
+/**
  * Returns a CustomComponent wrapped in a Wrapper as component
  * @param props - properties sent by the server
+ * @param customComp - the custom component to render
  * @returns a CustomComponent wrapped in a Wrapper as component
  */
 export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, customComp) => {
@@ -358,6 +369,7 @@ const classNameMapper = new Map<string, Function>()
     .set("TabsetPanel", createTabsetPanel)
     .set("Chart", createChart)
     .set("Map", createMap)
+    .set("Tree", createTree)
 
 /**
  * Returns the function to build the component

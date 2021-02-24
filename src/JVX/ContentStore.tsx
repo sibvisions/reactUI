@@ -34,6 +34,8 @@ export default class ContentStore{
     currentUser: UserData = new UserData();
     /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
     navigationNames = new Map<string, string>();
+    /** A Map which stores the translation values, the key is the original text and the value is the translated text */
+    translation = new Map<string, string>();
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
 
@@ -82,6 +84,11 @@ export default class ContentStore{
      * An array of functions to update the homechildren state of components which use the useHomeComponents hook
      */
     popupSubscriber = new Array<Function>();
+
+    /**
+     * An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook
+     */
+    translationLoadedSubscriber = new Array<Function>();
 
     //DataProvider Maps
     /**
@@ -168,7 +175,7 @@ export default class ContentStore{
              * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
              * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
              */
-            if((newComponent["~remove"] || newComponent["~destroy"]) && existingComponent){
+            if((newComponent["~remove"] || newComponent["~destroy"]) && existingComponent) {
                 if (!isCustom) {
                     this.flatContent.delete(newComponent.id);
                     if(newComponent["~remove"])
@@ -192,8 +199,11 @@ export default class ContentStore{
                     existingComponent[newPropName] = newComponent[newPropName]
                 }
             } 
-            else if (!isCustom)
+            else if (!isCustom) {
+                if (this.removedContent.has(newComponent.id))
+                    this.removedContent.delete(newComponent.id)
                 this.flatContent.set(newComponent.id, newComponent);
+            }
             else {
                 const newComp:BaseComponent = {id: newComponent.id, parent: newComponent.parent, constraints: newComponent.constraints, name: newComponent.name,
                                                preferredSize: newComponent.preferredSize, minimumSize: newComponent.minimumSize, maximumSize: newComponent.maximumSize};
@@ -239,7 +249,6 @@ export default class ContentStore{
     onlyUniqueFilter(value: string, index: number, self: Array<string>) {
         return self.indexOf(value) === index;
     }
-
 
     /**
      * When a screen closes cleanUp the data for the window 
@@ -565,19 +574,32 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    subscribeToDataChange(compId:string, dataProvider: string, fn: Function){
+    subscribeToDataChange(compId:string, dataProvider: string|string[], fn: Function){
         /** Checks if there is already a Map for the dataChangeSubscriber */
         const existingMap = this.dataChangeSubscriber.get(compId);
         if (existingMap) {
+            let subscriber1:Function[]|undefined;
             /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            const subscriber = existingMap.get(dataProvider);
-            if(subscriber)
-                subscriber.push(fn);
-            else
-                existingMap.set(dataProvider, new Array<Function>(fn));
+            if (Array.isArray(dataProvider)) {
+                dataProvider.forEach(provider => {
+                    subscriber1 = existingMap.get(provider)
+                    if (subscriber1)
+                        subscriber1.push(fn)
+                    else
+                        existingMap.set(provider, new Array<Function>(fn))
+                });
+            }
+            else {
+                const subscriber = existingMap.get(dataProvider);
+                if(subscriber)
+                    subscriber.push(fn);
+                else
+                    existingMap.set(dataProvider, new Array<Function>(fn));
+            }
         }
         else {
             const tempMap:Map<string, Array<Function>> = new Map();
+            if (Array.isArray(dataProvider))
             tempMap.set(dataProvider, new Array<Function>(fn));
             this.dataChangeSubscriber.set(compId, tempMap);
         }
@@ -618,6 +640,14 @@ export default class ContentStore{
     }
 
     /**
+     * Subscribes components to translationLoaded , to change the translation-loaded state
+     * @param fn - the function to update the translation-loaded state
+     */
+    subscribeToTranslation(fn: Function) {
+        this.translationLoadedSubscriber.push(fn);
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -631,6 +661,14 @@ export default class ContentStore{
      */
     unsubscribeFromMenuChange(fn: Function){
         this.MenuSubscriber.splice(this.MenuSubscriber.findIndex(value => value === fn), 1);
+    }
+
+    /**
+     * Unsubscribes components from translationLoaded
+     * @param fn - the function to update the translation-loaded state
+     */
+    unsubscribeFromTranslation(fn: Function) {
+        this.translationLoadedSubscriber.splice(this.translationLoadedSubscriber.findIndex(value => value === fn), 1);
     }
 
     /**
@@ -727,6 +765,13 @@ export default class ContentStore{
             this.menuCollapsed = false;
         else if (collapseVal === 2)
             this.menuCollapsed = !this.menuCollapsed;
+    }
+
+    /** When the translation is loaded, notify the subscribers */
+    emitTranslation() {
+        this.translationLoadedSubscriber.forEach(subFunction => {
+            subFunction.apply(undefined, [this.translation]);
+        });
     }
 
     //Custom Screens

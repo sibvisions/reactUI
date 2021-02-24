@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 /** 3rd Party imports */
 import {Calendar} from 'primereact/calendar';

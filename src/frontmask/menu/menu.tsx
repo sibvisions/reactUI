@@ -9,6 +9,7 @@ import {MenuItem} from "primereact/api";
 /** Hook imports */
 import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
 import useWindowObserver from "../../JVX/components/zhooks/useWindowObserver";
+import useTranslation from "../../JVX/components/zhooks/useTranslation";
 
 /** Other imports */
 import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
@@ -52,6 +53,8 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
     const fadeRef = useRef<HTMLDivElement>(null);
     /** Current logged in user */
     const currUser = context.contentStore.currentUser;
+    /** Current state of translations */
+    const translations = useTranslation()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -103,7 +106,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                         //     }
                         // },
                         {
-                            label: "Logout",
+                            label: translations.get("Logout"),
                             icon: "pi pi-power-off",
                             command(e: { originalEvent: Event; item: MenuItem }) {
                                 sendLogout()
@@ -120,7 +123,7 @@ const Menu: FC<IMenu> = ({forwardedRef}) => {
                     model={slideOptions}/>
             </div>
         )
-    },[profileRef, currUser, context.server, context.contentStore]);
+    },[profileRef, currUser, context.server, context.contentStore, translations]);
 
     /** 
      * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems

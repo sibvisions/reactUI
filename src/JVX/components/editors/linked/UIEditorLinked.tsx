@@ -235,9 +235,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                      *          foundData = ID, ACADEMIC_TITLE
                      * foundData columnNames have to be adjusted to linkReference
                      */
-                    for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                        console.log(props.cellEditor.linkReference.columnNames[i], Object.values(foundData[0])[i], foundData[0])
-                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    }
+                    for (let i = 0; i < Object.values(foundData[0]).length; i++)
+                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    
                     onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, context.server));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */

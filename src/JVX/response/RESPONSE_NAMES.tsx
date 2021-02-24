@@ -16,6 +16,7 @@ enum RESPONSE_NAMES{
     SESSION_EXPIRED="message.sessionexpired",
     ERROR="message.error",
     RESTART="restart",
-    APPLICATION_PARAMETERS = "applicationParameters",
+    APPLICATION_PARAMETERS="applicationParameters",
+    LANGUAGE="language"
 }
 export default RESPONSE_NAMES

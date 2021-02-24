@@ -1,5 +1,6 @@
 /** 3rd Party imports */
 import * as queryString from "querystring";
+import {parseString} from "xml2js"
 
 /** Other imports */
 import ContentStore from "./ContentStore"
@@ -24,6 +25,7 @@ import ErrorResponse from "./response/ErrorResponse";
 import {Panel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
+import LanguageResponse from "./response/LanguageResponse";
 
 /** Type for query */
 type queryType = {
@@ -115,7 +117,8 @@ class Server {
         .set(RESPONSE_NAMES.SESSION_EXPIRED, this.sessionExpired.bind(this))
         .set(RESPONSE_NAMES.ERROR, this.showError.bind(this))
         .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this))
-        .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this));
+        .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this))
+        .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -385,9 +388,22 @@ class Server {
      * Shows a toast that the site needs to be reloaded
      * @param reData - the restartResponse
      */
-    showRestart(reData: RestartResponse) {
+    showRestart(reData:RestartResponse) {
         this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info});
         console.warn(reData.info);
+    }
+
+    /**
+     * 
+     * @param languageData 
+     */
+    language(langData:LanguageResponse) {
+        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
+        .then((response:any) => response.text())
+        .then(value => parseString(value, (err, result) => { 
+            result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+            this.contentStore.emitTranslation();
+        }))
     }
 
     /**
