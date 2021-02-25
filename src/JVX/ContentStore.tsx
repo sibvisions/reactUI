@@ -66,6 +66,11 @@ export default class ContentStore{
      */
     dataChangeSubscriber = new Map<string, Map<string, Array<Function>>>();
     /**
+     * A Map which stores a function to update a components state of all dataprovider data, key is the screens component id
+     * value is the function to update the state
+     */
+    screenDataChangeSubscriber = new Map<string, Function>();
+    /**
      * A Map which stores a function to update the screen-name state of the subscribers, the key is the name of the subscribers
      * and the value is the function to update the screen-name state
      */
@@ -76,19 +81,16 @@ export default class ContentStore{
      */
     menuCollapseSubscriber = new Map<string, Function>();
 
-    /**
-     * An array of functions to update the menuitem states of its subscribers
-     */
+    /** An array of functions to update the menuitem states of its subscribers */
     MenuSubscriber = new Array<Function>();
-    /**
-     * An array of functions to update the homechildren state of components which use the useHomeComponents hook
-     */
+    /** An array of functions to update the homechildren state of components which use the useHomeComponents hook */
     popupSubscriber = new Array<Function>();
 
-    /**
-     * An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook
-     */
+    /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
     translationLoadedSubscriber = new Array<Function>();
+
+    /** A function to change the register custom content state of a component*/
+    registerCustomSubscriber:Function = () => {};
 
     //DataProvider Maps
     /**
@@ -353,7 +355,8 @@ export default class ContentStore{
             dataMap.set(dataProvider, newDataSet)
             this.dataProviderData.set(compId, dataMap);
         }
-        this.notifyDataChange(compId, dataProvider)
+        this.notifyDataChange(compId, dataProvider);
+        this.notifyScreenDataChange(compId);
     }
 
     /**
@@ -366,6 +369,14 @@ export default class ContentStore{
         this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(value => {
             value.apply(undefined, []);
         });
+    }
+
+    /**
+     * Notifies the components which use the useScreenData hook that the data of their screen changed
+     * @param compId - the component id of the screen
+     */
+    notifyScreenDataChange(compId:string) {
+        this.screenDataChangeSubscriber.get(compId)?.apply(undefined, []);
     }
 
     /**
@@ -574,35 +585,31 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    subscribeToDataChange(compId:string, dataProvider: string|string[], fn: Function){
+    subscribeToDataChange(compId:string, dataProvider: string, fn: Function){
         /** Checks if there is already a Map for the dataChangeSubscriber */
         const existingMap = this.dataChangeSubscriber.get(compId);
         if (existingMap) {
-            let subscriber1:Function[]|undefined;
             /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            if (Array.isArray(dataProvider)) {
-                dataProvider.forEach(provider => {
-                    subscriber1 = existingMap.get(provider)
-                    if (subscriber1)
-                        subscriber1.push(fn)
-                    else
-                        existingMap.set(provider, new Array<Function>(fn))
-                });
-            }
-            else {
-                const subscriber = existingMap.get(dataProvider);
-                if(subscriber)
-                    subscriber.push(fn);
-                else
-                    existingMap.set(dataProvider, new Array<Function>(fn));
-            }
+            const subscriber = existingMap.get(dataProvider);
+            if(subscriber)
+                subscriber.push(fn);
+            else
+                existingMap.set(dataProvider, new Array<Function>(fn));
         }
         else {
             const tempMap:Map<string, Array<Function>> = new Map();
-            if (Array.isArray(dataProvider))
             tempMap.set(dataProvider, new Array<Function>(fn));
             this.dataChangeSubscriber.set(compId, tempMap);
         }
+    }
+
+    /**
+     * Subscribes a component to its screen-data (every dataprovider data)
+     * @param compId - the component id of the screen
+     * @param fn - the function to update the state
+     */
+    subscribeToScreenDataChange(compId:string, fn:Function) {
+        this.screenDataChangeSubscriber.set(compId, fn)
     }
 
     /**
@@ -648,6 +655,14 @@ export default class ContentStore{
     }
 
     /**
+     * Subscribes the app to register-custom, to change the register-custom flip value
+     * @param fn - the function to update the register-custom flip value
+     */
+    subscribeToRegisterCustom(fn:Function) {
+        this.registerCustomSubscriber = fn;
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -682,6 +697,14 @@ export default class ContentStore{
         if(subscriber){
             subscriber.splice(subscriber.findIndex(value => value === fn),1);
         }
+    }
+
+    /**
+     * Unsubscribes a component from its screen-data (every dataprovider data)
+     * @param compId - the component id of the screen
+     */
+    unsubscribeFromScreenDataChange(compId:string) {
+        this.screenDataChangeSubscriber.delete(compId);
     }
 
     /**
@@ -729,6 +752,13 @@ export default class ContentStore{
         this.menuCollapseSubscriber.delete(id);
     }
 
+    /**
+     * Unsubscribes app from register-custom
+     */
+    unsubscribeFromRegisterCustom() {
+        this.subscribeToRegisterCustom = () => {}
+    }
+
 
     /**
      * When a new row is selected call the function of the subscriber
@@ -772,6 +802,11 @@ export default class ContentStore{
         this.translationLoadedSubscriber.forEach(subFunction => {
             subFunction.apply(undefined, [this.translation]);
         });
+    }
+
+    /** When the app needs to reregister the custom content*/
+    emitRegisterCustom() {
+        this.registerCustomSubscriber()
     }
 
     //Custom Screens

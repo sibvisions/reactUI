@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 
 /** 3rd Party imports */
@@ -14,6 +14,7 @@ import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
+import useScreenData from "../zhooks/useScreenData";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[]
@@ -35,12 +36,34 @@ const UITree: FC<ITree> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The data provided by the databook */
-    const [providerData] = useDataProviderData(compId, props.dataBooks[0]);
-    /** The data provided by the databook */
-    const [providerData2] = useDataProviderData(compId, props.dataBooks[1]);
-    const providedTreeData = useMemo(() => {
-        
-    },[])
+    const providedData = useScreenData(compId);
+
+    const indexRef = useRef<number>(0)
+
+    const buildTreeItems = (data:any[], dataBook:string) => {
+        const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(dataBook)
+        const builtTreeItems:Array<any> = new Array<any>();
+        if (metaData) {
+            data.forEach(dataRow => {
+                let treeItem:any = {
+                    "key": indexRef.current,
+                    "label": dataRow[metaData.columnView_table[0]],
+                    "children": () => {
+                        if (context.contentStore.dataProviderMetaData.get(compId) && metaData.detailReferences)
+                            return buildTreeItems(context.contentStore.dataProviderData.get(compId)?.get(metaData.detailReferences[0].referencedDataBook) as any[], metaData.detailReferences[0].referencedDataBook)
+                        else
+                            return null
+                    } 
+                }
+                builtTreeItems.push(treeItem)
+                indexRef.current++;
+            });
+        }
+        return builtTreeItems
+    }
+
+    /** The state of the tree-items */
+    const [treeItems, setTreeItems] = useState<any>()
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
@@ -52,7 +75,7 @@ const UITree: FC<ITree> = (baseProps) => {
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    console.log(providerData, providerData2, props.dataBooks)
+    console.log(providedData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

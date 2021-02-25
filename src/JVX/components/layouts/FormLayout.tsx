@@ -684,6 +684,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * If preferredCompSizes is set (every component in this layout reported its preferred size) 
          * and the preferredCompSize is the same as children size calculate the layout 
          */
+        console.log(preferredCompSizes, preferredCompSizes?.size, children.size)
         if(preferredCompSizes && preferredCompSizes.size === children.size)
             calculateLayout(
                 preferredCompSizes,

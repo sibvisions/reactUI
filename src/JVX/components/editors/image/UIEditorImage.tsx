@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useContext} from "react";
+import React, {FC, useContext, useEffect} from "react";
 
 /** Hook imports */
 import useRowSelect from "../../zhooks/useRowSelect";
@@ -48,6 +48,19 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const {verticalAlignment, horizontalAlignment} = props
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
+
+    useEffect(() => {
+        if (!props.cellEditor.defaultImageName) {
+            const prefSize:Size = {width: 0, height: 0}
+            if (props.preferredSize) {
+                const parsedSize = parseJVxSize(props.preferredSize) as Size
+                prefSize.height = parsedSize.height;
+                prefSize.width = parsedSize.width;
+            }
+            if (onLoadCallback)
+                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+        }
+    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize])
 
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout

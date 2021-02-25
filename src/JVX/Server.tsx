@@ -372,6 +372,7 @@ class Server {
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})
+        this.contentStore.emitRegisterCustom()
         console.error(expData.title)
     }
 

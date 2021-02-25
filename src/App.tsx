@@ -43,15 +43,26 @@ const App: FC<ICustomContent> = (props) => {
     const history = useHistory()
     /** State of the current app-name to display it in the header */
     const [appName, setAppName] = useState<string>();
+    /** Register custom content flip value, changes value when custom content needs to be re-registered */
+    const [registerCustom, setRegisterCustom] = useState<boolean>(false);
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
+
+    /**
+     * Subscribes to session-expired notification
+     * @returns unsubscribes from session
+     */
+    useEffect(() => {
+        context.contentStore.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
+        return () => context.contentStore.unsubscribeFromRegisterCustom();
+    })
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     useEffect(() => {
         context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
         context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-        //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
-    }, [context.contentStore]);
+        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+    }, [context.contentStore, registerCustom]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
@@ -66,7 +77,7 @@ const App: FC<ICustomContent> = (props) => {
         props.customComponents?.forEach(replaceComponent => {
             context.contentStore.registerCustomComponent(replaceComponent.componentName, replaceComponent.compFactory);
         })
-    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents]);
+    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents, registerCustom]);
 
     /** Default values for translation */
     useEffect(() => {
@@ -76,7 +87,7 @@ const App: FC<ICustomContent> = (props) => {
         .set("Login", "Login")
         .set("Logout", "Logout")
         .set("Settings", "Settings");
-    },[])
+    },[context.contentStore])
 
     /**
      * On reload navigate to home, fetch config.json if some fields are not configured, warns user with toast.
