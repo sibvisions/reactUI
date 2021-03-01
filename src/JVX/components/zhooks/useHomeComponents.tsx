@@ -4,6 +4,7 @@ import {ReactElement, useCallback, useContext, useEffect, useState} from "react"
 /** Other imports */
 //import Settings from "../../../frontmask/settings/Settings";
 import { jvxContext } from "../../jvxProvider";
+import { getScreenIdFromNavigation } from "../util/GetScreenNameFromNavigation";
 
 /**
  * This hook returns the screens which will be displayed at the "main" div multiple screens possible if popup
@@ -14,24 +15,17 @@ const useHomeComponents = (componentId:string) => {
     const context = useContext(jvxContext);
     /** Returns the built windows */
     const buildWindow = useCallback((compId:string):Array<ReactElement> => {
-        let compKey = "";
         let tempArray: Array<ReactElement> = [];
         // if (compId === "settings") {
         //     tempArray.push(<Settings/>)
         // }
-        for (let [key, value] of context.contentStore.navigationNames.entries()) {
-            if (value === compId)
-            compKey = key
-        }
-        if (context.contentStore.getWindow(compKey))
-            tempArray.push(context.contentStore.getWindow(compKey));
-        if (context.contentStore.customContent.has(compId))
+        if (context.contentStore.getWindow(compId))
             tempArray.push(context.contentStore.getWindow(compId));
         return tempArray
     },[context.contentStore])
 
     /** Current state of the built screens which will be displayed */
-    const [homeChildren, setHomeChildren] = useState<Array<ReactElement>>(buildWindow(componentId));
+    const [homeChildren, setHomeChildren] = useState<Array<ReactElement>>(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
 
     /** 
      * Subscribes to popupChange which either adds a popup to the current homechildren, or removes a popup
@@ -43,7 +37,7 @@ const useHomeComponents = (componentId:string) => {
          * @param compKey - componentId/navigationName of Screen
          */
         const buildHomeChildren = (compKey:string) => {
-            const newHomeChildren = buildWindow(compKey);
+            const newHomeChildren = buildWindow(getScreenIdFromNavigation(compKey, context.contentStore));
             const cl = new Array<ReactElement>();
             homeChildren.forEach(hc => {
                 cl.push(hc);
@@ -74,7 +68,12 @@ const useHomeComponents = (componentId:string) => {
         });
 
         return () => {
-            context.contentStore.unsubscribeFromPopupChange(buildHomeChildren)
+            context.contentStore.unsubscribeFromPopupChange((compKey:string, remove:boolean) => {
+                if (remove)
+                    removeHomeChild(compKey);
+                else
+                    buildHomeChildren(compKey);
+            });
         }
     },[context.contentStore, buildWindow, homeChildren]);
 

@@ -24,7 +24,7 @@ export interface MenuItemCustom extends MenuItem{
 }
 
 /** Interface to receive a forwarded reference */
-interface IMenu {
+export interface IMenu {
     forwardedRef?: any
 }
 

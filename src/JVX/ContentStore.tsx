@@ -38,6 +38,8 @@ export default class ContentStore{
     translation = new Map<string, string>();
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
+    /** A Map which stores custom display names for screens, key is the screen-name and the value is the name of the custom display */
+    customDisplays = new Map<string, string>();
 
     //Sub Maps
     /** 
@@ -893,5 +895,17 @@ export default class ContentStore{
         else {
             this.customProperties.set(property, value);
         }
+    }
+
+    /**
+     * Adds a custom display for screens
+     * @param screenName - the screen/s in which the custom display should be displayed
+     * @param customDisplay - the name of the custom display component
+     */
+    addCustomDisplay(screenName:string|string[], customDisplay:string) {
+        if (Array.isArray(screenName))
+            screenName.forEach(name => this.customDisplays.set(name, customDisplay));
+        else 
+            this.customDisplays.set(screenName, customDisplay);
     }
 }

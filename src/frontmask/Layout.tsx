@@ -17,21 +17,28 @@ import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
 import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
+import WorkScreen from "../JVX/components/workscreen/WorkScreen";
+
+interface ILayout {
+    libChildren?: any
+    screenId?: string
+}
 
 /**
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
  * @param props - the children components
  */
-const Layout: FC = (props) => {
-
+const Layout: FC<ILayout> = (props) => {
     /** Reference for the screen-container */
-    const sizeRef = useRef<HTMLDivElement>(null);
+    const sizeRef = useRef<any>(null);
     /** Reference for the menu component */
     const menuRef = useRef<any>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('layout');
+    /** Current state of the size of the screen-container*/
+    const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -53,16 +60,14 @@ const Layout: FC = (props) => {
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')), 
     parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth'))), menuCollapsed);
 
-    /** Current state of the size of the screen-container*/
-    const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
-
     /** 
      * When the window resizes, the screen-container will measure itself and set its size, 
      * setting this size will recalculate the layouts
      */
     const doResize = useCallback(() => {
-        if(sizeRef.current){
-            const size = sizeRef.current.getBoundingClientRect();
+        
+        if(sizeRef.current || document.querySelector('#workscreen')){
+            const size = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
@@ -78,8 +83,8 @@ const Layout: FC = (props) => {
     /** Using underscore debounce to debounce sending the current devicestatus (screen-container height and width) to the server */
     const handleDeviceStatus = _.debounce(() => {
         const deviceStatusReq = createDeviceStatusRequest();
-        if(sizeRef.current){
-            const mainSize = sizeRef.current.getBoundingClientRect();
+        if(sizeRef.current || document.querySelector('#workscreen')){
+            const mainSize = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
             deviceStatusReq.screenHeight = mainSize.height;
             deviceStatusReq.screenWidth = mainSize.width;
             context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
@@ -96,7 +101,7 @@ const Layout: FC = (props) => {
      * @returns remove eventListeners
      */
     useEffect(() => {
-        const currSizeRef = sizeRef.current
+        const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
         const resizeTimer = _.debounce(() => {
             if (currSizeRef)
                 currSizeRef.classList.remove("transition-disable-overflow")
@@ -141,14 +146,18 @@ const Layout: FC = (props) => {
                 screenTitle = childWithProps.props.screen_title_;
         })      
         context.contentStore.notifyScreenNameChanged(screenTitle)
-    }, [props.children, context.server.APP_NAME, context.contentStore])
+    }, [props.children, context.server.APP_NAME, context.contentStore]);
 
     return(
         <div className={"layout"}>
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
-                <div ref={sizeRef} className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
-                    {props.children}
+                <div className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
+                    {props.libChildren}
+                    {!props.libChildren &&
+                        <WorkScreen forwardedRef={sizeRef}>
+                           {props.children} 
+                        </WorkScreen>}
                 </div>
             </LayoutContext.Provider>
         </div>

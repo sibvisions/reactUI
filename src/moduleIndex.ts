@@ -1,3 +1,5 @@
+import { jvxContext } from './JVX/jvxProvider';
+
 /** Exporting components and hooks to be used as library */
 export {default as UIButton} from './JVX/components/buttons/button/UIButton';
 export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';
@@ -31,6 +33,8 @@ export {default as UITable} from './JVX/components/table/UITable';
 export {default as UIPassword} from './JVX/components/text/UIPassword';
 export {default as UIText} from './JVX/components/text/UIText';
 export {default as UITextArea} from './JVX/components/text/UITextArea';
+export {default as UITree} from './JVX/components/tree/UITree'
+export {default as WorkScreen} from './JVX/components/workscreen/WorkScreen'
 export {default as useComponents} from './JVX/components/zhooks/useComponents';
 export {default as useDataProviderData} from './JVX/components/zhooks/useDataProviderData';
 export {default as useHomeComponents} from './JVX/components/zhooks/useHomeComponents';
@@ -39,5 +43,6 @@ export {default as useOutsideClick} from './JVX/components/zhooks/useOutsideClic
 export {default as useProperties} from './JVX/components/zhooks/useProperties';
 export {default as useRowSelect} from './JVX/components/zhooks/useRowSelect';
 export {default as useGetCustomProperty} from './JVX/components/zhooks/useGetCustomProperty'
+export {default as useJVXContext} from './JVX/components/zhooks/useJVXContext'
 export * from './JVX/factories/RequestFactory';
 export {default as ReactUI} from './MiddleMan';
