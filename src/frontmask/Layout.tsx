@@ -20,8 +20,7 @@ import {LayoutContext} from "../JVX/LayoutContext";
 import WorkScreen from "../JVX/components/workscreen/WorkScreen";
 
 interface ILayout {
-    libChildren?: any
-    screenId?: string
+    screenId: string
 }
 
 /**
@@ -152,9 +151,9 @@ const Layout: FC<ILayout> = (props) => {
         <div className={"layout"}>
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
-                <div className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
-                    {props.libChildren}
-                    {!props.libChildren &&
+                <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
+                    {context.contentStore.customDisplays.has(props.screenId) && context.contentStore.customDisplays.get(props.screenId)}
+                    {!context.contentStore.customDisplays.has(props.screenId) &&
                         <WorkScreen forwardedRef={sizeRef}>
                            {props.children} 
                         </WorkScreen>}

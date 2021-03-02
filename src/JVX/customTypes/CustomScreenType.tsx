@@ -5,6 +5,6 @@ import { ReactElement } from "react";
 interface CustomScreenType {
     screenName: string,
     menuGroup: string,
-    screenFactory: () => ReactElement
+    customScreen: ReactElement
 }
 export default CustomScreenType;

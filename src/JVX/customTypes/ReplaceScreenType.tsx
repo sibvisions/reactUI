@@ -4,6 +4,6 @@ import { ReactElement } from "react";
 /** Interface for ReplaceScreens */
 interface ReplaceScreenType {
     screenToReplace: string,
-    screenFactory: () => ReactElement
+    replaceScreen: ReactElement
 }
 export default ReplaceScreenType;

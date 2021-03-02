@@ -14,12 +14,8 @@ import { getScreenIdFromNavigation } from "../../JVX/components/util/GetScreenNa
 /** Other imports */
 import { jvxContext } from "../../JVX/jvxProvider";
 
-export interface IHome {
-    libChildren?: any
-}
-
 /** Container-component for the main layout of the app, provides layout with its built react-children */
-const Home: FC<IHome> = (props) => {
+const Home: FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** ComponentId of Screen extracted by useParams hook */
@@ -28,7 +24,7 @@ const Home: FC<IHome> = (props) => {
     const homeChildren = useHomeComponents(componentId);
 
     return(
-        <Layout libChildren={props.libChildren} screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
+        <Layout screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
             {homeChildren}
         </Layout>
     )

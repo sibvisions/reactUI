@@ -14,12 +14,14 @@ import CustomScreenType from './JVX/customTypes/CustomScreenType';
 import ReplaceScreenType from './JVX/customTypes/ReplaceScreenType';
 import CustomComponentType from './JVX/customTypes/CustomComponentType';
 import customStartupProps from './JVX/customTypes/CustomStartupProps';
+import CustomDisplayType from './JVX/customTypes/CustomDisplayType';
 
 export interface ICustomContent {
-    customScreens?: Array<CustomScreenType>
-    replaceScreens?: Array<ReplaceScreenType>
-    customComponents?: Array<CustomComponentType>
-    customStartupProps?: Array<customStartupProps>
+    customScreens?: CustomScreenType[]
+    replaceScreens?: ReplaceScreenType[]
+    customComponents?: CustomComponentType[]
+    customStartupProps?: customStartupProps[]
+    customDisplays?: CustomDisplayType[]
 }
 
 /**

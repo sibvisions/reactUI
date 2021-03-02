@@ -59,25 +59,20 @@ const App: FC<ICustomContent> = (props) => {
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     useEffect(() => {
-        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", () => <CustomHelloScreen/>);
-        context.contentStore.registerReplaceScreen("Cha-OL", () => <CustomChartScreen/>);
-        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", () => <CustomHelloScreen/>)
+        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", <CustomHelloScreen/>);
+        context.contentStore.registerReplaceScreen("Cha-OL", <CustomChartScreen/>);
+        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
     }, [context.contentStore, registerCustom]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
-        props.customScreens?.forEach(customScreen => {
-            context.contentStore.registerCustomOfflineScreen(customScreen.screenName, customScreen.menuGroup, customScreen.screenFactory);
-        });
+        props.customScreens?.forEach(cs => context.contentStore.registerCustomOfflineScreen(cs.screenName, cs.menuGroup, cs.customScreen));
 
-        props.replaceScreens?.forEach(replaceScreen => {
-            context.contentStore.registerReplaceScreen(replaceScreen.screenToReplace, replaceScreen.screenFactory);
-        });
+        props.replaceScreens?.forEach(rs => context.contentStore.registerReplaceScreen(rs.screenToReplace, rs.replaceScreen));
 
-        props.customComponents?.forEach(replaceComponent => {
-            context.contentStore.registerCustomComponent(replaceComponent.componentName, replaceComponent.compFactory);
-        })
-    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents, registerCustom]);
+        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.componentName, rc.customComp));
+        props.customDisplays?.forEach(cd => context.contentStore.registerCustomDisplay(cd.screen, cd.customDisplay))
+    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents, props.customDisplays, registerCustom]);
 
     /** Default values for translation */
     useEffect(() => {
@@ -177,7 +172,7 @@ const App: FC<ICustomContent> = (props) => {
             <Toast ref={toastRef} position="top-right"/>
                 <Switch>
                     <Route exact path={"/login"} render={() => <Login />}/>
-                    <Route exact path={"/home/:componentId"} render={routeProps => <Home libChildren={props.children} key={routeProps.match.params.componentId} />} />
+                    <Route exact path={"/home/:componentId"} render={routeProps => <Home key={routeProps.match.params.componentId} />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                     <Route path={"/home"} render={() => <Home key={'homeBlank'} />} />
                 </Switch>   

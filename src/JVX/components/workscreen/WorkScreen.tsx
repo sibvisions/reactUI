@@ -11,7 +11,7 @@ const WorkScreen: FC<IMenu> = (props) => {
     /** Screens which are currently displayed by the workscreen can be multiple screens if there are popups */
     const homeChildren = useHomeComponents(componentId);
     return (
-        <div id="workscreen" ref={props.forwardedRef} style={{flex: "1 1 auto"}}>
+        <div id="workscreen" ref={props.forwardedRef} style={{flex: "1"}}>
             {homeChildren}
         </div>
     )

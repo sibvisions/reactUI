@@ -39,7 +39,7 @@ export default class ContentStore{
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
     /** A Map which stores custom display names for screens, key is the screen-name and the value is the name of the custom display */
-    customDisplays = new Map<string, string>();
+    customDisplays = new Map<string, ReactElement>();
 
     //Sub Maps
     /** 
@@ -300,15 +300,29 @@ export default class ContentStore{
     reset(){
         this.flatContent.clear();
         this.removedContent.clear();
+        this.customContent.clear();
+        this.removedCustomContent.clear();
+        this.replacedContent.clear();
+        this.serverMenuItems.clear();
+        this.customMenuItems.clear();
+        this.mergedMenuItems.clear();
         this.currentUser = new UserData();
+        this.navigationNames.clear();
+        this.customProperties.clear();
+        this.customDisplays.clear();
+        this.propertiesSubscriber.clear();
+        this.parentSubscriber.clear();
+        this.rowSelectionSubscriber.clear();
+        this.dataChangeSubscriber.clear();
+        this.screenDataChangeSubscriber.clear();
+        this.screenNameSubscriber.clear();
+        this.menuCollapseSubscriber.clear();
+        this.MenuSubscriber = new Array<Function>();
+        this.popupSubscriber = new Array<Function>();
         this.dataProviderData.clear();
         this.dataProviderMetaData.clear();
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
-        this.navigationNames.clear();
-        this.serverMenuItems.clear();
-        this.customMenuItems.clear();
-        this.mergedMenuItems.clear();
     }
 
     /**
@@ -835,20 +849,20 @@ export default class ContentStore{
 
     /**
      * Adds a customScreen to customContent
-     * @param title - the title of the customScreen
-     * @param screenFactory - the function to build the component
+     * @param title - the title of the custom screen
+     * @param customScreen - the custom screen
      */
-    addCustomScreen(title: string, screenFactory: () => ReactElement){
-        this.customContent.set(title, screenFactory);
+    addCustomScreen(title: string, customScreen: ReactElement){
+        this.customContent.set(title, () => customScreen);
     }
 
     /**
      * Registers a customScreen to the contentStore, which will create a menuButton, add the screen to the content and add a menuItem
      * @param title - the title of the customScreen
      * @param group - the menuGroup of the customScreen
-     * @param screenFactory - the function to build the component
+     * @param customScreen - the function to build the component
      */
-    registerCustomOfflineScreen(title: string, group: string, screenFactory: () => ReactElement){
+    registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement){
         const menuButton: serverMenuButtons = {
             group: group,
 
@@ -860,26 +874,26 @@ export default class ContentStore{
             }
         }
 
-        this.addCustomScreen(title, screenFactory);
+        this.addCustomScreen(title, customScreen);
         this.addMenuItem(menuButton, false);
     }
 
     /**
      * Registers a replaceScreen to the customContent
      * @param title - the title of the replaceScreen
-     * @param screenFactory - the function to build the component
+     * @param replaceScreen - the replaceScreen
      */
-    registerReplaceScreen(title: string, screenFactory: () => ReactElement){
-        this.customContent.set(title, screenFactory);
+    registerReplaceScreen(title: string, replaceScreen: ReactElement){
+        this.customContent.set(title, () => replaceScreen);
     }
 
     /**
      * Registers a customComponent to the customContent
      * @param title - the title of the customComponent
-     * @param compFactory - the function to build the component
+     * @param customComp - the custom component
      */
-    registerCustomComponent(title:string, compFactory: () => ReactElement) {
-        this.customContent.set(title, compFactory);
+    registerCustomComponent(title:string, customComp: ReactElement) {
+        this.customContent.set(title, () => customComp);
     }
 
     /**
@@ -902,7 +916,7 @@ export default class ContentStore{
      * @param screenName - the screen/s in which the custom display should be displayed
      * @param customDisplay - the name of the custom display component
      */
-    addCustomDisplay(screenName:string|string[], customDisplay:string) {
+    registerCustomDisplay(screenName:string|string[], customDisplay:ReactElement) {
         if (Array.isArray(screenName))
             screenName.forEach(name => this.customDisplays.set(name, customDisplay));
         else 

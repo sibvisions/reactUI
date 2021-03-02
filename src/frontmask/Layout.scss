@@ -21,6 +21,12 @@
   overflow-y: hidden;
 }
 
+.customDisplayDiv {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
 .layout-expanded {
   @extend %layout-transition;
   margin-left: var(--menuCollapsedWidth);
