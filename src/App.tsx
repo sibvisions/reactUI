@@ -61,7 +61,7 @@ const App: FC<ICustomContent> = (props) => {
     useEffect(() => {
         context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", <CustomHelloScreen/>);
         context.contentStore.registerReplaceScreen("Cha-OL", <CustomChartScreen/>);
-        context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
+        //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
     }, [context.contentStore, registerCustom]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */

@@ -21,8 +21,8 @@
   overflow-y: hidden;
 }
 
-.customDisplayDiv {
-  display: flex;
+.custom-display-div {
+  display: flex !important;
   flex: 1 1 auto;
   flex-direction: column;
 }

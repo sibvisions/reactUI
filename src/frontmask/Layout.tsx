@@ -18,6 +18,7 @@ import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
 import WorkScreen from "../JVX/components/workscreen/WorkScreen";
+import CustomGlobalDisplay from "../JVX/components/customComp/CustomGlobalDisplay";
 
 interface ILayout {
     screenId: string
@@ -152,11 +153,11 @@ const Layout: FC<ILayout> = (props) => {
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
-                    {context.contentStore.customDisplays.has(props.screenId) && context.contentStore.customDisplays.get(props.screenId)}
-                    {!context.contentStore.customDisplays.has(props.screenId) &&
-                        <WorkScreen forwardedRef={sizeRef}>
-                           {props.children} 
-                        </WorkScreen>}
+                    <WorkScreen 
+                        forwardedRef={sizeRef} 
+                        isGlobal={context.contentStore.customDisplays.has('global')}>
+                        {props.children}
+                    </WorkScreen>
                 </div>
             </LayoutContext.Provider>
         </div>

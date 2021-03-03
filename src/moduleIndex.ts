@@ -1,3 +1,5 @@
+import { jvxContext } from './JVX/jvxProvider';
+
 /** Exporting components and hooks to be used as library */
 export {default as UIButton} from './JVX/components/buttons/button/UIButton';
 export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';
@@ -34,6 +36,7 @@ export {default as UITextArea} from './JVX/components/text/UITextArea';
 export {default as UITree} from './JVX/components/tree/UITree'
 export {default as WorkScreen} from './JVX/components/workscreen/WorkScreen'
 export {default as CustomDisplayWrapper} from './JVX/components/customComp/CustomDisplayWrapper'
+export {default as GlobalWorkscreen} from './JVX/components/customComp/CustomDisplayDecider'
 export {default as useComponents} from './JVX/components/zhooks/useComponents';
 export {default as useDataProviderData} from './JVX/components/zhooks/useDataProviderData';
 export {default as useHomeComponents} from './JVX/components/zhooks/useHomeComponents';
@@ -45,3 +48,4 @@ export {default as useGetCustomProperty} from './JVX/components/zhooks/useGetCus
 export {default as useJVXContext} from './JVX/components/zhooks/useJVXContext'
 export * from './JVX/factories/RequestFactory';
 export {default as ReactUI} from './MiddleMan';
+export {jvxContext} from './JVX/jvxProvider';

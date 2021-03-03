@@ -1,12 +1,11 @@
-import React, { FC, useEffect, useLayoutEffect } from "react";
+import React, { FC, useLayoutEffect } from "react";
 
 const CustomDisplayWrapper:FC = (props) => {
 
     useLayoutEffect(() => {
         let test = document.getElementById("workscreen")?.parentElement
         while (test?.parentElement && test.getAttribute('id') !== "reactUI-main") {
-            console.log(test)
-            test.classList.add("customDisplayDiv");
+            test.classList.add("custom-display-div");
             test = test.parentElement
         }
     })
