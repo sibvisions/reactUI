@@ -482,12 +482,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
-                if(calcSize.width < preferredWidth){
+                if(calcSize.width < preferredWidth)
                     calcSize.width = preferredWidth;
-                }
-                if(calcSize.height < preferredHeight ){
+                if(calcSize.height < preferredHeight )
                     calcSize.height = preferredHeight;
-                }
 
                 const lba = anchors.get("l");
                 const rba = anchors.get("r");

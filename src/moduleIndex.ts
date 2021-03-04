@@ -34,9 +34,9 @@ export {default as UIPassword} from './JVX/components/text/UIPassword';
 export {default as UIText} from './JVX/components/text/UIText';
 export {default as UITextArea} from './JVX/components/text/UITextArea';
 export {default as UITree} from './JVX/components/tree/UITree'
-export {default as WorkScreen} from './JVX/components/workscreen/WorkScreen'
+export {default as WorkScreen} from './frontmask/workscreen/WorkScreen'
 export {default as CustomDisplayWrapper} from './JVX/components/customComp/CustomDisplayWrapper'
-export {default as GlobalWorkscreen} from './JVX/components/customComp/CustomDisplayDecider'
+export {default as GlobalWorkscreen} from './JVX/components/customComp/CustomDisplayManager'
 export {default as useComponents} from './JVX/components/zhooks/useComponents';
 export {default as useDataProviderData} from './JVX/components/zhooks/useDataProviderData';
 export {default as useHomeComponents} from './JVX/components/zhooks/useHomeComponents';

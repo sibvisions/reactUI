@@ -5,7 +5,7 @@ import React, {FC, ReactNode, useContext} from "react";
 import {useParams} from "react-router-dom";
 
 /** UI Imports */
-import Layout from "../Layout";
+import UIManager from "../UIManager";
 
 /** Hook imports */
 import useHomeComponents from "../../JVX/components/zhooks/useHomeComponents";
@@ -13,6 +13,7 @@ import { getScreenIdFromNavigation } from "../../JVX/components/util/GetScreenNa
 
 /** Other imports */
 import { jvxContext } from "../../JVX/jvxProvider";
+
 
 /** Container-component for the main layout of the app, provides layout with its built react-children */
 const Home: FC = (props) => {
@@ -24,9 +25,9 @@ const Home: FC = (props) => {
     const homeChildren = useHomeComponents(componentId);
 
     return(
-        <Layout screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
+        <UIManager screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
             {homeChildren}
-        </Layout>
+        </UIManager>
     )
 }
 export default Home

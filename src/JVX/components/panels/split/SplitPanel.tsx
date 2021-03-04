@@ -3,6 +3,7 @@ import React, {CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState} 
 
 /** 3rd Party import */
 import * as _ from 'underscore'
+import { IForwardRef } from "../../../IForwardRef";
 import { ComponentSize } from "../../zhooks/useComponents";
 
 /** Type for ResizeEvent */
@@ -15,7 +16,7 @@ export enum ORIENTATIONSPLIT {
 }
 
 /** Interface for SplitPanel */
-type SplitPanelProps = {
+interface ISplitPanel extends IForwardRef {
     dividerPosition: number
     orientation: 0|1
     forwardedRef?: any
@@ -33,7 +34,7 @@ type SplitPanelProps = {
  * This component holds two components divided by a seperator which can be dragged to adjust their size 
  * @param props - Props received by UISplitPanel which is the "wrapper" of this component
  */
-const SplitPanel: FC<SplitPanelProps> = (props) => {
+const SplitPanel: FC<ISplitPanel> = (props) => {
     /** State of the position of the first component in the splitPanel */
     const [firstPosition, setFirstPosition] = useState<number | undefined>(props.dividerPosition !== -1 ? props.dividerPosition : undefined);
     /** Reference for the first component */

@@ -4,6 +4,6 @@ import { ReactElement } from "react";
 /** Interface for CustomComponents */
 interface CustomComponentType {
     componentName: string,
-    customComp: ReactElement
+    customComp: ReactElement|null
 }
 export default CustomComponentType;

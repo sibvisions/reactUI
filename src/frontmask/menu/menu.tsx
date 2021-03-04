@@ -17,22 +17,18 @@ import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
 import {jvxContext} from "../../JVX/jvxProvider";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
+import { IForwardRef } from "../../JVX/IForwardRef";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem{
     componentId?: string
 }
 
-/** Interface to receive a forwarded reference */
-export interface IMenu {
-    forwardedRef?: any
-}
-
 /**
  * Manu component builds and displays the menu for reactUI, consists of a topbar with a profile-menu and a sidebar with panel-menu.
  * @param forwardedRef - receives a reference so the reference can be used in other components
  */
-const Menu: FC<IMenu> = ({forwardedRef}) => {
+const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** Flag if the manu is collpased or expanded */

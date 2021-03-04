@@ -17,10 +17,9 @@ import REQUEST_ENDPOINTS from "../JVX/request/REQUEST_ENDPOINTS";
 import {createDeviceStatusRequest} from "../JVX/factories/RequestFactory";
 import {jvxContext} from "../JVX/jvxProvider";
 import {LayoutContext} from "../JVX/LayoutContext";
-import WorkScreen from "../JVX/components/workscreen/WorkScreen";
-import CustomGlobalDisplay from "../JVX/components/customComp/CustomGlobalDisplay";
+import ScreenManager from "./ScreenManager";
 
-interface ILayout {
+interface IUIManager {
     screenId: string
 }
 
@@ -28,7 +27,7 @@ interface ILayout {
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
  * @param props - the children components
  */
-const Layout: FC<ILayout> = (props) => {
+const UIManager: FC<IUIManager> = (props) => {
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
     /** Reference for the menu component */
@@ -36,7 +35,7 @@ const Layout: FC<ILayout> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** Flag if the manu is collpased or expanded */
-    const menuCollapsed = useMenuCollapser('layout');
+    const menuCollapsed = useMenuCollapser('reactUI');
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
@@ -65,7 +64,6 @@ const Layout: FC<ILayout> = (props) => {
      * setting this size will recalculate the layouts
      */
     const doResize = useCallback(() => {
-        
         if(sizeRef.current || document.querySelector('#workscreen')){
             const size = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
             const sizeMap = new Map<string, CSSProperties>();
@@ -93,6 +91,7 @@ const Layout: FC<ILayout> = (props) => {
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
     useLayoutEffect(() => {
+        console.log('resize')
         doResize();
     }, [props.children, doResize, menuSize])
 
@@ -149,19 +148,15 @@ const Layout: FC<ILayout> = (props) => {
     }, [props.children, context.server.APP_NAME, context.contentStore]);
 
     return(
-        <div className={"layout"}>
+        <div className={"reactUI"}>
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
-                <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " layout-expanded" : "")}>
-                    <WorkScreen 
-                        forwardedRef={sizeRef} 
-                        isGlobal={context.contentStore.customDisplays.has('global')}>
-                        {props.children}
-                    </WorkScreen>
+                <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "")}>
+                    <ScreenManager forwardedRef={sizeRef} />
                 </div>
             </LayoutContext.Provider>
         </div>
 
     )
 }
-export default Layout
+export default UIManager

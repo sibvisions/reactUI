@@ -1,24 +1,24 @@
-/// Transition when layout is collapsing/expanding
-%layout-transition {
+/// Transition when screen is collapsing/expanding
+%screen-transition {
   -webkit-transition: margin-left 0.5s ease-in-out;
   -moz-transition: margin-left 0.5s ease-in-out;
   -o-transition: margin-left 0.5s ease-in-out;
   transition: margin-left 0.5s ease-in-out;
 }
 
-.layout{
+.reactUI{
   height: 100vh;
   display: flex;
 }
 
 .main {
-  @extend %layout-transition;
+  @extend %screen-transition;
   margin-top: var(--menuHeight);
   margin-left: var(--menuWidth);
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .custom-display-div {
@@ -27,8 +27,8 @@
   flex-direction: column;
 }
 
-.layout-expanded {
-  @extend %layout-transition;
+.screen-expanded {
+  @extend %screen-transition;
   margin-left: var(--menuCollapsedWidth);
 }
 

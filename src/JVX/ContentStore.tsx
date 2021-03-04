@@ -892,7 +892,8 @@ export default class ContentStore{
      * @param title - the title of the customComponent
      * @param customComp - the custom component
      */
-    registerCustomComponent(title:string, customComp: ReactElement) {
+    registerCustomComponent(title:string, customComp: ReactElement|null) {
+        console.log('register called', title)
         this.customContent.set(title, () => customComp);
     }
 
