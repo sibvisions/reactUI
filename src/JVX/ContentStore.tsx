@@ -155,7 +155,7 @@ export default class ContentStore{
             existingComponent = this.flatContent.get(newComponent.id) || this.replacedContent.get(newComponent.id) ||this.removedContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(this.removedContent.has(newComponent.id)){
+            if(this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id)){
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
                     this.flatContent.set(newComponent.id, existingComponent as BaseComponent);
@@ -170,9 +170,8 @@ export default class ContentStore{
             if(newComponent.parent || newComponent["~remove"] || newComponent["~destroy"] || newComponent.visible !== undefined || newComponent.constraints){
                 //Double add??
                 notifyList.push(existingComponent?.parent || "");
-                if(newComponent.parent){
+                if(newComponent.parent)
                     notifyList.push(newComponent.parent);
-                }
             }
 
             /** 
@@ -259,7 +258,7 @@ export default class ContentStore{
      * @param windowName - the name of the window to close
      */
     closeScreen(windowName: string){
-        const window = this.getWindowData(windowName);
+        const window = this.getComponentByName(windowName);
         if(window){
             this.cleanUp(window.id, window.name);
         }
@@ -471,7 +470,7 @@ export default class ContentStore{
      * @returns the built window
      */
     getWindow(windowName: string): ReactElement{
-        const windowData = this.getWindowData(windowName);
+        const windowData = this.getComponentByName(windowName);
         if(windowData)
             return componentHandler(windowData);
         else
@@ -479,15 +478,15 @@ export default class ContentStore{
     }
 
     /**
-     * Returns the data/properties of a window based on the name
-     * @param windowName - the window name
-     * @returns the data/properties of a window based on the name
+     * Returns the data/properties of a component based on the name
+     * @param componentName - the name of the component
+     * @returns the data/properties of a component based on the name
      */
-    getWindowData(windowName: string): BaseComponent | undefined{
+    getComponentByName(componentName: string): BaseComponent | undefined{
         let componentEntries = this.flatContent.entries();
         let entry = componentEntries.next();
         while(!entry.done){
-            if(entry.value[1].name === windowName){
+            if(entry.value[1].name === componentName){
                 return entry.value[1];
             }
             entry = componentEntries.next();
@@ -893,8 +892,15 @@ export default class ContentStore{
      * @param customComp - the custom component
      */
     registerCustomComponent(title:string, customComp: ReactElement|null) {
-        console.log('register called', title)
+        console.log('registered ' + title)
         this.customContent.set(title, () => customComp);
+        if (this.getComponentByName(title)) {
+            const customComp = this.getComponentByName(title) as BaseComponent
+            const notifyList = new Array<string>();
+            if (customComp.parent)
+                notifyList.push(customComp.parent);
+            notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
+        }
     }
 
     /**

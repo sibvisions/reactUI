@@ -8,7 +8,7 @@ interface BaseComponent{
     onLoadCallback?: LoadCallBack
     id: string,
     parent?: string
-    name?: string,
+    name: string,
     className?: string,
     "~remove"?: boolean
     "~destroy"?: boolean

@@ -79,14 +79,15 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
 
         /** Create the reactchildren */
         children.forEach(child => {
+            console.log(child)
             let reactChild;
             child.onLoadCallback = componentHasLoaded;
-            if (!context.contentStore.replacedContent.has(child.id))
+            if (!context.contentStore.customContent.has(child.name))
                 reactChild = componentHandler(child);
                 
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
             else {
-                let customComp = context.contentStore.customContent.get(child.name as string)?.apply(undefined, []);
+                let customComp = context.contentStore.customContent.get(child.name)?.apply(undefined, []);
                 reactChild = createCustomComponentWrapper(child, customComp);
             }
                 
@@ -114,12 +115,12 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 let alreadyAdded = false
                 /** Checks if the new component is already added in the current components if yes add the old component else the new one */
                 components.forEach(oc => {
-                    if(nc.props.id === oc.props.id){
+                    if(nc.props.id === oc.props.id && !context.contentStore.customContent.has(nc.props.name)){
                         alreadyAdded = true
                         cl.push(oc);
                     }
                 });
-                if(!alreadyAdded){
+                if(!alreadyAdded) {
                     cl.push(nc);
                 }
             });
