@@ -26,11 +26,11 @@ const useDataProviderData = (compId:string, dataProvider:string): [Array<any>]=>
             const a = context.contentStore.getData(compId, dataProvider);
             setData([...a]);
         }
-        context.contentStore.subscribeToDataChange(compId, dataProvider, onDataChange);
+        context.subscriptions.subscribeToDataChange(compId, dataProvider, onDataChange);
         return () => {
-            context.contentStore.unsubscribeFromDataChange(compId, dataProvider, onDataChange);
+            context.subscriptions.unsubscribeFromDataChange(compId, dataProvider, onDataChange);
         }
-    }, [context.contentStore, dataProvider, compId]);
+    }, [context.subscriptions, dataProvider, compId]);
 
     return [data];
 }

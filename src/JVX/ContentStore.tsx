@@ -8,12 +8,12 @@ import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
 import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
+import { subscriptionManager } from "./subscriptionManager";
 
-/**
- * The ContentStore stores active content like user, components subscribtions and more, it also handleshandles subscription events
- * and notifies the subscribers
- */
+/** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
+    /** subscriptionManager instance */
+    subManager:subscriptionManager = new subscriptionManager(this);
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
@@ -40,59 +40,6 @@ export default class ContentStore{
     customProperties = new Map<string, any>();
     /** A Map which stores custom display names for screens, key is the screen-name and the value is the name of the custom display */
     customDisplays = new Map<string, ReactElement>();
-
-    //Sub Maps
-    /** 
-     * A Map which stores components which want to subscribe to their properties, 
-     * the key is the component id and the value is a function to update the state of the properties 
-     */
-    propertiesSubscriber = new Map<string, Function>();
-    /**
-     * A Map which stores a function to update the state of a parents childcomponents, components which use the 
-     * useComponents hook subscribe to the parentSubscriber the key is the component id and the 
-     * value is a function to update the state of a parents childcomponents
-     */
-    parentSubscriber = new Map<string, Function>();
-    /**
-     * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the 
-     * useRowSelect hook, to the changes of a screens dataproviders selectedRow, the key is the screens component id and the
-     * value is another Map which key is the dataprovider and the value is an array of functions to update the
-     * subscribers selectedRow state
-     */
-    rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
-    /**
-     * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useDataProviderData hook, to the changes of a screens dataproviders data, the key is the screens component id and the
-     * value is another Map which key is the dataprovider and the value is an array of functions to update the
-     * subscribers data state
-     */
-    dataChangeSubscriber = new Map<string, Map<string, Array<Function>>>();
-    /**
-     * A Map which stores a function to update a components state of all dataprovider data, key is the screens component id
-     * value is the function to update the state
-     */
-    screenDataChangeSubscriber = new Map<string, Function>();
-    /**
-     * A Map which stores a function to update the screen-name state of the subscribers, the key is the name of the subscribers
-     * and the value is the function to update the screen-name state
-     */
-    screenNameSubscriber = new Map<string, Function>();
-    /**
-     * A Map which stores a function to update the menu-collapsed state of the subscribers, the key is the name of the subscribers
-     * and the value is the function to update the menu-collapsed state
-     */
-    menuCollapseSubscriber = new Map<string, Function>();
-
-    /** An array of functions to update the menuitem states of its subscribers */
-    MenuSubscriber = new Array<Function>();
-    /** An array of functions to update the homechildren state of components which use the useHomeComponents hook */
-    popupSubscriber = new Array<Function>();
-
-    /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
-    translationLoadedSubscriber = new Array<Function>();
-
-    /** A function to change the register custom content state of a component*/
-    registerCustomSubscriber:Function = () => {};
 
     //DataProvider Maps
     /**
@@ -134,6 +81,14 @@ export default class ContentStore{
     /** True, if the menu should overlay the layout in mini mode */
     menuOverlaying:boolean = true;
 
+    /**
+     * Sets the subscription-manager
+     * @param subManager - the subscription-manager instance 
+     */
+    setsubscriptionManager(subManager:subscriptionManager) {
+        this.subManager = subManager;
+    }
+
     //Content
     /**
      * Sets or updates flatContent, removedContent, replacedContent, updates properties and notifies subscriber
@@ -152,7 +107,8 @@ export default class ContentStore{
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
             const isCustom:boolean = this.customContent.has(newComponent.name as string);
-            existingComponent = this.flatContent.get(newComponent.id) || this.replacedContent.get(newComponent.id) ||this.removedContent.get(newComponent.id);
+            existingComponent = this.flatContent.get(newComponent.id) || this.replacedContent.get(newComponent.id) || 
+                                this.removedContent.get(newComponent.id) || this.removedCustomContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
             if(this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id)){
@@ -233,19 +189,19 @@ export default class ContentStore{
 
             /** If newComponent has property screen_modal tell the popUpSubscribers to show the component as a popup*/
             if (newCompAsPanel.screen_modal_) 
-                this.popupSubscriber[0].apply(undefined, [newCompAsPanel.screen_navigationName_, false]);
+                this.subManager.popupSubscriber[0].apply(undefined, [newCompAsPanel.screen_navigationName_, false]);
         });
 
         /** If the component already exists and it is subscribed to properties update the state */
         componentsToUpdate.forEach(value => {
             const existingComp = this.flatContent.get(value.id) || this.replacedContent.get(value.id) || this.removedContent.get(value.id);
-            const updateFunction = this.propertiesSubscriber.get(value.id);
+            const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
             if(existingComp && updateFunction){
                 updateFunction(existingComp);
             }
         });
         /** Call the update function of the parentSubscribers */
-        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
     /** Filter function for notifyList */
@@ -284,14 +240,14 @@ export default class ContentStore{
     cleanUp(id:string, name:string|undefined) {
         if (name) {
             if ((this.flatContent.get(id) as Panel).screen_modal_)
-                this.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
+                this.subManager.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
             this.deleteChildren(id);
             this.flatContent.delete(id);
             this.dataProviderData.delete(name);
             this.dataProviderMetaData.delete(name);
             this.dataProviderFetched.delete(name);
             this.dataProviderSelectedRow.delete(name);
-            this.rowSelectionSubscriber.delete(name);
+            this.subManager.rowSelectionSubscriber.delete(name);
         }
     }
 
@@ -309,15 +265,15 @@ export default class ContentStore{
         this.navigationNames.clear();
         this.customProperties.clear();
         this.customDisplays.clear();
-        this.propertiesSubscriber.clear();
-        this.parentSubscriber.clear();
-        this.rowSelectionSubscriber.clear();
-        this.dataChangeSubscriber.clear();
-        this.screenDataChangeSubscriber.clear();
-        this.screenNameSubscriber.clear();
-        this.menuCollapseSubscriber.clear();
-        this.MenuSubscriber = new Array<Function>();
-        this.popupSubscriber = new Array<Function>();
+        this.subManager.propertiesSubscriber.clear();
+        this.subManager.parentSubscriber.clear();
+        this.subManager.rowSelectionSubscriber.clear();
+        this.subManager.dataChangeSubscriber.clear();
+        this.subManager.screenDataChangeSubscriber.clear();
+        this.subManager.screenNameSubscriber.clear();
+        this.subManager.menuCollapseSubscriber.clear();
+        this.subManager.menuSubscriber = new Array<Function>();
+        this.subManager.popupSubscriber = new Array<Function>();
         this.dataProviderData.clear();
         this.dataProviderMetaData.clear();
         this.dataProviderFetched.clear();
@@ -370,28 +326,8 @@ export default class ContentStore{
             dataMap.set(dataProvider, newDataSet)
             this.dataProviderData.set(compId, dataMap);
         }
-        this.notifyDataChange(compId, dataProvider);
-        this.notifyScreenDataChange(compId);
-    }
-
-    /**
-     * Notifies the components which use the useDataProviderData hook that their data changed
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     */
-    notifyDataChange(compId:string, dataProvider: string) {
-        //Notify
-        this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(value => {
-            value.apply(undefined, []);
-        });
-    }
-
-    /**
-     * Notifies the components which use the useScreenData hook that the data of their screen changed
-     * @param compId - the component id of the screen
-     */
-    notifyScreenDataChange(compId:string) {
-        this.screenDataChangeSubscriber.get(compId)?.apply(undefined, []);
+        this.subManager.notifyDataChange(compId, dataProvider);
+        this.subManager.notifyScreenDataChange(compId);
     }
 
     /**
@@ -535,293 +471,11 @@ export default class ContentStore{
     }
 
     /**
-     * Calls the function of the screen-name subscribers to change their state
-     * @param screenName - the current screen-name
-     */
-    notifyScreenNameChanged(screenName:string) {
-        this.screenNameSubscriber.forEach(subscriber => {
-            subscriber.apply(undefined, [screenName])
-        })
-    }
-
-    /**
      * Sets the menu-mode
      * @param value - the menu-mode
      */
     setMenuModeAuto(value:boolean) {
         this.menuModeAuto = value;
-    }
-
-    /**
-     * Subscribes the component which uses the useProperties hook, with the id to property changes
-     * @param id - the component id
-     * @param fn - the function to update the component's properties state
-     */
-    subscribeToPropChange(id: string, fn: Function){
-        this.propertiesSubscriber.set(id, fn);
-    }
-
-    /**
-     * Subscribes parents which use the useComponents hook, to change their childcomponent state
-     * @param id - the component id
-     * @param fn - the function to update a parents childcomponent state
-     */
-    subscribeToParentChange(id: string, fn: Function){
-        this.parentSubscriber.set(id, fn);
-    }
-
-    /**
-     * Subscribes components which use the useRowSelect hook, to change their selectedRow state
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the selectedRow state
-     */
-    subscribeToRowSelection(compId:string, dataProvider: string, fn: Function) {
-        /** Checks if there is already a Map for the rowSelectionSubscriber */
-        const existingMap = this.rowSelectionSubscriber.get(compId);
-        if (existingMap) {
-            /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            const subscriber = existingMap.get(dataProvider);
-            if(subscriber)
-                subscriber.push(fn);
-            else
-                existingMap.set(dataProvider, new Array<Function>(fn));
-        }
-        else {
-            const tempMap:Map<string, Function[]> = new Map<string, Function[]>();
-            tempMap.set(dataProvider, new Array<Function>(fn));
-            this.rowSelectionSubscriber.set(compId, tempMap);
-        }
-
-    }
-    /**
-     * Subscribes components which use the useDataProviderData hook, to change their data state
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    subscribeToDataChange(compId:string, dataProvider: string, fn: Function){
-        /** Checks if there is already a Map for the dataChangeSubscriber */
-        const existingMap = this.dataChangeSubscriber.get(compId);
-        if (existingMap) {
-            /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            const subscriber = existingMap.get(dataProvider);
-            if(subscriber)
-                subscriber.push(fn);
-            else
-                existingMap.set(dataProvider, new Array<Function>(fn));
-        }
-        else {
-            const tempMap:Map<string, Array<Function>> = new Map();
-            tempMap.set(dataProvider, new Array<Function>(fn));
-            this.dataChangeSubscriber.set(compId, tempMap);
-        }
-    }
-
-    /**
-     * Subscribes a component to its screen-data (every dataprovider data)
-     * @param compId - the component id of the screen
-     * @param fn - the function to update the state
-     */
-    subscribeToScreenDataChange(compId:string, fn:Function) {
-        this.screenDataChangeSubscriber.set(compId, fn)
-    }
-
-    /**
-     * Subscribes components to the screen-name, to change their screen-name state
-     * @param id - the id of the component
-     * @param fn - the function to update the screen-name state
-     */
-    subscribeToScreenName(id:string, fn: Function) {
-        this.screenNameSubscriber.set(id, fn);
-    }
-
-    /**
-     * Subscribes the menu to menuChanges , to change the menu-item state
-     * @param fn - the function to update the menu-item state
-     */
-    subscribeToMenuChange(fn: Function){
-        this.MenuSubscriber.push(fn);
-    }
-
-    /**
-     * Subscribes components to popUpChanges, to change their homeComponents state
-     * @param fn - the function to add or remove popups to the state
-     */
-    subscribeToPopupChange(fn: Function) {
-        this.popupSubscriber.push(fn);
-    }
-
-    /**
-     * Subscribes components to menuChanges (menu-collapsed), to change their menu-collapsed state
-     * @param id - the component id
-     * @param fn - the function to update the menu-collapsed state
-     */
-    subscribeToMenuCollapse(id:string, fn: Function) {
-        this.menuCollapseSubscriber.set(id, fn);
-    }
-
-    /**
-     * Subscribes components to translationLoaded , to change the translation-loaded state
-     * @param fn - the function to update the translation-loaded state
-     */
-    subscribeToTranslation(fn: Function) {
-        this.translationLoadedSubscriber.push(fn);
-    }
-
-    /**
-     * Subscribes the app to register-custom, to change the register-custom flip value
-     * @param fn - the function to update the register-custom flip value
-     */
-    subscribeToRegisterCustom(fn:Function) {
-        this.registerCustomSubscriber = fn;
-    }
-
-    /**
-     * Unsubscribes a component from popUpChanges
-     * @param fn - the function to add or remove popups to the state
-     */
-    unsubscribeFromPopupChange(fn: Function) {
-        this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn), 1);
-    }
-
-    /**
-     * Unsubscribes the menu from menuChanges
-     * @param fn - the function to update the menu-item state
-     */
-    unsubscribeFromMenuChange(fn: Function){
-        this.MenuSubscriber.splice(this.MenuSubscriber.findIndex(value => value === fn), 1);
-    }
-
-    /**
-     * Unsubscribes components from translationLoaded
-     * @param fn - the function to update the translation-loaded state
-     */
-    unsubscribeFromTranslation(fn: Function) {
-        this.translationLoadedSubscriber.splice(this.translationLoadedSubscriber.findIndex(value => value === fn), 1);
-    }
-
-    /**
-     * Unsubscibes components from dataChange
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function){
-        const subscriber = this.dataChangeSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
-        }
-    }
-
-    /**
-     * Unsubscribes a component from its screen-data (every dataprovider data)
-     * @param compId - the component id of the screen
-     */
-    unsubscribeFromScreenDataChange(compId:string) {
-        this.screenDataChangeSubscriber.delete(compId);
-    }
-
-    /**
-     * Unsubscribes a component from rowSelection
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the selectedRow state
-     */
-    unsubscribeFromRowSelection(compId:string, dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
-        }
-    }
-
-    /**
-     * Unsubscribes a component from parentChanges
-     * @param id - the component id
-     */
-    unsubscribeFromParentChange(id: string){
-        this.parentSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes a component from property changes
-     * @param id - the component id
-     */
-    unsubscribeFromPropChange(id: string){
-        this.propertiesSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes a component from screen-name changes
-     * @param id - the component id
-     */
-    unsubscribeFromScreenName(id: string) {
-        this.screenNameSubscriber.delete(id)
-    }
-
-    /**
-     * Unsubscribes a component from menu-collapse
-     * @param id - the component id
-     */
-    unsubscribeFromMenuCollapse(id:string) {
-        this.menuCollapseSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes app from register-custom
-     */
-    unsubscribeFromRegisterCustom() {
-        this.subscribeToRegisterCustom = () => {}
-    }
-
-
-    /**
-     * When a new row is selected call the function of the subscriber
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     */
-    emitRowSelect(compId:string, dataProvider: string){
-        const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
-        const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
-        if(rowSubscriber)
-            rowSubscriber.forEach(sub => {
-                sub.apply(undefined, [selectedRow]);
-            });
-    }
-
-    /** When the menu-items change, call the function of the menu-subscriber */
-    emitMenuUpdate(){
-        this.MenuSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [this.mergedMenuItems]);
-        });
-    }
-
-    /**
-     * When menu collapses or expands, call the function of the menu-collapse subscriber and set the contentStore value
-     * @param collapseVal - the collapse value
-     */
-    emitMenuCollapse(collapseVal:number) {
-        this.menuCollapseSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [collapseVal]);
-        })
-        if (collapseVal === 0 && !this.menuCollapsed)
-            this.menuCollapsed = true;
-        else if (collapseVal === 1 && this.menuCollapsed)
-            this.menuCollapsed = false;
-        else if (collapseVal === 2)
-            this.menuCollapsed = !this.menuCollapsed;
-    }
-
-    /** When the translation is loaded, notify the subscribers */
-    emitTranslation() {
-        this.translationLoadedSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [this.translation]);
-        });
-    }
-
-    /** When the app needs to reregister the custom content*/
-    emitRegisterCustom() {
-        this.registerCustomSubscriber()
     }
 
     //Custom Screens
@@ -899,7 +553,7 @@ export default class ContentStore{
             const notifyList = new Array<string>();
             if (customComp.parent)
                 notifyList.push(customComp.parent);
-            notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.parentSubscriber.get(parentId)?.apply(undefined, []));
+            notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
         }
     }
 

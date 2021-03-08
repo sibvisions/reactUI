@@ -91,7 +91,6 @@ const UIManager: FC<IUIManager> = (props) => {
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
     useLayoutEffect(() => {
-        console.log('resize')
         doResize();
     }, [props.children, doResize, menuSize])
 
@@ -144,8 +143,8 @@ const UIManager: FC<IUIManager> = (props) => {
             if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
                 screenTitle = childWithProps.props.screen_title_;
         })      
-        context.contentStore.notifyScreenNameChanged(screenTitle)
-    }, [props.children, context.server.APP_NAME, context.contentStore]);
+        context.subscriptions.notifyScreenNameChanged(screenTitle)
+    }, [props.children, context.server.APP_NAME, context.subscriptions]);
 
     return(
         <div className={"reactUI"}>

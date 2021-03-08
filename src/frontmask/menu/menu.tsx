@@ -67,14 +67,14 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.contentStore.subscribeToScreenName('x', (appName:string) => {
+        context.subscriptions.subscribeToScreenName('x', (appName:string) => {
             setScreenTitle(appName)
         });
 
         return () => {
-            context.contentStore.unsubscribeFromScreenName('x');
+            context.subscriptions.unsubscribeFromScreenName('x');
         }
-    });
+    },[context.subscriptions]);
 
     /**
      * Builds the profile menu
@@ -148,12 +148,12 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
             setMenuItems(primeMenu)
         }
         receiveNewMenuItems(context.contentStore.mergedMenuItems);
-        context.contentStore.subscribeToMenuChange(receiveNewMenuItems);
+        context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);
 
         return () => {
-            context.contentStore.unsubscribeFromMenuChange(receiveNewMenuItems)
+            context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
-    }, [context.contentStore]);
+    }, [context.subscriptions]);
 
     /** Sets the image of the profile-image element to the profileImage of the current user */
     useEffect(() => {
@@ -169,13 +169,13 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
             else {
                 if (!windowSize) {
                     closeOpenedMenuPanel();
-                    context.contentStore.emitMenuCollapse(0);
+                    context.subscriptions.emitMenuCollapse(0);
                 }
                     
                 else
-                    context.contentStore.emitMenuCollapse(1);
+                    context.subscriptions.emitMenuCollapse(1);
             }
-    },[context.contentStore, windowSize])
+    },[context.contentStore, context.subscriptions, windowSize])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,
@@ -233,7 +233,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     const handleToggleClick = () => {
         closeOpenedMenuPanel();
         context.contentStore.setMenuModeAuto(!context.contentStore.menuModeAuto)
-        context.contentStore.emitMenuCollapse(2);
+        context.subscriptions.emitMenuCollapse(2);
     }
 
     return(

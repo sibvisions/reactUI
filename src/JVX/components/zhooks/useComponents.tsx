@@ -79,7 +79,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
 
         /** Create the reactchildren */
         children.forEach(child => {
-            console.log(child)
             let reactChild;
             child.onLoadCallback = componentHasLoaded;
             if (!context.contentStore.customContent.has(child.name))
@@ -106,7 +105,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
      * @returns unsubscribes from childcomponent changes
      */
     useEffect(() => {
-        context.contentStore.subscribeToParentChange(id, () => {
+        context.subscriptions.subscribeToParentChange(id, () => {
             /** New Components when component changes */
             const newComponents = buildComponents();
             /** Contains the components */
@@ -128,9 +127,9 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         });
 
         return () => {
-            context.contentStore.unsubscribeFromParentChange(id);
+            context.subscriptions.unsubscribeFromParentChange(id);
         }
-    }, [context.contentStore, id, components, buildComponents]);
+    }, [context.subscriptions, id, components, buildComponents]);
 
     return [components, preferredSizes];
 }

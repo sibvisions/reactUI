@@ -60,7 +60,7 @@ const useHomeComponents = (componentId:string) => {
             });
             setHomeChildren(cl);
         }
-        context.contentStore.subscribeToPopupChange((compKey:string, remove:boolean) => {
+        context.subscriptions.subscribeToPopupChange((compKey:string, remove:boolean) => {
             if (remove)
                 removeHomeChild(compKey);
             else
@@ -68,14 +68,14 @@ const useHomeComponents = (componentId:string) => {
         });
 
         return () => {
-            context.contentStore.unsubscribeFromPopupChange((compKey:string, remove:boolean) => {
+            context.subscriptions.unsubscribeFromPopupChange((compKey:string, remove:boolean) => {
                 if (remove)
                     removeHomeChild(compKey);
                 else
                     buildHomeChildren(compKey);
             });
         }
-    },[context.contentStore, buildWindow, homeChildren]);
+    },[context.contentStore, context.subscriptions, buildWindow, homeChildren]);
 
     return homeChildren
 }

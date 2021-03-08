@@ -21,13 +21,13 @@ const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
      * @returns unsubscribes from propChange
      */
     useEffect(() => {
-        context.contentStore.subscribeToPropChange(id, (value: T) => {
+        context.subscriptions.subscribeToPropChange(id, (value: T) => {
             setProps({...value});
         });
         return() => {
-           context.contentStore.unsubscribeFromPropChange(id);
+           context.subscriptions.unsubscribeFromPropChange(id);
         };
-    }, [id, context.contentStore, props]);
+    }, [id, context.subscriptions, props]);
 
     return [props]
 }

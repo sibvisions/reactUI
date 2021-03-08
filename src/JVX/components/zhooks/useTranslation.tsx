@@ -19,12 +19,12 @@ const useTranslation = () => {
      * @returns unsubscribes from translation
      */
     useEffect(() => {
-        context.contentStore.subscribeToTranslation((translationMap:Map<string, string>) => setTranslations(new Map(translationMap)));
+        context.subscriptions.subscribeToTranslation((translationMap:Map<string, string>) => setTranslations(new Map(translationMap)));
 
         return () => {
-            context.contentStore.unsubscribeFromTranslation((translationMap:Map<string, string>) => setTranslations(new Map(translationMap)));
+            context.subscriptions.unsubscribeFromTranslation((translationMap:Map<string, string>) => setTranslations(new Map(translationMap)));
         }
-    });
+    },[context.subscriptions]);
     return tranlations
 }
 export default useTranslation;

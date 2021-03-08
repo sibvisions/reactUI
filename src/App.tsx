@@ -53,9 +53,9 @@ const App: FC<ICustomContent> = (props) => {
      * @returns unsubscribes from session
      */
     useEffect(() => {
-        context.contentStore.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
-        return () => context.contentStore.unsubscribeFromRegisterCustom();
-    })
+        context.subscriptions.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
+        return () => context.subscriptions.unsubscribeFromRegisterCustom();
+    },[context.subscriptions])
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     useEffect(() => {
@@ -140,7 +140,7 @@ const App: FC<ICustomContent> = (props) => {
                 startUpRequest.authKey = authKey;
             }
             setAppName(context.server.APP_NAME);
-            context.contentStore.notifyScreenNameChanged(context.server.APP_NAME);
+            context.subscriptions.notifyScreenNameChanged(context.server.APP_NAME);
             startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;

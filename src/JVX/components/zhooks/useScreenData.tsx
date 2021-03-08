@@ -26,9 +26,9 @@ const useScreenData = (compId:string): Map<string, Array<any>>|undefined => {
             setDataMap(a ? new Map(a) : undefined);
         }
 
-        context.contentStore.subscribeToScreenDataChange(compId, onScreenDataChange);
-        return () => context.contentStore.unsubscribeFromScreenDataChange(compId);
-    })
+        context.subscriptions.subscribeToScreenDataChange(compId, onScreenDataChange);
+        return () => context.subscriptions.unsubscribeFromScreenDataChange(compId);
+    },[context.subscriptions])
 
     return dataMap
 }

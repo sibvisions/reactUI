@@ -19,7 +19,7 @@ const useMenuCollapser = (id:string) => {
      * @returns unsubscribe from menuCollapse
      */
     useEffect(() => {
-        context.contentStore.subscribeToMenuCollapse(id, (collapsedVal:number) => {
+        context.subscriptions.subscribeToMenuCollapse(id, (collapsedVal:number) => {
             /** 0 means always collapse, 1 means always expand and 2 means flipping */
             if (collapsedVal === 0)
                 setMenuCollapsed(true);
@@ -30,9 +30,9 @@ const useMenuCollapser = (id:string) => {
                 
         });
         return () => {
-            context.contentStore.unsubscribeFromMenuCollapse(id);
+            context.subscriptions.unsubscribeFromMenuCollapse(id);
         }
-    }, [id, context.contentStore, menuCollapsed]);
+    }, [id, context.subscriptions, menuCollapsed]);
 
     return menuCollapsed;
 }

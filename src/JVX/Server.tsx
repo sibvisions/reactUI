@@ -26,6 +26,7 @@ import {Panel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
+import { subscriptionManager } from "./subscriptionManager";
 
 /** Type for query */
 type queryType = {
@@ -42,8 +43,9 @@ class Server {
      * @constructor constructs server instance
      * @param store - contentstore instance
      */
-    constructor(store: ContentStore) {
+    constructor(store: ContentStore, subManager:subscriptionManager) {
         this.contentStore = store
+        this.subManager = subManager
     }
 
     /** Application name */
@@ -54,6 +56,8 @@ class Server {
     RESOURCE_URL = ""
     /** Contentstore instance */
     contentStore: ContentStore;
+    /** subscriptionManager instance */
+    subManager:subscriptionManager;
     /**
      * Function to show a toast
      * @param message - message to show
@@ -204,7 +208,7 @@ class Server {
             }
             this.contentStore.addMenuItem(menuItem, true);
         });
-        this.contentStore.emitMenuUpdate();
+        this.subManager.emitMenuUpdate();
     }
 
     //Dal
@@ -219,10 +223,10 @@ class Server {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow);
-            this.contentStore.emitRowSelect(compId, dataProvider);
+            this.subManager.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
             this.contentStore.clearSelectedRow(compId, dataProvider);
-            this.contentStore.emitRowSelect(compId, dataProvider);
+            this.subManager.emitRowSelect(compId, dataProvider);
         }
     }
 
@@ -246,7 +250,7 @@ class Server {
         if(fetchData.records.length !== 0)
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         else
-            this.contentStore.notifyDataChange(compId, fetchData.dataProvider);
+            this.subManager.notifyDataChange(compId, fetchData.dataProvider);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
@@ -372,7 +376,7 @@ class Server {
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title})
-        this.contentStore.emitRegisterCustom()
+        this.subManager.emitRegisterCustom()
         console.error(expData.title)
     }
 
@@ -403,7 +407,7 @@ class Server {
         .then((response:any) => response.text())
         .then(value => parseString(value, (err, result) => { 
             result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-            this.contentStore.emitTranslation();
+            this.subManager.emitTranslation();
         }))
     }
 

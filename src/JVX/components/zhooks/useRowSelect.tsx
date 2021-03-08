@@ -41,11 +41,11 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
             else
                 setSelectedRow(newRow);
         }
-        context.contentStore.subscribeToRowSelection(compId, dataProvider, onRowSelection);
+        context.subscriptions.subscribeToRowSelection(compId, dataProvider, onRowSelection);
         return () => {
-            context.contentStore.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
+            context.subscriptions.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
         }
-    }, [context.contentStore, dataProvider, column, compId])
+    }, [context.subscriptions, dataProvider, column, compId])
 
     return [selectedRow];
 }

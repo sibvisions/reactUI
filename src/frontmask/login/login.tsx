@@ -34,8 +34,8 @@ const Login: FC = () => {
         loginRequestBody.username = username;
         loginRequestBody.password = password;
         context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN);
-        context.contentStore.emitRegisterCustom();
-        context.contentStore.emitMenuUpdate();
+        context.subscriptions.emitRegisterCustom();
+        context.subscriptions.emitMenuUpdate();
     }
 
     return(
