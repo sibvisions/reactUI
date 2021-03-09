@@ -8,12 +8,13 @@ import UserData from "./model/UserData";
 import MetaDataResponse from "./response/MetaDataResponse";
 import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
-import { subscriptionManager } from "./subscriptionManager";
+import { SubscriptionManager } from "./SubscriptionManager";
+import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
     /** subscriptionManager instance */
-    subManager:subscriptionManager = new subscriptionManager(this);
+    subManager:SubscriptionManager = new SubscriptionManager(this);
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
@@ -38,8 +39,8 @@ export default class ContentStore{
     translation = new Map<string, string>();
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
-    /** A Map which stores custom display names for screens, key is the screen-name and the value is the name of the custom display */
-    customDisplays = new Map<string, ReactElement>();
+    /** A Map which stores custom display names for screens, key is the screen-name and the value is the object of the custom display */
+    customDisplays = new Map<string, {display: ReactElement, options: CustomDisplayOptions}>();
 
     //DataProvider Maps
     /**
@@ -85,7 +86,7 @@ export default class ContentStore{
      * Sets the subscription-manager
      * @param subManager - the subscription-manager instance 
      */
-    setsubscriptionManager(subManager:subscriptionManager) {
+    setsubscriptionManager(subManager:SubscriptionManager) {
         this.subManager = subManager;
     }
 
@@ -515,13 +516,13 @@ export default class ContentStore{
      * @param group - the menuGroup of the customScreen
      * @param customScreen - the function to build the component
      */
-    registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement){
+    registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement, icon?:string){
         const menuButton: serverMenuButtons = {
             group: group,
 
             componentId: "",
-            image: "someIcon",
-            text: "Click Me",
+            image: icon ? icon.substring(0,2) + " " + icon : "",
+            text: title,
             action: () => {
                 window.location.hash = "/home/"+title;
             }
@@ -545,9 +546,12 @@ export default class ContentStore{
      * @param title - the title of the customComponent
      * @param customComp - the custom component
      */
-    registerCustomComponent(title:string, customComp: ReactElement|null) {
-        console.log('registered ' + title)
-        this.customContent.set(title, () => customComp);
+    registerCustomComponent(title:string, customComp?:ReactElement) {
+        if (customComp === undefined)
+            this.customContent.set(title, () => null)
+        else
+            this.customContent.set(title, () => customComp);
+        /** Notifies the parent that a custom component has replaced a server sent component */
         if (this.getComponentByName(title)) {
             const customComp = this.getComponentByName(title) as BaseComponent
             const notifyList = new Array<string>();
@@ -576,11 +580,12 @@ export default class ContentStore{
      * Adds a custom display for screens
      * @param screenName - the screen/s in which the custom display should be displayed
      * @param customDisplay - the name of the custom display component
+     * @param pOptions - the options for the custom display component
      */
-    registerCustomDisplay(screenName:string|string[], customDisplay:ReactElement) {
+    registerCustomDisplay(screenName:string|string[], customDisplay:ReactElement, pOptions?:CustomDisplayOptions) {
         if (Array.isArray(screenName))
-            screenName.forEach(name => this.customDisplays.set(name, customDisplay));
+            screenName.forEach(name => this.customDisplays.set(name, {display: customDisplay, options: pOptions ? pOptions : {global: true}}));
         else 
-            this.customDisplays.set(screenName, customDisplay);
+            this.customDisplays.set(screenName, {display: customDisplay, options: pOptions ? pOptions : {global: true}});
     }
 }

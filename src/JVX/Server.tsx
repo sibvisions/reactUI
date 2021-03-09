@@ -26,7 +26,7 @@ import {Panel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
-import { subscriptionManager } from "./subscriptionManager";
+import { SubscriptionManager } from "./SubscriptionManager";
 
 /** Type for query */
 type queryType = {
@@ -43,7 +43,7 @@ class Server {
      * @constructor constructs server instance
      * @param store - contentstore instance
      */
-    constructor(store: ContentStore, subManager:subscriptionManager) {
+    constructor(store: ContentStore, subManager:SubscriptionManager) {
         this.contentStore = store
         this.subManager = subManager
     }
@@ -57,7 +57,7 @@ class Server {
     /** Contentstore instance */
     contentStore: ContentStore;
     /** subscriptionManager instance */
-    subManager:subscriptionManager;
+    subManager:SubscriptionManager;
     /**
      * Function to show a toast
      * @param message - message to show

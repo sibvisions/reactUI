@@ -6,5 +6,6 @@ interface CustomScreenType {
     screenName: string,
     menuGroup: string,
     customScreen: ReactElement
+    icon?: string
 }
 export default CustomScreenType;

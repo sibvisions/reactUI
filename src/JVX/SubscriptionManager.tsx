@@ -1,3 +1,4 @@
+/** Other imports */
 import ContentStore from "./ContentStore"
 
 /** Manages subscriptions and handles the subscriber eventss */

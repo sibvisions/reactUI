@@ -58,20 +58,20 @@ const App: FC<ICustomContent> = (props) => {
     },[context.subscriptions])
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
-    useEffect(() => {
-        context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", <CustomHelloScreen/>);
-        context.contentStore.registerReplaceScreen("Cha-OL", <CustomChartScreen/>);
-        //context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
-    }, [context.contentStore, registerCustom]);
+    // useEffect(() => {
+    //     context.contentStore.registerCustomOfflineScreen("FirstOfflineScreen", "Custom Group", <CustomHelloScreen/>);
+    //     context.contentStore.registerReplaceScreen("Cha-OL", <CustomChartScreen/>);
+    //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
+    // }, [context.contentStore, registerCustom]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
-        props.customScreens?.forEach(cs => context.contentStore.registerCustomOfflineScreen(cs.screenName, cs.menuGroup, cs.customScreen));
+        props.customScreens?.forEach(cs => context.contentStore.registerCustomOfflineScreen(cs.screenName, cs.menuGroup, cs.customScreen, cs.icon));
 
         props.replaceScreens?.forEach(rs => context.contentStore.registerReplaceScreen(rs.screenToReplace, rs.replaceScreen));
 
         props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.componentName, rc.customComp));
-        props.customDisplays?.forEach(cd => context.contentStore.registerCustomDisplay(cd.screen, cd.customDisplay))
+        props.customDisplays?.forEach(cd => context.contentStore.registerCustomDisplay(cd.screen, cd.customDisplay, cd.options))
     },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents, props.customDisplays, registerCustom]);
 
     /** Default values for translation */

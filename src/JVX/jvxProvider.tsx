@@ -4,13 +4,13 @@ import React, {createContext, FC, useState} from "react";
 /** Other imports */
 import Server from "./Server";
 import ContentStore from "./ContentStore";
-import { subscriptionManager } from "./subscriptionManager";
+import { SubscriptionManager } from "./SubscriptionManager";
 
 /** Type for jvxContext */
 type jvxContextType={
     server: Server,
     contentStore: ContentStore,
-    subscriptions: subscriptionManager,
+    subscriptions: SubscriptionManager,
     //theme: string,
     //setTheme: Function
 }
@@ -18,7 +18,7 @@ type jvxContextType={
 /** Contentstore instance */
 const contentStore = new ContentStore();
 /** subscriptionManager instance */
-const subscriptions = new subscriptionManager(contentStore)
+const subscriptions = new SubscriptionManager(contentStore)
 /** Server instance */
 const server = new Server(contentStore, subscriptions);
 
@@ -48,7 +48,7 @@ const JVXProvider: FC = ({children}) => {
         // }
 
         const contentStore = new ContentStore();
-        const subscriptions = new subscriptionManager(contentStore)
+        const subscriptions = new SubscriptionManager(contentStore)
         const server = new Server(contentStore, subscriptions);
         
         contentStore.setsubscriptionManager(subscriptions)

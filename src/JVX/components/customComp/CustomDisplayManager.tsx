@@ -13,6 +13,6 @@ const CustomDisplayManager:FC = () => {
     /** The ID of the screen based on the navigation-name */
     const screenId = getScreenIdFromNavigation(componentId, context.contentStore)
 
-    return context.contentStore.customDisplays.has(screenId) ? context.contentStore.customDisplays.get(screenId||"") as ReactElement : <WorkScreen/>
+    return context.contentStore.customDisplays.has(screenId) ? context.contentStore.customDisplays.get(screenId||"")?.display as ReactElement : <WorkScreen/>
 }
 export default CustomDisplayManager;
