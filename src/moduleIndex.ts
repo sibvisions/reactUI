@@ -44,9 +44,10 @@ export {default as useImageStyle} from './JVX/components/zhooks/useImageStyle';
 export {default as useOutsideClick} from './JVX/components/zhooks/useOutsideClick';
 export {default as useProperties} from './JVX/components/zhooks/useProperties';
 export {default as useRowSelect} from './JVX/components/zhooks/useRowSelect';
-export {default as useGetCustomProperty} from './JVX/components/zhooks/useGetCustomProperty'
-export {default as useJVXContext} from './JVX/components/zhooks/useJVXContext'
-export {default as useRemoveCompFromWorkscreen} from './JVX/components/zhooks/useRemoveCompFromWorkscreen'
+export {default as useGetCustomProperty} from './JVX/components/zhooks/useGetCustomProperty';
+export {default as useJVXContext} from './JVX/components/zhooks/useJVXContext';
+export {default as useRemoveCompFromWorkscreen} from './JVX/components/zhooks/useRemoveCompFromWorkscreen';
+export {default as useDataProviders} from './JVX/components/zhooks/useDataProviders';
 export * from './JVX/factories/RequestFactory';
 export {default as ReactUI} from './MiddleMan';
 export {jvxContext} from './JVX/jvxProvider';

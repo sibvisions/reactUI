@@ -24,15 +24,21 @@ export class SubscriptionManager {
      */
     parentSubscriber = new Map<string, Function>();
     /**
+     * A Map which stores an Array of functions to update the state of a screens dataProviders, components which use
+     * the useDataProviders hook subscribe to a screens dataProvider, the key is a screen component id and the
+     * value is an Array of functions to update the subscribers dataProviders state
+     */
+    dataProvidersSubscriber = new Map<string, Array<Function>>();
+    /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the 
-     * useRowSelect hook, to the changes of a screens dataproviders selectedRow, the key is the screens component id and the
+     * useRowSelect hook, subscribe to the changes of a screens dataproviders selectedRow, the key is the screens component id and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers selectedRow state
      */
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useDataProviderData hook, to the changes of a screens dataproviders data, the key is the screens component id and the
+     * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens component id and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers data state
      */
@@ -77,6 +83,20 @@ export class SubscriptionManager {
      */
     subscribeToParentChange(id: string, fn: Function){
         this.parentSubscriber.set(id, fn);
+    }
+
+    /**
+     * Subscribes components which use the useDataProviders hook, to change their dataProviders state
+     * @param compId - the component id of the screen
+     * @param fn - the function to update the dataProviders state
+     */
+    subscribeToDataProviders(compId:string, fn:Function) {
+        /** Check if there is already a function array for this screen */
+        const subscriber = this.dataProvidersSubscriber.get(compId);
+        if (subscriber)
+            subscriber.push(fn)
+        else
+            this.dataProvidersSubscriber.set(compId, new Array<Function>(fn));
     }
 
     /**
@@ -191,7 +211,7 @@ export class SubscriptionManager {
      * @param fn - the function to add or remove popups to the state
      */
     unsubscribeFromPopupChange(fn: Function) {
-        this.popupSubscriber.splice(this.popupSubscriber.findIndex(value => value === fn), 1);
+        this.popupSubscriber.splice(this.popupSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -199,7 +219,7 @@ export class SubscriptionManager {
      * @param fn - the function to update the menu-item state
      */
     unsubscribeFromMenuChange(fn: Function){
-        this.menuSubscriber.splice(this.menuSubscriber.findIndex(value => value === fn), 1);
+        this.menuSubscriber.splice(this.menuSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -207,7 +227,18 @@ export class SubscriptionManager {
      * @param fn - the function to update the translation-loaded state
      */
     unsubscribeFromTranslation(fn: Function) {
-        this.translationLoadedSubscriber.splice(this.translationLoadedSubscriber.findIndex(value => value === fn), 1);
+        this.translationLoadedSubscriber.splice(this.translationLoadedSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /**
+    * Unsubscribes components from dataProviders
+    * @param compId - the component id of the screen
+    * @param fn - the function to update the dataProvider state
+    */
+    unsubscribeFromDataProviders(compId:string, fn: Function) {
+        const subscriber = this.dataProvidersSubscriber.get(compId);
+        if (subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn), 1)
     }
 
     /**
@@ -218,9 +249,8 @@ export class SubscriptionManager {
      */
     unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function){
         const subscriber = this.dataChangeSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
-        }
+        if(subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
     /**
@@ -239,9 +269,8 @@ export class SubscriptionManager {
      */
     unsubscribeFromRowSelection(compId:string, dataProvider: string, fn: Function){
         const subscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber){
-            subscriber.splice(subscriber.findIndex(value => value === fn),1);
-        }
+        if(subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
     /**
@@ -284,14 +313,20 @@ export class SubscriptionManager {
     }
 
     /**
+     * Notifies the components which use the useDataProviders hook that their dataProviders changed
+     * @param compId 
+     */
+    notifyDataProviderChange(compId:string) {
+        this.dataProvidersSubscriber.get(compId)?.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
      * Notifies the components which use the useDataProviderData hook that their data changed
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
     notifyDataChange(compId:string, dataProvider: string) {
-        this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(value => {
-            value.apply(undefined, []);
-        });
+        this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
@@ -307,9 +342,7 @@ export class SubscriptionManager {
      * @param screenName - the current screen-name
      */
     notifyScreenNameChanged(screenName:string) {
-        this.screenNameSubscriber.forEach(subscriber => {
-                subscriber.apply(undefined, [screenName])
-        })
+        this.screenNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [screenName]))
     }
 
     /**
@@ -321,16 +354,12 @@ export class SubscriptionManager {
         const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
         const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider);
         if(rowSubscriber)
-            rowSubscriber.forEach(sub => {
-                sub.apply(undefined, [selectedRow]);
-            });
+            rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
     }
 
     /** When the menu-items change, call the function of the menu-subscriber */
     emitMenuUpdate(){
-        this.menuSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [this.contentStore.mergedMenuItems]);
-        });
+        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.mergedMenuItems]));
     }
 
     /**
@@ -338,9 +367,7 @@ export class SubscriptionManager {
      * @param collapseVal - the collapse value
      */
     emitMenuCollapse(collapseVal:number) {
-        this.menuCollapseSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [collapseVal]);
-        })
+        this.menuCollapseSubscriber.forEach(subFunction => subFunction.apply(undefined, [collapseVal]))
         if (collapseVal === 0 && !this.contentStore.menuCollapsed)
             this.contentStore.menuCollapsed = true;
         else if (collapseVal === 1 && this.contentStore.menuCollapsed)
@@ -351,9 +378,7 @@ export class SubscriptionManager {
 
     /** When the translation is loaded, notify the subscribers */
     emitTranslation() {
-        this.translationLoadedSubscriber.forEach(subFunction => {
-            subFunction.apply(undefined, [this.contentStore.translation]);
-        });
+        this.translationLoadedSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.translation]));
     }
 
     /** When the app needs to reregister the custom content*/

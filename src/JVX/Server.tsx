@@ -284,12 +284,16 @@ class Server {
     processMetaData(metaData: MetaDataResponse) {
         const compId = metaData.dataProvider.split('/')[1];
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
-        if (existingMap)
+        if (existingMap) {
             existingMap.set(metaData.dataProvider, metaData);
+            this.subManager.notifyDataProviderChange(compId);
+        }
+
         else {
             const tempMap:Map<string, MetaDataResponse> = new Map<string, MetaDataResponse>();
             tempMap.set(metaData.dataProvider, metaData)
             this.contentStore.dataProviderMetaData.set(compId, tempMap);
+            this.subManager.notifyDataProviderChange(compId);
         }
     }
 

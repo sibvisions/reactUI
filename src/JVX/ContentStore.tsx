@@ -1,5 +1,5 @@
 /** React imports */
-import {ReactElement} from "react";
+import React, {ReactElement} from "react";
 
 /** Other imports */
 import {serverMenuButtons} from "./response/MenuResponse";
@@ -318,9 +318,8 @@ export default class ContentStore{
                     }
                 }
             }
-            else {
+            else
                 existingMap.set(dataProvider, newDataSet)
-            }
         }
         else{
             const dataMap:Map<string, any[]> = new Map()
@@ -411,7 +410,7 @@ export default class ContentStore{
         if(windowData)
             return componentHandler(windowData);
         else
-            return this.customContent.get(windowName)?.apply(undefined, []);
+            return this.customContent.get(windowName)?.apply(undefined, [{screenName: windowName}]);
     }
 
     /**
@@ -538,7 +537,7 @@ export default class ContentStore{
      * @param replaceScreen - the replaceScreen
      */
     registerReplaceScreen(title: string, replaceScreen: ReactElement){
-        this.customContent.set(title, () => replaceScreen);
+        this.customContent.set(title, (x:any) => React.cloneElement(replaceScreen, x));
     }
 
     /**
