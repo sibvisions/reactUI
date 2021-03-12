@@ -28,7 +28,7 @@ const useDataProviderData = (compId:string, dataProvider:string): [Array<any>]=>
         }
         context.subscriptions.subscribeToDataChange(compId, dataProvider, onDataChange);
         return () => context.subscriptions.unsubscribeFromDataChange(compId, dataProvider, onDataChange);
-    }, [context.subscriptions, dataProvider, compId]);
+    }, [context.subscriptions, dataProvider, compId, context.contentStore]);
 
     return [data];
 }

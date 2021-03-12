@@ -330,7 +330,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * Notifies the components which use the useScreenData hook that the data of their screen changed
+     * Notifies the components which use the useAllDataProviderData hook that the data of their screen changed
      * @param compId - the component id of the screen
      */
     notifyScreenDataChange(compId:string) {

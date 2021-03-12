@@ -5,7 +5,7 @@ interface SelectRowRequest {
     dataProvider: string | undefined,
     filter: {
         columnNames: Array<string>,
-        values: Array<string>
+        values: Array<any>
     } | undefined,
 }
 export default SelectRowRequest

@@ -146,6 +146,8 @@ export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
     const req: FetchRequest = {
         clientId: values?.clientId || getClientId(),
         dataProvider: values?.dataProvider,
+        columnNames: values?.columnNames,
+        filter: values?.filter,
         fromRow: values?.fromRow,
         rowCount: values?.rowCount
     }
@@ -162,7 +164,8 @@ export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
         clientId: values?.clientId || getClientId(),
         dataProvider: values?.dataProvider,
         editorComponentId: values?.editorComponentId,
-        value: values?.value||""
+        value: values?.value||"",
+        filterCondition: values?.filterCondition
     }
     return req;
 }

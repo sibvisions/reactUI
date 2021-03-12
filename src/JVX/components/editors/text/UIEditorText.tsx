@@ -21,6 +21,7 @@ import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
+import { getMetaData } from "../../util/GetMetaData";
 
 /** Interface for cellEditor property of TextCellEditor */
 interface ICellEditorText extends ICellEditor{
@@ -59,7 +60,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** The metadata for the TextCellEditor */
-    const cellEditorMetaData:IEditorText|undefined = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorText;
+    const cellEditorMetaData:IEditorText|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorText;
     /**
      * Returns the maximum length for the TextCellEditor
      * @returns maximum length for the TextCellEditor

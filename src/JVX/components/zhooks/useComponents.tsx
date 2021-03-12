@@ -129,7 +129,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         return () => {
             context.subscriptions.unsubscribeFromParentChange(id);
         }
-    }, [context.subscriptions, id, components, buildComponents]);
+    }, [context.subscriptions, id, components, buildComponents, context.contentStore.customContent]);
 
     return [components, preferredSizes];
 }

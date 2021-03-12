@@ -1,3 +1,6 @@
+import FilterCondition from "../model/FilterCondition";
+
+
 /** Interface for FilterRequest */
 interface FilterRequest {
     clientId: string,
@@ -5,5 +8,6 @@ interface FilterRequest {
     
     editorComponentId: string|undefined,
     value: string,
+    filterCondition?:FilterCondition
 }
 export default FilterRequest

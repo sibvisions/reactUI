@@ -18,8 +18,8 @@ import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
 import {jvxContext} from "./JVX/jvxProvider";
 import {createStartupRequest} from "./JVX/factories/RequestFactory";
 import {checkEmptyConfProperties} from './JVX/components/util/CheckProperties';
-import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
-import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
+//import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
+//import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 import {ICustomContent} from "./MiddleMan"
 
 /** Types for querystring parsing */
@@ -152,7 +152,7 @@ const App: FC<ICustomContent> = (props) => {
         }).catch(() => {
             msg({severity: 'error', summary: 'config.json file could not be loaded. Make sure there is a config.json file in your public folder.', life: 5000});
         })
-    }, [context.server, context.contentStore, history, props.customStartupProps]);
+    }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions]);
 
     /**
      * Method to show a toast

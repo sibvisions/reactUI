@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 
 /** 3rd Party imports */
@@ -14,7 +14,10 @@ import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
-import useScreenData from "../zhooks/useScreenData";
+import { createSelectRowRequest } from "../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import useAllDataProviderData from "../zhooks/useAllDataProviderData";
+import { getMetaData } from "../util/GetMetaData";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[]
@@ -35,8 +38,41 @@ const UITree: FC<ITree> = (baseProps) => {
     const [props] = useProperties<ITree>(baseProps.id, baseProps);
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
-    /** The data provided by the databook */
-    const providedData = useScreenData(compId);
+    /** The data provided by the databooks */
+    const providedData = useAllDataProviderData(compId, props.dataBooks);
+
+    const testData = useMemo(() => {
+        let dataProviderEntries = providedData.entries();
+        let entry = dataProviderEntries.next()
+        while (!entry.done) {
+            const metaData = getMetaData(compId, entry.value[0], context.contentStore);
+            entry.value[1].forEach(data => {
+                if (metaData?.detailReferences) {
+                    const selectReq = createSelectRowRequest();
+                    selectReq.filter = {
+                        columnNames: metaData.detailReferences[0].columnNames,
+                        values: [data[metaData.detailReferences[0].columnNames[0]]]
+                    }
+                    selectReq.dataProvider = entry.value[0]
+                    selectReq.componentId = props.name;
+                    context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW)
+                }
+            })
+            
+            console.log(metaData)
+            entry = dataProviderEntries?.next()
+        }
+        // const tempMap = new Map<string, any[]>();
+        // const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBooks[1]);
+        // const selectReq = createSelectRowRequest();
+        // selectReq.filter = {
+        //     columnNames: metaData?.masterReference?.referencedColumnNames || ["ID"],
+        //     values: [1]
+        // }
+        // selectReq.dataProvider = props.dataBooks[0];
+        // selectReq.componentId = props.name;
+        //context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW)
+    },[context.server, props.dataBooks])
 
     const indexRef = useRef<number>(0)
 
@@ -74,8 +110,6 @@ const UITree: FC<ITree> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    console.log(providedData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

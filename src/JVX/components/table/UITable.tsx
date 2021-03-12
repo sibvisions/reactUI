@@ -22,6 +22,7 @@ import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import Size from "../util/Size";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
+import { getMetaData } from "../util/GetMetaData";
 
 /** Interface for Table */
 export interface TableProps extends BaseComponent{
@@ -237,7 +238,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Building the columns */
     const columns = useMemo(() => {
-        const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook);
+        const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         return props.columnNames.map((colName, colIndex) => {
             return <Column
                 field={colName}
@@ -263,7 +264,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
-        const primaryKeys = context.contentStore.dataProviderMetaData.get(compId)?.get(props.dataBook)?.primaryKeyColumns || ["ID"];
+        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
 
         if(event.value){
             const selectReq = createSelectRowRequest();

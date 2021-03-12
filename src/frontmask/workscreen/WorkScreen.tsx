@@ -1,5 +1,5 @@
 /** React imports */
-import React, {CSSProperties, FC, ReactElement, useContext} from "react";
+import React, {CSSProperties, FC} from "react";
 import { useParams } from "react-router";
 
 /** Hook imports */

@@ -153,7 +153,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
         return () => {
             context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
-    }, [context.subscriptions]);
+    }, [context.subscriptions, context.contentStore.mergedMenuItems]);
 
     /** Sets the image of the profile-image element to the profileImage of the current user */
     useEffect(() => {

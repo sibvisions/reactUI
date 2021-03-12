@@ -20,6 +20,7 @@ import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 import {getDecimalLength, getGrouping, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
+import { getMetaData } from "../../util/GetMetaData";
 
 /** Interface for cellEditor property of NumberCellEditor */
 interface ICellEditorNumber extends ICellEditor{
@@ -68,8 +69,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     /** The metadata for the NumberCellEditor */
-    const cellEditorMetaData:IEditorNumber|undefined = context.contentStore.dataProviderMetaData.get(compId)?.
-    get(props.dataRow)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
+    const cellEditorMetaData:IEditorNumber|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor

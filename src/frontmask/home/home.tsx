@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, ReactNode, useContext} from "react";
+import React, {FC, useContext} from "react";
 
 /** 3rd Party imports */
 import {useParams} from "react-router-dom";
