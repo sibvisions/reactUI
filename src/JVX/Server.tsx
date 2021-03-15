@@ -63,6 +63,20 @@ class Server {
      * @param message - message to show
      */
     showToast = (message: any) => {};
+
+    /**
+     * Builds a request to send to the server
+     * @param request - the request to send
+     * @returns - a request to send to the server
+     */
+    buildReqOpts(request:any) {
+        let reqOpt: RequestInit = {
+            method: 'POST',
+            body: JSON.stringify(request),
+            credentials:"include",
+        };
+        return reqOpt;
+    }
  
     /**
      * Sends a request to the server and handles its response
@@ -70,12 +84,7 @@ class Server {
      * @param endpoint - the endpoint to send the request to
      */
     sendRequest(request: any, endpoint: string){
-        let reqOpt: RequestInit = {
-            method: 'POST',
-            body: JSON.stringify(request),
-            credentials:"include",
-        };
-        this.timeoutRequest(fetch(this.BASE_URL+endpoint, reqOpt), 2000)
+        this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 2000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
             .catch(error => console.error(error));
@@ -230,25 +239,29 @@ class Server {
         }
     }
 
-    /**
-     * Builds the data and then tells contentStore to update its dataProviderData
-     * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
-     * @param fetchData - the fetchResponse
-     */
-    processFetch(fetchData: FetchResponse) {
-        const builtData = fetchData.records.map(record => {
+    buildDatasets(fetchData: FetchResponse) {
+        return fetchData.records.map(record => {
             const data : any = {}
             fetchData.columnNames.forEach((columnName, index) => {
                 data[columnName] = record[index];
             });
             return data;
         });
+    }
+
+    /**
+     * Builds the data and then tells contentStore to update its dataProviderData
+     * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
+     * @param fetchData - the fetchResponse
+     */
+    processFetch(fetchData: FetchResponse) {
+        const builtData = this.buildDatasets(fetchData)
         const compId = fetchData.dataProvider.split('/')[1];
         const tempMap:Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        if(fetchData.records.length !== 0)
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
+        if(fetchData.records.length !== 0) 
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from); 
         else
             this.subManager.notifyDataChange(compId, fetchData.dataProvider);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);

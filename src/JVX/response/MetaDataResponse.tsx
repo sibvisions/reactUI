@@ -11,7 +11,7 @@ type MetaDataReference = {
 
 /** Interface for MetaDataResponse */
 interface MetaDataResponse extends BaseResponse{
-    columnView_table: Array<string>,
+    columnView_table_: Array<string>,
     columns: Array<IEditor>,
     primaryKeyColumns: Array<string>,
     dataProvider: string,
