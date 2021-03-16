@@ -3,7 +3,7 @@ import BaseResponse from "./BaseResponse";
 import {IEditor} from "../components/editors/IEditor";
 
 /** Type for MetaData of dataprovider referencing other dataprovider */
-type MetaDataReference = {
+export type MetaDataReference = {
     columnNames: string[],
     referencedColumnNames: string[],
     referencedDataBook: string

@@ -1,12 +1,12 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 
 /** 3rd Party imports */
+import { Tree } from 'primereact/tree';
 
 /** Hook imports */
 import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -14,12 +14,13 @@ import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
-import { createFetchRequest, createSelectRowRequest } from "../../factories/RequestFactory";
+import { createFetchRequest } from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import useAllDataProviderData from "../zhooks/useAllDataProviderData";
 import { getMetaData } from "../util/GetMetaData";
-import DataProviderChangedResponse from "../../response/DataProviderChangedResponse";
 import FetchResponse from "../../response/FetchResponse";
+import MetaDataResponse, {MetaDataReference} from "../../response/MetaDataResponse";
+import useDataProviderData from "../zhooks/useDataProviderData";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[]
@@ -43,76 +44,55 @@ const UITree: FC<ITree> = (baseProps) => {
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(compId, props.dataBooks);
     /** The state of the tree-items */
-    const [treeData, setTreeData] = useState<Map<string, any[]|undefined>>(new Map<string, any[]|undefined>())
+    const [treeData, setTreeData] = useState<Map<string, any[]|undefined>>(new Map<string, any[]|undefined>());
+
+    const [builtTreeItems, setBuiltTreeItems] = useState<Array<any>>();
+
+    const getDataProviderData = useCallback((metaData:MetaDataResponse) => {
+        if (metaData.masterReference)
+            return providedData.get(metaData.masterReference.referencedDataBook)
+    },[providedData])
 
     useEffect(() => {
-        const tempMap:Map<string, any[]|undefined> = treeData
+        const tempMap:Map<string, any[]|undefined> = new Map<string, any[]|undefined>()
         const metaData = getMetaData(compId, props.dataBooks[1], context.contentStore);
-        let dataProviderData:any[]|undefined
-        
-        if (metaData?.masterReference)
-            dataProviderData = providedData.get(metaData.masterReference.referencedDataBook);
-        dataProviderData?.forEach((data, i) => {
-            setTimeout(() => {
-                if (metaData?.masterReference) {
-                    const selectReq = createSelectRowRequest();
-                    selectReq.filter = {
-                        columnNames: metaData.masterReference.referencedColumnNames,
-                        values: [data[metaData.masterReference.referencedColumnNames[0]]]
-                    }
-                    selectReq.dataProvider = metaData.masterReference.referencedDataBook
-                    selectReq.componentId = props.name;
+        let dataProviderData:any[]|undefined;
 
-                    context.server.timeoutRequest(fetch(context.server.BASE_URL+REQUEST_ENDPOINTS.SELECT_ROW, context.server.buildReqOpts(selectReq)), 2000)
-                        .then((response: any) => response.json())
-                        .then((json) => {
-                            json.forEach((changedProvider:DataProviderChangedResponse) => {
-                                if (changedProvider.reload === -1) {
-                                    context.server.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider)
-                                    context.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
-                                    const fetchReq = createFetchRequest();
-                                    fetchReq.dataProvider = changedProvider.dataProvider;
-                                    context.server.timeoutRequest(fetch(context.server.BASE_URL+REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
-                                    .then((response: any) => response.json())
-                                    .then((fetchData:FetchResponse[]) => {
-                                        context.server.processFetch(fetchData[0])
-                                        return context.server.buildDatasets(fetchData[0])
-                                    })
-                                    .then((result) => tempMap.set(data[metaData.columnView_table_[0]], result))
-                                }
-                            })
-                        })
-                        .catch(error => console.error(error));
-                }
-            }, i * 100);
-        });
-        setTreeData(tempMap);
-    }, [context.server, props.dataBooks])
+        if (metaData?.masterReference) {
+            dataProviderData = getDataProviderData(metaData)
+            if (dataProviderData) {
+                dataProviderData.forEach((data, i) => {
+                    let masterReference = (metaData as MetaDataResponse).masterReference as MetaDataReference
+                    const fetchReq = createFetchRequest();
+                    fetchReq.dataProvider = props.dataBooks[1];
+                    fetchReq.filter = {
+                        columnNames: masterReference.columnNames,
+                        values: [data[masterReference.referencedColumnNames[0]]]
+                    }
+                    context.server.timeoutRequest(fetch(context.server.BASE_URL+REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
+                    .then((response: any) => response.json())
+                    .then((fetchData:FetchResponse[]) => {
+                        context.server.processFetch(fetchData[0]);
+                        return context.server.buildDatasets(fetchData[0]);
+                    })
+                    .then((result) => { 
+                        tempMap.set(data[(metaData as MetaDataResponse).columnView_table_[0]], result);
+                        if (i === (dataProviderData?.length as number) - 1)
+                            setTreeData((currentTreeData) => new Map([...currentTreeData, ...tempMap]))
+                    })
+                });
+            }
+        }
+    // eslint-disable-next-line
+    }, [context.server, context.contentStore, props.dataBooks, compId]);
+
+    useEffect(() => {
+        if (treeData.size) {
+            console.log(treeData)
+        }
+    },[treeData])
 
     const indexRef = useRef<number>(0)
-
-    const buildTreeItems = (data:any[], dataBook:string) => {
-        const metaData = context.contentStore.dataProviderMetaData.get(compId)?.get(dataBook)
-        const builtTreeItems:Array<any> = new Array<any>();
-        if (metaData) {
-            data.forEach(dataRow => {
-                let treeItem:any = {
-                    "key": indexRef.current,
-                    "label": dataRow[metaData.columnView_table_[0]],
-                    "children": () => {
-                        if (context.contentStore.dataProviderMetaData.get(compId) && metaData.detailReferences)
-                            return buildTreeItems(context.contentStore.dataProviderData.get(compId)?.get(metaData.detailReferences[0].referencedDataBook) as any[], metaData.detailReferences[0].referencedDataBook)
-                        else
-                            return null
-                    } 
-                }
-                builtTreeItems.push(treeItem)
-                indexRef.current++;
-            });
-        }
-        return builtTreeItems
-    }
-
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -124,8 +104,6 @@ const UITree: FC<ITree> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    console.log(treeData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
