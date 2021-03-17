@@ -260,11 +260,8 @@ class Server {
         const tempMap:Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        if(fetchData.records.length !== 0) {
-            console.log(builtData)
+        if(fetchData.records.length !== 0) 
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from); 
-        }
-            
         else
             this.subManager.notifyDataChange(compId, fetchData.dataProvider);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);

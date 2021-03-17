@@ -21,6 +21,7 @@ import { getMetaData } from "../util/GetMetaData";
 import FetchResponse from "../../response/FetchResponse";
 import MetaDataResponse, {MetaDataReference} from "../../response/MetaDataResponse";
 import useDataProviderData from "../zhooks/useDataProviderData";
+import TreePath from "../../model/TreePath";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[]
@@ -44,9 +45,9 @@ const UITree: FC<ITree> = (baseProps) => {
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(compId, props.dataBooks);
     /** The state of the tree-items */
-    const [treeData, setTreeData] = useState<Map<string, any[]|undefined>>(new Map<string, any[]|undefined>());
+    const [treeData, setTreeData] = useState<Map<string, any>>(new Map<string, any>());
 
-    const [builtTreeItems, setBuiltTreeItems] = useState<Array<any>>();
+    const [nodes, setNodes] = useState<any[]>([]);
 
     const getDataProviderData = useCallback((metaData:MetaDataResponse) => {
         if (metaData.masterReference)
@@ -54,7 +55,9 @@ const UITree: FC<ITree> = (baseProps) => {
     },[providedData])
 
     useEffect(() => {
-        const tempMap:Map<string, any[]|undefined> = new Map<string, any[]|undefined>()
+        const tempTreeMap:Map<string, any> = new Map<string, any>();
+        const tempChildMap:Map<any, any> = new Map<any, any>();
+        
         const metaData = getMetaData(compId, props.dataBooks[1], context.contentStore);
         let dataProviderData:any[]|undefined;
 
@@ -75,24 +78,91 @@ const UITree: FC<ITree> = (baseProps) => {
                         context.server.processFetch(fetchData[0]);
                         return context.server.buildDatasets(fetchData[0]);
                     })
-                    .then((result) => { 
-                        tempMap.set(data[(metaData as MetaDataResponse).columnView_table_[0]], result);
-                        if (i === (dataProviderData?.length as number) - 1)
-                            setTreeData((currentTreeData) => new Map([...currentTreeData, ...tempMap]))
+                    .then((result) => {
+                        const testMap:Map<any, any> = new Map<any, any>();
+                        result.forEach((resultRecord, resultIndex) => 
+                        testMap.set(new TreePath(i, resultIndex).toString(), {name: resultRecord[metaData.columnView_table_[0]], children: new Map<any, any>()}));
+                        tempChildMap.set(new TreePath(i).toString(), {name: data[metaData.columnView_table_[0]], children: testMap});
+                        if (i === (dataProviderData?.length as number) - 1) {
+                            tempTreeMap.set(new TreePath().toString(), tempChildMap);
+                            setTreeData(tempTreeMap);
+                        }
+                            
                     })
                 });
             }
         }
     // eslint-disable-next-line
-    }, [context.server, context.contentStore, props.dataBooks, compId]);
+    }, []);
+
+    // const builtTreeItems = useMemo(() => {
+    //     const treeArray:any[] = []
+    //     if (treeData.size) {
+    //         const rawData = treeData.get(new TreePath().toString());
+    //         console.log(rawData)
+    //         const metaData = getMetaData(compId, props.dataBooks[0], context.contentStore);
+    //         if (rawData && metaData) {
+    //             for(let [key, value] of rawData.entries()) {
+    //                 let treeItem = {
+    //                     "key": key,
+    //                     "label": value.name,
+    //                     "leaf": value.children.size === 0
+    //                 }
+    //                 treeArray.push(treeItem);
+    //             }
+    //         }
+    //     }
+    //     return treeArray;
+    // },[treeData]);
+
+    const createTreeNodes = useCallback(() => {
+        const treeArray:any[] = []
+        if (treeData.size) {
+            const rawData = treeData.get(new TreePath().toString());
+            //console.log(rawData)
+            const metaData = getMetaData(compId, props.dataBooks[0], context.contentStore);
+            if (rawData && metaData) {
+                for(let [key, value] of rawData.entries()) {
+                    let treeItem = {
+                        key: key,
+                        label: value.name,
+                        leaf: value.children.size === 0
+                    }
+                    treeArray.push(treeItem);
+                }
+            }
+        }
+        return treeArray;
+    },[context.contentStore, compId, props.dataBooks, treeData]);
+
+    const onExpandLoad = (event:any) => {
+        if (!event.node.children) {
+            let node = {...event.node}
+            node.children = [];
+            //console.log(treeData.get(new TreePath().toString()).get(event.node.key).children)
+            for (let [key, value] of treeData.get(new TreePath().toString()).get(event.node.key).children) {
+                node.children.push({
+                    key: key,
+                    label: value.name,
+                    leaf: value.children.size === 0
+                });
+            }
+
+            let value = [...nodes];
+            let foundNode = value.findIndex((node) => node.key === event.node.key);
+            if (foundNode !== undefined) {
+                value[foundNode] = node;
+                setNodes(value);
+            }
+
+        }
+    }
 
     useEffect(() => {
         if (treeData.size) {
-            console.log(treeData)
+            setNodes(createTreeNodes());
         }
-    },[treeData])
-
-    const indexRef = useRef<number>(0)
+    },[treeData, createTreeNodes])
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -105,9 +175,11 @@ const UITree: FC<ITree> = (baseProps) => {
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    console.log(providedData)
+
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-
+            <Tree value={nodes} onExpand={onExpandLoad}/>
         </span>
     )
 }
