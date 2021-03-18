@@ -47,7 +47,7 @@ export default class ContentStore{
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value the data of the dataprovider
      */
-    dataProviderData = new Map<string, Map<string, Array<any>>>();
+    dataProviderData = new Map<string, Map<string, any>>();
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value the metadata of the dataprovider
@@ -312,7 +312,7 @@ export default class ContentStore{
                     existingData.push(...newDataSet)
                 } else {
                     let newDataSetIndex = 0;
-                    for(let i = to; i <= from; i++){
+                    for(let i = from; i <= to; i++) {
                         existingData[i] = newDataSet[newDataSetIndex];
                         newDataSetIndex++;
                     }
@@ -324,6 +324,56 @@ export default class ContentStore{
         else{
             const dataMap:Map<string, any[]> = new Map()
             dataMap.set(dataProvider, newDataSet)
+            this.dataProviderData.set(compId, dataMap);
+        }
+        this.subManager.notifyDataChange(compId, dataProvider);
+        this.subManager.notifyScreenDataChange(compId);
+    }
+
+    updateDataProviderTree(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey:string, selectedRow:string) {
+        const existingMap = this.dataProviderData.get(compId);
+        if (existingMap) {
+            const existingProvider = existingMap.get(dataProvider);
+            if (existingProvider && existingProvider instanceof Map) {
+                console.log(existingProvider, dataProvider)
+                const existingMaster = existingProvider.get(referenceKey);
+                if (existingMaster) {
+                    if (existingMaster.length <= from)
+                        existingMaster.push(...newDataSet);
+                    else {
+                        let newDataSetIndex = 0;
+                        for(let i = from; i <= to; i++) {
+                            existingMaster[i] = newDataSet[newDataSetIndex];
+                            newDataSetIndex++;
+                        }
+                    }
+                }
+                else
+                    existingProvider.set(referenceKey, newDataSet);
+
+                console.log(selectedRow);
+                if (existingProvider.has(selectedRow))
+                    existingProvider.set("current", existingProvider.get(selectedRow) as any[]);
+            }
+            else {
+                const providerMap = new Map<string, Array<any>>();
+                providerMap.set(referenceKey, newDataSet);
+                if (providerMap.has(selectedRow))
+                    providerMap.set("current", providerMap.get(selectedRow) as any[])
+                else
+                    providerMap.set("current", new Array<any>());
+                existingMap.set(dataProvider, providerMap);
+            }
+        }
+        else {
+            const dataMap = new Map<string, any>();
+            const providerMap = new Map<string, Array<any>>();
+            providerMap.set(referenceKey, newDataSet);
+            if (providerMap.has(selectedRow))
+                providerMap.set("current", providerMap.get(selectedRow) as any[])
+            else
+                providerMap.set("current", new Array<any>());
+            dataMap.set(dataProvider, providerMap);
             this.dataProviderData.set(compId, dataMap);
         }
         this.subManager.notifyDataChange(compId, dataProvider);
@@ -395,8 +445,11 @@ export default class ContentStore{
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
-    clearDataFromProvider(compId:string, dataProvider: string){
-        this.dataProviderData.get(compId)?.delete(dataProvider);
+    clearDataFromProvider(compId:string, dataProvider: string, selectedRow?:string){
+        if (this.dataProviderData.get(compId)?.get(dataProvider) instanceof Map && selectedRow)
+            this.dataProviderData.get(compId)?.get(dataProvider).delete(selectedRow)
+        else
+            this.dataProviderData.get(compId)?.delete(dataProvider);
     }
 
 

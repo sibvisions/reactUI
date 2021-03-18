@@ -20,8 +20,8 @@ const CustomChartScreen: FC = () => {
      * @returns chart-object to present chart
      */
     const chartData = useMemo(() => {
-        const labels = data.map(point => point.COUNTRY);
-        const chartData = data.map(point => point.LITRES)
+        const labels = data.map((point:any) => point.COUNTRY);
+        const chartData = data.map((point:any) => point.LITRES)
         const primeChart = {
             labels: labels,
             datasets: [

@@ -69,7 +69,6 @@ class FilterCondition {
     }
 
     setCompareType(compareType:CompareType) {
-        console.log(compareType.toString())
         this.compareType = compareType === null ? null : firstCharToLower(compareType.toString());
     }
 

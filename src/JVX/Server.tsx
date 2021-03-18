@@ -13,7 +13,7 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
-import MetaDataResponse from "./response/MetaDataResponse";
+import MetaDataResponse, { MetaDataReference } from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import ShowDocumentResponse from "./response/ShowDocumentResponse"
 import {createFetchRequest, createOpenScreenRequest, createStartupRequest} from "./factories/RequestFactory";
@@ -27,6 +27,7 @@ import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { getMetaData } from "./components/util/GetMetaData";
 
 /** Type for query */
 type queryType = {
@@ -254,16 +255,27 @@ class Server {
      * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
      * @param fetchData - the fetchResponse
      */
-    processFetch(fetchData: FetchResponse) {
+    processFetch(fetchData: FetchResponse, referenceKey?:string) {
         const builtData = this.buildDatasets(fetchData)
         const compId = fetchData.dataProvider.split('/')[1];
         const tempMap:Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        if(fetchData.records.length !== 0) 
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from); 
-        else
-            this.subManager.notifyDataChange(compId, fetchData.dataProvider);
+            if (referenceKey !== undefined || this.contentStore.dataProviderData.get(compId)?.get(fetchData.dataProvider) instanceof Map) {
+                const metaData = getMetaData(compId, fetchData.dataProvider, this.contentStore) as MetaDataResponse
+                const referencedSelectedRow = this.contentStore.dataProviderSelectedRow.get(compId)
+                ?.get((metaData.masterReference as MetaDataReference).referencedDataBook)
+                [(metaData.masterReference as MetaDataReference).referencedColumnNames[0]].toString();
+                if (referenceKey === undefined && builtData[fetchData.selectedRow] !== undefined && metaData.masterReference) {
+                    this.contentStore.updateDataProviderTree(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, 
+                        builtData[fetchData.selectedRow][metaData.masterReference.columnNames[0]].toString(), referencedSelectedRow);
+                }
+                else {
+                    this.contentStore.updateDataProviderTree(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, referenceKey as string, referencedSelectedRow);
+                }
+            }
+            else
+                this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
     }
 
@@ -273,10 +285,10 @@ class Server {
      * if reload is a number fetch from the reload value one row
      * @param changedProvider - the dataProviderChangedResponse
      */
-    processDataProviderChanged(changedProvider: DataProviderChangedResponse){
+    processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = changedProvider.dataProvider.split('/')[1];
         if(changedProvider.reload === -1) {
-            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
+            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider, changedProvider.selectedRow?.toString());
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);

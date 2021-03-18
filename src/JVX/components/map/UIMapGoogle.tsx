@@ -111,7 +111,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 const lngColname = props.longitudeColumnName;
                 /** If there are marker/points, create the marker at the position with the correct icon, if it is the last marker, set it as selectedMarker */
                 if (providedPointData.length) {
-                    providedPointData.forEach((point, i) => {
+                    providedPointData.forEach((point:any, i:number) => {
                         let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                         const marker = new google.maps.Marker({position: {lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE}, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon)});
                         marker.setMap(map);

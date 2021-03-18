@@ -13,7 +13,7 @@ const useAllDataProviderData = (compId:string, databooks:string[]): Map<string, 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
-    /** Returns dataproviders of a component or undefined if there are no dataproviders */
+    /** Returns dataproviders of a component or an empty Map if there are no dataproviders */
     const getDataProvidersOfComp = useCallback(() => {
         const dataProviders = context.contentStore.dataProviderData.get(compId);
         if (dataProviders) {

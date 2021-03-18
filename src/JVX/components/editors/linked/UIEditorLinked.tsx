@@ -212,7 +212,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const handleInput = () => {
         const newVal:any = {}
         /** Returns the values, of the databook, that match the input of the user */
-        const foundData = providedData.filter(data => {
+        const foundData = providedData.filter((data:any) => {
             if (props.cellEditor) {
                 const refColNames = props.cellEditor.linkReference.referencedColumnNames
                 const colNames = props.cellEditor.linkReference.columnNames
