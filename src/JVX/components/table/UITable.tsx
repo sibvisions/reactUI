@@ -101,7 +101,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The amount of virtual rows loaded */
     const rows = 40;
     /** The virtual rows filled with data */
-    const [virtualRows, setVirtualRows] = useState(providerData instanceof Array ? providerData.slice(0, rows) : providerData.get("current").slice);
+    const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
     /** The estimated table width */
@@ -122,7 +122,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
-                    console.log(providerData)
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
                     const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+2}
                     sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
@@ -209,10 +208,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     },[])
 
     /** When providerData changes set state of virtual rows*/
-    useLayoutEffect(() => {
-        setVirtualRows(providerData instanceof Array ? providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2)) 
-        : providerData.get("current").slice(firstRowIndex.current, firstRowIndex.current+(rows*2)))
-    }, [providerData])
+    useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData])
 
     /** When a resized column got smaller, it sometimes interpreted the mouseup as click to sort the column so the pointer-events got disabled while resizing columns */
     useEffect(() => {

@@ -15,16 +15,18 @@ const useAllDataProviderData = (compId:string, databooks:string[]): Map<string, 
 
     /** Returns dataproviders of a component or an empty Map if there are no dataproviders */
     const getDataProvidersOfComp = useCallback(() => {
-        const dataProviders = context.contentStore.dataProviderData.get(compId);
-        if (dataProviders) {
-            for (const [key] of dataProviders?.entries()) {
-                if (!databooks.includes(key))
-                    dataProviders.delete(key)
-            }
-            return dataProviders
+        if (context.contentStore.dataProviderData.get(compId) !== undefined) {
+            const tempMap = new Map(context.contentStore.dataProviderData.get(compId)!);
+            if (tempMap) {
+                for (const [key] of tempMap?.entries()) {
+                    if (!databooks.includes(key))
+                        tempMap.delete(key)
+                }
+                return tempMap
+            }           
         }
-        else
-            return new Map()
+        return new Map()
+
     },[compId, databooks, context.contentStore])
     /** Current state of dataMap */
     const [dataMap, setDataMap] = useState<Map<string, Array<any>>>(getDataProvidersOfComp());

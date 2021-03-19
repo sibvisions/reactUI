@@ -330,12 +330,24 @@ export default class ContentStore{
         this.subManager.notifyScreenDataChange(compId);
     }
 
-    updateDataProviderTree(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey:string, selectedRow:string) {
+    /**
+     * Sets or updates data of a dataprovider in a map and notifies components which use the useDataProviderData hook.
+     * Is used when the dataprovider has a master-reference, so it saves its data in a Map, the key is the respective primary key
+     * for the data of its master and the value is the data. Additionally there is a key "current" which holds data of the
+     * current selected row of the master.
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     * @param newDataSet - the new data
+     * @param to - to which row will be set/updated
+     * @param from - from which row will be set/updated
+     * @param referenceKey - the primary key value of the master-reference 
+     * @param selectedRow - the currently selected row of the master-reference
+     */
+    updateDataProviderMap(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey:string, selectedRow:string) {
         const existingMap = this.dataProviderData.get(compId);
         if (existingMap) {
             const existingProvider = existingMap.get(dataProvider);
             if (existingProvider && existingProvider instanceof Map) {
-                console.log(existingProvider, dataProvider)
                 const existingMaster = existingProvider.get(referenceKey);
                 if (existingMaster) {
                     if (existingMaster.length <= from)
@@ -351,7 +363,6 @@ export default class ContentStore{
                 else
                     existingProvider.set(referenceKey, newDataSet);
 
-                console.log(selectedRow);
                 if (existingProvider.has(selectedRow))
                     existingProvider.set("current", existingProvider.get(selectedRow) as any[]);
             }
@@ -389,8 +400,10 @@ export default class ContentStore{
      * @returns either a part of the data of a dataprovider specified by "from" and "to" or all data
      */
     getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
-        const dataArray = this.dataProviderData.get(compId)?.get(dataProvider);
-        if(from !== undefined && to !== undefined){
+        let dataArray = this.dataProviderData.get(compId)?.get(dataProvider);
+        if (dataArray instanceof Map)
+            dataArray = dataArray.get("current")
+        if(from !== undefined && to !== undefined) {
             return dataArray?.slice(from, to) || [];
         }
 
