@@ -282,19 +282,23 @@ function mapPartMoment(dateFormat:string, value:any) {
 function mapToClientFormat(dateFormat:string, value:any, prime:boolean) {
     let mappedString = ''
     let part:any = ''
-    /** RegExp to part tokens from literal strings in the format '[]' in moment "'" in Java */
+    /** 
+     * RegExp to part tokens from literal strings in the format '[]' in moment "'" in Java 
+     * Match all characters which don't contain "[", "]" or "'" in one group, in the next group check
+     * if there is "[", "]" or "'" and match the text with the brackets/single quotes e.g. "[test]"
+     */
     const regexp = prime ? /[^[\]]+|(\[[^[\]]*])/g : /[^']+|('[^']*')/g;
     while (part = regexp.exec(dateFormat)) {
         part = part[0]
         if (prime) {
-            /** If the part has literal text by moment, put it in single quotes else map it */
+            /** If the part is a group with brackets, put it in single quotes else map it */
             if (part.match(/\[(.*?)\]/))
                 mappedString += "'" + part.substring(1, part.length - 1) + "'";
             else
                 mappedString += mapPartPrime(part, value);
         }
         else {
-            /** If the part has literal text b Java, put it in brackets else map it */
+            /** If the part is a group with single quotes, put it in brackets else map it */
             if (part.match(/'(.*?)'/))
                 mappedString += '[' + part.substring(1, part.length - 1) + ']';
             else
