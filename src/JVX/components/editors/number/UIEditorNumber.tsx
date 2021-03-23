@@ -15,7 +15,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
-import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
+import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
@@ -67,6 +67,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const lastValue = useRef<any>();
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+    /** The horizontal- and vertical alignments */
+    const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The metadata for the NumberCellEditor */
     const cellEditorMetaData:IEditorNumber|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
@@ -104,14 +106,12 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale);
     },[cellEditorMetaData.precision, cellEditorMetaData.scale]);
 
-    /** Set inputfield style properties set maxlength attribute */
+    /** Set maxlength attribute */
     useLayoutEffect(() => {
         //@ts-ignore
         let currElem = numberRef.current.inputEl;
         if(currElem){
             currElem.setAttribute('maxlength', length);
-            currElem.style.setProperty('background', props.cellEditor_background_);
-            currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
         }
     })
 
@@ -154,6 +154,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             maxFractionDigits={scaleDigits.maxScale}
             value={value}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
+            inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
             onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
             disabled={!props.cellEditor_editable_}

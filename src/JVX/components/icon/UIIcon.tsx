@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
 
 /** Hook imports */
 import useProperties from "../zhooks/useProperties";
@@ -27,6 +27,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+    const [preferredSize, setPreferredSize] = useState<Size>();
     /** Properties for icon */
     const iconProps = parseIconData(props.foreground, props.image);
     /** Extracting onLoadCallback, id and alignments from baseProps */
@@ -45,18 +46,14 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             const parsedSize = parseJVxSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
+            setPreferredSize(prefSize)
         } 
         else {
             prefSize.height = event.currentTarget.height;
             prefSize.width = event.currentTarget.width;
         }
-        if (onLoadCallback) {
-            //@ts-ignore
-            iconRef.current.children[0].style.setProperty('height', prefSize.height+'px');
-            //@ts-ignore
-            iconRef.current.children[0].style.setProperty('width', prefSize.width+'px');
+        if (onLoadCallback)
             sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
-        }
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
@@ -80,7 +77,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 return <img
                 alt="icon"
                 src={context.server.RESOURCE_URL + iconProps.icon}
-                style={imageStyle.img}
+                style={{...imageStyle.img, height: preferredSize?.height, width: preferredSize?.width}}
                 onLoad={iconLoaded}
                 onError={iconLoaded}/>
             }

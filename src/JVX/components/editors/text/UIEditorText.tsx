@@ -17,7 +17,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
-import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
+import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
@@ -61,23 +61,10 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** The metadata for the TextCellEditor */
     const cellEditorMetaData:IEditorText|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorText;
-    /**
-     * Returns the maximum length for the TextCellEditor
-     * @returns maximum length for the TextCellEditor
-     */
-    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData])
-    
-    /** Set inputfield style properties if the border is invisible add a styleclass */
-    useLayoutEffect(() => {
-        //@ts-ignore
-        const currElem = textRef.current.element
-        if(currElem){
-            if (props.borderVisible === false && !currElem.classList.contains("invisible-border"))
-                currElem.classList.add("invisible-border");
-            currElem.style.setProperty('background', props.cellEditor_background_);
-            currElem.style.setProperty('text-align', checkCellEditorAlignments(props).ha);
-        }
-    });
+    /** Returns the maximum length for the TextCellEditor */
+    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData]);
+    /** The horizontal- and vertical alignments */
+    const textAlign = useMemo(() => getTextAlignment(props), [props]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
@@ -106,7 +93,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus={baseProps.autoFocus}
             ref={textRef}
             className="rc-editor-textarea"
-            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            style={layoutValue.get(props.id) ? 
+                {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
+                {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
             maxLength={length}
             disabled={!props.cellEditor_editable_}
             value={text || ""}
@@ -122,7 +111,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus={baseProps.autoFocus}
             ref={textRef}
             className="rc-editor-password"
-            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            style={layoutValue.get(props.id) ? 
+                {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
+                {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
             maxLength={length}
             feedback={false}
             disabled={!props.cellEditor_editable_}
@@ -138,8 +129,10 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             <InputText
                 autoFocus={baseProps.autoFocus}
                 ref={textRef}
-                className="rc-editor-text"
-                style={layoutValue.get(props.id) || baseProps.editorStyle}
+                className={"rc-editor-text" + (props.borderVisible === false ? " invisible-border" : "")}
+                style={layoutValue.get(props.id) ? 
+                        {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
+                        {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
                 maxLength={length}
                 disabled={!props.cellEditor_editable_}
                 value={text || ""}

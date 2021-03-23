@@ -9,7 +9,7 @@ import useRowSelect from "../../zhooks/useRowSelect";
 import {ICellEditor, IEditor} from "../IEditor";
 import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";
-import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { getAlignments } from "../../compprops/GetAlignments";
 import {createSetValuesRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import { parseJVxSize } from "../../util/parseJVxSize";
@@ -49,7 +49,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Alignments for CellEditor */
-    const alignments = checkCellEditorAlignments(props);
+    const alignments = getAlignments(props);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 

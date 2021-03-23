@@ -13,7 +13,7 @@ import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
-import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { getAlignments } from "../../compprops/GetAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
 import { getEditorCompId } from "../../util/GetEditorCompId";
@@ -48,7 +48,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Alignments for CellEditor */
-    const alignments = checkCellEditorAlignments(props);
+    const alignments = getAlignments(props);
 
     /**
      * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:

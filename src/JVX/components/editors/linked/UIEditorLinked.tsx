@@ -18,7 +18,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import {createFetchRequest, createFilterRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {onBlurCallback} from "../../util/OnBlurCallback";
-import {checkCellEditorAlignments} from "../../compprops/CheckAlignments";
+import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
@@ -77,8 +77,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [itemHeight, setItemHeight] = useState(0);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-    /** Alignments for CellEditor */
-    const alignments = checkCellEditorAlignments(props);
+    /** The horizontal- and vertical alignments */
+    const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -88,15 +88,13 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** Set inputfield style properties disable dropdownbutton tabIndex */
+    /** disable dropdownbutton tabIndex */
     useEffect(() => {
         const autoRef:any = linkedRef.current
         if (autoRef) {
-            autoRef.inputEl.style.setProperty('background', props.cellEditor_background_);
-            autoRef.inputEl.style.setProperty('text-align', alignments.ha);
             autoRef.dropdownButton.element.tabIndex = -1;
         }
-    },[props.cellEditor_editable_, props.cellEditor_background_, alignments.ha]);
+    },[]);
 
     /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
     useEffect(() => {
@@ -295,6 +293,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             ref={linkedRef}
             className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
+            inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             disabled={!props.cellEditor_editable_}
             dropdown
             completeMethod={onInputChange}

@@ -55,7 +55,7 @@ const App: FC<ICustomContent> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
         return () => context.subscriptions.unsubscribeFromRegisterCustom();
-    },[context.subscriptions])
+    },[context.subscriptions]);
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     // useEffect(() => {

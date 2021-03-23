@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 
 /** 3rd Party imports */
 import {Calendar} from 'primereact/calendar';
@@ -16,7 +16,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import { getMomentValue, parseDateFormatCell, parseDateFormatTable } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
-import { checkCellEditorAlignments } from "../../compprops/CheckAlignments";
+import { getTextAlignment } from "../../compprops/GetAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { parseJVxSize } from "../../util/parseJVxSize";
 import { getEditorCompId } from "../../util/GetEditorCompId";
@@ -62,6 +62,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Current state of dateFormat for PrimeReact Calendar */
     const [dateFormat, setDateFormat] = useState(selectedRow ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : "")
+    /** The horizontal- and vertical alignments */
+    const textAlignment = useMemo(() => getTextAlignment(props), [props]);
     /** Wether the DateCellEditor is a time-editor */
     const showTime = props.cellEditor.isTimeEditor;
     /** Wether the DateCellEditor should show seconds */
@@ -105,21 +107,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, context.server));
         overridePrime()
     }
-
-    /** Set inputfield style properties */
-    useLayoutEffect(() => {
-        //@ts-ignore
-        if (calendar.current.container !== null) {
-            const alignments = checkCellEditorAlignments(props)
-            //@ts-ignore
-            for (let child of calendar.current.container.children) {
-                if (child.tagName === 'INPUT') {
-                    child.style.setProperty('background', props.cellEditor_background_)
-                    child.style.setProperty('text-align', alignments?.ha)
-                }
-            }
-        }
-    });
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -192,6 +179,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
             showIcon={true}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
+            inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             value={selectedRow ? new Date(selectedRow) : undefined}
             appendTo={document.body}
             onChange={event => onSelectCallback(event.value)}

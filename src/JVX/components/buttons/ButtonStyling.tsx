@@ -5,7 +5,7 @@ import {CSSProperties} from 'react';
 import tinycolor from 'tinycolor2';
 
 /** Other imports */
-import {checkAlignments} from "../compprops/CheckAlignments";
+import {getAlignments} from "../compprops/GetAlignments";
 import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
 import IconProps from '../compprops/IconProps';
 import {IButton} from "./IButton";
@@ -22,8 +22,8 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, st
         tabIndex: props.focusable !== false ? (props.tabIndex ? props.tabIndex : 0) : -1,
         style: {
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
-            justifyContent: props.horizontalTextPosition !== 1 ? checkAlignments(props).ha : checkAlignments(props).va,
-            alignItems: props.horizontalTextPosition !== 1 ? checkAlignments(props).va : checkAlignments(props).ha,
+            justifyContent: props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va,
+            alignItems: props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha,
             background: props.background ? tinycolor(props.background).toString() : undefined,
             borderColor: props.background ? tinycolor(props.background).toString() : undefined,
             color: props.foreground ? tinycolor(props.foreground).toString() : undefined,

@@ -7,7 +7,7 @@ import useProperties from "../zhooks/useProperties";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import {getFont} from "../compprops/ComponentProperties";
-import {checkAlignments} from "../compprops/CheckAlignments";
+import {getAlignments} from "../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
 import {parseJVxSize} from "../util/parseJVxSize";
 
@@ -26,7 +26,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Alignments for label */
-    const lblAlignments = checkAlignments(props);
+    const lblAlignments = getAlignments(props);
     /** Font for label */
     const lblFont = getFont(props.font);
 
