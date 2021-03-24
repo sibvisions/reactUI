@@ -57,9 +57,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
-            btnRef.defaultButton.style.setProperty('justify-content', btnHAlign);
-            btnRef.defaultButton.style.setProperty('align-items', btnVAlign);
-            btnRef.defaultButton.style.setProperty('padding', btnData.style.padding)
+            btnRef.defaultButton.style.setProperty('--menuDefaultJustify', btnHAlign);
+            btnRef.defaultButton.style.setProperty('--menuDefaultAlign', btnVAlign);
+            btnRef.defaultButton.style.setProperty('--menuDefaultPadding', btnData.style.padding)
             if (btnData.iconProps.icon)
                 renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
             (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");

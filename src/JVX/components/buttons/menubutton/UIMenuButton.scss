@@ -32,7 +32,12 @@
 }
 
 .p-splitbutton-defaultbutton {
-    padding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+    --menuDefaultJustify: center;
+    --menuDefaultAlign: center;
+    --menuDefaultPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+    justify-content: var(--menuDefaultJustify);
+    align-items: var(--menuDefaultAlign);
+    padding: var(--menuDefaultPadding);
 }
 
 /// Fixed width for menubutton part of splitbutton

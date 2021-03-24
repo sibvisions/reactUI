@@ -265,7 +265,7 @@ class Server {
             const metaData = getMetaData(compId, fetchData.dataProvider, this.contentStore) as MetaDataResponse
             const referencedSelectedRow = this.contentStore.dataProviderSelectedRow.get(compId)
                 ?.get((metaData.masterReference as MetaDataReference).referencedDataBook)
-            [(metaData.masterReference as MetaDataReference).referencedColumnNames[0]].toString();
+                [(metaData.masterReference as MetaDataReference).referencedColumnNames[0]].toString();
             if (referenceKey === undefined && builtData[fetchData.selectedRow] !== undefined && metaData.masterReference) {
                 this.contentStore.updateDataProviderMap(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from,
                     builtData[fetchData.selectedRow][metaData.masterReference.columnNames[0]].toString(), referencedSelectedRow);
