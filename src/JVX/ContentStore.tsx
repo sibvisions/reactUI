@@ -10,6 +10,7 @@ import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
+import { getMetaData } from "./components/util/GetMetaData";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -295,46 +296,13 @@ export default class ContentStore{
     }
 
     //Data Provider Management
-    /**
-     * Sets or updates data of a dataprovider and notifies components which use the useDataProviderData hook
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param newDataSet - the new data
-     * @param to - to which row will be set/updated
-     * @param from - from which row will be set/updated
-     */
-    updateDataProviderData(compId:string, dataProvider: string, newDataSet: Array<any>, to: number, from: number){
-        const existingMap = this.dataProviderData.get(compId);
-        if (existingMap) {
-            const existingData = existingMap.get(dataProvider);
-            if(existingData){
-                if(existingData.length <= from){
-                    existingData.push(...newDataSet)
-                } else {
-                    let newDataSetIndex = 0;
-                    for(let i = from; i <= to; i++) {
-                        existingData[i] = newDataSet[newDataSetIndex];
-                        newDataSetIndex++;
-                    }
-                }
-            }
-            else
-                existingMap.set(dataProvider, newDataSet)
-        }
-        else{
-            const dataMap:Map<string, any[]> = new Map()
-            dataMap.set(dataProvider, newDataSet)
-            this.dataProviderData.set(compId, dataMap);
-        }
-        this.subManager.notifyDataChange(compId, dataProvider);
-        this.subManager.notifyScreenDataChange(compId);
-    }
 
     /**
      * Sets or updates data of a dataprovider in a map and notifies components which use the useDataProviderData hook.
-     * Is used when the dataprovider has a master-reference, so it saves its data in a Map, the key is the respective primary key
+     * If the dataprovider has a master-reference, it saves its data in a Map, the key is the respective primary key
      * for the data of its master and the value is the data. Additionally there is a key "current" which holds data of the
      * current selected row of the master.
+     * If there is no master-reference, it saves the data in a Map with one entry key: "current" value: data 
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      * @param newDataSet - the new data
@@ -343,49 +311,48 @@ export default class ContentStore{
      * @param referenceKey - the primary key value of the master-reference 
      * @param selectedRow - the currently selected row of the master-reference
      */
-    updateDataProviderMap(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey:string, selectedRow:string) {
+    updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey?:string) {
+        const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
+            if (referenceKey !== undefined)
+                mapProv.set(referenceKey, newDataSet)
+            else
+                mapProv.set("current", newDataSet);
+            if (mapScreen) {
+                mapScreen.set(dataProvider, mapProv);
+                if (addDPD)
+                    this.dataProviderData.set(compId, mapScreen);
+            }
+        }
+
         const existingMap = this.dataProviderData.get(compId);
         if (existingMap) {
             const existingProvider = existingMap.get(dataProvider);
-            if (existingProvider && existingProvider instanceof Map) {
-                const existingMaster = existingProvider.get(referenceKey);
-                if (existingMaster) {
-                    if (existingMaster.length <= from)
-                        existingMaster.push(...newDataSet);
+            if (existingProvider) {
+                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+                if (existingData) {
+                    if (existingData.length <= from)
+                        existingData.push(...newDataSet);
                     else {
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
-                            existingMaster[i] = newDataSet[newDataSetIndex];
+                            existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
                         }
                     }
                 }
-                else
-                    existingProvider.set(referenceKey, newDataSet);
-
-                if (existingProvider.has(selectedRow))
-                    existingProvider.set("current", existingProvider.get(selectedRow) as any[]);
+                else {
+                    fillDataMap(existingProvider);
+                }
             }
             else {
                 const providerMap = new Map<string, Array<any>>();
-                providerMap.set(referenceKey, newDataSet);
-                if (providerMap.has(selectedRow))
-                    providerMap.set("current", providerMap.get(selectedRow) as any[])
-                else
-                    providerMap.set("current", new Array<any>());
-                existingMap.set(dataProvider, providerMap);
+                fillDataMap(providerMap, existingMap);
             }
         }
         else {
             const dataMap = new Map<string, any>();
             const providerMap = new Map<string, Array<any>>();
-            providerMap.set(referenceKey, newDataSet);
-            if (providerMap.has(selectedRow))
-                providerMap.set("current", providerMap.get(selectedRow) as any[])
-            else
-                providerMap.set("current", new Array<any>());
-            dataMap.set(dataProvider, providerMap);
-            this.dataProviderData.set(compId, dataMap);
+            fillDataMap(providerMap, dataMap, true);
         }
         this.subManager.notifyDataChange(compId, dataProvider);
         this.subManager.notifyScreenDataChange(compId);
@@ -401,12 +368,12 @@ export default class ContentStore{
      */
     getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
         let dataArray = this.dataProviderData.get(compId)?.get(dataProvider);
-        if (dataArray instanceof Map)
+        if (dataArray) {
             dataArray = dataArray.get("current")
-        if(from !== undefined && to !== undefined) {
-            return dataArray?.slice(from, to) || [];
+            if(from !== undefined && to !== undefined) {
+                return dataArray?.slice(from, to) || [];
+            }
         }
-
         return  dataArray || []
     }
 
@@ -458,11 +425,8 @@ export default class ContentStore{
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
-    clearDataFromProvider(compId:string, dataProvider: string, selectedRow?:string){
-        if (this.dataProviderData.get(compId)?.get(dataProvider) instanceof Map && selectedRow)
-            this.dataProviderData.get(compId)?.get(dataProvider).delete(selectedRow)
-        else
-            this.dataProviderData.get(compId)?.delete(dataProvider);
+    clearDataFromProvider(compId:string, dataProvider: string) {
+        this.dataProviderData.get(compId)?.get(dataProvider).delete("current");     
     }
 
 

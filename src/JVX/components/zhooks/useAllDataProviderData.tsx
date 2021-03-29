@@ -9,7 +9,7 @@ import {jvxContext} from "../../jvxProvider";
  * @param compId - the component id of the screen
  * @returns the current data of all dataproviders of a component as map
  */
-const useAllDataProviderData = (compId:string, databooks:string[]): Map<string, Array<any>|Map<string, any>> => {
+const useAllDataProviderData = (compId:string, databooks:string[]): Map<string, any> => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
@@ -29,7 +29,7 @@ const useAllDataProviderData = (compId:string, databooks:string[]): Map<string, 
 
     },[compId, databooks, context.contentStore])
     /** Current state of dataMap */
-    const [dataMap, setDataMap] = useState<Map<string, Array<any>|Map<string, any>>>(getDataProvidersOfComp());
+    const [dataMap, setDataMap] = useState<Map<string, any>>(getDataProvidersOfComp());
 
     /**
      * Subscribes to screenDataChange

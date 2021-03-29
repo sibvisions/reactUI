@@ -240,6 +240,11 @@ class Server {
         }
     }
 
+    /**
+     * Returns the data as array with objects of the columnnames and data merged together
+     * @param fetchData - the fetchResponse received
+     * @returns the data as array with objects of the columnnames and data merged together
+     */
     buildDatasets(fetchData: FetchResponse) {
         return fetchData.records.map(record => {
             const data : any = {}
@@ -254,26 +259,32 @@ class Server {
      * Builds the data and then tells contentStore to update its dataProviderData
      * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
      * @param fetchData - the fetchResponse
+     * @param referenceKey - the referenced key which should be added to the map
      */
-    processFetch(fetchData: FetchResponse, referenceKey?: string) {
+    processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData)
         const compId = fetchData.dataProvider.split('/')[1];
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
+        const metaData = getMetaData(compId, fetchData.dataProvider, this.contentStore) as MetaDataResponse;
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        if (referenceKey !== undefined || this.contentStore.dataProviderData.get(compId)?.get(fetchData.dataProvider) instanceof Map) {
-            const metaData = getMetaData(compId, fetchData.dataProvider, this.contentStore) as MetaDataResponse
-            const referencedSelectedRow = this.contentStore.dataProviderSelectedRow.get(compId)
-                ?.get((metaData.masterReference as MetaDataReference).referencedDataBook)
-                [(metaData.masterReference as MetaDataReference).referencedColumnNames[0]].toString();
-            if (referenceKey === undefined && builtData[fetchData.selectedRow] !== undefined && metaData.masterReference) {
-                this.contentStore.updateDataProviderMap(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from,
-                    builtData[fetchData.selectedRow][metaData.masterReference.columnNames[0]].toString(), referencedSelectedRow);
-            }
-            else {
-                this.contentStore.updateDataProviderMap(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, referenceKey as string, referencedSelectedRow);
-            }
+        let referencedPKValue
+        // Checks if there is a referenced primary key value for the selectedRow
+        if (metaData.masterReference && this.contentStore.dataProviderSelectedRow.get(compId)?.get(metaData.masterReference.referencedDataBook)) {
+            referencedPKValue = this.contentStore.dataProviderSelectedRow.get(compId)
+                ?.get(metaData.masterReference.referencedDataBook)[metaData.masterReference.referencedColumnNames[0]].toString();
         }
+        // If there is a detailMapKey, call updateDataProviderData with it
+        if (detailMapKey !== undefined) {
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, detailMapKey as string);
+        }
+        // If there is no detailMapKey and a dataRow for selectedRow and a masterreference and a referenced primary key value,
+        // use the 
+        // else if (detailMapKey === undefined && builtData[fetchData.selectedRow] !== undefined && metaData.masterReference && referencedPKValue) {
+            
+        //     this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from,
+        //         builtData[fetchData.selectedRow][metaData!.masterReference!.columnNames[0]].toString(), referencedPKValue);
+        // }
         else
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
@@ -288,7 +299,7 @@ class Server {
     processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = changedProvider.dataProvider.split('/')[1];
         if(changedProvider.reload === -1) {
-            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider, changedProvider.selectedRow?.toString());
+            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);

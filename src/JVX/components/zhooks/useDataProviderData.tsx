@@ -24,7 +24,7 @@ const useDataProviderData = (compId:string, dataProvider:string): [any]=> {
         /** Get the data from the dataProvider and set the state */
         const onDataChange = () => {
             const a = context.contentStore.getData(compId, dataProvider);
-            setData(a instanceof Array ? [...a] : new Map(a));
+            setData([...a]);
         }
         context.subscriptions.subscribeToDataChange(compId, dataProvider, onDataChange);
         return () => context.subscriptions.unsubscribeFromDataChange(compId, dataProvider, onDataChange);
