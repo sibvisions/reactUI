@@ -13,7 +13,7 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
 import UserDataResponse from "./response/UserDataResponse";
 import FetchResponse from "./response/FetchResponse";
-import MetaDataResponse, { MetaDataReference } from "./response/MetaDataResponse";
+import MetaDataResponse from "./response/MetaDataResponse";
 import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
 import ShowDocumentResponse from "./response/ShowDocumentResponse"
 import {createFetchRequest, createOpenScreenRequest, createStartupRequest} from "./factories/RequestFactory";
@@ -27,7 +27,6 @@ import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
-import { getMetaData } from "./components/util/GetMetaData";
 
 /** Type for query */
 type queryType = {
@@ -265,26 +264,11 @@ class Server {
         const builtData = this.buildDatasets(fetchData)
         const compId = fetchData.dataProvider.split('/')[1];
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
-        const metaData = getMetaData(compId, fetchData.dataProvider, this.contentStore) as MetaDataResponse;
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        let referencedPKValue
-        // Checks if there is a referenced primary key value for the selectedRow
-        if (metaData.masterReference && this.contentStore.dataProviderSelectedRow.get(compId)?.get(metaData.masterReference.referencedDataBook)) {
-            referencedPKValue = this.contentStore.dataProviderSelectedRow.get(compId)
-                ?.get(metaData.masterReference.referencedDataBook)[metaData.masterReference.referencedColumnNames[0]].toString();
-        }
         // If there is a detailMapKey, call updateDataProviderData with it
-        if (detailMapKey !== undefined) {
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, detailMapKey as string);
-        }
-        // If there is no detailMapKey and a dataRow for selectedRow and a masterreference and a referenced primary key value,
-        // use the 
-        // else if (detailMapKey === undefined && builtData[fetchData.selectedRow] !== undefined && metaData.masterReference && referencedPKValue) {
-            
-        //     this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from,
-        //         builtData[fetchData.selectedRow][metaData!.masterReference!.columnNames[0]].toString(), referencedPKValue);
-        // }
+        if (detailMapKey !== undefined)
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, detailMapKey);
         else
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);

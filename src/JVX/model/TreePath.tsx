@@ -127,8 +127,8 @@ class TreePath {
         return [...this.array]
     }
 
-    getLastOfParent(treePath:TreePath) {
-        return treePath.getParentPath().getLast();
+    getLastOfParent() {
+        return this.getParentPath().getLast();
     }
 }
 export default TreePath
