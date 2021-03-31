@@ -121,6 +121,7 @@
     width: var(--menuLogoWidth);
     border-radius: 5%;
     max-height: var(--menuLogoHeight);
+    object-fit: contain;
 }
 
 /// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
