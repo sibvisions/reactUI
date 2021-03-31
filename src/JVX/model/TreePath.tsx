@@ -1,3 +1,11 @@
+/**
+ * A TreePath stores the path of node in a tree.
+ * It is stored as int array representing the selected row in the corresponding level.
+ * eg:
+ * [] empty array means tree path for the root page.
+ * [1] the detail page for the row 1 of root page.
+ * [1, 2] the detail page for the row 2 of the detail page for the row 1 of the root page.  
+ */
 class TreePath {
     array:number[];
     static EMPTY = new TreePath();

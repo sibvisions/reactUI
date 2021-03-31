@@ -409,6 +409,7 @@ export default class ContentStore{
             tempMapRow.set(dataProvider, dataRow);
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
+        console.log('selectedRow set ' + dataProvider)
     }
 
     /**
