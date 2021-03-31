@@ -76,7 +76,6 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                 elem.style.setProperty('background-image', 'url(' + context.server.RESOURCE_URL + btnData.iconProps.icon + ')');
         }
 
-        const btnRef = buttonRef.current
         if (buttonRef.current) {
             const btnContainer = buttonRef.current.container;
             if (btnData.iconProps.icon) {
@@ -95,12 +94,14 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
             btnBgd, tinycolor(btnBgd).darken(10).toString(), 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
         return () => {
-            if (btnRef && btnData.iconProps.icon && pressedIconData.icon) {
-                const btnContainer = btnRef.container;
-                const iconElement = btnContainer.children[0] as HTMLElement
-                btnContainer.removeEventListener('mousedown', () => handleMouseImagePressed(iconElement));
-                btnContainer.removeEventListener('mouseup', () => handleMouseImageReleased(iconElement));
-                btnContainer.removeEventListener('mouseout', () => handleMouseImageReleased(iconElement));
+            if (buttonRef.current && btnData.iconProps.icon && pressedIconData.icon) {
+                const btnContainer = buttonRef.current.container;
+                if (btnContainer) {
+                    const iconElement = btnContainer.children[0] as HTMLElement
+                    btnContainer.removeEventListener('mousedown', () => handleMouseImagePressed(iconElement));
+                    btnContainer.removeEventListener('mouseup', () => handleMouseImageReleased(iconElement));
+                    btnContainer.removeEventListener('mouseout', () => handleMouseImageReleased(iconElement));
+                }
             }
         }
     },[props.selected, btnBgd, btnData.btnBorderPainted, btnData.iconProps, btnData.style, props, context.server.RESOURCE_URL, pressedIconData.icon]);
