@@ -263,7 +263,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
-
+        
         if(event.value){
             const selectReq = createSelectRowRequest();
             selectReq.filter = {

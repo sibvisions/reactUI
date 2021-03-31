@@ -37,6 +37,11 @@ export class SubscriptionManager {
      */
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
     /**
+     * A Map which stores a function to update a components state of all dataproviders selected-row, key is the screens component id
+     * and value is the function to update the state
+     */
+    screenRowSelectionSubscriber = new Map<string, Function>();
+    /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
      * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens component id and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
@@ -44,7 +49,7 @@ export class SubscriptionManager {
      */
     dataChangeSubscriber = new Map<string, Map<string, Array<Function>>>();
     /**
-     * A Map which stores a function to update a components state of all dataprovider data, key is the screens component id
+     * A Map which stores a function to update a components state of all dataproviders data, key is the screens component id
      * value is the function to update the state
      */
     screenDataChangeSubscriber = new Map<string, Function>();
@@ -152,8 +157,17 @@ export class SubscriptionManager {
      * @param compId - the component id of the screen
      * @param fn - the function to update the state
      */
-        subscribeToScreenDataChange(compId:string, fn:Function) {
+    subscribeToScreenDataChange(compId:string, fn:Function) {
         this.screenDataChangeSubscriber.set(compId, fn)
+    }
+
+    /**
+     * Subscribes a component to its dataproviders selected-rows
+     * @param compId - the component id of the screen
+     * @param fn - the function to update the state
+     */
+    subscribeToScreenRowChange(compId:string, fn:Function) {
+        this.screenRowSelectionSubscriber.set(compId, fn);
     }
 
     /**
@@ -262,6 +276,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from its dataproviders selected-rows
+     * @param compId 
+     */
+    unsubscribeFromScreenRowChange(compId:string) {
+        this.screenRowSelectionSubscriber.delete(compId);
+    }
+
+    /**
      * Unsubscribes a component from rowSelection
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
@@ -352,9 +374,12 @@ export class SubscriptionManager {
      */
      emitRowSelect(compId:string, dataProvider: string){
         const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
+        const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
         const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider);
         if(rowSubscriber)
             rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
+        if (screenRowSubs)
+            screenRowSubs.apply(undefined, []);
     }
 
     /** When the menu-items change, call the function of the menu-subscriber */
