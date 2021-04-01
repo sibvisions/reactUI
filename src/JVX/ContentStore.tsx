@@ -10,7 +10,6 @@ import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
-import { getMetaData } from "./components/util/GetMetaData";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -409,7 +408,6 @@ export default class ContentStore{
             tempMapRow.set(dataProvider, dataRow);
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
-        console.log('selectedRow set ' + dataProvider)
     }
 
     /**

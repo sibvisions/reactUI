@@ -6,10 +6,10 @@ import {jvxContext} from "../../jvxProvider";
 import { getDataProvidersOfComp } from "../util/GetDataProvidersOfComp";
 
 /**
- * This hook returns the current data of all dataproviders of a component as map
+ * This hook returns the current data of all dataproviders of a component as Map
  * @param compId - the component id of the screen
  * @param databooks - the databooks of the component
- * @returns the current data of all dataproviders of a component as map
+ * @returns the current data of all dataproviders of a component as Map
  */
 const useAllDataProviderData = (compId:string, dataBooks:string[]): Map<string, any> => {
     /** Use context to gain access for contentstore and server methods */

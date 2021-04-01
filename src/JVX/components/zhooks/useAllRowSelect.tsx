@@ -1,26 +1,29 @@
 /** React imports */
-import {useContext, useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 /** Other imports */
 import {jvxContext} from "../../jvxProvider";
 import { getDataProvidersOfComp } from "../util/GetDataProvidersOfComp";
 
+/**
+ * This hook returns every currently selected Row of all dataproviders of a component as Map
+ * @param compId - the component id of the screen
+ * @param dataBooks - the databooks of the component
+ * @param column - the column
+ * @returns  every currently selected Row of all dataproviders of a component as Map
+ */
 const useAllRowSelect = (compId:string, dataBooks:string[], column?:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
-    // const buildMap = useMemo(() => {
-    //     const
-    // },[])
-
     /** Current state of dataMap */
-    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks));
+    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks, column));
     
     //console.log(context.contentStore.dataProviderSelectedRow)
 
     useEffect(() => {
         const onScreenSelectedRowChange = () => {
-            const a = getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks);
+            const a = getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks, column);
             setSelectedRowMap(new Map(a));
         }
 

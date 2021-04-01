@@ -228,7 +228,7 @@ class Server {
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string){
         const compId = dataProvider.split('/')[1];
-        if(selectedRowIndex !== -1 && selectedRowIndex !== undefined) {
+        if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow);
