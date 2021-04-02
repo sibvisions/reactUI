@@ -23,16 +23,38 @@ export interface IChart extends BaseComponent {
 
 /** 
  * enum for different Chartstyles 
- * 0 = Line
- * 1 = Area
- * 2 = Bars
- * 3 = Pie
  */
 enum CHART_STYLES {
-    LINES=0,
-    AREAS=1,
-    BARS=2,
-    PIE=3
+    /** Style constant for showing a line chart. */
+    LINES = 0,
+    /** Style constant for showing an area chart. */
+    AREA = 1,
+    /** Style constant for showing a bar chart. */
+    BARS = 2,
+    /** Style constant for showing a pie chart. */
+    PIE = 3,
+    /** Style constant for showing an step line chart. */
+    STEPLINES = 100,
+    /** Style constant for showing an area chart. */
+    STACKEDAREA = 101,
+    /** Style constant for showing an area chart. */
+    STACKEDPERCENTAREA = 201,
+    /** Style constant for showing a stacked bar chart. */
+    STACKEDBARS = 102,
+    /** Style constant for showing a stacked bar chart. */
+    STACKEDPERCENTBARS = 202,
+    /** Style constant for showing a overlapped bar chart. */
+    OVERLAPPEDBARS = 302,
+    /** Style constant for showing a bar chart. */
+    HBARS = 1002,
+    /** Style constant for showing a stacked bar chart. */
+    STACKEDHBARS = 1102,
+    /** Style constant for showing a stacked bar chart. */
+    STACKEDPERCENTHBARS = 1202,
+    /** Style constant for showing a overlapped bar chart. */
+    OVERLAPPEDHBARS = 1302,
+    /** Style constant for showing a ring chart. */
+    RING = 103,
 
 }
 
@@ -56,7 +78,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      */
     const chartType = useMemo(() => {
         switch (props.chartStyle) {
-            case CHART_STYLES.LINES: case CHART_STYLES.AREAS: return "line";
+            case CHART_STYLES.LINES: case CHART_STYLES.AREA: return "line";
             case CHART_STYLES.BARS: return "bar";
             default: return "pie"
         }
@@ -77,7 +99,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                     data: props.data.map(dataRow => dataRow[0]),
                     backgroundColor: props.chartStyle === CHART_STYLES.PIE ? props.data.map(() => tinycolor.random().toHexString()): singleColor,
                     borderColor: props.chartStyle !== CHART_STYLES.PIE ? singleColor : undefined,
-                    fill: props.chartStyle === CHART_STYLES.AREAS ? true : false,
+                    fill: props.chartStyle === CHART_STYLES.AREA ? true : false,
                     lineTension: 0,
                     pointRadius: props.chartStyle === CHART_STYLES.LINES ? 6 : 0,
                     pointHitRadius: props.chartStyle === CHART_STYLES.LINES ? 7 : 0,
