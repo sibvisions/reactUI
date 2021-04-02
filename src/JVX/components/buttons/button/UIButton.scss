@@ -50,3 +50,33 @@
         margin: calc(var(--btnPTB) * -1) calc(var(--btnPLR) * -1) !important;
     }
 }
+
+.rc-button-icon {
+    font-size: var(--iconHeight);
+    color: var(--iconColor);
+    &:not([class*="fa fa-"]) {
+        width: var(--iconWidth);
+        height: var(--iconHeight);
+        display: inline-block;
+        background-image: var(--iconImage);
+    }
+
+    &:not(span) {
+        margin-right: var(--iconTextGap);
+    }
+
+    @at-root #{selector-unify(&, "span")} {
+        .gap-top & {
+            margin-top: var(--iconTextGap);
+        }
+        .gap-left & {
+            margin-left: var(--iconTextGap);
+        }
+        .gap-right & {
+            margin-right: var(--iconTextGap);
+        }
+        .gap-bottom & {
+            margin-bottom: var(--iconTextGap);
+        }
+    }
+}

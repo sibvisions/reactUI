@@ -31,10 +31,28 @@
     }
 }
 
+@mixin hover {
+    background-color: var(--background);
+
+    &:hover {
+        background-color: var(--hoverBackground);
+    }
+
+    &:not(.border-notpainted) {
+        border-color: var(--background);
+
+        &:hover {
+            border-color: var(--hoverBackground);
+        }
+    }
+}
+
 .p-splitbutton {
     --menuBtnJustify: center;
     --menuBtnAlign: center;
     --menuBtnPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+
+    @include hover;
 }
 
 .p-splitbutton-defaultbutton {

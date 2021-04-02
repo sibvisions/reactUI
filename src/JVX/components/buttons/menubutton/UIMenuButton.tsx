@@ -14,7 +14,7 @@ import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, renderButtonIcon} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, renderButtonIcon, getGapPos} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
@@ -23,6 +23,11 @@ import { parseJVxSize } from "../../util/parseJVxSize";
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
     popupMenu: string;
+}
+
+/** Helper method to concatenate class names and filter out falsy values */
+function cn(...classNames: (string | null | undefined)[]) {
+    return classNames.filter(Boolean).join(' ');
 }
 
 /**
@@ -58,10 +63,10 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
             if (btnData.iconProps.icon) {
-                renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
+                //renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
             }
-            btnRef.container.classList.add((btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? "bright" : "dark");
-            addHoverEffect(
+            //btnRef.container.classList.add((btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? "bright" : "dark");
+            /*addHoverEffect(
                 btnRef.container as HTMLElement, 
                 props.borderOnMouseEntered, 
                 btnBgd, 
@@ -70,7 +75,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 btnData.btnBorderPainted, 
                 undefined, 
                 props.background ? true : false
-            );
+            );*/
         }
 
     },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd]);
@@ -109,20 +114,38 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         buildMenu(context.contentStore.getChildren(props.popupMenu));
     },[context.contentStore, context.server, props])
     
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition)
+
     return (
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
                 ref={buttonRef}
-                className={"rc-popupmenubutton"  + (props.borderPainted === false ? " border-notpainted" : "")}
+                className={cn(
+                    "rc-popupmenubutton",
+                    props.borderPainted === false ? "border-notpainted" : '',
+                    btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
+                    `gap-${gapPos}`
+                )}
                 style={{
                     ...btnData.style, 
                     padding: '0', 
+                    background: undefined,
+                    borderColor: undefined,
                     '--menuBtnJustify': btnHAlign,
                     '--menuBtnAlign': btnVAlign,
-                    '--menuBtnPadding': btnData.style.padding
+                    '--menuBtnPadding': btnData.style.padding,
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
+                    ...(btnData.iconProps?.icon ? {
+                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
+                        '--iconColor': btnData.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                        '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    } : {})
                 }}
                 label={props.text}
-                icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
+                icon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 tabIndex={btnData.tabIndex}
                 model={items}
                 //@ts-ignore

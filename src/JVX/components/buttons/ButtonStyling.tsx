@@ -45,7 +45,7 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, st
  * @param vTextPos  - verticalTextPosition of the button label 
  * @returns the position for the gap between label and icon
  */
-function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
+export function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) {
     if (hTextPos === 0) {
         return 'left'
     }
