@@ -57,13 +57,20 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         if (buttonRef.current) {
             const btnRef = buttonRef.current
-            btnRef.defaultButton.style.setProperty('--menuDefaultJustify', btnHAlign);
-            btnRef.defaultButton.style.setProperty('--menuDefaultAlign', btnVAlign);
-            btnRef.defaultButton.style.setProperty('--menuDefaultPadding', btnData.style.padding)
-            if (btnData.iconProps.icon)
+            if (btnData.iconProps.icon) {
                 renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.container.classList.add("bright") : btnRef.container.classList.add("dark");
-            addHoverEffect(btnRef.container as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
+            }
+            btnRef.container.classList.add((btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? "bright" : "dark");
+            addHoverEffect(
+                btnRef.container as HTMLElement, 
+                props.borderOnMouseEntered, 
+                btnBgd, 
+                null, 
+                5, 
+                btnData.btnBorderPainted, 
+                undefined, 
+                props.background ? true : false
+            );
         }
 
     },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd]);
@@ -107,7 +114,13 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             <SplitButton
                 ref={buttonRef}
                 className={"rc-popupmenubutton"  + (props.borderPainted === false ? " border-notpainted" : "")}
-                style={{...btnData.style, padding: '0'}}
+                style={{
+                    ...btnData.style, 
+                    padding: '0', 
+                    '--menuBtnJustify': btnHAlign,
+                    '--menuBtnAlign': btnVAlign,
+                    '--menuBtnPadding': btnData.style.padding
+                }}
                 label={props.text}
                 icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
                 tabIndex={btnData.tabIndex}

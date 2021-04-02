@@ -1,5 +1,5 @@
 /** React imports */
-import {CSSProperties} from 'react';
+import React, {CSSProperties, PropsWithChildren, FC, useState, useLayoutEffect} from 'react';
 
 /** 3rd Party imports */
 import tinycolor from 'tinycolor2';
@@ -24,7 +24,7 @@ export function buttonProps(props:IButton): {iconPos:string, tabIndex:number, st
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
             justifyContent: props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va,
             alignItems: props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha,
-            //background: props.background ? tinycolor(props.background).toString() : undefined,
+            background: props.background ? tinycolor(props.background).toString() : undefined,
             borderColor: props.background ? tinycolor(props.background).toString() : undefined,
             color: props.foreground ? tinycolor(props.foreground).toString() : undefined,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,

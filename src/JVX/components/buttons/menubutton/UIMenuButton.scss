@@ -31,13 +31,16 @@
     }
 }
 
+.p-splitbutton {
+    --menuBtnJustify: center;
+    --menuBtnAlign: center;
+    --menuBtnPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+}
+
 .p-splitbutton-defaultbutton {
-    --menuDefaultJustify: center;
-    --menuDefaultAlign: center;
-    --menuDefaultPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
-    justify-content: var(--menuDefaultJustify);
-    align-items: var(--menuDefaultAlign);
-    padding: var(--menuDefaultPadding);
+    justify-content: var(--menuBtnJustify);
+    align-items: var(--menuBtnAlign);
+    padding: var(--menuBtnPadding);
 }
 
 /// Fixed width for menubutton part of splitbutton
