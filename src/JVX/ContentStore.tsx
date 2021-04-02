@@ -10,6 +10,7 @@ import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
+import { getMetaData } from "./components/util/GetMetaData";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -419,13 +420,35 @@ export default class ContentStore{
         this.dataProviderSelectedRow.get(compId)?.delete(dataProvider);
     }
 
+    clearDataFromSubPage(compId:string, subDataProvider:string) {
+        this.dataProviderData.get(compId)?.delete(subDataProvider);
+        const metaData = this.dataProviderMetaData.get(compId)?.get(subDataProvider);
+        if (metaData && metaData.detailReferences) {
+            metaData.detailReferences.forEach(reference => {
+                this.clearDataFromSubPage(compId, reference.referencedDataBook);
+            })
+        }
+        this.subManager.notifyDataChange(compId, subDataProvider);
+        this.subManager.notifyScreenDataChange(compId);
+    }
+
     /**
      * Clears the data of a dataProvider
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
     clearDataFromProvider(compId:string, dataProvider: string) {
-        this.dataProviderData.get(compId)?.get(dataProvider).delete("current");     
+        const data = this.dataProviderData.get(compId)?.get(dataProvider);
+        if (data) {
+            data.delete("current");
+        }
+        const metaData = getMetaData(compId, dataProvider, this);
+        if (metaData?.masterReference === undefined && metaData?.detailReferences) {
+            metaData.detailReferences.forEach(reference => {
+                this.clearDataFromSubPage(compId, reference.referencedDataBook);
+            });
+        }
+  
     }
 
 
