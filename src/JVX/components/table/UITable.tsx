@@ -316,8 +316,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
-    console.log(providerData, props.dataBook)
-
     return(
        <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
            <DataTable

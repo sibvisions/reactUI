@@ -18,8 +18,6 @@ const useAllRowSelect = (compId:string, dataBooks:string[], column?:string) => {
 
     /** Current state of dataMap */
     const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks, column));
-    
-    //console.log(context.contentStore.dataProviderSelectedRow)
 
     useEffect(() => {
         const onScreenSelectedRowChange = () => {

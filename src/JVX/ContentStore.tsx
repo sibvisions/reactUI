@@ -5,7 +5,7 @@ import React, {ReactElement} from "react";
 import {serverMenuButtons} from "./response/MenuResponse";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
-import MetaDataResponse from "./response/MetaDataResponse";
+import MetaDataResponse, { MetaDataReference } from "./response/MetaDataResponse";
 import {componentHandler} from "./factories/UIFactory";
 import {Panel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -420,16 +420,24 @@ export default class ContentStore{
         this.dataProviderSelectedRow.get(compId)?.delete(dataProvider);
     }
 
-    clearDataFromSubPage(compId:string, subDataProvider:string) {
-        this.dataProviderData.get(compId)?.delete(subDataProvider);
-        const metaData = this.dataProviderMetaData.get(compId)?.get(subDataProvider);
-        if (metaData && metaData.detailReferences) {
-            metaData.detailReferences.forEach(reference => {
-                this.clearDataFromSubPage(compId, reference.referencedDataBook);
-            })
+    clearDataFromSubPage(compId:string, detailReferences?:MetaDataReference[]) {
+        if (detailReferences !== undefined) {
+            detailReferences.forEach(reference => {
+                const referencedDataBook = reference.referencedDataBook;
+                const metaData = getMetaData(compId, referencedDataBook, this);
+                const dataBookData = this.dataProviderData.get(compId)?.get(referencedDataBook)
+                for (let [key] of dataBookData) {
+                    if (key !== "current") {
+                        dataBookData.delete(key);
+                    }
+                }
+                if (metaData && metaData.detailReferences) {
+                    this.clearDataFromSubPage(compId, metaData.detailReferences);
+                }
+                this.subManager.notifyDataChange(compId, referencedDataBook);
+                this.subManager.notifyScreenDataChange(compId);
+            });
         }
-        this.subManager.notifyDataChange(compId, subDataProvider);
-        this.subManager.notifyScreenDataChange(compId);
     }
 
     /**
@@ -439,16 +447,14 @@ export default class ContentStore{
      */
     clearDataFromProvider(compId:string, dataProvider: string) {
         const data = this.dataProviderData.get(compId)?.get(dataProvider);
+        const metaData = getMetaData(compId, dataProvider, this);
         if (data) {
             data.delete("current");
         }
-        const metaData = getMetaData(compId, dataProvider, this);
-        if (metaData?.masterReference === undefined && metaData?.detailReferences) {
-            metaData.detailReferences.forEach(reference => {
-                this.clearDataFromSubPage(compId, reference.referencedDataBook);
-            });
+        
+        if (metaData && metaData.masterReference === undefined) {
+            this.clearDataFromSubPage(compId, metaData.detailReferences);
         }
-  
     }
 
 

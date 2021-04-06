@@ -286,8 +286,12 @@ class Server {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
-            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
-        } else if(changedProvider.reload !== undefined) {
+            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.FETCH, this.buildReqOpts(fetchReq)), 2000)
+            .then((response:any) => response.json())
+            .then((fetchData:FetchResponse[]) => this.processFetch(fetchData[0]))
+            .then(() => this.subManager.notifyTreeChanged(changedProvider.dataProvider));
+        } 
+        else if(changedProvider.reload !== undefined) {
             const fetchReq = createFetchRequest();
             fetchReq.rowCount = 1;
             fetchReq.fromRow = changedProvider.reload;

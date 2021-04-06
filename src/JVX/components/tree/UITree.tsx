@@ -21,6 +21,7 @@ import { getMetaData } from "../util/GetMetaData";
 import FetchResponse from "../../response/FetchResponse";
 import TreePath from "../../model/TreePath";
 import useAllRowSelect from "../zhooks/useAllRowSelect";
+import MetaDataResponse from "../../response/MetaDataResponse";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[],
@@ -46,9 +47,13 @@ const UITree: FC<ITree> = (baseProps) => {
     const providedData = useAllDataProviderData(compId, props.dataBooks);
     const selectedRows = useAllRowSelect(compId, props.dataBooks)
 
+    const [rebuildTree, setRebuildTree] = useState<boolean>(false);
+
     const [treeData, setTreeData] = useState<Map<string, any>>(new Map<string, any>());
 
     const [nodes, setNodes] = useState<any[]>([]);
+
+    const [expandedKeys, setExpandedKeys] = useState<any>({});
 
     const testFunc = () => {
         if (treeData.size > 0) {
@@ -79,6 +84,19 @@ const UITree: FC<ITree> = (baseProps) => {
             sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        const updateRebuildTree = () => {
+            expandedNode.current = null;
+            setExpandedKeys({})
+            setNodes([]);
+            setTreeData(new Map());
+            setRebuildTree(prevState => !prevState);        
+        }
+
+        context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
+        return () => context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
+    }, [context.subscriptions, props.dataBooks]);
 
     const isSelfJoined = (dataBook:string) => {
         const metaData = getMetaData(compId, dataBook, context.contentStore)
@@ -130,65 +148,91 @@ const UITree: FC<ITree> = (baseProps) => {
     }
 
     const sendTreeFetchSingle = (fetchObj: any, node: any) => {
-        const parentPath = new TreePath(JSON.parse(node.key));
         const tempTreeMap: Map<string, any> = new Map<string, any>();
+
+        const fillTempTree = (dataArray:any[]) => {
+            dataArray.forEach((data, i) => {
+                const path = new TreePath(JSON.parse(node.key)).getChildPath(i);
+                tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
+            });
+            setTreeData(prevState => new Map([...prevState, ...tempTreeMap]));
+            newNodes.current = tempTreeMap;
+            if (newNodes.current.size === 0)
+                node.leaf = true;
+        }
+
+        const parentPath = new TreePath(JSON.parse(node.key));
         const fetchDataPage = getDataBook(parentPath.length());
         const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
-        if (isSelfJoined(fetchDataPage) || parentPath.length() < props.dataBooks.length) {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = fetchDataPage;
-            fetchReq.filter = {
-                columnNames: metaData!.masterReference!.columnNames,
-                values: [fetchObj[metaData!.masterReference!.referencedColumnNames[0]]]
+        if (metaData !== undefined && metaData.masterReference !== undefined) {
+            if (!providedData.get(fetchDataPage).has(fetchObj[metaData!.masterReference!.referencedColumnNames[0]].toString())
+                && (isSelfJoined(fetchDataPage) || parentPath.length() < props.dataBooks.length)) {
+                    const fetchReq = createFetchRequest();
+                    fetchReq.dataProvider = fetchDataPage;
+                    fetchReq.filter = {
+                        columnNames: metaData!.masterReference!.columnNames,
+                        values: [fetchObj[metaData!.masterReference!.referencedColumnNames[0]]]
+                    }
+                    context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
+                        .then((response: any) => response.json())
+                        .then((fetchData: FetchResponse[]) => {
+                            context.server.processFetch(fetchData[0], fetchObj[metaData!.masterReference!.referencedColumnNames[0]].toString());
+                            const builtData = context.server.buildDatasets(fetchData[0]);
+                            fillTempTree(builtData);
+                        });
             }
-            context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
-                .then((response: any) => response.json())
-                .then((fetchData: FetchResponse[]) => {
-                    context.server.processFetch(fetchData[0], fetchObj[metaData!.masterReference!.referencedColumnNames[0]].toString());
-                    const builtData = context.server.buildDatasets(fetchData[0]);
-                    builtData.forEach((data, i) => {
-                        const path = new TreePath(JSON.parse(node.key)).getChildPath(i);
-                        tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
-                    })
-                    setTreeData(oldState => new Map([...oldState, ...tempTreeMap]))
-                    newNodes.current = tempTreeMap;
-                    if (newNodes.current.size === 0)
-                        node.leaf = true;
-                });
+            else {
+                const availableData = providedData.get(fetchDataPage).get(fetchObj[metaData!.masterReference!.referencedColumnNames[0]].toString())
+                fillTempTree(availableData);
+            }
         }
     }
 
     const sendTreeFetchMulti = (fetchArray?: any[], node?: any) => {
         const tempTreeMap: Map<string, any> = new Map<string, any>();
-        fetchArray?.forEach((data, i) => {
+
+        const fillTempTree = (path:TreePath, arr:any[], data:any, metaData:MetaDataResponse, i:number,) => {
+            tempTreeMap.set(path.toString(), data[metaData.masterReference!.referencedColumnNames[0]]);
+            if (i === arr.length - 1) {
+                node ? setTreeData(oldState => new Map([...oldState, ...tempTreeMap])) : setTreeData(tempTreeMap);
+                newNodes.current = tempTreeMap;
+            }
+        }
+        fetchArray?.forEach((fetchData, i) => {
             const path = node ? new TreePath(JSON.parse(node.key)).getChildPath(i) : new TreePath(i);
-            if (!treeData.has(path.toString())) {
-                const fetchDataPage = getDataBook(path.length());
-                const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
-                if (isSelfJoined(fetchDataPage) || path.length() < props.dataBooks.length) {
+            const fetchDataPage = getDataBook(path.length());
+            const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
+            if (metaData !== undefined && metaData.masterReference !== undefined) {
+                if (!providedData.get(fetchDataPage).has(fetchData[metaData.masterReference.referencedColumnNames[0]].toString())
+                    && (isSelfJoined(fetchDataPage) || path.length() < props.dataBooks.length)) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = fetchDataPage;
                     fetchReq.filter = {
-                        columnNames: metaData!.masterReference!.columnNames,
-                        values: [data[metaData!.masterReference!.referencedColumnNames[0]]]
+                        columnNames: metaData.masterReference.columnNames,
+                        values: [fetchData[metaData.masterReference.referencedColumnNames[0]]]
                     }
                     context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
-                        .then((response:any) => response.json())
-                        .then((fetchData:FetchResponse[]) => {
-                            context.server.processFetch(fetchData[0], data[metaData!.masterReference!.referencedColumnNames[0]].toString());
-                            tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
-                            if (i === fetchArray.length - 1) {
-                                node ? setTreeData(oldState => new Map([...oldState, ...tempTreeMap])) : setTreeData(tempTreeMap);
-                                newNodes.current = tempTreeMap;
-                            }
+                        .then((response: any) => response.json())
+                        .then((fetchResponse: FetchResponse[]) => {
+                            context.server.processFetch(fetchResponse[0], fetchData[metaData!.masterReference!.referencedColumnNames[0]].toString());
+                            console.log(providedData.get(getDataBook(1)).get("current") === selectedRows.get(fetchDataPage), selectedRows)
+                            // if (selectedRows.get(fetchDataPage)[metaData!.masterReference!.columnNames[0]] === data[metaData!.masterReference!.referencedColumnNames[0]]) {
+                            //     const selectedFetchPage = getDataBook(path.length()+1);
+                            //     const selectedMetaData = getMetaData(compId, selectedFetchPage, context.contentStore);
+                            //     const fetchReq2 = createFetchRequest();
+                            //     fetchReq2.dataProvider = selectedFetchPage;
+                            //     fetchReq2.filter = {
+                            //         columnNames: selectedMetaData!.masterReference!.columnNames,
+                            //         values: [selectedRows.get(fetchDataPage)[selectedMetaData!.masterReference!.referencedColumnNames[0]]]
+                            //     }
+                            //     context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq2)), 2000)
+                            //     .then((response:any) => console.log(response.json()))
+                            // }
+                            fillTempTree(path, fetchArray, fetchData, metaData, i);
                         });
                 }
                 else {
-                    tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
-                    if (i === fetchArray.length - 1) {
-                        node ? setTreeData(oldState => new Map([...oldState, ...tempTreeMap])) : setTreeData(tempTreeMap);
-                        newNodes.current = tempTreeMap;
-                    }
+                    fillTempTree(path, fetchArray, fetchData, metaData, i);
                 }
             }
         });
@@ -205,7 +249,6 @@ const UITree: FC<ITree> = (baseProps) => {
                 const tempTreeMap: Map<string, any> = new Map<string, any>();
                 const metaData = getMetaData(compId, getDataBook(props.dataBooks.length - 1), context.contentStore);
                 getDataRowChildren(path, treeData.get(node.key)).forEach((data, i) => {
-                    console.log(treeData, path.getChildPath(i).toString())
                     if (!treeData.has(path.getChildPath(i).toString()))
                         tempTreeMap.set(path.getChildPath(i).toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
                 });
@@ -216,7 +259,6 @@ const UITree: FC<ITree> = (baseProps) => {
             }
         }
         else {
-            console.log(getDataBook(path.length()), providedData.get(getDataBook(path.length())));
             sendTreeFetchSingle(getDataRow(path, treeData.get(node.key)), expandedNode.current);
         }
     }
@@ -244,6 +286,27 @@ const UITree: FC<ITree> = (baseProps) => {
     }
 
     useEffect(() => {
+        const firstLvlData = providedData.get(props.dataBooks[0]).get("current") as any[];
+        if (props.detectEndNode !== false) {
+            sendTreeFetchMulti(firstLvlData);
+        }
+        else {
+            const tempTreeMap:Map<string, any> = new Map<string, any>();
+            firstLvlData.forEach((data, i) => {
+                const path = new TreePath(i);
+                const fetchDataPage = getDataBook(path.length());
+                const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
+                tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
+                if (i === firstLvlData.length - 1) {
+                    setTreeData(tempTreeMap);
+                    newNodes.current = tempTreeMap;
+                }
+            });
+        }
+    // eslint-disable-next-line
+    }, [rebuildTree]);
+
+    useEffect(() => {
         if (treeData.size > 0) {
             const treeArray:any[] = [];
             let nodeCopy = [...nodes]
@@ -253,7 +316,7 @@ const UITree: FC<ITree> = (baseProps) => {
                     let nodeChildren:any[] = [];
                     if (props.detectEndNode !== false)
                         nodeChildren = getDataRowChildren(path, value);
-                    else if (path.length() < props.dataBooks.length)
+                    else if (isSelfJoined(getDataBook(path.length())) || path.length() < props.dataBooks.length)
                         nodeChildren = [{}]
 
                     if (!expandedNode.current) {
@@ -277,36 +340,15 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     },[treeData])
 
-    useEffect(() => {
-        const firstLvlData = providedData.get(props.dataBooks[0]).get("current") as any[]
-        if (props.detectEndNode !== false) {
-            sendTreeFetchMulti(firstLvlData);
-        }
-        else {
-            const tempTreeMap:Map<string, any> = new Map<string, any>();
-            firstLvlData.forEach((data, i) => {
-                const path = new TreePath(i);
-                const fetchDataPage = getDataBook(path.length());
-                const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
-                tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
-                if (i === firstLvlData.length - 1) {
-                    setTreeData(tempTreeMap);
-                    newNodes.current = tempTreeMap;
-                }
-            });
-        }
-    // eslint-disable-next-line
-    }, []);
-
-    //console.log(providedData)
-
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Tree 
-                value={nodes} 
-                onExpand={onExpandLoad}
+                value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}
+                expandedKeys={expandedKeys}
+                onExpand={onExpandLoad}
+                onToggle={e => setExpandedKeys(e.value)}
                 onSelectionChange={handleRowSelection}
             />
         </span>

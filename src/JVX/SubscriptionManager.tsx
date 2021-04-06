@@ -63,6 +63,11 @@ export class SubscriptionManager {
      * and the value is the function to update the menu-collapsed state
      */
     menuCollapseSubscriber = new Map<string, Function>();
+    /**
+     * A Map which stores a function to update boolean flag state of the tree subscribers, key is the master databook and value is
+     * an array of functions to update all tree flip state which have this master databook
+     */
+    treeSubscriber = new Map<string, Array<Function>>();
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
     /** An array of functions to update the homechildren state of components which use the useHomeComponents hook */
@@ -205,6 +210,19 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes components to flip flag, to change their flag state
+     * @param masterDataBook  - the master databook of the tree
+     * @param fn  - the function to update the flip flag
+     */
+    subscribeToTreeChange(masterDataBook:string, fn:Function) {
+        const subscriber = this.treeSubscriber.get(masterDataBook);
+        if (subscriber)
+            subscriber.push(fn)
+        else
+            this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
+    }
+
+    /**
      * Subscribes components to translationLoaded , to change the translation-loaded state
      * @param fn - the function to update the translation-loaded state
      */
@@ -328,6 +346,16 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a tree from its flip flag
+     * @param masterDataBook - the master dataBook of the tree
+     */
+    unsubscribeFromTreeChange(masterDataBook:string, fn:Function) {
+        const subscriber = this.treeSubscriber.get(masterDataBook)
+        if (subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    }
+
+    /**
      * Unsubscribes app from register-custom
      */
     unsubscribeFromRegisterCustom() {
@@ -365,6 +393,14 @@ export class SubscriptionManager {
      */
     notifyScreenNameChanged(screenName:string) {
         this.screenNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [screenName]))
+    }
+
+    /**
+     * Notifies every tree which uses the given master databook to update their state
+     * @param masterDataBook - the master databook of the tree
+     */
+    notifyTreeChanged(masterDataBook:string) {
+        this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
