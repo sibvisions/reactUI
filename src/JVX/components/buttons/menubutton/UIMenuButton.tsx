@@ -111,7 +111,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             });
             setItems(tempItems);
         }
-        buildMenu(context.contentStore.getChildren(props.popupMenu));
+        if(props.popupMenu) {
+            buildMenu(context.contentStore.getChildren(props.popupMenu));
+        }
     },[context.contentStore, context.server, props])
     
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition)
