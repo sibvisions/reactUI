@@ -96,12 +96,10 @@ const UIChart: FC<IChart> = (baseProps) => {
      */
     const chartType = useMemo(() => {
         switch (props.chartStyle) {
-            case CHART_STYLES.LINES: 
-            case CHART_STYLES.AREA: 
-            case CHART_STYLES.STEPLINES: 
-            case CHART_STYLES.STACKEDAREA: 
-            case CHART_STYLES.STACKEDPERCENTAREA: 
-                return "line";
+            case CHART_STYLES.PIE:
+                return "pie";
+            case CHART_STYLES.RING: 
+                return "doughnut";
             case CHART_STYLES.BARS: 
             case CHART_STYLES.STACKEDBARS: 
             case CHART_STYLES.STACKEDPERCENTBARS: 
@@ -112,11 +110,13 @@ const UIChart: FC<IChart> = (baseProps) => {
             case CHART_STYLES.STACKEDPERCENTHBARS: 
             case CHART_STYLES.OVERLAPPEDHBARS: 
                 return "horizontalBar";
-            case CHART_STYLES.RING: 
-                return "doughnut";
-            case CHART_STYLES.PIE:
-            default: 
-                return "pie";
+            case CHART_STYLES.LINES: 
+            case CHART_STYLES.AREA: 
+            case CHART_STYLES.STEPLINES: 
+            case CHART_STYLES.STACKEDAREA: 
+            case CHART_STYLES.STACKEDPERCENTAREA: 
+            default:
+                return "line";
         }
     },[props.chartStyle])
 
@@ -125,7 +125,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns the data of a chart and how it should be displayed
      */
     const chartData = useMemo(() => {
-        let { chartStyle = CHART_STYLES.PIE, yColumnLabels, yColumnNames } = props;
+        let { chartStyle = CHART_STYLES.LINES, yColumnLabels, yColumnNames } = props;
         yColumnLabels = yColumnLabels || [];
         yColumnNames = yColumnNames || [];
         const primeChart = {
@@ -196,7 +196,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const {chartStyle = CHART_STYLES.PIE} = props;
+        const {chartStyle = CHART_STYLES.LINES} = props;
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 legend: {
