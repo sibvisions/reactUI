@@ -91,18 +91,24 @@ const colors = [
     '#00ff0080',
     '#ffff0080',
     '#ff00ff80',
+    '#00ffff80',
 ]
 
 function getColor(idx: number) {
     return colors[idx % colors.length];
 }
 
-function labels(from: number, to: number) {
-    const diff = to - from + 1;
-    if(isNaN(diff)) {
-        return [0, 1];
+function getLabels(values:any[]) {
+    if(values.some(v => typeof v !== 'number' || isNaN(v))) {
+        //if one of the labels is not a number return a list of the unique label values
+        return [...(new Set(values))]
+    } else {
+        //if all labels are numbers generate list from min to max
+        const from = Math.min(...values) - 1;
+        const to = Math.max(...values) + 1;
+        const diff = to - from + 1;
+        return [...Array(diff).keys()].map(k => from + k)
     }
-    return [...Array(diff).keys()].map(k => from + k);
 }
 
 /**
@@ -125,7 +131,53 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    console.log(props, providerData);
+    console.log(props.chartStyle, providerData, props)
+
+    const [data, min, max] = useMemo(() => {
+        let { yColumnNames, xColumnName, chartStyle } = props;
+        yColumnNames = yColumnNames || [];
+        xColumnName = xColumnName || 'X';
+        const labels = getLabels(providerData.map(dataRow => dataRow[xColumnName]));
+
+        const percentage = [
+            CHART_STYLES.STACKEDPERCENTAREA, 
+            CHART_STYLES.STACKEDPERCENTBARS, 
+            CHART_STYLES.STACKEDPERCENTHBARS
+        ].includes(chartStyle);
+
+        const stacked = [
+            CHART_STYLES.STACKEDAREA, 
+            CHART_STYLES.STACKEDBARS, 
+            CHART_STYLES.STACKEDHBARS,
+            CHART_STYLES.STACKEDPERCENTAREA,
+            CHART_STYLES.STACKEDPERCENTBARS,
+            CHART_STYLES.STACKEDPERCENTHBARS,
+        ].includes(chartStyle);
+
+        let data:number[][] = yColumnNames.map((name) => {
+            return providerData.reduce<number[]>((agg, dataRow) => { 
+                const lidx = labels.indexOf(dataRow[xColumnName]);
+                agg[lidx] = (agg[lidx] || 0) + dataRow[name]; 
+                return agg; 
+            }, [])
+        })
+
+        const sum = data.reduce((agg, d) => {
+            d.forEach((v, idx) => agg[idx] = (agg[idx] || 0) + v)
+            return agg;
+        }, []);
+
+        let min = 0;
+        let max = 100;
+        if (percentage) {
+            data = data.map(d => d.map((v, idx) => 100 * v / sum[idx]))
+        } else {
+            min = Math.min(0, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.min(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean));
+            max = Math.max(1, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.max(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean)) + 1;    
+        }
+
+        return [data, min, max];
+    }, [providerData, props.yColumnNames, props.xColumnName, props.chartStyle])
 
     /**
      * Chart type to be displayed
@@ -158,64 +210,6 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[props.chartStyle])
 
     /**
-     * Returns the maximum value of the data
-     * @returns max value of data
-     */
-     const getMaxDataVal = () => {
-        const stacked = [
-            CHART_STYLES.STACKEDAREA, 
-            CHART_STYLES.STACKEDBARS, 
-            CHART_STYLES.STACKEDHBARS,
-            CHART_STYLES.STACKEDPERCENTAREA,
-            CHART_STYLES.STACKEDPERCENTBARS,
-            CHART_STYLES.STACKEDPERCENTHBARS,
-        ].includes(props.chartStyle);
-        let { yColumnNames } = props;
-        yColumnNames = yColumnNames || [];
-        return providerData ? Math.max(...providerData.map(dataRow => stacked ? 
-            yColumnNames.reduce((agg, n) => agg + dataRow[n], 0) : 
-            Math.max(...yColumnNames.map(n => dataRow[n])))) + 1 : 1
-    }
-
-    /**
-     * Returns the minimum value of the data or 0
-     * @returns min value of data
-     */
-     const getMinDataVal = () => {    
-        const stacked = [
-            CHART_STYLES.STACKEDAREA, 
-            CHART_STYLES.STACKEDBARS, 
-            CHART_STYLES.STACKEDHBARS,
-            CHART_STYLES.STACKEDPERCENTAREA,
-            CHART_STYLES.STACKEDPERCENTBARS,
-            CHART_STYLES.STACKEDPERCENTHBARS,
-        ].includes(props.chartStyle);
-        let { yColumnNames } = props;
-        yColumnNames = yColumnNames || [];
-        return providerData ? Math.min(0, ...providerData.map(dataRow => stacked ? 
-            yColumnNames.reduce((agg, n) => agg + dataRow[n], 0) : 
-            Math.min(...yColumnNames.map(n => dataRow[n])))) : 0
-    }
-
-    /**
-     * Returns the maximum value on the x axis or 1
-     * @returns min value of data
-     */
-    const getMaxXVal = () => {
-        let { xColumnName } = props;
-        return providerData ? Math.max(...providerData.map(dataRow => dataRow[xColumnName])) + 1 : 1
-    }
-
-    /**
-     * Returns the minimum value on the x axis or 0
-     * @returns min value of data
-     */
-    const getMinXVal = () => {
-        let { xColumnName } = props;
-        return providerData ? Math.min(0, ...providerData.map(dataRow => dataRow[xColumnName])) : 0
-    }
-
-    /**
      * Returns the data of a chart and how it should be displayed
      * @returns the data of a chart and how it should be displayed
      */
@@ -223,13 +217,15 @@ const UIChart: FC<IChart> = (baseProps) => {
         let { chartStyle = CHART_STYLES.LINES, yColumnLabels, yColumnNames, xColumnName } = props;
         yColumnLabels = yColumnLabels || [];
         yColumnNames = yColumnNames || [];
+        xColumnName = xColumnName || 'X';
+
         const primeChart = {
-            labels: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? [...Array(providerData.length).keys()] : labels(getMinXVal(), getMaxXVal()),
+            labels: getLabels(providerData.map(dataRow => dataRow[xColumnName])),
             datasets: yColumnNames.map((name, idx) => {
                 const singleColor = getColor(idx);
                 return {
                     label: yColumnLabels[idx],
-                    data: providerData.reduce((agg, dataRow) => { agg[dataRow[xColumnName]] = dataRow[name]; return agg; }, []),
+                    data: data[idx],
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
                         [...Array(providerData.length).keys()].map((k, idx) => getColor(idx)) : singleColor,
                     borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
@@ -243,6 +239,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             })
         }
+        //console.log('charts', primeChart, providerData, xColumnName, yColumnNames);
         return primeChart
     },[providerData, props.chartStyle, props.yColumnLabels]);
 
@@ -289,8 +286,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                     CHART_STYLES.STACKEDPERCENTHBARS,
                 ].includes(chartStyle),
                 ticks: {
-                    min: getMinDataVal(),
-                    max: getMaxDataVal()
+                    min,
+                    max
                 }
             }];
 
