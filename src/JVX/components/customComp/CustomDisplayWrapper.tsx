@@ -1,8 +1,14 @@
 /** React imports */
-import React, { FC, useLayoutEffect } from "react";
+import React, { FC, PropsWithChildren, ReactElement, useLayoutEffect } from "react";
+import { ScreenContext } from "../../../frontmask/ScreenManager";
+import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
+
 
 /** This component is for library users to wrap their custom displays */
-const CustomDisplayWrapper:FC = (props) => {
+const CustomDisplayWrapper:FC<{
+    screen?: typeof WorkScreen,
+    children: (screen?: ReactElement) => ReactElement
+}> = ({screen, children, ...props}) => {
 
     /** 
      * Adds classname to parent elements of workscreen (parent of parent etc.) with flex styles 
@@ -16,6 +22,6 @@ const CustomDisplayWrapper:FC = (props) => {
         }
     })
 
-    return (<>{props.children}</>)
+    return <ScreenContext.Consumer>{({screen}) => children(screen)}</ScreenContext.Consumer>;
 }
 export default CustomDisplayWrapper
