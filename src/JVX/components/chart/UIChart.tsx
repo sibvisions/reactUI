@@ -16,7 +16,7 @@ import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
-import { jvxContext } from "src/JVX/jvxProvider";
+import { jvxContext } from "../../jvxProvider";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
