@@ -31,9 +31,7 @@ const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
     /** If there is a custom-display for this screen, check if there is a global and global should be shown, if true show global if false don't */
     if (customDisplays.has(screenId)) {
         const customDisplay = customDisplays.get(screenId)
-        console.log('have custom display', customDisplay);
         if (customDisplays.has('global') && customDisplay?.options.global){
-            console.log('use global')
             const content = <ScreenContext.Provider value={{screen}}>
                 {customDisplay?.display}
             </ScreenContext.Provider>
@@ -41,7 +39,6 @@ const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
                 {customDisplays.get('global')?.display}
             </ScreenContext.Provider>
         } else { 
-            console.log('no global')
             return <ScreenContext.Provider value={{screen}}>
                 {customDisplay?.display}
             </ScreenContext.Provider>
