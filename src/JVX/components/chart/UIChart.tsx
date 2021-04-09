@@ -65,7 +65,36 @@ enum CHART_STYLES {
     OVERLAPPEDHBARS = 1302,
     /** Style constant for showing a ring chart. */
     RING = 103,
+}
 
+const pointStyles = [
+    'rect',
+    'circle',
+    'triangle',
+    'star',
+    'cross',
+    'dash',
+    'rectRot',
+    'crossRot',
+    'line',
+    'rectRounded',
+]
+
+function getPointStyle(idx: number) {
+    return pointStyles[idx % pointStyles.length];
+}
+
+
+const colors = [
+    '#ff000080',
+    '#0000ff80',
+    '#00ff0080',
+    '#ffff0080',
+    '#ff00ff80',
+]
+
+function getColor(idx: number) {
+    return colors[idx % colors.length];
 }
 
 /**
@@ -88,7 +117,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    //console.log(props, providerData);
+    console.log(props, providerData);
 
     /**
      * Chart type to be displayed
@@ -131,16 +160,18 @@ const UIChart: FC<IChart> = (baseProps) => {
         const primeChart = {
             labels: [...Array(providerData.length).keys()],
             datasets: yColumnNames.map((name, idx) => {
-                const singleColor = tinycolor.random().toHexString();
+                const singleColor = getColor(idx);
                 return {
                     label: yColumnLabels[idx],
                     data: providerData.map(dataRow => dataRow[name]),
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
-                        [...Array(providerData.length).keys()].map(() => tinycolor.random().toHexString()) : singleColor,
-                    borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? singleColor : undefined,
+                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx)) : singleColor,
+                    borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
+                    borderWidth: 1,
                     fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
                     lineTension: 0,
-                    pointRadius: CHART_STYLES.LINES === chartStyle ? 6 : 0,
+                    pointStyle: getPointStyle(idx),
+                    pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
                     pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
                     steppedLine: CHART_STYLES.STEPLINES === chartStyle,
                 }
@@ -249,6 +280,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             }
             
             return {
+                aspectRatio: 1.3,
                 legend: {
                     position: 'bottom'
                 },
