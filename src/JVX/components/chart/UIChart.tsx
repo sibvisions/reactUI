@@ -97,6 +97,14 @@ function getColor(idx: number) {
     return colors[idx % colors.length];
 }
 
+function labels(from: number, to: number) {
+    const diff = to - from + 1;
+    if(isNaN(diff)) {
+        return [0, 1];
+    }
+    return [...Array(diff).keys()].map(k => from + k);
+}
+
 /**
  * This component displays charts with various styles
  * @param baseProps - Initial properties sent by the server for this component
@@ -150,42 +158,10 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[props.chartStyle])
 
     /**
-     * Returns the data of a chart and how it should be displayed
-     * @returns the data of a chart and how it should be displayed
-     */
-    const chartData = useMemo(() => {
-        let { chartStyle = CHART_STYLES.LINES, yColumnLabels, yColumnNames } = props;
-        yColumnLabels = yColumnLabels || [];
-        yColumnNames = yColumnNames || [];
-        const primeChart = {
-            labels: [...Array(providerData.length).keys()],
-            datasets: yColumnNames.map((name, idx) => {
-                const singleColor = getColor(idx);
-                return {
-                    label: yColumnLabels[idx],
-                    data: providerData.map(dataRow => dataRow[name]),
-                    backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
-                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx)) : singleColor,
-                    borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
-                    borderWidth: 1,
-                    fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
-                    lineTension: 0,
-                    pointStyle: getPointStyle(idx),
-                    pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
-                    pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
-                    steppedLine: CHART_STYLES.STEPLINES === chartStyle,
-                }
-            })
-        }
-        return primeChart
-    },[providerData, props.chartStyle, props.yColumnLabels]);
-
-    
-    /**
      * Returns the maximum value of the data
      * @returns max value of data
      */
-    const getMaxDataVal = () => {
+     const getMaxDataVal = () => {
         const stacked = [
             CHART_STYLES.STACKEDAREA, 
             CHART_STYLES.STACKEDBARS, 
@@ -222,12 +198,62 @@ const UIChart: FC<IChart> = (baseProps) => {
     }
 
     /**
+     * Returns the maximum value on the x axis or 1
+     * @returns min value of data
+     */
+    const getMaxXVal = () => {
+        let { xColumnName } = props;
+        return providerData ? Math.max(...providerData.map(dataRow => dataRow[xColumnName])) + 1 : 1
+    }
+
+    /**
+     * Returns the minimum value on the x axis or 0
+     * @returns min value of data
+     */
+    const getMinXVal = () => {
+        let { xColumnName } = props;
+        return providerData ? Math.min(0, ...providerData.map(dataRow => dataRow[xColumnName])) : 0
+    }
+
+    /**
+     * Returns the data of a chart and how it should be displayed
+     * @returns the data of a chart and how it should be displayed
+     */
+    const chartData = useMemo(() => {
+        let { chartStyle = CHART_STYLES.LINES, yColumnLabels, yColumnNames, xColumnName } = props;
+        yColumnLabels = yColumnLabels || [];
+        yColumnNames = yColumnNames || [];
+        const primeChart = {
+            labels: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? [...Array(providerData.length).keys()] : labels(getMinXVal(), getMaxXVal()),
+            datasets: yColumnNames.map((name, idx) => {
+                const singleColor = getColor(idx);
+                return {
+                    label: yColumnLabels[idx],
+                    data: providerData.reduce((agg, dataRow) => { agg[dataRow[xColumnName]] = dataRow[name]; return agg; }, []),
+                    backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
+                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx)) : singleColor,
+                    borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
+                    borderWidth: 1,
+                    fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
+                    lineTension: 0,
+                    pointStyle: getPointStyle(idx),
+                    pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
+                    pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
+                    steppedLine: CHART_STYLES.STEPLINES === chartStyle,
+                }
+            })
+        }
+        return primeChart
+    },[providerData, props.chartStyle, props.yColumnLabels]);
+
+    /**
      * Returns options for display mostly for legend and axes
      * @param style - chartstyle pie, bar...
      * @returns options for display
      */
     const options = useMemo(() => {
         const {chartStyle = CHART_STYLES.LINES} = props;
+        
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 legend: {
