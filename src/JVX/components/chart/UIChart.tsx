@@ -6,7 +6,6 @@ import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
 
 /** 3rd Party imports */
 import {Chart} from 'primereact/chart';
-import tinycolor from 'tinycolor2';
 
 /** Hook imports */
 import useProperties from "../zhooks/useProperties";
@@ -30,6 +29,7 @@ export interface IChart extends BaseComponent {
     xAxisTitle: string
     yAxisTitle: string
     data: Array<Array<any>>
+    title: string
 }
 
 /** 
@@ -155,6 +155,13 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.STACKEDPERCENTHBARS,
         ].includes(chartStyle);
 
+        const horizontal = [
+            CHART_STYLES.HBARS,
+            CHART_STYLES.STACKEDHBARS,
+            CHART_STYLES.STACKEDPERCENTHBARS,
+            CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
         let data:number[][] = yColumnNames.map((name) => {
             return providerData.reduce<number[]>((agg, dataRow) => { 
                 const lidx = labels.indexOf(dataRow[xColumnName]);
@@ -175,6 +182,13 @@ const UIChart: FC<IChart> = (baseProps) => {
         } else {
             min = Math.min(0, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.min(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean));
             max = Math.max(1, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.max(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean)) + 1;    
+        }
+
+        if (horizontal) {
+            data.forEach(d => {
+                d.reverse();
+                d.unshift(0);
+            });
         }
 
         return [data, min, max];
@@ -220,11 +234,27 @@ const UIChart: FC<IChart> = (baseProps) => {
         yColumnNames = yColumnNames || [];
         xColumnName = xColumnName || 'X';
 
+        const overlapped = [
+            CHART_STYLES.OVERLAPPEDBARS,
+            CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
+        const horizontal = [
+            CHART_STYLES.HBARS,
+            CHART_STYLES.STACKEDHBARS,
+            CHART_STYLES.STACKEDPERCENTHBARS,
+            CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
+        const labels = getLabels(providerData.map(dataRow => dataRow[xColumnName]));
+
         const primeChart = {
-            labels: getLabels(providerData.map(dataRow => dataRow[xColumnName])),
+            labels: horizontal ? labels.reverse() : labels,
             datasets: yColumnNames.map((name, idx) => {
                 const singleColor = getColor(idx);
+                const axisID = overlapped ? `axis-${idx}` : "axis-0";
                 return {
+                    ...(horizontal ? { yAxisID: axisID } : { xAxisID: axisID }),
                     label: yColumnLabels[idx],
                     data: data[idx],
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
@@ -250,7 +280,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle } = props;
+        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle, yColumnNames, title: chartTitle } = props;
         
         const percentage = [
             CHART_STYLES.STACKEDPERCENTAREA, 
@@ -258,48 +288,70 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.STACKEDPERCENTHBARS
         ].includes(chartStyle);
 
+        const overlapped = [
+            CHART_STYLES.OVERLAPPEDBARS,
+            CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
+        const stacked = [
+            CHART_STYLES.STACKEDAREA, 
+            CHART_STYLES.STACKEDBARS, 
+            CHART_STYLES.STACKEDHBARS,
+            CHART_STYLES.STACKEDPERCENTAREA,
+            CHART_STYLES.STACKEDPERCENTBARS,
+            CHART_STYLES.STACKEDPERCENTHBARS,
+        ].includes(chartStyle);
+
+        const title = {
+            display: true,
+            text: chartTitle,
+        }
+
+        const preferredSize = parseJVxSize(props.preferredSize) || parseJVxSize(props.maximumSize) || {width: 1.3, height: 1};
+        const aspectRatio = preferredSize.width / preferredSize.height;
+
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
+                title,
+                aspectRatio,
                 legend: {
                     display: false
                 }
             }
         } else {
-            let xAxes:any[] = [{
+            let xAxes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
+                id: `axis-${idx}`,
+                display: !idx,
                 scaleLabel: {
                     display: true,
                     labelString: xAxisTitle,
                 },
-                stacked: [
-                    CHART_STYLES.STACKEDAREA, 
-                    CHART_STYLES.STACKEDBARS, 
-                    CHART_STYLES.STACKEDHBARS,
-                    CHART_STYLES.STACKEDPERCENTAREA,
-                    CHART_STYLES.STACKEDPERCENTBARS,
-                    CHART_STYLES.STACKEDPERCENTHBARS,
-                ].includes(chartStyle),
+                stacked,
                 ticks: {
                     callback: (value:any) => {
                         //truncate
                         value = value.toString();
                         return value.length > 12 ? `${value.substr(0, 10)}...` : value
                     } 
-                }
-            }];
+                },
+                //apparently bar chart defaults are only set correctly for the first axis
+                ...(!idx ? {
+                    type: 'category',
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8,
+                    gridLines: {
+                      offsetGridLines: false
+                    },
+                    offset: false
+                } : {}),
+            }));
 
             let yAxes:any[] = [{
                 scaleLabel: {
                     display: true,
                     labelString: yAxisTitle,
                 },
-                stacked: [
-                    CHART_STYLES.STACKEDAREA, 
-                    CHART_STYLES.STACKEDBARS, 
-                    CHART_STYLES.STACKEDHBARS,
-                    CHART_STYLES.STACKEDPERCENTAREA,
-                    CHART_STYLES.STACKEDPERCENTBARS,
-                    CHART_STYLES.STACKEDPERCENTHBARS,
-                ].includes(chartStyle),
+                stacked,
                 ticks: {
                     min,
                     max,
@@ -317,11 +369,10 @@ const UIChart: FC<IChart> = (baseProps) => {
                 xAxes = yAxes;
                 yAxes = t;
             }
-            
-            const preferredSize = parseJVxSize(props.preferredSize) || parseJVxSize(props.maximumSize) || {width: 1.3, height: 1};
 
             return {
-                aspectRatio: preferredSize.width / preferredSize.height,
+                title,
+                aspectRatio,
                 legend: {
                     position: 'bottom'
                 },
