@@ -302,6 +302,13 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.STACKEDPERCENTHBARS,
         ].includes(chartStyle);
 
+        const horizontal = [
+            CHART_STYLES.HBARS,
+            CHART_STYLES.STACKEDHBARS,
+            CHART_STYLES.STACKEDPERCENTHBARS,
+            CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
         const title = {
             display: true,
             text: chartTitle,
@@ -334,15 +341,15 @@ const UIChart: FC<IChart> = (baseProps) => {
                         return value.length > 12 ? `${value.substr(0, 10)}...` : value
                     } 
                 },
+                offset: false,
+                gridLines: {
+                    offsetGridLines: false
+                },
                 //apparently bar chart defaults are only set correctly for the first axis
-                ...(!idx ? {
+                ...(idx ? {
                     type: 'category',
                     barPercentage: 0.9,
                     categoryPercentage: 0.8,
-                    gridLines: {
-                      offsetGridLines: false
-                    },
-                    offset: false
                 } : {}),
             }));
 
@@ -359,12 +366,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             }];
 
-            if ([
-                CHART_STYLES.HBARS,
-                CHART_STYLES.STACKEDHBARS,
-                CHART_STYLES.STACKEDPERCENTHBARS,
-                CHART_STYLES.OVERLAPPEDHBARS,
-            ].includes(chartStyle)) {
+            if (horizontal) {
                 const t = xAxes;
                 xAxes = yAxes;
                 yAxes = t;
