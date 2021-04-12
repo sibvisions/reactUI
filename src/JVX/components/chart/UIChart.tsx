@@ -1,4 +1,5 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
+// https://github.com/chartjs/Chart.js/issues/5224
 
 /** React imports */
 import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
@@ -26,8 +27,8 @@ export interface IChart extends BaseComponent {
     xColumnLabel: string
     yColumnNames: string[]
     yColumnLabels: string[]
-    xAxistTitle: string
-    yAxistTitle: string
+    xAxisTitle: string
+    yAxisTitle: string
     data: Array<Array<any>>
 }
 
@@ -131,7 +132,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    console.log(props.chartStyle, providerData, props)
+    console.log(props.chartStyle, providerData, props, layoutValue)
 
     const [data, min, max] = useMemo(() => {
         let { yColumnNames, xColumnName, chartStyle } = props;
@@ -249,7 +250,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const {chartStyle = CHART_STYLES.LINES} = props;
+        const {chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle} = props;
         
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
@@ -259,6 +260,10 @@ const UIChart: FC<IChart> = (baseProps) => {
             }
         } else {
             let xAxes:any[] = [{
+                scaleLabel: {
+                    display: true,
+                    labelString: xAxisTitle,
+                },
                 stacked: [
                     CHART_STYLES.STACKEDAREA, 
                     CHART_STYLES.STACKEDBARS, 
@@ -277,6 +282,10 @@ const UIChart: FC<IChart> = (baseProps) => {
             }];
 
             let yAxes:any[] = [{
+                scaleLabel: {
+                    display: true,
+                    labelString: yAxisTitle,
+                },
                 stacked: [
                     CHART_STYLES.STACKEDAREA, 
                     CHART_STYLES.STACKEDBARS, 
@@ -302,8 +311,10 @@ const UIChart: FC<IChart> = (baseProps) => {
                 yAxes = t;
             }
             
+            const preferredSize = parseJVxSize(props.preferredSize) || parseJVxSize(props.maximumSize) || {width: 1.3, height: 1};
+
             return {
-                aspectRatio: 1.3,
+                aspectRatio: preferredSize.width / preferredSize.height,
                 legend: {
                     position: 'bottom'
                 },
@@ -317,8 +328,16 @@ const UIChart: FC<IChart> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (chartRef.current)
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), chartRef.current, onLoadCallback)
+        if (chartRef.current) {
+            sendOnLoadCallback(
+                id, 
+                parseJVxSize(props.preferredSize), 
+                parseJVxSize(props.maximumSize), 
+                parseJVxSize(props.minimumSize), 
+                chartRef.current, 
+                onLoadCallback
+            )
+        }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
