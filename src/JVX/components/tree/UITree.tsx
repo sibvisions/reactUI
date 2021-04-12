@@ -119,6 +119,43 @@ const UITree: FC<ITree> = (baseProps) => {
         return dataPage?.get(value.toString());
     }
 
+    const sendTreeFetch = (dataArray:any[], prevNode:any|undefined, nodesList:any[], single:boolean) => {
+        const tempTreeMap:Map<string, any> = new Map<string, any>();
+
+        const parentPath = prevNode ? new TreePath(JSON.parse(prevNode.key)) : new TreePath();
+
+        const fetchDataPage = getDataBook(single ? parentPath.length() : parentPath.length()+1);
+        const currDataBook = single ? undefined : getDataBook(parentPath.length());
+        const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
+
+        let selectedResponse:FetchResponse;
+        let selectedChildren:any[];
+        let selectedNode:any;
+
+        return new Promise<any>((resolve) => {
+            const promises = dataArray.map((data, i) => {
+                if (metaData !== undefined && metaData.masterReference !== undefined) {
+                    const pkValues = data[metaData.masterReference.referencedColumnNames[0]];
+                    if (!providedData.get(fetchDataPage).has(pkValues.toString())
+                        && (isSelfJoined(fetchDataPage) || parentPath.length() + (single ? 0 : 1) < props.dataBooks.length)) {
+                        const fetchReq = createFetchRequest();
+                        fetchReq.dataProvider = fetchDataPage;
+                        fetchReq.filter = {
+                            columnNames: metaData.masterReference.columnNames,
+                            values: [pkValues]
+                        }
+                        return context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
+                            .then((response:any) => response.json())
+                            .then((fetchResponse:FetchResponse[]) => {
+                                context.server.processFetch(fetchResponse[0], pkValues.toString());
+                                const builtData = context.server.buildDatasets(fetchResponse[0]);
+                            })
+                    }
+                }
+            })
+        })
+    }
+
     const sendTreeFetchSingle = (fetchObj: any, prevNode: any) => {
         const tempTreeMap: Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(prevNode.key));
@@ -195,6 +232,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 const addedNode = {
                     key: path.toString(),
                     label: data[metaData!.columnView_table_[0]],
+                    leaf: false
                 }
                 if (metaData !== undefined && metaData.masterReference !== undefined) {
                     const pkValues = data[metaData.masterReference.referencedColumnNames[0]];
@@ -211,6 +249,9 @@ const UITree: FC<ITree> = (baseProps) => {
                             .then((fetchResponse:FetchResponse[]) => {
                                 context.server.processFetch(fetchResponse[0], pkValues.toString());
                                 const builtData = context.server.buildDatasets(fetchResponse[0]);
+                                if (!builtData.length) {
+                                    addedNode.leaf = true
+                                }
                                 if (_.isEqual(selectedRows.get(currDataBook), data)) {
                                     selectedResponse = fetchResponse[0];
                                     selectedChildren = builtData;
@@ -232,7 +273,6 @@ const UITree: FC<ITree> = (baseProps) => {
             .then((results:any[]) => {
                 results.forEach(result => {
                     if (result.status === "fulfilled") {
-                        result.value.node.leaf = providedData.get(result.value.dataPage).get(tempTreeMap.get(result.value.node.key).toString()).length === 0;
                         if (!prevNode) {
                             nodesList.push(result.value.node)
                         }
