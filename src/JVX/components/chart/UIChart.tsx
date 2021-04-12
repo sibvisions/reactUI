@@ -99,8 +99,12 @@ function getColor(idx: number) {
     return colors[idx % colors.length];
 }
 
+function someNaN(values:any[]) {
+    return values && values.some(v => typeof v !== 'number' || isNaN(v));
+}
+
 function getLabels(values:any[]) {
-    if(values.some(v => typeof v !== 'number' || isNaN(v))) {
+    if(someNaN(values)) {
         //if one of the labels is not a number return a list of the unique label values
         return [...(new Set(values))]
     } else {
@@ -132,13 +136,15 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    console.log(props.chartStyle, providerData, props, layoutValue)
+    //console.log(props.chartStyle, providerData, props, layoutValue)
 
     const [data, min, max] = useMemo(() => {
         let { yColumnNames, xColumnName, chartStyle } = props;
         yColumnNames = yColumnNames || [];
         xColumnName = xColumnName || 'X';
-        const labels = getLabels(providerData.map(dataRow => dataRow[xColumnName]));
+        const row = providerData.map(dataRow => dataRow[xColumnName]);
+        const labels = getLabels(row);
+        const stringLabels = someNaN(row);
 
         const percentage = [
             CHART_STYLES.STACKEDPERCENTAREA, 
@@ -160,6 +166,11 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.STACKEDHBARS,
             CHART_STYLES.STACKEDPERCENTHBARS,
             CHART_STYLES.OVERLAPPEDHBARS,
+        ].includes(chartStyle);
+
+        const pie = [
+            CHART_STYLES.PIE,
+            CHART_STYLES.RING,
         ].includes(chartStyle);
 
         let data:number[][] = yColumnNames.map((name) => {
@@ -184,14 +195,14 @@ const UIChart: FC<IChart> = (baseProps) => {
             max = Math.max(1, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.max(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean)) + 1;    
         }
 
-        if (horizontal) {
+        if (horizontal && !stringLabels) {
             data.forEach(d => {
                 d.reverse();
                 d.unshift(0);
             });
         }
 
-        return [data, min, max];
+        return [pie && data.length > 1 ? [data.map(d => d.reduce((agg, v) => agg + v, 0))] : data, min, max];
     }, [providerData, props.yColumnNames, props.xColumnName, props.chartStyle])
 
     /**
@@ -246,11 +257,18 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.OVERLAPPEDHBARS,
         ].includes(chartStyle);
 
-        const labels = getLabels(providerData.map(dataRow => dataRow[xColumnName]));
+        const pie = [
+            CHART_STYLES.PIE,
+            CHART_STYLES.RING,
+        ].includes(chartStyle);
+
+        const rows = providerData.map(dataRow => dataRow[xColumnName]);
+        const labels = getLabels(rows);
+        const stringLabels = someNaN(rows);
 
         const primeChart = {
-            labels: horizontal ? labels.reverse() : labels,
-            datasets: yColumnNames.map((name, idx) => {
+            labels: (horizontal && !stringLabels) ? labels.reverse() : labels,
+            datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
                 return {
@@ -280,7 +298,7 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle, yColumnNames, title: chartTitle } = props;
+        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle, yColumnNames, xColumnName, title: chartTitle } = props;
         
         const percentage = [
             CHART_STYLES.STACKEDPERCENTAREA, 
@@ -317,6 +335,8 @@ const UIChart: FC<IChart> = (baseProps) => {
         const preferredSize = parseJVxSize(props.preferredSize) || parseJVxSize(props.maximumSize) || {width: 1.3, height: 1};
         const aspectRatio = preferredSize.width / preferredSize.height;
 
+        const stringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
+
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 title,
@@ -341,14 +361,14 @@ const UIChart: FC<IChart> = (baseProps) => {
                         return value.length > 12 ? `${value.substr(0, 10)}...` : value
                     } 
                 },
-                offset: false,
+                offset: stringLabels,
                 gridLines: {
-                    offsetGridLines: false
+                    offsetGridLines: stringLabels
                 },
                 //apparently bar chart defaults are only set correctly for the first axis
                 ...(idx ? {
                     type: 'category',
-                    barPercentage: 0.9,
+                    barPercentage: stringLabels ? (0.9 - (idx * 0.15)) : 0.9,
                     categoryPercentage: 0.8,
                 } : {}),
             }));
@@ -375,6 +395,9 @@ const UIChart: FC<IChart> = (baseProps) => {
             return {
                 title,
                 aspectRatio,
+                labels: {
+                    usePointStyle: true,
+                },
                 legend: {
                     position: 'bottom'
                 },
