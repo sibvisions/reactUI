@@ -250,8 +250,14 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const {chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle} = props;
+        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle } = props;
         
+        const percentage = [
+            CHART_STYLES.STACKEDPERCENTAREA, 
+            CHART_STYLES.STACKEDPERCENTBARS, 
+            CHART_STYLES.STACKEDPERCENTHBARS
+        ].includes(chartStyle);
+
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 legend: {
@@ -296,7 +302,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                 ].includes(chartStyle),
                 ticks: {
                     min,
-                    max
+                    max,
+                    ...(percentage ? {callback: (value:any) => `${value}%`} : {})
                 }
             }];
 
