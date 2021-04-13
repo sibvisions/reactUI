@@ -305,7 +305,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             onBlur={() => {
                 /** On blur, close the dropdownmenu and set the cache to start */
                 if (document.querySelector(".p-autocomplete-panel")) {
-                    (document.querySelector(".p-autocomplete-dropdown") as HTMLElement).click()
                     setFirstRow(0);
                     setLastRow(100)
                 }
