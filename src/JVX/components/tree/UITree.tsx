@@ -301,7 +301,6 @@ const UITree: FC<ITree> = (baseProps) => {
             dataBookIndex++
             if (single) {
                 if (dataBookIndex < props.dataBooks.length) {
-                    console.log(fetchObj)
                     sendTreeFetch([fetchObj], selectedNode, nodes, true)
                     .then((res:any) => {
                         setTreeData(prevState => new Map([...prevState, ...res.treeMap]));
@@ -315,7 +314,34 @@ const UITree: FC<ITree> = (baseProps) => {
                 if (dataBookIndex < props.dataBooks.length) { 
                     sendTreeFetch(fetchObj, selectedNode, tempNodes, false)
                     .then((res:any) => {
-                        setTreeData(prevState => new Map([...prevState, ...res.treeMap]));
+                        if (dataBookIndex + 1 === props.dataBooks.length) {
+                            res.builtData.forEach((data:any, i:number) => {
+                                const path = new TreePath(JSON.parse(res.selectedNode.key)).getChildPath(i);
+                                const metaData = getMetaData(compId, getDataBook(path.length()-1), context.contentStore);
+                                tempTreeMap.set(path.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
+                                res.selectedNode.children = res.selectedNode.children ? res.selectedNode.children : []
+                                res.selectedNode.children.push({
+                                    key: path.toString(),
+                                    label: data[metaData!.columnView_table_[0]],
+                                    leaf: true
+                                })
+                                if (res.response.selectedRow === i) {
+                                    setSelectedKey(path.toString());
+                                    const expKeysObj:any = {}
+                                    let loopPath = path
+                                    while (loopPath.length() !== 0) {
+                                        expKeysObj[loopPath.toString()] = true;
+                                        loopPath = loopPath.getParentPath();
+                                    }
+                                    setExpandedKeys(expKeysObj);
+                                }
+                            })
+                            setTreeData(prevState => new Map([...prevState, ...res.treeMap, ...tempTreeMap]))
+                        }
+                        else {
+                            setTreeData(prevState => new Map([...prevState, ...res.treeMap]));
+                        }
+                        
                         if (res.response !== undefined && res.response.selectedRow !== -0x80000000 && res.response.selectedRow !== -1) {
                             return initRecursive(res.builtData, res.selectedNode, false, dataBookIndex);
                         }    
