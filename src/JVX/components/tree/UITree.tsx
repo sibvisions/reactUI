@@ -125,17 +125,27 @@ const UITree: FC<ITree> = (baseProps) => {
         const parentPath = prevNode ? new TreePath(JSON.parse(prevNode.key)) : new TreePath();
 
         const fetchDataPage = getDataBook(single ? parentPath.length() : parentPath.length()+1);
-        const currDataBook = single ? undefined : getDataBook(parentPath.length());
+        const currDataBook = single ? fetchDataPage : getDataBook(parentPath.length());
         const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
 
         let selectedResponse:FetchResponse;
         let selectedChildren:any[];
         let selectedNode:any;
 
+        const getNodeToAdd = (key:string, label:string, leaf:boolean) => {
+            return {
+                key: key,
+                label: label,
+                leaf: leaf
+            }
+        }
+
         return new Promise<any>((resolve) => {
             const promises = dataArray.map((data, i) => {
+                let path = parentPath.getChildPath(i);
                 if (metaData !== undefined && metaData.masterReference !== undefined) {
                     const pkValues = data[metaData.masterReference.referencedColumnNames[0]];
+                    let nodeLabel = data[metaData.columnView_table_[0]];
                     if (!providedData.get(fetchDataPage).has(pkValues.toString())
                         && (isSelfJoined(fetchDataPage) || parentPath.length() + (single ? 0 : 1) < props.dataBooks.length)) {
                         const fetchReq = createFetchRequest();
@@ -149,6 +159,32 @@ const UITree: FC<ITree> = (baseProps) => {
                             .then((fetchResponse:FetchResponse[]) => {
                                 context.server.processFetch(fetchResponse[0], pkValues.toString());
                                 const builtData = context.server.buildDatasets(fetchResponse[0]);
+                                let treeMapValue = pkValues;
+                                let addedNode;
+                                if (single) {
+                                    if (!builtData.length) {
+                                        prevNode.leaf = true;
+                                    }
+                                    builtData.forEach((bData, i) => {
+                                        path = parentPath.getChildPath(i);
+                                        nodeLabel = bData[metaData!.columnView_table_[0]];
+                                        prevNode.children = prevNode.children ? prevNode.children : [];
+                                        addedNode = getNodeToAdd(path.toString(), nodeLabel, fetchDataPage === props.dataBooks[props.dataBooks.length - 1]);
+                                        treeMapValue = bData[metaData!.masterReference!.referencedColumnNames[0]];
+                                        if (_.isEqual(selectedRows.get(currDataBook), bData)) {
+                                            selectedNode = addedNode
+                                        }
+                                    });
+                                }
+                                else {
+                                    addedNode = getNodeToAdd(path.toString(), nodeLabel, builtData.length === 0);
+                                    if (_.isEqual(selectedRows.get(currDataBook), data)) {
+                                        selectedResponse = fetchResponse[0];
+                                        selectedChildren = builtData;
+                                        selectedNode = addedNode
+                                    }
+                                }
+                                tempTreeMap.set(path.toString(), treeMapValue);
                             })
                     }
                 }

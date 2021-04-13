@@ -25,7 +25,7 @@ const Dummy: FC<BaseComponent> = (props) => {
 
     return(
         <span ref={ref} style={layoutValue.get(props.id)}>
-           Iam a Dummy
+           Unsupported UI Component
         </span>
     )
 }

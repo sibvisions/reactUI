@@ -76,7 +76,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         if (onLoadCallback && preferredCompSizes && preferredCompSizes.size > 0 && props.selectedIndex !== -1) {
             const selectedPanel = preferredCompSizes.get(components[(props.selectedIndex as number)].props.id);
             if (selectedPanel) {
-                const prefSize:Size = {height: selectedPanel.height, width: selectedPanel.width};
+                const prefSize:Size = {height: selectedPanel.height + 48, width: selectedPanel.width};
                 sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
             }
                 

@@ -84,7 +84,7 @@ class Server {
      * @param endpoint - the endpoint to send the request to
      */
     sendRequest(request: any, endpoint: string){
-        this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 2000)
+        this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 5000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
             .catch(error => console.error(error));

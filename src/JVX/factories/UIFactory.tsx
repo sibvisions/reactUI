@@ -370,6 +370,7 @@ const classNameMapper = new Map<string, Function>()
     .set("Chart", createChart)
     .set("Map", createMap)
     .set("Tree", createTree)
+    .set("Gauge", createDummy)
 
 /**
  * Returns the function to build the component
@@ -381,6 +382,6 @@ export const componentHandler = (component: BaseComponent) => {
     if(builder) {
         return builder(component);
     } else {
-        return createDummy(component)
+        return <div> </div>
     }
 }
