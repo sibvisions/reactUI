@@ -5,6 +5,7 @@ import React, {createContext, FC, useState} from "react";
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { useHistory } from "react-router";
 
 /** Type for jvxContext */
 type jvxContextType={
@@ -40,16 +41,16 @@ export const jvxContext = createContext<jvxContextType>(initValue)
  * @param param0 - the children
  */
 const JVXProvider: FC = ({children}) => {
+    const history = useHistory()
 
     /** Sets the initial state */
     const initState = (): jvxContextType => {
         // const setTheme = (newTheme: string) => {
         //     setContextState({...contextState, theme: newTheme});
         // }
-
         const contentStore = new ContentStore();
-        const subscriptions = new SubscriptionManager(contentStore)
-        const server = new Server(contentStore, subscriptions);
+        const subscriptions = new SubscriptionManager(contentStore);
+        const server = new Server(contentStore, subscriptions, history);
         
         contentStore.setsubscriptionManager(subscriptions)
 

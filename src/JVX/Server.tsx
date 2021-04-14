@@ -27,6 +27,7 @@ import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { History } from "history";
 
 /** Type for query */
 type queryType = {
@@ -43,9 +44,10 @@ class Server {
      * @constructor constructs server instance
      * @param store - contentstore instance
      */
-    constructor(store: ContentStore, subManager:SubscriptionManager) {
+    constructor(store: ContentStore, subManager:SubscriptionManager, history?: History<any>) {
         this.contentStore = store
         this.subManager = subManager
+        this.history = history;
     }
 
     /** Application name */
@@ -58,6 +60,8 @@ class Server {
     contentStore: ContentStore;
     /** subscriptionManager instance */
     subManager:SubscriptionManager;
+    /** the react routers history object */
+    history?:History<any>;
     /**
      * Function to show a toast
      * @param message - message to show
@@ -468,10 +472,11 @@ class Server {
                const CSResponse = (response as CloseScreenResponse);
                let wasPopup:boolean = false;
                for (let entry of this.contentStore.flatContent.entries()) {
-                   if (entry[1].name === CSResponse.componentId) {
+                    if (entry[1].name === CSResponse.componentId) {
                        this.contentStore.closeScreen(entry[1].name);
                        if ((entry[1] as Panel).screen_modal_)
                             wasPopup = true;
+                       break; //quit loop because there might be a new screen of the same type
                    }
                }
                if(highestPriority < 1 && !wasPopup){
@@ -492,8 +497,8 @@ class Server {
 
 
         if(routeTo){
-            window.location.hash = "/"+routeTo
-            // history.push();//
+            //window.location.hash = "/"+routeTo
+            this.history?.push(`/${routeTo}`);
         }
     }
 }

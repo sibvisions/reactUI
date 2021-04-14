@@ -109,23 +109,31 @@ export default class ContentStore{
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
             const isCustom:boolean = this.customContent.has(newComponent.name as string);
-            existingComponent = this.flatContent.get(newComponent.id) || this.replacedContent.get(newComponent.id) || 
-                                this.removedContent.get(newComponent.id) || this.removedCustomContent.get(newComponent.id);
+            existingComponent = this.flatContent.get(newComponent.id) || 
+                                this.replacedContent.get(newComponent.id) || 
+                                this.removedContent.get(newComponent.id) || 
+                                this.removedCustomContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id)){
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))){
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
-                    this.flatContent.set(newComponent.id, existingComponent as BaseComponent);
+                    this.flatContent.set(newComponent.id, existingComponent);
                 }
                 else {
                     this.removedCustomContent.delete(newComponent.id);
-                    this.replacedContent.set(newComponent.id, existingComponent as BaseComponent);
+                    this.replacedContent.set(newComponent.id, existingComponent);
                 }
             }
 
             /** Add parent of newComponent to notifyList */
-            if(newComponent.parent || newComponent["~remove"] || newComponent["~destroy"] || newComponent.visible !== undefined || newComponent.constraints){
+            if (
+                newComponent.parent || 
+                newComponent["~remove"] || 
+                newComponent["~destroy"] || 
+                newComponent.visible !== undefined || 
+                newComponent.constraints
+            ){
                 //Double add??
                 notifyList.push(existingComponent?.parent || "");
                 if(newComponent.parent)
@@ -166,8 +174,15 @@ export default class ContentStore{
                 this.flatContent.set(newComponent.id, newComponent);
             }
             else {
-                const newComp:BaseComponent = {id: newComponent.id, parent: newComponent.parent, constraints: newComponent.constraints, name: newComponent.name,
-                                               preferredSize: newComponent.preferredSize, minimumSize: newComponent.minimumSize, maximumSize: newComponent.maximumSize};
+                const newComp:BaseComponent = {
+                    id: newComponent.id, 
+                    parent: newComponent.parent, 
+                    constraints: newComponent.constraints, 
+                    name: newComponent.name,
+                    preferredSize: newComponent.preferredSize, 
+                    minimumSize: newComponent.minimumSize, 
+                    maximumSize: newComponent.maximumSize
+                };
                 this.replacedContent.set(newComponent.id, newComp)
             }
             
@@ -178,15 +193,15 @@ export default class ContentStore{
              * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
              * to the navigation-name, if not, don't add anything, and call setNavigationName
              */
-            if ((newComponent as Panel).screen_navigationName_) {
+            if (newCompAsPanel.screen_navigationName_) {
                 let increment:number|string = 0;
                 for (let value of this.navigationNames.values()) {
                     if (value.replace(/\s\d+$/, '') === newCompAsPanel.screen_navigationName_)
                         increment++
                 }
-                if (increment === 0 || (increment === 1 && this.navigationNames.has(newCompAsPanel.name as string)))
+                if (increment === 0 || (increment === 1 && this.navigationNames.has(newCompAsPanel.name)))
                     increment = ''
-                this.setNavigationName(newCompAsPanel.name as string, newCompAsPanel.screen_navigationName_ as string + increment.toString())
+                this.setNavigationName(newCompAsPanel.name, newCompAsPanel.screen_navigationName_ + increment.toString())
             }
 
             /** If newComponent has property screen_modal tell the popUpSubscribers to show the component as a popup*/

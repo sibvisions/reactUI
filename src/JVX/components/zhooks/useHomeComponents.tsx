@@ -22,10 +22,15 @@ const useHomeComponents = (componentId:string) => {
         if (context.contentStore.getWindow(compId))
             tempArray.push(context.contentStore.getWindow(compId));
         return tempArray
-    },[context.contentStore])
+    }, [context.contentStore])
 
     /** Current state of the built screens which will be displayed */
     const [homeChildren, setHomeChildren] = useState<Array<ReactElement>>(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
+
+    /* if the screen in the store changed update the child components */
+    useEffect(() => {
+        setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)))
+    }, [context.contentStore.getComponentByName(getScreenIdFromNavigation(componentId, context.contentStore))])
 
     /** 
      * Subscribes to popupChange which either adds a popup to the current homechildren, or removes a popup
