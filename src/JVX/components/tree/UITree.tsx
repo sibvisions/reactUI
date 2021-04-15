@@ -138,7 +138,7 @@ const UITree: FC<ITree> = (baseProps) => {
             }
         }
 
-        const addNodesToParent = (node:any, builtData:any[], path:TreePath, pSelectedRow:number, parentData?:any) => {
+        const addNodesToParent = (node:any, builtData:any[], path:TreePath, pSelectedRow:number) => {
             node.leaf = builtData.length === 0;
             builtData.forEach((data, i) => {
                 const childPath = path.getChildPath(i);
@@ -147,8 +147,8 @@ const UITree: FC<ITree> = (baseProps) => {
                 node.children = node.children ? node.children : [];
                 node.children.push(newNode);
                 tempTreeMap.set(childPath.toString(), data[metaData!.masterReference!.referencedColumnNames[0]]);
-                if (_.isEqual(selectedRows.get(currDataBook), parentData ? parentData : data)) {
-                    addedNodes.set(childPath.toString(), newNode);
+                addedNodes.set(childPath.toString(), newNode);
+                if (pSelectedRow === i) {
                     selectedRow = pSelectedRow;
                     selectedChildren = builtData;
                 }
@@ -159,7 +159,6 @@ const UITree: FC<ITree> = (baseProps) => {
             const promises = dataArray.map((data, i) => {
                 const currPath = parentPath.getChildPath(i);
                 const currNode = nodesMap.size > 0 ? (nodesMap.size === 1 ? nodesMap.entries().next().value[1] : nodesMap.get(currPath.toString())) : undefined;
-
                 if (metaData !== undefined && metaData.masterReference !== undefined) {
                     const pkValues = data[metaData.masterReference.referencedColumnNames[0]];
 
@@ -177,7 +176,7 @@ const UITree: FC<ITree> = (baseProps) => {
                             .then((fetchResponse:FetchResponse[]) => {
                                 const builtData = context.server.buildDatasets(fetchResponse[0]);
                                 context.server.processFetch(fetchResponse[0], pkValues.toString());
-                                addNodesToParent(currNode, builtData, single ? parentPath : currPath, fetchResponse[0].selectedRow, !single ? data : undefined);
+                                addNodesToParent(currNode, builtData, single ? parentPath : currPath, fetchResponse[0].selectedRow);
                             })
                     }
                     else {
@@ -246,47 +245,50 @@ const UITree: FC<ITree> = (baseProps) => {
         const firstLvlData = providedData.get(props.dataBooks[0]).get("current") as any[];
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const tempNodes:any[] = [];
+        const tempExpKeys:any = {}
+        let tempSelectedKey:any;
 
         const initRecursive = (fetchObj:any|any[], single:boolean, dataBookIndex:number, nodesMap:Map<string, any>) => {
             dataBookIndex++
-            if (single) {
-                if (dataBookIndex < props.dataBooks.length) {
-                    sendTreeFetch([fetchObj], true, nodesMap)
-                    .then((res:any) => {
-                        setTreeData(prevState => new Map([...prevState, ...res.treeMap]));
-                        if (res.selectedRow !== -0x80000000 && res.selectedRow !== -1) {
-                            return initRecursive(res.builtData[res.selectedRow], true, dataBookIndex, res.nodesMap);
-                        }    
-                    });
-                }
-            }
-            else {
-                if (dataBookIndex < props.dataBooks.length) { 
-                    sendTreeFetch(fetchObj, false, nodesMap)
-                    .then((res:any) => {
-                        if (dataBookIndex === props.dataBooks.length - 1) {
-                            const nodeEntries = res.nodesMap.entries()
-                            let entry = nodeEntries.next();
-                            while (!entry.done) {
-                                let path = new TreePath(JSON.parse(entry.value[0]))
-                                if (path.getLast() === res.selectedRow) {
-                                    const expKeysObj:any = {}
-                                    while (path.length()) {
-                                        expKeysObj[path.toString()] = true;
-                                        path = path.getParentPath();
-                                    }
-                                    setExpandedKeys(expKeysObj);
-                                    setSelectedKey(entry.value[0]);
+            if (dataBookIndex < props.dataBooks.length) {
+                sendTreeFetch(single ? [fetchObj] : fetchObj, single, nodesMap)
+                .then((res:any) => {
+                    const newNodesMap = new Map<string, any>()
+                    for (let [key, value] of res.nodesMap) {
+                        if (new TreePath(JSON.parse(key)).getLastOfParent() === selectedRows.get(props.dataBooks[dataBookIndex-1]).selectedIndex) {
+                            if (single) {
+                                if (new TreePath(JSON.parse(key)).getLast() === res.selectedRow) {
+                                    newNodesMap.set(key, value);
                                 }
-                                entry = nodeEntries.next();
+                            }
+                            else {
+                                newNodesMap.set(key, value);
                             }
                         }
-                        setTreeData(prevState => new Map([...prevState, ...tempTreeMap, ...res.treeMap]))
-                        if (res.selectedRow !== -0x80000000 && res.selectedRow !== -1) {
-                            return initRecursive(res.builtData, false, dataBookIndex, res.nodesMap);
-                        }    
-                    });
-                }
+                    }
+                    const nodeEntries = newNodesMap.entries()
+                    let entry = nodeEntries.next();
+                    while (!entry.done) {
+                        let path = new TreePath(JSON.parse(entry.value[0]))
+                        if (path.getLast() === res.selectedRow) {
+                            tempExpKeys[path.toString()] = true;
+                            tempSelectedKey = path.toString();
+                        }
+                        entry = nodeEntries.next();
+                    }
+                    setTreeData(prevState => new Map([...prevState, ...tempTreeMap, ...res.treeMap]));
+                    if (res.selectedRow !== undefined) {
+                        return initRecursive(single ? res.builtData[res.selectedRow] : res.builtData, single, dataBookIndex, newNodesMap);
+                    }
+                    else {
+                        setExpandedKeys(tempExpKeys);
+                        setSelectedKey(tempSelectedKey);
+                    }
+                })
+            }
+            else {
+                setExpandedKeys(tempExpKeys);
+                setSelectedKey(tempSelectedKey);
             }
         }
 
@@ -300,10 +302,16 @@ const UITree: FC<ITree> = (baseProps) => {
                 label: data[metaData!.columnView_table_[0]],
                 leaf: props.detectEndNode !== false
             };
+
+            if (data === selectedRows.get(props.dataBooks[0])?.dataRow) {
+                tempExpKeys[path.toString()] = true;
+                tempSelectedKey = path.toString()
+            }
+
             if (props.detectEndNode !== false) {
                 nodesMap.set(path.toString(), addedNode);
             }
-            else if (data === selectedRows.get(props.dataBooks[0])) {
+            else if (data === selectedRows.get(props.dataBooks[0])?.dataRow) {
                 nodesMap.set(path.toString(), addedNode);
                 initRecursive(data, true, 0, nodesMap);
             }
@@ -313,7 +321,7 @@ const UITree: FC<ITree> = (baseProps) => {
         });
         setNodes(tempNodes);
         if (props.detectEndNode !== false) {
-            if (firstLvlData.includes(selectedRows.get(props.dataBooks[0]))) {
+            if (firstLvlData.includes(selectedRows.get(props.dataBooks[0])?.dataRow)) {
                 initRecursive(firstLvlData, false, 0, nodesMap);
             }
             else {

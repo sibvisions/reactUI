@@ -414,14 +414,14 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      * @param dataRow - the selectedDataRow
      */
-    setSelectedRow(compId:string, dataProvider: string, dataRow: any) {
+    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number) {
         const existingMapRow = this.dataProviderSelectedRow.get(compId);
         if (existingMapRow) {
-            existingMapRow.set(dataProvider, dataRow);
+            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index});
         }
         else {
             const tempMapRow:Map<string, any> = new Map<string, any>();
-            tempMapRow.set(dataProvider, dataRow);
+            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index});
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
     }

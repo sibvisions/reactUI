@@ -411,7 +411,7 @@ export class SubscriptionManager {
      emitRowSelect(compId:string, dataProvider: string){
         const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
-        const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+        const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)?.dataRow;
         if(rowSubscriber)
             rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
         if (screenRowSubs)
