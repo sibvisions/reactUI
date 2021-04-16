@@ -19,7 +19,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
      * @returns either the value of the column of the currently selectedRow or the entire selectedRow
      */
     const currentlySelectedRow = useMemo(() => {
-        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
+        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)?.dataRow
         if(column && sr)
             return sr[column];
         else
