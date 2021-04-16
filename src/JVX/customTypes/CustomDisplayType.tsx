@@ -8,7 +8,7 @@ export type CustomDisplayOptions = {
 /** Interface for ReplaceScreens */
 interface CustomDisplayType {
     screen: string|string[],
-    customDisplay: ReactElement,
+    display: ReactElement,
     options?: CustomDisplayOptions
 }
 export default CustomDisplayType;

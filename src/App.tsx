@@ -66,13 +66,17 @@ const App: FC<ICustomContent> = (props) => {
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
-        props.customScreens?.forEach(cs => context.contentStore.registerCustomOfflineScreen(cs.screenName, cs.menuGroup, cs.customScreen, cs.icon));
+        props.customScreens?.forEach(s => {
+            if (s.replace) {
+                context.contentStore.registerReplaceScreen(s.name, s.screen)
+            } else {
+                context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
+            }
+        });
 
-        props.replaceScreens?.forEach(rs => context.contentStore.registerReplaceScreen(rs.screenToReplace, rs.replaceScreen));
-
-        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.componentName, rc.customComp));
-        props.customDisplays?.forEach(cd => context.contentStore.registerCustomDisplay(cd.screen, cd.customDisplay, cd.options))
-    },[context.contentStore, props.customScreens, props.replaceScreens, props.customComponents, props.customDisplays, registerCustom]);
+        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
+        props.customDisplays?.forEach(cd => context.contentStore.registerCustomDisplay(cd.screen, cd.display, cd.options))
+    },[context.contentStore, props.customScreens, props.customComponents, props.customDisplays, registerCustom]);
 
     /** Default values for translation */
     useEffect(() => {

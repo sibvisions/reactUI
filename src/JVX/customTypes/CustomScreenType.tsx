@@ -2,10 +2,15 @@
 import { ReactElement } from "react";
 
 /** Interface for CustomScreens */
-interface CustomScreenType {
-    screenName: string,
+type CustomScreenType = {
+    name: string,
+    screen: ReactElement,
     menuGroup: string,
-    customScreen: ReactElement
-    icon?: string
+    icon?: string,
+    replace?: false,
+} | {
+    name: string,
+    screen: ReactElement,
+    replace: true,
 }
 export default CustomScreenType;
