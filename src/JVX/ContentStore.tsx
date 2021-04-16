@@ -260,11 +260,15 @@ export default class ContentStore{
                 this.subManager.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
             this.deleteChildren(id);
             this.flatContent.delete(id);
-            this.dataProviderData.delete(name);
-            this.dataProviderMetaData.delete(name);
-            this.dataProviderFetched.delete(name);
-            this.dataProviderSelectedRow.delete(name);
-            this.subManager.rowSelectionSubscriber.delete(name);
+
+            //only do a total cleanup if there are no more components of that name
+            if(!this.getComponentByName(name)) {
+                this.dataProviderData.delete(name);
+                this.dataProviderMetaData.delete(name);
+                this.dataProviderFetched.delete(name);
+                this.dataProviderSelectedRow.delete(name);
+                this.subManager.rowSelectionSubscriber.delete(name);
+            }
         }
     }
 
