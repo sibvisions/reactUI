@@ -260,12 +260,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             values.forEach((value:any) => {
                 let text = ""
                 if (props.cellEditor) {
-                    if (props.cellEditor.columnView)
-                        text = value[props.cellEditor.columnView.columnNames[0]]
-                    else if (props.cellEditor.linkReference.referencedColumnNames.length > 1)
-                        text = value[props.cellEditor.linkReference.referencedColumnNames[1]];
-                    else
-                        text = value[props.cellEditor.linkReference.referencedColumnNames[0]]
+                    const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
+                    text = value[props.cellEditor.linkReference.referencedColumnNames[colNameIndex]];
                 } 
                 suggestions.push(text)
             });

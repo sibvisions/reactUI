@@ -73,10 +73,9 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     style={{order: btnData.iconPos === 'left' ? 1 : 2}}
                     checked={props.selected}
                     onChange={() => {
-                        let checked = props.selected === undefined ? true : !props.selected;
                         const req = createSetValueRequest();
                         req.componentId = props.name;
-                        req.value = checked;
+                        req.value = props.selected === undefined ? true : !props.selected;;
                         context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE);
                     }}
                 />
