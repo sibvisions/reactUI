@@ -298,6 +298,14 @@
             }
         }
     }
+
+    .p-panelmenu-content .p-menuitem.p-menuitem--active {
+        .p-menuitem-link {
+            .p-menuitem-text, .p-menuitem-icon {
+                color: var(--menuPanelActiveItemColor);
+            }
+        }
+    }
 }
 
 @media screen and (max-width: 960px) {

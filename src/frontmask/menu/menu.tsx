@@ -18,6 +18,7 @@ import {jvxContext} from "../../JVX/jvxProvider";
 import {serverMenuButtons} from "../../JVX/response/MenuResponse";
 import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
 import { IForwardRef } from "../../JVX/IForwardRef";
+import { useParams } from "react-router";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem{
@@ -51,6 +52,10 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     const currUser = context.contentStore.currentUser;
     /** Current state of translations */
     const translations = useTranslation()
+    /** The react router params */
+    const params = useParams<{componentId: string}>();
+    /** a reference to the current panelmenu reactelement */
+    const panelMenu = useRef<PanelMenu>(null);
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -138,14 +143,17 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                            command: e => menuItems.action(),
                            label: menuItems.text,
                            componentId: menuItems.componentId,
-                           icon: iconData.icon
+                           icon: iconData.icon,
+                           className: menuItems.componentId.includes(`.${params.componentId}WorkScreen`) ? "p-menuitem--active" : undefined,
                        }
                        return subMenuItem
                     })
                 }
                 primeMenu.push(primeMenuItem);
             });
-            setMenuItems(primeMenu)
+            setMenuItems(primeMenu);
+            //TODO in the latest primereact version the expanded state can be set via the menu model.
+            panelMenu.current?.setState({activeItem: primeMenu.find(m => m.label === panelMenu.current?.state.activeItem?.label)});
         }
         receiveNewMenuItems(context.contentStore.mergedMenuItems);
         context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);
@@ -153,7 +161,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
         return () => {
             context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
-    }, [context.subscriptions, context.contentStore.mergedMenuItems]);
+    }, [params, context.subscriptions, context.contentStore.mergedMenuItems]);
 
     /** Sets the image of the profile-image element to the profileImage of the current user */
     useEffect(() => {
@@ -252,7 +260,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                 <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                     <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>
-                <PanelMenu model={menuItems} />
+                <PanelMenu model={menuItems} ref={panelMenu} />
                 {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
             </div>
         </div>
