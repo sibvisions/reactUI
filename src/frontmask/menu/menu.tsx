@@ -144,7 +144,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                            label: menuItems.text,
                            componentId: menuItems.componentId,
                            icon: iconData.icon,
-                           className: menuItems.componentId.includes(`.${params.componentId}WorkScreen`) ? "p-menuitem--active" : undefined,
+                           className: menuItems.componentId && menuItems.componentId.includes(`.${params.componentId}WorkScreen`) || menuItems.text === params.componentId ? "p-menuitem--active" : undefined,
                        }
                        return subMenuItem
                     })
