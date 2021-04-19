@@ -17,11 +17,12 @@ import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
-import { createFetchRequest, createSelectRowRequest } from "../../factories/RequestFactory";
+import { createFetchRequest, createSelectRowRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import { getMetaData } from "../util/GetMetaData";
 import FetchResponse from "../../response/FetchResponse";
 import TreePath from "../../model/TreePath";
+import { SelectFilter } from "../../request/SelectRowRequest";
 
 export interface ITree extends BaseComponent {
     dataBooks: string[],
@@ -135,7 +136,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 }
                 node.children = node.children ? node.children : [];
                 node.children.push(newNode);
-                tempTreeMap.set(childPath.toString(), _.pick(data, metaData!.masterReference!.referencedColumnNames));
+                tempTreeMap.set(childPath.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
                 addedNodes.set(childPath.toString(), newNode);
                 if (pSelectedRow === i) {
                     selectedRow = pSelectedRow;
@@ -207,23 +208,28 @@ const UITree: FC<ITree> = (baseProps) => {
 
     const handleRowSelection = (event:any) => {
         if (event.value) {
+            const selectedFilters:Array<SelectFilter|null> = []
             setSelectedKey(event.value)
-            const path = new TreePath(JSON.parse(event.value));
-            let tempPath = new TreePath()
-            path.array.forEach((level, i) => {
-                tempPath = tempPath.set(i, level);
-                const dataBook = getDataBook(i);
-                const dataRow = getDataRow(tempPath, treeData.get(tempPath.toString()));
+            let path = new TreePath(JSON.parse(event.value));
+            while (path.length() !== 0) {
+                const dataBook = getDataBook(path.length()-1)
+                const dataRow = getDataRow(path, treeData.get(path.toString()));
                 const primaryKeys = getMetaData(compId, dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
-                const selectReq = createSelectRowRequest();
-                selectReq.componentId = props.name;
-                selectReq.dataProvider = dataBook;
-                selectReq.filter = {
+                selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => dataRow[pk])
-                }
-                context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW);
-            })
+                });
+                path = path.getParentPath();
+            }
+            selectedFilters.reverse();
+            while (selectedFilters.length < props.dataBooks.length) {
+                selectedFilters.push(null)
+            }
+            const selectReq = createSelectTreeRequest();
+            selectReq.componentId = props.name;
+            selectReq.dataProvider = props.dataBooks
+            selectReq.filter = selectedFilters;
+            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_TREE);
         }
     }
 
@@ -281,8 +287,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const nodesMap = new Map<string, any>();
         firstLvlData.forEach((data, i) => {
             const path = new TreePath(i);
-            const fetchDataPage = getDataBook(path.length());
-            const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
+            const metaData = getMetaData(compId, props.dataBooks[0], context.contentStore);
             const addedNode = {
                 key: path.toString(),
                 label: data[metaData!.columnView_table_[0]],
@@ -303,7 +308,7 @@ const UITree: FC<ITree> = (baseProps) => {
             }
             
             tempNodes.push(addedNode);
-            tempTreeMap.set(path.toString(), _.pick(data, metaData!.masterReference!.referencedColumnNames));
+            tempTreeMap.set(path.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
         });
         setNodes(tempNodes);
         if (props.detectEndNode !== false) {
@@ -323,6 +328,44 @@ const UITree: FC<ITree> = (baseProps) => {
 
     // eslint-disable-next-line
     }, [rebuildTree]);
+
+    useEffect(() => {
+        const selectedIndices:number[] = []
+        const expKeys:any = {}
+        let filteredNodes = nodes
+        const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
+            if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) > props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
+                return 1;
+            }
+            else if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) < props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
+                return -1;
+            }
+            else {
+                return 0
+            }
+        }));
+        for(let [key, value] of sortedSR.entries()) {
+            selectedIndices.push(value.selectedIndex);
+            const path = new TreePath(selectedIndices)
+            //console.log(key, value, path.toString());
+            //console.log(filteredNodes.find(node => node.key === path.toString()).children)
+            if (filteredNodes.find(node => node.key === path.toString()).children === undefined) {
+                const parentPath = path.getParentPath()
+                //console.log(treeData.get(parentPath.toString()), providedData.get(getDataBook(parentPath.length())).get(JSON.stringify(treeData.get(parentPath.toString()))))
+                const dataRowChildren = providedData.get(getDataBook(parentPath.length())).get(JSON.stringify(treeData.get(parentPath.toString())))
+                sendTreeFetch(dataRowChildren, false, new Map(filteredNodes.map((node:any) => [node.key, node])))
+                .then((res:any) => {
+                    console.log([...res.nodesMap.values()])
+                    filteredNodes = [...res.nodesMap.values()]
+                })
+            }
+            filteredNodes = filteredNodes.find(node => node.key === path.toString()).children
+            expKeys[path.toString()] = true
+        }
+        setSelectedKey(new TreePath(selectedIndices).toString());
+        setExpandedKeys(expKeys)
+    }, [selectedRows])
+
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

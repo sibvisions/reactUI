@@ -13,6 +13,7 @@ import SetValueRequest from "../request/SetValueRequest";
 import TabRequest from "../request/TabRequest";
 import SaveRequest from "../request/SaveRequest";
 import CloseScreenRequest from "../request/CloseScreenRequest";
+import SelectTreeRequest from "../request/SelectTreeRequest";
 
 
 /**
@@ -129,6 +130,21 @@ export const createDeviceStatusRequest = (values?: DeviceStatusRequest): DeviceS
  */
 export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequest => {
     const req: SelectRowRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        dataProvider: values?.dataProvider,
+        filter: values?.filter
+    }
+    return req
+}
+
+/**
+ * Returns a selectTreeRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the selectRowRequest
+ * @returns a selectRowRequest object
+ */
+export const createSelectTreeRequest = (values?: SelectTreeRequest): SelectTreeRequest => {
+    const req:SelectTreeRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
         dataProvider: values?.dataProvider,

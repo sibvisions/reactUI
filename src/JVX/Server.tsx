@@ -231,6 +231,8 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string){
+        //TODO: implement "invokeLater", which will wait for all selectedRow updates per databook to finish to then update the state (emitRowSelect)
+        //so e.g. tree doesn't rerender with each row selection update
         const compId = dataProvider.split('/')[1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */

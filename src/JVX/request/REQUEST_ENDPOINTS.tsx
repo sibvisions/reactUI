@@ -9,6 +9,7 @@ enum REQUEST_ENDPOINTS  {
     DEVICE_STATUS = "/api/deviceStatus",
     UPLOAD = "/upload",
     SELECT_ROW = "/api/dal/selectRecord",
+    SELECT_TREE = "/api/dal/selectRecordTree",
     FETCH = "/api/dal/fetch",
     FILTER = "/api/dal/filter",
     SET_VALUE = "/api/comp/setValue",
