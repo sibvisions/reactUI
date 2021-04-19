@@ -176,9 +176,9 @@ const App: FC<ICustomContent> = (props) => {
             <Toast ref={toastRef} position="top-right"/>
                 <Switch>
                     <Route exact path={"/login"} render={() => <Login />}/>
-                    <Route exact path={"/home/:componentId"} render={routeProps => <Home key={routeProps.match.params.componentId} />} />
+                    <Route exact path={"/home/:componentId"} render={routeProps => <Home />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
-                    <Route path={"/home"} render={() => <Home key={'homeBlank'} />} />
+                    <Route path={"/home"} render={() => <Home />} />
                 </Switch>   
         </>
   );
