@@ -330,40 +330,7 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [rebuildTree]);
 
     useEffect(() => {
-        const selectedIndices:number[] = []
-        const expKeys:any = {}
-        let filteredNodes = nodes
-        const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
-            if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) > props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
-                return 1;
-            }
-            else if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) < props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
-                return -1;
-            }
-            else {
-                return 0
-            }
-        }));
-        for(let [key, value] of sortedSR.entries()) {
-            selectedIndices.push(value.selectedIndex);
-            const path = new TreePath(selectedIndices)
-            //console.log(key, value, path.toString());
-            //console.log(filteredNodes.find(node => node.key === path.toString()).children)
-            if (filteredNodes.find(node => node.key === path.toString()).children === undefined) {
-                const parentPath = path.getParentPath()
-                //console.log(treeData.get(parentPath.toString()), providedData.get(getDataBook(parentPath.length())).get(JSON.stringify(treeData.get(parentPath.toString()))))
-                const dataRowChildren = providedData.get(getDataBook(parentPath.length())).get(JSON.stringify(treeData.get(parentPath.toString())))
-                sendTreeFetch(dataRowChildren, false, new Map(filteredNodes.map((node:any) => [node.key, node])))
-                .then((res:any) => {
-                    console.log([...res.nodesMap.values()])
-                    filteredNodes = [...res.nodesMap.values()]
-                })
-            }
-            filteredNodes = filteredNodes.find(node => node.key === path.toString()).children
-            expKeys[path.toString()] = true
-        }
-        setSelectedKey(new TreePath(selectedIndices).toString());
-        setExpandedKeys(expKeys)
+        console.log(selectedRows)
     }, [selectedRows])
 
 

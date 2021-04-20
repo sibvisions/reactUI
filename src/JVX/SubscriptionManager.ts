@@ -76,6 +76,11 @@ export class SubscriptionManager {
     translationLoadedSubscriber = new Array<Function>();
     /** A function to change the register custom content state of a component*/
     registerCustomSubscriber:Function = () => {};
+    /** 
+     * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
+     * call the state updates to reduce the amount of state updates/rerenders
+     */
+    jobQueue:Map<string, any> = new Map();
 
     /**
      * Subscribes the component which uses the useProperties hook, with the id to property changes
@@ -404,7 +409,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * When a new row is selected call the function of the subscriber
+     * When a new row is selected add the row selection to the jobQueue to avoid multiple state updates
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
@@ -413,9 +418,9 @@ export class SubscriptionManager {
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
         const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)?.dataRow;
         if(rowSubscriber)
-            rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
+            this.jobQueue.set("rowSelect_" + dataProvider, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]))) 
         if (screenRowSubs)
-            screenRowSubs.apply(undefined, []);
+            this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
     }
 
     /** When the menu-items change, call the function of the menu-subscriber */

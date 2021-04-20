@@ -83,14 +83,26 @@ class Server {
     }
  
     /**
-     * Sends a request to the server and handles its response
+     * Sends a request to the server and handles its response, if there are jobs in the
+     * SubscriptionManagers JobQueue, call them after the response handling is complete
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
      */
-    sendRequest(request: any, endpoint: string){
-        this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 5000)
+    sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean){
+        return this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 5000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
+            .then(() => {
+                if (fn) {
+                    fn.forEach(func => func.apply(undefined, []))
+                }
+                if (!job) {
+                    for (let [key, value] of this.subManager.jobQueue.entries()) {
+                        value();
+                    }
+                    this.subManager.jobQueue.clear()
+                }
+            })
             .catch(error => console.error(error));
     }
 
@@ -141,13 +153,14 @@ class Server {
      * Calls the correct functions based on the responses received and then calls the routing decider
      * @param responses - the responses received
      */
-    responseHandler(responses: Array<BaseResponse>){
-        responses.forEach((responseObject: BaseResponse) => {
-            const mapper = this.responseMap.get(responseObject.name);
-            if(mapper){
-                mapper(responseObject);
+    async responseHandler(responses: Array<BaseResponse>){
+        for (const [i, response] of responses.entries()) {
+            const mapper = this.responseMap.get(response.name);
+            if (mapper) {
+                await mapper(response);
             }
-        });
+                
+        }
 
         this.routingDecider(responses);
     }
@@ -231,8 +244,6 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string){
-        //TODO: implement "invokeLater", which will wait for all selectedRow updates per databook to finish to then update the state (emitRowSelect)
-        //so e.g. tree doesn't rerender with each row selection update
         const compId = dataProvider.split('/')[1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
@@ -286,25 +297,24 @@ class Server {
      * if reload is a number fetch from the reload value one row
      * @param changedProvider - the dataProviderChangedResponse
      */
-    processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
+    async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = changedProvider.dataProvider.split('/')[1];
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
-            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.FETCH, this.buildReqOpts(fetchReq)), 2000)
-            .then((response:any) => response.json())
-            .then((fetchData:FetchResponse[]) => this.processFetch(fetchData[0]))
-            .then(() => this.subManager.notifyTreeChanged(changedProvider.dataProvider));
+            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
         } 
         else if(changedProvider.reload !== undefined) {
             const fetchReq = createFetchRequest();
             fetchReq.rowCount = 1;
             fetchReq.fromRow = changedProvider.reload;
             fetchReq.dataProvider = changedProvider.dataProvider;
-            this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
         }
-        this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
+        else {
+            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider)
+        }
     }
 
     /**
