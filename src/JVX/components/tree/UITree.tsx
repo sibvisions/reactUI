@@ -310,7 +310,6 @@ const UITree: FC<ITree> = (baseProps) => {
             tempNodes.push(addedNode);
             tempTreeMap.set(path.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
         });
-        setNodes(tempNodes);
         if (props.detectEndNode !== false) {
             if (firstLvlData.includes(selectedRows.get(props.dataBooks[0])?.dataRow)) {
                 initRecursive(firstLvlData, false, 0, nodesMap);
@@ -323,16 +322,69 @@ const UITree: FC<ITree> = (baseProps) => {
             }
         }
         else {
+            console.log(tempTreeMap)
             setTreeData(tempTreeMap);
         }
-
+        setNodes(tempNodes);
     // eslint-disable-next-line
     }, [rebuildTree]);
 
     useEffect(() => {
-        console.log(selectedRows)
-    }, [selectedRows])
+        const selectedIndices:number[] = [];
+        let tempTreeData = new Map(treeData)
+        const expKeys:any = {};
+        let filteredNodes = nodes;
+        const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
+            if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) > props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
+                return 1;
+            }
+            else if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) < props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
+                return -1;
+            }
+            else {
+                return 0
+            }
+        }));
+        const fetchBySelectedRow = async () => {
+            for (let [key, value] of sortedSR.entries()) {
+                selectedIndices.push(value.selectedIndex);
+                const path = new TreePath(selectedIndices);
+                expKeys[path.toString()] = true
+                if (props.detectEndNode !== false) {
+                    if (filteredNodes.find(node => node.key === path.toString()).children === undefined) {
+                        const parentPath = path.getParentPath()
+                        
+                        const dataRowChildren = providedData.get(getDataBook(parentPath.length())).get(JSON.stringify(tempTreeData.get(parentPath.toString())));
+                        if (dataRowChildren !== undefined) {
+                            let fetchRes = await sendTreeFetch(dataRowChildren, false, new Map(filteredNodes.map((node:any) => [node.key, node])));
+                            filteredNodes = [...fetchRes.nodesMap.values()];
+                            tempTreeData = new Map([...tempTreeData, ...fetchRes.treeMap]);
+                        }
+                    }
+                    else {
+                        filteredNodes = filteredNodes.find(node => node.key === path.toString()).children
+                    }
+                }
+                else {
+                    const tempNodesMap:Map<string, any> = new Map<string, any>();
+                    console.log(filteredNodes, treeData)
+                    const foundNode = filteredNodes.find(node => node.key === path.toString())
+                    tempNodesMap.set(foundNode.key, foundNode);
+                    console.log(filteredNodes.find(node => node.key === path.toString()), getDataRow(path, tempTreeData.get(path.toString())), path.toString(), tempTreeData);
+                    let fetchRes = await sendTreeFetch([getDataRow(path, tempTreeData.get(path.toString()))], true, tempNodesMap)
+                    filteredNodes = [...fetchRes.nodesMap.values()];
+                    tempTreeData = new Map([...tempTreeData, ...fetchRes.treeMap]);
+                }
+            }
+            setSelectedKey(new TreePath(selectedIndices).toString());
+            setExpandedKeys(expKeys)
+            setTreeData(tempTreeData);
+        }
+        fetchBySelectedRow()
 
+    }, [selectedRows]);
+
+    console.log(treeData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
