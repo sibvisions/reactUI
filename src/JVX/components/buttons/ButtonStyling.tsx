@@ -1,5 +1,5 @@
 /** React imports */
-import React, {CSSProperties, PropsWithChildren, FC, useState, useLayoutEffect} from 'react';
+import {CSSProperties} from 'react';
 
 /** 3rd Party imports */
 import tinycolor from 'tinycolor2';

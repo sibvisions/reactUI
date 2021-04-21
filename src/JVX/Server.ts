@@ -97,7 +97,7 @@ class Server {
                     fn.forEach(func => func.apply(undefined, []))
                 }
                 if (!job) {
-                    for (let [key, value] of this.subManager.jobQueue.entries()) {
+                    for (let [, value] of this.subManager.jobQueue.entries()) {
                         value();
                     }
                     this.subManager.jobQueue.clear()
@@ -154,7 +154,7 @@ class Server {
      * @param responses - the responses received
      */
     async responseHandler(responses: Array<BaseResponse>){
-        for (const [i, response] of responses.entries()) {
+        for (const [, response] of responses.entries()) {
             const mapper = this.responseMap.get(response.name);
             if (mapper) {
                 await mapper(response);
