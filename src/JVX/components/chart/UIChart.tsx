@@ -88,12 +88,12 @@ function getPointStyle(idx: number) {
 
 
 const colors = [
-    '#ff000080',
-    '#0000ff80',
-    '#00ff0080',
-    '#ffff0080',
-    '#ff00ff80',
-    '#00ffff80',
+    'rgba(255, 99, 132, 0.7)',
+    'rgba(54, 162, 235, 0.7)',
+    'rgba(255, 206, 86, 0.7)',
+    'rgba(75, 192, 192, 0.7)',
+    'rgba(153, 102, 255, 0.7)',
+    'rgba(255, 159, 64, 0.7)'
 ]
 
 function getColor(idx: number) {
