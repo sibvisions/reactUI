@@ -17,6 +17,7 @@ import { parseJVxSize } from "../util/parseJVxSize";
 import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
+import useTranslation from "../zhooks/useTranslation";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -103,10 +104,15 @@ function someNaN(values:any[]) {
     return values && values.some(v => typeof v !== 'number' || isNaN(v));
 }
 
-function getLabels(values:any[]) {
+function getLabels(values:any[], translation?: Map<string,string>) {
     if(someNaN(values)) {
         //if one of the labels is not a number return a list of the unique label values
-        return [...(new Set(values))]
+        const labels = [...(new Set(values))];
+        if(translation) {
+            return labels.map(l => translation.get(l) || l)
+        } else {
+            return labels;
+        }
     } else {
         //if all labels are numbers generate list from min to max
         const from = Math.min(...values) - 1;
@@ -135,6 +141,8 @@ const UIChart: FC<IChart> = (baseProps) => {
     const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+    /** Translations for labels */
+    const translation = useTranslation();
 
     //console.log(props.chartStyle, providerData, props, layoutValue)
 
@@ -263,7 +271,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle);
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
-        const labels = getLabels(rows);
+        const labels = getLabels(rows, translation);
         const stringLabels = someNaN(rows);
 
         const primeChart = {
