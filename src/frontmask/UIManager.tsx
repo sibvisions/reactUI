@@ -71,6 +71,9 @@ const UIManager: FC<IUIManager> = (props) => {
                 const childWithProps = (child as ChildWithProps);
                 sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
             });
+
+            //TODO: maybe fetch ids via screenId instead of relying on the children 
+
             setComponentSize(sizeMap);
         }
     },[props.children])
@@ -133,7 +136,7 @@ const UIManager: FC<IUIManager> = (props) => {
 
         }
     // eslint-disable-next-line
-    },[]);
+    },[doResize]);
 
     /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
     useEffect(() => {
@@ -147,7 +150,7 @@ const UIManager: FC<IUIManager> = (props) => {
     }, [props.children, context.server.APP_NAME, context.subscriptions]);
 
     return(
-        <div className={"reactUI"}>
+        <div className="reactUI">
             <Menu forwardedRef={menuRef}/>
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "")}>

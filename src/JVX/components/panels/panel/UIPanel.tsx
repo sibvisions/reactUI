@@ -68,13 +68,21 @@ const UIPanel: FC<Panel> = (baseProps) => {
      */
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
-            const prefSize:Size = {height: height, width: width}
+            const prefSize:Size = {height, width}
             sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
     return(
-        <div id={props.id} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
+        <div 
+            id={props.id} 
+            style={props.screen_modal_ ? { 
+                height: prefSize?.height, 
+                width: prefSize?.width 
+            } : {
+                ...layoutContext.get(baseProps.id), 
+                backgroundColor: props.background
+            }}>
             <Layout
                 id={id}
                 layoutData={props.layoutData}

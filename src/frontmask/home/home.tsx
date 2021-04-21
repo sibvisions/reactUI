@@ -24,6 +24,8 @@ const Home: FC = (props) => {
     /** Screens which are currently displayed by the layout can be multiple screens if there are popups */
     const homeChildren = useHomeComponents(componentId);
 
+    //TODO the homeChildren actually never get rendered in UIManager
+
     return(
         <UIManager screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
             {homeChildren}
