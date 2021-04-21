@@ -29,8 +29,8 @@ const useHomeComponents = (componentId:string) => {
 
     /* if the screen in the store changed update the child components */
     useEffect(() => {
-        setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)))
-    }, [context.contentStore.getComponentByName(getScreenIdFromNavigation(componentId, context.contentStore))])
+        setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
+    }, [componentId, context.contentStore.getComponentByName(getScreenIdFromNavigation(componentId, context.contentStore))])
 
     /** 
      * Subscribes to popupChange which either adds a popup to the current homechildren, or removes a popup
