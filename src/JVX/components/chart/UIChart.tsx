@@ -18,6 +18,7 @@ import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
 import useTranslation from "../zhooks/useTranslation";
+import { useRowSelect } from "src/moduleIndex";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -139,6 +140,8 @@ const UIChart: FC<IChart> = (baseProps) => {
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The data provided by the databook */
     const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);
+    /** get the currently selected row */
+    const [selectedRow] = useRowSelect(compId, props.dataBook);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Translations for labels */
@@ -181,8 +184,8 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.RING,
         ].includes(chartStyle);
 
-        let data:number[][] = yColumnNames.map((name) => {
-            return providerData.reduce<number[]>((agg, dataRow) => { 
+        let data:number[][] = yColumnNames.map(name => {
+            return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData).reduce<number[]>((agg, dataRow) => { 
                 const lidx = labels.indexOf(dataRow[xColumnName]);
                 agg[lidx] = (agg[lidx] || 0) + dataRow[name]; 
                 return agg; 
@@ -271,7 +274,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle);
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
-        const labels = getLabels(rows, translation);
+        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const stringLabels = someNaN(rows);
 
         const primeChart = {
