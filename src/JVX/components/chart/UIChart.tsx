@@ -71,6 +71,24 @@ enum CHART_STYLES {
     RING = 103,
 }
 
+/**
+ * Fetches the chart color & point settings from the css variables
+ * @param elem - Optional reference element to use for css variable fetching
+ * @returns An Object with the colors, points & overlapOpacity value
+ */
+ function getSettingsFromCSSVar(elem?: HTMLElement | null) {
+    const style = getComputedStyle(elem || document.body);
+    const colors = style.getPropertyValue('--chart-colors').split(',').map(v => v.trim());
+    const points = style.getPropertyValue('--chart-points').split(',').map(v => v.trim());
+    const overlapOpacity = parseFloat(style.getPropertyValue('--chart-overlap-opacity')) || .5;
+    return {
+        colors,
+        points,
+        overlapOpacity,
+    }
+}
+
+
 const pointStyles = [
     'rect',
     'circle',
@@ -84,6 +102,13 @@ const pointStyles = [
     'rectRounded',
 ]
 
+/**
+ * Retrieves the point style for the given index. 
+ * The point styles are returned in the order of the point styles list and start from the beginning if the end of the list is reached.
+ * @param idx - The index to get the point style for
+ * @param points - A custom list of point styles to use for retrieval
+ * @returns 
+ */
 function getPointStyle(idx: number, points?: string[]) {
     const p = points || pointStyles;
     return p[idx % p.length];
@@ -98,28 +123,37 @@ const colors = [
     'rgba(255, 159, 64, 0.7)'
 ]
 
-function getSettingsFromCSSVar(elem?: HTMLElement | null) {
-    const style = getComputedStyle(elem || document.body);
-    const colors = style.getPropertyValue('--chart-colors').split(',').map(v => v.trim());
-    const points = style.getPropertyValue('--chart-points').split(',').map(v => v.trim());
-    const overlapOpacity = parseFloat(style.getPropertyValue('--chart-overlap-opacity')) || .5;
-    return {
-        colors,
-        points,
-        overlapOpacity,
-    }
-}
-
+/**
+ * Retrieves the color for the given index. 
+ * The colors are returned in the order of the colors list and start from the beginning if the end of the list is reached.
+ * @param idx - The index to get the color for
+ * @param opacity - The opacity of the color
+ * @param customColors - A custom list of colors to use for retrieval
+ * @returns 
+ */
 function getColor(idx: number, opacity = 1, customColors?: string[]) {
     const c = customColors || colors;
     const cv = c[idx % c.length];
     return opacity < 1 ?  tinycolor(cv).setAlpha(opacity).toRgbString() : cv;
 }
 
+/**
+ * returns true if one or more of the values in the given array are not a number
+ * @param values - A list of values to check
+ * @returns true if there is a non numeric value in the list
+ */
 function someNaN(values:any[]) {
     return values && values.some(v => typeof v !== 'number' || isNaN(v));
 }
 
+/**
+ * Generates a list of axis labels based on the given values.
+ * If the given values are all numbers a list of numbers from the minimum to maximum value is generated
+ * If some of the values are non numeric a list of unique values is returned
+ * @param values - A list of values
+ * @param translation - A list of possible translations for non numeric values
+ * @returns A list of axis labels for a chart
+ */
 function getLabels(values:any[], translation?: Map<string,string>) {
     if(someNaN(values)) {
         //if one of the labels is not a number return a list of the unique label values
@@ -164,13 +198,14 @@ const UIChart: FC<IChart> = (baseProps) => {
 
     //console.log(props.chartStyle, providerData, props, layoutValue)
 
+    /** process the providerData to geta usable data list as well as the min & max values */
     const [data, min, max] = useMemo(() => {
         let { yColumnNames, xColumnName, chartStyle } = props;
         yColumnNames = yColumnNames || [];
         xColumnName = xColumnName || 'X';
         const row = providerData.map(dataRow => dataRow[xColumnName]);
         const labels = getLabels(row);
-        const stringLabels = someNaN(row);
+        const hasStringLabels = someNaN(row);
 
         const percentage = [
             CHART_STYLES.STACKEDPERCENTAREA, 
@@ -200,35 +235,61 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle);
 
         let data:number[][] = yColumnNames.map(name => {
-            return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData).reduce<number[]>((agg, dataRow) => { 
+            //if this is a pie chart and there are multiple y-values 
+            //only use the selected row as data or the first one 
+            // -> y-values are compared in pie chart
+            return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData)
+            .reduce<number[]>((agg, dataRow) => {
+                //get the index of the x-value in the labels
                 const lidx = labels.indexOf(dataRow[xColumnName]);
+                //use that label index to assign the summed value over all rows at the correct index
+                //so that label & value match up in the rendered chart
                 agg[lidx] = (agg[lidx] || 0) + dataRow[name]; 
                 return agg; 
             }, [])
         })
 
+        //generate the sum of all y-values
         const sum = data.reduce((agg, d) => {
             d.forEach((v, idx) => agg[idx] = (agg[idx] || 0) + v)
             return agg;
         }, []);
 
+        //default min & max are 0-100 for percentage values
         let min = 0;
         let max = 100;
 
         if(pie) {
+            //in a pie or ring chart we only need the total sum 
             const pieSum = sum.reduce((agg, v) => agg + v, 0);
             if(data.length > 1) {
+                //if there are multiple y-axes sum the values
                 data = [data.map(d => d.reduce((agg, v) => agg + v, 0))]
             }
             data = data.map(d => d.map(v => 100 * v / pieSum))
         } else if (percentage) {
+            //convert values to percentages
             data = data.map(d => d.map((v, idx) => 100 * v / sum[idx]))
         } else {
-            min = Math.min(0, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.min(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean));
-            max = Math.max(1, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.max(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean)) + 1;    
+            //find the actual minimum and maximum values
+            min = Math.min(0, ...data.reduce((agg, d) => {
+                d.forEach((v, idx) => stacked ? 
+                    agg[idx] = sum[idx] : 
+                    agg[idx] = Math.min(agg[idx] || 0, v || 0)
+                ); 
+                return agg;
+            }, []).filter(Boolean));
+            max = Math.max(1, ...data.reduce((agg, d) => {
+                d.forEach((v, idx) => stacked ? 
+                    agg[idx] = sum[idx] : 
+                    agg[idx] = Math.max(agg[idx] || 0, v || 0)
+                ); 
+                return agg;
+            }, []).filter(Boolean)) + 1;    
         }
 
-        if (horizontal && !stringLabels) {
+        if (horizontal && !hasStringLabels) {
+            //if the chart is horizontal and has no string labels reverese the order
             data.forEach(d => {
                 d.reverse();
                 d.unshift(0);
@@ -295,9 +356,11 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.RING,
         ].includes(chartStyle);
 
+        //get the actual x-values from the provided data
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
+        //if pie chart & multiple y-Axes use the y column labels otherwise generate labels based on x-values
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
-        const stringLabels = someNaN(rows);
+        const hasStringLabels = someNaN(rows);
         const {colors, points, overlapOpacity} = getSettingsFromCSSVar(chartRef.current);
 
         const opacity = [
@@ -307,7 +370,8 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle) ? overlapOpacity : 1;
 
         const primeChart = {
-            labels: (horizontal && !stringLabels) ? labels.reverse() : labels,
+            labels: (horizontal && !hasStringLabels) ? labels.reverse() : labels,
+            //a dataset per y-Axis unless for a pie chart where we only need a single data set
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx, opacity, colors);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
