@@ -118,7 +118,7 @@ const UITree: FC<ITree> = (baseProps) => {
         return {}
     }, [providedData, getDataBook]);
 
-    const newFetch = useCallback((fetchObj:any, nodeReference:any) => {
+    const sendTreeFetch = useCallback((fetchObj:any, nodeReference:any) => {
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(nodeReference.key))
         const fetchDataPage = getDataBook(parentPath.length());
@@ -174,103 +174,24 @@ const UITree: FC<ITree> = (baseProps) => {
         })
     }, [context.contentStore, context.server, compId, getDataBook, props.dataBooks.length, providedData])
 
-    const sendTreeFetch = useCallback((dataArray:any[], single:boolean, nodesMap:Map<string, any>) => {
-        const tempTreeMap:Map<string, any> = new Map<string, any>();
-        const parentPath = single ? new TreePath(JSON.parse(nodesMap?.entries().next().value[0])) 
-                                  : new TreePath(JSON.parse(nodesMap?.entries().next().value[0])).getParentPath();
-        const fetchDataPage = getDataBook(single ? parentPath.length() : parentPath.length()+1);
-        const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
-        const addedNodes = new Map<string, any>();
-        let selectedRow:number;
-        let selectedChildren:any[];
-
-        const addNodesToParent = (node:any, builtData:any[], path:TreePath, pSelectedRow?:number) => {
-            node.leaf = builtData.length === 0;
-            builtData.forEach((data, i) => {
-                const childPath = path.getChildPath(i);
-                const newNode = {
-                    key: childPath.toString(),
-                    label: data[metaData!.columnView_table_[0]],
-                    leaf: childPath.length() === props.dataBooks.length || !single
-                }
-                node.children = node.children ? node.children : [];
-                if (!node.children.some((child:any) => child.key === newNode.key)) {
-                    node.children.push(newNode);
-                }
-                tempTreeMap.set(childPath.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
-                addedNodes.set(childPath.toString(), newNode);
-                if (pSelectedRow !== undefined && pSelectedRow === i) {
-                    selectedRow = pSelectedRow;
-                    selectedChildren = builtData;
-                }
-            });
-        }
-
-        return new Promise<any>((resolve) => {
-            const promises = dataArray.map((data, i) => {
-                const currPath = parentPath.getChildPath(i);
-                const currNode = nodesMap.size > 0 ? (nodesMap.size === 1 ? nodesMap.entries().next().value[1] : nodesMap.get(currPath.toString())) : undefined;
-                if (metaData !== undefined && metaData.masterReference !== undefined) {
-                    const pkObj = _.pick(data, metaData.masterReference.referencedColumnNames);
-                    if (!providedData.get(fetchDataPage).has(JSON.stringify(pkObj))
-                        && (isSelfJoined(fetchDataPage) || parentPath.length() + (single ? 0 : 1) < props.dataBooks.length)) {
-                        const fetchReq = createFetchRequest();
-                        fetchReq.dataProvider = fetchDataPage;
-                        fetchReq.filter = {
-                            columnNames: metaData.masterReference.columnNames,
-                            values: Object.values(pkObj)
-                        }
-
-                        return context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 2000)
-                            .then((response:any) => response.json())
-                            .then((fetchResponse:FetchResponse[]) => {
-                                const builtData = context.server.buildDatasets(fetchResponse[0]);
-                                context.server.processFetch(fetchResponse[0], JSON.stringify(pkObj));
-                                addNodesToParent(currNode, builtData, single ? parentPath : currPath, fetchResponse[0].selectedRow);
-                            })
-                    }
-                    else {
-                        return new Promise<void> ((resolve) => {
-                            const builtData = providedData.get(fetchDataPage).get(JSON.stringify(pkObj));
-                            const sr = selectedRows.get(fetchDataPage)?.selectedIndex;
-                            addNodesToParent(currNode, builtData, single ? parentPath : currPath, sr);
-                            resolve()
-                        })
-                    }
-                }
-                else {
-                    return Promise.reject();
-                }
-            });
-
-            Promise.allSettled(promises)
-            .then(() => {
-                resolve({ selectedRow: selectedRow, builtData: selectedChildren, treeMap: tempTreeMap, nodesMap: addedNodes })
-            });
-        });
-    }, [context.contentStore, context.server, compId, getDataBook, isSelfJoined, props.dataBooks.length, providedData, selectedRows])
-
     const onExpandLoad = (event:any) => {
         const path = new TreePath(JSON.parse(event.node.key));
         let tempTreeMap:Map<string, any> = new Map([...treeData]);
         if (props.detectEndNode !== false) {
             if (getDataBook(path.length() + 1)) {
-                const dataRowChildren = providedData.get(getDataBook(path.length())).get(JSON.stringify(treeData.get(event.node.key)));
-                for (let [i, child] of dataRowChildren.entries()) {
-                    newFetch(child, event.node.children[i]).then((res:any) => {
-                        tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]);
-                        if (i === dataRowChildren.length - 1) {
-                            setTreeData(tempTreeMap);
-                        }
-                    });
-                }
+                const dataRowChildren:any[] = providedData.get(getDataBook(path.length())).get(JSON.stringify(treeData.get(event.node.key)));
+                Promise.allSettled(dataRowChildren.map(async (data, i) => {
+                    return sendTreeFetch(data, event.node.children[i])
+                    .then((res:any) => tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]));
+                }))
+                .then(() => setTreeData(prevState => new Map([...prevState, ...tempTreeMap])));
             }
         }
         else {
-            newFetch(getDataRow(path, treeData.get(event.node.key), treeData), event.node).then((res:any) => {
+            sendTreeFetch(getDataRow(path, treeData.get(event.node.key), treeData), event.node)
+            .then((res:any) => {
                 tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]);
-                    setTreeData(tempTreeMap);
-            });
+            }).then(() => setTreeData(tempTreeMap));
         }
     }
 
@@ -304,7 +225,6 @@ const UITree: FC<ITree> = (baseProps) => {
     const recursiveCallback = useCallback(async (nodesArray:any[], treeMap:Map<string, any>) => {
         const selectedIndices:number[] = [];
         const expKeys:any = {};
-        let filteredNodes = nodesArray;
         const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
             if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) > props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
                 return 1;
@@ -325,65 +245,51 @@ const UITree: FC<ITree> = (baseProps) => {
             return tempNode
         }
 
-        for (let [, value] of sortedSR.entries()) {
-            selectedIndices.push(value.selectedIndex);
+        for (let [, data] of sortedSR.entries()) {
+            selectedIndices.push(data.selectedIndex);
             const path = new TreePath(selectedIndices);
             expKeys[path.toString()] = true;
-            if (props.detectEndNode !== false) {
-                const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
-                const dataRowChildren = path.length() !== 1 ? currData : [currData[value.selectedIndex]];
-                if (getDataBook(path.length())) {
-                    for (let [i, data] of dataRowChildren.entries()) {
-                        let fetchRes = await newFetch(data, getReferencedNode(path.getParentPath().getChildPath(i)));
-                        treeMap = new Map([...treeMap, ...fetchRes.treeMap]);
-                        setTreeData(prevState => new Map([...prevState, ...treeMap]));
+            if (getDataBook(path.length())) {
+                if (props.detectEndNode !== false) {
+                    const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
+                    const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.selectedIndex]];
+                    for (let [i, value] of dataRowChildren.entries()) {
+                        await sendTreeFetch(value, getReferencedNode(path.length() !== 1 ? path.getParentPath().getChildPath(i) : path))
+                        .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
                     }
                 }
-            }
-            else {
-                const tempNodesMap: Map<string, any> = new Map<string, any>();
-                const foundNode = filteredNodes.find(node => node.key === path.toString())
-                tempNodesMap.set(foundNode.key, foundNode);
-                let fetchRes = await sendTreeFetch([getDataRow(path, treeMap.get(path.toString()), treeMap)], true, new Map([filteredNodes.find(node => node.key === path.toString())].map((x: any) => [x.key, x])));
-                filteredNodes = Array.from(fetchRes.nodesMap.values());
-                treeMap = new Map([...treeMap, ...fetchRes.treeMap]);
+                else {
+                    await sendTreeFetch(getDataRow(path, treeMap.get(path.toString()), treeMap), getReferencedNode(path))
+                    .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
+                }
             }
         }
         setSelectedKey(new TreePath(selectedIndices).toString());
         setExpandedKeys(expKeys);
-        if (treeMap.size > 0)
-            setTreeData(treeMap);
+        setTreeData(treeMap);
     },[getDataBook, getDataRow, props.dataBooks, props.detectEndNode, providedData, selectedRows, sendTreeFetch])
 
     useEffect(() => {
         const firstLvlData = providedData.get(props.dataBooks[0]).get("current") as any[];
         let tempTreeMap: Map<string, any> = treeData;
-        const tempNodes: any[] = nodes;
-        const tempExpKeys: any = {}
         const metaData = getMetaData(compId, props.dataBooks[0], context.contentStore);
 
-        for (let [i, data] of firstLvlData.entries()) {
+        Promise.allSettled(firstLvlData.map((data, i) => {
             const path = new TreePath(i);
             const addedNode = {
                 key: path.toString(),
                 label: data[metaData!.columnView_table_[0]],
                 leaf: props.detectEndNode !== false
             };
-            tempNodes.push(addedNode);
+            nodes.push(addedNode);
             tempTreeMap.set(path.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
             if (data === selectedRows.get(props.dataBooks[0])?.dataRow) {
-                tempExpKeys[path.toString()] = true;
-                let x = recursiveCallback(tempNodes, tempTreeMap);
+                return recursiveCallback(nodes, tempTreeMap);
             }
             else if (props.detectEndNode !== false) {
-                newFetch(data, addedNode).then((res: any) => {
-                    tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]);
-                    if (i === firstLvlData.length - 1) {
-                        setTreeData(prevState => new Map([...prevState, ...tempTreeMap]));
-                    }
-                })
+                return sendTreeFetch(data, addedNode).then((res: any) => tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]));
             }
-        }
+        })).then(() => setTreeData(prevState => new Map([...prevState, ...tempTreeMap])));
         setInitRender(true)
         // eslint-disable-next-line
     }, [rebuildTree]);
