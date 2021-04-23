@@ -18,7 +18,8 @@ import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
 import useTranslation from "../zhooks/useTranslation";
-import { useRowSelect } from "src/moduleIndex";
+import tinycolor from "tinycolor2";
+import useRowSelect from "../zhooks/useRowSelect";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -83,10 +84,10 @@ const pointStyles = [
     'rectRounded',
 ]
 
-function getPointStyle(idx: number) {
-    return pointStyles[idx % pointStyles.length];
+function getPointStyle(idx: number, points?: string[]) {
+    const p = points || pointStyles;
+    return p[idx % p.length];
 }
-
 
 const colors = [
     'rgba(255, 99, 132, 0.7)',
@@ -97,8 +98,22 @@ const colors = [
     'rgba(255, 159, 64, 0.7)'
 ]
 
-function getColor(idx: number) {
-    return colors[idx % colors.length];
+function getSettingsFromCSSVar(elem?: HTMLElement | null) {
+    const style = getComputedStyle(elem || document.body);
+    const colors = style.getPropertyValue('--chart-colors').split(',').map(v => v.trim());
+    const points = style.getPropertyValue('--chart-points').split(',').map(v => v.trim());
+    const overlapOpacity = parseFloat(style.getPropertyValue('--chart-overlap-opacity')) || .5;
+    return {
+        colors,
+        points,
+        overlapOpacity,
+    }
+}
+
+function getColor(idx: number, opacity = 1, customColors?: string[]) {
+    const c = customColors || colors;
+    const cv = c[idx % c.length];
+    return opacity < 1 ?  tinycolor(cv).setAlpha(opacity).toRgbString() : cv;
 }
 
 function someNaN(values:any[]) {
@@ -129,7 +144,7 @@ function getLabels(values:any[], translation?: Map<string,string>) {
  */
 const UIChart: FC<IChart> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
-    const chartRef = useRef(null);
+    const chartRef = useRef<HTMLSpanElement>(null);
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
     /** Use context to gain access for contentstore and server methods */
@@ -283,23 +298,30 @@ const UIChart: FC<IChart> = (baseProps) => {
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const stringLabels = someNaN(rows);
+        const {colors, points, overlapOpacity} = getSettingsFromCSSVar(chartRef.current);
+
+        const opacity = [
+            CHART_STYLES.AREA,
+            CHART_STYLES.OVERLAPPEDBARS,
+            CHART_STYLES.OVERLAPPEDHBARS
+        ].includes(chartStyle) ? overlapOpacity : 1;
 
         const primeChart = {
             labels: (horizontal && !stringLabels) ? labels.reverse() : labels,
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
-                const singleColor = getColor(idx);
+                const singleColor = getColor(idx, opacity, colors);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
                 return {
                     ...(horizontal ? { yAxisID: axisID } : { xAxisID: axisID }),
                     label: yColumnLabels[idx],
                     data: data[idx],
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
-                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx)) : singleColor,
+                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx, opacity, colors)) : singleColor,
                     borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
                     borderWidth: 1,
                     fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
                     lineTension: 0,
-                    pointStyle: getPointStyle(idx),
+                    pointStyle: getPointStyle(idx, points),
                     pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
                     pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
                     steppedLine: CHART_STYLES.STEPLINES === chartStyle,
