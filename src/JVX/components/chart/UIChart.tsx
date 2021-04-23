@@ -199,7 +199,14 @@ const UIChart: FC<IChart> = (baseProps) => {
 
         let min = 0;
         let max = 100;
-        if (percentage) {
+
+        if(pie) {
+            const pieSum = sum.reduce((agg, v) => agg + v, 0);
+            if(data.length > 1) {
+                data = [data.map(d => d.reduce((agg, v) => agg + v, 0))]
+            }
+            data = data.map(d => d.map(v => 100 * v / pieSum))
+        } else if (percentage) {
             data = data.map(d => d.map((v, idx) => 100 * v / sum[idx]))
         } else {
             min = Math.min(0, ...data.reduce((agg, d) => {d.forEach((v, idx) => stacked ? agg[idx] = sum[idx] : agg[idx] = Math.min(agg[idx] || 0, v || 0)); return agg;}, []).filter(Boolean));
@@ -213,7 +220,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             });
         }
 
-        return [pie && data.length > 1 ? [data.map(d => d.reduce((agg, v) => agg + v, 0))] : data, min, max];
+        return [data, min, max];
     }, [providerData, props.yColumnNames, props.xColumnName, props.chartStyle])
 
     /**
@@ -317,6 +324,11 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.STACKEDPERCENTHBARS
         ].includes(chartStyle);
 
+        const pie = [
+            CHART_STYLES.PIE,
+            CHART_STYLES.RING,
+        ].includes(chartStyle);
+
         const overlapped = [
             CHART_STYLES.OVERLAPPEDBARS,
             CHART_STYLES.OVERLAPPEDHBARS,
@@ -348,13 +360,27 @@ const UIChart: FC<IChart> = (baseProps) => {
 
         const stringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
+        const tooltips = {
+            callbacks: {
+                label: (tooltipItem:any, data:any) => {
+                    let value = tooltipItem.value;
+                    if(pie && !value) {
+                        value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                    }
+                    
+                    return (pie || percentage) ? `${parseFloat(value).toFixed(2).replace('.00', '')}%` : tooltipItem.value;
+                }
+            }
+        }
+
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 title,
                 aspectRatio,
                 legend: {
                     display: false
-                }
+                },
+                tooltips
             }
         } else {
             let xAxes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
@@ -416,6 +442,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                     xAxes,
                     yAxes
                 },
+                tooltips,
             }
         }
     }, [props.chartStyle, providerData]);
