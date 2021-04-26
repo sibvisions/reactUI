@@ -8,6 +8,7 @@ interface DataProviderChangedResponse extends BaseResponse{
     deleteEnabled?: boolean,
     updateEnabled?: boolean,
     reload?: -1 | 0 | 1,
-    selectedRow?: number
+    selectedRow?: number,
+    treePath?: number[]
 }
 export default DataProviderChangedResponse

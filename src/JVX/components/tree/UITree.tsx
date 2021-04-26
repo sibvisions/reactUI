@@ -88,7 +88,7 @@ const UITree: FC<ITree> = (baseProps) => {
     const isSelfJoined = useCallback((dataBook:string) => {
         const metaData = getMetaData(compId, dataBook, context.contentStore)
         if (metaData?.masterReference)
-            return metaData.masterReference.referencedDataBook === metaData?.dataProvider
+            return metaData.masterReference.referencedDataBook === dataBook
         else
             return false;
     }, [context.contentStore, compId])
@@ -198,6 +198,7 @@ const UITree: FC<ITree> = (baseProps) => {
     const handleRowSelection = (event:any) => {
         if (event.value) {
             const selectedFilters:Array<SelectFilter|null> = []
+            const selectedDatabooks = props.dataBooks;
             setSelectedKey(event.value)
             let path = new TreePath(JSON.parse(event.value));
             while (path.length() !== 0) {
@@ -211,8 +212,11 @@ const UITree: FC<ITree> = (baseProps) => {
                 path = path.getParentPath();
             }
             selectedFilters.reverse();
-            while (selectedFilters.length < props.dataBooks.length) {
+            while (selectedFilters.length < selectedDatabooks.length) {
                 selectedFilters.push(null)
+            }
+            while (selectedDatabooks.length < selectedFilters.length && isSelfJoined(selectedDatabooks.slice(-1).pop() as string)) {
+                selectedDatabooks.push(selectedDatabooks.slice(-1).pop() as string)
             }
             const selectReq = createSelectTreeRequest();
             selectReq.componentId = props.name;
@@ -222,7 +226,7 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     }
 
-    const recursiveCallback = useCallback(async (nodesArray:any[], treeMap:Map<string, any>) => {
+    const recursiveCallback = useCallback(async (treeMap:Map<string, any>) => {
         const selectedIndices:number[] = [];
         const expKeys:any = {};
         const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
@@ -245,31 +249,62 @@ const UITree: FC<ITree> = (baseProps) => {
             return tempNode
         }
 
-        for (let [, data] of sortedSR.entries()) {
-            selectedIndices.push(data.selectedIndex);
-            const path = new TreePath(selectedIndices);
-            expKeys[path.toString()] = true;
-            if (getDataBook(path.length())) {
-                if (props.detectEndNode !== false) {
-                    const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
-                    const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.selectedIndex]];
-                    for (let [i, value] of dataRowChildren.entries()) {
-                        await sendTreeFetch(value, getReferencedNode(path.length() !== 1 ? path.getParentPath().getChildPath(i) : path))
+        for (let [key, data] of sortedSR.entries()) {
+            if (!isSelfJoined(key)) {
+                selectedIndices.push(data.selectedIndex);
+                const path = new TreePath(selectedIndices);
+                if (path.getParentPath().length() > 0) {
+                    expKeys[path.getParentPath().toString()] = true;
+                }
+                if (getDataBook(path.length())) {
+                    if (props.detectEndNode !== false) {
+                        const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
+                        const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.selectedIndex]];
+                        for (let [i, value] of dataRowChildren.entries()) {
+                            await sendTreeFetch(value, getReferencedNode(path.length() !== 1 ? path.getParentPath().getChildPath(i) : path))
+                            .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
+                        }
+                    }
+                    else {
+                        await sendTreeFetch(getDataRow(path, treeMap.get(path.toString()), treeMap), getReferencedNode(path))
                         .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
                     }
                 }
-                else {
-                    await sendTreeFetch(getDataRow(path, treeMap.get(path.toString()), treeMap), getReferencedNode(path))
-                    .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
-                }
             }
         }
+        const lastDatabook = Array.from(sortedSR.keys()).pop() as string
+        if (isSelfJoined(lastDatabook)) {
+            const responseValue = sortedSR.get(lastDatabook);
+            const metaData = getMetaData(compId, lastDatabook, context.contentStore);
+            const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.selectedIndex)
+
+            let prevRow = JSON.stringify(metaData?.masterReference?.referencedColumnNames.reduce((obj:any, key:any) => {
+                obj[key] = null;
+                return obj
+            },{}));
+
+            for (let i = 0; i < selfJoinedPath.length(); i++) {
+                selectedIndices.push(selfJoinedPath.get(i));
+                const path = new TreePath(selectedIndices);
+                if (path.getParentPath().length() > 0) {
+                    expKeys[path.getParentPath().toString()] = true;
+                }
+                const dataRowChildren = providedData.get(lastDatabook).get(prevRow);
+                for (let [i, value] of dataRowChildren.entries()) {
+                    await sendTreeFetch(value, getReferencedNode(path.getParentPath().getChildPath(i)))
+                    .then((response:any) => treeMap = new Map([...treeMap, ...response.treeMap]));
+                }
+                prevRow = JSON.stringify(_.pick(dataRowChildren[selfJoinedPath.get(i)], metaData!.masterReference!.referencedColumnNames));
+            }
+        }
+
         setSelectedKey(new TreePath(selectedIndices).toString());
-        setExpandedKeys(expKeys);
+        setExpandedKeys((prevState:any) => Object.assign(prevState, expKeys));
         setTreeData(treeMap);
     },[getDataBook, getDataRow, props.dataBooks, props.detectEndNode, providedData, selectedRows, sendTreeFetch])
 
     useEffect(() => {
+        //TODO: if selfjoined dont use current use pk null
         const firstLvlData = providedData.get(props.dataBooks[0]).get("current") as any[];
         let tempTreeMap: Map<string, any> = treeData;
         const metaData = getMetaData(compId, props.dataBooks[0], context.contentStore);
@@ -284,7 +319,7 @@ const UITree: FC<ITree> = (baseProps) => {
             nodes.push(addedNode);
             tempTreeMap.set(path.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
             if (data === selectedRows.get(props.dataBooks[0])?.dataRow) {
-                return recursiveCallback(nodes, tempTreeMap);
+                return recursiveCallback(tempTreeMap);
             }
             else if (props.detectEndNode !== false) {
                 return sendTreeFetch(data, addedNode).then((res: any) => tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]));
@@ -296,9 +331,11 @@ const UITree: FC<ITree> = (baseProps) => {
 
     useEffect(() => {
         if (initRender) {
-            recursiveCallback(nodes, treeData)
+            recursiveCallback(treeData)
         }
     }, [selectedRows]);
+
+    console.log(providedData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>

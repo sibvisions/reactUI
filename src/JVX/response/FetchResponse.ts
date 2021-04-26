@@ -10,5 +10,6 @@ interface FetchResponse extends BaseResponse{
     selectedRow: number;
     from: number;
     to: number;
+    treePath?: number[]
 }
 export default FetchResponse
