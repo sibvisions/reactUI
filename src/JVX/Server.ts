@@ -28,6 +28,8 @@ import ApplicationParametersResponse from "./response/ApplicationParametersRespo
 import LanguageResponse from "./response/LanguageResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
+import TreePath from "./model/TreePath";
+import { getMetaData } from "./components/util/GetMetaData";
 
 /** Type for query */
 type queryType = {
@@ -158,8 +160,7 @@ class Server {
             const mapper = this.responseMap.get(response.name);
             if (mapper) {
                 await mapper(response);
-            }
-                
+            }   
         }
 
         this.routingDecider(responses);
@@ -243,12 +244,12 @@ class Server {
      * @param selectedRowIndex - the index of the selectedRow
      * @param dataProvider - the dataprovider
      */
-    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string){
+    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath){
         const compId = dataProvider.split('/')[1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex);
+            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath);
             this.subManager.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
             this.contentStore.clearSelectedRow(compId, dataProvider);
@@ -288,7 +289,14 @@ class Server {
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, detailMapKey);
         else
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
-        this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
+    
+        if (fetchData.treePath !== undefined) {
+            this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, new TreePath(fetchData.treePath));
+        }
+        else {
+            this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
+        }
+        
     }
 
     /**
@@ -299,6 +307,7 @@ class Server {
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = changedProvider.dataProvider.split('/')[1];
+        const metaData = getMetaData(compId, changedProvider.dataProvider, this.contentStore);
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
@@ -313,7 +322,12 @@ class Server {
             await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
         }
         else {
-            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider)
+            if (changedProvider.treePath !== undefined) {
+                this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, new TreePath(changedProvider.treePath));
+            }
+            else {
+                this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
+            }
         }
     }
 

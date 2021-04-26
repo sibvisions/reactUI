@@ -11,6 +11,7 @@ import {Panel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
 import { getMetaData } from "./components/util/GetMetaData";
+import TreePath from "./model/TreePath";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -331,11 +332,22 @@ export default class ContentStore{
      * @param selectedRow - the currently selected row of the master-reference
      */
     updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey?:string) {
+        const metaData = getMetaData(compId, dataProvider, this);
+
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
             if (referenceKey !== undefined)
                 mapProv.set(referenceKey, newDataSet)
-            else
+            else {
                 mapProv.set("current", newDataSet);
+                if (metaData?.masterReference?.referencedDataBook === dataProvider) {
+                    let tempObj:any = {}
+                    metaData.masterReference.referencedColumnNames.forEach(colName => {
+                        tempObj[colName] = null
+                    })
+                    mapProv.set(JSON.stringify(tempObj), newDataSet);
+                }
+            }
+                
             if (mapScreen) {
                 mapScreen.set(dataProvider, mapProv);
                 if (addDPD)
@@ -418,14 +430,14 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      * @param dataRow - the selectedDataRow
      */
-    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number) {
+    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath) {
         const existingMapRow = this.dataProviderSelectedRow.get(compId);
         if (existingMapRow) {
-            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index});
+            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath});
         }
         else {
             const tempMapRow:Map<string, any> = new Map<string, any>();
-            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index});
+            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath});
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
     }
