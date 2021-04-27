@@ -252,7 +252,14 @@ class Server {
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath);
             this.subManager.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
-            this.contentStore.clearSelectedRow(compId, dataProvider);
+            if (treePath !== undefined && treePath.length() > 0) {
+                const selectedRow = this.contentStore.getDataRow(compId, dataProvider, treePath.getLast());
+                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath())
+            }
+            else {
+                this.contentStore.clearSelectedRow(compId, dataProvider);
+            }
+            
             this.subManager.emitRowSelect(compId, dataProvider);
         }
     }
@@ -286,16 +293,11 @@ class Server {
         this.contentStore.dataProviderFetched.set(compId, tempMap);
         // If there is a detailMapKey, call updateDataProviderData with it
         if (detailMapKey !== undefined)
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, detailMapKey);
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath, detailMapKey);
         else
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from);
-    
-        if (fetchData.treePath !== undefined) {
-            this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, new TreePath(fetchData.treePath));
-        }
-        else {
-            this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider);
-        }
+            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath);
+        
+        this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined);
         
     }
 

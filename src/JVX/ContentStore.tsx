@@ -12,6 +12,7 @@ import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
 import { getMetaData } from "./components/util/GetMetaData";
 import TreePath from "./model/TreePath";
+import { getSelfJoinedRootReference } from "./components/util/GetSelfJoinedRootReference";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -331,21 +332,12 @@ export default class ContentStore{
      * @param referenceKey - the primary key value of the master-reference 
      * @param selectedRow - the currently selected row of the master-reference
      */
-    updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, referenceKey?:string) {
-        const metaData = getMetaData(compId, dataProvider, this);
-
+    updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, treePath?:number[], referenceKey?:string) {
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
             if (referenceKey !== undefined)
                 mapProv.set(referenceKey, newDataSet)
             else {
                 mapProv.set("current", newDataSet);
-                if (metaData?.masterReference?.referencedDataBook === dataProvider) {
-                    let tempObj:any = {}
-                    metaData.masterReference.referencedColumnNames.forEach(colName => {
-                        tempObj[colName] = null
-                    })
-                    mapProv.set(JSON.stringify(tempObj), newDataSet);
-                }
             }
                 
             if (mapScreen) {
