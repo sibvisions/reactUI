@@ -26,7 +26,7 @@ export interface IMenuButton extends IButton {
 }
 
 /** Helper method to concatenate class names and filter out falsy values */
-function cn(...classNames: (string | null | undefined)[]) {
+export function cn(...classNames: (string | null | undefined)[]) {
     return classNames.filter(Boolean).join(' ');
 }
 
@@ -57,28 +57,6 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const btnVAlign = btnData.style.alignItems || "center";
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<any>>();
-
-    /** Apply all server sent styling and add a custom hover effect to the menubutton */
-    useLayoutEffect(() => {
-        if (buttonRef.current) {
-            const btnRef = buttonRef.current
-            if (btnData.iconProps.icon) {
-                //renderButtonIcon(btnRef.defaultButton.children[0], props, btnData.iconProps, context.server.RESOURCE_URL);
-            }
-            //btnRef.container.classList.add((btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? "bright" : "dark");
-            /*addHoverEffect(
-                btnRef.container as HTMLElement, 
-                props.borderOnMouseEntered, 
-                btnBgd, 
-                null, 
-                5, 
-                btnData.btnBorderPainted, 
-                undefined, 
-                props.background ? true : false
-            );*/
-        }
-
-    },[props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnVAlign, btnHAlign, btnBgd]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -116,7 +94,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
     },[context.contentStore, context.server, props])
     
-    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition)
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
     return (
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
@@ -130,7 +108,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 )}
                 style={{
                     ...btnData.style, 
-                    padding: '0', 
+                    padding: '0',
                     background: undefined,
                     borderColor: undefined,
                     '--menuBtnJustify': btnHAlign,

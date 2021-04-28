@@ -14,10 +14,11 @@ import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButtonSelectable} from "../IButton";
-import {addHoverEffect, buttonProps, centerElem, renderButtonIcon} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, centerElem, getGapPos, renderButtonIcon} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseIconData} from "../../compprops/ComponentProperties";
 import {parseJVxSize} from "../../util/parseJVxSize";
+import { cn } from "../menubutton/UIMenuButton";
 
 /** Interface fot ToggleButtons */
 export interface IToggleButton extends IButtonSelectable {
@@ -51,6 +52,10 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     const btnHAlign = btnData.style.justifyContent || "center";
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
+        /** On which side of the side of the label, the gap between icon and label should be */
+        const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+        /** The amount of pixels to put  */
+        const iconCenterGap = buttonRef.current ? buttonRef.current.container.children[1].offsetWidth/2 - buttonRef.current.container.children[0].offsetWidth/2 : 0
 
         /** 
      * Adding eventListener for mouse pressing to display the mousePressImage received by the server
@@ -64,7 +69,7 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                 elem.classList.add(pressedIconData.icon.substring(3));
             }
             else
-                elem.style.setProperty('background-image', 'url(' + context.server.RESOURCE_URL + pressedIconData.icon + ')');
+                elem.style.setProperty('--iconImage', 'url(' + context.server.RESOURCE_URL + pressedIconData.icon + ')');
         }
 
         const handleMouseImageReleased = (elem:HTMLElement) => {
@@ -73,14 +78,14 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                 elem.classList.add((btnData.iconProps.icon as string).substring(3))
             }
             else
-                elem.style.setProperty('background-image', 'url(' + context.server.RESOURCE_URL + btnData.iconProps.icon + ')');
+                elem.style.setProperty('--iconImage', 'url(' + context.server.RESOURCE_URL + btnData.iconProps.icon + ')');
         }
 
         if (buttonRef.current) {
             const btnContainer = buttonRef.current.container;
             if (btnData.iconProps.icon) {
                 const iconElement = btnContainer.children[0] as HTMLElement;
-                renderButtonIcon(iconElement, props, btnData.iconProps, context.server.RESOURCE_URL);
+                //renderButtonIcon(iconElement, props, btnData.iconProps, context.server.RESOURCE_URL);
                 if (props.horizontalTextPosition === 1)
                     centerElem(btnContainer.children[0], btnContainer.children[1], props.horizontalAlignment)
                 if (pressedIconData.icon) {
@@ -89,9 +94,9 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                     btnContainer.addEventListener('mouseout', () => handleMouseImageReleased(iconElement));
                 }
             }
-            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnContainer.classList.add("bright") : btnContainer.classList.add("dark");
-            addHoverEffect(btnContainer as HTMLElement, props.borderOnMouseEntered,
-            btnBgd, tinycolor(btnBgd).darken(10).toString(), 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
+            //(btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnContainer.classList.add("bright") : btnContainer.classList.add("dark");
+            //addHoverEffect(btnContainer as HTMLElement, props.borderOnMouseEntered,
+            //btnBgd, tinycolor(btnBgd).darken(10).toString(), 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
         }
         return () => {
             if (buttonRef.current && btnData.iconProps.icon && pressedIconData.icon) {
@@ -125,12 +130,35 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
         <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <ToggleButton
                 ref={buttonRef}
-                className={"rc-button"  + (props.borderPainted === false ? " border-notpainted" : "")}
-                style={{...btnData.style, background: props.selected ? tinycolor(btnBgd).darken(10).toString() : btnBgd, justifyContent: btnHAlign, alignItems: btnVAlign}}
+                className={cn(
+                    "rc-togglebutton",
+                    props.borderPainted === false ? "border-notpainted" : '',
+                    btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
+                    props.borderOnMouseEntered ? "mouse-border" : '',
+                )}
+                style={{
+                    ...btnData.style,
+                    background: undefined,
+                    borderColor: undefined,
+                    '--btnJustify': btnHAlign,
+                    '--btnAlign': btnVAlign,
+                    '--btnPadding': btnData.style.padding,
+                    '--background': btnBgd,
+                    '--selectedBackground': tinycolor(btnBgd).darken(10).toString(),
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
+                    ...(btnData.iconProps?.icon ? {
+                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
+                        '--iconColor': btnData.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                        '--iconTextGap': `${props.imageTextGap || 4}px`,
+                        '--iconCenterGap': `${iconCenterGap}px`
+                    } : {})
+                }}
                 offLabel={props.text}
                 onLabel={props.text}
-                offIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
-                onIcon={btnData.iconProps ? btnData.iconProps.icon : undefined}
+                offIcon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
+                onIcon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}

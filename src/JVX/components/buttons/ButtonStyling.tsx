@@ -60,6 +60,18 @@ export function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) 
     }
 }
 
+export function getIconCenterDirection(hTextPos:number|undefined, hAlign:number|undefined, iconProps:IconProps|undefined) {
+    if (hTextPos === 1) {
+        if (hAlign === 0 || (!hAlign && !iconProps)) {
+            return 'icon-center-left';
+        }
+        else if (hAlign === 2) {
+            return 'icon-center-right'
+        }
+    }
+    return '';
+}
+
 /**
  * Centers an element relative to the measured length of another element
  * @param centerElem - the element to be centered

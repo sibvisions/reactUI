@@ -14,9 +14,10 @@ import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, centerElem, renderButtonIcon} from "../ButtonStyling";
+import {addHoverEffect, buttonProps, centerElem, getGapPos, getIconCenterDirection, renderButtonIcon} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
+import { cn } from "../menubutton/UIMenuButton";
 
 /**
  * This component displays a basic button
@@ -43,21 +44,10 @@ const UIButton: FC<IButton> = (baseProps) => {
     const btnHAlign = btnData.style.justifyContent || "center";
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
-
-    /** Apply all server sent styling and add a custom hover effect to the button */
-    useLayoutEffect(() => {
-        if (buttonRef.current) {
-            const btnRef = buttonRef.current.element;
-            if (btnData.iconProps.icon) {
-                renderButtonIcon(btnRef.children[0] as HTMLElement, props, btnData.iconProps, context.server.RESOURCE_URL);
-                /** if the horizontalTextPosition is 1 the icon needs to be centered relative to the label */
-                if (props.horizontalTextPosition === 1)
-                    centerElem(btnRef.children[0], btnRef.children[1], props.horizontalAlignment)
-            }
-            (btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnRef.classList.add("bright") : btnRef.classList.add("dark");
-            addHoverEffect(btnRef as HTMLElement, props.borderOnMouseEntered, btnBgd, null, 5, btnData.btnBorderPainted, undefined, props.background ? true : false);
-        }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, btnBgd]);
+    /** On which side of the side of the label, the gap between icon and label should be */
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+    /** The amount of pixels to put  */
+    const iconCenterGap = buttonRef.current ? buttonRef.current.element.children[1].offsetWidth/2 - buttonRef.current.element.children[0].offsetWidth/2 : 0
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -79,10 +69,35 @@ const UIButton: FC<IButton> = (baseProps) => {
         <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
                 ref={buttonRef}
-                className={"rc-button" + (props.borderPainted === false ? " border-notpainted" : "") + (props.style?.includes('hyperlink') ? " p-button-link" : "")}
-                style={{...btnData.style, justifyContent: btnHAlign, alignItems: btnVAlign}}
+                className={cn(
+                    "rc-button",
+                    props.borderPainted === false ? "border-notpainted" : '',
+                    props.style?.includes("hyperlink") ? "p-button-link" : '',
+                    btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
+                    props.borderOnMouseEntered ? "mouse-border" : '',
+                    `gap-${gapPos}`,
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
+                )}
+                style={{
+                    ...btnData.style,
+                    background: undefined,
+                    borderColor: undefined,
+                    '--btnJustify': btnHAlign, 
+                    '--btnAlign': btnVAlign,
+                    '--btnPadding': btnData.style.padding,
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
+                    ...(btnData.iconProps?.icon ? {
+                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
+                        '--iconColor': btnData.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                        '--iconTextGap': `${props.imageTextGap || 4}px`,
+                        '--iconCenterGap': `${iconCenterGap}px`
+                    } : {})
+                } as any}
                 label={props.text}
-                icon={btnData.iconProps ? btnData.iconProps.icon : undefined}
+                icon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}

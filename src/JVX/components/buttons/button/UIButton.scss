@@ -1,14 +1,26 @@
+@import '../../../../frontmask/scssmixin/buttonHover.scss';
+
 /// Inherit height and width from parent who has set it by the layout
-.rc-button, .p-button-icon-only {
+.rc-button {
+    --btnJustify: center;
+    --btnAlign: center;
+    --btnPadding: var(--btnPTB) var(--btnPLR);
+
     height: inherit;
     width: inherit;
-    padding: var(--btnPTB) var(--btnPLR);
+
+    justify-content: var(--btnJustify);
+    align-items: var(--btnAlign);
+    padding: var(--btnPadding);
+
     .p-button-icon-left {
         margin-right: 0;
     }
     .p-button-icon-right {
         margin-left: 0;
     }
+
+    @include btnHover
 }
 
 /// If the button is dark set the foreground to white
@@ -27,7 +39,7 @@
     }
 }
 
-/// When the border is not painted background and border are transparent an the color is set to standard
+/// When the border is not painted background and border are transparent and the color is set to standard
 .border-notpainted, .border-notpainted:enabled:hover {
     background: transparent;
     border-color: transparent;
@@ -35,7 +47,7 @@
 }
 
 /// Show that a button without border is hovered
-.border-notpainted:enabled:hover {
+.mouse-border:enabled:hover {
     border-color: var(--btnNoBorderPaintedColor);
 }
 
@@ -78,5 +90,12 @@
         .gap-bottom & {
             margin-bottom: var(--iconTextGap);
         }
+        .icon-center-left & {
+            margin-left: var(--iconCenterGap)
+        }
+        .icon-center-right & {
+            margin-right: var(--iconCenterGap)
+        }
     }
 }
+

@@ -1,0 +1,73 @@
+@mixin btnHover {
+    background: var(--background);
+
+    &:enabled:hover {
+        background: var(--hoverBackground);
+    }
+
+    &:not(.border-notpainted) {
+        border-color: var(--background);
+    }
+}
+
+@mixin menuBtnHover {
+    background: var(--background);
+
+    &:hover {
+        background: var(--hoverBackground);
+    }
+
+    &:not(.border-notpainted) {
+        border-color: var(--background);
+    }
+}
+
+@mixin toggleBtnHover {
+    &.p-button {
+        background: var(--background);
+
+        &:not(.border-notpainted) {
+            border-color: var(--background);
+        }
+
+        &.bright, &:not(.p-disabled):not(.p-highlight):hover.bright {
+            color: var(--btnColorBright);
+        }
+
+        &.dark, &:not(.p-disabled):not(.p-highlight):hover.dark {
+            color: var(--standardTextColor);
+        }
+
+        &:not(.p-disabled):not(.p-highlight):hover {
+            background: var(--hoverBackground);
+            
+            &:not(.border-notpainted) {
+                border-color: var(--hoverBackground);
+            }
+        }
+
+        &.p-highlight {
+            background: var(--selectedBackground);
+
+            &:not(.border-notpainted) {
+                border-color: var(--selectedBackground);
+        
+                &:hover {
+                    border-color: var(--background);
+                }
+            }
+    
+            &:hover {
+                background: var(--background);
+
+                &.bright {
+                    color: var(--btnColorBright);
+                }
+
+                &.dark {
+                    color: var(--standardTextColor);
+                }
+            }
+        }
+    }
+}

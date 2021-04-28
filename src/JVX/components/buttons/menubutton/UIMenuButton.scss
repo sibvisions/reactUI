@@ -1,3 +1,5 @@
+@import '../../../../frontmask/scssmixin/buttonHover.scss';
+
 /// background and border-color set because children need to inherit
 /// Inherit height and width from parent who has set it by the layout
 .rc-popupmenubutton {
@@ -31,28 +33,14 @@
     }
 }
 
-@mixin hover {
-    background-color: var(--background);
 
-    &:hover {
-        background-color: var(--hoverBackground);
-    }
-
-    &:not(.border-notpainted) {
-        border-color: var(--background);
-
-        &:hover {
-            border-color: var(--hoverBackground);
-        }
-    }
-}
 
 .p-splitbutton {
     --menuBtnJustify: center;
     --menuBtnAlign: center;
     --menuBtnPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
 
-    @include hover;
+    @include menuBtnHover;
 }
 
 .p-splitbutton-defaultbutton {
