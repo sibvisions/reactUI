@@ -85,8 +85,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const updateRebuildTree = () => {
             setInitRender(false);
             setExpandedKeys({});
-            console.log('clearing nodes')
-            setNodes([]);
+            nodes.length = 0
             setTreeData(new Map());
             setRebuildTree(prevState => !prevState);        
         }
@@ -177,7 +176,6 @@ const UITree: FC<ITree> = (baseProps) => {
             builtData.forEach((data, i) => {
                 const childPath = parentPath.getChildPath(i);
                 nodeReference.children = nodeReference.children ? nodeReference.children : [];
-                console.log(nodeReference.children.some((child:any) => child.key === childPath.toString()), childPath.toString())
                 if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
                     const newNode = {
                         key: childPath.toString(),
@@ -295,7 +293,6 @@ const UITree: FC<ITree> = (baseProps) => {
      * if necessary.
      */
     const recursiveCallback = useCallback(async () => {
-        console.log('start', nodes)
         //An array which is used to get the current path and at the end the selected key of the node
         const selectedIndices:number[] = [];
         //Object which stores which keys are currently extended
@@ -319,7 +316,6 @@ const UITree: FC<ITree> = (baseProps) => {
          * @returns the referenced node based on the given path
          */
         const getReferencedNode = (path: TreePath) => {
-            console.log(nodes)
             let tempNode: any = nodes[path.get(0)];
             for (let i = 1; i < path.length(); i++) {
                 tempNode = tempNode.children[path.get(i)]
@@ -357,7 +353,6 @@ const UITree: FC<ITree> = (baseProps) => {
         //If the last databook is self-joined, some additional fetches need to be performed
         if (isSelfJoined(lastDatabook)) {
             const responseValue = sortedSR.get(lastDatabook);
-            console.log(responseValue, nodes[0])
             const metaData = getMetaData(compId, lastDatabook, context.contentStore);
             const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.selectedIndex);
             //init the previous row with the root reference
@@ -371,7 +366,6 @@ const UITree: FC<ITree> = (baseProps) => {
                 }
                 if (props.detectEndNode !== false) {
                     const dataRowChildren = providedData.get(lastDatabook).get(prevRow);
-                    console.log(dataRowChildren, getReferencedNode(path.getParentPath().getChildPath(i)))
                     for (let [i, value] of dataRowChildren.entries()) {
                         await sendTreeFetch(value, getReferencedNode(path.getParentPath().getChildPath(i)))
                         .then((response:any) => tempTreeMap = new Map([...tempTreeMap, ...response.treeMap]));
@@ -405,7 +399,26 @@ const UITree: FC<ITree> = (baseProps) => {
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
 
-        const testFunc = (data:any[]) => {
+        /**
+         * When the first databook is self-joined, the root page must be fetched always.
+         * Sets self-joined "null" datapage in dataprovider map
+         * @returns the datarows of the root page
+         */
+        const fetchSelfJoinedRoot = async () => {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = firstLvlDataBook;
+            fetchReq.filter = {
+                columnNames: metaData!.masterReference!.referencedColumnNames,
+                values: [null]
+            }
+            const response:any = await context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
+            const fetchResponse = await response.json();
+            context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
+            const builtData = context.server.buildDatasets(fetchResponse[0])
+            return builtData;
+        }
+
+        const fetchAndBuildNodes = (data:any[]) => {
             //allSettled so the tree waits for all fetches to be finished and then it sets the treedata
             Promise.allSettled(data.map((data, i) => {
                 const path = new TreePath(i);
@@ -420,9 +433,6 @@ const UITree: FC<ITree> = (baseProps) => {
 
                 //if the current row is selected, call the recursive callback to fetch the row
                 //and potential selected rows below
-                if (isSelfJoined(firstLvlDataBook))
-                    console.log(data, selectedRows, getDataRow(new TreePath(selectedRows.get(props.dataBooks[0])?.treePath.get(0)), {}), _.isEqual(data, getDataRow(new TreePath(selectedRows.get(props.dataBooks[0])?.treePath.get(0)), {})))
-
                 if (data === selectedRows.get(props.dataBooks[0])?.dataRow || 
                     (isSelfJoined(firstLvlDataBook) && _.isEqual(data, getDataRow(new TreePath(selectedRows.get(props.dataBooks[0])?.treePath.get(0)), {})))) {
                     return recursiveCallback();
@@ -439,37 +449,13 @@ const UITree: FC<ITree> = (baseProps) => {
             setInitRender(true)
         }
 
-        const fetchMissingData = async () => {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = firstLvlDataBook;
-            fetchReq.filter = {
-                columnNames: metaData!.masterReference!.referencedColumnNames,
-                values: [null]
-            }
-            let test:any = await context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
-            test = await test.json();
-            context.server.processFetch(test[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
-            let wat = context.server.buildDatasets(test[0])
-            return wat;
-            
-        }
-
+        //if the first databook is self-joined fetch the root page else fetch build up the tree as usual
         if (isSelfJoined(firstLvlDataBook)) {
-            console.log(nodes)
-            fetchMissingData().then((res:any) => testFunc(res))   
+            fetchSelfJoinedRoot().then((res:any) => fetchAndBuildNodes(res))   
         }
         else {
-            console.log('lol')
-            testFunc(providedData.get(firstLvlDataBook).get("current"))
+            fetchAndBuildNodes(providedData.get(firstLvlDataBook).get("current"))
         }
-
-        // if (isSelfJoined(firstLvlDataBook) && !firstLvlData) {
-        //     fetchMissingData().then((res:any) => testFunc(res))
-        // }
-        // else {
-        //     testFunc(firstLvlData)
-        // }
-
         
         // eslint-disable-next-line
     }, [rebuildTree]);
@@ -483,7 +469,7 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     }, [selectedRows]);
 
-    console.log(nodes)
+    console.log(treeData)
 
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
