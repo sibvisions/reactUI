@@ -56,7 +56,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title} = props;
+    const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue} = props;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -72,37 +72,65 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
-    let Gauge = RingGauge;
+    let Gauge:React.ComponentType<GaugeProps> = SpeedometerGauge;
 
     switch(gaugeStyle) {
         case GAUGE_STYLES.STYLE_FLAT:
             Gauge = ArcGauge;
+            break;
+        case GAUGE_STYLES.STYLE_RING:
+            Gauge = RingGauge;
             break;
     }
 
     return (
         <span ref={wrapperRef} className="ui-gauge" style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
             <div className="ui-gauge__title">{title}</div>
-            <Gauge value={data / maxValue} label={`${data} ${columnLabel}`} />
+            <Gauge 
+                id={id}
+                value={data} 
+                label={`${data} ${columnLabel}`} 
+                max={maxValue}
+                steps={[minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]}
+            />
         </span>
     )
 }
 
-const RingGauge = ({
+interface GaugeProps {
+    id: string
+    value: number 
+    size?: number
+    thickness?: number
+    color?: string
+    background?: string
+    label?: string
+    min?: number
+    max?: number
+    steps?: [number, number, number, number]
+    ticks?: number
+    subTicks?: number
+}
+
+const RingGauge: React.FC<GaugeProps> = ({
     value = 0, 
+    max = 10,
     size = 100, 
     thickness = 10, 
     color = "#F77777",
     background = "#808080",
-    label = ""
+    label = "",
+    id
 }) => {
     const r = (size - thickness) * .5;
     const circumference = 2 * Math.PI * r;
     const hs = size * .5;
 
+    const maskID = `mask-${id}`;
+
     return <div className="ui-gauge-ring">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <mask id="mask">
+            <mask id={maskID}>
                 <circle 
                     cx={hs} 
                     cy={hs}
@@ -112,7 +140,7 @@ const RingGauge = ({
                     fill="none"
                 />
             </mask>
-            <g mask="url(#mask)">
+            <g mask={`url(#${maskID})`}>
                 <circle 
                     cx={hs} 
                     cy={hs}
@@ -129,7 +157,7 @@ const RingGauge = ({
                     strokeWidth={thickness + 2}
                     stroke={color}
                     strokeDasharray={circumference}
-                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value) * circumference))}
+                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
                     fill="none"
                 />
             </g>
@@ -140,22 +168,26 @@ const RingGauge = ({
     </div>
 }
 
-const ArcGauge = ({
+const ArcGauge: React.FC<GaugeProps> = ({
     value = 0, 
+    max = 10,
     size = 100, 
     thickness = 10, 
     color = "#F77777",
     background = "#808080",
-    label = ""
+    label = "",
+    id
 }) => {
     const r = (size - thickness) * .5;
     const circumference = Math.PI * r;
     const ht = thickness * .5;
     const hs = size * .5;
 
+    const maskID = `mask-${id}`;
+
     return <div className="ui-gauge-arc">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <mask id="mask">
+            <mask id={maskID}>
                 <path 
                     d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
                     strokeWidth={thickness}
@@ -163,7 +195,7 @@ const ArcGauge = ({
                     fill="none"
                 />
             </mask>
-            <g transform={`translate(0 ${size * .25})`} mask="url(#mask)">
+            <g transform={`translate(0 ${size * .25})`} mask={`url(#${maskID})`}>
                 <path 
                     d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
                     strokeWidth={thickness + 2}
@@ -175,12 +207,106 @@ const ArcGauge = ({
                     strokeWidth={thickness + 2}
                     stroke={color}
                     strokeDasharray={circumference}
-                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value) * circumference))}
+                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
                     fill="none"
                 />
             </g>
         </svg>
         <div className="ui-gauge-arc__label">
+            {label}
+        </div>
+    </div>
+}
+
+
+const SpeedometerGauge: React.FC<GaugeProps> = ({
+    value = 0, 
+    size = 100, 
+    thickness = 4, 
+    color = "#F77777",
+    label = "",
+    min = 0,
+    max = 10,
+    ticks = 11,
+    subTicks = 3,
+    steps,
+    id
+}) => {
+    const r = (size - thickness) * .5;
+    const ir = r - thickness - 2;
+    const circumference = Math.PI * r;
+    const innerCircumference = Math.PI * ir;
+    const ht = thickness * .5;
+    const hs = size * .5;
+
+    const tickSize = 1;
+    const subTickSize = .5;
+    const needleOrigin = hs;
+    const needleLength = needleOrigin + thickness;
+    const needleRotation = 180 * value / max - 90;
+
+    let dasharray = [tickSize, circumference / (ticks - 1) - tickSize];
+
+    if (subTicks > 0) {
+        const space = dasharray.pop() || 0;
+        const segment = (space - subTicks * subTickSize) / (subTicks + 1);
+        dasharray.push(segment);
+        for (let i = 0; i < subTicks; i++) {
+            dasharray.push(subTickSize, segment)
+        }
+    }
+
+    const maskID = `mask-${id}`;
+
+    return <div className="ui-gauge-speedometer">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
+            <mask id={maskID}>
+                <path 
+                    d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                    strokeWidth={thickness - 1}
+                    stroke={"#0e0"}
+                    fill="none"
+                />
+            </mask>
+            <g transform={`translate(0 ${size * .25})`}>
+                {steps ? <g mask={`url(#${maskID})`}>
+                    <path 
+                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        strokeWidth={thickness}
+                        stroke={"#0e0"}
+                        fill="none"
+                    />
+                    <path 
+                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        strokeWidth={thickness}
+                        strokeDasharray={`${innerCircumference * steps[1] / max} ${innerCircumference * (steps[2] - steps[1]) / max} ${innerCircumference}`}
+                        stroke={"#fc0"}
+                        fill="none"
+                    />
+                    <path 
+                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        strokeWidth={thickness}
+                        strokeDasharray={`${innerCircumference * steps[0] / max} ${innerCircumference * (steps[3] - steps[0]) / max} ${innerCircumference}`}
+                        stroke={"#e00"}
+                        fill="none"
+                    />
+                </g> : null}
+                <path 
+                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                    strokeWidth={thickness}
+                    strokeDasharray={dasharray.join(' ')}
+                    strokeDashoffset={tickSize * .5}
+                    stroke={"#000"}
+                    fill="none"
+                />
+                <path 
+                    d={`m ${hs} ${needleOrigin}, -2.5 2.5, 2.5 -${needleLength}, 2.5 ${needleLength}z`} 
+                    transform={`rotate(${needleRotation} ${hs} ${hs})`}
+                    fill="#000" 
+                />
+            </g>
+        </svg>
+        <div className="ui-gauge-speedometer__label">
             {label}
         </div>
     </div>
