@@ -102,25 +102,37 @@ const RingGauge = ({
 
     return <div className="ui-gauge-ring">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <circle 
-                cx={hs} 
-                cy={hs}
-                r={r}
-                strokeWidth={thickness}
-                stroke={background}
-                fill="none"
-            />
-            <circle 
-                cx={hs} 
-                cy={hs}
-                r={r}
-                transform={`rotate(-90 ${hs} ${hs})`}
-                strokeWidth={thickness}
-                stroke={color}
-                strokeDasharray={circumference}
-                strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value) * circumference))}
-                fill="none"
-            />
+            <mask id="mask">
+                <circle 
+                    cx={hs} 
+                    cy={hs}
+                    r={r}
+                    strokeWidth={thickness}
+                    stroke="#fff"
+                    fill="none"
+                />
+            </mask>
+            <g mask="url(#mask)">
+                <circle 
+                    cx={hs} 
+                    cy={hs}
+                    r={r}
+                    strokeWidth={thickness + 2}
+                    stroke={background}
+                    fill="none"
+                />
+                <circle 
+                    cx={hs} 
+                    cy={hs}
+                    r={r}
+                    transform={`rotate(-90 ${hs} ${hs})`}
+                    strokeWidth={thickness + 2}
+                    stroke={color}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value) * circumference))}
+                    fill="none"
+                />
+            </g>
         </svg>
         <div className="ui-gauge-ring__label">
             {label}
@@ -143,16 +155,24 @@ const ArcGauge = ({
 
     return <div className="ui-gauge-arc">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <g transform={`translate(0 ${size * .25})`}>
+            <mask id="mask">
                 <path 
                     d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
                     strokeWidth={thickness}
+                    stroke="#fff"
+                    fill="none"
+                />
+            </mask>
+            <g transform={`translate(0 ${size * .25})`} mask="url(#mask)">
+                <path 
+                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                    strokeWidth={thickness + 2}
                     stroke={background}
                     fill="none"
                 />
                 <path 
                     d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                    strokeWidth={thickness}
+                    strokeWidth={thickness + 2}
                     stroke={color}
                     strokeDasharray={circumference}
                     strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value) * circumference))}
