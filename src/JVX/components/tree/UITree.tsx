@@ -469,8 +469,6 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     }, [selectedRows]);
 
-    console.log(treeData)
-
     return (
         <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Tree 
