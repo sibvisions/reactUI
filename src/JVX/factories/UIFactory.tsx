@@ -33,6 +33,7 @@ import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 //import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
+import UIGauge, { IGauge } from "../components/gauge/UIGauge";
 import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
 import UIMapGoogle from "../components/map/UIMapGoogle";
 import UICustomComponentWrapper, { ICustomComponentWrapper } from "../components/customComp/UICustomComponentWrapper";
@@ -281,6 +282,15 @@ export const createChart: FC<IChart> = (props) => {
 }
 
 /**
+ * Returns a Gauge as component
+ * @param props - properties sent by the server
+ * @returns a tree as component
+ */
+ export const createGauge: FC<IGauge> = (props) => {
+    return <UIGauge {...props} key={props.id}/>
+}
+
+/**
  * Returns a Map either Google Maps or OpenStreetMaps as component
  * @param props - properties sent by the server
  * @returns a Map either Google Maps or OpenStreetMaps as component
@@ -370,7 +380,7 @@ const classNameMapper = new Map<string, Function>()
     .set("Chart", createChart)
     .set("Map", createMap)
     .set("Tree", createTree)
-    .set("Gauge", createDummy)
+    .set("Gauge", createGauge)
 
 /**
  * Returns the function to build the component
