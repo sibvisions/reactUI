@@ -1,0 +1,90 @@
+@mixin btnHover {
+    background: var(--background);
+
+    &:enabled:hover {
+        background: var(--hoverBackground);
+        border-color: var(--hoverBackground);
+    }
+
+    &:not(.border-notpainted) {
+        border-color: var(--background);
+    }
+}
+
+@mixin menuBtnHover {
+    background: var(--background);
+
+    &:hover {
+        background: var(--hoverBackground);
+        border-color: var(--hoverBackground);
+    }
+
+    &:not(.border-notpainted) {
+        border-color: var(--background);
+    }
+}
+
+@mixin toggleBtnHover {
+    &.p-button {
+        &:not(.border-notpainted) {
+            background: var(--background);
+            border-color: var(--background);
+        }
+
+        &.border-notpainted {
+            background: transparent;
+            border-color: transparent;
+            color: var(--standardTextColor);
+        }
+
+        &:not(.p-disabled):not(.p-highlight):hover {
+            &:not(.border-notpainted) {
+                background: var(--hoverBackground);
+                border-color: var(--hoverBackground);
+            }
+
+            &.border-notpainted {
+                background: transparent;
+                border-color: transparent;
+                color: var(--standardTextColor);
+
+                &.mouse-border {
+                    background: var(--hoverBackground);
+                    border-color: var(--hoverBackground);
+                }
+            }
+        }
+
+        &.bright, &:not(.p-disabled):not(.p-highlight).bright:hover, &.p-highlight.bright:hover {
+            color: var(--btnColorBright);
+
+            .p-button-icon-left, .p-button-icon-right {
+                    color: var(--iconColor, --btnColorBright);
+            }
+        }
+
+        &.dark, &:not(.p-disabled):not(.p-highlight).dark:hover, &.p-highlight.dark:hover {
+            color: var(--standardTextColor);
+
+            .p-button-icon-left, .p-button-icon-right {
+                color: var(--iconColor, --standardTextColor);
+            }
+        }
+
+        &.p-highlight {
+            &:not(.border-notpainted), &.border-notpainted.mouse-border {
+                background: var(--selectedBackground);
+                border-color: var(--selectedBackground);
+        
+                &:hover {
+                    background: var(--background);
+                    border-color: var(--background);
+                }
+            }
+    
+            &:hover {
+                background: var(--background);
+            }
+        }
+    }
+}

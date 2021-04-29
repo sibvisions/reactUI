@@ -14,10 +14,12 @@ import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, centerElem, getGapPos, getIconCenterDirection, renderButtonIcon} from "../ButtonStyling";
+import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
 import { cn } from "../menubutton/UIMenuButton";
+import { parseIconData } from "../../compprops/ComponentProperties";
+import useButtonMouseImages from "../../zhooks/useButtonMouseImages";
 
 /**
  * This component displays a basic button
@@ -47,7 +49,13 @@ const UIButton: FC<IButton> = (baseProps) => {
     /** On which side of the side of the label, the gap between icon and label should be */
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
     /** The amount of pixels to put  */
-    const iconCenterGap = buttonRef.current ? buttonRef.current.element.children[1].offsetWidth/2 - buttonRef.current.element.children[0].offsetWidth/2 : 0
+    const iconCenterGap = buttonRef.current ? buttonRef.current.element.children[1].offsetWidth/2 - buttonRef.current.element.children[0].offsetWidth/2 : 0;
+    /** Data of the icon which is displayed while holding the mousebutton */
+    const pressedIconData = parseIconData(props.foreground, props.mousePressedImage);
+    /** Data of the icon which is displayed while moving the mouse over the button */
+    const mouseOverIconData = parseIconData(props.foreground, props.mouseOverImage);
+    /** Hook to display mouseOverImages and mousePressedImage */
+    useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current.element : undefined);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -71,7 +79,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 ref={buttonRef}
                 className={cn(
                     "rc-button",
-                    props.borderPainted === false ? "border-notpainted" : '',
+                    !btnData.btnBorderPainted ? "border-notpainted" : '',
                     props.style?.includes("hyperlink") ? "p-button-link" : '',
                     btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
                     props.borderOnMouseEntered ? "mouse-border" : '',

@@ -14,22 +14,18 @@ import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButtonSelectable} from "../IButton";
-import {addHoverEffect, buttonProps, centerElem, getGapPos, renderButtonIcon} from "../ButtonStyling";
+import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseIconData} from "../../compprops/ComponentProperties";
 import {parseJVxSize} from "../../util/parseJVxSize";
-import { cn } from "../menubutton/UIMenuButton";
-
-/** Interface fot ToggleButtons */
-export interface IToggleButton extends IButtonSelectable {
-    mousePressedImage: string;
-}
+import {cn} from "../menubutton/UIMenuButton";
+import useButtonMouseImages from "../../zhooks/useButtonMouseImages";
 
 /**
  * This component displays a Button which can be toggled on and off
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIToggleButton: FC<IToggleButton> = (baseProps) => {
+const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
     /** Reference for the span that is wrapping the button containing layout information */
@@ -39,77 +35,27 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IToggleButton>(baseProps.id, baseProps);
+    const [props] = useProperties<IButtonSelectable>(baseProps.id, baseProps);
     /** Information on how to display the button, refreshes everytime the props change */
     const btnData = useMemo(() => buttonProps(props), [props]);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Button Background either server set or default */
     const btnBgd = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
-    /** Data of the icon which is displayed while holding the mousebutton */
-    const pressedIconData = parseIconData(props.foreground, props.mousePressedImage)
     /** Server set or default horizontal alignment */
     const btnHAlign = btnData.style.justifyContent || "center";
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
-        /** On which side of the side of the label, the gap between icon and label should be */
-        const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
-        /** The amount of pixels to put  */
-        const iconCenterGap = buttonRef.current ? buttonRef.current.container.children[1].offsetWidth/2 - buttonRef.current.container.children[0].offsetWidth/2 : 0
-
-        /** 
-     * Adding eventListener for mouse pressing to display the mousePressImage received by the server
-     * apply all server sent styling and add a custom hover effect to the ToggleButton
-     * @returns removing eventListeners on unmount
-     */
-    useLayoutEffect(() => {
-        const handleMouseImagePressed = (elem:HTMLElement) => {
-            if (pressedIconData.icon?.includes('fa fa-')) {
-                elem.classList.remove((btnData.iconProps.icon as string).substring(3));
-                elem.classList.add(pressedIconData.icon.substring(3));
-            }
-            else
-                elem.style.setProperty('--iconImage', 'url(' + context.server.RESOURCE_URL + pressedIconData.icon + ')');
-        }
-
-        const handleMouseImageReleased = (elem:HTMLElement) => {
-            if (pressedIconData.icon?.includes('fa fa-')) {
-                elem.classList.remove(pressedIconData.icon.substring(3));
-                elem.classList.add((btnData.iconProps.icon as string).substring(3))
-            }
-            else
-                elem.style.setProperty('--iconImage', 'url(' + context.server.RESOURCE_URL + btnData.iconProps.icon + ')');
-        }
-
-        if (buttonRef.current) {
-            const btnContainer = buttonRef.current.container;
-            if (btnData.iconProps.icon) {
-                const iconElement = btnContainer.children[0] as HTMLElement;
-                //renderButtonIcon(iconElement, props, btnData.iconProps, context.server.RESOURCE_URL);
-                if (props.horizontalTextPosition === 1)
-                    centerElem(btnContainer.children[0], btnContainer.children[1], props.horizontalAlignment)
-                if (pressedIconData.icon) {
-                    btnContainer.addEventListener('mousedown', () => handleMouseImagePressed(iconElement));
-                    btnContainer.addEventListener('mouseup', () => handleMouseImageReleased(iconElement));
-                    btnContainer.addEventListener('mouseout', () => handleMouseImageReleased(iconElement));
-                }
-            }
-            //(btnData.btnBorderPainted && tinycolor(btnBgd).isDark()) ? btnContainer.classList.add("bright") : btnContainer.classList.add("dark");
-            //addHoverEffect(btnContainer as HTMLElement, props.borderOnMouseEntered,
-            //btnBgd, tinycolor(btnBgd).darken(10).toString(), 5, btnData.btnBorderPainted, props.selected, props.background ? true : false);
-        }
-        return () => {
-            if (buttonRef.current && btnData.iconProps.icon && pressedIconData.icon) {
-                const btnContainer = buttonRef.current.container;
-                if (btnContainer) {
-                    const iconElement = btnContainer.children[0] as HTMLElement
-                    btnContainer.removeEventListener('mousedown', () => handleMouseImagePressed(iconElement));
-                    btnContainer.removeEventListener('mouseup', () => handleMouseImageReleased(iconElement));
-                    btnContainer.removeEventListener('mouseout', () => handleMouseImageReleased(iconElement));
-                }
-            }
-        }
-    },[props.selected, btnBgd, btnData.btnBorderPainted, btnData.iconProps, btnData.style, props, context.server.RESOURCE_URL, pressedIconData.icon]);
+    /** On which side of the side of the label, the gap between icon and label should be */
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+    /** The amount of pixels to put  */
+    const iconCenterGap = buttonRef.current ? buttonRef.current.container.children[1].offsetWidth/2 - buttonRef.current.container.children[0].offsetWidth/2 : 0;
+    /** Data of the icon which is displayed while holding the mousebutton */
+    const pressedIconData = parseIconData(props.foreground, props.mousePressedImage);
+    /** Data of the icon which is displayed while moving the mouse over the button */
+    const mouseOverIconData = parseIconData(props.foreground, props.mouseOverImage);
+    /** Hook to display mouseOverImages and mousePressedImage */
+    useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current.container : undefined);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -132,9 +78,11 @@ const UIToggleButton: FC<IToggleButton> = (baseProps) => {
                 ref={buttonRef}
                 className={cn(
                     "rc-togglebutton",
-                    props.borderPainted === false ? "border-notpainted" : '',
+                    !btnData.btnBorderPainted ? "border-notpainted" : '',
                     btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
                     props.borderOnMouseEntered ? "mouse-border" : '',
+                    `gap-${gapPos}`,
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
                 )}
                 style={{
                     ...btnData.style,

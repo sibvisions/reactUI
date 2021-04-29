@@ -1,3 +1,5 @@
+@import '../../../../frontmask/scssmixin/buttonColors.scss';
+
 .rc-togglebutton {
     --btnJustify: center;
     --btnAlign: center;
@@ -18,51 +20,6 @@
     }
 
     @include toggleBtnHover;
-
-
-    // &.p-button:not(.p-disabled):not(.p-highlight) {
-    //     background: var(--btnDefaultBgd);
-    //     border-color: var(--btnDefaultBgd);
-    //     &.dark {
-    //         color: var(--standardTextColor);
-    //         &.p-button-icon-left, .p-button-icon-right {
-    //             color: var(--standardTextColor);
-    //         } 
-    //     }
-    //     &.bright {
-    //         color: var(--btnColorBright);
-    //         .p-button-icon-left, .p-button-icon-right {
-    //             color: var(--btnColorBright);
-    //         } 
-    //     }
-    //     &:hover {
-    //         &.dark {
-    //             .p-button-icon-left, .p-button-icon-right {
-    //                 color: var(--standardTextColor);
-    //             } 
-    //         }
-    //         &.bright {
-    //             .p-button-icon-left, .p-button-icon-right {
-    //                 color: white;
-    //             } 
-    //         }
-    //     }
-    // }
-    // &.p-button.p-highlight, &.p-button.p-highlight:hover {
-    //     border-color: var(--btnDefaultBgd);
-    //     &.dark {
-    //         color: black;
-    //         .p-button-icon-left, .p-button-icon-right {
-    //             color: black;
-    //         }
-    //     }
-    //     &.bright {
-    //         color: white;
-    //         .p-button-icon-left, .p-button-icon-right {
-    //             color: white;
-    //         }
-    //     }
-    // }
 }
 
 .rc-inputswitch {

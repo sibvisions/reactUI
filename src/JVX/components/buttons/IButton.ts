@@ -11,6 +11,8 @@ export interface IButton extends BaseComponent {
     imageTextGap?: number,
     borderOnMouseEntered?: boolean,
     enabled?: boolean
+    mouseOverImage?: string,
+    mousePressedImage?: string
 }
 
 /** Interface for Buttons which manage a selected state extends IButton */

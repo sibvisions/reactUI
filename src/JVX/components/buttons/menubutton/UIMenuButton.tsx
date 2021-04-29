@@ -14,7 +14,7 @@ import {jvxContext} from "../../../jvxProvider";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButton} from "../IButton";
-import {addHoverEffect, buttonProps, renderButtonIcon, getGapPos} from "../ButtonStyling";
+import {buttonProps, getGapPos} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";

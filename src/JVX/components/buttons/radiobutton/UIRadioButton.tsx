@@ -64,9 +64,17 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    console.log(btnData)
+
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span className="rc-radiobutton" style={{...btnData.style, justifyContent: rbHAlign, alignItems: rbVAlign}}>
+            <span 
+                className="rc-radiobutton" 
+                style={{
+                    ...btnData.style, 
+                    justifyContent: rbHAlign, 
+                    alignItems: rbVAlign
+                }}>
                 <RadioButton
                     ref={rbRef}
                     inputId={props.id}

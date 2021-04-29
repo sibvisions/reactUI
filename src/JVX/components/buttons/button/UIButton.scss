@@ -1,4 +1,4 @@
-@import '../../../../frontmask/scssmixin/buttonHover.scss';
+@import '../../../../frontmask/scssmixin/buttonColors.scss';
 
 /// Inherit height and width from parent who has set it by the layout
 .rc-button {
@@ -48,7 +48,8 @@
 
 /// Show that a button without border is hovered
 .mouse-border:enabled:hover {
-    border-color: var(--btnNoBorderPaintedColor);
+    background: var(--background);
+    border-color: var(--background);
 }
 
 .p-button-label {

@@ -1,7 +1,26 @@
 /// Inherit height and width from parent who has set it by the layout
 /// Inline-flex for alignment
 .rc-radiobutton {
+    --radioJustify: flex-start;
+    --radioAlign: center;
+    --radioPadding: 0;
+
     display: inline-flex;
     height: inherit;
     width: inherit;
+
+    justify-content: var(--radioJustify);
+    align-items: var(--radioAlign);
+    padding: var(--radioPadding);
+}
+
+.p-radiobutton-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.p-radiobutton {
+    min-width: 20px;
+    min-height: 20px;
 }

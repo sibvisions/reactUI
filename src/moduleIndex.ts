@@ -5,7 +5,6 @@ export {default as UIButton} from './JVX/components/buttons/button/UIButton';
 export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';
 export {default as UIRadioButton} from './JVX/components/buttons/radiobutton/UIRadioButton';
 export {default as UIToggleButton} from './JVX/components/buttons/togglebutton/UIToggleButton';
-export {default as UIInputSwitch} from './JVX/components/buttons/togglebutton/UIInputSwitch';
 export {default as UIChart} from './JVX/components/chart/UIChart';
 export {default as UICheckbox} from './JVX/components/checkbox/UICheckBox';
 export {default as UIEditorCheckbox} from './JVX/components/editors/checkbox/UIEditorCheckbox';

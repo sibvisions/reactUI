@@ -20,7 +20,7 @@ import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEd
 import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
 import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import { IButton, IButtonSelectable } from "../components/buttons/IButton";
-import UIToggleButton, { IToggleButton } from "../components/buttons/togglebutton/UIToggleButton";
+import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
 import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
 import UIRadioButton from "../components/buttons/radiobutton/UIRadioButton";
 import UICheckBox from "../components/checkbox/UICheckBox";
@@ -31,7 +31,6 @@ import UIPassword from "../components/text/UIPassword";
 import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
 import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
-//import UIInputSwitch from "../components/buttons/togglebutton/UIInputSwitch";
 import UIChart, { IChart } from "../components/chart/UIChart";
 import UIGauge, { IGauge } from "../components/gauge/UIGauge";
 import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
@@ -99,13 +98,9 @@ export const createButton: FC<IButton> = (props) => {
  * @param props - properties sent by the server
  * @returns a ToggleButton as component
  */
-export const createToggleButton: FC<IToggleButton> = (props) => {
+export const createToggleButton: FC<IButtonSelectable> = (props) => {
     return <UIToggleButton {...props} key={props.id}/>
 }
-
-// export const createToggleButton: FC<IToggleButton> = (props) => {
-//     return <UIInputSwitch {...props} key={props.id}/>
-// }
 
 /**
  * Returns a PopupMenuButton as component
