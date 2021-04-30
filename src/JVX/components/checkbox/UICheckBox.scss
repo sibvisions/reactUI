@@ -1,7 +1,39 @@
 /// Inherit height and width from parent who has set it by the layout
 /// Inline-flex for alignment
 .rc-checkbox {
+    --checkJustify: flex-start;
+    --checkAlign: center;
+    --checkPadding: 0;
+
     display: inline-flex;
     height: inherit;
     width: inherit;
+
+    justify-content: var(--checkJustify);
+    align-items: var(--checkAlign);
+    padding: var(--checkPadding);
+}
+
+.p-checkbox {
+    min-width: 20px;
+    min-height: 20px;
+
+    .gap-top & {
+        margin-top: var(--iconTextGap);
+    }
+    .gap-left & {
+        margin-left: var(--iconTextGap);
+    }
+    .gap-right & {
+        margin-right: var(--iconTextGap);
+    }
+    .gap-bottom & {
+        margin-bottom: var(--iconTextGap);
+    }
+    .icon-center-left & {
+        margin-left: var(--iconCenterGap)
+    }
+    .icon-center-right & {
+        margin-right: var(--iconCenterGap)
+    }
 }

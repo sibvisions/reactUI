@@ -12,11 +12,12 @@ import useProperties from "../../zhooks/useProperties";
 import {jvxContext} from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButtonSelectable} from "../IButton";
-import {buttonProps, renderRadioCheck} from "../ButtonStyling";
+import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
 import {createSetValueRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {parseJVxSize} from "../../util/parseJVxSize";
+import { cn } from "../menubutton/UIMenuButton";
 
 /**
  * This component displays a RadioButton and its label
@@ -45,16 +46,10 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const rbHAlign = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');
     /** Server set or default vertical alignment */
     const rbVAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
-
-    /** Apply all server sent styling for RadioButton */
-    useLayoutEffect(() => {
-        const lblRef = labelRef.current;
-        const radioRef = rbRef.current
-        if (lblRef && radioRef) {
-            renderRadioCheck(radioRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(rbBgd).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
-        }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, rbBgd]);
+    /** On which side of the side of the label, the gap between icon and label should be */
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+    /** The amount of pixels to center the icon or radiobutton/checkbox respective to the label is hTextPos = 1 */
+    const iconCenterGap = rbRef.current && labelRef.current ? labelRef.current.offsetWidth/2 - rbRef.current.element.offsetWidth/2 : 0;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -64,17 +59,29 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    console.log(btnData)
-
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <span 
-                className="rc-radiobutton" 
+                className={cn(
+                    "rc-radiobutton",
+                    `gap-${gapPos}`,
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
+                    )} 
                 style={{
-                    ...btnData.style, 
-                    justifyContent: rbHAlign, 
-                    alignItems: rbVAlign
-                }}>
+                    ...btnData.style,
+                    '--radioJustify': rbHAlign, 
+                    '--radioAlign': rbVAlign,
+                    '--radioPadding': btnData.style.padding,
+                    '--background': rbBgd,
+                    '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    '--iconCenterGap': `${iconCenterGap}px`,
+                    ...(btnData.iconProps?.icon ? {
+                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
+                        '--iconColor': btnData.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                    } : {})
+                } as any}>
                 <RadioButton
                     ref={rbRef}
                     inputId={props.id}
@@ -88,9 +95,17 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                         context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE);
                     }}
                 />
-                <label ref={labelRef} className="p-radiobutton-label" htmlFor={props.id} style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
+                <label 
+                    ref={labelRef} 
+                    className={cn(
+                        "p-radiobutton-label",
+                        btnData.style.color ? 'textcolor-set' : '',
+                        btnData.btnBorderPainted && tinycolor(rbBgd).isDark() ? "bright" : "dark"
+                        )} 
+                    htmlFor={props.id} 
+                    style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
                     {btnData.iconProps.icon !== undefined &&
-                        <i className={btnData.iconProps.icon}/>
+                        <i className={cn(btnData.iconProps.icon, 'rc-button-icon')}/>
                     }
                     {props.text}
                 </label>

@@ -23,4 +23,27 @@
 .p-radiobutton {
     min-width: 20px;
     min-height: 20px;
+
+    .gap-top & {
+        margin-top: var(--iconTextGap);
+    }
+    .gap-left & {
+        margin-left: var(--iconTextGap);
+    }
+    .gap-right & {
+        margin-right: var(--iconTextGap);
+    }
+    .gap-bottom & {
+        margin-bottom: var(--iconTextGap);
+    }
+    .icon-center-left & {
+        margin-left: var(--iconCenterGap)
+    }
+    .icon-center-right & {
+        margin-right: var(--iconCenterGap)
+    }
+}
+
+.textcolor-set {
+    color: inherit;
 }

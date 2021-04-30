@@ -48,7 +48,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     const btnVAlign = btnData.style.alignItems || "center";
     /** On which side of the side of the label, the gap between icon and label should be */
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
-    /** The amount of pixels to put  */
+    /** The amount of pixels to center the icon or radiobutton/checkbox respective to the label is hTextPos = 1 */
     const iconCenterGap = buttonRef.current ? buttonRef.current.element.children[1].offsetWidth/2 - buttonRef.current.element.children[0].offsetWidth/2 : 0;
     /** Data of the icon which is displayed while holding the mousebutton */
     const pressedIconData = parseIconData(props.foreground, props.mousePressedImage);

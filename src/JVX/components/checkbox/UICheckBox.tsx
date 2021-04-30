@@ -12,11 +12,12 @@ import useProperties from "../zhooks/useProperties";
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import {IButtonSelectable} from "../buttons/IButton";
-import {buttonProps, renderRadioCheck} from "../buttons/ButtonStyling";
+import {buttonProps, getGapPos, getIconCenterDirection} from "../buttons/ButtonStyling";
 import {createSetValueRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import { parseJVxSize } from "../util/parseJVxSize";
+import { cn } from "../buttons/menubutton/UIMenuButton";
 
 /**
  * This component displays a CheckBox and its label
@@ -45,16 +46,10 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     const cbHAlign = btnData.style.justifyContent || (props.horizontalTextPosition !== 1 ? 'flex-start' : 'center');
     /** Server set or default vertical alignment */
     const cbVAlign = btnData.style.alignItems || (props.horizontalTextPosition !== 1 ? 'center' : 'flex-start');
-
-    /** Apply all server sent styling for CheckBox */
-    useLayoutEffect(() => {
-        const lblRef = labelRef.current
-        const checkRef = cbRef.current;
-        if (checkRef && lblRef) {
-            renderRadioCheck(checkRef.element, lblRef, props, btnData.iconProps, context.server.RESOURCE_URL);
-            (btnData.btnBorderPainted && tinycolor(cbBgd).isDark()) ? lblRef.classList.add("bright") : lblRef.classList.add("dark");
-        }
-    }, [props, btnData.btnBorderPainted, btnData.iconProps, btnData.style, context.server.RESOURCE_URL, cbBgd]);
+    /** On which side of the side of the label, the gap between icon and label should be */
+    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+    /** The amount of pixels to center the icon or radiobutton/checkbox respective to the label is hTextPos = 1 */
+    const iconCenterGap = cbRef.current && labelRef.current ? labelRef.current.offsetWidth/2 - cbRef.current.element.offsetWidth/2 : 0;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -66,7 +61,27 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
 
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span className="rc-checkbox" style={{...btnData.style, justifyContent: cbHAlign, alignItems: cbVAlign}}>
+            <span 
+                className={cn(
+                    "rc-checkbox",
+                    `gap-${gapPos}`,
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
+                    )} 
+                style={{
+                    ...btnData.style,
+                    '--checkJustify': cbHAlign, 
+                    '--checkAlign': cbVAlign,
+                    '--checkPadding': btnData.style.padding,
+                    '--background': cbBgd,
+                    '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    '--iconCenterGap': `${iconCenterGap}px`,
+                    ...(btnData.iconProps?.icon ? {
+                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
+                        '--iconColor': btnData.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                    } : {})
+                } as any}>
                 <Checkbox
                     ref={cbRef}
                     inputId={props.id}
@@ -79,9 +94,17 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                         context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE);
                     }}
                 />
-                <label ref={labelRef} className="p-radiobutton-label" htmlFor={props.id} style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
+                <label 
+                    ref={labelRef} 
+                    className={cn(
+                        "p-radiobutton-label",
+                        btnData.style.color ? 'textcolor-set' : '',
+                        btnData.btnBorderPainted && tinycolor(cbBgd).isDark() ? "bright" : "dark"
+                        )} 
+                    htmlFor={props.id} 
+                    style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
                     {btnData.iconProps.icon !== undefined &&
-                        <i className={btnData.iconProps.icon}/>
+                        <i className={cn(btnData.iconProps.icon, 'rc-button-icon')}/>
                     }
                     {props.text}
                 </label>

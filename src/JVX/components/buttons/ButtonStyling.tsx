@@ -62,7 +62,7 @@ export function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) 
 
 export function getIconCenterDirection(hTextPos:number|undefined, hAlign:number|undefined, iconProps:IconProps|undefined) {
     if (hTextPos === 1) {
-        if (hAlign === 0 || (!hAlign && !iconProps)) {
+        if (hAlign === 0 || !hAlign) {
             return 'icon-center-left';
         }
         else if (hAlign === 2) {
@@ -70,58 +70,4 @@ export function getIconCenterDirection(hTextPos:number|undefined, hAlign:number|
         }
     }
     return '';
-}
-
-/**
- * Centers an element relative to the measured length of another element
- * @param centerElem - the element to be centered
- * @param labelElem - label element
- * @param hAlign - horizontalAlignment of button
- */
-export function centerElem(centerElem:HTMLElement, labelElem:HTMLElement, hAlign:number|undefined) {
-    let labelWidth = labelElem.offsetWidth/2;
-    let centerWidth = centerElem.offsetWidth/2;
-        if (hAlign === 0 || (!hAlign && !centerElem.classList.contains('rc-button-icon')))
-            centerElem.style.setProperty('margin-left', labelWidth-centerWidth + 'px')
-        else if (hAlign === 2)
-            centerElem.style.setProperty('margin-right', labelWidth-centerWidth + 'px')
-}
-
-/**
- * Sets styling of RadioButtons and Checkboxes
- * @param btnElement - element of the RadioButton or CheckBox
- * @param lblElement - label element
- * @param props - properties of the RadioButton or CheckBox
- * @param iconProps - properties of the icon
- * @param resource - resource string to get images
- */
-export function renderRadioCheck(btnElement:HTMLElement, lblElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
-    btnElement.style.setProperty('margin-' + getGapPos(props.horizontalTextPosition, props.verticalTextPosition), '4px');
-    if (props.horizontalTextPosition === 1)
-        centerElem(btnElement, lblElement, props.horizontalAlignment)
-    if (iconProps.icon)
-        renderButtonIcon(lblElement.children[0] as HTMLElement, props, iconProps, resource);
-}
-
-/**
- * Sets the styling of an icon for a button
- * @param iconElement - the element which contains the icon
- * @param props - properties of the button
- * @param iconProps - properties of the icon
- * @param resource  - resource strong to get images
- */
-export function renderButtonIcon(iconElement:HTMLElement, props:IButton, iconProps:IconProps, resource:string) {
-    iconElement.classList.add("rc-button-icon")
-    const gapPos = iconElement.tagName === 'SPAN' ? getGapPos(props.horizontalTextPosition, props.verticalTextPosition) : 'right';
-    iconElement.style.setProperty('margin-' + gapPos, (props.imageTextGap ? props.imageTextGap : 4)+'px');
-    if (!iconProps.icon?.includes('fa fa-')) {
-        iconElement.style.setProperty('display', 'inline-block');
-        iconElement.style.setProperty('width', iconProps.size?.width+'px');
-        iconElement.style.setProperty('height', iconProps.size?.height+'px');
-    }
-    iconElement.style.setProperty('font-size', iconProps.size?.height+'px');
-    iconElement.style.setProperty('color', iconProps.color ? iconProps.color : null);
-    if (!iconElement.classList.value.includes('fa fa-')) {
-        iconElement.style.setProperty('background-image', 'url(' + resource + iconProps.icon + ')');
-    }
 }

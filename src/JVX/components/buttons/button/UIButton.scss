@@ -75,7 +75,7 @@
     }
 
     &:not(span) {
-        margin-right: var(--iconTextGap);
+        margin-right: 4px;
     }
 
     @at-root #{selector-unify(&, "span")} {
