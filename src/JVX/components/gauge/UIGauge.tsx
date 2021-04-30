@@ -75,6 +75,9 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     let Gauge:React.ComponentType<GaugeProps> = SpeedometerGauge;
 
     switch(gaugeStyle) {
+        case GAUGE_STYLES.STYLE_METER:
+            Gauge = MeterGauge;
+            break;
         case GAUGE_STYLES.STYLE_FLAT:
             Gauge = ArcGauge;
             break;
@@ -110,6 +113,7 @@ interface GaugeProps {
     steps?: [number, number, number, number]
     ticks?: number
     subTicks?: number
+    circle?: number
 }
 
 const RingGauge: React.FC<GaugeProps> = ({
@@ -218,8 +222,11 @@ const ArcGauge: React.FC<GaugeProps> = ({
     </div>
 }
 
+const SpeedometerGauge: React.FC<GaugeProps> = (props) => {
+    return <MeterGauge {...props} circle={.75} />
+}
 
-const SpeedometerGauge: React.FC<GaugeProps> = ({
+const MeterGauge: React.FC<GaugeProps> = ({
     value = 0, 
     size = 100, 
     thickness = 4, 
@@ -230,20 +237,24 @@ const SpeedometerGauge: React.FC<GaugeProps> = ({
     ticks = 11,
     subTicks = 3,
     steps,
-    id
+    id,
+    circle = .5,
 }) => {
     const r = (size - thickness) * .5;
     const ir = r - thickness - 2;
-    const circumference = Math.PI * r;
-    const innerCircumference = Math.PI * ir;
+    const circumference = 2 * Math.PI * r * circle;
+    const innerCircumference =  2 * Math.PI * ir * circle;
     const ht = thickness * .5;
     const hs = size * .5;
+    const sin = (1 - Math.sin(Math.PI * circle));
+    const inset = sin * r;
+    const iinset = sin * ir;
 
     const tickSize = 1;
     const subTickSize = .5;
     const needleOrigin = hs;
     const needleLength = needleOrigin + thickness;
-    const needleRotation = 180 * value / max - 90;
+    const needleRotation = 360 * circle * value / max - 180 * circle;
 
     let dasharray = [tickSize, circumference / (ticks - 1) - tickSize];
 
@@ -258,33 +269,39 @@ const SpeedometerGauge: React.FC<GaugeProps> = ({
 
     const maskID = `mask-${id}`;
 
+    const bottom = r + Math.sqrt(r * r - Math.pow(r - inset, 2)) + thickness * .5;
+    const leftScale = ht + thickness + 2 + iinset;
+    const rightScale = size - ht - thickness - 2 - iinset;
+    const bottomScale = ir + Math.sqrt(ir * ir - Math.pow(ir - iinset, 2)) + thickness + 4;
+
+
     return <div className="ui-gauge-speedometer">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
             <mask id={maskID}>
                 <path 
-                    d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                    d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                     strokeWidth={thickness - 1}
                     stroke={"#0e0"}
                     fill="none"
                 />
             </mask>
-            <g transform={`translate(0 ${size * .25})`}>
+            <g transform={`translate(0 0)`}>
                 {steps ? <g mask={`url(#${maskID})`}>
                     <path 
-                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         stroke={"#0e0"}
                         fill="none"
                     />
                     <path 
-                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[1] / max} ${innerCircumference * (steps[2] - steps[1]) / max} ${innerCircumference}`}
                         stroke={"#fc0"}
                         fill="none"
                     />
                     <path 
-                        d={`M ${ht + thickness + 1} ${hs} A ${ir} ${ir} 0 0 1 ${size - ht - thickness - 1} ${hs}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[0] / max} ${innerCircumference * (steps[3] - steps[0]) / max} ${innerCircumference}`}
                         stroke={"#e00"}
@@ -292,7 +309,7 @@ const SpeedometerGauge: React.FC<GaugeProps> = ({
                     />
                 </g> : null}
                 <path 
-                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                    d={`M ${ht + inset} ${bottom} A ${r} ${r} 0 1 1 ${size - ht - inset} ${bottom}`}
                     strokeWidth={thickness}
                     strokeDasharray={dasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
