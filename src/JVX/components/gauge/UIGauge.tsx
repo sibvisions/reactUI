@@ -248,7 +248,7 @@ const ArcGauge: React.FC<GaugeProps> = ({
 }
 
 const SpeedometerGauge: React.FC<GaugeProps> = (props) => {
-    return <MeterGauge {...props} circle={.75} />
+    return <MeterGauge {...props} ticks={11} subTicks={3} circle={.75} />
 }
 
 const MeterGauge: React.FC<GaugeProps> = ({
@@ -257,11 +257,11 @@ const MeterGauge: React.FC<GaugeProps> = ({
     thickness = 4, 
     label = "",
     max = 10,
-    ticks = 11,
-    subTicks = 3,
+    ticks = 5,
+    subTicks = 4,
     steps,
     id,
-    circle = .5,
+    circle = .25,
 }) => {
     const r = (size - thickness) * .5;
     const tr = r + thickness * .25;
@@ -274,6 +274,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
     const sin = (1 - Math.sin(Math.PI * circle));
     const inset = sin * r;
     const iinset = sin * ir;
+    const tinset = sin * tr;
 
     const tickSize = 1;
     const subTickSize = .5;
@@ -295,11 +296,17 @@ const MeterGauge: React.FC<GaugeProps> = ({
     const maskID = `mask-${id}`;
     const markerID = `end-${id}`;
 
-    const bottom = r + Math.sqrt(r * r - Math.pow(r - inset, 2)) + thickness * .5;
+    const height = Math.sqrt(r * r - Math.pow(r - inset, 2));
+    const bottom = (circle >= .5 ? r + height : r - height) + thickness * .5;
     const leftScale = ht + thickness + 2 + iinset;
     const rightScale = size - ht - thickness - 2 - iinset;
-    const bottomScale = ir + Math.sqrt(ir * ir - Math.pow(ir - iinset, 2)) + thickness + 4;
+    const scaleHeight = Math.sqrt(ir * ir - Math.pow(ir - iinset, 2));
+    const bottomScale = (circle >= .5 ? ir + scaleHeight : ir - scaleHeight) + thickness + 4;
 
+    const ticksHeight = Math.sqrt(tr * tr - Math.pow(tr - tinset, 2));
+    const bottomTicks = (circle >= .5 ? tr + ticksHeight : tr - ticksHeight) + thickness * .25;
+
+    const arcFlag = circle >= .5 ? 1 : 0;
 
     return <div className="ui-gauge-speedometer">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
@@ -315,7 +322,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
             </defs>
             <mask id={maskID}>
                 <path 
-                    d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
+                    d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
                     strokeWidth={thickness - 1}
                     stroke="#fff"
                     fill="none"
@@ -324,20 +331,20 @@ const MeterGauge: React.FC<GaugeProps> = ({
             <g transform={`translate(0 0)`}>
                 {steps ? <g mask={`url(#${maskID})`}>
                     <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         stroke={colorOK}
                         fill="none"
                     />
                     <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[1] / max} ${innerCircumference * (steps[2] - steps[1]) / max} ${innerCircumference}`}
                         stroke={colorWarning}
                         fill="none"
                     />
                     <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[0] / max} ${innerCircumference * (steps[3] - steps[0]) / max} ${innerCircumference}`}
                         stroke={colorError}
@@ -346,7 +353,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                 </g> : null}
 
                 <path 
-                    d={`M ${ht + inset} ${bottom} A ${r} ${r} 0 1 1 ${size - ht - inset} ${bottom}`}
+                    d={`M ${ht + inset} ${bottom} A ${r} ${r} 0 ${arcFlag} 1 ${size - ht - inset} ${bottom}`}
                     strokeWidth={thickness}
                     strokeDasharray={dasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
@@ -357,7 +364,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                 />
 
                 {subDasharray.length ? <path 
-                    d={`M ${ht + inset - thickness * .25} ${bottom} A ${tr} ${tr} 0 1 1 ${size - ht - inset + thickness * .25} ${bottom}`}
+                    d={`M ${ht + tinset - thickness * .25} ${bottomTicks} A ${tr} ${tr} 0 ${arcFlag} 1 ${size - ht - tinset + thickness * .25} ${bottomTicks}`}
                     strokeWidth={thickness * .5}
                     strokeDasharray={subDasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
