@@ -264,8 +264,10 @@ const MeterGauge: React.FC<GaugeProps> = ({
     circle = .5,
 }) => {
     const r = (size - thickness) * .5;
+    const tr = r + thickness * .25;
     const ir = r - thickness - 2;
     const circumference = 2 * Math.PI * r * circle;
+    const tickCircumference = 2 * Math.PI * tr * circle;
     const innerCircumference =  2 * Math.PI * ir * circle;
     const ht = thickness * .5;
     const hs = size * .5;
@@ -280,13 +282,13 @@ const MeterGauge: React.FC<GaugeProps> = ({
     const needleRotation = 360 * circle * value / max - 180 * circle;
 
     let dasharray = [tickSize, circumference / (ticks - 1) - tickSize];
+    let subDasharray: number[] = [];
 
     if (subTicks > 0) {
-        const space = dasharray.pop() || 0;
-        const segment = (space - subTicks * subTickSize) / (subTicks + 1);
-        dasharray.push(segment);
+        const tickSegment = ((tickCircumference / (ticks - 1) - tickSize) - subTicks * subTickSize) / (subTicks + 1);
+        subDasharray = [0, tickSize + tickSegment];
         for (let i = 0; i < subTicks; i++) {
-            dasharray.push(subTickSize, segment)
+            subDasharray.push(subTickSize, tickSegment)
         }
     }
 
@@ -342,6 +344,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                         fill="none"
                     />
                 </g> : null}
+
                 <path 
                     d={`M ${ht + inset} ${bottom} A ${r} ${r} 0 1 1 ${size - ht - inset} ${bottom}`}
                     strokeWidth={thickness}
@@ -352,6 +355,16 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     marker-end={`url(#${markerID})`}
                     fill="none"
                 />
+
+                {subDasharray.length ? <path 
+                    d={`M ${ht + inset - thickness * .25} ${bottom} A ${tr} ${tr} 0 1 1 ${size - ht - inset + thickness * .25} ${bottom}`}
+                    strokeWidth={thickness * .5}
+                    strokeDasharray={subDasharray.join(' ')}
+                    strokeDashoffset={tickSize * .5}
+                    stroke="#000"
+                    fill="none"
+                /> : null}
+            
                 <path 
                     d={`m ${hs} ${needleOrigin}, -2.5 2.5, 2.5 -${needleLength}, 2.5 ${needleLength}z`} 
                     transform={`rotate(${needleRotation} ${hs} ${hs})`}
