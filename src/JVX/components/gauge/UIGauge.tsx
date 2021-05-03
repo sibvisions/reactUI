@@ -291,6 +291,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
     }
 
     const maskID = `mask-${id}`;
+    const markerID = `end-${id}`;
 
     const bottom = r + Math.sqrt(r * r - Math.pow(r - inset, 2)) + thickness * .5;
     const leftScale = ht + thickness + 2 + iinset;
@@ -300,6 +301,16 @@ const MeterGauge: React.FC<GaugeProps> = ({
 
     return <div className="ui-gauge-speedometer">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
+            <defs>
+                <marker id={markerID} viewBox={`0 0 ${tickSize} ${thickness}`}
+                    refX={tickSize * .5} refY={thickness * .5}
+                    markerUnits="userSpaceOnUse"
+                    markerWidth={tickSize} 
+                    markerHeight={thickness}
+                    orient="auto">
+                    <rect x="0" y="0" width={tickSize} height={thickness} />
+                </marker>
+            </defs>
             <mask id={maskID}>
                 <path 
                     d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
@@ -336,7 +347,9 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     strokeWidth={thickness}
                     strokeDasharray={dasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
-                    stroke={"#000"}
+                    stroke="#000"
+                    marker-start={`url(#${markerID})`}
+                    marker-end={`url(#${markerID})`}
                     fill="none"
                 />
                 <path 
