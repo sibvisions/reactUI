@@ -1,5 +1,3 @@
-import { jvxContext } from './JVX/jvxProvider';
-
 /** Exporting components and hooks to be used as library */
 export {default as UIButton} from './JVX/components/buttons/button/UIButton';
 export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';

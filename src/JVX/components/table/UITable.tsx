@@ -36,6 +36,7 @@ export interface TableProps extends BaseComponent{
 
 /** Type for CellEditor */
 type CellEditor = {
+    compId: string
     name: string
     cellData: any,
     dataProvider: string,
@@ -56,25 +57,62 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** Metadata of the columns */
-    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName)
+    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
+
+    const [selectedRow] = useRowSelect(props.compId, props.metaData!.dataProvider, props.colName);
+
+    const [waiting, setWaiting] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (waiting) {
+            
+            setWaiting(false);
+        }
+    }, [selectedRow])
+
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
     /** Either return the correctly rendered value or a in-cell editor */
+
     return useMemo(() => {
-        if (!edit) {
-            return (
-                <div className={"cell-data"} style={{height: 30}} onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                    {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
-                </div>
-            )
-        } else {
-            return (
-                <div ref={wrapperRef} style={{height: 30}}>
-                    {displayEditor(columnMetaData, props)}
-                </div>
-            )
+        if (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") {
+            if (edit && !waiting) {
+                return (
+                    <div ref={wrapperRef} style={{ height: 30 }}>
+                        {displayEditor(columnMetaData, props)}
+                    </div>
+                )
+            }
+            else {
+                return (
+                    <div
+                        className="cell-data"
+                        style={{ height: 30 }}
+                        onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
+                    </div>
+                )
+            }
         }
-    }, [edit, props, context.contentStore.locale, columnMetaData]);
+        else {
+            if (!edit) {
+                return (
+                    <div
+                        className="cell-data"
+                        style={{ height: 30 }}
+                        onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
+                    </div>
+                )
+            } else {
+                return (
+                    <div ref={wrapperRef} style={{ height: 30 }}>
+                        {displayEditor(columnMetaData, props)}
+                    </div>
+                )
+            }  
+        }
+    }, [edit, props, context.contentStore.locale, columnMetaData, waiting]);
 }
 
 /**
@@ -244,6 +282,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 key={colName}
                 headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined}}
                 body={(rowData: any) => <CellEditor
+                    compId={compId}
                     name={props.name as string}
                     colName={colName}
                     dataProvider={props.dataBook}

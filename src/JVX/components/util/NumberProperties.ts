@@ -75,8 +75,10 @@ export function getNumberLength(scaleDigits:ScaleType, precision:number, scale:n
  * @returns the deciaml length of the number editor
  */
 export function getDecimalLength(precision:number, scale:number) {
-    if (precision > 0)
+    if (precision > 0) {
         return precision - scale
-    else
+    }
+    else {
         return undefined
+    }
 }

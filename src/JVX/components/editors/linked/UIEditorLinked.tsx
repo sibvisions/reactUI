@@ -74,7 +74,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** For lazy loading, current state of the last value in lazy loading "cache" */
     const [lastRow, setLastRow] = useState(100);
     /** Current state of the height of an item in the LinkedCellEditor list, used for calculating position in lazy loading*/
-    const [itemHeight, setItemHeight] = useState(0);
+    const itemHeight = useRef<number>();
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** The horizontal- and vertical alignments */
@@ -115,16 +115,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     //@ts-ignore
                     if (autoPanel.children[0].children[0]) {
                         //@ts-ignore
-                        autoPanel.children[0].style.height = Math.ceil(providedData.length * parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))+'px';
-                        if(itemHeight === 0) {
+                        autoPanel.children[0].style.setProperty('--itemsHeight', Math.ceil(providedData.length * parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))+'px');
+                        if(!itemHeight.current) {
                             //@ts-ignore
-                            setItemHeight(parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))
+                            itemHeight.current = parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height)
                         }
                     }
                 }
             }, 150);
         }
-    },[providedData, id, itemHeight]);
+    },[providedData, id]);
 
     /**
      * Sets the top style property of each dropdownitem based on the firstrow in cache (lazy loading)
@@ -135,7 +135,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
                 if (autoPanel) {
                     let itemsList:Array<any> = [...document.getElementsByClassName("p-autocomplete-item")];
-                    itemsList.map(element => element.style.top = (parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height) * firstRow)+'px');
+                    itemsList.map(element => element.style.setProperty('--itemTop', (parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height) * firstRow)+'px'));
                 }
             }, 150)
         }
@@ -156,21 +156,22 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         const handleScroll = (elem:HTMLElement) => {
             if (elem) {
                 elem.onscroll = _.debounce(() => {
+                    let itemH = itemHeight.current ? itemHeight.current : 33
                     /** The current first item visible in the dropdownlist */
-                    let currFirstItem = elem.scrollTop / itemHeight;
+                    let currFirstItem = elem.scrollTop / itemH;
                     /** The current last item visible in the dropdownlist */
-                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemHeight;
+                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemH;
                     /** If the current first item is "less" than the cached firstRow, set the new row states to reload the data */
                     if (currFirstItem < firstRow) {
                         setFirstRow(Math.floor(currFirstItem / 50) * 50);
                         setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
-                        elem.scrollTop = itemHeight * (currLastItem - 3);
+                        elem.scrollTop = itemH * (currLastItem - 3);
                     }
                     /** If the current last item is "greater" than the cached lastRow, set the new row states to reload the data */
                     if (currLastItem > lastRow) {
                         setFirstRow(Math.floor(currLastItem / 100) * 100);
                         setLastRow(Math.ceil(currLastItem / 100) * 100);
-                        elem.scrollTop = itemHeight * (currFirstItem + 3)
+                        elem.scrollTop = itemH * (currFirstItem + 3)
                     }
                     /** If the current providedData length is smaller than the current first item + 400, send a fetchRequest to the server to fetch new data */
                     if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
@@ -182,7 +183,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
         },150);
-    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, itemHeight, compId])
+    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, compId])
 
     /**
      * When enter is pressed "submit" the value

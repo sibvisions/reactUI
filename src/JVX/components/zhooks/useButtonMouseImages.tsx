@@ -1,6 +1,7 @@
-import {useContext, useLayoutEffect, useCallback, useRef, useEffect} from "react"
+import {useContext, useCallback, useRef, useEffect} from "react"
 import { jvxContext } from "../../jvxProvider";
 import IconProps from "../compprops/IconProps";
+import useEventHandler from "./useEventHandler";
 
 const isFAIcon = (iconName?:string) => {
     return iconName?.includes('fa fa-');
@@ -12,24 +13,6 @@ const removeIcon = (elem:HTMLElement, iconName:string) => {
     } else {
         elem.style.setProperty('--iconImage', '');
     }
-}
-
-const useEventHandler = (target?: HTMLElement, event?: keyof HTMLElementEventMap, handler?: EventListener) => {
-    const targetRef = useRef<HTMLElement>();
-    const handlerRef = useRef<EventListener>();
-    const eventRef = useRef<keyof HTMLElementEventMap>();
-
-    useEffect(() => {
-        if (targetRef.current && handlerRef.current && eventRef.current) {
-            targetRef.current.removeEventListener(eventRef.current, handlerRef.current);
-        }
-        targetRef.current = target;
-        handlerRef.current = handler;
-        eventRef.current = event;
-        if (target && event && handler) {
-            target.addEventListener(event, handler);
-        }
-    }, [target, event, handler])
 }
 
 const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconProps, mouseOverIconData?:IconProps, btnElement?:HTMLElement) => {

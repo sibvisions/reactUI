@@ -19,9 +19,15 @@
 /// Lazyloading loading animation
 .p-autocomplete-panel {
     .p-autocomplete-items {
+        --itemsHeight: 200px;
+
+        height: var(--itemsHeight);
         animation: pulse 0.7s infinite ease-in-out;
         padding: 0;
         .p-autocomplete-item {
+            --itemTop: 0px;
+
+            top: var(--itemTop);
             background: white;
         }
     }
