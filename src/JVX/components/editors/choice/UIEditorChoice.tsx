@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useContext, useMemo, useRef} from "react";
+import React, {FC, useContext, useEffect, useMemo, useRef} from "react";
 
 /** Hook imports */
 import useProperties from "../../zhooks/useProperties";
@@ -84,8 +84,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(selectedRow !== undefined)
+        if(selectedRow !== undefined) {
             validImage = selectedRow
+        }
         else{
             for(let value in validImages){
                 if(validImages[value] === props.cellEditor.defaultImageName){
@@ -138,6 +139,12 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
 
     }
+
+    useEffect(() => {
+        if (baseProps.id === "") {
+            handleClick()
+        }
+    }, [])
     
     return (
         <span className="rc-editor-choice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>

@@ -45,7 +45,7 @@ export function displayEditor(metaData:IEditor|undefined, props:any) {
  * @param locale - the current locale
  * @returns properly rendered values for cells based on their CellEditors
  */
-export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:string, locale:string) {
+export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:string, locale:string, stateFunc:Function) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
             /** If the cell is a ChoiceCellEditor get the index of the value in metaData and return the corresponding image */
@@ -53,7 +53,7 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                 const castedColumn = metaData as IEditorChoice;
                 const cellIndex = castedColumn.cellEditor.allowedValues.indexOf(cellData);
                 if (castedColumn.cellEditor.imageNames && cellIndex !== undefined)
-                    return <img className="rc-editor-choice-img" alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]}/>
+                    return <img className="rc-editor-choice-img" alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]} onClick={() => {console.log('calling func'); stateFunc()}}/>
             }
             /** If the cell is a DateCellEditor use moment to return the correct value with the correct format (parsing Java SimpleDateFormat tokens to moment tokens) */
             else if (metaData.cellEditor.className === "DateCellEditor") {

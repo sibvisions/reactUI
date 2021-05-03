@@ -21,6 +21,7 @@ import {parseJVxSize} from "../../util/parseJVxSize";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 import {getDecimalLength, getGrouping, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
 import { getMetaData } from "../../util/GetMetaData";
+import useEventHandler from "../../zhooks/useEventHandler";
 
 /** Interface for cellEditor property of NumberCellEditor */
 interface ICellEditorNumber extends ICellEditor{
@@ -91,29 +92,22 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, selectedRow),
     [props.cellEditor.numberFormat, selectedRow]);
 
-    /** 
-    * Returns the max length available for the NumberCellEditor 
-    * @returns the max length available for the NumberCellEditor 
-    */
-    const length = useMemo(() => getNumberLength(scaleDigits, cellEditorMetaData.precision, cellEditorMetaData.scale, useGrouping, prefixLength), 
-    [cellEditorMetaData.precision, cellEditorMetaData.scale, scaleDigits, useGrouping, prefixLength]);
-
     /**
      * Returns the maximal length before the deciaml seperator
      * @returns the maximal length before the deciaml seperator
      */
-    const decimalLength = useMemo(() => {
-        getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale);
-    },[cellEditorMetaData.precision, cellEditorMetaData.scale]);
+    const decimalLength = useMemo(() => getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale), [cellEditorMetaData.precision, cellEditorMetaData.scale]);
 
-    /** Set maxlength attribute */
-    useLayoutEffect(() => {
-        //@ts-ignore
-        let currElem = numberRef.current.inputEl;
-        if(currElem){
-            currElem.setAttribute('maxlength', length);
+    const isSelectedBeforeComma = () => {
+        if (numberRef.current) {
+            //@ts-ignore
+            return numberRef.current.inputEl.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
-    })
+        else {
+            //@ts-ignore
+            return false
+        }
+    }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -130,18 +124,39 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     },[selectedRow]);
 
     /**
-     * When enter is pressed "submit" the value. When the value reaches the max length, disable keyboard inputs
-     * @param e 
+     * When enter is pressed "submit" the value. When the value before the comma reaches the max length, disable keyboard inputs
+     * @param e - the browser event
      */
-    const handleKeyDown = (e:any) => {
-        const curRef = numberRef.current
+    const handleKeyDown = (e: any) => {
         handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, context.server));
-        //@ts-ignore
-        if (curRef.inputEl.value.length === curRef.inputEl.maxLength || (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + e.key).toString().length > decimalLength && curRef.inputEl.selectionStart <= (value ? value.toString().indexOf('.') : 0))) {
-            e.preventDefault();
-            return false;
+        if (['ArrowLeft', 'ArrowRight'].indexOf(e.key) < 0) {
+            //@ts-ignore
+            if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + e.key).toString().length > decimalLength && isSelectedBeforeComma()) {
+                e.preventDefault();
+                return false;
+            }
         }
     }
+
+    /**
+     * When a value is pasted check if the value isn't too big for the max length
+     * @param e - the browser event
+     */
+    const handlePaste = (e:ClipboardEvent) => {
+        if (e.clipboardData && decimalLength) {
+            const pastedValue = parseInt(e.clipboardData.getData('text'));
+            if (!isNaN(pastedValue)) {
+                //@ts-ignore
+                if (isSelectedBeforeComma() && (value ? value.toString().split('.')[0] : "").length + pastedValue.toString().length > decimalLength) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+            } 
+        }
+    }
+
+    //@ts-ignore
+    useEventHandler(numberRef.current ? numberRef.current.inputEl : undefined, 'paste', handlePaste)
 
     return (
         <InputNumber

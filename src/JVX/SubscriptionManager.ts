@@ -418,7 +418,7 @@ export class SubscriptionManager {
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
         const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)?.dataRow;
         if(rowSubscriber)
-            this.jobQueue.set("rowSelect_" + dataProvider, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]))) 
+            this.jobQueue.set("rowSelect_" + dataProvider, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
         if (screenRowSubs)
             this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
     }
