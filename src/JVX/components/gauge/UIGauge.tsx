@@ -39,6 +39,25 @@ enum GAUGE_STYLES {
     STYLE_FLAT = 3,
 }
 
+/** Color for ok value. */
+const colorOK = "#55BF3B";
+/** Color for warning value. */
+const colorWarning = "#DDDF0D";
+/** Color for error value. */
+const colorError = "#DF5353";
+
+function getColor(value: number, steps?: [number, number, number, number]) {
+    if(!steps) {
+        return colorOK;
+    }
+    if(value <= steps[0] || value >= steps[3]) {
+        return colorError;
+    } else if (value <= steps[1] || value >= steps[2]) {
+        return colorWarning;
+    } else {
+        return colorOK;
+    }
+}
 
 /**
  * This component displays gauges with various styles
@@ -121,9 +140,10 @@ const RingGauge: React.FC<GaugeProps> = ({
     max = 10,
     size = 100, 
     thickness = 10, 
-    color = "#F77777",
     background = "#808080",
     label = "",
+    color,
+    steps,
     id
 }) => {
     const r = (size - thickness) * .5;
@@ -131,6 +151,8 @@ const RingGauge: React.FC<GaugeProps> = ({
     const hs = size * .5;
 
     const maskID = `mask-${id}`;
+
+    color = color || getColor(value, steps);
 
     return <div className="ui-gauge-ring">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
@@ -177,9 +199,10 @@ const ArcGauge: React.FC<GaugeProps> = ({
     max = 10,
     size = 100, 
     thickness = 10, 
-    color = "#F77777",
     background = "#808080",
     label = "",
+    color,
+    steps,
     id
 }) => {
     const r = (size - thickness) * .5;
@@ -188,6 +211,8 @@ const ArcGauge: React.FC<GaugeProps> = ({
     const hs = size * .5;
 
     const maskID = `mask-${id}`;
+
+    color = color || getColor(value, steps);
 
     return <div className="ui-gauge-arc">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
@@ -230,9 +255,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
     value = 0, 
     size = 100, 
     thickness = 4, 
-    color = "#F77777",
     label = "",
-    min = 0,
     max = 10,
     ticks = 11,
     subTicks = 3,
@@ -281,7 +304,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                 <path 
                     d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                     strokeWidth={thickness - 1}
-                    stroke={"#0e0"}
+                    stroke="#fff"
                     fill="none"
                 />
             </mask>
@@ -290,21 +313,21 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     <path 
                         d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
-                        stroke={"#0e0"}
+                        stroke={colorOK}
                         fill="none"
                     />
                     <path 
                         d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[1] / max} ${innerCircumference * (steps[2] - steps[1]) / max} ${innerCircumference}`}
-                        stroke={"#fc0"}
+                        stroke={colorWarning}
                         fill="none"
                     />
                     <path 
                         d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 1 1 ${rightScale} ${bottomScale}`}
                         strokeWidth={thickness}
                         strokeDasharray={`${innerCircumference * steps[0] / max} ${innerCircumference * (steps[3] - steps[0]) / max} ${innerCircumference}`}
-                        stroke={"#e00"}
+                        stroke={colorError}
                         fill="none"
                     />
                 </g> : null}
