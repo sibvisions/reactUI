@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 /** 3rd Party imports */
 import {Checkbox} from 'primereact/checkbox';
@@ -15,7 +15,7 @@ import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import { getAlignments } from "../../compprops/GetAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import { getEditorCompId } from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
@@ -28,6 +28,20 @@ interface ICellEditorCheckbox extends ICellEditor{
 /** Interface for CheckBoxCellEditor */
 export interface IEditorCheckbox extends IEditor{
     cellEditor: ICellEditorCheckbox
+}
+
+/**
+ * Returns the boolean value depending on the CheckBox input
+ * @param input - value of CheckBoxCellEditor
+ * @returns boolean value of CheckBox input
+ */
+export function getBooleanValue(input: string | boolean | number | undefined) {
+    if (input === 'Y' || input === true || input === 1) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 /**
@@ -68,19 +82,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         }
     }
 
-    /**
-     * Returns the boolean value depending on the CheckBox input
-     * @param input - value of CheckBoxCellEditor
-     * @returns boolean value of CheckBox input
-     */
-    const getBooleanValue = (input:string|boolean|number|undefined) => {
-        if (input === 'Y' || input === true || input === 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+
 
     /**
      * Returns the correct value which needs to be sent to the server based on the CheckBoxCellEditor type.
@@ -115,9 +117,24 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && cbxRef.current){
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), cbxRef.current, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), cbxRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        setChecked(getBooleanValue(selectedRow))
+    }, [selectedRow]);
+
+    const handleOnChange = () => {
+        setChecked(prevState => !prevState);
+        sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server)
+    }
+
+    useEffect(() => {
+        if (baseProps.id === "") {
+            handleOnChange()
+        }
+    }, []);
 
     return (
         <span
@@ -132,12 +149,12 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
             <Checkbox
                 inputId={id}
                 checked={checked}
-                onChange={() => {
-                    setChecked(!checked)
-                    sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server)
-                }} 
+                onChange={() => handleOnChange()} 
             />
-            <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
+            {baseProps.id !== "" &&
+                <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
+            }
+            
         </span>
     )
 }

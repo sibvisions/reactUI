@@ -7,7 +7,7 @@ import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
 import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
-import {ComponentSize} from "../zhooks/useComponents";
+import {ComponentSize, ComponentSizes} from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import BaseComponent from "../BaseComponent";
@@ -30,7 +30,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         components,
         layout,
         layoutData,
-        preferredCompSizes,
+        compSizes,
         style,
         id,
         reportSize
@@ -38,7 +38,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** 
      * Function which lays out the container
-     * @param preferredCompSizes - the preferredSizes of all Childcomponents
+     * @param compSizes - the preferredSizes of all Childcomponents
      * @param children - the Childcomponents of the layout
      * @param layout - contains data about the layout like gaps, alignments etc.
      * @param layoutData - contains data about the anchors and constraints
@@ -46,7 +46,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
      * @param style - contains the style properties for size of the parent layout
      */
     const calculateLayout = useCallback((
-        preferredCompSizes: Map<string, ComponentSize>,
+        compSizes: Map<string, ComponentSizes>,
         children: Map<string, BaseComponent>,
         layout: string,
         layoutData: string,
@@ -253,7 +253,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     children.forEach(component => {
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
-                            const preferredSizeObj = preferredCompSizes.get(component.id);
+                            const preferredSizeObj = compSizes.get(component.id)?.preferredSize;
                             if(constraint && preferredSizeObj) {
                                 calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height as number, autoSizeCount);
                                 calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width as number, autoSizeCount);
@@ -295,12 +295,31 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 let topHeight = 0;
                 let bottomHeight = 0;
 
+                const isPanel = (className: string | undefined) => {
+                    if (className !== undefined) {
+                        if (className === "Panel"
+                            || className === "SplitPanel"
+                            || className === "ScrollPanel"
+                            || className === "GroupPanel"
+                            || className === "TabsetPanel") {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
                 /** Calculate preferredSize */
                 children.forEach(component => {
                     if(component.visible !== false){
                         const constraint = componentConstraints.get(component.id);
-                        const preferredComponentSize = preferredCompSizes.get(component.id);
-                        if(constraint && preferredComponentSize){
+
+                        const preferredComponentSize = compSizes.get(component.id)?.preferredSize;
+                        const minimumComponentSize = component.minimumSize || isPanel(component.className) ? 
+                                                     compSizes.get(component.id)?.minimumSize
+                                                     :
+                                                     compSizes.get(component.id)?.preferredSize
+
+                        if(constraint && preferredComponentSize && minimumComponentSize){
                             if(constraint.rightAnchor.getBorderAnchor().name === "l"){
                                 let w = constraint.rightAnchor.getAbsolutePosition();
                                 if(w > leftWidth){
@@ -310,7 +329,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                             if(constraint.leftAnchor.getBorderAnchor().name === "r"){
                                 let w = -constraint.leftAnchor.getAbsolutePosition();
-                                if(w/2 > rightWidth){
+                                if(w > rightWidth){
                                     rightWidth = w;
                                 }
                                 rightBorderUsed = true;
@@ -324,17 +343,18 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                             if(constraint.topAnchor.getBorderAnchor().name === "b"){
                                 let h = -constraint.topAnchor.getAbsolutePosition();
-                                if(h/2 > bottomHeight){
+                                if(h > bottomHeight){
                                     bottomHeight = h;
                                 }
                                 bottomBorderUsed = true;
                             }
                             if(constraint.leftAnchor.getBorderAnchor().name === "l" && constraint.rightAnchor.getBorderAnchor().name === "r"){
                                 if (!constraint.leftAnchor.autoSize || !constraint.rightAnchor.autoSize) {
-                                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + (preferredComponentSize.width as number);
+                                    let w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + preferredComponentSize.width;
                                     if(w > preferredWidth){
                                         preferredWidth = w;
                                     }
+                                    w = constraint.leftAnchor.getAbsolutePosition() - constraint.rightAnchor.getAbsolutePosition() + minimumComponentSize.width
                                     if(w > minimumWidth){
                                         minimumWidth = w;
                                     }
@@ -344,10 +364,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                             if(constraint.topAnchor.getBorderAnchor().name === "t" && constraint.bottomAnchor.getBorderAnchor().name === "b"){
                                 if (!constraint.topAnchor.autoSize || !constraint.bottomAnchor.autoSize) {
-                                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + (preferredComponentSize.height as number);
+                                    let h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + preferredComponentSize.height;
                                     if(h > preferredHeight){
                                         preferredHeight = h;
                                     }
+                                    h = constraint.topAnchor.getAbsolutePosition() - constraint.bottomAnchor.getAbsolutePosition() + minimumComponentSize.height
                                     if(h > minimumHeight){
                                         minimumHeight = h;
                                     }
@@ -361,15 +382,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 /** Preferred width */
                 if(leftWidth !== 0 && rightWidth !== 0){
-                    let w = leftWidth + rightWidth + gaps.verticalGap;
-                    if(w > preferredWidth){
+                    let w = leftWidth + rightWidth + gaps.horizontalGap;
+                    if(w > preferredWidth) {
                         preferredWidth = w;
                     }
-                    if(w > minimumWidth){
+                    if(w > minimumWidth) {
                         minimumWidth = w;
                     }
                 }
-                else if(leftWidth !== 0){
+                else if (leftWidth !== 0) {
                     const rma = anchors.get("rm");
                     if(rma){
                         let w = leftWidth - rma.position;
@@ -398,7 +419,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 /** Preferred height */
                 if(topHeight !== 0 && bottomHeight !== 0){
-                    let h = topHeight + bottomHeight + gaps.horizontalGap;
+                    let h = topHeight + bottomHeight + gaps.verticalGap;
                     if(h > preferredHeight){
                         preferredHeight = h;
                     }
@@ -482,10 +503,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
-                if(calcSize.width < preferredWidth)
-                    calcSize.width = preferredWidth;
-                if(calcSize.height < preferredHeight )
-                    calcSize.height = preferredHeight;
+                if(calcSize.width < minimumWidth)
+                    calcSize.width = minimumWidth;
+                if(calcSize.height < minimumHeight)
+                    calcSize.height = minimumHeight;
 
                 const lba = anchors.get("l");
                 const rba = anchors.get("r");
@@ -582,7 +603,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     children.forEach(component => {
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
-                            const preferredComponentSize = preferredCompSizes.get(component.id);
+                            const preferredComponentSize = compSizes.get(component.id)?.preferredSize;
                             if(constraint && preferredComponentSize){
                                 calculateRelativeAnchor(constraint.leftAnchor, constraint.rightAnchor, preferredComponentSize.width as number);
                                 calculateRelativeAnchor(constraint.topAnchor, constraint.bottomAnchor, preferredComponentSize.height as number);
@@ -679,19 +700,19 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         /** Gets the Childcomponents of the layout */
         const children = context.contentStore.getChildren(id);
         /** 
-         * If preferredCompSizes is set (every component in this layout reported its preferred size) 
-         * and the preferredCompSize is the same as children size calculate the layout 
+         * If compSizes is set (every component in this layout reported its preferred size) 
+         * and the compSize is the same as children size calculate the layout 
          */
-        if(preferredCompSizes && preferredCompSizes.size === children.size)
+        if(compSizes && compSizes.size === children.size)
             calculateLayout(
-                preferredCompSizes,
+                compSizes,
                 children,
                 layout,
                 layoutData,
                 reportSize,
                 style
             )
-    }, [layout, layoutData, preferredCompSizes, style, id, calculateLayout, context.contentStore, reportSize])
+    }, [layout, layoutData, compSizes, style, id, calculateLayout, context.contentStore, reportSize])
 
 
     return(

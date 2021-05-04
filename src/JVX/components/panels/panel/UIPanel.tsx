@@ -11,7 +11,7 @@ import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for Panels */
 export interface Panel extends BaseComponent{
@@ -34,11 +34,11 @@ const UIPanel: FC<Panel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, preferredComponentSizes] = useComponents(baseProps.id);
+    const [components, componentSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Preferred size of panel */
-    const prefSize = parseJVxSize(props.preferredSize);
+    const prefSize = parsePrefSize(props.preferredSize);
 
     /**
      * Returns the style of the panel/layout
@@ -69,7 +69,7 @@ const UIPanel: FC<Panel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Size = {height, width}
-            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
@@ -89,7 +89,7 @@ const UIPanel: FC<Panel> = (baseProps) => {
                 layout={props.layout}
                 preferredSize={props.preferredSize}
                 reportSize={reportSize}
-                preferredCompSizes={preferredComponentSizes}
+                compSizes={componentSizes}
                 components={components}
                 style={getStyle()}/>
         </div>

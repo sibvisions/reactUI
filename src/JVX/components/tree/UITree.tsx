@@ -16,7 +16,7 @@ import BaseComponent from "../BaseComponent";
 import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import { getMetaData } from "../util/GetMetaData";
@@ -72,7 +72,7 @@ const UITree: FC<ITree> = (baseProps) => {
     useLayoutEffect(() => {
         const wrapperRef = treeWrapperRef.current;
         if (wrapperRef)
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback)
 
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

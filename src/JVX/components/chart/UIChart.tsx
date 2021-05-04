@@ -13,7 +13,7 @@ import useProperties from "../zhooks/useProperties";
 /** Other imports */
 import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
@@ -195,8 +195,6 @@ const UIChart: FC<IChart> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Translations for labels */
     const translation = useTranslation();
-
-    //console.log(props.chartStyle, providerData, props, layoutValue)
 
     /** process the providerData to geta usable data list as well as the min & max values */
     const [data, min, max] = useMemo(() => {
@@ -392,7 +390,6 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             })
         }
-        //console.log('charts', primeChart, providerData, xColumnName, yColumnNames);
         return primeChart
     },[providerData, props.chartStyle, props.yColumnLabels]);
 
@@ -441,7 +438,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             text: chartTitle,
         }
 
-        const preferredSize = parseJVxSize(props.preferredSize) || parseJVxSize(props.maximumSize) || {width: 1.3, height: 1};
+        const preferredSize = parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
         const aspectRatio = preferredSize.width / preferredSize.height;
 
         const stringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
@@ -538,9 +535,9 @@ const UIChart: FC<IChart> = (baseProps) => {
         if (chartRef.current) {
             sendOnLoadCallback(
                 id, 
-                parseJVxSize(props.preferredSize), 
-                parseJVxSize(props.maximumSize), 
-                parseJVxSize(props.minimumSize), 
+                parsePrefSize(props.preferredSize), 
+                parseMaxSize(props.maximumSize), 
+                parseMinSize(props.minimumSize), 
                 chartRef.current, 
                 onLoadCallback
             )

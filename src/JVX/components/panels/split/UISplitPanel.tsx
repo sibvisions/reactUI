@@ -12,7 +12,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
 import {jvxContext} from "../../../jvxProvider";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for UISplitPanel */
 export interface UISplitPanelProps extends BaseComponent{
@@ -68,7 +68,7 @@ const UISplitPanel: FC<UISplitPanelProps> = (baseProps) => {
     useLayoutEffect(() => {
         if (splitRef.current) {
             if(onLoadCallback)
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), splitRef.current, onLoadCallback);
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize])
 

@@ -20,7 +20,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of LinkedCellEditor */
@@ -84,7 +84,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && linkedRef.current){
             // @ts-ignore
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), linkedRef.current.container, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), linkedRef.current.container, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

@@ -11,7 +11,7 @@ import {ICellEditor, IEditor} from "../IEditor";
 import {LayoutContext} from "../../../LayoutContext";
 import {jvxContext} from "../../../jvxProvider";
 import Size from "../../util/Size";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 
@@ -53,12 +53,12 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         if (!props.cellEditor.defaultImageName) {
             const prefSize:Size = {width: 0, height: 0}
             if (props.preferredSize) {
-                const parsedSize = parseJVxSize(props.preferredSize) as Size
+                const parsedSize = parsePrefSize(props.preferredSize) as Size
                 prefSize.height = parsedSize.height;
                 prefSize.width = parsedSize.width;
             }
             if (onLoadCallback)
-                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+                sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
         }
     },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize])
 
@@ -69,7 +69,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Size = {width: 0, height: 0}
         if(props.preferredSize){
-            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            const parsedSize = parsePrefSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
         } else {
@@ -78,7 +78,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
         }
 
         if(onLoadCallback)
-            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
     }
 
     return(

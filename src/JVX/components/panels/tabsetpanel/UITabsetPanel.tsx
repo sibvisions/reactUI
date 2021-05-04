@@ -18,7 +18,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import IconProps from "../../compprops/IconProps";
 import Size from "../../util/Size";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends Panel {
@@ -41,13 +41,13 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, preferredCompSizes] = useComponents(baseProps.id);
+    const [components, compSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Reference value if there is currently a tab closing action */
     const closing = useRef(false);
     /** Preferred size of panel */
-    const prefSize = parseJVxSize(props.preferredSize);
+    const prefSize = parsePrefSize(props.preferredSize);
 
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel
@@ -73,15 +73,15 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      */
     useLayoutEffect(() => {
-        if (onLoadCallback && preferredCompSizes && preferredCompSizes.size > 0 && props.selectedIndex !== -1) {
-            const selectedPanel = preferredCompSizes.get(components[(props.selectedIndex as number)].props.id);
+        if (onLoadCallback && compSizes && compSizes.size > 0 && props.selectedIndex !== -1) {
+            const selectedPanel = compSizes.get(components[(props.selectedIndex as number)].props.id)?.preferredSize;
             if (selectedPanel) {
                 const prefSize:Size = {height: selectedPanel.height + 48, width: selectedPanel.width};
-                sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+                sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
             }
                 
         }
-    }, [id, preferredCompSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
+    }, [id, compSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
 
     /** Sets up a TabsetPanelRequest which will be sent to the server either selectTab or closeTab*/
     const buildTabRequest = useCallback((tabId:number) => {

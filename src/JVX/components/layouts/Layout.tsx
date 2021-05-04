@@ -2,7 +2,7 @@ import React, {CSSProperties, FC, ReactElement} from "react";
 import FormLayout from "./FormLayout";
 import BorderLayout from "./BorderLayout";
 import FlowLayout from "./FlowLayout";
-import {ComponentSize} from "../zhooks/useComponents";
+import {ComponentSizes} from "../zhooks/useComponents";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
 
@@ -20,7 +20,7 @@ export interface ILayout{
     layoutData: string,
     preferredSize?: string,
     components: Array<ReactElement>
-    preferredCompSizes: Map<string, ComponentSize> | undefined
+    compSizes: Map<string, ComponentSizes> | undefined
     style: CSSProperties,
     reportSize: Function
 }

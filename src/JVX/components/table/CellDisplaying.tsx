@@ -13,6 +13,8 @@ import { parseDateFormatTable } from "../util/ParseDateFormats";
 import { createEditor } from "../../factories/UIFactory";
 import { IEditorNumber } from "../editors/number/UIEditorNumber";
 import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../util/NumberProperties";
+import { Checkbox } from "primereact/checkbox";
+import { getBooleanValue } from "../editors/checkbox/UIEditorCheckbox";
 
 /** 
  * Returns an in-cell editor for the column 
@@ -53,7 +55,7 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                 const castedColumn = metaData as IEditorChoice;
                 const cellIndex = castedColumn.cellEditor.allowedValues.indexOf(cellData);
                 if (castedColumn.cellEditor.imageNames && cellIndex !== undefined)
-                    return <img className="rc-editor-choice-img" alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]} onClick={() => {console.log('calling func'); stateFunc()}}/>
+                    return <img className="rc-editor-choice-img" alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]} onClick={() => stateFunc()}/>
             }
             /** If the cell is a DateCellEditor use moment to return the correct value with the correct format (parsing Java SimpleDateFormat tokens to moment tokens) */
             else if (metaData.cellEditor.className === "DateCellEditor") {
@@ -89,8 +91,16 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                         maximumFractionDigits: getScaleDigits(castedColumn.cellEditor.numberFormat, castedColumn.scale).maxScale
                     }).format(cellData);
             }
-            else
+            else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
+                return <span onClick={() => stateFunc()}>
+                    <Checkbox checked={getBooleanValue(cellData)} />
+                </span>
+                
+            }
+            else {
                 return cellData;
+            }
+                
         }
     }
     /** If there is no cellData (null) leave cell empty */

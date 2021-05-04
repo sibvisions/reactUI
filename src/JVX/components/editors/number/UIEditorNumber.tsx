@@ -17,7 +17,7 @@ import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 import {getDecimalLength, getGrouping, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
 import { getMetaData } from "../../util/GetMetaData";
@@ -113,7 +113,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && numberRef.current) {
             // @ts-ignore
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), numberRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), numberRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

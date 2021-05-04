@@ -34,17 +34,17 @@ function checkSizes(prefSize:Size, minSize:Size|undefined, maxSize:Size|undefine
  * @param ref - the reference of the component
  * @param onLoadCallback - the onLoadCallback function
  */
-export function sendOnLoadCallback(id: string, preferredSize: Size | undefined, maxSize: Size | undefined, minSize: Size | undefined, ref: any, onLoadCallback: Function | undefined) {
+export function sendOnLoadCallback(id: string, preferredSize:Size|undefined, maxSize: Size, minSize: Size, ref: any, onLoadCallback: Function | undefined) {
+    let checkedSize:Size
     if (onLoadCallback) {
         if (preferredSize) {
-            const sizeToSend:Size = checkSizes(preferredSize, minSize, maxSize);
-            onLoadCallback(id, sizeToSend.height, sizeToSend.width);
+            checkedSize = checkSizes(preferredSize, minSize, maxSize);
         }
         else {
             /** Measure how big the component wants to be initially */
             const prefSize:Size = {width: ref.getBoundingClientRect().width, height: ref.getBoundingClientRect().height};
-            const sizeToSend:Size = checkSizes(prefSize, minSize, maxSize)
-            onLoadCallback(id, sizeToSend.height, sizeToSend.width);
+            checkedSize = checkSizes(prefSize, minSize, maxSize)
         }
+        onLoadCallback(id, checkedSize, minSize, maxSize);
     }
 }

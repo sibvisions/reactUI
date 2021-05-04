@@ -21,7 +21,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     const {
         components,
         layout,
-        preferredCompSizes,
+        compSizes,
         style,
         id,
         reportSize
@@ -49,8 +49,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         /** Gets the Childcomponents of the layout */
         const children = context.contentStore.getChildren(id);
 
-        /** If preferredCompSizes is set (every component in this layout reported its preferred size) */
-        if (preferredCompSizes) {
+        /** If compSizes is set (every component in this layout reported its preferred size) */
+        if (compSizes) {
             /** The widest single grid of all components */
             let widest = 0;
             /** The tallest single grid of all components */
@@ -63,7 +63,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             
             children.forEach(component => {
                 const componentConstraints = new CellConstraints(component.constraints);
-                const prefSize = preferredCompSizes.get(component.id) || {width: 0, height: 0};
+                const prefSize = compSizes.get(component.id)?.preferredSize || {width: 0, height: 0};
                 /** Calculate how wide one single grid would be for the component based on the preferred width and how many grids the component is wide */
                 const widthOneField = Math.ceil(prefSize.width / componentConstraints.gridWidth);
                 /** Calculate how tall one single grid would be for the component based on the preferred height and how many grids the component is tall */
@@ -111,7 +111,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         }
 
         return sizeMap
-    },[layout, preferredCompSizes, reportSize, id, style, context.contentStore])
+    },[layout, compSizes, reportSize, id, style, context.contentStore])
 
     return (
         /** Provide the allowed sizes of the children as a context */

@@ -12,7 +12,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import { getAlignments } from "../../compprops/GetAlignments";
 import {createSetValuesRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import { getEditorCompId } from "../../util/GetEditorCompId";
@@ -105,7 +105,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Size = {width: 0, height: 0}
         if(props.preferredSize){
-            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            const parsedSize = parsePrefSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
         }
@@ -114,7 +114,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             prefSize.width = event.currentTarget.width;
         }
         if(onLoadCallback){
-            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 

@@ -20,7 +20,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     const {
         components,
         layout,
-        preferredCompSizes,
+        compSizes,
         style,
         id,
         reportSize
@@ -55,8 +55,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** Sorts the Childcomponent based on indexOf property */
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}))
 
-        /** If preferredCompSizes is set (every component in this layout reported its preferred size) */
-        if(preferredCompSizes){
+        /** If compSizes is set (every component in this layout reported its preferred size) */
+        if(compSizes){
             /**
 	         * Gets the factor for an alignment value. The factor will be used
 	         * to align the components in the layout.
@@ -100,7 +100,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
-                        const prefSize = preferredCompSizes.get(component.id) || { width: 0, height: 0 };
+                        const prefSize = compSizes.get(component.id)?.preferredSize || { width: 0, height: 0 };
                         if (isRowOrientation) {
                             /** If this isn't the first component add the gap between components*/
                             if (!bFirst)
@@ -192,7 +192,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
              */
             childrenSorted.forEach(component => {
                 if (component.visible !== false) {
-                    const size = preferredCompSizes.get(component.id) || {width: 0, height: 0};
+                    const size = compSizes.get(component.id)?.preferredSize || {width: 0, height: 0};
 
                     if (isRowOrientation) {
                         if (!bFirst && autoWrap && (style.width as number) > 0 && x + size.width > (style.width as number)) {
@@ -262,7 +262,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         }
 
         return sizeMap;
-    }, [layout, preferredCompSizes, reportSize, id, style, context.contentStore])
+    }, [layout, compSizes, reportSize, id, style, context.contentStore])
 
     return(
         /** Provide the allowed sizes of the children as a context */

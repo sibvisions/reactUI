@@ -18,7 +18,7 @@ import {buttonProps, getGapPos} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -62,7 +62,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

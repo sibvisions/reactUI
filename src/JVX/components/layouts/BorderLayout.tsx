@@ -25,7 +25,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     /** Extract variables from baseprops */
     const {
         components,
-        preferredCompSizes,
+        compSizes,
         style,
         reportSize,
         id,
@@ -47,8 +47,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
 
-        /** If preferredCompSizes is set (every component in this layout reported its preferred size) */
-        if(preferredCompSizes) {
+        /** If compSizes is set (every component in this layout reported its sizes) */
+        if(compSizes) {
             /** Sizes for BorderLayout areas */
             const constraintSizes: borderLayoutComponents = {
                 center: {height: 0, width: 0},
@@ -62,7 +62,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             const children = context.contentStore.getChildren(id);
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
-                const preferredSize = preferredCompSizes.get(component.id) || {height: 0, width: 0};
+                const preferredSize = compSizes.get(component.id)?.preferredSize || {height: 0, width: 0};
                 if(component.constraints === "North")
                     constraintSizes.north = preferredSize;
                 else if(component.constraints === "South")
@@ -198,7 +198,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             }
         }
         return sizeMap;
-    }, [preferredCompSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
 
     return(
         /** Provide the allowed sizes of the children as a context */

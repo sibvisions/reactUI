@@ -19,7 +19,7 @@ import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 import { getMetaData } from "../../util/GetMetaData";
 
@@ -71,11 +71,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         if(onLoadCallback && textRef.current) {
             if (props.cellEditor.contentType?.includes("password")) {
                 //@ts-ignore
-                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), textRef.current.inputEl, onLoadCallback)
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current.inputEl, onLoadCallback)
             }
             else {
                 // @ts-ignore
-                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), textRef.current.element, onLoadCallback)
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current.element, onLoadCallback)
             }
         }
     },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);

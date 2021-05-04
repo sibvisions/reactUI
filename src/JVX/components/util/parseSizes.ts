@@ -7,13 +7,33 @@ import Size from "./Size";
  * @param size - the size for the component
  * @returns split up size as object 
  */
-export function parseJVxSize(size:string|undefined):Size|undefined {
-    if (size) {
-        const sizeSplitted = size.split(',');
+export function parsePrefSize(prefSize:string|undefined):Size|undefined {
+    if (prefSize) {
+        const sizeSplitted = prefSize.split(',');
         return {width: parseInt(sizeSplitted[0]), height: parseInt(sizeSplitted[1])};
     }
     else
         return undefined;
+}
+
+export function parseMinSize(minSize:string|undefined):Size {
+    if (minSize) {
+        const sizeSplitted = minSize.split(',');
+        return {width: parseInt(sizeSplitted[0]), height: parseInt(sizeSplitted[1])};
+    }
+    else {
+        return {width: 0, height: 0};
+    }
+}
+
+export function parseMaxSize(maxSize:string|undefined):Size {
+    if (maxSize) {
+        const sizeSplitted = maxSize.split(',');
+        return {width: parseInt(sizeSplitted[0]), height: parseInt(sizeSplitted[1])};
+    }
+    else {
+        return {width: 0x80000000, height: 0x80000000};
+    }
 }
 
 /**

@@ -11,7 +11,7 @@ import useProperties from "../zhooks/useProperties";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 
 /**
  * This component displays an input field of password type not linked to a databook
@@ -33,7 +33,7 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && passwordRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), passwordRef.current.inputEl, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current.inputEl, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 

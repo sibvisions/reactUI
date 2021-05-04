@@ -19,7 +19,7 @@ const Dummy: FC<BaseComponent> = (props) => {
     useLayoutEffect(() => {
        if(props.onLoadCallback && ref.current){
            const size = ref.current.getClientRects();
-           props.onLoadCallback(props.id, size[0].height, size[0].width);
+           props.onLoadCallback(props.id, {width: size[0].width, height: size[0].height}, {width: 0, height: 0}, {width: 0x80000000, height: 0x80000000});
        }
     }, [props, ref]);
 

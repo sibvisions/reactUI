@@ -19,10 +19,11 @@ import {createFetchRequest, createSelectRowRequest} from "../../factories/Reques
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import MetaDataResponse from "../../response/MetaDataResponse";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import Size from "../util/Size";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { getMetaData } from "../util/GetMetaData";
+import _ from "underscore";
 
 /** Interface for Table */
 export interface TableProps extends BaseComponent{
@@ -36,7 +37,7 @@ export interface TableProps extends BaseComponent{
 
 /** Type for CellEditor */
 type CellEditor = {
-    id: number
+    pk: any
     compId: string
     name: string
     cellData: any,
@@ -65,7 +66,9 @@ const CellEditor: FC<CellEditor> = (props) => {
     const [waiting, setWaiting] = useState<boolean>(false);
 
     useEffect(() => {
-        if (waiting && selectedRow.ID == props.id) {
+        const pickedVals = _.pick(selectedRow, Object.keys(props.pk))
+        //console.log(pickedVals, props.pk)
+        if (waiting && _.isEqual(pickedVals, props.pk)) {
             setWaiting(false);
         }
     }, [selectedRow, edit])
@@ -74,7 +77,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
     /** Either return the correctly rendered value or a in-cell editor */
 
-    return (columnMetaData?.cellEditor?.className === "ChoiceCellEditor") ?
+    return (columnMetaData?.cellEditor?.className === "ChoiceCellEditor" || columnMetaData?.cellEditor?.className === "CheckBoxCellEditor") ?
         ((edit && !waiting) ? 
             <div ref={wrapperRef} style={{ height: 30 }}>
                 {displayEditor(columnMetaData, props)}
@@ -141,12 +144,12 @@ const UITable: FC<TableProps> = (baseProps) => {
         if(wrapRef.current){
             if(onLoadCallback) {
                 if (props.preferredSize) {
-                    sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+                    sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
                     const prefSize:Size = {height: providerData.length < 10 ? providerData.length*37 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+4}
-                    sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback)
+                    sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
         }
@@ -259,6 +262,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Building the columns */
     const columns = useMemo(() => {
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
+        const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
         return props.columnNames.map((colName, colIndex) => {
             return <Column
                 field={colName}
@@ -266,7 +270,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 key={colName}
                 headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined}}
                 body={(rowData: any) => <CellEditor
-                    id={rowData.ID}
+                    pk={_.pick(rowData, primaryKeys)}
                     compId={compId}
                     name={props.name as string}
                     colName={colName}

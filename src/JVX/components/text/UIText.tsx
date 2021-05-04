@@ -11,7 +11,7 @@ import useProperties from "../zhooks/useProperties";
 import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 
 /**
  * This component displays an input field not linked to a databook
@@ -33,7 +33,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), inputRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 

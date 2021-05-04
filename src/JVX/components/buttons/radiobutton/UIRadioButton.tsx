@@ -16,7 +16,7 @@ import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
 import {createSetValueRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
-import {parseJVxSize} from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import { cn } from "../menubutton/UIMenuButton";
 
 /**
@@ -55,7 +55,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), wrapperRef, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

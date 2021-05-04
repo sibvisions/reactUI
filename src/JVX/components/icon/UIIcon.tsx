@@ -11,7 +11,7 @@ import {jvxContext} from "../../jvxProvider";
 import {parseIconData} from "../compprops/ComponentProperties";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import Size from "../util/Size"
 
 /**
@@ -43,7 +43,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Size = {width: 0, height: 0}
         if (props.preferredSize) {
-            const parsedSize = parseJVxSize(props.preferredSize) as Size
+            const parsedSize = parsePrefSize(props.preferredSize) as Size
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
             setPreferredSize(prefSize)
@@ -53,14 +53,14 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             prefSize.width = event.currentTarget.width;
         }
         if (onLoadCallback)
-            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current){
             if (iconProps.icon?.includes('fa fa-')) {
-                sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), iconRef.current, onLoadCallback)
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, iconProps.icon, props.preferredSize, props.maximumSize, props.minimumSize]);

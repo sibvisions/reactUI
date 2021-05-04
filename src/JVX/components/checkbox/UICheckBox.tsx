@@ -16,7 +16,7 @@ import {buttonProps, getGapPos, getIconCenterDirection} from "../buttons/ButtonS
 import {createSetValueRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import { cn } from "../buttons/menubutton/UIMenuButton";
 
 /**
@@ -55,7 +55,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
         if (btnRef) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), btnRef, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

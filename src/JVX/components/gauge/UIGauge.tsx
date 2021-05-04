@@ -7,7 +7,7 @@ import useProperties from "../zhooks/useProperties";
 /** Other imports */
 import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import { parseJVxSize } from "../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import BaseComponent from "../BaseComponent";
 import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
@@ -82,9 +82,9 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         if (wrapperRef.current) {
             sendOnLoadCallback(
                 id, 
-                parseJVxSize(props.preferredSize), 
-                parseJVxSize(props.maximumSize), 
-                parseJVxSize(props.minimumSize), 
+                parsePrefSize(props.preferredSize), 
+                parseMaxSize(props.maximumSize), 
+                parseMinSize(props.minimumSize), 
                 wrapperRef.current, 
                 onLoadCallback
             )

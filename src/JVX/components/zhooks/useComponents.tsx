@@ -4,6 +4,8 @@ import {ReactElement, useCallback, useContext, useEffect, useState} from "react"
 /** Other imports */
 import {jvxContext} from "../../jvxProvider";
 import {componentHandler, createCustomComponentWrapper} from "../../factories/UIFactory";
+import Size from "../util/Size";
+import _ from "underscore";
 
 /** Type for component sizes */
 export type ComponentSize = {
@@ -11,20 +13,26 @@ export type ComponentSize = {
     height: number
 }
 
+export type ComponentSizes = {
+    preferredSize: ComponentSize,
+    minimumSize: ComponentSize,
+    maximumSize: ComponentSize
+}
+
 /**
  * A hook which returns the state of a parents rendered Childcomponents and their preferred size 
  * @param id - the id of the component
  * @returns a layouts rendered Childcomponents and their preferred size
  */
-const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSize>| undefined] => {
+const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
-    const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSize>>();
+    const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
 
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
-        let tempSizes = new Map<string, ComponentSize>();
+        let tempSizes = new Map<string, ComponentSizes>();
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
             tempSizes = preferredSizes
@@ -34,6 +42,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 }
             });
         }
+
         /** Gets the Childcomponents of the parent */
         const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
@@ -44,19 +53,31 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
          * @param height - the preferred height of the component
          * @param width - the preferred width of the component
          */
-        const componentHasLoaded = (compId: string, height: number, width: number)=> {
-            const preferredComp = tempSizes.get(compId)
-            tempSizes.set(compId, {width: width, height: height});
-            /** If all components are loaded or it is a tabsetpanel and the size changed, set the preferredSizes */
-            if((tempSizes.size === children.size || id.includes('TP')) && (preferredComp?.height !== height || preferredComp?.width !== width))
-                setPreferredSizes(new Map(tempSizes));
 
+        const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Size, newMin:Size, newMax:Size) => {
+            if (_.isEqual(compSizes?.preferredSize, newPref) && _.isEqual(compSizes?.minimumSize, newMin) && _.isEqual(compSizes?.maximumSize, newMax)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        const componentHasLoaded = (compId: string, prefSize:Size, minSize:Size, maxSize:Size)=> {
+            const preferredComp = tempSizes.get(compId)
+            tempSizes.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
+            if((tempSizes.size === children.size || id.includes('TP')) && sizesChanged(preferredComp, prefSize, minSize, maxSize)) {
+                setPreferredSizes(new Map(tempSizes));
+            }
+                
             //Set Preferred Sizes of changed Components
             if(preferredSizes && preferredSizes.has(compId)){
                 const preferredComp = preferredSizes.get(compId);
-                if(preferredComp && (preferredComp.height !== height || preferredComp.width !== width)){
-                    preferredComp.height = height;
-                    preferredComp.width = width;
+                if(preferredComp && sizesChanged(preferredComp, prefSize, minSize, maxSize)){
+                    preferredComp.preferredSize = prefSize;
+                    preferredComp.minimumSize = minSize;
+                    preferredComp.maximumSize = maxSize
                     setPreferredSizes(new Map(preferredSizes));
                 }
             }
@@ -64,7 +85,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
 
         /** If there are no children set an empty map */
         if(children.size === 0 && !preferredSizes){
-            setPreferredSizes(new Map<string, ComponentSize>());
+            setPreferredSizes(new Map<string, ComponentSizes>());
         }
 
         /** If there are components in tempSizes which are not longer in the current children (got removed, invisible), remove them and set preferredSize */

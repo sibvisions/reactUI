@@ -18,7 +18,7 @@ import { getMomentValue, parseDateFormatCell, parseDateFormatTable } from "../..
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { getTextAlignment } from "../../compprops/GetAlignments";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import { getEditorCompId } from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of DateCellEditor */
@@ -112,7 +112,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useLayoutEffect(() => {
         if (onLoadCallback && calendar.current) {
             //@ts-ignore
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), calendar.current.container, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), calendar.current.container, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

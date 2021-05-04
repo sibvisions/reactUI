@@ -16,7 +16,7 @@ import useDataProviderData from "../zhooks/useDataProviderData";
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
-import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
+import {parseJVxLocation, parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import BaseComponent from "../BaseComponent";
 import IconProps from "../compprops/IconProps";
 import {sendSetValues} from "../util/SendSetValues";
@@ -66,7 +66,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && mapRef.current) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), mapRef.current, onLoadCallback);
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), mapRef.current, onLoadCallback);
         }
             
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);

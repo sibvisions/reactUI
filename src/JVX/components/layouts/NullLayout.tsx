@@ -15,7 +15,7 @@ const NullLayout: FC<ILayout> = (baseProps) => {
     /** Extract variables from baseprops */
     const {
         components,
-        preferredCompSizes,
+        compSizes,
         style,
         id,
         reportSize
@@ -36,8 +36,8 @@ const NullLayout: FC<ILayout> = (baseProps) => {
         /** Gets the Childcomponents of the layout */
         const children = context.contentStore.getChildren(id);
 
-        /** If preferredCompSizes is set (every component in this layout reported its preferred size) */
-        if (preferredCompSizes) {
+        /** If compSizes is set (every component in this layout reported its preferred size) */
+        if (compSizes) {
             /** horizontal position of the component most to the right*/
             let furthest = 0;
             /** vertical position of the component most to the bottom */
@@ -77,7 +77,7 @@ const NullLayout: FC<ILayout> = (baseProps) => {
         }
 
         return sizeMap;
-    },[preferredCompSizes, reportSize, id, style, context.contentStore]);
+    },[compSizes, reportSize, id, style, context.contentStore]);
 
     return (
         /** Provide the allowed sizes of the children as a context */

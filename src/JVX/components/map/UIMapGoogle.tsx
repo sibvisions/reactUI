@@ -14,7 +14,7 @@ import useDataProviderData from "../zhooks/useDataProviderData";
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
 import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
-import {parseJVxLocation, parseJVxSize} from "../util/parseJVxSize";
+import {parseJVxLocation, parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import {sendSetValues} from "../util/SendSetValues";
 import { IMap } from "./UIMapOSM";
 import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
@@ -84,7 +84,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && mapWrapperRef.current) {
-            sendOnLoadCallback(id, parseJVxSize(props.preferredSize), parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), mapWrapperRef.current, onLoadCallback);
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), mapWrapperRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

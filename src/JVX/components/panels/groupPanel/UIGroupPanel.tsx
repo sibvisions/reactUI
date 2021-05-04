@@ -11,7 +11,7 @@ import Layout from "../../layouts/Layout";
 import {Panel} from "../panel/UIPanel";
 import Size from "../../util/Size";
 import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
-import { parseJVxSize } from "../../util/parseJVxSize";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -23,11 +23,11 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, preferredComponentSizes] = useComponents(baseProps.id);
+    const [components, componentSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Preferred size of panel */
-    const prefSize = parseJVxSize(props.preferredSize);
+    const prefSize = parsePrefSize(props.preferredSize);
 
     /**
      * Returns the style of the panel/layout
@@ -59,7 +59,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Size = {height: height+28, width: width};
-            sendOnLoadCallback(id, prefSize, parseJVxSize(props.maximumSize), parseJVxSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
@@ -71,7 +71,7 @@ const UIGroupPanel: FC<Panel> = (baseProps) => {
                 layoutData={props.layoutData}
                 layout={props.layout}
                 reportSize={reportSize}
-                preferredCompSizes={preferredComponentSizes}
+                compSizes={componentSizes}
                 components={components}
                 style={{...getStyle()}}/>
         </div>
