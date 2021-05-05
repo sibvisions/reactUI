@@ -107,7 +107,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
             <Gauge 
                 id={id}
                 value={data} 
-                label={`${data} ${columnLabel}`} 
+                label={columnLabel} 
                 max={maxValue}
                 steps={[minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]}
             />
@@ -128,6 +128,8 @@ interface GaugeProps {
     ticks?: number
     subTicks?: number
     circle?: number
+    classPrefix?: string
+    tickLabelsInside?: boolean
 }
 
 const RingGauge: React.FC<GaugeProps> = ({
@@ -201,7 +203,7 @@ const RingGauge: React.FC<GaugeProps> = ({
             </g>
         </svg>
         <div className="ui-gauge-ring__label">
-            {label}
+            {`${value} ${label}`}
         </div>
     </div>
 }
@@ -275,13 +277,13 @@ const ArcGauge: React.FC<GaugeProps> = ({
             </g>
         </svg>
         <div className="ui-gauge-arc__label">
-            {label}
+            {`${value} ${label}`}
         </div>
     </div>
 }
 
 const SpeedometerGauge: React.FC<GaugeProps> = (props) => {
-    return <MeterGauge {...props} ticks={11} subTicks={3} circle={.75} />
+    return <MeterGauge {...props} ticks={11} subTicks={3} circle={.75} classPrefix="ui-gauge-speedometer" tickLabelsInside={true} />
 }
 
 const MeterGauge: React.FC<GaugeProps> = ({
@@ -295,10 +297,13 @@ const MeterGauge: React.FC<GaugeProps> = ({
     steps,
     id,
     circle = .25,
+    classPrefix = "ui-gauge-meter",
+    tickLabelsInside = false
 }) => {
     const r = (size - thickness) * .5;
     const tr = r + thickness * .25;
     const ir = r - thickness - 2;
+    const tlr = r + (tickLabelsInside ? -13 : 6);
     const circumference = 2 * Math.PI * r * circle;
     const tickCircumference = 2 * Math.PI * tr * circle;
     const innerCircumference =  2 * Math.PI * ir * circle;
@@ -311,8 +316,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
 
     const tickSize = 1;
     const subTickSize = .5;
-    const needleOrigin = hs;
-    const needleLength = needleOrigin + thickness;
+    const needleLength = hs + thickness;
     const needleRotation = 360 * circle * value / max - 180 * circle;
 
     let dasharray = [tickSize, circumference / (ticks - 1) - tickSize];
@@ -328,6 +332,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
 
     const maskID = `mask-${id}`;
     const markerID = `end-${id}`;
+    const gradientID = `gradient-${id}`;
 
     const height = Math.sqrt(r * r - Math.pow(r - inset, 2));
     const bottom = (circle >= .5 ? r + height : r - height) + thickness * .5;
@@ -341,11 +346,11 @@ const MeterGauge: React.FC<GaugeProps> = ({
 
     const arcFlag = circle >= .5 ? 1 : 0;
 
-    return <div className="ui-gauge-speedometer">
+    return <div className={classPrefix}>
         <svg 
             version="1.1" 
             xmlns="http://www.w3.org/2000/svg" 
-            viewBox={`0 0 ${size} ${size * Math.min(1, circle * 1.2)}`} //XXX: the 1.2 factor is a magic number
+            viewBox={`0 0 ${size} ${circle < .5 ? size * Math.min(1, circle * 1.2) + (tickLabelsInside ? 0 : 10) : size}`} //XXX: the 1.2 factor is a magic number
         >
             <defs>
                 <marker id={markerID} viewBox={`0 0 ${tickSize} ${thickness}`}
@@ -356,16 +361,31 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     orient="auto">
                     <rect x="0" y="0" width={tickSize} height={thickness} />
                 </marker>
+                <mask id={maskID}>
+                    <path 
+                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
+                        strokeWidth={thickness - 1}
+                        stroke="#fff"
+                        fill="none"
+                    />
+                </mask>
+                <linearGradient id={gradientID} gradientTransform="rotate(90)">
+                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                </linearGradient>
             </defs>
-            <mask id={maskID}>
-                <path 
-                    d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
-                    strokeWidth={thickness - 1}
-                    stroke="#fff"
-                    fill="none"
-                />
-            </mask>
-            <g transform={`translate(0 0)`}>
+
+            <g transform={`translate(0 ${tickLabelsInside ? 0 : 10})`}>
+                {circle > .5 ? <circle 
+                    className="ui-gauge-ring__bg"
+                    cx={hs} 
+                    cy={hs}
+                    r={size * .5 - .25}
+                    strokeWidth={.5}
+                    stroke="var(--gauge-color__border)"
+                    fill={`url(#${gradientID})`}
+                /> : null}
+                
                 {steps ? <g mask={`url(#${maskID})`}>
                     <path 
                         d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
@@ -411,8 +431,8 @@ const MeterGauge: React.FC<GaugeProps> = ({
             
                 {[...Array(ticks).keys()].map((i, idx) => {
                     const a = idx * Math.PI * 2 * circle / (ticks - 1) + Math.PI * .5 + (1 - circle) * Math.PI;
-                    const x = parseFloat((hs + Math.cos(a) * (r - 13)).toFixed(4));
-                    const y = parseFloat((hs + Math.sin(a) * (r - 13)).toFixed(4));
+                    const x = parseFloat((hs + Math.cos(a) * tlr).toFixed(4));
+                    const y = parseFloat((hs + Math.sin(a) * tlr).toFixed(4));
                     return <text 
                         fill="var(--gauge-color__ticklabels)"
                         key={idx} 
@@ -420,19 +440,29 @@ const MeterGauge: React.FC<GaugeProps> = ({
                         y={y} 
                         dominantBaseline="middle" 
                         textAnchor="middle"
-                    >{(idx * max / (ticks - 1)).toFixed(1)}</text>
+                    >{(idx * max / (ticks - 1)).toFixed(1).replace(/[,.]0$/, '')}</text>
                 })}
-                    
-                <path 
-                    className="gauge-needle"
-                    d={`m ${hs} ${needleOrigin}, -2.5 2.5, 2.5 -${needleLength}, 2.5 ${needleLength}z`} 
+
+                <text 
+                    x={hs} 
+                    y={hs - 25}
+                    textAnchor="middle" 
+                    className={`${classPrefix}__label`}
+                >{label}</text>
+
+                <g 
+                    className="gauge-needle" 
+                    fill="var(--gauge-color__needle)"
                     transform={`rotate(${needleRotation} ${hs} ${hs})`}
-                    fill="var(--gauge-color__needle)" 
-                />
+                >
+                    <path d={`m ${hs - 1.5} ${hs + 6}, 1.5 -${needleLength}, 1.5 ${needleLength}z`} />
+                    <circle cx={hs} cy={hs} r="4" />
+                </g>    
+
             </g>
         </svg>
-        <div className="ui-gauge-speedometer__label">
-            {label}
+        <div className={`${classPrefix}__value`}>
+            {value}
         </div>
     </div>
 }
