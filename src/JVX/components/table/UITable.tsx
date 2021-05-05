@@ -197,12 +197,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
                 for (let i = 0; i < theader.length; i++)
                     theader[i].style.setProperty('width', cellDataWidthList[i]+  'px');
-                    let tempWidth:number = 0;
-                    cellDataWidthList.forEach(cellDataWidth => {
+
+                let tempWidth:number = 0;
+                cellDataWidthList.forEach(cellDataWidth => {
                     tempWidth += cellDataWidth
                 });
                 /** set EstTableWidth for size reporting */
-                setEstTableWidth(tempWidth)
+                setEstTableWidth(tempWidth);
             }
             /** If there is lazyloading do the same thing as above but set width not only for header but for column groups and header */
             else {
@@ -218,16 +219,19 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
                 for (let i = 0; i < 20; i++)
                     goThroughCellData(trows, i)
-                for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width', cellDataWidthList[i] + 'px');
-                    tCols1[i].style.setProperty('width', cellDataWidthList[i] + 'px');
-                    tCols2[i].style.setProperty('width', cellDataWidthList[i] + 'px');
-                }
+
                 let tempWidth:number = 0;
-                 cellDataWidthList.forEach(cellDataWidth => {
+                cellDataWidthList.forEach(cellDataWidth => {
                     tempWidth += cellDataWidth
-                 });
-                 setEstTableWidth(tempWidth+17)
+                });
+
+                for (let i = 0; i < theader.length; i++) {
+                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
+                    tCols1[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
+                    tCols2[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
+                }
+
+                setEstTableWidth(tempWidth+17)
             }
         }
     },[])
@@ -263,6 +267,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const columns = useMemo(() => {
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
+
         return props.columnNames.map((colName, colIndex) => {
             return <Column
                 field={colName}
@@ -283,9 +288,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div className="loading-text" style={{height: 30}} />}
                 sortable/>
-        }
-
-        )
+        })
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible])
 
     /** When a row is selected send a selectRow request to the server */
@@ -330,13 +333,17 @@ const UITable: FC<TableProps> = (baseProps) => {
             //@ts-ignore
             if (!tableRef.current.table) {
                 //@ts-ignore
+                const tColGroupHeader = tableRef.current.container.querySelector('.p-datatable-scrollable-header-table > colgroup');
+                //@ts-ignore
                 const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
+                const width = tColGroup[0].offsetWidth;
                 for (let i = 0; i < tCols1.length; i++) {
-                    tCols2[i].style.setProperty('width', (parseFloat(tCols1[i].style.width) + 8) +'px')
+                    tCols1[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
+                    tCols2[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
+                    tColGroupHeader.children[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
                 }
-
             }
         }
     }
