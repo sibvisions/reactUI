@@ -7,7 +7,7 @@ import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import MetaDataResponse, { MetaDataReference } from "./response/MetaDataResponse";
 import {componentHandler} from "./factories/UIFactory";
-import {Panel} from './components/panels/panel/UIPanel'
+import {IPanel} from './components/panels/panel/UIPanel'
 import { SubscriptionManager } from "./SubscriptionManager";
 import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
 import { getMetaData } from "./components/util/GetMetaData";
@@ -189,7 +189,7 @@ export default class ContentStore{
             }
             
             /** Cast newComponent as Panel */
-            const newCompAsPanel = (newComponent as Panel);
+            const newCompAsPanel = (newComponent as IPanel);
 
             /** 
              * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
@@ -258,8 +258,8 @@ export default class ContentStore{
      */
     cleanUp(id:string, name:string|undefined) {
         if (name) {
-            if ((this.flatContent.get(id) as Panel).screen_modal_)
-                this.subManager.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as Panel).screen_navigationName_, true]);
+            if ((this.flatContent.get(id) as IPanel).screen_modal_)
+                this.subManager.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as IPanel).screen_navigationName_, true]);
             this.deleteChildren(id);
             this.flatContent.delete(id);
 

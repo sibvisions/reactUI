@@ -12,16 +12,16 @@ import {LayoutContext} from "../../../LayoutContext";
 import {jvxContext} from "../../../jvxProvider";
 import useComponents from "../../zhooks/useComponents";
 import {parseIconData} from "../../compprops/ComponentProperties";
-import {Panel} from "../panel/UIPanel";
+import {IPanel} from "../panel/UIPanel";
 import {createTabRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import IconProps from "../../compprops/IconProps";
 import Size from "../../util/Size";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for TabsetPanel */
-export interface ITabsetPanel extends Panel {
+export interface ITabsetPanel extends IPanel {
     selectedIndex?: number;
 }
 

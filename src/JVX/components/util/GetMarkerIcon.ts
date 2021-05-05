@@ -1,6 +1,6 @@
 /** Other imports */
-import { parseIconData } from "../../compprops/ComponentProperties";
-import IconProps from "../../compprops/IconProps";
+import { parseIconData } from "../compprops/ComponentProperties";
+import IconProps from "../compprops/IconProps";
 
 /**
  * Returns the icon of the marker

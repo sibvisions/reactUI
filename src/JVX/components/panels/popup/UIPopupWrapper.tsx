@@ -5,13 +5,13 @@ import React, {FC, ReactElement, useContext} from "react";
 import { Dialog } from 'primereact/dialog';
 
 /** Other imports */
-import { Panel } from "../panel/UIPanel";
+import { IPanel } from "../panel/UIPanel";
 import { jvxContext } from "../../../jvxProvider";
 import { createCloseScreenRequest } from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 
 /** Interface for Popup */
-export interface IPopup extends Panel {
+export interface IPopup extends IPanel {
     render: ReactElement;
 }
 

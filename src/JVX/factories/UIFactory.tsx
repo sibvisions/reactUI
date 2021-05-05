@@ -5,38 +5,51 @@ import React, {FC} from "react"
 import BaseComponent from "../components/BaseComponent";
 
 /** UI and Interface Imports */
-import UIPanel, {Panel} from "../components/panels/panel/UIPanel";
-import UIButton from "../components/buttons/button/UIButton";
+import {UIGroupPanel,
+        UIPanel,
+        UIPopupWrapper,
+        UIScrollPanel,
+        UISplitPanel,
+        UITabsetPanel,
+        IPanel,
+        IPopup,
+        ISplit,
+        ITabsetPanel
+    } from '../components/panels'
+import { UIButton,
+        UICheckBox,
+        UIMenuButton,
+        UIToggleButton,
+        UIRadioButton,
+        IButton,
+        IButtonSelectable,
+        IMenuButton
+    } from "../components/buttons"
 import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
-import UIEditorImage, {IEditorImage} from "../components/editors/image/UIEditorImage";
-import {IEditor} from "../components/editors/IEditor";
-import UIEditorText, {IEditorText} from "../components/editors/text/UIEditorText";
-import UISplitPanel, {UISplitPanelProps} from "../components/panels/split/UISplitPanel";
+import {UIEditorCheckBox,
+        UIEditorChoice,
+        UIEditorDate,
+        UIEditorImage,
+        UIEditorLinked,
+        UIEditorNumber,
+        UIEditorText,
+        IEditor,
+        IEditorCheckBox,
+        IEditorChoice,
+        IEditorDate,
+        IEditorImage,
+        IEditorLinked,
+        IEditorNumber,
+        IEditorText
+    } from "../components/editors"
 import UITable, {TableProps} from "../components/table/UITable";
-import UIEditorNumber, {IEditorNumber} from "../components/editors/number/UIEditorNumber";
-import UIEditorDate, { IEditorDate } from "../components/editors/date/UIEditorDate";
-import UIEditorChoice, { IEditorChoice } from "../components/editors/choice/UIEditorChoice";
-import UIEditorCheckbox, { IEditorCheckbox } from "../components/editors/checkbox/UIEditorCheckbox";
-import UIEditorLinked, { IEditorLinked } from "../components/editors/linked/UIEditorLinked";
-import { IButton, IButtonSelectable } from "../components/buttons/IButton";
-import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
-import UIMenuButton, { IMenuButton } from "../components/buttons/menubutton/UIMenuButton";
-import UIRadioButton from "../components/buttons/radiobutton/UIRadioButton";
-import UICheckBox from "../components/checkbox/UICheckBox";
 import UIIcon from "../components/icon/UIIcon";
-import UIText from "../components/text/UIText";
-import UITextArea from "../components/text/UITextArea";
-import UIPassword from "../components/text/UIPassword";
-import UITabsetPanel, { ITabsetPanel } from "../components/panels/tabsetpanel/UITabsetPanel";
-import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
-import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
+import {UIPassword, UIText, UITextArea} from "../components/text"
 import UIChart, { IChart } from "../components/chart/UIChart";
 import UIGauge, { IGauge } from "../components/gauge/UIGauge";
-import UIMapOSM, {IMap} from "../components/map/UIMapOSM";
-import UIMapGoogle from "../components/map/UIMapGoogle";
-import UICustomComponentWrapper, { ICustomComponentWrapper } from "../components/customComp/UICustomComponentWrapper";
-import UIPopupWrapper, { IPopup } from "../components/panels/popup/UIPopupWrapper";
+import {UIMapGoogle, UIMapOSM, IMap} from "../components/map"
+import {UICustomComponentWrapper, ICustomComponentWrapper} from '../components/customComp/index'
 import UITree, { ITree } from "../components/tree/UITree";
 
 /**
@@ -44,7 +57,7 @@ import UITree, { ITree } from "../components/tree/UITree";
  * @param props - properties sent by the server
  * @returns a Panel as component
  */
-export const createPanel: FC<IPopup|Panel> = (props) => {
+export const createPanel: FC<IPopup|IPanel> = (props) => {
     if (props.screen_modal_)
         return <UIPopupWrapper {...props} render={<UIPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
     else
@@ -56,7 +69,7 @@ export const createPanel: FC<IPopup|Panel> = (props) => {
  * @param props - properties sent by the server
  * @returns a GroupPanel as component
  */
-export const createGroupPanel: FC<IPopup|Panel> = (props) => {
+export const createGroupPanel: FC<IPopup|IPanel> = (props) => {
     if (props.screen_modal_)
         return <UIPopupWrapper {...props} render={<UIGroupPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
     else
@@ -68,7 +81,7 @@ export const createGroupPanel: FC<IPopup|Panel> = (props) => {
  * @param props - properties sent by the server
  * @returns a ScrollPanel as component
  */
-export const createScrollPanel: FC<IPopup|Panel> = (props) => {
+export const createScrollPanel: FC<IPopup|IPanel> = (props) => {
     if (props.screen_modal_)
         return <UIPopupWrapper {...props} render={<UIScrollPanel {...props} key={props.id}/>} key={'PopupWrapper-' + props.id}/>
     else
@@ -80,7 +93,7 @@ export const createScrollPanel: FC<IPopup|Panel> = (props) => {
  * @param props - properties sent by the server
  * @returns a SplitPanel as component
  */
-export const createSplitPanel: FC<UISplitPanelProps> = (props) => {
+export const createSplitPanel: FC<ISplit> = (props) => {
     return <UISplitPanel {...props} key={props.id}/>
 }
 
@@ -197,8 +210,8 @@ export const createEditorChoice: FC<IEditorChoice> = (props) => {
  * @param props - properties sent by the server
  * @returns a CheckBoxCellEditor as component
  */
-export const createEditorCheckbox: FC<IEditorCheckbox> = (props) => {
-    return <UIEditorCheckbox {...props} key={props.id}/>
+export const createEditorCheckbox: FC<IEditorCheckBox> = (props) => {
+    return <UIEditorCheckBox {...props} key={props.id}/>
 }
 
 /**
@@ -338,7 +351,7 @@ export const createEditor: FC<IEditor> = ( props ) => {
             return createEditorChoice((props as IEditorChoice));
         }
         else if (props.cellEditor.className === "CheckBoxCellEditor") {
-            return createEditorCheckbox((props as IEditorCheckbox));
+            return createEditorCheckbox((props as IEditorCheckBox));
         }
         else if (props.cellEditor.className === "LinkedCellEditor") {
             return createEditorLinked((props as IEditorLinked));

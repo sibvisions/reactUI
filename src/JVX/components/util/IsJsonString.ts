@@ -1,4 +1,4 @@
-export function isJsonString(str:string) {
+export function isJSONString(str:string) {
     try {
         JSON.parse(str);
     }

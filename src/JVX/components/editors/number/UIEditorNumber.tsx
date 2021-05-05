@@ -16,10 +16,10 @@ import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
-import {getDecimalLength, getGrouping, getNumberLength, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
+import {getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits} from "../../util/NumberProperties";
 import { getMetaData } from "../../util/GetMetaData";
 import useEventHandler from "../../zhooks/useEventHandler";
 
@@ -31,11 +31,10 @@ interface ICellEditorNumber extends ICellEditor{
 
 /** Interface for NumberCellEditor */
 export interface IEditorNumber extends IEditor{
-    cellEditor: ICellEditorNumber
-    label: string
+    cellEditor: ICellEditorNumber,
     length: number,
     precision: number,
-    scale: number,
+    scale: number
 }
 
 /** Type for scales */

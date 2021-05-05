@@ -6,18 +6,18 @@ import useProperties from "../../zhooks/useProperties";
 import useComponents from "../../zhooks/useComponents";
 
 /** Other imports */
-import {Panel} from "../panel/UIPanel";
+import {IPanel} from "../panel/UIPanel";
 import {LayoutContext} from "../../../LayoutContext";
 import Layout from "../../layouts/Layout";
 import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /**
  * This component displays a panel in which you will be able to scroll
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIScrollPanel: FC<Panel> = (baseProps) => {
+const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Use context for the positioning, size informations of the layout */
     const layoutContext = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */

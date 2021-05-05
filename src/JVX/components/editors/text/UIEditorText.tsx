@@ -18,19 +18,19 @@ import {sendSetValues} from "../../util/SendSetValues";
 import {handleEnterKey} from "../../util/HandleEnterKey";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 import { getMetaData } from "../../util/GetMetaData";
 
 /** Interface for cellEditor property of TextCellEditor */
-interface ICellEditorText extends ICellEditor{
+interface ICellEditorText extends ICellEditor {
     preferredEditorMode?: number
     length?:number
 }
 
 /** Interface for TextCellEditor */
-export interface IEditorText extends IEditor{
+export interface IEditorText extends IEditor {
     cellEditor: ICellEditorText
     borderVisible?: boolean
 }

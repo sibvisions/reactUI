@@ -8,7 +8,7 @@ import BaseComponent from "../BaseComponent";
 import {LayoutContext} from "../../LayoutContext";
 import {getFont} from "../compprops/ComponentProperties";
 import {getAlignments} from "../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 
 

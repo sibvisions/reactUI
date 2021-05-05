@@ -22,7 +22,7 @@ import UploadResponse from "./response/UploadResponse";
 import DownloadResponse from "./response/DownloadResponse";
 import SessionExpiredResponse from "./response/SessionExpiredResponse";
 import ErrorResponse from "./response/ErrorResponse";
-import {Panel} from "./components/panels/panel/UIPanel"
+import {IPanel} from "./components/panels/panel/UIPanel"
 import RestartResponse from "./response/RestartResponse";
 import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
 import LanguageResponse from "./response/LanguageResponse";
@@ -488,7 +488,7 @@ class Server {
            }
            else if(response.name === RESPONSE_NAMES.SCREEN_GENERIC){
                 const GResponse = (response as GenericResponse);
-                const firstComp = (GResponse.changedComponents[0] as Panel)
+                const firstComp = (GResponse.changedComponents[0] as IPanel)
                 if(!GResponse.update && !firstComp.screen_modal_) {
                     if(highestPriority < 2){
                         highestPriority = 2;
@@ -502,7 +502,7 @@ class Server {
                for (let entry of this.contentStore.flatContent.entries()) {
                     if (entry[1].name === CSResponse.componentId) {
                        this.contentStore.closeScreen(entry[1].name);
-                       if ((entry[1] as Panel).screen_modal_)
+                       if ((entry[1] as IPanel).screen_modal_)
                             wasPopup = true;
                        break; //quit loop because there might be a new screen of the same type
                    }

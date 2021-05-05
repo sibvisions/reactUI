@@ -1,6 +1,6 @@
 /** Other imports */
-import { createFetchRequest } from "../../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import { createFetchRequest } from "../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 
 /**
  * Sends fetch requests, for the groups and points of a map, to the server

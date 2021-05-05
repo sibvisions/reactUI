@@ -1,50 +1,17 @@
 /** Exporting components and hooks to be used as library */
-export {default as UIButton} from './JVX/components/buttons/button/UIButton';
-export {default as UIMenuButton} from './JVX/components/buttons/menubutton/UIMenuButton';
-export {default as UIRadioButton} from './JVX/components/buttons/radiobutton/UIRadioButton';
-export {default as UIToggleButton} from './JVX/components/buttons/togglebutton/UIToggleButton';
+export * from './JVX/components/buttons';
 export {default as UIChart} from './JVX/components/chart/UIChart';
-export {default as UICheckbox} from './JVX/components/checkbox/UICheckBox';
-export {default as UIEditorCheckbox} from './JVX/components/editors/checkbox/UIEditorCheckbox';
-export {default as UIEditorChoice} from './JVX/components/editors/choice/UIEditorChoice';
-export {default as UIEditorDate} from './JVX/components/editors/date/UIEditorDate';
-export {default as UIEditorImage} from './JVX/components/editors/image/UIEditorImage';
-export {default as UIEditorLinked} from './JVX/components/editors/linked/UIEditorLinked';
-export {default as UIEditorNumber} from './JVX/components/editors/number/UIEditorNumber';
-export {default as UIEditorText} from './JVX/components/editors/text/UIEditorText';
+export * from './JVX/components/editors';
 export {default as UIIcon} from './JVX/components/icon/UIIcon';
 export {default as UILabel} from './JVX/components/label/UILabel';
-export {default as BorderLayout} from './JVX/components/layouts/BorderLayout';
-export {default as FlowLayout} from './JVX/components/layouts/FlowLayout';
-export {default as FormLayout} from './JVX/components/layouts/FormLayout';
-export {default as GridLayout} from './JVX/components/layouts/GridLayout';
-export {default as UIMapGoogle} from './JVX/components/map/UIMapGoogle';
-export {default as UIMapOSM} from './JVX/components/map/UIMapOSM';
-export {default as UIGroupPanel} from './JVX/components/panels/groupPanel/UIGroupPanel';
-export {default as UIPanel} from './JVX/components/panels/panel/UIPanel';
-export {default as UIPopupWrapper} from './JVX/components/panels/popup/UIPopupWrapper';
-export {default as UIScrollPanel} from './JVX/components/panels/scrollPanel/UIScrollPanel';
-export {default as UISplitPanel} from './JVX/components/panels/split/UISplitPanel';
-export {default as UITabsetPanel} from './JVX/components/panels/tabsetpanel/UITabsetPanel';
+export {BorderLayout, FlowLayout, FormLayout, GridLayout, NullLayout} from './JVX/components/layouts'
+export {UIMapGoogle, UIMapOSM} from './JVX/components/map';
+export * from './JVX/components/panels'
 export {default as UITable} from './JVX/components/table/UITable';
+export * from './JVX/components/text'
 export {default as UIPassword} from './JVX/components/text/UIPassword';
-export {default as UIText} from './JVX/components/text/UIText';
-export {default as UITextArea} from './JVX/components/text/UITextArea';
-export {default as UITree} from './JVX/components/tree/UITree'
-export {default as WorkScreen} from './frontmask/workscreen/WorkScreen'
-export {default as CustomDisplayWrapper} from './JVX/components/customComp/CustomDisplayWrapper'
-export {default as GlobalWorkscreen} from './JVX/components/customComp/CustomDisplayManager'
-export {default as useComponents} from './JVX/components/zhooks/useComponents';
-export {default as useDataProviderData} from './JVX/components/zhooks/useDataProviderData';
-export {default as useHomeComponents} from './JVX/components/zhooks/useHomeComponents';
-export {default as useImageStyle} from './JVX/components/zhooks/useImageStyle';
-export {default as useOutsideClick} from './JVX/components/zhooks/useOutsideClick';
-export {default as useProperties} from './JVX/components/zhooks/useProperties';
-export {default as useRowSelect} from './JVX/components/zhooks/useRowSelect';
-export {default as useGetCustomProperty} from './JVX/components/zhooks/useGetCustomProperty';
-export {default as useJVXContext} from './JVX/components/zhooks/useJVXContext';
-export {default as useRemoveCompFromWorkscreen} from './JVX/components/zhooks/useRemoveCompFromWorkscreen';
-export {default as useDataProviders} from './JVX/components/zhooks/useDataProviders';
+export {CustomDisplayWrapper} from './JVX/components/customComp/index';
+export * from './JVX/components/zhooks'
 export * from './JVX/factories/RequestFactory';
 export {default as ReactUI} from './MiddleMan';
 export {jvxContext} from './JVX/jvxProvider';

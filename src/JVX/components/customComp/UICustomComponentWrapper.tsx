@@ -7,7 +7,7 @@ import useProperties from "../zhooks/useProperties";
 /** Other imports */
 import {LayoutContext} from "../../LayoutContext";
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {

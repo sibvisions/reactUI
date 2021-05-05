@@ -17,7 +17,7 @@ import {sendSetValues} from "../../util/SendSetValues";
 import { getMomentValue, parseDateFormatCell, parseDateFormatTable } from "../../util/ParseDateFormats";
 import { onBlurCallback } from "../../util/OnBlurCallback";
 import { getTextAlignment } from "../../compprops/GetAlignments";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import { getEditorCompId } from "../../util/GetEditorCompId";
 
