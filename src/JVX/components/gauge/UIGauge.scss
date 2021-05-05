@@ -6,6 +6,9 @@
     --gauge-color__subticks: #999;
     --gauge-color__needle: #000;
     --gauge-color__ticklabels: #000;
+    --gauge-color__border: #bbb;
+    --gauge-gradient__top: #fff;
+    --gauge-gradient__bottom: #ccc;
 }
 
 .ui-gauge {
@@ -45,6 +48,11 @@
     svg {
         width: 100%;
         height: 100%;
+    }
+
+    text {
+        font-size: 7px;
+        fill: #999;
     }
 
     &__label {
