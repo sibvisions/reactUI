@@ -13,14 +13,14 @@ import useDataProviderData from "../zhooks/useDataProviderData";
 /** Other imports */
 import {jvxContext} from "../../jvxProvider";
 import {LayoutContext} from "../../LayoutContext";
-import {sendOnLoadCallback} from "../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../util/SendOnLoadCallback";
 import {parseJVxLocation, parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import {sendSetValues} from "../util/SendSetValues";
 import { IMap } from "./UIMapOSM";
-import { sendMapFetchRequests } from "../util/mapUtils/SendMapFetchRequests";
-import { sortGroupDataGoogle } from "../util/mapUtils/SortGroupData";
+import { sendMapFetchRequests } from "../util/SendMapFetchRequests";
+import { sortGroupDataGoogle } from "../util/SortGroupData";
 import IconProps from "../compprops/IconProps";
-import { getMarkerIcon } from "../util/mapUtils/GetMarkerIcon";
+import { getMarkerIcon } from "../util/GetMarkerIcon";
 import { sendSaveRequest } from "../util/SendSaveRequest";
 
 /**

@@ -9,7 +9,6 @@ export function checkEmptyConfProperties(confData:any) {
         if (confData[key] === null || confData[key] === "") {
             emptyProps.push(key);
         }
-            
     }
     return emptyProps;
 }

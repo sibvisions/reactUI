@@ -11,11 +11,11 @@ import ChildWithProps from "../../util/ChildWithProps";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
 import {jvxContext} from "../../../jvxProvider";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for UISplitPanel */
-export interface UISplitPanelProps extends BaseComponent{
+export interface ISplit extends BaseComponent{
     dividerAlignment: number,
     dividerPosition: number,
     orientation: 0|1
@@ -25,7 +25,7 @@ export interface UISplitPanelProps extends BaseComponent{
  * This component wraps the SplitPanel and provides it with properties
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UISplitPanel: FC<UISplitPanelProps> = (baseProps) => {
+const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(jvxContext);
     /** Use context for the positioning, size informations of the layout */

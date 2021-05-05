@@ -15,7 +15,7 @@ import useAllRowSelect from "../zhooks/useAllRowSelect";
 import BaseComponent from "../BaseComponent";
 import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
-import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";

@@ -15,7 +15,7 @@ import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {LayoutContext} from "../../../LayoutContext";
 import {IButtonSelectable} from "../IButton";
 import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {parseIconData} from "../../compprops/ComponentProperties";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {cn} from "../menubutton/UIMenuButton";

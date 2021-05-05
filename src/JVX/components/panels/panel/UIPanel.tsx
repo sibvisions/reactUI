@@ -10,11 +10,11 @@ import Layout from "../../layouts/Layout";
 import BaseComponent from "../../BaseComponent";
 import {LayoutContext} from "../../../LayoutContext";
 import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for Panels */
-export interface Panel extends BaseComponent{
+export interface IPanel extends BaseComponent{
     orientation: number,
     layout: string,
     layoutData: string,
@@ -28,7 +28,7 @@ export interface Panel extends BaseComponent{
  * This component displays a panel which holds a layout where components are lay out
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIPanel: FC<Panel> = (baseProps) => {
+const UIPanel: FC<IPanel> = (baseProps) => {
     /** Use context for the positioning, size informations of the layout */
     const layoutContext = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */

@@ -16,7 +16,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import {IButton} from "../IButton";
 import {buttonProps, getGapPos} from "../ButtonStyling";
 import { parseIconData } from "../../compprops/ComponentProperties";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import BaseComponent from "../../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 

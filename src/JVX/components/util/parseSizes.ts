@@ -1,5 +1,5 @@
 /** Other imports */
-import JVxLocation from "./JVxLocation";
+import JVxLocation from "./MapLocation";
 import Size from "./Size";
 
 /**

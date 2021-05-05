@@ -1,10 +1,11 @@
 import React, {CSSProperties, FC, ReactElement} from "react";
-import FormLayout from "./FormLayout";
-import BorderLayout from "./BorderLayout";
-import FlowLayout from "./FlowLayout";
+import {BorderLayout, 
+        FlowLayout, 
+        FormLayout, 
+        GridLayout, 
+        NullLayout
+    } from './index';
 import {ComponentSizes} from "../zhooks/useComponents";
-import GridLayout from "./GridLayout";
-import NullLayout from "./NullLayout";
 
 /**
  * General information for layouts:

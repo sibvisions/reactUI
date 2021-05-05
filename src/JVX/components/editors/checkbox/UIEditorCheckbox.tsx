@@ -14,20 +14,20 @@ import {LayoutContext} from "../../../LayoutContext";
 import {jvxContext} from "../../../jvxProvider";
 import {sendSetValues} from "../../util/SendSetValues";
 import { getAlignments } from "../../compprops/GetAlignments";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import { getEditorCompId } from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
-interface ICellEditorCheckbox extends ICellEditor{
+interface ICellEditorCheckBox extends ICellEditor {
     text?: string,
     selectedValue?:string|boolean|number|undefined, 
     preferredEditorMode?: number
 }
 
 /** Interface for CheckBoxCellEditor */
-export interface IEditorCheckbox extends IEditor{
-    cellEditor: ICellEditorCheckbox
+export interface IEditorCheckBox extends IEditor {
+    cellEditor: ICellEditorCheckBox
 }
 
 /**
@@ -48,7 +48,7 @@ export function getBooleanValue(input: string | boolean | number | undefined) {
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
+const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const cbxRef = useRef(null);
     /** Use context to gain access for contentstore and server methods */
@@ -56,7 +56,7 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorCheckbox>(baseProps.id, baseProps)
+    const [props] = useProperties<IEditorCheckBox>(baseProps.id, baseProps)
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
@@ -158,4 +158,4 @@ const UIEditorCheckbox: FC<IEditorCheckbox> = (baseProps) => {
         </span>
     )
 }
-export default UIEditorCheckbox
+export default UIEditorCheckBox

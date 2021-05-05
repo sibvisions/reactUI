@@ -12,7 +12,7 @@ import {LayoutContext} from "../../../LayoutContext";
 import {jvxContext} from "../../../jvxProvider";
 import Size from "../../util/Size";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of ImageViewer */

@@ -14,7 +14,7 @@ import {createSetValuesRequest} from "../../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
 import { getEditorCompId } from "../../util/GetEditorCompId";
 
 /** Interface for cellEditor property of ChoiceCellEditor */

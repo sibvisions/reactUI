@@ -19,7 +19,7 @@ import {createFetchRequest, createFilterRequest} from "../../../factories/Reques
 import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
 import {onBlurCallback} from "../../util/OnBlurCallback";
 import {getTextAlignment} from "../../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../../util/sendOnLoadCallback";
+import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 import {getEditorCompId} from "../../util/GetEditorCompId";
 

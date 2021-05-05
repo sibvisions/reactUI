@@ -7,7 +7,7 @@ import Constraints from "./models/Constraints";
 import Gaps from "./models/Gaps";
 import Margins from "./models/Margins";
 import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
-import {ComponentSize, ComponentSizes} from "../zhooks/useComponents";
+import {ComponentSizes} from "../zhooks/useComponents";
 import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import BaseComponent from "../BaseComponent";

@@ -6,18 +6,18 @@ import {Checkbox} from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import useProperties from "../../zhooks/useProperties";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
-import {LayoutContext} from "../../LayoutContext";
-import {IButtonSelectable} from "../buttons/IButton";
-import {buttonProps, getGapPos, getIconCenterDirection} from "../buttons/ButtonStyling";
-import {createSetValueRequest} from "../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
-import { cn } from "../buttons/menubutton/UIMenuButton";
+import {jvxContext} from "../../../jvxProvider";
+import {LayoutContext} from "../../../LayoutContext";
+import {IButtonSelectable} from "../IButton";
+import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
+import {createSetValueRequest} from "../../../factories/RequestFactory";
+import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
+import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
+import { cn } from "../menubutton/UIMenuButton";
 
 /**
  * This component displays a CheckBox and its label

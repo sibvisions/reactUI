@@ -18,7 +18,7 @@ import {jvxContext} from "../../jvxProvider";
 import {createFetchRequest, createSelectRowRequest} from "../../factories/RequestFactory";
 import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
 import MetaDataResponse from "../../response/MetaDataResponse";
-import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import Size from "../util/Size";
 import { cellRenderer, displayEditor } from "./CellDisplaying";

@@ -10,7 +10,7 @@ import {LayoutContext} from "../../LayoutContext";
 import {jvxContext} from "../../jvxProvider";
 import {parseIconData} from "../compprops/ComponentProperties";
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
+import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import Size from "../util/Size"
 
