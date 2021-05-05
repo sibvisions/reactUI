@@ -1,3 +1,13 @@
+:root {
+    --gauge-color__error: #DF5353;
+    --gauge-color__warning: #DDDF0D;
+    --gauge-color__ok: #55BF3B;
+    --gauge-color__ticks: #000;
+    --gauge-color__subticks: #999;
+    --gauge-color__needle: #000;
+    --gauge-color__ticklabels: #000;
+}
+
 .ui-gauge {
     display: flex;
     flex-direction: column;

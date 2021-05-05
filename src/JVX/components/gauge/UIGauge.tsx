@@ -9,11 +9,7 @@ import {LayoutContext} from "../../LayoutContext";
 import { sendOnLoadCallback } from "../util/sendOnLoadCallback";
 import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import BaseComponent from "../BaseComponent";
-import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
-import useTranslation from "../zhooks/useTranslation";
-import tinycolor from "tinycolor2";
-import useRowSelect from "../zhooks/useRowSelect";
 
 /** Interface for Gauge properties sent by server */
 export interface IGauge extends BaseComponent {
@@ -40,11 +36,11 @@ enum GAUGE_STYLES {
 }
 
 /** Color for ok value. */
-const colorOK = "#55BF3B";
+const colorOK = "var(--gauge-color__ok)"; //"#55BF3B"
 /** Color for warning value. */
-const colorWarning = "#DDDF0D";
+const colorWarning = "var(--gauge-color__warning)"; //"#DDDF0D"
 /** Color for error value. */
-const colorError = "#DF5353";
+const colorError = "var(--gauge-color__error)"; //"#DF5353"
 
 function getColor(value: number, steps?: [number, number, number, number]) {
     if(!steps) {
@@ -361,7 +357,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     strokeWidth={thickness}
                     strokeDasharray={dasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
-                    stroke="#000"
+                    stroke="var(--gauge-color__ticks)"
                     marker-start={`url(#${markerID})`}
                     marker-end={`url(#${markerID})`}
                     fill="none"
@@ -372,7 +368,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     strokeWidth={thickness * .5}
                     strokeDasharray={subDasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
-                    stroke="#000"
+                    stroke="var(--gauge-color__subticks)"
                     fill="none"
                 /> : null}
             
@@ -381,6 +377,7 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     const x = parseFloat((hs + Math.cos(a) * (r - 13)).toFixed(4));
                     const y = parseFloat((hs + Math.sin(a) * (r - 13)).toFixed(4));
                     return <text 
+                        fill="var(--gauge-color__ticklabels)"
                         key={idx} 
                         x={x} 
                         y={y} 
@@ -390,9 +387,10 @@ const MeterGauge: React.FC<GaugeProps> = ({
                 })}
                     
                 <path 
+                    className="gauge-needle"
                     d={`m ${hs} ${needleOrigin}, -2.5 2.5, 2.5 -${needleLength}, 2.5 ${needleLength}z`} 
                     transform={`rotate(${needleRotation} ${hs} ${hs})`}
-                    fill="#000" 
+                    fill="var(--gauge-color__needle)" 
                 />
             </g>
         </svg>
