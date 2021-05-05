@@ -121,7 +121,6 @@ interface GaugeProps {
     size?: number
     thickness?: number
     color?: string
-    background?: string
     label?: string
     min?: number
     max?: number
@@ -135,40 +134,57 @@ const RingGauge: React.FC<GaugeProps> = ({
     value = 0, 
     max = 10,
     size = 100, 
-    thickness = 10, 
-    background = "#808080",
+    thickness = 20, 
     label = "",
     color,
     steps,
     id
 }) => {
-    const r = (size - thickness) * .5;
+    const r = (size - thickness - 1) * .5;
     const circumference = 2 * Math.PI * r;
     const hs = size * .5;
 
     const maskID = `mask-${id}`;
+    const gradientID = `gradient-${id}`;
 
     color = color || getColor(value, steps);
 
     return <div className="ui-gauge-ring">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <mask id={maskID}>
-                <circle 
-                    cx={hs} 
-                    cy={hs}
-                    r={r}
-                    strokeWidth={thickness}
-                    stroke="#fff"
-                    fill="none"
-                />
-            </mask>
+            <defs>
+                <linearGradient id={gradientID} gradientTransform="rotate(90)">
+                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                </linearGradient>
+                <mask id={maskID}>
+                    <circle 
+                        cx={hs} 
+                        cy={hs}
+                        r={r}
+                        strokeWidth={thickness}
+                        stroke="#fff"
+                        fill="none"
+                    />
+                </mask>
+            </defs>
+            <circle 
+                className="ui-gauge-ring__border"
+                cx={hs} 
+                cy={hs}
+                r={r}
+                strokeWidth={thickness + 1}
+                stroke="var(--gauge-color__border)"
+                fill="none"
+            />
             <g mask={`url(#${maskID})`}>
+                <rect x="0" y="0" width={size} height={size} fill="transparent" />
                 <circle 
+                    className="ui-gauge-ring__bg"
                     cx={hs} 
                     cy={hs}
                     r={r}
                     strokeWidth={thickness + 2}
-                    stroke={background}
+                    stroke={`url(#${gradientID})`}
                     fill="none"
                 />
                 <circle 
@@ -194,47 +210,68 @@ const ArcGauge: React.FC<GaugeProps> = ({
     value = 0, 
     max = 10,
     size = 100, 
-    thickness = 10, 
-    background = "#808080",
+    thickness = 20, 
     label = "",
     color,
     steps,
     id
 }) => {
-    const r = (size - thickness) * .5;
+    const r = (size - thickness - 1) * .5;
     const circumference = Math.PI * r;
     const ht = thickness * .5;
     const hs = size * .5;
 
     const maskID = `mask-${id}`;
+    const gradientID = `gradient-${id}`;
 
     color = color || getColor(value, steps);
 
     return <div className="ui-gauge-arc">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <mask id={maskID}>
+            <defs>
+                <linearGradient id={gradientID} gradientTransform="rotate(90)">
+                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                </linearGradient>
+                <mask id={maskID}>
+                    <path 
+                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                        strokeWidth={thickness}
+                        stroke="#fff"
+                        fill="none"
+                    />
+                </mask>
+            </defs>
+            <g transform={`translate(0 ${size * .25})`}>
                 <path 
+                    className="ui-gauge-arc__border"
                     d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                    strokeWidth={thickness}
-                    stroke="#fff"
+                    strokeWidth={thickness + 1}
+                    stroke="var(--gauge-color__border)"
                     fill="none"
                 />
-            </mask>
-            <g transform={`translate(0 ${size * .25})`} mask={`url(#${maskID})`}>
-                <path 
-                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                    strokeWidth={thickness + 2}
-                    stroke={background}
-                    fill="none"
-                />
-                <path 
-                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                    strokeWidth={thickness + 2}
-                    stroke={color}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
-                    fill="none"
-                />
+                <rect x="-0.5" y={hs} width={thickness + 1} height={.5} fill="var(--gauge-color__border)" />
+                <rect x={size - thickness - .5} y={hs} width={thickness + 1} height={.5} fill="var(--gauge-color__border)" />
+                <g mask={`url(#${maskID})`}>
+                    <rect x="0" y="0" width={size} height={size} fill="transparent" />
+                    <path 
+                        className="ui-gauge-arc__bg"
+                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                        strokeWidth={thickness + 2}
+                        stroke={`url(#${gradientID})`}
+                        fill="none"
+                    />
+                    <path 
+                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
+                        strokeWidth={thickness + 2}
+                        stroke={color}
+                        strokeDasharray={circumference}
+                        strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
+                        fill="none"
+                    />
+                </g>
+                <text x={ht} y={hs + 4} textAnchor="middle" dominantBaseline="hanging">0</text>
+                <text x={size - ht} y={hs + 4} textAnchor="middle" dominantBaseline="hanging">{max}</text>
             </g>
         </svg>
         <div className="ui-gauge-arc__label">
