@@ -309,7 +309,11 @@ const MeterGauge: React.FC<GaugeProps> = ({
     const arcFlag = circle >= .5 ? 1 : 0;
 
     return <div className="ui-gauge-speedometer">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
+        <svg 
+            version="1.1" 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox={`0 0 ${size} ${size * Math.min(1, circle * 1.2)}`} //XXX: the 1.2 factor is a magic number
+        >
             <defs>
                 <marker id={markerID} viewBox={`0 0 ${tickSize} ${thickness}`}
                     refX={tickSize * .5} refY={thickness * .5}

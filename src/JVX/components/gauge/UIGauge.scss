@@ -64,5 +64,10 @@
         left: 50%;
         transform: translate(-50%, 0);
         font-weight: bold;
+        background: rgba(#fff, .9);
+        backdrop-filter: blur(10px);
+        border-radius: .25em;
+        padding: .25em .5em;
+        border: 1px solid #ddd;
     }
 }
