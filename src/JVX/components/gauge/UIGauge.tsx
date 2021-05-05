@@ -372,6 +372,19 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     fill="none"
                 /> : null}
             
+                {[...Array(ticks).keys()].map((i, idx) => {
+                    const a = idx * Math.PI * 2 * circle / (ticks - 1) + Math.PI * .5 + (1 - circle) * Math.PI;
+                    const x = parseFloat((hs + Math.cos(a) * (r - 13)).toFixed(4));
+                    const y = parseFloat((hs + Math.sin(a) * (r - 13)).toFixed(4));
+                    return <text 
+                        key={idx} 
+                        x={x} 
+                        y={y} 
+                        dominantBaseline="middle" 
+                        textAnchor="middle"
+                    >{(idx * max / (ticks - 1)).toFixed(1)}</text>
+                })}
+                    
                 <path 
                     d={`m ${hs} ${needleOrigin}, -2.5 2.5, 2.5 -${needleLength}, 2.5 ${needleLength}z`} 
                     transform={`rotate(${needleRotation} ${hs} ${hs})`}
