@@ -6,7 +6,7 @@ import { useProperties } from "../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../LayoutContext";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import BaseComponent from "../BaseComponent";
 import { jvxContext } from "../../jvxProvider";
 

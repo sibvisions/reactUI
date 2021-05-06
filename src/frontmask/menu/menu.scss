@@ -168,6 +168,7 @@
             > .p-menuitem-link:not(.p-disabled) {
                 background: var(--menuTopBar);
                 color: var(--menuFgdColor);
+                padding: 0.5rem 0rem;
                 .p-menuitem-text, .p-submenu-icon {
                     color: var(--menuFgdColor);
                 }
@@ -180,6 +181,7 @@
                 }
             }
         }
+
         /// Primereact sets a default width which is way too big
         .p-submenu-list {
             width: 100%;
@@ -254,6 +256,8 @@
 .p-panelmenu {
     .p-panelmenu-header {
         > a {
+            padding: 1rem 1rem 1rem 10px;
+
             //Positioning of menu-arrow
             .p-panelmenu-icon {
                 position: absolute;

@@ -1,4 +1,12 @@
 .p-tree {
     height: 100%;
     overflow: auto;
+
+    .p-tree-container {
+        .p-treenode {
+            .p-treenode-content {
+                padding: 0;
+            }
+        }
+    }
 }

@@ -29,6 +29,11 @@
                 display: inline-block;
                 margin-right: 4px;
             }
+
+            .p-tabview-nav-link:not(.p-disabled):focus {
+                box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+            }
         }
     }
 }
