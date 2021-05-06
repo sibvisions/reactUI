@@ -1,5 +1,5 @@
 /** Other imports */
-import { ScaleType } from "../editors/number/UIEditorNumber";
+import { ScaleType } from "../editors";
 
 /**
  * Returns true, if there is a ',' in the number format to enable grouping

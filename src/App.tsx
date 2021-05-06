@@ -1,12 +1,12 @@
 /** React imports */
-import React, {FC, useContext, useEffect, useRef, useState} from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 
 /** 3rd Party imports */
-import {Toast, ToastMessage} from 'primereact/toast';
+import { Toast, ToastMessage } from 'primereact/toast';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
-import {Helmet} from "react-helmet";
-import {Route, Switch, useHistory} from "react-router-dom";
+import { Helmet } from "react-helmet";
+import { Route, Switch, useHistory } from "react-router-dom";
 
 /** UI imports */
 import Home from "./frontmask/home/home";
@@ -14,13 +14,13 @@ import Login from "./frontmask/login/login";
 //import Settings from "./frontmask/settings/Settings"
 
 /** Other imports */
-import REQUEST_ENDPOINTS from "./JVX/request/REQUEST_ENDPOINTS";
-import {jvxContext} from "./JVX/jvxProvider";
-import {createStartupRequest} from "./JVX/factories/RequestFactory";
-import {checkEmptyConfProperties} from './JVX/components/util/CheckProperties';
+import { REQUEST_ENDPOINTS, StartupRequest } from "./JVX/request";
+import { jvxContext } from "./JVX/jvxProvider";
+import { createStartupRequest } from "./JVX/factories/RequestFactory";
+import { ICustomContent } from "./MiddleMan";
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
-import {ICustomContent} from "./MiddleMan"
+
 
 /** Types for querystring parsing */
 type queryType = {
@@ -97,21 +97,38 @@ const App: FC<ICustomContent> = (props) => {
         history.replace("/home")
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
+
+        const startUpByURL = (startupReq:StartupRequest) => {
+            console.log(queryParams)
+            if(queryParams.appName && queryParams.baseUrl){
+                startupReq.applicationName = queryParams.appName;
+                context.server.APP_NAME = queryParams.appName;
+                context.server.BASE_URL = queryParams.baseUrl;
+                context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
+            }
+            if(queryParams.userName && queryParams.password){
+                startupReq.password = queryParams.password;
+                startupReq.userName = queryParams.userName;
+            }
+            if(authKey){
+                startupReq.authKey = authKey;
+            }
+            setAppName(context.server.APP_NAME);
+            context.subscriptions.notifyScreenNameChanged(context.server.APP_NAME);
+            startupReq.deviceMode = "desktop";
+            startupReq.screenHeight = window.innerHeight;
+            startupReq.screenWidth = window.innerWidth;
+            if (props.customStartupProps?.length) {
+                props.customStartupProps.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
+            }
+            context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP);
+            context.server.showToast = msg
+        }
+
+        const startUpRequest = createStartupRequest();
         fetch('config.json')
         .then((r) => r.json())
         .then((data) => {
-            const emptyConfProps = checkEmptyConfProperties(data);
-            if (emptyConfProps.length > 0) {
-                let propsToPrint = ""
-                emptyConfProps.forEach((emptyProp:string) => {
-                    propsToPrint += emptyProp + ", "
-                })
-                const warnMsg = propsToPrint + "field(s) is/are not configured in the config.json file!"
-                msg({severity: 'warn', summary: warnMsg})
-                console.warn(warnMsg)
-            }
-            const startUpRequest = createStartupRequest();
-
             startUpRequest.applicationName = data.appName;
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseURL;
@@ -130,31 +147,9 @@ const App: FC<ICustomContent> = (props) => {
             startUpRequest.password = data.password;
             startUpRequest.language = data.language ? data.language : 'de';
 
-            if(queryParams.appName && queryParams.baseUrl){
-                startUpRequest.applicationName = queryParams.appName;
-                context.server.APP_NAME = queryParams.appName;
-                context.server.BASE_URL = queryParams.baseUrl;
-                context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
-            }
-            if(queryParams.userName && queryParams.password){
-                startUpRequest.password = queryParams.password;
-                startUpRequest.userName = queryParams.userName;
-            }
-            if(authKey){
-                startUpRequest.authKey = authKey;
-            }
-            setAppName(context.server.APP_NAME);
-            context.subscriptions.notifyScreenNameChanged(context.server.APP_NAME);
-            startUpRequest.deviceMode = data.deviceMode ? data.deviceMode : "desktop";
-            startUpRequest.screenHeight = window.innerHeight;
-            startUpRequest.screenWidth = window.innerWidth;
-            if (props.customStartupProps?.length) {
-                props.customStartupProps.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
-            }
-            context.server.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-            context.server.showToast = msg
+            startUpByURL(startUpRequest)
         }).catch(() => {
-            msg({severity: 'error', summary: 'config.json file could not be loaded. Make sure there is a config.json file in your public folder.', life: 5000});
+            startUpByURL(startUpRequest);
         })
     }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions]);
 

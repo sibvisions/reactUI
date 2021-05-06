@@ -1,14 +1,14 @@
 /** React imports */
-import React, {FC, ReactElement, useContext} from "react";
+import React, { FC, ReactElement, useContext } from "react";
 
 /** 3rd Party imports */
 import { Dialog } from 'primereact/dialog';
 
 /** Other imports */
-import { IPanel } from "../panel/UIPanel";
+import { IPanel } from "../";
 import { jvxContext } from "../../../jvxProvider";
 import { createCloseScreenRequest } from "../../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
+import { REQUEST_ENDPOINTS } from "../../../request";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {

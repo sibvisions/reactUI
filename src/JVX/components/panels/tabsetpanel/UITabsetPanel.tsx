@@ -1,24 +1,20 @@
 /** React imports */
-import React, {CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
-import {TabView,TabPanel} from 'primereact/tabview';
+import { TabView, TabPanel } from 'primereact/tabview';
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
+import { useProperties, useComponents } from "../../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../../LayoutContext";
-import {jvxContext} from "../../../jvxProvider";
-import useComponents from "../../zhooks/useComponents";
-import {parseIconData} from "../../compprops/ComponentProperties";
-import {IPanel} from "../panel/UIPanel";
-import {createTabRequest} from "../../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import IconProps from "../../compprops/IconProps";
-import Size from "../../util/Size";
-import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
+import { LayoutContext } from "../../../LayoutContext";
+import { jvxContext } from "../../../jvxProvider";
+import { parseIconData, IconProps } from "../../compprops";
+import { IPanel } from "../";
+import { createTabRequest } from "../../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../../request";
+import { parsePrefSize, parseMinSize, parseMaxSize, Size, sendOnLoadCallback } from "../../util";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {

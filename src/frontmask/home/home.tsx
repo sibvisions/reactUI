@@ -1,15 +1,15 @@
 /** React imports */
-import React, {FC, useContext} from "react";
+import React, { FC, useContext } from "react";
 
 /** 3rd Party imports */
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 /** UI Imports */
 import UIManager from "../UIManager";
 
 /** Hook imports */
-import useHomeComponents from "../../JVX/components/zhooks/useHomeComponents";
-import { getScreenIdFromNavigation } from "../../JVX/components/util/GetScreenNameFromNavigation";
+import { useHomeComponents } from "../../JVX/components/zhooks";
+import { getScreenIdFromNavigation } from "../../JVX/components/util";
 
 /** Other imports */
 import { jvxContext } from "../../JVX/jvxProvider";

@@ -1,8 +1,8 @@
 /** React imports */
-import {useContext, useEffect, useMemo, useState} from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
+import { jvxContext } from "../../jvxProvider";
 
 /**
  * This hook returns the current state of either the entire selectedRow or the value of the column of the selectedRow 

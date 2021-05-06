@@ -4,32 +4,32 @@ import {parseString} from "xml2js"
 
 /** Other imports */
 import ContentStore from "./ContentStore"
-import ApplicationMetaData from "./response/ApplicationMetaDataResponse";
-import BaseResponse from "./response/BaseResponse";
-import MenuResponse from "./response/MenuResponse";
-import GenericResponse from "./response/GenericResponse";
-import CloseScreenResponse from "./response/CloseScreenResponse";
-import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
-import AuthenticationDataResponse from "./response/AuthenticationDataResponse";
-import UserDataResponse from "./response/UserDataResponse";
-import FetchResponse from "./response/FetchResponse";
-import MetaDataResponse from "./response/MetaDataResponse";
-import DataProviderChangedResponse from "./response/DataProviderChangedResponse";
-import ShowDocumentResponse from "./response/ShowDocumentResponse"
-import {createFetchRequest, createOpenScreenRequest, createStartupRequest} from "./factories/RequestFactory";
-import REQUEST_ENDPOINTS from "./request/REQUEST_ENDPOINTS";
-import UploadResponse from "./response/UploadResponse";
-import DownloadResponse from "./response/DownloadResponse";
-import SessionExpiredResponse from "./response/SessionExpiredResponse";
-import ErrorResponse from "./response/ErrorResponse";
-import {IPanel} from "./components/panels/panel/UIPanel"
-import RestartResponse from "./response/RestartResponse";
-import ApplicationParametersResponse from "./response/ApplicationParametersResponse";
-import LanguageResponse from "./response/LanguageResponse";
+import { ApplicationMetaDataResponse,
+         BaseResponse,
+         MenuResponse,
+         GenericResponse,
+         CloseScreenResponse,
+         RESPONSE_NAMES,
+         AuthenticationDataResponse,
+         UserDataResponse,
+         FetchResponse,
+         MetaDataResponse,
+         DataProviderChangedResponse,
+         ShowDocumentResponse,
+         UploadResponse,
+         DownloadResponse,
+         SessionExpiredResponse,
+         ErrorResponse,
+         RestartResponse,
+         ApplicationParametersResponse,
+         LanguageResponse } from "./response";
+import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "./request";
+import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
-import { getMetaData } from "./components/util/GetMetaData";
+import { getMetaData } from "./components/util";
 
 /** Type for query */
 type queryType = {
@@ -170,7 +170,7 @@ class Server {
      * Sets the clientId in the sessionStorage
      * @param metaData - the applicationMetaDataResponse
      */
-    applicationMetaData(metaData: ApplicationMetaData){
+    applicationMetaData(metaData: ApplicationMetaDataResponse){
         sessionStorage.setItem("clientId", metaData.clientId);
     }
 

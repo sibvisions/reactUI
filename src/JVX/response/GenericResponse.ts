@@ -1,5 +1,5 @@
 /** Other imports */
-import BaseResponse from "./BaseResponse";
+import { BaseResponse } from "./";
 import BaseComponent from "../components/BaseComponent";
 
 /** Interface for GenericResponse */

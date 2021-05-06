@@ -1,6 +1,6 @@
 /** Other imports */
-import BaseResponse from "./BaseResponse";
-import {IEditor} from "../components/editors/IEditor";
+import { BaseResponse } from "./";
+import { IEditor } from "../components/editors";
 
 /** Type for MetaData of dataprovider referencing other dataprovider */
 export type MetaDataReference = {

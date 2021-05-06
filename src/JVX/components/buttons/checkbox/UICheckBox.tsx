@@ -1,23 +1,20 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
-import {Checkbox} from 'primereact/checkbox';
+import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
+import { useProperties } from "../../zhooks";
 
 /** Other imports */
-import {jvxContext} from "../../../jvxProvider";
-import {LayoutContext} from "../../../LayoutContext";
-import {IButtonSelectable} from "../IButton";
-import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
-import {createSetValueRequest} from "../../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
-import { cn } from "../menubutton/UIMenuButton";
+import { jvxContext } from "../../../jvxProvider";
+import { LayoutContext } from "../../../LayoutContext";
+import { IButtonSelectable, buttonProps, getGapPos, getIconCenterDirection } from "../";
+import { createSetValueRequest } from "../../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../../request";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 
 /**
  * This component displays a CheckBox and its label
@@ -62,7 +59,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <span 
-                className={cn(
+                className={concatClassnames(
                     "rc-checkbox",
                     `gap-${gapPos}`,
                     getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
@@ -96,7 +93,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                 />
                 <label 
                     ref={labelRef} 
-                    className={cn(
+                    className={concatClassnames(
                         "p-radiobutton-label",
                         btnData.style.color ? 'textcolor-set' : '',
                         btnData.btnBorderPainted && tinycolor(cbBgd).isDark() ? "bright" : "dark"
@@ -104,7 +101,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     htmlFor={props.id} 
                     style={{order: btnData.iconPos === 'left' ? 2 : 1}}>
                     {btnData.iconProps.icon !== undefined &&
-                        <i className={cn(btnData.iconProps.icon, 'rc-button-icon')}/>
+                        <i className={concatClassnames(btnData.iconProps.icon, 'rc-button-icon')}/>
                     }
                     {props.text}
                 </label>

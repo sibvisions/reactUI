@@ -1,9 +1,9 @@
 /** React imports */
-import {useContext, useEffect, useState} from "react";
+import { useContext, useEffect, useState } from "react";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
-import { getDataProvidersOfComp } from "../util/GetDataProvidersOfComp";
+import { jvxContext } from "../../jvxProvider";
+import { getDataProvidersOfComp } from "../util";
 
 /**
  * This hook returns the current data of all dataproviders of a component as Map

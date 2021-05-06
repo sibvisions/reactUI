@@ -2,10 +2,9 @@
 import tinycolor from 'tinycolor2';
 
 /** Other imports */
-import Margins from '../layouts/models/Margins';
-import Size from '../util/Size';
-import IconProps from './IconProps';
-import { UIFont } from './UIFont';
+import { Margins } from '../layouts';
+import { Size } from '../util';
+import { UIFont, IconProps } from './';
 
 /**
  * Returns margins of component

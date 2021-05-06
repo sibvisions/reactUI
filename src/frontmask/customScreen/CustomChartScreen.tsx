@@ -1,11 +1,11 @@
 /** React imports */
-import React, {FC, useMemo} from "react";
+import React, { FC, useMemo } from "react";
 
 /** 3rd Party imports */
-import {Chart} from 'primereact/chart';
+import { Chart } from 'primereact/chart';
 
 /** Hook imports */
-import useDataProviderData from "../../JVX/components/zhooks/useDataProviderData";
+import { useDataProviderData } from "../../JVX/components/zhooks";
 
 
 /**

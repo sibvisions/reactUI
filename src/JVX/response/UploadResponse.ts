@@ -1,5 +1,5 @@
 /** Other imports */
-import BaseResponse from "./BaseResponse";
+import { BaseResponse } from "./";
 
 /** Interface for UploadResponse */
 interface UploadResponse extends BaseResponse{

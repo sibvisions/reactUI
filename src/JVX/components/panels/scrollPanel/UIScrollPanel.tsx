@@ -1,17 +1,15 @@
 /** React imports */
-import React, {FC, useContext} from "react";
+import React, { FC, useContext } from "react";
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
-import useComponents from "../../zhooks/useComponents";
+import { useProperties, useComponents } from "../../zhooks";
 
 /** Other imports */
-import {IPanel} from "../panel/UIPanel";
-import {LayoutContext} from "../../../LayoutContext";
-import Layout from "../../layouts/Layout";
-import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
+
+import { LayoutContext } from "../../../LayoutContext";
+import { IPanel } from "../";
+import { Layout } from "../../layouts";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Size } from "../../util";
 
 /**
  * This component displays a panel in which you will be able to scroll

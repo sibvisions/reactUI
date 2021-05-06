@@ -1,6 +1,6 @@
 /** Other imports */
 import { createSaveRequest } from "../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import { REQUEST_ENDPOINTS } from "../../request";
 import Server from "../../Server";
 
 /**

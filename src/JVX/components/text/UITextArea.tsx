@@ -1,17 +1,16 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
-import {InputTextarea} from "primereact/inputtextarea";
+import { InputTextarea } from "primereact/inputtextarea";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import { useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {LayoutContext} from "../../LayoutContext";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
+import { LayoutContext } from "../../LayoutContext";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 
 /**
  * This component displays a textarea not linked to a databook

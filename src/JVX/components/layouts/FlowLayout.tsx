@@ -1,15 +1,11 @@
 /** React imports */
-import React, {CSSProperties, FC, useContext, useMemo} from "react";
+import React, { CSSProperties, FC, useContext, useMemo } from "react";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import Gaps from "./models/Gaps";
-import {ILayout} from "./Layout";
 import {jvxContext} from "../../jvxProvider";
-import {HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT} from "./models/ALIGNMENT";
-import {ORIENTATION} from "./models/Anchor";
-import {FlowGrid} from "./models/FlowGrid";
-import Size from "../util/Size";
+import { LayoutContext } from "../../LayoutContext";
+import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from "./";
+import { Size } from "../util";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.

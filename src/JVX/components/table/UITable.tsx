@@ -1,29 +1,24 @@
 /** React imports */
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
-import {Column} from "primereact/column";
-import {DataTable} from "primereact/datatable";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import _ from "underscore";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
-import useRowSelect from "../zhooks/useRowSelect";
-import useOutsideClick from "../zhooks/useOutsideClick";
+import { useProperties, useDataProviderData, useRowSelect, useOutsideClick } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {LayoutContext} from "../../LayoutContext";
-import {jvxContext} from "../../jvxProvider";
-import {createFetchRequest, createSelectRowRequest} from "../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import MetaDataResponse from "../../response/MetaDataResponse";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
-import Size from "../util/Size";
+import { LayoutContext } from "../../LayoutContext";
+import { jvxContext } from "../../jvxProvider";
+import { createFetchRequest, createSelectRowRequest } from "../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../request";
+import { MetaDataResponse } from "../../response";
+import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Size } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
-import { getMetaData } from "../util/GetMetaData";
-import _ from "underscore";
+
 
 /** Interface for Table */
 export interface TableProps extends BaseComponent{

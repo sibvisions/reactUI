@@ -1,11 +1,14 @@
 /** React imports */
-import {ReactElement, useCallback, useContext, useEffect, useState} from "react";
+import { ReactElement, useCallback, useContext, useEffect, useState } from "react";
+
+/** 3rd Party imports */
+import _ from "underscore";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
-import {componentHandler, createCustomComponentWrapper} from "../../factories/UIFactory";
-import Size from "../util/Size";
-import _ from "underscore";
+import { jvxContext } from "../../jvxProvider";
+import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
+import { Size } from "../util";
+
 
 /** Type for component sizes */
 export type ComponentSize = {

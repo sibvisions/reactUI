@@ -3,18 +3,12 @@ import React from "react"
 
 /** 3rd Party imports */
 import moment from "moment";
+import { Checkbox } from "primereact/checkbox";
 
 /** Other imports */
-import { IEditorChoice } from "../editors/choice/UIEditorChoice";
-import { IEditorDate } from "../editors/date/UIEditorDate";
-import { IEditorImage } from "../editors/image/UIEditorImage";
-import { IEditor } from "../editors/IEditor";
-import { parseDateFormatTable } from "../util/ParseDateFormats";
+import { IEditor, IEditorChoice, IEditorDate, IEditorImage, IEditorNumber, getBooleanValue } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
-import { IEditorNumber } from "../editors/number/UIEditorNumber";
-import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../util/NumberProperties";
-import { Checkbox } from "primereact/checkbox";
-import { getBooleanValue } from "../editors/checkbox/UIEditorCheckbox";
+import { getGrouping, getMinimumIntDigits, getScaleDigits, parseDateFormatTable } from "../util";
 
 /** 
  * Returns an in-cell editor for the column 

@@ -1,11 +1,10 @@
 /** React imports */
-import React, {CSSProperties, FC, useContext, useMemo, useState} from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import {ILayout} from "./Layout";
-import {jvxContext} from "../../jvxProvider";
-import Bounds from './models/Bounds';
+import { jvxContext } from "../../jvxProvider";
+import { LayoutContext } from "../../LayoutContext";
+import { ILayout, Bounds } from "./";
 
 /**
  * The NullLayout allows to layout the components in an absolute manner

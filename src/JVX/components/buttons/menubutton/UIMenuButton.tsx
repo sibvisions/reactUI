@@ -1,33 +1,26 @@
 /** React imports */
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
-import {SplitButton} from "primereact/splitbutton";
+import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
+import { useProperties } from "../../zhooks";
 
 /** Other imports */
-import {createPressButtonRequest} from "../../../factories/RequestFactory";
-import {jvxContext} from "../../../jvxProvider";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import {LayoutContext} from "../../../LayoutContext";
-import {IButton} from "../IButton";
-import {buttonProps, getGapPos} from "../ButtonStyling";
-import { parseIconData } from "../../compprops/ComponentProperties";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
+import { createPressButtonRequest } from "../../../factories/RequestFactory";
+import { jvxContext } from "../../../jvxProvider";
+import { REQUEST_ENDPOINTS } from "../../../request/";
+import { LayoutContext } from "../../../LayoutContext";
+import { IButton, buttonProps, getGapPos } from "../";
+import { parseIconData } from "../../compprops";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util/";
 import BaseComponent from "../../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
     popupMenu: string;
-}
-
-/** Helper method to concatenate class names and filter out falsy values */
-export function cn(...classNames: (string | null | undefined)[]) {
-    return classNames.filter(Boolean).join(' ');
 }
 
 /**
@@ -100,7 +93,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
             <SplitButton
                 ref={buttonRef}
-                className={cn(
+                className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',
                     btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
@@ -125,7 +118,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     } : {})
                 }}
                 label={props.text}
-                icon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
+                icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 tabIndex={btnData.tabIndex}
                 model={items}
                 //@ts-ignore

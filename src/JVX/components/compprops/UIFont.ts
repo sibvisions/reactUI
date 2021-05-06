@@ -1,7 +1,7 @@
 /**
  * Helper class for fonts 
  */
-export class UIFont {
+class UIFont {
     /** font-family for component, default value is empty for standard css font-family */
     fontFamily = "";
     /** font-weight for component, default value is 400 for normal weight */
@@ -62,3 +62,4 @@ export class UIFont {
         }
     }
 }
+export default UIFont

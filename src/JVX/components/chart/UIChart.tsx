@@ -2,24 +2,20 @@
 // https://github.com/chartjs/Chart.js/issues/5224
 
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
-import {Chart} from 'primereact/chart';
+import { Chart } from 'primereact/chart';
+import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import { useProperties, useDataProviderData, useRowSelect, useTranslation } from "../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
 import BaseComponent from "../BaseComponent";
-import useDataProviderData from "../zhooks/useDataProviderData";
 import { jvxContext } from "../../jvxProvider";
-import useTranslation from "../zhooks/useTranslation";
-import tinycolor from "tinycolor2";
-import useRowSelect from "../zhooks/useRowSelect";
+import { LayoutContext } from "../../LayoutContext";
+import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {

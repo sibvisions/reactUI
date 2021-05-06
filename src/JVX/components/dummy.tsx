@@ -1,9 +1,9 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Other imports */
 import BaseComponent from "./BaseComponent";
-import {LayoutContext} from "../LayoutContext";
+import { LayoutContext } from "../LayoutContext";
 
 /**
  * This component gets rendered when there is a component sent by the server which is not yet implemented on the client

@@ -1,18 +1,15 @@
 /** React imports */
-import React, {CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
-import useComponents, { ComponentSize } from "../../zhooks/useComponents";
+import { useProperties, useComponents, ComponentSize } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
-import ChildWithProps from "../../util/ChildWithProps";
+import { jvxContext } from "../../../jvxProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
-import {jvxContext} from "../../../jvxProvider";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
+import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../../util";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{

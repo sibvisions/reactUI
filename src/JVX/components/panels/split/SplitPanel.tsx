@@ -1,10 +1,10 @@
 /** React import */
-import React, {CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState} from "react";
+import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 
 /** 3rd Party import */
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
-import { ComponentSize } from "../../zhooks/useComponents";
+import { ComponentSize } from "../../zhooks";
 
 /** Type for ResizeEvent */
 type onResizeEvent = (firstSize: ComponentSize, secondSize: ComponentSize) => void;

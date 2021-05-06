@@ -1,17 +1,17 @@
 /** React imports */
-import React, {FC, FormEvent, useContext, useState} from "react";
+import React, { FC, FormEvent, useContext, useState } from "react";
 
 /** 3rd Party imports */
-import {InputText} from "primereact/inputtext";
-import {Button} from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 
 /** Hook imports */
-import useTranslation from "../../JVX/components/zhooks/useTranslation";
+import { useTranslation } from "../../JVX/components/zhooks";
 
 /** Other imports */
-import {jvxContext} from "../../JVX/jvxProvider";
-import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
-import {createLoginRequest} from "../../JVX/factories/RequestFactory";
+import { jvxContext } from "../../JVX/jvxProvider";
+import { REQUEST_ENDPOINTS } from "../../JVX/request";
+import { createLoginRequest } from "../../JVX/factories/RequestFactory";
 
 
 /** Component which handles logging in */

@@ -1,5 +1,4 @@
-import { firstCharToLower } from "../components/util/FirstCharToLower";
-import { firstCharToUpper } from "../components/util/FirstCharToUpper";
+import { firstCharToLower, firstCharToUpper } from "../components/util";
 
 /** the supported operator types. */
 export enum OperatorType

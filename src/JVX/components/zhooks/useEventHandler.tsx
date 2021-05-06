@@ -1,5 +1,11 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * Adds an event-handler to the target, also handles cleanup
+ * @param target - the element the event should be added to
+ * @param event - the event
+ * @param handler - the function which should be executed
+ */
 const useEventHandler = (target?: HTMLElement, event?: keyof HTMLElementEventMap, handler?: EventListener) => {
     const targetRef = useRef<HTMLElement>();
     const handlerRef = useRef<EventListener>();

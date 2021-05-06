@@ -1,15 +1,11 @@
 /** React imports */
-import React, {CSSProperties, FC, useContext, useMemo, useState} from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import Gaps from "./models/Gaps";
-import {ILayout} from "./Layout";
 import {jvxContext} from "../../jvxProvider";
-import CellConstraints from "./models/CellConstraints"
-import Margins from "./models/Margins";
-import GridSize from "./models/GridSize";
-import Size from "../util/Size";
+import {LayoutContext} from "../../LayoutContext";
+import { ILayout, Gaps, CellConstraints, Margins, GridSize } from "./";
+import { Size } from "../util";
 
 /**
  * The GridLayout is a component that lays out a container's

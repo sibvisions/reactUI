@@ -1,5 +1,5 @@
 /** Other imports */
-import Size from "../util/Size";
+import { Size } from "../util";
 
 /** Interface for iconproperties */
 interface IconProps {

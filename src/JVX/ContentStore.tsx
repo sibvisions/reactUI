@@ -1,18 +1,16 @@
 /** React imports */
-import React, {ReactElement} from "react";
+import React, { ReactElement } from "react";
 
 /** Other imports */
-import {serverMenuButtons} from "./response/MenuResponse";
+import { SubscriptionManager } from "./SubscriptionManager";
+import { serverMenuButtons, MetaDataResponse, MetaDataReference } from "./response";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
-import MetaDataResponse, { MetaDataReference } from "./response/MetaDataResponse";
-import {componentHandler} from "./factories/UIFactory";
-import {IPanel} from './components/panels/panel/UIPanel'
-import { SubscriptionManager } from "./SubscriptionManager";
-import { CustomDisplayOptions } from "./customTypes/CustomDisplayType";
-import { getMetaData } from "./components/util/GetMetaData";
 import TreePath from "./model/TreePath";
-import { getSelfJoinedRootReference } from "./components/util/GetSelfJoinedRootReference";
+import { componentHandler } from "./factories/UIFactory";
+import { IPanel } from './components/panels/'
+import { CustomDisplayOptions } from "./customTypes";
+import { getMetaData } from "./components/util";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{

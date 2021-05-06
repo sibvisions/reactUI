@@ -1,17 +1,14 @@
 /** React imports */
-import React, {FC, useContext} from "react";
+import React, { FC, useContext } from "react";
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
-import useComponents from "../../zhooks/useComponents";
+import { useProperties, useComponents } from "../../zhooks";
 
 /** Other imports */
-import Layout from "../../layouts/Layout";
+import { LayoutContext } from "../../../LayoutContext";
+import { Layout } from "../../layouts";
+import { parsePrefSize, parseMinSize, parseMaxSize, Size, sendOnLoadCallback } from "../../util";
 import BaseComponent from "../../BaseComponent";
-import {LayoutContext} from "../../../LayoutContext";
-import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent{

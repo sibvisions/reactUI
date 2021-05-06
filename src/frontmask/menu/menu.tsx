@@ -1,27 +1,25 @@
 /** React imports */
-import React, {FC, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
-import {MenuItem} from "primereact/api";
-
-/** Hook imports */
-import useMenuCollapser from "../../JVX/components/zhooks/useMenuCollapser";
-import useWindowObserver from "../../JVX/components/zhooks/useWindowObserver";
-import useTranslation from "../../JVX/components/zhooks/useTranslation";
-
-/** Other imports */
-import {createLogoutRequest} from "../../JVX/factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../JVX/request/REQUEST_ENDPOINTS";
-import {jvxContext} from "../../JVX/jvxProvider";
-import {serverMenuButtons} from "../../JVX/response/MenuResponse";
-import { parseIconData } from "../../JVX/components/compprops/ComponentProperties";
-import { IForwardRef } from "../../JVX/IForwardRef";
+import { MenuItem } from "primereact/api";
 import { useParams } from "react-router";
 
+/** Hook imports */
+import { useMenuCollapser, useWindowObserver, useTranslation } from '../../JVX/components/zhooks'
+
+/** Other imports */
+import { jvxContext } from "../../JVX/jvxProvider";
+import { createLogoutRequest } from "../../JVX/factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../JVX/request";
+import { serverMenuButtons } from "../../JVX/response";
+import { parseIconData } from "../../JVX/components/compprops";
+import { IForwardRef } from "../../JVX/IForwardRef";
+
 /** Extends the PrimeReact MenuItem with componentId */
-export interface MenuItemCustom extends MenuItem{
+export interface MenuItemCustom extends MenuItem {
     componentId?: string
 }
 

@@ -1,16 +1,13 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import { useProperties } from "../zhooks";
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {LayoutContext} from "../../LayoutContext";
-import {getFont} from "../compprops/ComponentProperties";
-import {getAlignments} from "../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
-
+import { LayoutContext } from "../../LayoutContext";
+import {getFont, getAlignments} from "../compprops";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 
 /**
  * Displays a simple label

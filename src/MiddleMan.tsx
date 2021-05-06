@@ -1,5 +1,5 @@
 /** React imports */
-import React, {FC} from 'react';
+import React, { FC } from 'react';
 
 /** scss */
 import './index.scss';
@@ -10,10 +10,7 @@ import { HashRouter } from 'react-router-dom';
 /** Other imports */
 import App from './App';
 import JVXProvider from "./JVX/jvxProvider";
-import CustomScreenType from './JVX/customTypes/CustomScreenType';
-import CustomComponentType from './JVX/customTypes/CustomComponentType';
-import CustomStartupProps from './JVX/customTypes/CustomStartupProps';
-import CustomDisplayType from './JVX/customTypes/CustomDisplayType';
+import { CustomScreenType, CustomComponentType, CustomStartupProps, CustomDisplayType } from './JVX/customTypes';
 
 export interface ICustomContent {
     customScreens?: CustomScreenType[]

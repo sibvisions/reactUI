@@ -1,13 +1,13 @@
 /** React imports */
-import React, {FC, ReactElement, useContext, useLayoutEffect, useRef} from "react";
+import React, { FC, ReactElement, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import { useProperties } from "../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
+import { LayoutContext } from "../../LayoutContext";
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
+import { sendOnLoadCallback } from "../util/";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {

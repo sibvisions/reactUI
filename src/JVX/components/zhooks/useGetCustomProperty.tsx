@@ -2,7 +2,7 @@
 import { useContext } from "react";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
+import { jvxContext } from "../../jvxProvider";
 
 /**
  * This hook returns the value of a customStartup property set by the user 

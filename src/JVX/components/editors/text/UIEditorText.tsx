@@ -1,27 +1,28 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
-import {InputText} from "primereact/inputtext";
+import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
-import useRowSelect from "../../zhooks/useRowSelect";
+import { useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
-import {ICellEditor, IEditor} from "../IEditor";
-import {LayoutContext} from "../../../LayoutContext";
-import {jvxContext} from "../../../jvxProvider";
-import {sendSetValues} from "../../util/SendSetValues";
-import {handleEnterKey} from "../../util/HandleEnterKey";
-import {onBlurCallback} from "../../util/OnBlurCallback";
-import {getTextAlignment} from "../../compprops/GetAlignments";
-import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
-import {getEditorCompId} from "../../util/GetEditorCompId";
-import { getMetaData } from "../../util/GetMetaData";
+import { ICellEditor, IEditor } from "../";
+import { LayoutContext } from "../../../LayoutContext";
+import { jvxContext } from "../../../jvxProvider";
+import { getTextAlignment } from "../../compprops";
+import { getEditorCompId, 
+         getMetaData, 
+         sendSetValues, 
+         handleEnterKey, 
+         onBlurCallback, 
+         sendOnLoadCallback, 
+         parsePrefSize, 
+         parseMinSize, 
+         parseMaxSize } from "../../util";
 
 /** Interface for cellEditor property of TextCellEditor */
 interface ICellEditorText extends ICellEditor {

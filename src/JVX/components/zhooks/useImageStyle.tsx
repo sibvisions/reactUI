@@ -2,7 +2,7 @@
 import { CSSProperties, useMemo } from "react";
 
 /** Other imports */
-import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
 
 /**
  * This hook returns css style properties for images based on their alignments

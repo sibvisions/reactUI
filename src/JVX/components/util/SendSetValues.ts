@@ -1,7 +1,7 @@
 /** Other imports */
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
+import { REQUEST_ENDPOINTS } from "../../request";
 import Server from "../../Server";
-import {createSetValuesRequest} from "../../factories/RequestFactory";
+import { createSetValuesRequest } from "../../factories/RequestFactory";
 
 /**
  * Builds a setValuesRequest and sends it to the server

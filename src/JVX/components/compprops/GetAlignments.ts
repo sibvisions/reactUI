@@ -1,8 +1,15 @@
-/** Other imports */
+/** React imports */
 import { CSSProperties } from "react";
+
+/** Other imports */
 import BaseComponent from "../BaseComponent";
-import { IEditor } from "../editors/IEditor";
-import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
+import { IEditor } from "../editors";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
+
+export interface Alignments {
+    ha?: string,
+    va?: string
+}
 
 /**
  * Translates the server sent number alignments into flexbox alignments
@@ -10,7 +17,7 @@ import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIG
  * @param pva - server sent vertical alignment
  * @returns Alignments in flexbox alignment strings
  */
-function translateAlignments(pha:number|undefined, pva:number|undefined) {
+function translateAlignments(pha:number|undefined, pva:number|undefined):Alignments {
     let ha:string|undefined;
     let va:string|undefined;
 
@@ -45,7 +52,7 @@ function isEditor(props:IEditor|BaseComponent): props is IEditor {
  * @param props - Properties of CellEditor
  * @returns Horizontal- and verticalalignment of CellEditor or undefined if none are set
  */
-export function getAlignments(props: IEditor|BaseComponent) {
+export function getAlignments(props: IEditor|BaseComponent):Alignments {
     if (isEditor(props)) {
         if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor_verticalAlignment_ !== undefined)
             return translateAlignments(props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);

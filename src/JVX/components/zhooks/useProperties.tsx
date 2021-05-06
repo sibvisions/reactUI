@@ -1,9 +1,9 @@
 /** React imports */
-import {useContext, useEffect, useState} from "react";
+import { useContext, useEffect, useState } from "react";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {jvxContext} from "../../jvxProvider";
+import { jvxContext } from "../../jvxProvider";
 
 /**
  * This hook returns the up to date properties for a component

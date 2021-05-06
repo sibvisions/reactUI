@@ -1,11 +1,11 @@
 /** React imports */
-import React, {FC} from "react"
+import React, { FC } from "react"
 
 /** Other imports */
 import BaseComponent from "../components/BaseComponent";
 
 /** UI and Interface Imports */
-import {UIGroupPanel,
+import { UIGroupPanel,
         UIPanel,
         UIPopupWrapper,
         UIScrollPanel,
@@ -14,8 +14,7 @@ import {UIGroupPanel,
         IPanel,
         IPopup,
         ISplit,
-        ITabsetPanel
-    } from '../components/panels'
+        ITabsetPanel } from '../components/panels'
 import { UIButton,
         UICheckBox,
         UIMenuButton,
@@ -23,11 +22,10 @@ import { UIButton,
         UIRadioButton,
         IButton,
         IButtonSelectable,
-        IMenuButton
-    } from "../components/buttons"
+        IMenuButton } from "../components/buttons"
 import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
-import {UIEditorCheckBox,
+import { UIEditorCheckBox,
         UIEditorChoice,
         UIEditorDate,
         UIEditorImage,
@@ -41,15 +39,14 @@ import {UIEditorCheckBox,
         IEditorImage,
         IEditorLinked,
         IEditorNumber,
-        IEditorText
-    } from "../components/editors"
-import UITable, {TableProps} from "../components/table/UITable";
+        IEditorText } from "../components/editors"
+import UITable, { TableProps } from "../components/table/UITable";
 import UIIcon from "../components/icon/UIIcon";
-import {UIPassword, UIText, UITextArea} from "../components/text"
+import { UIPassword, UIText, UITextArea } from "../components/text"
 import UIChart, { IChart } from "../components/chart/UIChart";
 import UIGauge, { IGauge } from "../components/gauge/UIGauge";
-import {UIMapGoogle, UIMapOSM, IMap} from "../components/map"
-import {UICustomComponentWrapper, ICustomComponentWrapper} from '../components/customComp/index'
+import { UIMapGoogle, UIMapOSM, IMap } from "../components/map"
+import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/customComp/index'
 import UITree, { ITree } from "../components/tree/UITree";
 
 /**

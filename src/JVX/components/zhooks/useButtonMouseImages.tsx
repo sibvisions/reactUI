@@ -1,7 +1,13 @@
-import {useContext, useCallback, useRef, useEffect} from "react"
+/** React imports */
+import { useContext, useCallback } from "react"
+
+/** Hook imports */
+import { useEventHandler } from "./";
+
+/** Other imports */
 import { jvxContext } from "../../jvxProvider";
-import IconProps from "../compprops/IconProps";
-import useEventHandler from "./useEventHandler";
+import { IconProps } from "../compprops";
+
 
 const isFAIcon = (iconName?:string) => {
     return iconName?.includes('fa fa-');

@@ -1,13 +1,12 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
+import { useProperties } from "../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
+import { LayoutContext } from "../../LayoutContext";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 import BaseComponent from "../BaseComponent";
 import { jvxContext } from "../../jvxProvider";
 

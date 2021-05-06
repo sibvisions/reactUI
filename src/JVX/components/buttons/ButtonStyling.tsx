@@ -1,14 +1,12 @@
 /** React imports */
-import {CSSProperties} from 'react';
+import { CSSProperties } from 'react';
 
 /** 3rd Party imports */
 import tinycolor from 'tinycolor2';
 
 /** Other imports */
-import {getAlignments} from "../compprops/GetAlignments";
-import {getFont, getMargins, parseIconData} from '../compprops/ComponentProperties';
-import IconProps from '../compprops/IconProps';
-import {IButton} from "./IButton";
+import { getAlignments, getFont, getMargins, IconProps, parseIconData } from '../compprops';
+import { IButton } from "./";
 
 /**
  * @param props - buttonproperties received by the server

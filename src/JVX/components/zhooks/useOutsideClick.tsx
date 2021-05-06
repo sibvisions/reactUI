@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 
 /** Other imports */
-import { IEditor } from "../editors/IEditor"
+import { IEditor } from "../editors"
 
 /**
  * This hook adds a clickListener to the document, when a LinkedCellEditor or a DateCellEditor is opened while in-cell editing,

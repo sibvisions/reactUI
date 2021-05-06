@@ -1,5 +1,5 @@
+import { CSSProperties } from "react";
 import BaseComponent from "../BaseComponent";
-import {CSSProperties} from "react";
 
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{

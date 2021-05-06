@@ -1,12 +1,12 @@
 /** React imports */
-import React, {CSSProperties, FC, useContext, useMemo} from "react";
+import React, { CSSProperties, FC, useContext, useMemo } from "react";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext"
-import {jvxContext} from "../../jvxProvider";
-import {ILayout} from "./Layout";
-import {ComponentSize} from "../zhooks/useComponents";
-import Margins from "./models/Margins";
+import { LayoutContext } from "../../LayoutContext"
+import { jvxContext } from "../../jvxProvider";
+import { ILayout } from "./Layout";
+import { ComponentSize } from "../zhooks";
+import { Margins } from "./";
 
 /** Type for borderLayoutComponents */
 type borderLayoutComponents = {

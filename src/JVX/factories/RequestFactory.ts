@@ -1,20 +1,19 @@
 /** Request imports */
-import StartupRequest from "../request/StartupRequest";
-import LoginRequest from "../request/LoginRequest";
-import PressButtonRequest from "../request/PressButtonRequest";
-import OpenScreenRequest from "../request/OpenScreenRequest";
-import LogoutRequest from "../request/LogoutRequest";
-import DeviceStatusRequest from "../request/DeviceStatusRequest";
-import SelectRowRequest from "../request/SelectRowRequest";
-import FetchRequest from "../request/FetchRequest";
-import SetValuesRequest from "../request/SetValuesRequest";
-import FilterRequest from "../request/FilterRequest";
-import SetValueRequest from "../request/SetValueRequest";
-import TabRequest from "../request/TabRequest";
-import SaveRequest from "../request/SaveRequest";
-import CloseScreenRequest from "../request/CloseScreenRequest";
-import SelectTreeRequest from "../request/SelectTreeRequest";
-
+import { StartupRequest,
+         LoginRequest,
+         PressButtonRequest,
+         OpenScreenRequest,
+         LogoutRequest,
+         DeviceStatusRequest,
+         SelectRowRequest,
+         FetchRequest,
+         SetValuesRequest,
+         FilterRequest,
+         SetValueRequest,
+         TabRequest,
+         SaveRequest,
+         CloseScreenRequest,
+         SelectTreeRequest } from "../request";
 
 /**
  * Returns the ClientId from the local storage

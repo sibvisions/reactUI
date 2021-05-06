@@ -1,8 +1,8 @@
 /** React imports */
-import {useContext, useEffect, useState} from "react";
+import { useContext, useEffect, useState } from "react";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
+import { jvxContext } from "../../jvxProvider";
 
 /**
  * This hook returns the data of the dataprovider, it updates whenever the dataprovider gets updated

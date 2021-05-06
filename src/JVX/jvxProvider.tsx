@@ -1,11 +1,13 @@
 /** React imports */
-import React, {createContext, FC, useState} from "react";
+import React, { createContext, FC, useState } from "react";
+
+/** 3rd Party imports */
+import { useHistory } from "react-router";
 
 /** Other imports */
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
-import { useHistory } from "react-router";
 
 /** Type for jvxContext */
 type jvxContextType={

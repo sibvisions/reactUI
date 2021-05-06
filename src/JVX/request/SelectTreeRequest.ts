@@ -1,4 +1,4 @@
-import { SelectFilter } from "./SelectRowRequest";
+import { SelectFilter } from "./";
 
 /** Interface for SelectTreeRequest */
 interface SelectTreeRequest {

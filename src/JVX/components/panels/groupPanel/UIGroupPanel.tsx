@@ -1,17 +1,14 @@
 /** React imports */
-import React, {FC, useContext} from "react";
+import React, { FC, useContext } from "react";
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
-import useComponents from "../../zhooks/useComponents";
+import { useProperties, useComponents } from "../../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../../LayoutContext";
-import Layout from "../../layouts/Layout";
-import {IPanel} from "../panel/UIPanel";
-import Size from "../../util/Size";
-import { sendOnLoadCallback } from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
+import { LayoutContext } from "../../../LayoutContext";
+import { Layout } from "../../layouts";
+import { IPanel } from "../";
+import { parsePrefSize, parseMinSize, parseMaxSize, Size, sendOnLoadCallback } from "../../util";
 
 /**
  * This component is a panel with a header, useful to group components

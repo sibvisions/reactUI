@@ -1,5 +1,5 @@
 /** React imports */
-import {ReactElement, useCallback, useContext, useEffect, useState} from "react"
+import { ReactElement, useCallback, useContext, useEffect, useState } from "react"
 
 /** Other imports */
 //import Settings from "../../../frontmask/settings/Settings";

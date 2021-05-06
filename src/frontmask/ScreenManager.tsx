@@ -3,7 +3,7 @@ import React, { createContext, FC, ReactElement, useContext } from "react";
 import { useParams } from "react-router";
 
 /** Other imports */
-import { getScreenIdFromNavigation } from "../JVX/components/util/GetScreenNameFromNavigation";
+import { getScreenIdFromNavigation } from "../JVX/components/util";
 import { IForwardRef } from "../JVX/IForwardRef";
 
 /** Other imports */

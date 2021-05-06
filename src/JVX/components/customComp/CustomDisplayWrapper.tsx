@@ -1,5 +1,7 @@
 /** React imports */
-import React, { FC, PropsWithChildren, ReactElement, useLayoutEffect } from "react";
+import React, { FC, ReactElement, useLayoutEffect } from "react";
+
+/** Other imports */
 import { ScreenContext } from "../../../frontmask/ScreenManager";
 import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
 

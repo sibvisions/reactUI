@@ -1,5 +1,5 @@
 /** React imports */
-import {useContext} from "react";
+import { useContext } from "react";
 
 /** Other imports */
 import { jvxContext } from "../../jvxProvider";

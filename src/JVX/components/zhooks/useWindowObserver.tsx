@@ -1,5 +1,5 @@
 /** React imports */
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 
 /** Returns true, if the window is smaller than 1030px to collapse the menu */
 const useWindowObserver = () => {

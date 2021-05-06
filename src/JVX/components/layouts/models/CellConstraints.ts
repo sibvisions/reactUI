@@ -1,5 +1,5 @@
 /** Other imports */
-import Margins from "./Margins";
+import { Margins } from "../";
 
 /** Class for the CellConstraints of GridLayout */
 class CellConstraints{

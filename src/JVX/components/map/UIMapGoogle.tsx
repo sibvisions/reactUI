@@ -1,27 +1,29 @@
 /* global google */
 /** React imports */
-import React, {FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
-import {GMap} from 'primereact/gmap';
+import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
+import { useProperties, useDataProviderData } from "../zhooks";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
-import {LayoutContext} from "../../LayoutContext";
-import {sendOnLoadCallback} from "../util/SendOnLoadCallback";
-import {parseJVxLocation, parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
-import {sendSetValues} from "../util/SendSetValues";
-import { IMap } from "./UIMapOSM";
-import { sendMapFetchRequests } from "../util/SendMapFetchRequests";
-import { sortGroupDataGoogle } from "../util/SortGroupData";
-import IconProps from "../compprops/IconProps";
-import { getMarkerIcon } from "../util/GetMarkerIcon";
-import { sendSaveRequest } from "../util/SendSaveRequest";
+import { jvxContext } from "../../jvxProvider";
+import { LayoutContext } from "../../LayoutContext";
+import { getMarkerIcon, 
+         parseMapLocation, 
+         parsePrefSize, 
+         parseMinSize, 
+         parseMaxSize, 
+         sendOnLoadCallback, 
+         sendSetValues, 
+         sendMapFetchRequests, 
+         sortGroupDataGoogle, 
+         sendSaveRequest } from "../util";
+import { IMap } from "./";
+import { IconProps } from "../compprops";
 
 /**
  * This component displays a map view with Google Maps
@@ -53,7 +55,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
     /** The center position of the map */
-    const centerPosition = parseJVxLocation(props.center);
+    const centerPosition = parseMapLocation(props.center);
     /** Options for map controls/display */
     const options = {
         center: centerPosition ? { lat: centerPosition.latitude, lng: centerPosition.longitude} : { lat: 0, lng: 0 },

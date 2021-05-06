@@ -1,5 +1,5 @@
 /** Other imports */
-import UserDataResponse from "../response/UserDataResponse";
+import { UserDataResponse } from "../response";
 
 /**
  * Class for UserData

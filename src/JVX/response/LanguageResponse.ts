@@ -1,5 +1,5 @@
 /** Other imports */
-import BaseResponse from "./BaseResponse";
+import { BaseResponse } from "./";
 
 /** Interface for LanguageResponse */
 interface LanguageResponse extends BaseResponse {

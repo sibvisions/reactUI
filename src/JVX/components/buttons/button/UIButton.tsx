@@ -1,25 +1,21 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useMemo, useRef} from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
-import {Button} from "primereact/button";
+import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../../zhooks/useProperties";
+import { useProperties, useButtonMouseImages } from "../../zhooks";
 
 /** Other imports */
-import {createPressButtonRequest} from "../../../factories/RequestFactory";
-import {jvxContext} from "../../../jvxProvider";
-import {LayoutContext} from "../../../LayoutContext";
-import REQUEST_ENDPOINTS from "../../../request/REQUEST_ENDPOINTS";
-import {IButton} from "../IButton";
-import {buttonProps, getGapPos, getIconCenterDirection} from "../ButtonStyling";
-import {sendOnLoadCallback} from "../../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../../util/parseSizes";
-import { cn } from "../menubutton/UIMenuButton";
-import { parseIconData } from "../../compprops/ComponentProperties";
-import useButtonMouseImages from "../../zhooks/useButtonMouseImages";
+import { createPressButtonRequest } from "../../../factories/RequestFactory";
+import { jvxContext } from "../../../jvxProvider";
+import { LayoutContext } from "../../../LayoutContext";
+import { REQUEST_ENDPOINTS } from "../../../request";
+import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "../";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { parseIconData } from "../../compprops";
 
 /**
  * This component displays a basic button
@@ -77,7 +73,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
                 ref={buttonRef}
-                className={cn(
+                className={concatClassnames(
                     "rc-button",
                     !btnData.btnBorderPainted ? "border-notpainted" : '',
                     props.style?.includes("hyperlink") ? "p-button-link" : '',
@@ -105,7 +101,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     } : {})
                 } as any}
                 label={props.text}
-                icon={btnData.iconProps ? cn(btnData.iconProps.icon, 'rc-button-icon') : undefined}
+                icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}

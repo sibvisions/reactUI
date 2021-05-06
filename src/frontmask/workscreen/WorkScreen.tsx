@@ -3,7 +3,7 @@ import React, {CSSProperties, FC} from "react";
 import { useParams } from "react-router";
 
 /** Hook imports */
-import useHomeComponents from "../../JVX/components/zhooks/useHomeComponents";
+import { useHomeComponents } from "../../JVX/components/zhooks";
 
 /**Other imports */
 import { IForwardRef } from "../../JVX/IForwardRef";

@@ -1,6 +1,5 @@
 /** Other imports */
-import JVxLocation from "./MapLocation";
-import Size from "./Size";
+import { MapLocation, Size } from "./";
 
 /**
  * Splits up the given size and returns it as a Size object
@@ -41,7 +40,7 @@ export function parseMaxSize(maxSize:string|undefined):Size {
  * @param location - the location for the point
  * @returns split up location (longitude, latitude) as object
  */
-export function parseJVxLocation(location:string|undefined):JVxLocation|undefined {
+export function parseMapLocation(location:string|undefined):MapLocation|undefined {
     if (location) {
         const locationSplitted = location.split(',');
         return {latitude: parseFloat(locationSplitted[0]), longitude: parseFloat(locationSplitted[1])};

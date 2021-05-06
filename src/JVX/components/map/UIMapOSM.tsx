@@ -1,29 +1,30 @@
 /** React imports */
-import React, {FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
-import {MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent} from "react-leaflet";
+import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import {PolylineOptions} from "leaflet";
-import L from 'leaflet'
+import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
-import useDataProviderData from "../zhooks/useDataProviderData";
+import { useProperties, useDataProviderData } from "../zhooks";
 
 /** Other imports */
-import {jvxContext} from "../../jvxProvider";
-import {LayoutContext} from "../../LayoutContext";
-import {sendOnLoadCallback} from "../util/SendOnLoadCallback";
-import {parseJVxLocation, parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
+import { jvxContext } from "../../jvxProvider";
+import { LayoutContext } from "../../LayoutContext";
+import { getMarkerIcon, 
+         parseMapLocation, 
+         parsePrefSize, 
+         parseMinSize, 
+         parseMaxSize, 
+         sendOnLoadCallback, 
+         sendSetValues, 
+         sendMapFetchRequests, 
+         sortGroupDataOSM, 
+         sendSaveRequest } from "../util";
 import BaseComponent from "../BaseComponent";
-import IconProps from "../compprops/IconProps";
-import {sendSetValues} from "../util/SendSetValues";
-import { sendMapFetchRequests } from "../util/SendMapFetchRequests";
-import { sortGroupDataOSM } from "../util/SortGroupData";
-import { getMarkerIcon } from "../util/GetMarkerIcon";
-import { sendSaveRequest } from "../util/SendSaveRequest";
+import { IconProps } from "../compprops";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {
@@ -59,7 +60,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
     /** The center position of the map */
-    const centerPosition = parseJVxLocation(props.center);
+    const centerPosition = parseMapLocation(props.center);
     /** Start zoom value is switched in Google and OSM */
     const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 0);
 

@@ -7,23 +7,17 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
-import useAllDataProviderData from "../zhooks/useAllDataProviderData";
-import useAllRowSelect from "../zhooks/useAllRowSelect";
+import { useProperties, useAllDataProviderData, useAllRowSelect } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import { jvxContext } from "../../jvxProvider";
 import { LayoutContext } from "../../LayoutContext";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
+import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
-import REQUEST_ENDPOINTS from "../../request/REQUEST_ENDPOINTS";
-import { getMetaData } from "../util/GetMetaData";
-import FetchResponse from "../../response/FetchResponse";
+import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
+import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
-import { SelectFilter } from "../../request/SelectRowRequest";
-import { getSelfJoinedRootReference } from "../util/GetSelfJoinedRootReference";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {

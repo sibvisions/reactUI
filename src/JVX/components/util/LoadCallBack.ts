@@ -1,4 +1,4 @@
-import Size from "./Size"
+import { Size } from "./"
 
 /** Type for the LoadCallBack function */
 type LoadCallBack = (id: string, prefSize:Size, minSize:Size, maxSize:Size) => void

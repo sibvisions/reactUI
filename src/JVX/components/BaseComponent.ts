@@ -1,7 +1,7 @@
 /** Other imports */
-import { UIFont } from "./compprops/UIFont";
-import Margins from "./layouts/models/Margins";
-import LoadCallBack from "./util/LoadCallBack";
+import { UIFont } from "./compprops";
+import { Margins } from "./layouts";
+import { LoadCallBack } from "./util";
 
 /** Interface for BaseComponent every components possible properties */
 interface BaseComponent{

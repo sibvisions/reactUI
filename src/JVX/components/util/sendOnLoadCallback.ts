@@ -1,5 +1,5 @@
 /** Other imports */
-import Size from "./Size";
+import { Size } from "./";
 
 /**
  * Checks if the preferred size isn't to small or to big for its minimum/maximum size

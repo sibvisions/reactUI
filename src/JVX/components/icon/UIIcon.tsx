@@ -1,18 +1,15 @@
 /** React imports */
-import React, {FC, useContext, useLayoutEffect, useRef, useState} from "react";
+import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import useProperties from "../zhooks/useProperties";
-import useImageStyle from "../zhooks/useImageStyle";
+import { useProperties, useImageStyle } from "../zhooks";
 
 /** Other imports */
-import {LayoutContext} from "../../LayoutContext";
-import {jvxContext} from "../../jvxProvider";
-import {parseIconData} from "../compprops/ComponentProperties";
+import { LayoutContext } from "../../LayoutContext";
+import { jvxContext } from "../../jvxProvider";
+import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback } from "../util/SendOnLoadCallback";
-import {parsePrefSize, parseMinSize, parseMaxSize} from "../util/parseSizes";
-import Size from "../util/Size"
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Size } from "../util";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
