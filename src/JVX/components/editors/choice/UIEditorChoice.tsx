@@ -18,7 +18,6 @@ interface ICellEditorChoice extends ICellEditor{
     allowedValues: Array<string>,
     defaultImageName?: string
     imageNames: Array<string>,
-    preferredEditorMode?: number,
 }
 
 /** Interface for ChoiceCellEditor */

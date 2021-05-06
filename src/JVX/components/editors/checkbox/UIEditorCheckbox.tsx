@@ -18,7 +18,6 @@ import { getAlignments } from "../../compprops";
 interface ICellEditorCheckBox extends ICellEditor {
     text?: string,
     selectedValue?:string|boolean|number|undefined, 
-    preferredEditorMode?: number
 }
 
 /** Interface for CheckBoxCellEditor */

@@ -29,7 +29,6 @@ import { getTextAlignment } from "../../compprops";
 /** Interface for cellEditor property of NumberCellEditor */
 interface ICellEditorNumber extends ICellEditor{
     numberFormat: string,
-    preferredEditorMode?: number,
 }
 
 /** Interface for NumberCellEditor */

@@ -31,7 +31,6 @@ interface ICellEditorLinked extends ICellEditor{
 
     }
     clearColumns:Array<string>
-    preferredEditorMode?: number
 }
 
 /** Interface for LinkedCellEditor */

@@ -33,7 +33,6 @@ interface ICellEditorDate extends ICellEditor{
     isMinuteEditor: boolean,
     isSecondEditor: boolean,
     isTimeEditor: boolean,
-    preferredEditorMode?: number
 }
 
 /** Interface for DateCellEditor */

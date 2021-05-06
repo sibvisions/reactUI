@@ -78,7 +78,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${gapPos}`,
-                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
                 )}
                 style={{
                     ...btnData.style,

@@ -62,7 +62,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                 className={concatClassnames(
                     "rc-radiobutton",
                     `gap-${gapPos}`,
-                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment, btnData.iconProps)
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
                     )} 
                 style={{
                     ...btnData.style,

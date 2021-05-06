@@ -4,7 +4,7 @@ import { Margins } from "./layouts";
 import { LoadCallBack } from "./util";
 
 /** Interface for BaseComponent every components possible properties */
-interface BaseComponent{
+interface BaseComponent {
     onLoadCallback?: LoadCallBack
     id: string,
     parent?: string
@@ -21,8 +21,8 @@ interface BaseComponent{
     background?: string
     foreground?: string
     margins?: string|Margins
-    horizontalAlignment?: 0 | 1 | 2| 3
-    verticalAlignment?: 0 | 1 | 2| 3
+    horizontalAlignment?: 0 | 1 | 2 | 3
+    verticalAlignment?: 0 | 1 | 2 | 3
     font?: string|UIFont
     image?: string
     focusable?: boolean

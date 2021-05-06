@@ -99,7 +99,6 @@ const App: FC<ICustomContent> = (props) => {
         const authKey = localStorage.getItem("authKey");
 
         const startUpByURL = (startupReq:StartupRequest) => {
-            console.log(queryParams)
             if(queryParams.appName && queryParams.baseUrl){
                 startupReq.applicationName = queryParams.appName;
                 context.server.APP_NAME = queryParams.appName;

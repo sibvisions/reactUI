@@ -26,7 +26,6 @@ import { getEditorCompId,
 
 /** Interface for cellEditor property of TextCellEditor */
 interface ICellEditorText extends ICellEditor {
-    preferredEditorMode?: number
     length?:number
 }
 

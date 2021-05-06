@@ -8,6 +8,7 @@ export interface ICellEditor{
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
     directCellEditor?: boolean,
+    preferredEditorMode?: number
 }
 
 /** Base Interface for CellEditors */

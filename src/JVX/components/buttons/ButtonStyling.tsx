@@ -58,7 +58,7 @@ export function getGapPos(hTextPos:number|undefined, vTextPos:number|undefined) 
     }
 }
 
-export function getIconCenterDirection(hTextPos:number|undefined, hAlign:number|undefined, iconProps:IconProps|undefined) {
+export function getIconCenterDirection(hTextPos:number|undefined, hAlign:number|undefined) {
     if (hTextPos === 1) {
         if (hAlign === 0 || !hAlign) {
             return 'icon-center-left';

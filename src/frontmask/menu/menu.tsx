@@ -20,7 +20,7 @@ import { IForwardRef } from "../../JVX/IForwardRef";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
-    componentId?: string
+    componentId:string
 }
 
 /**
@@ -35,7 +35,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     /** Flag if menu should be collapsed based on windowsize */
     const windowSize = useWindowObserver();
     /** Current state of menu items */
-    const [menuItems, setMenuItems] = useState<Array<MenuItemCustom>>();
+    const [menuItems, setMenuItems] = useState<Array<MenuItem>>();
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
     /** Reference for profile menu element */
