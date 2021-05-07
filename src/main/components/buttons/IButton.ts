@@ -13,6 +13,7 @@ export interface IButton extends BaseComponent {
     enabled?: boolean
     mouseOverImage?: string,
     mousePressedImage?: string
+    ariaLabel?: string;
 }
 
 /** Interface for Buttons which manage a selected state extends IButton */

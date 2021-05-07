@@ -90,7 +90,11 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
     return (
-        <span ref={buttonWrapperRef} style={{position: 'absolute', ...layoutValue.get(props.id)}}>
+        <span 
+            ref={buttonWrapperRef} 
+            style={{position: 'absolute', ...layoutValue.get(props.id)}}
+            aria-label={props.ariaLabel}
+        >
             <SplitButton
                 ref={buttonRef}
                 className={concatClassnames(

@@ -59,6 +59,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <span 
+                aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-radiobutton",
                     `gap-${gapPos}`,

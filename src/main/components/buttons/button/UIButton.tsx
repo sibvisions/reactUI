@@ -101,6 +101,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     } : {})
                 } as any}
                 label={props.text}
+                aria-label={props.ariaLabel}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}

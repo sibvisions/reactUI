@@ -69,7 +69,11 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     }
 
     return (
-        <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+        <span 
+            ref={buttonWrapperRef} 
+            style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}} 
+            aria-label={props.ariaLabel} 
+        >
             <ToggleButton
                 ref={buttonRef}
                 className={concatClassnames(
