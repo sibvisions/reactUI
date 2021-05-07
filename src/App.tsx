@@ -14,9 +14,9 @@ import Login from "./frontmask/login/login";
 //import Settings from "./frontmask/settings/Settings"
 
 /** Other imports */
-import { REQUEST_ENDPOINTS, StartupRequest } from "./JVX/request";
-import { jvxContext } from "./JVX/jvxProvider";
-import { createStartupRequest } from "./JVX/factories/RequestFactory";
+import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
+import { appContext } from "./main/AppProvider";
+import { createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
@@ -36,7 +36,7 @@ type queryType = {
  */
 const App: FC<ICustomContent> = (props) => {
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     /** Toast reference to use the show method of toast */
     const toastRef = useRef<Toast>(null);
     /** History of react-router-dom */

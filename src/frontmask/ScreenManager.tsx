@@ -3,11 +3,11 @@ import React, { createContext, FC, ReactElement, useContext } from "react";
 import { useParams } from "react-router";
 
 /** Other imports */
-import { getScreenIdFromNavigation } from "../JVX/components/util";
-import { IForwardRef } from "../JVX/IForwardRef";
+import { getScreenIdFromNavigation } from "../main/components/util";
+import { IForwardRef } from "../main/IForwardRef";
 
 /** Other imports */
-import { jvxContext } from "../JVX/jvxProvider";
+import { appContext } from "../main/AppProvider";
 import WorkScreen from "./workscreen/WorkScreen";
 
 export interface IScreenContext {
@@ -19,7 +19,7 @@ export const ScreenContext = createContext<IScreenContext>({});
 /** Displays either CustomDisplays set by the user or the workscreen */
 const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     const { contentStore, contentStore: { customDisplays } } = context;
     /** ComponentId of Screen extracted by useParams hook */
     const {componentId} = useParams<any>();

@@ -1,13 +1,13 @@
 import React, {FC, useContext} from "react";
-//import {jvxContext} from "../../JVX/jvxProvider";
-import {Card} from 'primereact/card';
-//import {RadioButton} from 'primereact/radiobutton';
+//import { appContext } from "../../main/AppProvider";
+import { Card } from 'primereact/card';
+//import { RadioButton } from 'primereact/radiobutton';
 
 /**
  * Component used for changing theme and possibly other client-side settings, currently not used because themes are not enabled
  */
 const Settings: FC = () => {
-    //const context = useContext(jvxContext)
+    //const context = useContext(appContext)
 
     return (
         <div>

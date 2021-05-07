@@ -6,12 +6,12 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 
 /** Hook imports */
-import { useTranslation } from "../../JVX/components/zhooks";
+import { useTranslation } from "../../main/components/zhooks";
 
 /** Other imports */
-import { jvxContext } from "../../JVX/jvxProvider";
-import { REQUEST_ENDPOINTS } from "../../JVX/request";
-import { createLoginRequest } from "../../JVX/factories/RequestFactory";
+import { appContext } from "../../main/AppProvider";
+import { REQUEST_ENDPOINTS } from "../../main/request";
+import { createLoginRequest } from "../../main/factories/RequestFactory";
 
 
 /** Component which handles logging in */
@@ -21,7 +21,7 @@ const Login: FC = () => {
     /** Current state of password */
     const [password, setPassword] = useState<string>("");
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     /** Current state of translations */
     const translations = useTranslation()
 

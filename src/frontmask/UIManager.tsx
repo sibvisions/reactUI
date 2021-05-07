@@ -8,14 +8,14 @@ import * as _ from 'underscore'
 import Menu from "./menu/menu";
 
 /** Hook imports */
-import { useMenuCollapser, useResponsiveBreakpoints } from "../JVX/components/zhooks";
+import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
 
 /** Other imports */
-import { ChildWithProps } from "../JVX/components/util";
-import { REQUEST_ENDPOINTS } from "../JVX/request";
-import { createDeviceStatusRequest } from "../JVX/factories/RequestFactory";
-import { jvxContext } from "../JVX/jvxProvider";
-import { LayoutContext } from "../JVX/LayoutContext";
+import { ChildWithProps } from "../main/components/util";
+import { REQUEST_ENDPOINTS } from "../main/request";
+import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
+import { appContext } from "../main/AppProvider";
+import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
 
 interface IUIManager {
@@ -32,7 +32,7 @@ const UIManager: FC<IUIManager> = (props) => {
     /** Reference for the menu component */
     const menuRef = useRef<any>(null);
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('reactUI');
     /** Current state of the size of the screen-container*/

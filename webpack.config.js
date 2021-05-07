@@ -9,7 +9,7 @@ module.exports = () => {
         output: {
             filename: 'moduleIndex.js',
             path: path.resolve(__dirname, 'dist'),
-            library: 'JVXReactUI',
+            library: 'JVxReactUI',
             libraryTarget: 'umd'
         },
         devtool: 'inline-source-map',

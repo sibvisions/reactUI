@@ -9,8 +9,8 @@ import { HashRouter } from 'react-router-dom';
 
 /** Other imports */
 import App from './App';
-import JVXProvider from "./JVX/jvxProvider";
-import { CustomScreenType, CustomComponentType, CustomStartupProps, CustomDisplayType } from './JVX/customTypes';
+import AppProvider from "./main/AppProvider";
+import { CustomScreenType, CustomComponentType, CustomStartupProps, CustomDisplayType } from './main/customTypes';
 
 export interface ICustomContent {
     customScreens?: CustomScreenType[]
@@ -29,9 +29,9 @@ const MiddleMan: FC<ICustomContent> = (props) => {
 
     return (
         <HashRouter>
-            <JVXProvider>
+            <AppProvider>
                 <App {...props}/>
-            </JVXProvider>
+            </AppProvider>
         </HashRouter>
     )
 }

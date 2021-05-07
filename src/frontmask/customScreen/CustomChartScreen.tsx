@@ -5,7 +5,7 @@ import React, { FC, useMemo } from "react";
 import { Chart } from 'primereact/chart';
 
 /** Hook imports */
-import { useDataProviderData } from "../../JVX/components/zhooks";
+import { useDataProviderData } from "../../main/components/zhooks";
 
 
 /**

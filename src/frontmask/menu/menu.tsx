@@ -8,15 +8,15 @@ import { MenuItem } from "primereact/api";
 import { useParams } from "react-router";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useTranslation } from '../../JVX/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useTranslation } from '../../main/components/zhooks'
 
 /** Other imports */
-import { jvxContext } from "../../JVX/jvxProvider";
-import { createLogoutRequest } from "../../JVX/factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../JVX/request";
-import { serverMenuButtons } from "../../JVX/response";
-import { parseIconData } from "../../JVX/components/compprops";
-import { IForwardRef } from "../../JVX/IForwardRef";
+import { appContext } from "../../main/AppProvider";
+import { createLogoutRequest } from "../../main/factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../main/request";
+import { serverMenuButtons } from "../../main/response";
+import { parseIconData } from "../../main/components/compprops";
+import { IForwardRef } from "../../main/IForwardRef";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -29,7 +29,7 @@ export interface MenuItemCustom extends MenuItem {
  */
 const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
     /** Flag if menu should be collapsed based on windowsize */

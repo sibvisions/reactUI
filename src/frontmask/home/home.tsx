@@ -8,17 +8,17 @@ import { useParams } from "react-router-dom";
 import UIManager from "../UIManager";
 
 /** Hook imports */
-import { useHomeComponents } from "../../JVX/components/zhooks";
-import { getScreenIdFromNavigation } from "../../JVX/components/util";
+import { useHomeComponents } from "../../main/components/zhooks";
+import { getScreenIdFromNavigation } from "../../main/components/util";
 
 /** Other imports */
-import { jvxContext } from "../../JVX/jvxProvider";
+import { appContext } from "../../main/AppProvider";
 
 
 /** Container-component for the main layout of the app, provides layout with its built react-children */
 const Home: FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(jvxContext);
+    const context = useContext(appContext);
     /** ComponentId of Screen extracted by useParams hook */
     const { componentId } = useParams<any>();
     /** Screens which are currently displayed by the layout can be multiple screens if there are popups */
