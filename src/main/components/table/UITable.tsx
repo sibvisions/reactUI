@@ -55,11 +55,12 @@ const CellEditor: FC<CellEditor> = (props) => {
     const context = useContext(appContext);
     /** Metadata of the columns */
     const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
-
+    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(props.compId, props.metaData!.dataProvider);
-
+    /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
+    /** When a new selectedRow is set, set waiting to false */
     useEffect(() => {
         const pickedVals = _.pick(selectedRow, Object.keys(props.pk))
         //console.log(pickedVals, props.pk)
@@ -113,7 +114,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
@@ -260,6 +261,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Building the columns */
     const columns = useMemo(() => {
+        console.log(compId)
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
 
