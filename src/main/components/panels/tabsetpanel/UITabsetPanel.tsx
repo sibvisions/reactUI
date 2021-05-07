@@ -127,7 +127,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 let header = 
                 <span>
                     {(!componentConstraints.includes("FontAwesome") && icon.icon) &&
-                    <span className="jvx-tabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
+                    <span className="rc-tabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
                     {
                     /** Tab text */
                     constraints[2]
