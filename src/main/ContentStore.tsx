@@ -205,8 +205,11 @@ export default class ContentStore{
             }
 
             /** If newComponent has property screen_modal tell the popUpSubscribers to show the component as a popup*/
-            if (newCompAsPanel.screen_modal_) 
-                this.subManager.popupSubscriber[0].apply(undefined, [newCompAsPanel.screen_navigationName_, false]);
+            if (newCompAsPanel.screen_modal_) {
+                this.subManager.popupSubscriber.forEach(ps => {
+                    ps.apply(undefined, [newCompAsPanel.screen_navigationName_, false])
+                })
+            }
         });
 
         /** If the component already exists and it is subscribed to properties update the state */
@@ -256,8 +259,11 @@ export default class ContentStore{
      */
     cleanUp(id:string, name:string|undefined) {
         if (name) {
-            if ((this.flatContent.get(id) as IPanel).screen_modal_)
-                this.subManager.popupSubscriber[0].apply(undefined, [(this.flatContent.get(id) as IPanel).screen_navigationName_, true]);
+            if ((this.flatContent.get(id) as IPanel).screen_modal_) {
+                this.subManager.popupSubscriber.forEach(ps => {
+                    ps.apply(undefined, [(this.flatContent.get(id) as IPanel).screen_navigationName_, true])
+                })
+            }
             this.deleteChildren(id);
             this.flatContent.delete(id);
 

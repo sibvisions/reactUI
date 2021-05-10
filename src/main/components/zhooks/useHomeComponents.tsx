@@ -1,5 +1,5 @@
 /** React imports */
-import { ReactElement, useCallback, useContext, useEffect, useState } from "react"
+import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react"
 
 /** Other imports */
 //import Settings from "../../../frontmask/settings/Settings";
@@ -32,16 +32,13 @@ const useHomeComponents = (componentId:string) => {
         setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
     }, [componentId, context.contentStore.getComponentByName(getScreenIdFromNavigation(componentId, context.contentStore))])
 
-    /** 
-     * Subscribes to popupChange which either adds a popup to the current homechildren, or removes a popup
-     * @returns unsubscribing from popupChange 
+    /**
+     * Adds a new window to the current homechildren e.g. a popup
+     * @param compKey - componentId/navigationName of Screen
      */
+    const buildHomeChildren = useRef<Function>(() => {});
     useEffect(() => {
-        /**
-         * Adds a new window to the current homechildren e.g. a popup
-         * @param compKey - componentId/navigationName of Screen
-         */
-        const buildHomeChildren = (compKey:string) => {
+        buildHomeChildren.current = (compKey:string) => {
             const newHomeChildren = buildWindow(getScreenIdFromNavigation(compKey, context.contentStore));
             const cl = new Array<ReactElement>();
             homeChildren.forEach(hc => {
@@ -49,15 +46,18 @@ const useHomeComponents = (componentId:string) => {
             });
             newHomeChildren.forEach(nHc => {
                 cl.push(nHc);
-            });
+            });    
             setHomeChildren(cl);
         }
+    }, [homeChildren, context.contentStore]);
 
-        /**
-         * Removes a window from the current homechildren e.g. removing a popup
-         * @param compKey - componentId/navigationName of Screen
-         */
-        const removeHomeChild = (compKey:string) => {
+    /**
+     * Removes a window from the current homechildren e.g. removing a popup
+     * @param compKey - componentId/navigationName of Screen
+     */
+    const removeHomeChild = useRef<Function>(() => {});
+    useEffect(() => {
+        removeHomeChild.current = (compKey:string) => {
             const cl = new Array<ReactElement>();
             homeChildren.forEach(hc => {
                 if (hc.props.screen_navigationName_ !== compKey)
@@ -65,22 +65,27 @@ const useHomeComponents = (componentId:string) => {
             });
             setHomeChildren(cl);
         }
-        context.subscriptions.subscribeToPopupChange((compKey:string, remove:boolean) => {
-            if (remove)
-                removeHomeChild(compKey);
-            else
-                buildHomeChildren(compKey);
-        });
+    }, [homeChildren]);
+
+    /** 
+     * Subscribes to popupChange which either adds a popup to the current homechildren, or removes a popup
+     * @returns unsubscribing from popupChange 
+     */
+    useEffect(() => {
+        const popupSubscription = (compKey:string, remove:boolean) => {
+            if (remove) {
+                removeHomeChild.current(compKey);
+            } else {
+                buildHomeChildren.current(compKey);
+            }
+        }
+
+        context.subscriptions.subscribeToPopupChange(popupSubscription);
 
         return () => {
-            context.subscriptions.unsubscribeFromPopupChange((compKey:string, remove:boolean) => {
-                if (remove)
-                    removeHomeChild(compKey);
-                else
-                    buildHomeChildren(compKey);
-            });
+            context.subscriptions.unsubscribeFromPopupChange(popupSubscription);
         }
-    },[context.contentStore, context.subscriptions, buildWindow, homeChildren]);
+    }, [context.subscriptions]);
 
     return homeChildren
 }
