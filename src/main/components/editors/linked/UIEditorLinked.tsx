@@ -85,7 +85,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useEffect(() => {
         const autoRef:any = linkedRef.current
         if (autoRef) {
-            autoRef.dropdownButton.element.tabIndex = -1;
+            autoRef.dropdownButton.tabIndex = -1;
         }
     },[]);
 
@@ -184,7 +184,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useEffect(() => {
         if (linkedRef.current) {
             //@ts-ignore
-            linkedRef.current.inputEl.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+            linkedRef.current.inputRef.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === "Enter") {
                     handleInput();
                 }
@@ -283,6 +283,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             ref={linkedRef}
             className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
+            scrollHeight={"200px"}
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             disabled={!props.cellEditor_editable_}
             dropdown

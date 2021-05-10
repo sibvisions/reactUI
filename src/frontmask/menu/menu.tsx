@@ -4,7 +4,6 @@ import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useStat
 /** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
-import { MenuItem } from "primereact/api";
 import { useParams } from "react-router";
 
 /** Hook imports */
@@ -17,6 +16,7 @@ import { REQUEST_ENDPOINTS } from "../../main/request";
 import { serverMenuButtons } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { IForwardRef } from "../../main/IForwardRef";
+import { CommandParams, MenuItem } from "primereact/api";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -107,7 +107,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                         {
                             label: translations.get("Logout"),
                             icon: "pi pi-power-off",
-                            command(e: { originalEvent: Event; item: MenuItem }) {
+                            command(e:CommandParams) {
                                 sendLogout()
                             }
                         }

@@ -102,7 +102,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
             //@ts-ignore
-            return numberRef.current.inputEl.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
+            return numberRef.current.inputRef.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
         else {
             //@ts-ignore
@@ -157,7 +157,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     }
 
     //@ts-ignore
-    useEventHandler(numberRef.current ? numberRef.current.inputEl : undefined, 'paste', handlePaste)
+    useEventHandler(numberRef.current ? numberRef.current.inputRef.current : undefined, 'paste', handlePaste)
 
     return (
         <InputNumber

@@ -32,7 +32,7 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 

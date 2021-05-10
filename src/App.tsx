@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 
 /** 3rd Party imports */
-import { Toast, ToastMessage } from 'primereact/toast';
+import { Toast } from 'primereact/toast';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
 import { Helmet } from "react-helmet";
@@ -156,7 +156,7 @@ const App: FC<ICustomContent> = (props) => {
      * Method to show a toast
      * @param {ToastMessage} messageObj - PrimeReact ToastMessage object which contains display information for toast
      */
-    const msg = (messageObj: ToastMessage) => {
+    const msg = (messageObj:any) => {
         if (toastRef.current) {
             toastRef.current.show(messageObj)
         }

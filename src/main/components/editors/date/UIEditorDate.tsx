@@ -84,7 +84,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 setTimeout(() => {
                     if (calendar.current) {
                         //@ts-ignore
-                        calendar.current.inputElement.value = dateFormat.replaceAll("'", '')
+                        calendar.current.value = dateFormat.replaceAll("'", '')
                     }
                 },0)
             }
@@ -92,7 +92,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 setTimeout(() => {
                     if (calendar.current) {
                         //@ts-ignore
-                        calendar.current.inputElement.value = selectedRow ? getMomentValue(props.cellEditor.dateFormat, selectedRow) : ""
+                        calendar.current.value = selectedRow ? getMomentValue(props.cellEditor.dateFormat, selectedRow) : ""
                     }
                     
                 }, 0);
@@ -130,11 +130,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         let inputDate:Date = new Date()
         if (showTime) {
             //@ts-ignore
-            inputDate = moment(calendar.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendar.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         else {
             //@ts-ignore
-            inputDate = moment(calendar.current.inputElement.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendar.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), context.server));
         overridePrime()
@@ -146,7 +146,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEffect(() => {
         if (calendar.current) {
             //@ts-ignore
-            calendar.current.inputElement.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+            calendar.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === "Enter") {
                     handleDateInput()
                 }

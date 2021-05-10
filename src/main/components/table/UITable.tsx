@@ -63,7 +63,6 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** When a new selectedRow is set, set waiting to false */
     useEffect(() => {
         const pickedVals = _.pick(selectedRow, Object.keys(props.pk))
-        //console.log(pickedVals, props.pk)
         if (waiting && _.isEqual(pickedVals, props.pk)) {
             setWaiting(false);
         }
@@ -261,7 +260,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Building the columns */
     const columns = useMemo(() => {
-        console.log(compId)
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
 

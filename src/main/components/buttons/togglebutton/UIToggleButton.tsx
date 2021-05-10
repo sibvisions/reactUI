@@ -107,7 +107,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 onLabel={props.text}
                 offIcon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 onIcon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
-                iconPos={btnData.iconPos}
+                iconPos={btnData.iconPos as ToggleButton.IconPositionType}
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}
                 onChange={handleOnChange}

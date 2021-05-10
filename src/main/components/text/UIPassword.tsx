@@ -32,12 +32,12 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && passwordRef.current){
             //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current.inputEl, onLoadCallback)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <Password ref={passwordRef} value={pwValue||""} feedback={false} style={layoutValue.get(props.id)} onChange={event => setPwValue(event.currentTarget.value)} />
+        <Password inputRef={passwordRef} value={pwValue||""} feedback={false} style={layoutValue.get(props.id)} onChange={event => setPwValue(event.currentTarget.value)} />
     )
 }
 export default UIPassword

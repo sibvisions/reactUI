@@ -71,11 +71,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         if(onLoadCallback && textRef.current) {
             if (props.cellEditor.contentType?.includes("password")) {
                 //@ts-ignore
-                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current.inputEl, onLoadCallback)
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
             }
             else {
                 // @ts-ignore
-                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current.element, onLoadCallback)
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
@@ -109,7 +109,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         return (
             <Password
             autoFocus={baseProps.autoFocus}
-            ref={textRef}
+            inputRef={textRef}
             className="rc-editor-password"
             style={layoutValue.get(props.id) ? 
                 {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
