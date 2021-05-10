@@ -57,7 +57,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             let height:number|undefined;
             if (external.width && external.height) {
                 width = external.width as number;
-                height = external.height as number - 31;
+                height = external.height as number - 48;
             }
             components.forEach((component: any) => {
                 sizeMap.set(component.props.id, { width, height })

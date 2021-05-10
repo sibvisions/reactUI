@@ -79,16 +79,11 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(selectedRow !== undefined) {
+        if(selectedRow !== undefined && props.cellEditor.allowedValues.includes(selectedRow)) {
             validImage = selectedRow
         }
-        else{
-            for(let value in validImages){
-                if(validImages[value] === props.cellEditor.defaultImageName){
-                    validImage = value;
-                    break;
-                }
-            }
+        else if (props.cellEditor.defaultImageName !== undefined) {
+            validImage = props.cellEditor.defaultImageName;
         }
         return validImage;
     }, [selectedRow, validImages, props.cellEditor.defaultImageName])
@@ -139,16 +134,22 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         if (baseProps.id === "") {
             handleClick()
         }
-    }, [])
+    }, []);
     
     return (
-        <span className="rc-editor-choice" style={{...layoutValue.get(props.id)||baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va}}>
+        <span className="rc-editor-choice" style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}>
             <img
                 ref={imgRef}
                 className="rc-editor-choice-img"
                 alt=""
                 onClick={handleClick}
-                src={context.server.RESOURCE_URL + validImages[currentImageValue]}
+                src={currentImageValue !== "invalid" ?
+                    context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
+                        currentImageValue
+                        :
+                        validImages[currentImageValue])
+                    : ""
+                }
                 onLoad={onChoiceLoaded}
                 onError={onChoiceLoaded}
             />
