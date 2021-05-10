@@ -1,22 +1,17 @@
 @mixin btnHover {
     background: var(--background);
 
-    &:enabled:hover {
+    &.p-button:not(a):not(.p-disabled):hover {
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
-    }
 
-    &:not(.border-notpainted) {
-        border-color: var(--background);
-    }
-}
+        &.bright {
+            color: var(--btnColorBright);
+        }
 
-@mixin menuBtnHover {
-    background: var(--background);
-
-    &:hover {
-        background: var(--hoverBackground);
-        border-color: var(--hoverBackground);
+        &.dark {
+            color: var(--standardTextColor);
+        }
     }
 
     &:not(.border-notpainted) {

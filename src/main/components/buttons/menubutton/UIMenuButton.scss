@@ -31,6 +31,8 @@
         box-shadow: unset;
         -webkit-box-shadow: unset;
     }
+
+    @include btnHover;
 }
 
 
@@ -39,8 +41,6 @@
     --menuBtnJustify: center;
     --menuBtnAlign: center;
     --menuBtnPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
-
-    @include menuBtnHover;
 }
 
 .p-splitbutton-defaultbutton {

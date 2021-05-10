@@ -8,14 +8,16 @@ import { REQUEST_ENDPOINTS } from "../../request";
  * @param pointDataProvider - the dataprovider of the point databook
  * @param server - server context
  */
-export function sendMapFetchRequests(groupDataProvider:string, pointDataProvider:string, server:any) {
+export async function sendMapFetchRequests(groupDataProvider:string, pointDataProvider:string, server:any) {
     /** Builds the fetch request */
     const sendFetchRequest = (dataProvider:string) => {
-        const fetchReq = createFetchRequest();
-        fetchReq.dataProvider = dataProvider;
-        fetchReq.fromRow = 0;
-        server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
+        return new Promise<void>((resolve) => {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = dataProvider;
+            fetchReq.fromRow = 0;
+            server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH).then(() => resolve());
+        })
     }
-    sendFetchRequest(groupDataProvider);
-    sendFetchRequest(pointDataProvider);
+    await sendFetchRequest(groupDataProvider);
+    await sendFetchRequest(pointDataProvider);
 }

@@ -62,7 +62,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** The center position of the map */
     const centerPosition = parseMapLocation(props.center);
     /** Start zoom value is switched in Google and OSM */
-    const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 0);
+    const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 10);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
