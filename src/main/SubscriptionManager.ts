@@ -76,6 +76,8 @@ export class SubscriptionManager {
     translationLoadedSubscriber = new Array<Function>();
     /** A function to change the register custom content state of a component*/
     registerCustomSubscriber:Function = () => {};
+    /** A function to change the appReady state to true */
+    appReadySubscriber:Function = () => {};
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -244,6 +246,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes the app to app-ready, to change the app-ready state
+     * @param fn  - the function to change the app-ready state
+     */
+    subscribeToAppReady(fn:Function) {
+        this.appReadySubscriber = fn;
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -368,6 +378,13 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes app from app-ready
+     */
+    unsubscribeFromAppReady() {
+        this.subscribeToAppReady = () => {}
+    }
+
+    /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
      */
@@ -450,5 +467,10 @@ export class SubscriptionManager {
     /** When the app needs to reregister the custom content*/
     emitRegisterCustom() {
         this.registerCustomSubscriber()
+    }
+
+    /** When the app is ready call the app-ready function */
+    emitAppReady() {
+        this.appReadySubscriber.apply(undefined, []);
     }
 }

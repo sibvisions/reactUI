@@ -1,6 +1,7 @@
 /** 3rd Party imports */
 import * as queryString from "querystring";
 import {parseString} from "xml2js"
+import { Dialog } from "primereact/dialog"
 
 /** Other imports */
 import ContentStore from "./ContentStore"
@@ -69,6 +70,10 @@ class Server {
      * @param message - message to show
      */
     showToast = (message: any) => {};
+    /**
+     * Function to show te timeout dialog
+     */
+    showDialog = () => {};
 
     /**
      * Builds a request to send to the server
@@ -91,7 +96,7 @@ class Server {
      * @param endpoint - the endpoint to send the request to
      */
     sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean){
-        return this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 5000)
+        return this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
             .then(() => {
@@ -109,13 +114,14 @@ class Server {
     }
 
     /**
-     * Returns a promise which times out and throws an error after given ms
+     * Returns a promise which times out and throws an error and displays dialog after given ms
      * @param promise - the promise
      * @param ms - the ms to wait before a timeout
      */
     timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
+                this.showDialog();
                 reject(new Error("timeOut"))
             }, ms);
             promise
@@ -472,7 +478,8 @@ class Server {
     }
 
     /**
-     * Decides if and where to the user should be routed based on all responses 
+     * Decides if and where to the user should be routed based on all responses.
+     * When the user is redirected to login, or gets auto logged in, app is set to ready
      * @param responses - the response array
      */
     routingDecider(responses: Array<BaseResponse>){
@@ -480,10 +487,11 @@ class Server {
         let highestPriority = 0;
 
         responses.forEach(response => {
-           if(response.name === RESPONSE_NAMES.USER_DATA){
-               if(highestPriority < 1){
+           if(response.name === RESPONSE_NAMES.USER_DATA) {
+               if(highestPriority < 1) {
                    highestPriority = 1;
                    routeTo = "home";
+                   this.subManager.emitAppReady();
                }
            }
            else if(response.name === RESPONSE_NAMES.SCREEN_GENERIC){
@@ -513,9 +521,10 @@ class Server {
                }
            }
            else if(response.name === RESPONSE_NAMES.LOGIN || response.name === RESPONSE_NAMES.SESSION_EXPIRED){
-               if(highestPriority < 1){
+               if(highestPriority < 1) {
                    highestPriority = 1;
-                   routeTo = "login"
+                   routeTo = "login";
+                   this.subManager.emitAppReady();
                }
            }
         //    else if (response.name === "settings") {

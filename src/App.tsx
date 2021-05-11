@@ -3,6 +3,7 @@ import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 
 /** 3rd Party imports */
 import { Toast } from 'primereact/toast';
+import { Dialog } from 'primereact/dialog';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
 import { Helmet } from "react-helmet";
@@ -11,6 +12,7 @@ import { Route, Switch, useHistory } from "react-router-dom";
 /** UI imports */
 import Home from "./frontmask/home/home";
 import Login from "./frontmask/login/login";
+import LoadingScreen from './frontmask/loading/loadingscreen';
 //import Settings from "./frontmask/settings/Settings"
 
 /** Other imports */
@@ -18,6 +20,7 @@ import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
 import { createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
+
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
 
@@ -45,16 +48,26 @@ const App: FC<ICustomContent> = (props) => {
     const [appName, setAppName] = useState<string>();
     /** Register custom content flip value, changes value when custom content needs to be re-registered */
     const [registerCustom, setRegisterCustom] = useState<boolean>(false);
+    /** State if the app is ready */
+    const [appReady, setAppReady] = useState<boolean>(false);
+    /** If true the timeout dialog gets displayed */
+    const [showTimeOut, setShowTimeOut] = useState<boolean>(false);
+
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
 
     /**
-     * Subscribes to session-expired notification
-     * @returns unsubscribes from session
+     * Subscribes to session-expired notification and app-ready
+     * @returns unsubscribes from session and app-ready
      */
     useEffect(() => {
+        context.subscriptions.subscribeToAppReady(() => setAppReady(true));
         context.subscriptions.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
-        return () => context.subscriptions.unsubscribeFromRegisterCustom();
+
+        return () => {
+            context.subscriptions.unsubscribeFromAppReady();
+            context.subscriptions.unsubscribeFromRegisterCustom();
+        }
     },[context.subscriptions]);
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
@@ -121,7 +134,8 @@ const App: FC<ICustomContent> = (props) => {
                 props.customStartupProps.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
             context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP);
-            context.server.showToast = msg
+            context.server.showToast = msg;
+            context.server.showDialog = showDialog;
         }
 
         const startUpRequest = createStartupRequest();
@@ -162,18 +176,33 @@ const App: FC<ICustomContent> = (props) => {
         }
     }
 
+    /**
+     * Sets the showTimeOut state to show the dialog
+     */
+    const showDialog = () => {
+        setShowTimeOut(true);
+    }
+    
+    /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (
         <>
             <Helmet>
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
-            <Toast ref={toastRef} position="top-right"/>
-                <Switch>
-                    <Route exact path={"/login"} render={() => <Login />}/>
+            <Toast ref={toastRef} position="top-right" />
+            <Dialog header="Server Timeout!" visible={showTimeOut} onHide={() => setShowTimeOut(false)}>
+                <p>TimeOut! Couldn't connect to the server after 10 seconds.</p>
+            </Dialog>
+            {appReady
+                ? <Switch>
+                    <Route exact path={"/login"} render={() => <Login />} />
                     <Route exact path={"/home/:componentId"} render={routeProps => <Home />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                     <Route path={"/home"} render={() => <Home />} />
-                </Switch>   
+                </Switch>
+                : <LoadingScreen />
+            }
+
         </>
   );
 }

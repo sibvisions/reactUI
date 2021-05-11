@@ -26,7 +26,7 @@ const Home: FC = (props) => {
 
     //TODO the homeChildren actually never get rendered in UIManager
 
-    return(
+    return (
         <UIManager screenId={getScreenIdFromNavigation(componentId, context.contentStore)}>
             {homeChildren}
         </UIManager>

@@ -1,0 +1,33 @@
+.loading-screen {
+    height: 100vh;
+    width: 100vw;
+    background: -webkit-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
+    background: -o-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
+    background: -moz-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
+    background: radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
+}
+
+.loading-logo-container {
+    position: absolute;
+    height: 300px;
+    width: 300px;
+    top: calc(50% - 166px);
+    left: calc(50% - 150px);
+}
+
+@keyframes p-progress-spinner-color {
+    100%,
+    0% {
+        stroke: #93C01F;
+    }
+    40% {
+        stroke: #93C01F;
+    }
+    66% {
+        stroke: #93C01F;
+    }
+    80%,
+    90% {
+        stroke: #93C01F;
+    }
+}

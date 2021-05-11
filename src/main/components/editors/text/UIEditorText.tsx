@@ -24,15 +24,11 @@ import { getEditorCompId,
          parseMinSize, 
          parseMaxSize } from "../../util";
 
-/** Interface for cellEditor property of TextCellEditor */
-interface ICellEditorText extends ICellEditor {
-    length?:number
-}
-
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
-    cellEditor: ICellEditorText
+    cellEditor: ICellEditor
     borderVisible?: boolean
+    length:number
 }
 
 /**
@@ -62,7 +58,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** The metadata for the TextCellEditor */
     const cellEditorMetaData:IEditorText|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorText;
     /** Returns the maximum length for the TextCellEditor */
-    const length = useMemo(() => cellEditorMetaData?.cellEditor.length, [cellEditorMetaData]);
+    const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
 
@@ -90,38 +86,37 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     if (props.cellEditor.contentType?.includes("multiline")) {
         return (
             <InputTextarea
-            autoFocus={baseProps.autoFocus}
-            ref={textRef}
-            className="rc-editor-textarea"
-            style={layoutValue.get(props.id) ? 
-                {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
-                {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
-            maxLength={length}
-            disabled={!props.cellEditor_editable_}
-            value={text || ""}
-            onChange={event => setText(event.currentTarget.value)}
-            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
-            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
-        />
+                autoFocus={baseProps.autoFocus}
+                ref={textRef}
+                className="rc-editor-textarea"
+                style={layoutValue.get(props.id) ?
+                    { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
+                    { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ }}
+                maxLength={length}
+                disabled={!props.cellEditor_editable_}
+                value={text || ""}
+                onChange={event => setText(event.currentTarget.value)}
+                onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+            />
         )
     }
     else if (props.cellEditor.contentType?.includes("password")) {
         return (
             <Password
-            autoFocus={baseProps.autoFocus}
-            inputRef={textRef}
-            className="rc-editor-password"
-            style={layoutValue.get(props.id) ? 
-                {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
-                {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
-            maxLength={length}
-            feedback={false}
-            disabled={!props.cellEditor_editable_}
-            value={text || ""}
-            onChange={event => setText(event.currentTarget.value)}
-            onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
-            onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
-        />
+                autoFocus={baseProps.autoFocus}
+                inputRef={textRef}
+                className="rc-editor-password"
+                style={layoutValue.get(props.id) ?
+                    { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
+                    { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ }}
+                maxLength={length}
+                feedback={false}
+                disabled={!props.cellEditor_editable_}
+                value={text || ""}
+                onChange={event => setText(event.currentTarget.value)}
+                onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+                onKeyDown={event => handleEnterKey(event, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
+            />
         )
     }
     else {
@@ -130,9 +125,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 autoFocus={baseProps.autoFocus}
                 ref={textRef}
                 className={"rc-editor-text" + (props.borderVisible === false ? " invisible-border" : "")}
-                style={layoutValue.get(props.id) ? 
-                        {...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_} : 
-                        {...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_}}
+                style={layoutValue.get(props.id) ?
+                    { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
+                    { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ }}
                 maxLength={length}
                 disabled={!props.cellEditor_editable_}
                 value={text || ""}
