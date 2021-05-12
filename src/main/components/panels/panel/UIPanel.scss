@@ -1,4 +1,4 @@
-.p-dialog {
+.rc-popup {
     .p-dialog-header {
         background: #ffffff;
         color: #495057;
@@ -10,10 +10,6 @@
             font-weight: 600;
             font-size: 1.25rem;
         }
-        .p-dialog-header-icons {
-            padding-top: 3px;
-            padding-right: 5px;
-        }
         .p-dialog-header-icon:focus {
             box-shadow: none;
             -webkit-box-shadow: none;
@@ -21,6 +17,9 @@
         .p-dialog-header-icon {
             width: 1.5rem;
             height: 1.5rem;
+            &:last-child {
+                margin-right: 4px;
+            }
         }
     }
     .p-dialog-content {

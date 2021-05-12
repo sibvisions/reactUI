@@ -17,17 +17,22 @@ import { serverMenuButtons } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { IForwardRef } from "../../main/IForwardRef";
 import { CommandParams, MenuItem } from "primereact/api";
+import { concatClassnames } from "../../main/components/util";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
     componentId:string
 }
 
+interface IMenu extends IForwardRef {
+    showMenuMini:boolean
+}
+
 /**
  * Manu component builds and displays the menu for reactUI, consists of a topbar with a profile-menu and a sidebar with panel-menu.
  * @param forwardedRef - receives a reference so the reference can be used in other components
  */
-const Menu: FC<IForwardRef> = ({forwardedRef}) => {
+const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Flag if the manu is collpased or expanded */
@@ -60,9 +65,9 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
      * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
      */
     const closeOpenedMenuPanel = useCallback(() => {
-        if (forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
-            forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
-    },[forwardedRef])
+        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
+            props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+    },[props.forwardedRef])
 
     /** 
      * The menu subscribes to the screen name, so everytime the screen name changes the state of the menu screen title,
@@ -191,8 +196,8 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
      */
     useEffect(() => {
         const testRef = document.getElementsByClassName("menu")[0] as HTMLElement;
-        if (forwardedRef.current) {
-            const menuRef = forwardedRef.current;
+        if (props.forwardedRef.current) {
+            const menuRef = props.forwardedRef.current;
             const hoverExpand = () => {
                 if (testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.remove("menu-collapsed");
@@ -228,7 +233,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                 menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
-    },[menuCollapsed, forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
+    },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
 
     /** 
      * Handles the click on the menu-toggler. It closes a currently opened panel and switches
@@ -243,7 +248,11 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
     }
 
     return(
-        <div className={"menu" + (menuCollapsed ? " menu-collapsed" : "")}>
+        <div className={concatClassnames(
+            "menu",
+            menuCollapsed ? " menu-collapsed" : "",
+            props.showMenuMini ? "" : "no-mini"
+        )}>
             <div className={"menu-topbar"}>
                 <div className="menu-logo-wrapper" ref={menuLogoRef}>
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
@@ -254,7 +263,7 @@ const Menu: FC<IForwardRef> = ({forwardedRef}) => {
                     {profileMenu}
                 </div>
             </div>
-            <div ref={forwardedRef} className="menu-panelmenu-wrapper">
+            <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                 <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                     <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>

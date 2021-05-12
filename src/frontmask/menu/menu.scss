@@ -396,6 +396,16 @@
     .fadeout {
         margin-top: calc(var(--menuHeight) + var(--menuLogoHeight));
     }
+
+    .menu-collapsed.no-mini {
+        .menu-logo-wrapper, .menu-panelmenu-wrapper {
+            width: 0px;
+            overflow: hidden;
+            .menu-logo {
+                width: 0px;
+            }
+        }
+    }
 }
 
 /// Animation for fadeout div

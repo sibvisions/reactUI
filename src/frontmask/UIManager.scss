@@ -32,6 +32,10 @@
   margin-left: var(--menuCollapsedWidth);
 }
 
+.screen-expanded.screen-no-mini {
+  margin-left: 0;
+}
+
 .transition-disable-overflow {
   overflow: hidden;
 }

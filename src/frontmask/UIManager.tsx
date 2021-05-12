@@ -11,7 +11,7 @@ import Menu from "./menu/menu";
 import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
 
 /** Other imports */
-import { ChildWithProps } from "../main/components/util";
+import { ChildWithProps, concatClassnames } from "../main/components/util";
 import { REQUEST_ENDPOINTS } from "../main/request";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { appContext } from "../main/AppProvider";
@@ -38,6 +38,8 @@ const UIManager: FC<IUIManager> = (props) => {
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    const menuMini = false;
+
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
      * @param start - Biggest possible size of menu
@@ -55,8 +57,8 @@ const UIManager: FC<IUIManager> = (props) => {
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
-    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')), 
-    parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth'))), menuCollapsed);
+    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')),
+    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth')) : 0), menuCollapsed);
 
     /** 
      * When the window resizes, the screen-container will measure itself and set its size, 
@@ -150,9 +152,13 @@ const UIManager: FC<IUIManager> = (props) => {
 
     return(
         <div className="reactUI">
-            <Menu forwardedRef={menuRef}/>
+            <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>
             <LayoutContext.Provider value={componentSize}>
-                <div id="reactUI-main" className={"main" + ((menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "")}>
+                <div id="reactUI-main" className={concatClassnames(
+                    "main",
+                    (menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "",
+                    menuMini ? "" : "screen-no-mini"
+                )}>
                     <ScreenManager forwardedRef={sizeRef} />
                 </div>
             </LayoutContext.Provider>

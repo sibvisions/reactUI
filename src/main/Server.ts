@@ -73,7 +73,7 @@ class Server {
     /**
      * Function to show te timeout dialog
      */
-    showDialog = () => {};
+    showDialog = (head:string, body:string) => {};
 
     /**
      * Builds a request to send to the server
@@ -110,7 +110,9 @@ class Server {
                     this.subManager.jobQueue.clear()
                 }
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error)
+            });
     }
 
     /**
@@ -121,7 +123,7 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.showDialog();
+                this.showDialog("Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
                 reject(new Error("timeOut"))
             }, ms);
             promise
@@ -130,6 +132,7 @@ class Server {
                     resolve(res);
                 },
                 err => {
+                    this.showDialog("Server Error!", err);
                     clearTimeout(timeoutId);
                     reject(err);
                 });

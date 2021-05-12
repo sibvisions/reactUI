@@ -33,6 +33,11 @@ type queryType = {
     baseUrl?: string
 }
 
+type serverFailMessage = {
+    headerMessage:string,
+    bodyMessage:string
+}
+
 /**
  * This component manages the start and routing of the application.
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
@@ -52,6 +57,8 @@ const App: FC<ICustomContent> = (props) => {
     const [appReady, setAppReady] = useState<boolean>(false);
     /** If true the timeout dialog gets displayed */
     const [showTimeOut, setShowTimeOut] = useState<boolean>(false);
+
+    const dialogRef = useRef<serverFailMessage>({headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server."})
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
@@ -179,7 +186,9 @@ const App: FC<ICustomContent> = (props) => {
     /**
      * Sets the showTimeOut state to show the dialog
      */
-    const showDialog = () => {
+    const showDialog = (head:string, body:string) => {
+        dialogRef.current.headerMessage = head;
+        dialogRef.current.bodyMessage = body;
         setShowTimeOut(true);
     }
     
@@ -190,13 +199,13 @@ const App: FC<ICustomContent> = (props) => {
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
             <Toast ref={toastRef} position="top-right" />
-            <Dialog header="Server Timeout!" visible={showTimeOut} onHide={() => setShowTimeOut(false)}>
-                <p>TimeOut! Couldn't connect to the server after 10 seconds.</p>
+            <Dialog header="Server Error!" visible={showTimeOut} onHide={() => setShowTimeOut(false)} resizable={false}>
+                <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
             {appReady
                 ? <Switch>
                     <Route exact path={"/login"} render={() => <Login />} />
-                    <Route exact path={"/home/:componentId"} render={routeProps => <Home />} />
+                    <Route exact path={"/home/:componentId"} render={() => <Home />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                     <Route path={"/home"} render={() => <Home />} />
                 </Switch>
