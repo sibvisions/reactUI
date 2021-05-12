@@ -36,7 +36,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Margins of the BorderLayout */
-    const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4))
+    const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
+
+    const children = context.contentStore.getChildren(id);
 
 
     /** 
@@ -48,7 +50,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         const sizeMap = new Map<string, CSSProperties>();
 
         /** If compSizes is set (every component in this layout reported its sizes) */
-        if(compSizes) {
+        if(compSizes && children.size === compSizes.size) {
             /** Sizes for BorderLayout areas */
             const constraintSizes: borderLayoutComponents = {
                 center: {height: 0, width: 0},
@@ -198,7 +200,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             }
         }
         return sizeMap;
-    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop])
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

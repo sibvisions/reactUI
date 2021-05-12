@@ -52,7 +52,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}))
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if(compSizes){
+        if(compSizes && childrenSorted.size === compSizes.size) {
             /**
 	         * Gets the factor for an alignment value. The factor will be used
 	         * to align the components in the layout.
@@ -256,9 +256,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 reportSize(flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth);
             }
         }
-
         return sizeMap;
-    }, [layout, compSizes, reportSize, id, style, context.contentStore])
+    }, [layout, compSizes, reportSize, id, style, context.contentStore]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

@@ -189,14 +189,17 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
                     goThroughCellData(trows, i);
-                /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                for (let i = 0; i < theader.length; i++)
-                    theader[i].style.setProperty('width', cellDataWidthList[i]+  'px');
 
-                let tempWidth:number = 0;
+                let tempWidth: number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
                     tempWidth += cellDataWidth
                 });
+                
+                /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
+                for (let i = 0; i < theader.length; i++)
+                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
+
+
                 /** set EstTableWidth for size reporting */
                 setEstTableWidth(tempWidth);
             }
@@ -232,9 +235,11 @@ const UITable: FC<TableProps> = (baseProps) => {
     },[])
 
     /** When providerData changes set state of virtual rows*/
-    useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData])
+    useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
 
     /** When a resized column got smaller, it sometimes interpreted the mouseup as click to sort the column so the pointer-events got disabled while resizing columns */
+
+    //TODO: useEventHandler for multiple elements possible? Check why Table is sorting on its own, probably not used soon because of own sorting!
     useEffect(() => {
         const currTable = tableRef.current;
         const resizeStart = (elem:Element) => {
@@ -256,7 +261,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
         }
-    },[])
+    },[]);
 
     /** Building the columns */
     const columns = useMemo(() => {
@@ -268,7 +273,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 field={colName}
                 header={props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
                 key={colName}
-                headerStyle={{overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined}}
+                headerStyle={{ overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined }}
                 body={(rowData: any) => <CellEditor
                     pk={_.pick(rowData, primaryKeys)}
                     compId={compId}
@@ -279,10 +284,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                     metaData={metaData}
                     resource={context.server.RESOURCE_URL}
                 />}
-                style={{whiteSpace: 'nowrap', lineHeight: '14px'}}
+                style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
-                loadingBody={() => <div className="loading-text" style={{height: 30}} />}
-                sortable/>
+                loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
+            />
         })
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible])
 
@@ -355,17 +360,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                scrollable={virtualEnabled}
                lazy={virtualEnabled}
                virtualScroll={virtualEnabled}
+               onVirtualScroll={handleVirtualScroll}
                resizableColumns
                rows={rows}
                virtualRowHeight={30}
                scrollHeight={heightNoHeaders}
-               onVirtualScroll={handleVirtualScroll}
                totalRecords={providerData.length}
                value={virtualRows}
                selection={selectedRow}
-               selectionMode={"single"}
-               onSelectionChange={handleRowSelection}
-               removableSort>
+               selectionMode="single"
+               onSelectionChange={handleRowSelection}>
                {columns}
            </DataTable>
        </div>

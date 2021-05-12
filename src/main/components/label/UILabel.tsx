@@ -34,24 +34,28 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
-        <span id={props.id} ref={labelRef} dangerouslySetInnerHTML={{__html: props.text as string}} className={"rc-label" + ((props.text as string).includes("<html>") ? " rc-label-html" : "")} style={layoutValue.get(props.id) ? {
-            justifyContent: lblAlignments.ha,
-            alignItems: lblAlignments.va,
-            backgroundColor: props.background,
-            color: props.foreground,
-            ...lblFont,
-            ...layoutValue.get(props.id)
-        } : {
-                justifyContent: lblAlignments.ha,
-                alignContent: lblAlignments.va,
-                backgroundColor: props.background,
-                color: props.foreground,
-                ...lblFont,
-            }}>
-        </span>
+        <span
+            id={props.id}
+            ref={labelRef}
+            dangerouslySetInnerHTML={{ __html: props.text as string }}
+            className={"rc-label" + ((props.text as string).includes("<html>") ? " rc-label-html" : "")}
+            style={layoutValue.get(props.id) ?
+                {
+                    justifyContent: lblAlignments.ha,
+                    alignItems: lblAlignments.va,
+                    backgroundColor: props.background,
+                    color: props.foreground,
+                    ...lblFont,
+                    ...layoutValue.get(props.id)
+                } : {
+                    justifyContent: lblAlignments.ha,
+                    alignContent: lblAlignments.va,
+                    backgroundColor: props.background,
+                    color: props.foreground,
+                    ...lblFont,
+                }} />
     )
 }
 export default UILabel
