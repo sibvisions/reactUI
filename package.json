@@ -37,7 +37,7 @@
     "node-sass": "^4.14.1",
     "primeflex": "^2.0.0-rc.1",
     "primeicons": "^4.0.0",
-    "primereact": "^6.3.0",
+    "primereact": "^6.3.2",
     "query-string": "^6.13.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",

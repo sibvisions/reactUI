@@ -7,13 +7,14 @@ import tinycolor from 'tinycolor2';
 /** Other imports */
 import { getAlignments, getFont, getMargins, IconProps, parseIconData } from '../compprops';
 import { IButton } from ".";
-import { PositionType } from 'primereact/components/tooltip/TooltipOptions';
+import { ButtonPositionType } from 'primereact/button';
+import { ToggleButtonIconPositionType } from 'primereact/togglebutton';
 
 /**
  * @param props - buttonproperties received by the server
  * @returns data on how the button should be displayed
  */
-export function buttonProps(props:IButton): {iconPos:PositionType|string, tabIndex:number, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
+export function buttonProps(props:IButton): {iconPos:ButtonPositionType|ToggleButtonIconPositionType, tabIndex:number, style:CSSProperties, iconProps:IconProps, btnImgTextGap:number, btnBorderPainted:boolean} {
     const margins = getMargins(props.margins);
     const font = getFont(props.font);
     return {

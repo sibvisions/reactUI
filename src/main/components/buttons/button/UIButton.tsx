@@ -16,7 +16,6 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
-import { PositionType } from "primereact/components/tooltip/TooltipOptions";
 
 /**
  * This component displays a basic button
@@ -104,7 +103,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 label={props.text}
                 aria-label={props.ariaLabel}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
-                iconPos={btnData.iconPos as PositionType}
+                iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}
                 disabled={props.enabled === false}

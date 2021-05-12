@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
-import { ToggleButton } from 'primereact/togglebutton';
+import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
@@ -107,7 +107,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 onLabel={props.text}
                 offIcon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 onIcon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
-                iconPos={btnData.iconPos as ToggleButton.IconPositionType}
+                iconPos={btnData.iconPos as ToggleButtonIconPositionType}
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}
                 onChange={handleOnChange}

@@ -16,7 +16,7 @@ import { REQUEST_ENDPOINTS } from "../../main/request";
 import { serverMenuButtons } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { IForwardRef } from "../../main/IForwardRef";
-import { CommandParams, MenuItem } from "primereact/api";
+import { MenuItemCommandParams, MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -112,7 +112,7 @@ const Menu: FC<IMenu> = (props) => {
                         {
                             label: translations.get("Logout"),
                             icon: "pi pi-power-off",
-                            command(e:CommandParams) {
+                            command(e:MenuItemCommandParams) {
                                 sendLogout()
                             }
                         }
