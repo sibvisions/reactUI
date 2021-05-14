@@ -62,7 +62,7 @@ tr.p-highlight{
                         }
                     }
                 }
-                >.cell-data{
+                &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor)>.cell-data {
                     padding: 6.5px 8.688px;
                     overflow: hidden;
                     text-overflow: ellipsis;

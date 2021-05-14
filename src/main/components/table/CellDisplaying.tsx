@@ -49,7 +49,14 @@ export function cellRenderer(metaData:IEditor|undefined, cellData:any, resource:
                 const castedColumn = metaData as IEditorChoice;
                 const cellIndex = castedColumn.cellEditor.allowedValues.indexOf(cellData);
                 if (castedColumn.cellEditor.imageNames && cellIndex !== undefined)
-                    return <img className="rc-editor-choice-img" alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]} onClick={() => stateFunc()}/>
+                    return <img
+                        className="rc-editor-choice-img"
+                        alt="choice" src={resource + castedColumn.cellEditor.imageNames[cellIndex]}
+                        onClick={() => stateFunc()}
+                        onLoad={(e) => {
+                            e.currentTarget.style.setProperty('--choiceMinW', `${e.currentTarget.naturalWidth}px`);
+                            e.currentTarget.style.setProperty('--choiceMinH', `${e.currentTarget.naturalHeight}px`);
+                        }} />
             }
             /** If the cell is a DateCellEditor use moment to return the correct value with the correct format (parsing Java SimpleDateFormat tokens to moment tokens) */
             else if (metaData.cellEditor.className === "DateCellEditor") {

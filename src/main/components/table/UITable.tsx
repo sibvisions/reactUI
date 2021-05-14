@@ -7,7 +7,7 @@ import { DataTable } from "primereact/datatable";
 import _ from "underscore";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useOutsideClick } from "../zhooks";
+import { useProperties, useDataProviderData, useRowSelect, useOutsideClick, useMultipleEventHandler } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -155,26 +155,29 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (tableRef.current) {
             let cellDataWidthList:Array<number> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
-            const goThroughCellData = (trows:any, index:number) => {
-                const cellDatas:NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cell-data");
-                        for (let j = 0; j < cellDatas.length; j++) {
-                            /** disable auto table layout it needs to be enabled later for column resizing */
-                            cellDatas[j].style.setProperty('display', 'inline-block');
-                            let tempWidth:number;
-                            if (cellDatas[j] !== undefined) {
-                                /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
-                                if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
-                                    tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
-                            /** Add 32 pixel to its measured width to display editor properly */
-                            else
-                                tempWidth = cellDatas[j].getBoundingClientRect().width + 32;
-                            /** If the measured width is greater than the current widest width for the column, replace it */
-                            if (tempWidth > cellDataWidthList[j])
-                                cellDataWidthList[j] = tempWidth;
-                            }
-                            /** remove inline block */
-                            cellDatas[j].style.removeProperty('display')
-                        } 
+            const goThroughCellData = (trows: any, index: number) => {
+                const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cell-data");
+                for (let j = 0; j < cellDatas.length; j++) {
+                    /** disable auto table layout it needs to be enabled later for column resizing */
+                    cellDatas[j].style.setProperty('display', 'inline-block');
+                    let tempWidth: number;
+                    if (cellDatas[j] !== undefined) {
+                        /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
+                        if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
+                        /** Add 32 pixel to its measured width to display editor properly */
+                        else
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 34;
+
+                        /** If the measured width is greater than the current widest width for the column, replace it */
+                        if (tempWidth > cellDataWidthList[j]) {
+                            cellDataWidthList[j] = tempWidth;
+                        }
+                            
+                    }
+                    /** remove inline block */
+                    cellDatas[j].style.removeProperty('display')
+                }
             }
 
             /** If there is no lazy loading */
@@ -183,10 +186,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 const theader = tableRef.current.table.querySelectorAll('th');
                 //@ts-ignore
-                const trows = tableRef.current.table.querySelectorAll('tbody > tr');
+                const trows = tableRef.current.table.querySelectorAll('th, tbody > tr');
+
+                
                 /** First set width of headers for columns then rows */
-                for (let i = 0; i < theader.length; i++)
+                for (let i = 0; i < theader.length; i++) {
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                }
+                    
                 for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
                     goThroughCellData(trows, i);
 
@@ -212,7 +219,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 for (let i = 0; i < theader.length; i++)
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 29;
+                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 //@ts-ignore
                 const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
                 for (let i = 0; i < 20; i++)
@@ -347,6 +354,20 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
         }
     }
+
+    useMultipleEventHandler(
+        tableRef.current ?
+        //@ts-ignore
+            (tableRef.current.table ?
+        //@ts-ignore
+                tableRef.current.table.querySelectorAll('th')
+        //@ts-ignore
+                : tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th')
+            )
+            : undefined,
+        'click',
+        () => console.log('testing tableheader click')
+    );
 
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined

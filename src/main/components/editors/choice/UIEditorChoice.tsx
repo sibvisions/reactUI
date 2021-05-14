@@ -32,7 +32,7 @@ export interface IEditorChoice extends IEditor{
  */
 const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Reference for the image */
-    const imgRef = useRef(null);
+    const imgRef = useRef<HTMLImageElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -100,9 +100,15 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             prefSize.width = parsedSize.width;
         }
         else {
-            prefSize.height = event.currentTarget.height;
-            prefSize.width = event.currentTarget.width;
+            prefSize.height = event.currentTarget.naturalHeight;
+            prefSize.width = event.currentTarget.naturalWidth;
         }
+
+        if (imgRef.current) {
+            imgRef.current.style.setProperty('--choiceMinW', `${event.currentTarget.naturalWidth}px`);
+            imgRef.current.style.setProperty('--choiceMinH', `${event.currentTarget.naturalHeight}px`);
+        }
+
         if(onLoadCallback){
             sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
