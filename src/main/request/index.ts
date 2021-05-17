@@ -15,3 +15,5 @@ export type { default as SetValueRequest } from './SetValueRequest';
 export type { default as SetValuesRequest } from './SetValuesRequest';
 export type { default as StartupRequest } from './StartupRequest';
 export type { default as TabRequest } from './TabRequest';
+export type { default as SortRequest } from './SortRequest';
+export type { SortDefinition } from './SortRequest';

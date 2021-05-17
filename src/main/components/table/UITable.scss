@@ -18,6 +18,16 @@ tr.p-highlight{
                 .pi-sort-alt {
                     display: none;
                 }
+                &:hover {
+                    background: #e9ecef;
+                }
+                &.sort-asc, &.sort-des {
+                    color: #2196F3;
+                }
+                .p-sortable-column-icon {
+                    font-size: 14px;
+                    margin-left: 4px;
+                }
             }
         }
     }

@@ -13,7 +13,8 @@ import { StartupRequest,
          TabRequest,
          SaveRequest,
          CloseScreenRequest,
-         SelectTreeRequest } from "../request";
+         SelectTreeRequest, 
+         SortRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -252,6 +253,15 @@ export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScre
     const req:CloseScreenRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
+    };
+    return req;
+}
+
+export const createSortRequest = (values?: SortRequest): SortRequest => {
+    const req:SortRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider,
+        sortDefinition: values?.sortDefinition
     };
     return req;
 }

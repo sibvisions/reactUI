@@ -1,7 +1,6 @@
 /** 3rd Party imports */
 import * as queryString from "querystring";
 import {parseString} from "xml2js"
-import { Dialog } from "primereact/dialog"
 
 /** Other imports */
 import ContentStore from "./ContentStore"
@@ -318,7 +317,6 @@ class Server {
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = changedProvider.dataProvider.split('/')[1];
-        const metaData = getMetaData(compId, changedProvider.dataProvider, this.contentStore);
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();

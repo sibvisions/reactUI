@@ -13,10 +13,10 @@ import { useProperties, useDataProviderData, useRowSelect, useOutsideClick, useM
 import BaseComponent from "../BaseComponent";
 import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
-import { createFetchRequest, createSelectRowRequest } from "../../factories/RequestFactory";
+import { createFetchRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { MetaDataResponse } from "../../response";
-import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../util";
+import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 
 
@@ -275,10 +275,19 @@ const UITable: FC<TableProps> = (baseProps) => {
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
 
+        const createColumnHeader = (colName: string, colIndex: number) => {
+            return (
+                <>
+                    <span className="p-column-resizer p-clickable" />
+                    <span className="p-column-title">{props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}</span>
+                    <span className="p-sortable-column-icon pi pi-fw pi-sort-alt"></span>
+                </>)
+        }
+
         return props.columnNames.map((colName, colIndex) => {
             return <Column
                 field={colName}
-                header={props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
+                header={createColumnHeader(colName, colIndex)}
                 key={colName}
                 headerStyle={{ overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined }}
                 body={(rowData: any) => <CellEditor
@@ -292,7 +301,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                     resource={context.server.RESOURCE_URL}
                 />}
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
-                className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
+                className={concatClassnames(
+                    metaData?.columns.find(column => column.name === colName)?.cellEditor?.className,
+                    "columnname-" + colName
+                    )}
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
             />
         })
@@ -355,6 +367,66 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    const getNextSort = (elem:HTMLTableHeaderCellElement) => {
+        if (elem.classList.contains("sort-asc")) {
+            return "Descending";
+        }
+        else if (elem.classList.contains("sort-des")) {
+            return "None";
+        }
+        else {
+            return "Ascending";
+        }
+    }
+
+    const handleSort = (e:Event) => {
+        if (e.target instanceof Element) {
+            //@ts-ignore
+            const allTableColumns = virtualEnabled ? tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th') : tableRef.current.table.querySelectorAll('th');
+            const clickedCol = e.target.closest("th");
+            for (let col of allTableColumns) {
+                if (col !== clickedCol) {
+                    if (col.classList.contains("sort-asc")) {
+                        col.classList.remove("sort-asc");
+                        col.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-up-alt", "pi-sort-alt");
+                    }
+                    else if (col.classList.contains("sort-des")) {
+                        col.classList.contains("sort-des");
+                        col.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-down", "pi-sort-alt");
+                    }
+                }
+            }
+            let sortColumnName = ""
+            if (clickedCol) {
+                for (let i = clickedCol.classList.length - 1; i >= 0; i--) {
+                    if (clickedCol.classList[i].includes("columnname")) {
+                        sortColumnName = clickedCol.classList[i].substring(clickedCol.classList[i].indexOf('-')+1);
+                        break;
+                    }
+                }
+                const sortReq = createSortRequest();
+                sortReq.dataProvider = props.dataBook;
+                sortReq.sortDefinition = [{columnName: sortColumnName, mode: getNextSort(clickedCol)}];
+                switch (getNextSort(clickedCol)) {
+                    case "Ascending":
+                        clickedCol.classList.add("sort-asc");
+                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-alt", "pi-sort-amount-up-alt");
+                        break;
+                    case "Descending":
+                        clickedCol.classList.replace("sort-asc", "sort-des");
+                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                        break;
+                    case "None":
+                        clickedCol.classList.remove("sort-des");
+                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-down", "pi-sort-alt");
+                        break;
+                }
+                context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
+            }
+        }
+        
+    }
+
     useMultipleEventHandler(
         tableRef.current ?
         //@ts-ignore
@@ -366,13 +438,13 @@ const UITable: FC<TableProps> = (baseProps) => {
             )
             : undefined,
         'click',
-        () => console.log('testing tableheader click')
+        (e) => handleSort(e)
     );
 
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
-    return(
+    return (
        <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
            <DataTable
                ref={tableRef}
