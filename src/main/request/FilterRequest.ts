@@ -8,6 +8,7 @@ interface FilterRequest {
     
     editorComponentId: string|undefined,
     value: string,
+    columnNames?:string[],
     filterCondition?:FilterCondition
 }
 export default FilterRequest

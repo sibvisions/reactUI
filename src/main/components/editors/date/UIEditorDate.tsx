@@ -146,12 +146,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEffect(() => {
         if (calendar.current) {
             //@ts-ignore
-            calendar.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+            calendar.current.inputRef.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+                event.stopPropagation();
                 if (event.key === "Enter") {
                     handleDateInput()
+                    overridePrime()
                 }
             }
-            overridePrime()
+            
         }
     });
 

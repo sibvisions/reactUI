@@ -70,9 +70,9 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
-    /** Either return the correctly rendered value or a in-cell editor */
 
-    return (columnMetaData?.cellEditor?.className === "ChoiceCellEditor" || columnMetaData?.cellEditor?.className === "CheckBoxCellEditor") ?
+    /** Either return the correctly rendered value or a in-cell editor */
+    return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         ((edit && !waiting) ? 
             <div ref={wrapperRef} style={{ height: 30 }}>
                 {displayEditor(columnMetaData, props)}
@@ -81,7 +81,12 @@ const CellEditor: FC<CellEditor> = (props) => {
             <div
                 className="cell-data"
                 style={{ height: 30 }}
-                onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                onClick={event => {
+                    if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
+                        setWaiting(true); 
+                        setEdit(true);
+                    }
+                }}>
                 {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
             </div>
         ) : (!edit ? 
@@ -244,32 +249,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
 
-    /** When a resized column got smaller, it sometimes interpreted the mouseup as click to sort the column so the pointer-events got disabled while resizing columns */
-
-    //TODO: useEventHandler for multiple elements possible? Check why Table is sorting on its own, probably not used soon because of own sorting!
-    useEffect(() => {
-        const currTable = tableRef.current;
-        const resizeStart = (elem:Element) => {
-            elem.parentElement?.style.setProperty('pointer-events', 'none');
-        }
-        if (currTable) {
-            //@ts-ignore
-            const resizerCollection:HTMLCollection = currTable.container.getElementsByClassName("p-column-resizer");
-            for (let resizer of resizerCollection) {
-                resizer.addEventListener('mousedown', () => resizeStart(resizer));
-            }
-        }
-        return () => {
-            if (currTable) {
-                //@ts-ignore
-                const resizerCollection:HTMLCollection = currTable.container.getElementsByClassName("p-column-resizer");
-                for (let resizer of resizerCollection) {
-                    resizer.removeEventListener('mousedown', () => resizeStart(resizer));
-                }
-            }
-        }
-    },[]);
-
     /** Building the columns */
     const columns = useMemo(() => {
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
@@ -278,8 +257,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         const createColumnHeader = (colName: string, colIndex: number) => {
             return (
                 <>
-                    <span className="p-column-resizer p-clickable" />
-                    <span className="p-column-title">{props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}</span>
+                    {props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
                     <span className="p-sortable-column-icon pi pi-fw pi-sort-alt"></span>
                 </>)
         }
@@ -346,7 +324,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     /** When column-resizing stops, enable pointer-events for sorting, and adjust the width of resize */
-    const handleColResize = (e:any) => {
+    const handleColResizeEnd = (e:any) => {
         e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
             //@ts-ignore
@@ -427,6 +405,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         
     }
 
+    const handleColResizeStart = (elem:Element) => {
+        elem.parentElement?.style.setProperty('pointer-events', 'none')
+    }
+
     useMultipleEventHandler(
         tableRef.current ?
         //@ts-ignore
@@ -438,8 +420,18 @@ const UITable: FC<TableProps> = (baseProps) => {
             )
             : undefined,
         'click',
-        (e) => handleSort(e)
+        (e:any) => handleSort(e)
     );
+
+    useMultipleEventHandler(
+        tableRef.current ?
+        //@ts-ignore
+            tableRef.current.container.getElementsByClassName("p-column-resizer")
+            : undefined,
+        'mousedown',
+        handleColResizeStart,
+        true
+    )
 
     //to subtract header Height
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
@@ -448,7 +440,7 @@ const UITable: FC<TableProps> = (baseProps) => {
        <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
            <DataTable
                ref={tableRef}
-               onColumnResizeEnd={handleColResize}
+               onColumnResizeEnd={handleColResizeEnd}
                className="rc-table"
                scrollable={virtualEnabled}
                lazy={virtualEnabled}

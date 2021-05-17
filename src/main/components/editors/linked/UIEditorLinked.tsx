@@ -185,6 +185,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         if (linkedRef.current) {
             //@ts-ignore
             linkedRef.current.inputRef.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+                event.stopPropagation();
                 if (event.key === "Enter") {
                     handleInput();
                 }
@@ -273,6 +274,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
         filterReq.value = event.query;
+        if (baseProps.id === "") {
+            filterReq.columnNames = [baseProps.columnName]
+        }
         context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
     }
 
