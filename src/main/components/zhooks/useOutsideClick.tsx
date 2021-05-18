@@ -1,8 +1,9 @@
 /** React imports */
 import { useEffect } from "react"
 
+
 /** Other imports */
-import { IEditor } from "../editors"
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
 /**
  * This hook adds a clickListener to the document, when a LinkedCellEditor or a DateCellEditor is opened while in-cell editing,
@@ -12,7 +13,7 @@ import { IEditor } from "../editors"
  * @param metaData - metaData of cell
  * @returns removes clickListener
  */
-const useOutsideClick = (ref: any, setEdit: Function, metaData: IEditor | undefined) => {
+const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDescription|LengthBasedColumnDescription|undefined) => {
     useEffect(() => {
         const handleClickOutside = (event: any) => {
             if (ref.current && !ref.current.contains(event.target) && !event.target.classList.contains('p-autocomplete-item') && !event.target.closest(".p-datepicker")) {

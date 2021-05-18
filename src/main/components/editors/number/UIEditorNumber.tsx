@@ -25,14 +25,15 @@ import { getEditorCompId,
          parseMinSize, 
          parseMaxSize} from "../../util";
 import { getTextAlignment } from "../../compprops";
+import { NumericColumnDescription } from "../../../response"
 
 /** Interface for cellEditor property of NumberCellEditor */
-interface ICellEditorNumber extends ICellEditor{
+export interface ICellEditorNumber extends ICellEditor{
     numberFormat: string,
 }
 
 /** Interface for NumberCellEditor */
-export interface IEditorNumber extends IEditor{
+export interface IEditorNumber extends IEditor {
     cellEditor: ICellEditorNumber,
     length: number,
     precision: number,
@@ -75,7 +76,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The metadata for the NumberCellEditor */
-    const cellEditorMetaData:IEditorNumber|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorNumber;
+    const cellEditorMetaData:NumericColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as NumericColumnDescription;
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor

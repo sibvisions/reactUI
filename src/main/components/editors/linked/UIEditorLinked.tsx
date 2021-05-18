@@ -18,7 +18,7 @@ import { getTextAlignment } from "../../compprops";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback} from "../../util";
 
 /** Interface for cellEditor property of LinkedCellEditor */
-interface ICellEditorLinked extends ICellEditor{
+export interface ICellEditorLinked extends ICellEditor{
     linkReference: {
         referencedDataBook: string
         columnNames: string[]

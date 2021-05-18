@@ -11,7 +11,7 @@ import { appContext } from "../../../AppProvider";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
 
 /** Interface for cellEditor property of ImageViewer */
-interface ICellEditorImage extends ICellEditor{
+export interface ICellEditorImage extends ICellEditor{
     defaultImageName: string,
     preserveAspectRatio: boolean
 }

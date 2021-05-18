@@ -9,6 +9,7 @@ interface SelectRowRequest {
     clientId: string,
     componentId: string | undefined,
     dataProvider: string | undefined,
-    filter: SelectFilter | undefined
+    filter: SelectFilter | undefined,
+    selectedColumn?: string
 }
 export default SelectRowRequest

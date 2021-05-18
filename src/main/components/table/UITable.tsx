@@ -344,9 +344,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tColGroupHeader.children[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
                 }
             }
-            else {
-                console.log('test', e)
-            }
         }
     }
 

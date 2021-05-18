@@ -12,7 +12,7 @@ export type { default as LanguageResponse } from './LanguageResponse';
 export type { default as MenuResponse } from './MenuResponse';
 export type { serverMenuButtons } from './MenuResponse';
 export type { default as MetaDataResponse } from './MetaDataResponse';
-export type { MetaDataReference } from './MetaDataResponse'
+export type { MetaDataReference, NumericColumnDescription, LengthBasedColumnDescription, ColumnDescription } from './MetaDataResponse'
 export { default as RESPONSE_NAMES } from './RESPONSE_NAMES';
 export type { default as RestartResponse } from './RestartResponse';
 export type { default as SessionExpiredResponse } from './SessionExpiredResponse';

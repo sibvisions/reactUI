@@ -48,6 +48,7 @@ import UIGauge, { IGauge } from "../components/gauge/UIGauge";
 import { UIMapGoogle, UIMapOSM, IMap } from "../components/map"
 import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/customComp/index'
 import UITree, { ITree } from "../components/tree/UITree";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../response";
 
 /**
  * Returns a Panel as component as popup or normal
@@ -330,8 +331,8 @@ export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props,
  * Decides which CellEditor function should be used
  * @param props - properties sent by the server
  */
-export const createEditor: FC<IEditor> = ( props ) => {
-    if(props.cellEditor){
+export const createEditor: FC<IEditor|LengthBasedColumnDescription|NumericColumnDescription> = ( props ) => {
+    if(props.cellEditor) {
         if(props.cellEditor.className === "ImageViewer"){
             return createEditorImage((props as IEditorImage));
         }
@@ -354,10 +355,10 @@ export const createEditor: FC<IEditor> = ( props ) => {
             return createEditorLinked((props as IEditorLinked));
         }
         else{
-            return createDummy(props)
+            return createDummy(props as IEditor)
         }
     } else {
-        return createDummy(props)
+        return createDummy(props as IEditor)
     }
 }
 

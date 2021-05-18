@@ -23,6 +23,7 @@ import { getEditorCompId,
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize } from "../../util";
+import { LengthBasedColumnDescription } from "../../../response";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -56,7 +57,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** The metadata for the TextCellEditor */
-    const cellEditorMetaData:IEditorText|undefined = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as IEditorText;
+    const cellEditorMetaData:LengthBasedColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as LengthBasedColumnDescription;
     /** Returns the maximum length for the TextCellEditor */
     const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);
     /** The horizontal- and vertical alignments */

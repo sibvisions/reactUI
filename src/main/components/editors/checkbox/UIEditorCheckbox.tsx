@@ -15,7 +15,7 @@ import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, pars
 import { getAlignments } from "../../compprops";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
-interface ICellEditorCheckBox extends ICellEditor {
+export interface ICellEditorCheckBox extends ICellEditor {
     text?: string,
     selectedValue?:string|boolean|number|undefined, 
 }

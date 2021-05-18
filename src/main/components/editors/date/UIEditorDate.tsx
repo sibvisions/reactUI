@@ -25,7 +25,7 @@ import { getEditorCompId,
 import { getTextAlignment } from "../../compprops";
 
 /** Interface for cellEditor property of DateCellEditor */
-interface ICellEditorDate extends ICellEditor{
+export interface ICellEditorDate extends ICellEditor{
     dateFormat?: string,
     isAmPmEditor: boolean,
     isDateEditor: boolean,

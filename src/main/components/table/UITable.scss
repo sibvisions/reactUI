@@ -109,6 +109,10 @@ tr.p-highlight{
     padding: 3px 7px;
 }
 
+.p-column-title {
+    user-select: none;
+}
+
 @keyframes pulse {
     0% {
         background: rgba(165, 165, 165, 0.1)

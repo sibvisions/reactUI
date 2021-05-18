@@ -14,7 +14,7 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
-interface ICellEditorChoice extends ICellEditor{
+export interface ICellEditorChoice extends ICellEditor{
     allowedValues: Array<string>,
     defaultImageName?: string
     imageNames: Array<string>,
