@@ -33,7 +33,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         if (preferredSizes) {
             tempSizes = preferredSizes
             tempSizes.forEach((val, key) => {
-                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key)) {
+                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
                     tempSizes.delete(key)
                 }
             });
