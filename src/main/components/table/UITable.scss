@@ -7,6 +7,9 @@ tr.p-highlight{
     height: 100%;
     border: 1px solid #d4d4d4;
     border-collapse: collapse;
+    &.no-auto-resize:not(.p-datatable-scrollable) table {
+        width: unset;
+    }
     .p-datatable-thead {
         >tr {
             >th {
@@ -72,6 +75,12 @@ tr.p-highlight{
                         }
                     }
                 }
+                &.LinkedCellEditor, &.DateCellEditor {
+                    button {
+                        width: 24px;
+                        padding: 0;
+                    }
+                }
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor)>.cell-data {
                     padding: 6.5px 8.688px;
                     overflow: hidden;
@@ -94,6 +103,10 @@ tr.p-highlight{
     animation: pulse 0.4s infinite ease-in-out;
     text-indent: -99999px;
     overflow: hidden;
+}
+
+.p-inputtext {
+    padding: 3px 7px;
 }
 
 @keyframes pulse {

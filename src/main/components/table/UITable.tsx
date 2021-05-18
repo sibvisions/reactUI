@@ -169,10 +169,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                     if (cellDatas[j] !== undefined) {
                         /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
                         if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 70;
+                            tempWidth = cellDatas[j].getBoundingClientRect().width + 24;
                         /** Add 32 pixel to its measured width to display editor properly */
                         else
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 34;
+                            tempWidth = cellDatas[j].getBoundingClientRect().width;
 
                         /** If the measured width is greater than the current widest width for the column, replace it */
                         if (tempWidth > cellDataWidthList[j]) {
@@ -199,8 +199,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 }
                     
-                for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++)
+                for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++) {
                     goThroughCellData(trows, i);
+                }
 
                 let tempWidth: number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
@@ -208,9 +209,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 });
                 
                 /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                for (let i = 0; i < theader.length; i++)
-                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
-
+                for (let i = 0; i < theader.length; i++) {
+                    theader[i].style.setProperty('width',`${100 * cellDataWidthList[i] / tempWidth}%`);
+                }
+                    
 
                 /** set EstTableWidth for size reporting */
                 setEstTableWidth(tempWidth);
@@ -342,6 +344,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tColGroupHeader.children[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
                 }
             }
+            else {
+                console.log('test', e)
+            }
         }
     }
 
@@ -437,27 +442,31 @@ const UITable: FC<TableProps> = (baseProps) => {
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
 
     return (
-       <div ref={wrapRef} style={{...layoutContext.get(props.id)}}>
-           <DataTable
-               ref={tableRef}
-               onColumnResizeEnd={handleColResizeEnd}
-               className="rc-table"
-               scrollable={virtualEnabled}
-               lazy={virtualEnabled}
-               virtualScroll={virtualEnabled}
-               onVirtualScroll={handleVirtualScroll}
-               resizableColumns
-               rows={rows}
-               virtualRowHeight={30}
-               scrollHeight={heightNoHeaders}
-               totalRecords={providerData.length}
-               value={virtualRows}
-               selection={selectedRow}
-               selectionMode="single"
-               onSelectionChange={handleRowSelection}>
-               {columns}
-           </DataTable>
-       </div>
+        <div ref={wrapRef} style={{ ...layoutContext.get(props.id) }}>
+            <DataTable
+                ref={tableRef}
+                onColumnResizeEnd={handleColResizeEnd}
+                className={concatClassnames(
+                    "rc-table",
+                    props.autoResize === false ? "no-auto-resize" : ""
+                )}
+                scrollable={virtualEnabled}
+                lazy={virtualEnabled}
+                virtualScroll={virtualEnabled}
+                onVirtualScroll={handleVirtualScroll}
+                resizableColumns
+                columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
+                rows={rows}
+                virtualRowHeight={30}
+                scrollHeight={heightNoHeaders}
+                totalRecords={providerData.length}
+                value={virtualRows}
+                selection={selectedRow}
+                selectionMode="single"
+                onSelectionChange={handleRowSelection}>
+                {columns}
+            </DataTable>
+        </div>
     )
 }
 export default UITable
