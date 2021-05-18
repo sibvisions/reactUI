@@ -46,6 +46,8 @@ export interface IEditorLinked extends IEditor{
 const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef(null);
+    /** Reference for the LinkedCellEditor input element */
+    const linkedInput = useRef(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -184,7 +186,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useEffect(() => {
         if (linkedRef.current) {
             //@ts-ignore
-            linkedRef.current.inputRef.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+            linkedInput.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
                 event.stopPropagation();
                 if (event.key === "Enter") {
                     handleInput();
@@ -282,9 +284,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     return (
         <AutoComplete
+            ref={linkedRef}
+            inputRef={linkedInput}
             autoFocus={props.autoFocus}
             appendTo={document.body}
-            ref={linkedRef}
             className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             scrollHeight={"200px"}

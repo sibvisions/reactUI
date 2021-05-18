@@ -48,6 +48,8 @@ export interface IEditorDate extends IEditor{
 const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for the calendar element */
     const calendar = useRef(null);
+    /** Reference for calendar input element */
+    const calendarInput = useRef(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -130,11 +132,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         let inputDate:Date = new Date()
         if (showTime) {
             //@ts-ignore
-            inputDate = moment(calendar.current.inputRef.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendarInput.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         else {
             //@ts-ignore
-            inputDate = moment(calendar.current.inputRef.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendarInput.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
         }
         onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), context.server));
         overridePrime()
@@ -146,7 +148,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEffect(() => {
         if (calendar.current) {
             //@ts-ignore
-            calendar.current.inputRef.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+            calendarInput.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
                 event.stopPropagation();
                 if (event.key === "Enter") {
                     handleDateInput()
@@ -172,6 +174,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     return(
         <Calendar
             ref={calendar}
+            inputRef={calendarInput}
             className="rc-editor-text"
             monthNavigator={true}
             yearNavigator={true}

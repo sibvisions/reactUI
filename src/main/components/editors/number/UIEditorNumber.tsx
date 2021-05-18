@@ -53,6 +53,8 @@ export interface ScaleType {
 const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
+    /** Reference for the NumberCellEditor input element */
+    const numberInput = useRef(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -102,7 +104,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
             //@ts-ignore
-            return numberRef.current.inputRef.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
+            return numberInput.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
         else {
             //@ts-ignore
@@ -157,11 +159,12 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     }
 
     //@ts-ignore
-    useEventHandler(numberRef.current ? numberRef.current.inputRef.current : undefined, 'paste', handlePaste)
+    useEventHandler(numberRef.current ? numberInput.current : undefined, 'paste', handlePaste)
 
     return (
         <InputNumber
             ref={numberRef}
+            inputRef={numberInput}
             className="rc-editor-number"
             useGrouping={useGrouping}
             locale={context.contentStore.locale}
