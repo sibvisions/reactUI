@@ -28,9 +28,9 @@ interface IMenu extends IForwardRef {
     showMenuMini:boolean
 }
 
-export const ProfileMenu:FC<{
-    profileImage?: string;
-}> = ({profileImage}) => {
+export const ProfileMenu = () => {
+    /** Use context to gain access for contentstore and server methods */
+    const { contentStore: { currentUser: { profileImage } } } = useContext(appContext);
     const slideOptions = useProfileMenuItems();
     
     return <div className="profile-menu">
@@ -53,18 +53,12 @@ const Menu: FC<IMenu> = (props) => {
     const windowSize = useWindowObserver();
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
-    /** Reference for profile menu element */
-    const profileRef = useRef<Menubar>(null);
     /** Reference for logo container element*/
     const menuLogoRef = useRef<HTMLDivElement>(null);
     /** Reference for logo container when devicemode is mini */
     const menuLogoMiniRef = useRef<HTMLDivElement>(null);
     /** Reference for fadeout element when menu is collapsed */
     const fadeRef = useRef<HTMLDivElement>(null);
-    /** Current logged in user */
-    const currUser = context.contentStore.currentUser;
-    /** Current state of translations */
-    const translations = useTranslation()
     /** a reference to the current panelmenu reactelement */
     const panelMenu = useRef<PanelMenu>(null);
     /** get menu items */
@@ -186,7 +180,7 @@ const Menu: FC<IMenu> = (props) => {
                 <div className="menu-upper">
                     <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
                     <span className="menu-screen-title">{screenTitle}</span>
-                    <ProfileMenu profileImage={currUser.profileImage} />
+                    <ProfileMenu />
                 </div>
             </div>
             <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
