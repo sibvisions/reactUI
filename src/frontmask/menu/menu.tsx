@@ -7,7 +7,7 @@ import { Menubar } from 'primereact/menubar';
 import { useParams } from "react-router";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useTranslation, useMenuItems } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useTranslation, useMenuItems, useProfileMenuItems } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
@@ -26,6 +26,18 @@ export interface MenuItemCustom extends MenuItem {
 
 interface IMenu extends IForwardRef {
     showMenuMini:boolean
+}
+
+export const ProfileMenu:FC<{
+    profileImage?: string;
+}> = ({profileImage}) => {
+    const slideOptions = useProfileMenuItems();
+    
+    return <div className="profile-menu">
+        <Menubar
+            style={profileImage ? {"--profileImage": `url(data:image/jpeg;base64,${profileImage})`} : {}}
+            model={slideOptions}/>
+    </div>
 }
 
 /**
@@ -85,57 +97,6 @@ const Menu: FC<IMenu> = (props) => {
             context.subscriptions.unsubscribeFromScreenName('x');
         }
     },[context.subscriptions]);
-
-    /**
-     * Builds the profile menu
-     * @returns the profile menu
-     */
-    const profileMenu = useMemo(() => {
-        /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
-        const sendLogout = () => {
-            const logoutRequest = createLogoutRequest();
-            localStorage.removeItem("authKey")
-            context.contentStore.reset();
-            context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT);
-        }
-        const slideOptions: Array<MenuItem> =
-            [
-                {
-                    label: currUser.displayName,
-                    icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fa fa-user',
-                    items: [
-                        // {
-                        //     label: "Settings",
-                        //     icon: "pi pi-cog",
-                        //     command: () => {
-                        //         context.server.routingDecider([{ name: "settings" }])
-                        //     }
-                        // },
-                        {
-                            label: translations.get("Logout"),
-                            icon: "pi pi-power-off",
-                            command(e:MenuItemCommandParams) {
-                                sendLogout()
-                            }
-                        }
-                    ]
-                }
-            ]
-
-        return(
-            <div className="profile-menu">
-                <Menubar
-                    ref={profileRef}
-                    model={slideOptions}/>
-            </div>
-        )
-    },[profileRef, currUser, context.server, context.contentStore, translations]);
-
-    /** Sets the image of the profile-image element to the profileImage of the current user */
-    useEffect(() => {
-        if (document.querySelector('.profile-image') && context.contentStore.currentUser.profileImage)
-            (document.querySelector('.profile-image') as HTMLElement).style.setProperty('background-image', "url(data:image/jpeg;base64,"+ context.contentStore.currentUser.profileImage + ')');
-    },[profileMenu, context.contentStore.currentUser.profileImage]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
@@ -225,7 +186,7 @@ const Menu: FC<IMenu> = (props) => {
                 <div className="menu-upper">
                     <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
                     <span className="menu-screen-title">{screenTitle}</span>
-                    {profileMenu}
+                    <ProfileMenu profileImage={currUser.profileImage} />
                 </div>
             </div>
             <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
