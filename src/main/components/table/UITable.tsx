@@ -7,14 +7,19 @@ import { DataTable } from "primereact/datatable";
 import _ from "underscore";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useOutsideClick, useMultipleEventHandler } from "../zhooks";
+import { useProperties, 
+         useDataProviderData, 
+         useRowSelect, 
+         useOutsideClick, 
+         useMultipleEventHandler, 
+         useSortDefinitions } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_ENDPOINTS, SortDefinition } from "../../request";
 import { MetaDataResponse } from "../../response";
 import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
@@ -49,14 +54,19 @@ type CellEditor = {
 const CellEditor: FC<CellEditor> = (props) => {
     /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);
+
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Metadata of the columns */
     const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(props.compId, props.metaData!.dataProvider);
+
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
@@ -109,26 +119,40 @@ const CellEditor: FC<CellEditor> = (props) => {
 const UITable: FC<TableProps> = (baseProps) => {
     /** Reference for the div wrapping the Table */
     const wrapRef = useRef<HTMLDivElement>(null);
+
     /** Reference for the Table */
     const tableRef = useRef(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutContext = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
+
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
+
+    /** The current sort-definitions */
+    const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook);
+
     /** The amount of virtual rows loaded */
     const rows = 40;
+
     /** The virtual rows filled with data */
     const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
+
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
+
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
@@ -251,16 +275,48 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
 
+    useEffect(() => {
+        if (tableRef.current) {
+            //@ts-ignore
+            const allTableColumns = virtualEnabled ? tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th') : tableRef.current.table.querySelectorAll('th');
+            for (const col of allTableColumns) {
+                const sortIcon = col.querySelector('.p-sortable-column-icon');
+                col.classList.remove("sort-asc", "sort-des");
+                sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
+                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+                if (sortDef !== undefined) {
+                    if (sortDef.mode === "Ascending") {
+                        col.classList.add("sort-asc");
+                        sortIcon.classList.add("pi-sort-amount-up-alt");
+                    }
+                    else if (sortDef.mode === "Descending") {
+                        col.classList.add("sort-des");
+                        sortIcon.classList.add("pi-sort-amount-down");
+                    }
+                }
+            }
+        }
+    }, [sortDefinitions])
+
     /** Building the columns */
     const columns = useMemo(() => {
         const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
 
         const createColumnHeader = (colName: string, colIndex: number) => {
+            let sortIndex = ""
+            if (sortDefinitions && sortDefinitions.length) {
+                let foundIndex = sortDefinitions.findIndex(sortDef => sortDef.columnName === colName);
+                if (foundIndex >= 0) {
+                    sortIndex = (foundIndex + 1).toString();
+                }
+            }
             return (
                 <>
                     {props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
-                    <span className="p-sortable-column-icon pi pi-fw pi-sort-alt"></span>
+                    <span className="p-sortable-column-icon pi pi-fw"></span>
+                    <span className="sort-index">{sortIndex}</span>
                 </>)
         }
 
@@ -269,7 +325,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
                 key={colName}
-                headerStyle={{ overflowX: "hidden", whiteSpace: 'nowrap', textOverflow: 'Ellipsis', display: props.tableHeaderVisible === false ? 'none' : undefined }}
+                headerStyle={{ 
+                    overflowX: "hidden", 
+                    whiteSpace: 'nowrap', 
+                    textOverflow: 'Ellipsis', 
+                    display: props.tableHeaderVisible === false ? 'none' : undefined,
+                    '--columnName': colName
+                }}
                 body={(rowData: any) => <CellEditor
                     pk={_.pick(rowData, primaryKeys)}
                     compId={compId}
@@ -288,7 +350,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
             />
         })
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible])
+    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
@@ -347,11 +409,11 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const getNextSort = (elem:HTMLTableHeaderCellElement) => {
-        if (elem.classList.contains("sort-asc")) {
+    const getNextSort = (elem:HTMLTableHeaderCellElement, mode?:"Ascending"|"Descending"|"None") => {
+        if (mode === "Ascending") {
             return "Descending";
         }
-        else if (elem.classList.contains("sort-des")) {
+        else if (mode === "Descending") {
             return "None";
         }
         else {
@@ -359,48 +421,27 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const handleSort = (e:Event) => {
+    const handleSort = (e:MouseEvent) => {
         if (e.target instanceof Element) {
-            //@ts-ignore
-            const allTableColumns = virtualEnabled ? tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th') : tableRef.current.table.querySelectorAll('th');
             const clickedCol = e.target.closest("th");
-            for (let col of allTableColumns) {
-                if (col !== clickedCol) {
-                    if (col.classList.contains("sort-asc")) {
-                        col.classList.remove("sort-asc");
-                        col.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-up-alt", "pi-sort-alt");
-                    }
-                    else if (col.classList.contains("sort-des")) {
-                        col.classList.contains("sort-des");
-                        col.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-down", "pi-sort-alt");
-                    }
-                }
-            }
-            let sortColumnName = ""
             if (clickedCol) {
-                for (let i = clickedCol.classList.length - 1; i >= 0; i--) {
-                    if (clickedCol.classList[i].includes("columnname")) {
-                        sortColumnName = clickedCol.classList[i].substring(clickedCol.classList[i].indexOf('-')+1);
-                        break;
-                    }
-                }
+                let sortColumnName = window.getComputedStyle(clickedCol).getPropertyValue('--columnName');
+                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === sortColumnName);
                 const sortReq = createSortRequest();
                 sortReq.dataProvider = props.dataBook;
-                sortReq.sortDefinition = [{columnName: sortColumnName, mode: getNextSort(clickedCol)}];
-                switch (getNextSort(clickedCol)) {
-                    case "Ascending":
-                        clickedCol.classList.add("sort-asc");
-                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-alt", "pi-sort-amount-up-alt");
-                        break;
-                    case "Descending":
-                        clickedCol.classList.replace("sort-asc", "sort-des");
-                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-up-alt", "pi-sort-amount-down");
-                        break;
-                    case "None":
-                        clickedCol.classList.remove("sort-des");
-                        clickedCol.querySelector('.p-sortable-column-icon')?.classList.replace("pi-sort-amount-down", "pi-sort-alt");
-                        break;
+                let sortDefToSend:SortDefinition[] = sortDefinitions || [];
+                if (e.ctrlKey) {
+                    if (!sortDef) {
+                        sortDefToSend.push({columnName: sortColumnName, mode:"Ascending"})
+                    }
+                    else {
+                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === sortColumnName)] = {columnName: sortColumnName, mode: getNextSort(clickedCol, sortDef?.mode)}
+                    }
                 }
+                else {
+                    sortDefToSend = [{columnName: sortColumnName, mode: getNextSort(clickedCol, sortDef?.mode)}]
+                }
+                sortReq.sortDefinition = sortDefToSend;
                 context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
             }
         }

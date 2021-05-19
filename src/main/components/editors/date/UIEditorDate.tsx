@@ -57,7 +57,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
     /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
+    const compId = getEditorCompId(props.id, context.contentStore);
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
     /** Reference to last value so that sendSetValue only sends when value actually changed */

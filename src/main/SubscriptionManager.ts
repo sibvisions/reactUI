@@ -3,32 +3,29 @@ import ContentStore from "./ContentStore"
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
-    /**
-     * @constructor constructs server instance
-     * @param store - contentstore instance
-     */
-    constructor(store: ContentStore) {
-        this.contentStore = store
-    }
     /** Contentstore instance */
     contentStore: ContentStore;
+
     /** 
      * A Map which stores components which want to subscribe to their properties, 
      * the key is the component id and the value is a function to update the state of the properties 
      */
     propertiesSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores a function to update the state of a parents childcomponents, components which use the 
      * useComponents hook subscribe to the parentSubscriber the key is the component id and the 
      * value is a function to update the state of a parents childcomponents
      */
     parentSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores an Array of functions to update the state of a screens dataProviders, components which use
      * the useDataProviders hook subscribe to a screens dataProvider, the key is a screen component id and the
      * value is an Array of functions to update the subscribers dataProviders state
      */
     dataProvidersSubscriber = new Map<string, Array<Function>>();
+
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the 
      * useRowSelect hook, subscribe to the changes of a screens dataproviders selectedRow, the key is the screens component id and the
@@ -36,11 +33,13 @@ export class SubscriptionManager {
      * subscribers selectedRow state
      */
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
+
     /**
      * A Map which stores a function to update a components state of all dataproviders selected-row, key is the screens component id
      * and value is the function to update the state
      */
     screenRowSelectionSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
      * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens component id and the
@@ -48,41 +47,93 @@ export class SubscriptionManager {
      * subscribers data state
      */
     dataChangeSubscriber = new Map<string, Map<string, Array<Function>>>();
+
     /**
      * A Map which stores a function to update a components state of all dataproviders data, key is the screens component id
      * value is the function to update the state
      */
     screenDataChangeSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores a function to update the screen-name state of the subscribers, the key is the name of the subscribers
      * and the value is the function to update the screen-name state
      */
     screenNameSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores a function to update the menu-collapsed state of the subscribers, the key is the name of the subscribers
      * and the value is the function to update the menu-collapsed state
      */
     menuCollapseSubscriber = new Map<string, Function>();
+
     /**
      * A Map which stores a function to update boolean flag state of the tree subscribers, key is the master databook and value is
      * an array of functions to update all tree flip state which have this master databook
      */
     treeSubscriber = new Map<string, Array<Function>>();
+
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
+
     /** An array of functions to update the homechildren state of components which use the useHomeComponents hook */
     popupSubscriber = new Array<Function>();
+
     /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
     translationLoadedSubscriber = new Array<Function>();
+
     /** A function to change the register custom content state of a component*/
     registerCustomSubscriber:Function = () => {};
+
     /** A function to change the appReady state to true */
     appReadySubscriber:Function = () => {};
+
+    /**
+     * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
+     * useSortDefinitions hook, subscribe to the changes of a screens sort-definitions, the key is the screens component id and the
+     * value is another Map which key is the dataprovider and the value is an array of functions to update the
+     * subscribers sort-definition state
+     */
+    sortDefinitionSubscriber = new Map<string, Map<string, Array<Function>>>();
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
      */
     jobQueue:Map<string, any> = new Map();
+
+    /**
+     * @constructor constructs server instance
+     * @param store - contentstore instance
+     */
+    constructor(store: ContentStore) {
+        this.contentStore = store
+    }
+
+    handleCompIdDataProviderSubscriptions(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
+        /** Checks if there is already a Map for the dataChangeSubscriber */
+        const existingMap = subs.get(compId);
+        if (existingMap) {
+            /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
+            const subscriber = existingMap.get(dataProvider);
+            if(subscriber) {
+                subscriber.push(fn);
+            }
+            else {
+                existingMap.set(dataProvider, new Array<Function>(fn));
+            }
+        }
+        else {
+            const tempMap:Map<string, Array<Function>> = new Map();
+            tempMap.set(dataProvider, new Array<Function>(fn));
+            subs.set(compId, tempMap);
+        }
+    }
+
+    handleCompIdDataProviderUnsubs(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
+        const subscriber = subs.get(compId)?.get(dataProvider)
+        if(subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    }
 
     /**
      * Subscribes the component which uses the useProperties hook, with the id to property changes
@@ -123,21 +174,7 @@ export class SubscriptionManager {
      * @param fn - the function to update the selectedRow state
      */
     subscribeToRowSelection(compId:string, dataProvider: string, fn: Function) {
-        /** Checks if there is already a Map for the rowSelectionSubscriber */
-        const existingMap = this.rowSelectionSubscriber.get(compId);
-        if (existingMap) {
-            /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            const subscriber = existingMap.get(dataProvider);
-            if(subscriber)
-                subscriber.push(fn);
-            else
-                existingMap.set(dataProvider, new Array<Function>(fn));
-        }
-        else {
-            const tempMap:Map<string, Function[]> = new Map<string, Function[]>();
-            tempMap.set(dataProvider, new Array<Function>(fn));
-            this.rowSelectionSubscriber.set(compId, tempMap);
-        }
+        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.rowSelectionSubscriber);
     }
 
     /**
@@ -147,21 +184,7 @@ export class SubscriptionManager {
      * @param fn - the function to update the data state
      */
     subscribeToDataChange(compId:string, dataProvider: string, fn: Function){
-        /** Checks if there is already a Map for the dataChangeSubscriber */
-        const existingMap = this.dataChangeSubscriber.get(compId);
-        if (existingMap) {
-            /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
-            const subscriber = existingMap.get(dataProvider);
-            if(subscriber)
-                subscriber.push(fn);
-            else
-                existingMap.set(dataProvider, new Array<Function>(fn));
-        }
-        else {
-            const tempMap:Map<string, Array<Function>> = new Map();
-            tempMap.set(dataProvider, new Array<Function>(fn));
-            this.dataChangeSubscriber.set(compId, tempMap);
-        }
+        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.dataChangeSubscriber);
     }
 
     /**
@@ -253,6 +276,10 @@ export class SubscriptionManager {
         this.appReadySubscriber = fn;
     }
 
+    subscribeToSortDefinitions(compId:string, dataProvider:string, fn:Function) {
+        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.sortDefinitionSubscriber);
+    }
+
     /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
@@ -294,10 +321,8 @@ export class SubscriptionManager {
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function){
-        const subscriber = this.dataChangeSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function) {
+        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.dataChangeSubscriber);
     }
 
     /**
@@ -323,9 +348,7 @@ export class SubscriptionManager {
      * @param fn - the function to update the selectedRow state
      */
     unsubscribeFromRowSelection(compId:string, dataProvider: string, fn: Function){
-        const subscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider)
-        if(subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.rowSelectionSubscriber);
     }
 
     /**
@@ -384,6 +407,10 @@ export class SubscriptionManager {
         this.subscribeToAppReady = () => {}
     }
 
+    unsubscribeFromSortDefinitions(compId:string, dataProvider:string, fn: Function) {
+        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.sortDefinitionSubscriber);
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -423,6 +450,10 @@ export class SubscriptionManager {
      */
     notifyTreeChanged(masterDataBook:string) {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    notifySortDefinitionChange(compId:string, dataProvider:string) {
+        this.sortDefinitionSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**

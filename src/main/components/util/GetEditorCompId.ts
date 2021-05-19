@@ -8,6 +8,6 @@ import ContentStore from "src/main/ContentStore";
  * @param dataRow - the dataRow/dataBook/dataProvider
  * @returns componentId of the screen
  */
-export function getEditorCompId(id:string, contentStore:ContentStore, dataRow:string) {
-    return id && contentStore.getComponentId(id) ? contentStore.getComponentId(id) as string : dataRow.split('/')[1];
+export function getEditorCompId(id:string, contentStore:ContentStore) {
+    return id && contentStore.getComponentId(id) ? contentStore.getComponentId(id) as string : contentStore.activeScreens.slice(-1).pop() as string;
 }

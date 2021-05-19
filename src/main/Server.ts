@@ -170,7 +170,6 @@ class Server {
                 await mapper(response);
             }   
         }
-
         this.routingDecider(responses);
     }
 
@@ -222,7 +221,11 @@ class Server {
      * Calls the contentStore updateContent function 
      * @param genericData - the genericResponse
      */
-    generic(genericData: GenericResponse){
+    generic(genericData: GenericResponse) {
+        if (!genericData.update) {
+            const workScreen = genericData.changedComponents[0] as IPanel
+            this.contentStore.setActiveScreen(workScreen.name, workScreen.screen_modal_);
+        }
         this.contentStore.updateContent(genericData.changedComponents);
     }
 
@@ -253,7 +256,7 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath){
-        const compId = dataProvider.split('/')[1];
+        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
@@ -295,16 +298,19 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData)
-        const compId = fetchData.dataProvider.split('/')[1];
+        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
         // If there is a detailMapKey, call updateDataProviderData with it
-        if (detailMapKey !== undefined)
+        if (detailMapKey !== undefined) {
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath, detailMapKey);
-        else
+        }   
+        else {
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath);
+        }   
         
+        this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : [])
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined);
         
     }
@@ -316,7 +322,7 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = changedProvider.dataProvider.split('/')[1];
+        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
@@ -345,7 +351,7 @@ class Server {
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = metaData.dataProvider.split('/')[1];
+        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
         if (existingMap) {
             existingMap.set(metaData.dataProvider, metaData);
@@ -483,58 +489,59 @@ class Server {
      * When the user is redirected to login, or gets auto logged in, app is set to ready
      * @param responses - the response array
      */
-    routingDecider(responses: Array<BaseResponse>){
+    routingDecider(responses: Array<BaseResponse>) {
         let routeTo: string | undefined;
         let highestPriority = 0;
 
         responses.forEach(response => {
-           if(response.name === RESPONSE_NAMES.USER_DATA) {
-               if(highestPriority < 1) {
-                   highestPriority = 1;
-                   routeTo = "home";
-                   this.subManager.emitAppReady();
-               }
-           }
-           else if(response.name === RESPONSE_NAMES.SCREEN_GENERIC){
+            if (response.name === RESPONSE_NAMES.USER_DATA) {
+                if (highestPriority < 1) {
+                    highestPriority = 1;
+                    routeTo = "home";
+                    this.subManager.emitAppReady();
+                }
+            }
+            else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
                 const GResponse = (response as GenericResponse);
                 const firstComp = (GResponse.changedComponents[0] as IPanel)
-                if(!GResponse.update && !firstComp.screen_modal_) {
-                    if(highestPriority < 2){
+                if (!GResponse.update && !firstComp.screen_modal_) {
+                    if (highestPriority < 2) {
                         highestPriority = 2;
                         routeTo = "home/" + this.contentStore.navigationNames.get(GResponse.componentId);
                     }
                 }
-           }
-           else if(response.name === RESPONSE_NAMES.CLOSE_SCREEN) {
-               const CSResponse = (response as CloseScreenResponse);
-               let wasPopup:boolean = false;
-               for (let entry of this.contentStore.flatContent.entries()) {
+            }
+            else if (response.name === RESPONSE_NAMES.CLOSE_SCREEN) {
+                const CSResponse = (response as CloseScreenResponse);
+                let wasPopup: boolean = false;
+                for (let entry of this.contentStore.flatContent.entries()) {
                     if (entry[1].name === CSResponse.componentId) {
-                       this.contentStore.closeScreen(entry[1].name);
-                       if ((entry[1] as IPanel).screen_modal_)
+                        this.contentStore.closeScreen(entry[1].name);
+                        if ((entry[1] as IPanel).screen_modal_) {
                             wasPopup = true;
-                       break; //quit loop because there might be a new screen of the same type
-                   }
-               }
-               if(highestPriority < 1 && !wasPopup){
-                   highestPriority = 1;
-                   routeTo = "home";
-               }
-           }
-           else if(response.name === RESPONSE_NAMES.LOGIN || response.name === RESPONSE_NAMES.SESSION_EXPIRED){
-               if(highestPriority < 1) {
-                   highestPriority = 1;
-                   routeTo = "login";
-                   this.subManager.emitAppReady();
-               }
-           }
-        //    else if (response.name === "settings") {
-        //        routeTo = "home/settings";
-        //    }
+                        }
+                        break; //quit loop because there might be a new screen of the same type
+                    }
+                }
+                if (highestPriority < 1 && !wasPopup) {
+                    highestPriority = 1;
+                    routeTo = "home";
+                }
+            }
+            else if (response.name === RESPONSE_NAMES.LOGIN || response.name === RESPONSE_NAMES.SESSION_EXPIRED) {
+                if (highestPriority < 1) {
+                    highestPriority = 1;
+                    routeTo = "login";
+                    this.subManager.emitAppReady();
+                }
+            }
+            //    else if (response.name === "settings") {
+            //        routeTo = "home/settings";
+            //    }
         });
 
 
-        if(routeTo){
+        if (routeTo) {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
         }

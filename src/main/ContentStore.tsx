@@ -11,35 +11,49 @@ import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
 import { CustomDisplayOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
+import { SortDefinition } from "./request"
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
     /** subscriptionManager instance */
     subManager:SubscriptionManager = new SubscriptionManager(this);
+
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
+
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
     removedContent = new Map<string, BaseComponent>();
+
     /** A Map which stores custom components made by the user, the key is the components title and the value a function to build the component*/
     customContent = new Map<string, Function>();
+
     /** A Map which stores removed, but not deleted custom components, the key is the components id and the value the component */
     removedCustomContent = new Map<string, BaseComponent>();
+
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
+
     /** A Map which stores the menuitems sent by the server, the key is the group of the menuitems and the value is the menuitem */
     serverMenuItems = new Map<string, Array<serverMenuButtons>>();
+
     /** A Map which stores custom menuitems, the key is the group of the menuitems and the value is the menuitem */
     customMenuItems = new Map<string, Array<serverMenuButtons>>();
+
     /** Combines serverMenuItems and customMenuItems */
     mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
+
     /** The current logged in user */
     currentUser: UserData = new UserData();
+
     /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
     navigationNames = new Map<string, string>();
+
     /** A Map which stores the translation values, the key is the original text and the value is the translated text */
     translation = new Map<string, string>();
+
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
+
     /** A Map which stores custom display names for screens, key is the screen-name and the value is the object of the custom display */
     customDisplays = new Map<string, {display: ReactElement, options: CustomDisplayOptions}>();
 
@@ -49,46 +63,72 @@ export default class ContentStore{
      * value is another map which key is the dataprovider and the value the data of the dataprovider
      */
     dataProviderData = new Map<string, Map<string, any>>();
+
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value the metadata of the dataprovider
      */
     dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
+
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value if all data of the dataprovider has been fetched
      */
     dataProviderFetched = new Map<string, Map<string, boolean>>();
+
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value is the selectedRow of a dataprovider
      */
     dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
+    /**
+     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
+     * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
+     */
+    dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
+
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
+
     /** The logo to display when the menu is collapsed */
     LOGO_SMALL:string = "/assets/logo_small.png";
+
     /** The logo to display at the login screen */
     LOGO_LOGIN:string = "/assets/logo_login.png";
+
     /** The current region */
     locale:string = "de-DE";
+
     /** True, if the menu is collapsed, default value based on window width */
     menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
+
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
      * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
      */
     menuModeAuto:boolean = true;
+
     /** True, if the menu should overlay the layout in mini mode */
     menuOverlaying:boolean = true;
+
+    activeScreens:string[] = [];
 
     /**
      * Sets the subscription-manager
      * @param subManager - the subscription-manager instance 
      */
-    setsubscriptionManager(subManager:SubscriptionManager) {
+    setSubscriptionManager(subManager:SubscriptionManager) {
         this.subManager = subManager;
+    }
+
+    setActiveScreen(screenName:string, popup?:boolean) {
+        if (popup) {
+            this.activeScreens.push(screenName);
+        }
+        else {
+            this.activeScreens = [screenName];
+        }
     }
 
     //Content
@@ -233,7 +273,8 @@ export default class ContentStore{
      * When a screen closes cleanUp the data for the window 
      * @param windowName - the name of the window to close
      */
-    closeScreen(windowName: string){
+    closeScreen(windowName: string) {
+        this.activeScreens.pop()
         const window = this.getComponentByName(windowName);
         if(window){
             this.cleanUp(window.id, window.name);
@@ -671,5 +712,25 @@ export default class ContentStore{
             screenName.forEach(name => this.customDisplays.set(name, {display: customDisplay, options: pOptions ? pOptions : {global: true}}));
         else 
             this.customDisplays.set(screenName, {display: customDisplay, options: pOptions ? pOptions : {global: true}});
+    }
+
+    /**
+     * Sets or updates the sort-definitions of a dataprovider in a map and then notifies the
+     * components which use the useSortDefinitions hook to update their state.
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     * @param sortDefinitions - the sort-definitions
+     */
+    setSortDefinition(compId:string, dataProvider:string, sortDefinitions:SortDefinition[]) {
+        const existingMap = this.dataProviderSortedColumns.get(compId);
+        if (existingMap) {
+            existingMap.set(dataProvider, sortDefinitions)
+        }
+        else {
+            const provMap = new Map<string, SortDefinition[]>();
+            provMap.set(dataProvider, sortDefinitions);
+            this.dataProviderSortedColumns.set(compId, provMap);
+        }
+        this.subManager.notifySortDefinitionChange(compId, dataProvider);
     }
 }

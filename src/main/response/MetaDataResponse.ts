@@ -24,6 +24,7 @@ export interface ColumnDescription {
                 ICellEditorLinked|
                 ICellEditorNumber,
     dataTypeIdentifyer: number,
+    width: number,
     readonly: boolean,
     nullable: boolean,
     resizable: boolean,

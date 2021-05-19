@@ -55,7 +55,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
     /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore, props.dataRow);
+    const compId = getEditorCompId(props.id, context.contentStore);
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */

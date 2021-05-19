@@ -18,9 +18,6 @@ tr.p-highlight{
                 font-weight: bold;
                 padding: 0.6rem 1rem;
                 background: white;
-                .pi-sort-alt {
-                    display: none;
-                }
                 &:hover {
                     background: #e9ecef;
                 }
@@ -30,6 +27,9 @@ tr.p-highlight{
                 .p-sortable-column-icon {
                     font-size: 14px;
                     margin-left: 4px;
+                }
+                .sort-index {
+                    font-size: 10px;
                 }
             }
         }
@@ -89,6 +89,9 @@ tr.p-highlight{
             }
         }
     }
+    .p-inputtext {
+        padding: 3px 7px;
+    }
 }
 
 .p-datatable-wrapper {
@@ -103,10 +106,6 @@ tr.p-highlight{
     animation: pulse 0.4s infinite ease-in-out;
     text-indent: -99999px;
     overflow: hidden;
-}
-
-.p-inputtext {
-    padding: 3px 7px;
 }
 
 .p-column-title {

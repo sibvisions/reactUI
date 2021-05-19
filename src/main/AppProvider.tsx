@@ -25,7 +25,7 @@ const subscriptions = new SubscriptionManager(contentStore)
 /** Server instance */
 const server = new Server(contentStore, subscriptions);
 
-contentStore.setsubscriptionManager(subscriptions);
+contentStore.setSubscriptionManager(subscriptions);
 /** Initial value for state */
 const initValue: AppContextType = {
     contentStore: contentStore,
@@ -54,7 +54,7 @@ const AppProvider: FC = ({children}) => {
         const subscriptions = new SubscriptionManager(contentStore);
         const server = new Server(contentStore, subscriptions, history);
         
-        contentStore.setsubscriptionManager(subscriptions)
+        contentStore.setSubscriptionManager(subscriptions)
 
         return {
             //theme: "dark",
