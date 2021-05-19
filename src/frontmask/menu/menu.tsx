@@ -7,7 +7,7 @@ import { Menubar } from 'primereact/menubar';
 import { useParams } from "react-router";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useTranslation } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useTranslation, useMenuItems } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
@@ -39,8 +39,6 @@ const Menu: FC<IMenu> = (props) => {
     const menuCollapsed = useMenuCollapser('menu');
     /** Flag if menu should be collapsed based on windowsize */
     const windowSize = useWindowObserver();
-    /** Current state of menu items */
-    const [menuItems, setMenuItems] = useState<Array<MenuItem>>();
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
     /** Reference for profile menu element */
@@ -55,10 +53,14 @@ const Menu: FC<IMenu> = (props) => {
     const currUser = context.contentStore.currentUser;
     /** Current state of translations */
     const translations = useTranslation()
-    /** The react router params */
-    const params = useParams<{componentId: string}>();
     /** a reference to the current panelmenu reactelement */
     const panelMenu = useRef<PanelMenu>(null);
+    /** get menu items */
+    const menuItems = useMenuItems((primeMenu) => {
+        //TODO in the latest primereact version the expanded state can be set via the menu model.
+        //XXX tried using expanded prop -> doesn't seem to work in our case
+        panelMenu.current?.setState({activeItem: primeMenu.find(m => m.label === panelMenu.current?.state.activeItem?.label)});
+    })
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -128,43 +130,6 @@ const Menu: FC<IMenu> = (props) => {
             </div>
         )
     },[profileRef, currUser, context.server, context.contentStore, translations]);
-
-    /** 
-     * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems
-     * @returns unsubscribing from menuchanges on unmount
-     */
-    useEffect(()=> {
-        const receiveNewMenuItems = (menuGroup: Map<string, Array<serverMenuButtons>>) => {
-            const primeMenu = new Array<MenuItem>();
-            menuGroup.forEach((value, key) => {
-                const primeMenuItem: MenuItem = {
-                    label: key,
-                    icon: undefined,
-                    items: value.map(menuItems => {
-                       const iconData = parseIconData(undefined, menuItems.image)
-                       const subMenuItem: MenuItemCustom = {
-                           command: e => menuItems.action(),
-                           label: menuItems.text,
-                           componentId: menuItems.componentId,
-                           icon: iconData.icon,
-                           className: menuItems.componentId && menuItems.componentId.includes(`.${params.componentId}WorkScreen`) || menuItems.text === params.componentId ? "p-menuitem--active" : undefined,
-                       }
-                       return subMenuItem
-                    })
-                }
-                primeMenu.push(primeMenuItem);
-            });
-            setMenuItems(primeMenu);
-            //TODO in the latest primereact version the expanded state can be set via the menu model.
-            panelMenu.current?.setState({activeItem: primeMenu.find(m => m.label === panelMenu.current?.state.activeItem?.label)});
-        }
-        receiveNewMenuItems(context.contentStore.mergedMenuItems);
-        context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);
-
-        return () => {
-            context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
-        }
-    }, [params, context.subscriptions, context.contentStore.mergedMenuItems]);
 
     /** Sets the image of the profile-image element to the profileImage of the current user */
     useEffect(() => {

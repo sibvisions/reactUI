@@ -45,9 +45,9 @@ const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:numbe
         const currElRef = elRef.current;
         const currObserverRef = observer
         if (currElRef)
-            currObserverRef.observe(elRef.current);
+            currObserverRef.observe(currElRef);
 
-        return () => currObserverRef.unobserve(currElRef);
+        return () => currElRef && currObserverRef.unobserve(currElRef);
     }, [elRef, observer, menuCollapsed])
 
     return breakSize;

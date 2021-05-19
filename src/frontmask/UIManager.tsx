@@ -18,15 +18,16 @@ import { appContext } from "../main/AppProvider";
 import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
 
-interface IUIManager {
+export interface IUIManagerProps {
     screenId: string
+    customAppWrapper?: React.ComponentType
 }
 
 /**
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
  * @param props - the children components
  */
-const UIManager: FC<IUIManager> = (props) => {
+const UIManager: FC<IUIManagerProps> = (props) => {
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
     /** Reference for the menu component */
@@ -116,7 +117,7 @@ const UIManager: FC<IUIManager> = (props) => {
         }
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
-        if (menuRef && currSizeRef) {
+        if (menuRef.current && currSizeRef) {
             menuRef.current.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
             menuRef.current.addEventListener("transitionend", () => {
                 setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
@@ -150,12 +151,23 @@ const UIManager: FC<IUIManager> = (props) => {
         context.subscriptions.notifyScreenNameChanged(screenTitle)
     }, [props.children, context.server.APP_NAME, context.subscriptions]);
 
+    const CustomWrapper = props.customAppWrapper;
+
     return(
-        <div className="reactUI">
+        CustomWrapper ? 
+            <CustomWrapper>
+                <LayoutContext.Provider value={componentSize}>
+                    <div id="reactUI-main" className="main">
+                        <ScreenManager forwardedRef={sizeRef} />
+                    </div>
+                </LayoutContext.Provider>
+            </CustomWrapper>
+        : <div className="reactUI">
             <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
+                    "main--with-menu",
                     (menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini"
                 )}>

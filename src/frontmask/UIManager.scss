@@ -13,12 +13,15 @@
 
 .main {
   @extend %screen-transition;
-  margin-top: var(--menuHeight);
-  margin-left: var(--menuWidth);
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  &--with-menu {
+    margin-top: var(--menuHeight);
+    margin-left: var(--menuWidth);
+  }
 }
 
 .custom-display-div {

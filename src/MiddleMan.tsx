@@ -11,12 +11,14 @@ import { HashRouter } from 'react-router-dom';
 import App from './App';
 import AppProvider from "./main/AppProvider";
 import { CustomScreenType, CustomComponentType, CustomStartupProps, CustomDisplayType } from './main/customTypes';
+import { IUIManagerProps } from './frontmask/UIManager';
 
 export interface ICustomContent {
     customScreens?: CustomScreenType[]
     customComponents?: CustomComponentType[]
     customStartupProps?: CustomStartupProps[]
     customDisplays?: CustomDisplayType[]
+    customAppWrapper?: IUIManagerProps["customAppWrapper"]
 }
 
 /**

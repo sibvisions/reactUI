@@ -205,9 +205,9 @@ const App: FC<ICustomContent> = (props) => {
             {appReady
                 ? <Switch>
                     <Route exact path={"/login"} render={() => <Login />} />
-                    <Route exact path={"/home/:componentId"} render={() => <Home />} />
+                    <Route exact path={"/home/:componentId"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />
                     {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
-                    <Route path={"/home"} render={() => <Home />} />
+                    <Route path={"/home"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />
                 </Switch>
                 : <LoadingScreen />
             }

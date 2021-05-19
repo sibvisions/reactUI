@@ -20,3 +20,4 @@ export { default as useRowSelect } from './useRowSelect';
 export { default as useTranslation } from './useTranslation';
 export { default as useWindowObserver } from './useWindowObserver';
 export { default as useSortDefinitions } from './useSortDefinitions';
+export { default as useMenuItems } from './useMenuItems';
