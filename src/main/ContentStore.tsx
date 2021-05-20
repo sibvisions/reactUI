@@ -88,6 +88,12 @@ export default class ContentStore{
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
+    /**
+     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
+     * value is another map which key is the dataprovider and the value is the selectedColumn of a dataprovider
+     */
+    dataProviderSelectedColumns = new Map<string, Map<string, string>>();
+
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
 
@@ -361,6 +367,84 @@ export default class ContentStore{
             this.navigationNames.set(compId, navName);
     }
 
+    /**
+     * Returns the built window
+     * @param windowName - the name of the window
+     * @returns the built window
+     */
+    getWindow(windowName: string): ReactElement {
+        const windowData = this.getComponentByName(windowName);
+        if (windowData)
+            return componentHandler(windowData);
+        else
+            return this.customContent.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+    }
+
+    /**
+     * Returns the data/properties of a component based on the name
+     * @param componentName - the name of the component
+     * @returns the data/properties of a component based on the name
+     */
+    getComponentByName(componentName: string): BaseComponent | undefined {
+        let componentEntries = this.flatContent.entries();
+        let entry = componentEntries.next();
+        while (!entry.done) {
+            if (entry.value[1].name === componentName) {
+                return entry.value[1];
+            }
+            entry = componentEntries.next();
+        }
+        return undefined;
+    }
+
+    /**
+     * Returns all visible children of a parent, if tabsetpanel also return invisible
+     * @param parentId - the id of the parent
+     * @returns all visible children of a parent, if tabsetpanel also return invisible
+     */
+    getChildren(parentId: string): Map<string, BaseComponent> {
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const componentEntries = mergedContent.entries();
+        const children = new Map<string, BaseComponent>();
+        let entry = componentEntries.next();
+        while (!entry.done) {
+            if (parentId.includes("TP")) {
+                if (entry.value[1].parent === parentId) {
+                    children.set(entry.value[1].id, entry.value[1]);
+                }
+            }
+            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false) {
+                children.set(entry.value[1].id, entry.value[1]);
+            }
+            entry = componentEntries.next();
+        }
+        return children;
+    }
+
+    /**
+     * Returns the component id of a screen for a component
+     * @param id - the id of the component
+     * @returns the component id of a screen for a component
+     */
+    getComponentId(id: string) {
+        let comp: BaseComponent | undefined = this.flatContent.get(id)
+        if (comp) {
+            while (comp?.parent) {
+                comp = this.flatContent.get(comp?.parent)
+            }
+
+        }
+        return comp?.name
+    }
+
+    /**
+     * Sets the menu-mode
+     * @param value - the menu-mode
+     */
+    setMenuModeAuto(value: boolean) {
+        this.menuModeAuto = value;
+    }
+
     //Data Provider Management
 
     /**
@@ -467,14 +551,14 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      * @param dataRow - the selectedDataRow
      */
-    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath) {
+    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
         const existingMapRow = this.dataProviderSelectedRow.get(compId);
         if (existingMapRow) {
-            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath});
+            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath, selectedColumn: selectedColumn});
         }
         else {
             const tempMapRow:Map<string, any> = new Map<string, any>();
-            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath});
+            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath, selectedColumn: selectedColumn});
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
     }
@@ -525,83 +609,33 @@ export default class ContentStore{
         }
     }
 
-
-    /**
-     * Returns the built window
-     * @param windowName - the name of the window
-     * @returns the built window
-     */
-    getWindow(windowName: string): ReactElement{
-        const windowData = this.getComponentByName(windowName);
-        if(windowData)
-            return componentHandler(windowData);
-        else
-            return this.customContent.get(windowName)?.apply(undefined, [{screenName: windowName}]);
-    }
-
-    /**
-     * Returns the data/properties of a component based on the name
-     * @param componentName - the name of the component
-     * @returns the data/properties of a component based on the name
-     */
-    getComponentByName(componentName: string): BaseComponent | undefined{
-        let componentEntries = this.flatContent.entries();
-        let entry = componentEntries.next();
-        while(!entry.done){
-            if(entry.value[1].name === componentName){
-                return entry.value[1];
-            }
-            entry = componentEntries.next();
+    fillColumnDataProviderMap(compId:string, dataProvider:string, map:Map<string, any>, value:any) {
+        const existingMap = map.get(compId);
+        if (existingMap) {
+            existingMap.set(dataProvider, value)
         }
-        return undefined;
-    }
-
-    /**
-     * Returns all visible children of a parent, if tabsetpanel also return invisible
-     * @param parentId - the id of the parent
-     * @returns all visible children of a parent, if tabsetpanel also return invisible
-     */
-    getChildren(parentId: string): Map<string, BaseComponent>{
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
-        const componentEntries = mergedContent.entries();
-        const children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
-        while (!entry.done){
-            if (parentId.includes("TP")) {
-                if(entry.value[1].parent === parentId) {
-                    children.set(entry.value[1].id, entry.value[1]);
-                }
-            }
-            else if(entry.value[1].parent === parentId && entry.value[1].visible !== false){
-                children.set(entry.value[1].id, entry.value[1]);
-            }
-            entry = componentEntries.next();
+        else {
+            const provMap = new Map<string, SortDefinition[]>();
+            provMap.set(dataProvider, value);
+            map.set(compId, provMap);
         }
-        return children;
     }
 
     /**
-     * Returns the component id of a screen for a component
-     * @param id - the id of the component
-     * @returns the component id of a screen for a component
+     * Sets or updates the sort-definitions of a dataprovider in a map and then notifies the
+     * components which use the useSortDefinitions hook to update their state.
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     * @param sortDefinitions - the sort-definitions
      */
-    getComponentId(id:string) {
-        let comp:BaseComponent|undefined = this.flatContent.get(id)
-        if (comp) {
-            while (comp?.parent) {
-                comp = this.flatContent.get(comp?.parent)
-            }
-                
-        }
-        return comp?.name
+    setSortDefinition(compId: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
+        this.fillColumnDataProviderMap(compId, dataProvider, this.dataProviderSortedColumns, sortDefinitions);
+        this.subManager.notifySortDefinitionChange(compId, dataProvider);
     }
 
-    /**
-     * Sets the menu-mode
-     * @param value - the menu-mode
-     */
-    setMenuModeAuto(value:boolean) {
-        this.menuModeAuto = value;
+    setSelectedColumn(compId:string, dataProvider:string, selectedColumn:string) {
+        this.fillColumnDataProviderMap(compId, dataProvider, this.dataProviderSelectedColumns, selectedColumn);
+        this.subManager.notifySelectedColumnChange(compId, dataProvider);
     }
 
     //Custom Screens
@@ -712,25 +746,5 @@ export default class ContentStore{
             screenName.forEach(name => this.customDisplays.set(name, {display: customDisplay, options: pOptions ? pOptions : {global: true}}));
         else 
             this.customDisplays.set(screenName, {display: customDisplay, options: pOptions ? pOptions : {global: true}});
-    }
-
-    /**
-     * Sets or updates the sort-definitions of a dataprovider in a map and then notifies the
-     * components which use the useSortDefinitions hook to update their state.
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param sortDefinitions - the sort-definitions
-     */
-    setSortDefinition(compId:string, dataProvider:string, sortDefinitions:SortDefinition[]) {
-        const existingMap = this.dataProviderSortedColumns.get(compId);
-        if (existingMap) {
-            existingMap.set(dataProvider, sortDefinitions)
-        }
-        else {
-            const provMap = new Map<string, SortDefinition[]>();
-            provMap.set(dataProvider, sortDefinitions);
-            this.dataProviderSortedColumns.set(compId, provMap);
-        }
-        this.subManager.notifySortDefinitionChange(compId, dataProvider);
     }
 }

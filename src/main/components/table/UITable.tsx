@@ -12,7 +12,8 @@ import { useProperties,
          useRowSelect, 
          useOutsideClick, 
          useMultipleEventHandler, 
-         useSortDefinitions } from "../zhooks";
+         useSortDefinitions, 
+         useCellSelect } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -135,14 +136,58 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
 
+    const metaData = getMetaData(compId, props.dataBook, context.contentStore);
+
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
 
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
 
+    const [selectedColumn] = useCellSelect(compId, props.dataBook);
+
+    const [columnOrder, setColumnOrder] = useState<string[]>(metaData!.columnView_table_);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataBook);
+    const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
+
+    const selectedCell = useMemo(() => {
+        console.log(tableRef.current, selectedRow, selectedColumn)
+        if (tableRef.current) {
+            //@ts-ignore
+            const highlightedRowElement = tableRef.current.table ?
+                //@ts-ignore
+                tableRef.current.table.querySelector('tbody > tr.p-highlight')
+                :
+                //@ts-ignore
+                tableRef.current.container.querySelector('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight')
+
+            if (highlightedRowElement) {
+                highlightedRowElement.classList.remove("p-highlight");
+            }
+            console.log(selectedRow, selectedColumn)
+            if (selectedRow && selectedRow.data && selectedColumn) {
+                //@ts-ignore
+                const selectedRowElement = tableRef.current.table ?
+                    //@ts-ignore
+                    tableRef.current.table.querySelectorAll('tbody > tr')[selectedRow.index]
+                    :
+                    //@ts-ignore
+                    tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index];
+
+                selectedRowElement.classList.add("p-highlight");
+
+                return {
+                    cellIndex: columnOrder.findIndex(column => column === selectedColumn),
+                    field: selectedColumn,
+                    rowData: selectedRow.data,
+                    rowIndex: selectedRow.index,
+                    value: selectedRow.data[selectedColumn]
+                }
+            }
+        }
+        return undefined
+    },[selectedRow, selectedColumn, columnOrder]);
 
     /** The amount of virtual rows loaded */
     const rows = 40;
@@ -270,7 +315,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 setEstTableWidth(tempWidth+17)
             }
         }
-    },[])
+    },[]);
 
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
@@ -297,11 +342,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
         }
-    }, [sortDefinitions])
+    }, [sortDefinitions]);
 
     /** Building the columns */
     const columns = useMemo(() => {
-        const metaData = getMetaData(compId, props.dataBook, context.contentStore);
         const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
 
         const createColumnHeader = (colName: string, colIndex: number) => {
@@ -355,16 +399,19 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
-        
         if(event.value){
+            const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
             const selectReq = createSelectRowRequest();
-            selectReq.filter = {
-                columnNames: primaryKeys,
-                values: primaryKeys.map(pk => event.value[pk])
+            if (isNewRow) {
+                selectReq.filter = {
+                    columnNames: primaryKeys,
+                    values: primaryKeys.map(pk => event.value.rowData[pk])
+                }
             }
             selectReq.dataProvider = props.dataBook;
             selectReq.componentId = props.name;
-            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_ROW);
+            selectReq.selectedColumn = event.value.field
+            context.server.sendRequest(selectReq, isNewRow ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
         }
     }
 
@@ -407,6 +454,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
         }
+    }
+
+    const handleColReorder = (e:any) => {
+       setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
 
     const getNextSort = (elem:HTMLTableHeaderCellElement, mode?:"Ascending"|"Descending"|"None") => {
@@ -477,31 +528,34 @@ const UITable: FC<TableProps> = (baseProps) => {
     )
 
     //to subtract header Height
-    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined
+    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined;
 
     return (
         <div ref={wrapRef} style={{ ...layoutContext.get(props.id) }}>
             <DataTable
                 ref={tableRef}
-                onColumnResizeEnd={handleColResizeEnd}
                 className={concatClassnames(
                     "rc-table",
                     props.autoResize === false ? "no-auto-resize" : ""
                 )}
+                value={virtualRows}
+                selection={selectedCell}
+                selectionMode="single"
+                cellSelection
+                scrollHeight={heightNoHeaders}
                 scrollable={virtualEnabled}
                 lazy={virtualEnabled}
                 virtualScroll={virtualEnabled}
-                onVirtualScroll={handleVirtualScroll}
+                rows={rows}
+                totalRecords={providerData.length}
+                virtualRowHeight={30}
                 resizableColumns
                 columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
-                rows={rows}
-                virtualRowHeight={30}
-                scrollHeight={heightNoHeaders}
-                totalRecords={providerData.length}
-                value={virtualRows}
-                selection={selectedRow}
-                selectionMode="single"
-                onSelectionChange={handleRowSelection}>
+                reorderableColumns
+                onSelectionChange={handleRowSelection}
+                onVirtualScroll={handleVirtualScroll}
+                onColumnResizeEnd={handleColResizeEnd}
+                onColReorder={handleColReorder}>
                 {columns}
             </DataTable>
         </div>

@@ -11,7 +11,7 @@ import { appContext } from "../../AppProvider";
  * @param dataProvider - the dataprovider
  * @param column - the column
  */
-const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
+const useRowSelect = (compId:string, dataProvider: string, column?: string, showIndex?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /**
@@ -19,11 +19,16 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
      * @returns either the value of the column of the currently selectedRow or the entire selectedRow
      */
     const currentlySelectedRow = useMemo(() => {
-        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)?.dataRow
-        if(column && sr)
-            return sr[column];
-        else
-            return sr;
+        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
+        if (sr) {
+            if (column && sr.dataRow) {
+                return !showIndex ? sr.dataRow[column] : {data: sr.dataRow[column], index: sr.selectedIndex};
+            }
+            else {
+                return !showIndex ? sr.dataRow : {data: sr.dataRow, index: sr.selectedIndex};
+            }
+        }
+
 
     }, [context.contentStore, dataProvider, column, compId]);
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
@@ -36,12 +41,21 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string) => {
      */
     useEffect(() => {
         const onRowSelection = (newRow: any) => {
-            if(column && newRow)
-                setSelectedRow(newRow[column]);
-            else
-                setSelectedRow(newRow);
+            if (newRow) {
+                if(column && newRow.dataRow) {
+                    setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.selectedIndex});
+                }
+                else {
+                    setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.selectedIndex});
+                }
+            }
+            else {
+                setSelectedRow(undefined)
+            }
         }
+
         context.subscriptions.subscribeToRowSelection(compId, dataProvider, onRowSelection);
+
         return () => {
             context.subscriptions.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
         }

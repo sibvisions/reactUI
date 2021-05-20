@@ -48,6 +48,9 @@ tr.p-highlight{
             ::-moz-focus-inner {
                 border: 0;
             }
+            &.table-row-selected {
+                background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
+            }
             >td {
                 height: 1px;
                 padding: 0.2rem 0.4rem;
@@ -85,6 +88,10 @@ tr.p-highlight{
                     padding: 6.5px 8.688px;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                }
+                &.p-highlight {
+                    background: linear-gradient(180deg, rgba(227,242,253,1) 2%, rgba(170,220,255,1) 98%);
+                    color: var(--standardTextColor);
                 }
             }
         }

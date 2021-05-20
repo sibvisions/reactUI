@@ -270,7 +270,6 @@ class Server {
             else {
                 this.contentStore.clearSelectedRow(compId, dataProvider);
             }
-            
             this.subManager.emitRowSelect(compId, dataProvider);
         }
     }
@@ -310,9 +309,13 @@ class Server {
             this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath);
         }   
         
-        this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : [])
+        this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
+
+        if (fetchData.selectedColumn) {
+            this.contentStore.setSelectedColumn(compId, fetchData.dataProvider, fetchData.selectedColumn);
+        }
+
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined);
-        
     }
 
     /**
@@ -337,12 +340,10 @@ class Server {
             await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
         }
         else {
-            if (changedProvider.treePath !== undefined) {
-                this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, new TreePath(changedProvider.treePath));
+            if (changedProvider.selectedColumn) {
+                this.contentStore.setSelectedColumn(compId, changedProvider.dataProvider, changedProvider.selectedColumn);
             }
-            else {
-                this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider);
-            }
+            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined);
         }
     }
 
