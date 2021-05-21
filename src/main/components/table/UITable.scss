@@ -57,6 +57,7 @@ tr.p-highlight{
                 overflow: hidden;
                 text-overflow: ellipsis;
                 border-width: 0px 0px 1px 0px !important;
+                user-select: none;
                 &.ChoiceCellEditor, &.CheckBoxCellEditor {
                     text-align: center;
                     >.cell-data {

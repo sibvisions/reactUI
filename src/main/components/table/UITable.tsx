@@ -13,7 +13,8 @@ import { useProperties,
          useOutsideClick, 
          useMultipleEventHandler, 
          useSortDefinitions, 
-         useCellSelect } from "../zhooks";
+         useCellSelect, 
+         useEventHandler} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -34,6 +35,13 @@ export interface TableProps extends BaseComponent{
     dataBook: string,
     tableHeaderVisible?: boolean
     autoResize?: boolean
+}
+
+enum Navigation {
+    NAVIGATION_NONE = 0,
+    NAVIGATION_CELL_AND_FOCUS = 1,
+    NAVIGATION_CELL_AND_ROW_AND_FOCUS = 2,
+    NAVIGATION_ROW_AND_FOCUS = 3
 }
 
 /** Type for CellEditor */
@@ -151,8 +159,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
+    /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        console.log(tableRef.current, selectedRow, selectedColumn)
         if (tableRef.current) {
             //@ts-ignore
             const highlightedRowElement = tableRef.current.table ?
@@ -165,17 +173,20 @@ const UITable: FC<TableProps> = (baseProps) => {
             if (highlightedRowElement) {
                 highlightedRowElement.classList.remove("p-highlight");
             }
-            console.log(selectedRow, selectedColumn)
-            if (selectedRow && selectedRow.data && selectedColumn) {
-                //@ts-ignore
-                const selectedRowElement = tableRef.current.table ?
+        }
+        if (selectedRow) {
+            if (selectedColumn) {
+                if (tableRef.current) {
                     //@ts-ignore
-                    tableRef.current.table.querySelectorAll('tbody > tr')[selectedRow.index]
-                    :
-                    //@ts-ignore
-                    tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index];
+                    const selectedRowElement = tableRef.current.table ?
+                        //@ts-ignore
+                        tableRef.current.table.querySelectorAll('tbody > tr')[selectedRow.index]
+                        :
+                        //@ts-ignore
+                        tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index];
 
-                selectedRowElement.classList.add("p-highlight");
+                    selectedRowElement.classList.add("p-highlight");
+                }
 
                 return {
                     cellIndex: columnOrder.findIndex(column => column === selectedColumn),
@@ -185,7 +196,15 @@ const UITable: FC<TableProps> = (baseProps) => {
                     value: selectedRow.data[selectedColumn]
                 }
             }
+            else {
+                const selectReq = createSelectRowRequest();
+                selectReq.dataProvider = props.dataBook;
+                selectReq.componentId = props.name;
+                selectReq.selectedColumn = columnOrder[0];
+                context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_COLUMN);
+            }
         }
+
         return undefined
     },[selectedRow, selectedColumn, columnOrder]);
 
@@ -201,12 +220,33 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
+    const enterNavigationMode = Navigation.NAVIGATION_CELL_AND_FOCUS;
+
+    const tabNavigationMode = Navigation.NAVIGATION_CELL_AND_FOCUS;
+
     /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows*2
     },[providerData.length])
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+
+    /**
+     * Returns the next sort mode
+     * @param mode - the current sort mode
+     * @returns the next sort mode
+     */
+    const getNextSort = (mode?: "Ascending" | "Descending" | "None") => {
+        if (mode === "Ascending") {
+            return "Descending";
+        }
+        else if (mode === "Descending") {
+            return "None";
+        }
+        else {
+            return "Ascending";
+        }
+    }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
@@ -418,23 +458,27 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** 
      * When the virtual scroll occurs, set the firstRow index to the current first row of the virtual scroll and check if more data needs to be loaded,
      * if yes, fetch data, no set virtual rows to the next bunch of datarows
+     * @param event - the scroll event
      */
-    const handleVirtualScroll = (event: {first: number, rows: number}) => {
-        const slicedProviderData = providerData.slice(event.first, event.first+event.rows);
+    const handleVirtualScroll = (e: {first: number, rows: number}) => {
+        const slicedProviderData = providerData.slice(e.first, e.first+e.rows);
         const isAllFetched = context.contentStore.dataProviderFetched.get(compId)?.get(props.dataBook);
-        firstRowIndex.current = event.first;
-        if((providerData.length < event.first+(event.rows*2)) && !isAllFetched) {
+        firstRowIndex.current = e.first;
+        if((providerData.length < e.first+(e.rows*2)) && !isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
             fetchReq.fromRow = providerData.length;
-            fetchReq.rowCount = event.rows*4;
+            fetchReq.rowCount = e.rows*4;
             context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
         } else {
             setVirtualRows(slicedProviderData);
         }
     }
 
-    /** When column-resizing stops, enable pointer-events for sorting, and adjust the width of resize */
+    /**
+     *  When column-resizing stops, enable pointer-events for sorting, and adjust the width of resize
+     *  @param e - the event
+     */
     const handleColResizeEnd = (e:any) => {
         e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
@@ -456,22 +500,52 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    /**
+     * When columns are reordered, set the column order.
+     * @param e - the event
+     */
     const handleColReorder = (e:any) => {
        setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
 
-    const getNextSort = (elem:HTMLTableHeaderCellElement, mode?:"Ascending"|"Descending"|"None") => {
-        if (mode === "Ascending") {
-            return "Descending";
-        }
-        else if (mode === "Descending") {
-            return "None";
-        }
-        else {
-            return "Ascending";
+    const handleTableKeys = (e:KeyboardEvent) => {
+        switch(e.key) {
+            case "Enter":
+                if (e.shiftKey) {
+                    selectPrevious(enterNavigationMode);
+                }
+                else {
+
+                }
+                console.log(e, selectedCell);
+                break;
         }
     }
 
+    const selectPrevious = (navigationMode:number) => {
+        if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
+            selectPreviousCell(true);
+        }
+    }
+
+    const selectPreviousCell = (delegateFocus:boolean) => {
+        if (selectedColumn && columnOrder.findIndex(column => column === selectedColumn) > 0) {
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
+            const selectReq = createSelectRowRequest();
+            selectReq.dataProvider = props.dataBook;
+            selectReq.componentId = props.name;
+            selectReq.selectedColumn = newSelectedColumn;
+            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_COLUMN);
+        }
+        else if (delegateFocus) {
+        
+        }
+    }
+
+    /**
+     * Sends a sort request to the server
+     * @param e - the mouse event
+     */
     const handleSort = (e:MouseEvent) => {
         if (e.target instanceof Element) {
             const clickedCol = e.target.closest("th");
@@ -486,11 +560,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                         sortDefToSend.push({columnName: sortColumnName, mode:"Ascending"})
                     }
                     else {
-                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === sortColumnName)] = {columnName: sortColumnName, mode: getNextSort(clickedCol, sortDef?.mode)}
+                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === sortColumnName)] = {columnName: sortColumnName, mode: getNextSort(sortDef?.mode)}
                     }
                 }
                 else {
-                    sortDefToSend = [{columnName: sortColumnName, mode: getNextSort(clickedCol, sortDef?.mode)}]
+                    sortDefToSend = [{columnName: sortColumnName, mode: getNextSort(sortDef?.mode)}]
                 }
                 sortReq.sortDefinition = sortDefToSend;
                 context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
@@ -499,10 +573,18 @@ const UITable: FC<TableProps> = (baseProps) => {
         
     }
 
+    /**
+     * When columns are resized disable pointer events, so when resize smaller sort is not called.
+     * @param elem - the element
+     */
     const handleColResizeStart = (elem:Element) => {
         elem.parentElement?.style.setProperty('pointer-events', 'none')
     }
 
+    //@ts-ignore
+    useEventHandler(wrapRef.current ? wrapRef.current : undefined, 'keydown', (e:any) => handleTableKeys(e))
+
+    /** Sort handler */
     useMultipleEventHandler(
         tableRef.current ?
         //@ts-ignore
@@ -517,6 +599,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         (e:any) => handleSort(e)
     );
 
+    /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
         //@ts-ignore
@@ -531,7 +614,16 @@ const UITable: FC<TableProps> = (baseProps) => {
     const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined;
 
     return (
-        <div ref={wrapRef} style={{ ...layoutContext.get(props.id) }}>
+        <div
+            ref={wrapRef}
+            style={{
+                ...layoutContext.get(props.id),
+                height: layoutContext.get(props.id)?.height as number - 2,
+                width: layoutContext.get(props.id)?.width as number - 2,
+                outline: "none"
+            }}
+            tabIndex={-1}
+        >
             <DataTable
                 ref={tableRef}
                 className={concatClassnames(
@@ -555,7 +647,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onSelectionChange={handleRowSelection}
                 onVirtualScroll={handleVirtualScroll}
                 onColumnResizeEnd={handleColResizeEnd}
-                onColReorder={handleColReorder}>
+                onColReorder={handleColReorder}
+                tabIndex={5}>
                 {columns}
             </DataTable>
         </div>
