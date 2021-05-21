@@ -517,7 +517,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 else {
 
                 }
-                console.log(e, selectedCell);
                 break;
         }
     }
