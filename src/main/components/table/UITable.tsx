@@ -21,7 +21,7 @@ import BaseComponent from "../BaseComponent";
 import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, SortDefinition } from "../../request";
+import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { MetaDataResponse } from "../../response";
 import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
@@ -34,7 +34,9 @@ export interface TableProps extends BaseComponent{
     columnNames: Array<string>,
     dataBook: string,
     tableHeaderVisible?: boolean
-    autoResize?: boolean
+    autoResize?: boolean,
+    enterNavigationMode?: number,
+    tabNavigationMode?: number
 }
 
 enum Navigation {
@@ -149,6 +151,20 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
 
+    /** The amount of virtual rows loaded */
+    const rows = 40;
+
+    /** The virtual rows filled with data */
+    const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
+
+    /** The current firstRow displayed in the table */
+    const firstRowIndex = useRef(0);
+
+    /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
+    const virtualEnabled = useMemo(() => {
+        return providerData.length > rows * 2
+    }, [providerData.length]);
+
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
 
@@ -159,35 +175,41 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
+    const selectedCellElem = useRef<HTMLTableDataCellElement>();
+
+    const sendSelectRequest = (selectedColumn?:string, filter?:SelectFilter) => {
+        const selectReq = createSelectRowRequest();
+        selectReq.dataProvider = props.dataBook;
+        selectReq.componentId = props.name;
+        if (selectedColumn) selectReq.selectedColumn = selectedColumn;
+        if (filter) selectReq.filter = filter
+        context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
+    }
+
+    const tableSelect = (multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
+        if (tableRef.current) {
+            if (multi) {
+                //@ts-ignore
+                return !virtualEnabled ? tableRef.current.table.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
+            }
+
+            //@ts-ignore
+            return !virtualEnabled ? tableRef.current.table.querySelector(noVirtualSelector) : tableRef.current.container.querySelector(virtualSelector);
+        }
+    }
+
     /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        if (tableRef.current) {
-            //@ts-ignore
-            const highlightedRowElement = tableRef.current.table ?
-                //@ts-ignore
-                tableRef.current.table.querySelector('tbody > tr.p-highlight')
-                :
-                //@ts-ignore
-                tableRef.current.container.querySelector('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight')
+        const highlightedRowElement = tableSelect(false, 'tbody > tr.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight');
 
-            if (highlightedRowElement) {
-                highlightedRowElement.classList.remove("p-highlight");
-            }
+        if (highlightedRowElement) {
+            highlightedRowElement.classList.remove("p-highlight");
         }
+
         if (selectedRow) {
             if (selectedColumn) {
-                if (tableRef.current) {
-                    //@ts-ignore
-                    const selectedRowElement = tableRef.current.table ?
-                        //@ts-ignore
-                        tableRef.current.table.querySelectorAll('tbody > tr')[selectedRow.index]
-                        :
-                        //@ts-ignore
-                        tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index];
-
-                    selectedRowElement.classList.add("p-highlight");
-                }
-
+                const selectedRowElement = tableSelect(true, 'tbody > tr', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index]
+                selectedRowElement.classList.add("p-highlight");
                 return {
                     cellIndex: columnOrder.findIndex(column => column === selectedColumn),
                     field: selectedColumn,
@@ -197,37 +219,20 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
             else {
-                const selectReq = createSelectRowRequest();
-                selectReq.dataProvider = props.dataBook;
-                selectReq.componentId = props.name;
-                selectReq.selectedColumn = columnOrder[0];
-                context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_COLUMN);
+                sendSelectRequest(columnOrder[0]);
             }
         }
 
         return undefined
-    },[selectedRow, selectedColumn, columnOrder]);
-
-    /** The amount of virtual rows loaded */
-    const rows = 40;
-
-    /** The virtual rows filled with data */
-    const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
-
-    /** The current firstRow displayed in the table */
-    const firstRowIndex = useRef(0);
+    }, [selectedRow, selectedColumn, columnOrder]);
 
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
-    const enterNavigationMode = Navigation.NAVIGATION_CELL_AND_FOCUS;
+    const enterNavigationMode = props.enterNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
-    const tabNavigationMode = Navigation.NAVIGATION_CELL_AND_FOCUS;
+    const tabNavigationMode = props.tabNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
-    /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
-    const virtualEnabled = useMemo(() => {
-        return providerData.length > rows*2
-    },[providerData.length])
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
 
@@ -361,28 +366,39 @@ const UITable: FC<TableProps> = (baseProps) => {
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
 
     useEffect(() => {
-        if (tableRef.current) {
-            //@ts-ignore
-            const allTableColumns = virtualEnabled ? tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th') : tableRef.current.table.querySelectorAll('th');
-            for (const col of allTableColumns) {
-                const sortIcon = col.querySelector('.p-sortable-column-icon');
-                col.classList.remove("sort-asc", "sort-des");
-                sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
-                const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
-                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-                if (sortDef !== undefined) {
-                    if (sortDef.mode === "Ascending") {
-                        col.classList.add("sort-asc");
-                        sortIcon.classList.add("pi-sort-amount-up-alt");
-                    }
-                    else if (sortDef.mode === "Descending") {
-                        col.classList.add("sort-des");
-                        sortIcon.classList.add("pi-sort-amount-down");
-                    }
+        const allTableColumns = tableSelect(true, "th", ".p-datatable-scrollable-header-table th");
+        for (const col of allTableColumns) {
+            const sortIcon = col.querySelector('.p-sortable-column-icon');
+            col.classList.remove("sort-asc", "sort-des");
+            sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+            const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
+            const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+            if (sortDef !== undefined) {
+                if (sortDef.mode === "Ascending") {
+                    col.classList.add("sort-asc");
+                    sortIcon.classList.add("pi-sort-amount-up-alt");
+                }
+                else if (sortDef.mode === "Descending") {
+                    col.classList.add("sort-des");
+                    sortIcon.classList.add("pi-sort-amount-down");
                 }
             }
         }
     }, [sortDefinitions]);
+
+    useEffect(() => {
+        if (tableRef.current) {
+            if (enterNavigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
+                selectedCellElem.current = tableSelect(
+                    false, "tbody > tr.p-highlight > td.p-highlight",
+                    ".p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight > td.p-highlight"
+                );
+            }
+            else if (enterNavigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
+                selectedCellElem.current = tableSelect(false, "tbody > tr.p-highlight", ".p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight");
+            }
+        }
+    }, [selectedCell])
 
     /** Building the columns */
     const columns = useMemo(() => {
@@ -427,10 +443,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     resource={context.server.RESOURCE_URL}
                 />}
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
-                className={concatClassnames(
-                    metaData?.columns.find(column => column.name === colName)?.cellEditor?.className,
-                    "columnname-" + colName
-                    )}
+                className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
             />
         })
@@ -439,19 +452,16 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
         const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
-        if(event.value){
+        if(event.value && event.originalEvent.type === 'click') {
             const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
-            const selectReq = createSelectRowRequest();
+            let filter:SelectFilter|undefined = undefined
             if (isNewRow) {
-                selectReq.filter = {
+                filter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => event.value.rowData[pk])
                 }
             }
-            selectReq.dataProvider = props.dataBook;
-            selectReq.componentId = props.name;
-            selectReq.selectedColumn = event.value.field
-            context.server.sendRequest(selectReq, isNewRow ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
+            sendSelectRequest(event.value.field, filter)
         }
     }
 
@@ -515,9 +525,18 @@ const UITable: FC<TableProps> = (baseProps) => {
                     selectPrevious(enterNavigationMode);
                 }
                 else {
-
+                    selectNext(enterNavigationMode)
                 }
                 break;
+        }
+    }
+
+    const selectNext = (navigationMode:number) => {
+        if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
+            selectNextCell(true);
+        }
+        else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
+            selectNextRow(true);
         }
     }
 
@@ -525,19 +544,91 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
             selectPreviousCell(true);
         }
+        else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
+            selectPreviousRow(true);
+        }
+    }
+
+    const focusCellElements = (next:boolean) => {
+        const focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable]")).filter((e: any) => {
+            const tabNegative = e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0;
+            const isTd = e.tagName === "TD";
+            const parentHighlighted = e.parentElement.classList.contains("p-highlight");
+            if (e.disabled || (tabNegative && !isTd) || (isTd && !parentHighlighted)) return false
+            return true;
+        }).sort((a: any, b: any) => {
+            return (parseFloat(a.tagName === "TD" ? 0 : a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.tagName === "TD" ? 0 : b.getAttribute("tabindex") || 99999) || 99999);
+        });
+        const focusIndex = focusable.indexOf(selectedCellElem.current as HTMLElement);
+        if (focusable[focusIndex + (next ? 1 : -1)]) (focusable[focusIndex + (next ? 1 : -1)] as HTMLElement).focus();
+    }
+
+    const focusRowElements = (next: boolean) => {
+        const focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable], #"
+            + id + " tbody > tr")).filter((e: any) => {
+                if (e.disabled || e.tagName === "TD" || (e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0)) return false
+                return true;
+            }).sort((a: any, b: any) => {
+                return (parseFloat(a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.getAttribute("tabindex") || 99999) || 99999);
+            });
+        const focusIndex = focusable.indexOf(selectedCellElem.current as HTMLElement);
+        console.log(focusable, focusIndex)
+        if (focusable[focusIndex + (next ? 1 : -1)]) (focusable[focusIndex + (next ? 1 : -1)] as HTMLElement).focus();
+    }
+
+    const selectNextCell = (delegateFocus:boolean) => {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) + 1;
+        if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
+            focusCellElements(true);
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) + 1];
+            sendSelectRequest(newSelectedColumn);
+        }
+        else if (delegateFocus) {
+            focusCellElements(true);
+        }
     }
 
     const selectPreviousCell = (delegateFocus:boolean) => {
-        if (selectedColumn && columnOrder.findIndex(column => column === selectedColumn) > 0) {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) - 1;
+        if (newSelectedColumnIndex >= 0 && selectedRow) {
+            focusCellElements(false);
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
-            const selectReq = createSelectRowRequest();
-            selectReq.dataProvider = props.dataBook;
-            selectReq.componentId = props.name;
-            selectReq.selectedColumn = newSelectedColumn;
-            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_COLUMN);
+            sendSelectRequest(newSelectedColumn);
         }
         else if (delegateFocus) {
-        
+            focusCellElements(false);
+        }
+    }
+
+    const selectNextRow = (delegateFocus:boolean) => {
+        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
+        const nextSelectedRowIndex = selectedRow.index + 1;
+        if (nextSelectedRowIndex < providerData.length) {
+            focusRowElements(true);
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+            };
+            sendSelectRequest(undefined, filter);
+        }
+        else if (delegateFocus) {
+            focusRowElements(true);
+        }
+    }
+
+    const selectPreviousRow = (delegateFocus:boolean) => {
+        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
+        const nextSelectedRowIndex = selectedRow.index - 1;
+        if (nextSelectedRowIndex >= 0) {
+            focusRowElements(false);
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+            };
+            sendSelectRequest(undefined, filter);
+        }
+        else if (delegateFocus) {
+            focusRowElements(false);
         }
     }
 
@@ -585,15 +676,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Sort handler */
     useMultipleEventHandler(
-        tableRef.current ?
-        //@ts-ignore
-            (tableRef.current.table ?
-        //@ts-ignore
-                tableRef.current.table.querySelectorAll('th')
-        //@ts-ignore
-                : tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th')
-            )
-            : undefined,
+        tableRef.current ? tableSelect(true, "th", ".p-datatable-scrollable-header-table th") : undefined,
         'click',
         (e:any) => handleSort(e)
     );
@@ -624,6 +707,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             tabIndex={-1}
         >
             <DataTable
+                id={id}
                 ref={tableRef}
                 className={concatClassnames(
                     "rc-table",
