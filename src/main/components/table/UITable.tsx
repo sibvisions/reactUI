@@ -582,6 +582,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     focusIndex += getNumberOfRowsPerPage() * columnOrder.length;
                 }
                 if (virtualEnabled) {
+                    focusIndex = -1;
                     //@ts-ignore
                     tableRef.current.container.querySelector(".p-datatable-scrollable-body").scrollTop += getNumberOfRowsPerPage() * 37;
                 }
@@ -607,6 +608,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     focusIndex -= getNumberOfRowsPerPage() * columnOrder.length;
                 }
                 if (virtualEnabled) {
+                    focusIndex = -1;
                     //@ts-ignore
                     tableRef.current.container.querySelector(".p-datatable-scrollable-body").scrollTop -= getNumberOfRowsPerPage() * 37;
                 }
