@@ -65,7 +65,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Current state of dateFormat for PrimeReact Calendar */
-    const [dateFormat, setDateFormat] = useState(selectedRow ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : "")
+    const [dateFormat, setDateFormat] = useState(selectedRow ? parseDateFormatTable(props.cellEditor.dateFormat, selectedRow) : "")
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
     /** Wether the DateCellEditor is a time-editor */
@@ -76,47 +76,41 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
 
     /**
-     * If time is displayed, PrimeReact ALWAYS puts the time after the date, but in our case the time could be anywhere
-     * so we have to get rid of their time
-     */
-    const overridePrime = useCallback(() => {
-        if (props.cellEditor_editable_ && selectedRow) {
-            if (timeOnly) {
-                /** Set value to just the dateformat without ' to remove PrimeReact time */
-                setTimeout(() => {
-                    if (calendar.current) {
-                        //@ts-ignore
-                        calendar.current.value = dateFormat.replaceAll("'", '')
-                    }
-                },0)
-            }
-            else if (showTime) {
-                setTimeout(() => {
-                    if (calendar.current) {
-                        //@ts-ignore
-                        calendar.current.value = selectedRow ? getMomentValue(props.cellEditor.dateFormat, selectedRow) : ""
-                    }
-                    
-                }, 0);
-            }
-        }
-    },[timeOnly, showTime, selectedRow, dateFormat, props.cellEditor.dateFormat, props.cellEditor_editable_])
-
-    /**
      * When a date is selected in the Datepicker call the onBlurCallBack function to send the value to the server
      * and call overridePrime to remove PrimeReact time if needed
      * @param submitValue 
      */
     const onSelectCallback = (submitValue:any) => {
-        onBlurCallback(baseProps, submitValue ? submitValue.getTime() : null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, submitValue ? submitValue.getTime() : null, context.server));
-        overridePrime()
+        onBlurCallback(
+            baseProps, 
+            submitValue 
+                ? submitValue.getTime() 
+                : null, 
+            lastValue.current, 
+            () => sendSetValues(
+                props.dataRow, 
+                props.name, 
+                props.columnName, 
+                submitValue 
+                    ? submitValue.getTime() 
+                    : null, 
+                context.server
+            )
+        );
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && calendar.current) {
-            //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), calendar.current.container, onLoadCallback)
+            sendOnLoadCallback(
+                id, 
+                parsePrefSize(props.preferredSize), 
+                parseMaxSize(props.maximumSize), 
+                parseMinSize(props.minimumSize), 
+                //@ts-ignore
+                calendar.current.container, 
+                onLoadCallback
+            )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
@@ -132,14 +126,47 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         let inputDate:Date = new Date()
         if (showTime) {
             //@ts-ignore
-            inputDate = moment(calendarInput.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY HH:mm", "DD-MM-YYYY HH:mm", "DD/MM/YYYY HH:mm", "DD.MMMMM.YY HH:mm", "DD-MMMMM-YYYY HH:mm", "DD/MMMM/YYYYY HH:mm", "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendarInput.current.value, [
+                parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), 
+                "DD.MM.YYYY HH:mm", 
+                "DD-MM-YYYY HH:mm", 
+                "DD/MM/YYYY HH:mm", 
+                "DD.MMMMM.YY HH:mm", 
+                "DD-MMMMM-YYYY HH:mm", 
+                "DD/MMMM/YYYYY HH:mm", 
+                "DD.MM.YYYY", 
+                "DD-MM-YYYY", 
+                "DD/MM/YYYY", 
+                "DD.MMMMM.YY", 
+                "DD-MMMMM-YYYY", 
+                "DD/MMMM/YYYYY"
+            ]).toDate();
         }
         else {
             //@ts-ignore
-            inputDate = moment(calendarInput.current.value, [parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), "DD.MM.YYYY", "DD-MM-YYYY", "DD/MM/YYYY", "DD.MMMMM.YY", "DD-MMMMM-YYYY", "DD/MMMM/YYYYY"]).toDate();
+            inputDate = moment(calendarInput.current.value, [
+                parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), 
+                "DD.MM.YYYY", 
+                "DD-MM-YYYY", 
+                "DD/MM/YYYY", 
+                "DD.MMMMM.YY", 
+                "DD-MMMMM-YYYY", 
+                "DD/MMMM/YYYYY"
+            ]).toDate();
         }
-        onBlurCallback(baseProps, inputDate.getTime(), lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, inputDate.getTime(), context.server));
-        overridePrime()
+        
+        onBlurCallback(
+            baseProps, 
+            inputDate.getTime(), 
+            lastValue.current, 
+            () => sendSetValues(
+                props.dataRow, 
+                props.name, 
+                props.columnName, 
+                inputDate.getTime(), 
+                context.server
+            )
+        );
     }
 
     /**
@@ -152,10 +179,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 event.stopPropagation();
                 if (event.key === "Enter") {
                     handleDateInput()
-                    overridePrime()
                 }
             }
-            
         }
     });
 
@@ -165,14 +190,15 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
      * which are not supported need to be passed between singlequotes in dateformat
      */
     useEffect(() => {
-        if (props.cellEditor_editable_)
-            setTimeout(() => setDateFormat(selectedRow ? parseDateFormatCell(props.cellEditor.dateFormat, selectedRow) : ""),75)
-        else
+        if (props.cellEditor_editable_) {
+            setTimeout(() => setDateFormat(selectedRow ? parseDateFormatTable(props.cellEditor.dateFormat, selectedRow) : ""), 75)
+        } else {
             setDateFormat("")
+        }
     }, [props.cellEditor_editable_, props.cellEditor.dateFormat, selectedRow]);
 
     return(
-        <Calendar
+        <CustomCalendar
             ref={calendar}
             inputRef={calendarInput}
             className="rc-editor-text"
@@ -196,3 +222,37 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     )
 }
 export default UIEditorDate
+
+class CustomCalendar extends Calendar {
+    formatDateTime(date: Date) {
+        let formattedValue = null;
+        if (date) {
+            if (this.props.timeOnly) {
+                formattedValue = moment(date).format(this.props.dateFormat);
+            } else {
+                formattedValue = moment(date).format(this.props.dateFormat);
+            }
+        }
+
+        return formattedValue;
+    }
+    parseDateTime(text: string) {
+        let date;
+        let mom = moment(text, this.props.dateFormat);
+
+        if (this.props.timeOnly) {
+            date = new Date();
+            date.setHours(mom.hours());
+            date.setMinutes(mom.minutes());
+            date.setSeconds(mom.seconds());
+        } else {
+            if (this.props.showTime) {
+                date = mom.toDate()
+            } else {
+                date = mom.startOf('day').toDate();
+            }
+        }
+
+        return date;
+    }
+}
