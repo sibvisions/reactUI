@@ -175,7 +175,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
-    const selectedCellElem = useRef<HTMLTableDataCellElement>();
+    const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
 
     const sendSelectRequest = (selectedColumn?:string, filter?:SelectFilter) => {
         const selectReq = createSelectRowRequest();
@@ -205,10 +205,9 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (highlightedRowElement) {
             highlightedRowElement.classList.remove("p-highlight");
         }
-
         if (selectedRow) {
             if (selectedColumn) {
-                const selectedRowElement = tableSelect(true, 'tbody > tr', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index]
+                const selectedRowElement = tableSelect(true, 'tbody > tr', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr')[selectedRow.index - firstRowIndex.current];
                 selectedRowElement.classList.add("p-highlight");
                 return {
                     cellIndex: columnOrder.findIndex(column => column === selectedColumn),
@@ -235,6 +234,10 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+
+    const getNumberOfRowsPerPage = () => {
+        return Math.ceil((layoutContext.get(baseProps.id)?.height as number - 35) / 37)
+    }
 
     /**
      * Returns the next sort mode
@@ -386,24 +389,8 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [sortDefinitions]);
 
-    useEffect(() => {
-        if (tableRef.current) {
-            if (enterNavigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-                selectedCellElem.current = tableSelect(
-                    false, "tbody > tr.p-highlight > td.p-highlight",
-                    ".p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight > td.p-highlight"
-                );
-            }
-            else if (enterNavigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-                selectedCellElem.current = tableSelect(false, "tbody > tr.p-highlight", ".p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight");
-            }
-        }
-    }, [selectedCell])
-
     /** Building the columns */
     const columns = useMemo(() => {
-        const primaryKeys = metaData?.primaryKeyColumns || ["ID"]
-
         const createColumnHeader = (colName: string, colIndex: number) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
@@ -451,7 +438,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = (event: {originalEvent: any, value: any}) => {
-        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
         if(event.value && event.originalEvent.type === 'click') {
             const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
             let filter:SelectFilter|undefined = undefined
@@ -525,9 +511,25 @@ const UITable: FC<TableProps> = (baseProps) => {
                     selectPrevious(enterNavigationMode);
                 }
                 else {
-                    selectNext(enterNavigationMode)
+                    selectNext(enterNavigationMode);
                 }
                 break;
+            case "Tab":
+                e.preventDefault();
+                if (e.shiftKey) {
+                    selectPrevious(tabNavigationMode);
+                }
+                else {
+                    selectNext(tabNavigationMode);
+                }
+                break;
+            case "PageUp":
+                e.preventDefault();
+                selectPreviousPage(false);
+                break;
+            case "PageDown":
+                e.preventDefault();
+                selectNextPage(false);
         }
     }
 
@@ -538,6 +540,9 @@ const UITable: FC<TableProps> = (baseProps) => {
         else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
             selectNextRow(true);
         }
+        else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
+            selectNextCellAndRow(true);
+        }
     }
 
     const selectPrevious = (navigationMode:number) => {
@@ -547,64 +552,108 @@ const UITable: FC<TableProps> = (baseProps) => {
         else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
             selectPreviousRow(true);
         }
+        else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
+            selectPreviousCellAndRow(true)
+        }
     }
 
-    const focusCellElements = (next:boolean) => {
-        const focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable]")).filter((e: any) => {
+    const focusCellAndRowElements = (next: boolean, row:boolean, page:boolean, navCell:boolean) => {
+        const currSelectedCell = tableSelect(
+            false, "tbody > tr.p-highlight > td.p-highlight",
+            ".p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight > td.p-highlight"
+        );
+        let focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable]")).filter((e: any) => {
             const tabNegative = e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0;
             const isTd = e.tagName === "TD";
-            const parentHighlighted = e.parentElement.classList.contains("p-highlight");
-            if (e.disabled || (tabNegative && !isTd) || (isTd && !parentHighlighted)) return false
+            if (e.disabled || (tabNegative && !isTd)) return false
             return true;
         }).sort((a: any, b: any) => {
             return (parseFloat(a.tagName === "TD" ? 0 : a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.tagName === "TD" ? 0 : b.getAttribute("tabindex") || 99999) || 99999);
         });
-        const focusIndex = focusable.indexOf(selectedCellElem.current as HTMLElement);
-        if (focusable[focusIndex + (next ? 1 : -1)]) (focusable[focusIndex + (next ? 1 : -1)] as HTMLElement).focus();
-    }
+        focusable = focusable.slice(focusable.findIndex(e => e.tagName === "TD") - 1, _.findLastIndex(focusable, (e) => e.tagName === "TD") + 2);
+        let focusIndex = focusable.indexOf(currSelectedCell);
 
-    const focusRowElements = (next: boolean) => {
-        const focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable], #"
-            + id + " tbody > tr")).filter((e: any) => {
-                if (e.disabled || e.tagName === "TD" || (e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0)) return false
-                return true;
-            }).sort((a: any, b: any) => {
-                return (parseFloat(a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.getAttribute("tabindex") || 99999) || 99999);
-            });
-        const focusIndex = focusable.indexOf(selectedCellElem.current as HTMLElement);
-        console.log(focusable, focusIndex)
-        if (focusable[focusIndex + (next ? 1 : -1)]) (focusable[focusIndex + (next ? 1 : -1)] as HTMLElement).focus();
+        if (next) {
+            if (page) {
+                if (selectedRow.index + getNumberOfRowsPerPage() >= providerData.length) {
+                    focusIndex = focusable.length - 2; 
+                }
+                else {
+                    focusIndex += getNumberOfRowsPerPage() * columnOrder.length;
+                }
+                if (virtualEnabled) {
+                    //@ts-ignore
+                    tableRef.current.container.querySelector(".p-datatable-scrollable-body").scrollTop += getNumberOfRowsPerPage() * 37;
+                }
+            }
+            else if (row) {
+                focusIndex += columnOrder.length;
+            }
+            else {
+                if (navCell) {
+                    focusIndex = focusable.length - 1;
+                }
+                else {
+                    focusIndex++
+                }
+            }
+        }
+        else {
+            if (page) {
+                if (selectedRow.index - getNumberOfRowsPerPage() < 0) {
+                    focusIndex = 1;
+                }
+                else {
+                    focusIndex -= getNumberOfRowsPerPage() * columnOrder.length;
+                }
+                if (virtualEnabled) {
+                    //@ts-ignore
+                    tableRef.current.container.querySelector(".p-datatable-scrollable-body").scrollTop -= getNumberOfRowsPerPage() * 37;
+                }
+            }
+            else if (row) {
+                focusIndex -= columnOrder.length;
+            }
+            else {
+                if (navCell) {
+                    focusIndex = 0;
+                }
+                else {
+                    focusIndex--;
+                }
+            }
+        }
+        if (focusable[focusIndex]) (focusable[focusIndex] as HTMLElement).focus();
     }
 
     const selectNextCell = (delegateFocus:boolean) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) + 1;
         if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
-            focusCellElements(true);
+            focusCellAndRowElements(true, false, false, false);
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) + 1];
             sendSelectRequest(newSelectedColumn);
         }
         else if (delegateFocus) {
-            focusCellElements(true);
+            focusCellAndRowElements(true, false, false, true);
         }
     }
 
     const selectPreviousCell = (delegateFocus:boolean) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) - 1;
         if (newSelectedColumnIndex >= 0 && selectedRow) {
-            focusCellElements(false);
+            focusCellAndRowElements(false, false, false, false);
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
             sendSelectRequest(newSelectedColumn);
         }
         else if (delegateFocus) {
-            focusCellElements(false);
+            focusCellAndRowElements(false, false, false, true);
         }
     }
 
     const selectNextRow = (delegateFocus:boolean) => {
-        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
         const nextSelectedRowIndex = selectedRow.index + 1;
         if (nextSelectedRowIndex < providerData.length) {
-            focusRowElements(true);
+            focusCellAndRowElements(true, true, false, false);
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
@@ -612,23 +661,104 @@ const UITable: FC<TableProps> = (baseProps) => {
             sendSelectRequest(undefined, filter);
         }
         else if (delegateFocus) {
-            focusRowElements(true);
+            focusCellAndRowElements(true, false, false, true);
         }
     }
 
     const selectPreviousRow = (delegateFocus:boolean) => {
-        const primaryKeys = getMetaData(compId, props.dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
-        const nextSelectedRowIndex = selectedRow.index - 1;
-        if (nextSelectedRowIndex >= 0) {
-            focusRowElements(false);
+        const prevSelectedRowIndex = selectedRow.index - 1;
+        if (prevSelectedRowIndex >= 0) {
+            focusCellAndRowElements(false, true, false, false);
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
-                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+                values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
             };
             sendSelectRequest(undefined, filter);
         }
         else if (delegateFocus) {
-            focusRowElements(false);
+            focusCellAndRowElements(false, false, false, true);
+        }
+    }
+
+    const selectNextCellAndRow = (delegateFocus:boolean) => {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) + 1;
+        const nextSelectedRowIndex = selectedRow.index + 1;
+        if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
+            focusCellAndRowElements(true, false, false, false);
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) + 1];
+            sendSelectRequest(newSelectedColumn);
+        }
+        else if (nextSelectedRowIndex < providerData.length) {
+            focusCellAndRowElements(true, false, false, false);
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+            };
+            sendSelectRequest(columnOrder[0], filter);
+        }
+        else if (delegateFocus) {
+            focusCellAndRowElements(true, false, false, true);
+        }
+    }
+
+    const selectPreviousCellAndRow = (delegateFocus:boolean) => {
+        const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) - 1;
+        const prevSelectedRowIndex = selectedRow.index - 1;
+        if (prevSelectedColumnIndex >= 0 && selectedRow) {
+            focusCellAndRowElements(false, false, false, false);
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
+            sendSelectRequest(newSelectedColumn);
+        }
+        else if (prevSelectedRowIndex >= 0) {
+            focusCellAndRowElements(false, false, false, false);
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
+            };
+            sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
+        }
+        else if (delegateFocus) {
+            focusCellAndRowElements(false, false, false, true);
+        }
+    }
+
+    const selectNextPage = (delegateFocus: boolean) => {
+        let nextSelectedRowIndex = selectedRow.index;
+        if (nextSelectedRowIndex < providerData.length - 1) {
+            focusCellAndRowElements(true, false, true, false)
+            //TODO: In the future with custom styles it's possible that the header or row height could have another height! Replace 35 and 37 then.
+            nextSelectedRowIndex += getNumberOfRowsPerPage();
+            if (nextSelectedRowIndex >= providerData.length) {
+                nextSelectedRowIndex = providerData.length - 1;
+            }
+            let filter: SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+            };
+            sendSelectRequest(undefined, filter)
+        }
+        else if (delegateFocus) {
+            focusCellAndRowElements(true, false, false, true);
+        }
+    }
+
+    const selectPreviousPage = (delegateFocus: boolean) => {
+        let nextSelectedRowIndex = selectedRow.index;
+        if (nextSelectedRowIndex > 0) {
+            focusCellAndRowElements(false, false, true, false)
+            //TODO: In the future with custom styles it's possible that the header or row height could have another height! Replace 35 and 37 then.
+            nextSelectedRowIndex -= getNumberOfRowsPerPage();
+            if (nextSelectedRowIndex < 0) {
+                nextSelectedRowIndex = 0;
+            }
+            let filter: SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
+            };
+            sendSelectRequest(undefined, filter)
+        }
+        else if (delegateFocus) {
+            focusCellAndRowElements(false, false, false, true);
         }
     }
 
@@ -693,7 +823,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     )
 
     //to subtract header Height
-    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 44).toString() + "px" || undefined;
+    //TODO: In the future with custom styles it's possible that the header could have another height! Replace 35 then.
+    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 35).toString() + "px" || undefined;
 
     return (
         <div
@@ -723,7 +854,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 virtualScroll={virtualEnabled}
                 rows={rows}
                 totalRecords={providerData.length}
-                virtualRowHeight={30}
+                virtualRowHeight={37}
                 resizableColumns
                 columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                 reorderableColumns
@@ -731,7 +862,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onVirtualScroll={handleVirtualScroll}
                 onColumnResizeEnd={handleColResizeEnd}
                 onColReorder={handleColReorder}
-                tabIndex={5}>
+                tabIndex={props.tabIndex}>
                 {columns}
             </DataTable>
         </div>

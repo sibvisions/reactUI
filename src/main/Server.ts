@@ -256,7 +256,7 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath){
-        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
@@ -297,7 +297,7 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData)
-        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
@@ -325,7 +325,7 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
@@ -352,7 +352,7 @@ class Server {
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = this.contentStore.activeScreens.slice(-1).pop() as string;
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
         if (existingMap) {
             existingMap.set(metaData.dataProvider, metaData);

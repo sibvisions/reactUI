@@ -280,7 +280,7 @@ export default class ContentStore{
      * @param windowName - the name of the window to close
      */
     closeScreen(windowName: string) {
-        this.activeScreens.pop()
+        this.activeScreens = this.activeScreens.filter(screen => screen !== windowName);
         const window = this.getComponentByName(windowName);
         if(window){
             this.cleanUp(window.id, window.name);
