@@ -119,6 +119,11 @@
 * {
     min-width: 0;
     min-height: 0;
+    outline-color: unset;
+
+    &:focus-visible {
+        outline: unset;
+    }
 }
 
 /// setting standard values for body
