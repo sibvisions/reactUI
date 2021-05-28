@@ -95,13 +95,13 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Either return the correctly rendered value or a in-cell editor */
     return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         ((edit && !waiting) ? 
-            <div ref={wrapperRef} style={{ height: 30 }}>
+            <div ref={wrapperRef}>
                 {displayEditor(columnMetaData, props)}
             </div>
         :
             <div
                 className="cell-data"
-                style={{ height: 30 }}
+                
                 onClick={event => {
                     if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
                         setWaiting(true); 
@@ -113,12 +113,12 @@ const CellEditor: FC<CellEditor> = (props) => {
         ) : (!edit ? 
             <div
                 className="cell-data"
-                style={{ height: 30 }}
+                
                 onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
                 {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setEdit(true)})}
             </div>
             :
-            <div ref={wrapperRef} style={{ height: 30 }}>
+            <div ref={wrapperRef} >
                 {displayEditor(columnMetaData, props)}
             </div>)
 }
@@ -181,13 +181,13 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
 
-    const sendSelectRequest = (selectedColumn?:string, filter?:SelectFilter) => {
+    const sendSelectRequest = async (selectedColumn?:string, filter?:SelectFilter) => {
         const selectReq = createSelectRowRequest();
         selectReq.dataProvider = props.dataBook;
         selectReq.componentId = props.name;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter
-        context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
+        await context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
     }
 
     const tableSelect = useCallback((multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
@@ -357,7 +357,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tCols2[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
                 }
 
-                setEstTableWidth(tempWidth+17)
+                setEstTableWidth(tempWidth)
             }
         }
     },[]);
@@ -386,23 +386,79 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [sortDefinitions, tableSelect]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
-            if (pageKeyPressed.current) {
+    const isVisible = (ele:HTMLElement, container:HTMLElement) => {
+        const eleLeft = ele.offsetLeft;
+        const eleRight = eleLeft + ele.clientWidth;
+    
+        const containerLeft = container.scrollLeft;
+        const containerRight = containerLeft + container.clientWidth;
+
+        const eleTop = ele.scrollTop;
+        const eleBottom = eleTop + ele.clientHeight;
+    
+        const containerTop = container.scrollTop;
+        const containerBottom = containerTop + container.clientHeight;
+    
+        // The element is fully visible in the container
+        return {visLeft: eleLeft >= containerLeft && eleRight <= containerRight, visTop: eleTop >= containerTop && eleBottom <= containerBottom}
+    };
+
+    const scrollToSelectedCell = () => {
+        const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
+
+        let extractedRowId; 
+        
+        (selectedElem.parentElement as HTMLElement).classList.forEach(cn => {
+            if (cn.includes("__")) {
+                extractedRowId = cn.substring(2);
+            }
+        });
+
+        console.log(extractedRowId)
+
+
+        if (pageKeyPressed.current && extractedRowId !== undefined) {
                 pageKeyPressed.current = false;
                 if (selectedElem) {
-                    selectedElem.scrollIntoView(true);
+                    //@ts-ignore
+                     const container = tableRef.current.container.querySelector(!virtualEnabled ? '.p-datatable-wrapper' : '.p-datatable-scrollable-body');
+
+                     container.scrollTo(selectedElem.offsetLeft, extractedRowId * 37)
+                    // const moveDirections = isVisible(selectedElem, container);
+                    // console.log(moveDirections, selectedElem, container)
+                    // if (!moveDirections.visLeft && moveDirections.visTop) {
+                    //     container.scrollTo(selectedElem.offsetLeft, container.scrollTop);
+                    // }
+                    // else if (moveDirections.visLeft && !moveDirections.visTop) {
+                    //     container.scrollTo(container.scrollLeft, container.scrollTop);
+                    // }
+                    // else if (!moveDirections.visLeft && !moveDirections.visTop) {
+                    //     container.scrollTo(selectedElem.offsetLeft, container.scrollTop);
+                    // }
+                    // else {
+                    //     container.scrollTo(selectedElem.offsetLeft, selectedElem.offsetTop);
+                    // }
+                }
+        }
+        if (navKeyPressed.current) {
+            navKeyPressed.current = false;
+            if (selectedElem) {
+                //@ts-ignore
+                const container = tableRef.current.container.querySelector(!virtualEnabled ? '.p-datatable-wrapper' : '.p-datatable-scrollable-body');
+                const moveDirections = isVisible(selectedElem, container);
+                console.log(moveDirections, selectedElem)
+                if (!moveDirections.visLeft && moveDirections.visTop) {
+                    container.scrollTo(selectedElem.offsetLeft, container.scrollTop);
+                }
+                else if (moveDirections.visLeft && !moveDirections.visTop) {
+                    container.scrollTo(container.scrollLeft, selectedElem.offsetTop);
+                }
+                else if (!moveDirections.visLeft && !moveDirections.visTop) {
+                    container.scrollTo(selectedElem.offsetLeft, selectedElem.offsetTop);
                 }
             }
-            if (navKeyPressed.current) {
-                navKeyPressed.current = false;
-                if (selectedElem) {
-                    selectedElem.scrollIntoView(true)
-                }
-            }
-        },400)
-    }, [selectedCell, tableSelect]);
+        }
+    }
 
     useEffect(() => {
         const selectedElems = tableSelect(true, 'tbody > tr td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr td.p-highlight');
@@ -553,10 +609,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "PageUp":
                 pageKeyPressed.current = true;
+                e.preventDefault();
                 selectPreviousPage(false);
                 break;
             case "PageDown":
                 pageKeyPressed.current = true;
+                e.preventDefault();
                 selectNextPage(false);
                 break;
         }
@@ -597,95 +655,103 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (focusable[next ? 2 : 0]) (focusable[next ? 2 : 0] as HTMLElement).focus();
     }
 
-    const selectNextCell = (delegateFocus:boolean) => {
+    const selectNextCell = async (delegateFocus:boolean) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) + 1;
         if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) + 1];
-            sendSelectRequest(newSelectedColumn);
+            await sendSelectRequest(newSelectedColumn);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true)
         }
     }
 
-    const selectPreviousCell = (delegateFocus:boolean) => {
+    const selectPreviousCell = async (delegateFocus:boolean) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) - 1;
         if (newSelectedColumnIndex >= 0 && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
-            sendSelectRequest(newSelectedColumn);
+            await sendSelectRequest(newSelectedColumn);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false)
         }
     }
 
-    const selectNextRow = (delegateFocus:boolean) => {
+    const selectNextRow = async (delegateFocus:boolean) => {
         const nextSelectedRowIndex = selectedRow.index + 1;
         if (nextSelectedRowIndex < providerData.length) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
-            sendSelectRequest(undefined, filter);
+            await sendSelectRequest(undefined, filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true);
         }
     }
 
-    const selectPreviousRow = (delegateFocus:boolean) => {
+    const selectPreviousRow = async (delegateFocus:boolean) => {
         const prevSelectedRowIndex = selectedRow.index - 1;
         if (prevSelectedRowIndex >= 0) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
             };
-            sendSelectRequest(undefined, filter);
+            await sendSelectRequest(undefined, filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false);
         }
     }
 
-    const selectNextCellAndRow = (delegateFocus:boolean) => {
+    const selectNextCellAndRow =  async (delegateFocus:boolean) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) + 1;
         const nextSelectedRowIndex = selectedRow.index + 1;
         if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) + 1];
-            sendSelectRequest(newSelectedColumn);
+            await sendSelectRequest(newSelectedColumn);
+            scrollToSelectedCell();
         }
         else if (nextSelectedRowIndex < providerData.length) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
-            sendSelectRequest(columnOrder[0], filter);
+            await sendSelectRequest(columnOrder[0], filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true)
         }
     }
 
-    const selectPreviousCellAndRow = (delegateFocus:boolean) => {
+    const selectPreviousCellAndRow = async (delegateFocus:boolean) => {
         const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedColumn) - 1;
         const prevSelectedRowIndex = selectedRow.index - 1;
         if (prevSelectedColumnIndex >= 0 && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedColumn) - 1];
-            sendSelectRequest(newSelectedColumn);
+            await sendSelectRequest(newSelectedColumn);
+            scrollToSelectedCell();
         }
         else if (prevSelectedRowIndex >= 0) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
             };
-            sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
+            await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false)
         }
     }
 
-    const selectNextPage = (delegateFocus: boolean) => {
+    const selectNextPage = async (delegateFocus: boolean) => {
         let nextSelectedRowIndex = selectedRow.index;
         if (nextSelectedRowIndex < providerData.length - 1) {
             nextSelectedRowIndex += getNumberOfRowsPerPage();
@@ -696,14 +762,15 @@ const UITable: FC<TableProps> = (baseProps) => {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
-            sendSelectRequest(undefined, filter)
+            await sendSelectRequest(undefined, filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true)
         }
     }
 
-    const selectPreviousPage = (delegateFocus: boolean) => {
+    const selectPreviousPage = async (delegateFocus: boolean) => {
         let nextSelectedRowIndex = selectedRow.index;
         if (nextSelectedRowIndex > 0) {
             nextSelectedRowIndex -= getNumberOfRowsPerPage();
@@ -714,7 +781,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
-            sendSelectRequest(undefined, filter)
+            await sendSelectRequest(undefined, filter);
+            scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false)
@@ -822,9 +890,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onColumnResizeEnd={handleColResizeEnd}
                 onColReorder={handleColReorder}
                 rowClassName={(data) => {
-                    const rowIndex = providerData.findIndex((test:any) => test === data)
-                    let test:any = {"": true}
-                    if (selectedRow.data === data) {
+                    const rowIndex = providerData.findIndex((x:any) => x === data)
+                    let test:any = {}
+                    test["__" + rowIndex] = true;
+                    if (selectedRow && selectedRow.data === data) {
                         test["p-highlight"] = true; 
                     }
                     return test
