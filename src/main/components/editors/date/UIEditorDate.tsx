@@ -203,7 +203,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         <CustomCalendar
             ref={calendar}
             inputRef={calendarInput}
-            className="rc-editor-text"
+            className="rc-editor-text rc-editor-date"
             monthNavigator={true}
             yearNavigator={true}
             yearRange="1900:2030"
