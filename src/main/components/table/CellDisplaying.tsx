@@ -2,7 +2,7 @@
 import React from "react"
 
 /** 3rd Party imports */
-import moment from "moment";
+import { format, formatISO, isValid } from 'date-fns'
 import { Checkbox } from "primereact/checkbox";
 
 /** Other imports */
@@ -12,7 +12,7 @@ import { getBooleanValue,
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
-import { getGrouping, getMinimumIntDigits, getScaleDigits, parseDateFormatTable } from "../util";
+import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
 /** 
@@ -63,12 +63,11 @@ export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumn
                             e.currentTarget.style.setProperty('--choiceMinH', `${e.currentTarget.naturalHeight}px`);
                         }} />
             }
-            /** If the cell is a DateCellEditor use moment to return the correct value with the correct format (parsing Java SimpleDateFormat tokens to moment tokens) */
+            /** If the cell is a DateCellEditor use date-fns format to return the correct value with the correct format*/
             else if (metaData.cellEditor.className === "DateCellEditor") {
                 const castedCellEditor = metaData.cellEditor as ICellEditorDate;
-                const formattedDate = moment(cellData).format(parseDateFormatTable(castedCellEditor.dateFormat, cellData));
-                if (formattedDate !== "Invalid date")
-                    return formattedDate;
+                if (isValid(cellData))
+                    return castedCellEditor.dateFormat ? format(cellData, castedCellEditor.dateFormat) : formatISO(cellData);
                 else
                     return null;
             }

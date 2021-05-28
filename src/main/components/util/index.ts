@@ -16,7 +16,6 @@ export type { default as LoadCallBack } from './LoadCallBack';
 export type { default as MapLocation } from './MapLocation';
 export { getGrouping, getMinimumIntDigits, getPrimePrefix, getScaleDigits, getNumberLength, getDecimalLength } from './NumberProperties';
 export { onBlurCallback } from './OnBlurCallback';
-export { parseDateFormatCell, parseDateFormatTable, getMomentValue } from './ParseDateFormats';
 export { parsePrefSize, parseMaxSize, parseMinSize, parseMapLocation } from './ParseSize';
 export { sendMapFetchRequests } from './SendMapFetchRequests';
 export { sendOnLoadCallback } from './SendOnLoadCallback';

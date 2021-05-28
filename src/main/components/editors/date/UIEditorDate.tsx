@@ -3,7 +3,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
-import moment from "moment";
+import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
 import { useProperties, useRowSelect } from "../../zhooks";
@@ -13,9 +13,6 @@ import { ICellEditor, IEditor } from "..";
 import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, 
-         getMomentValue, 
-         parseDateFormatCell, 
-         parseDateFormatTable, 
          sendSetValues, 
          onBlurCallback, 
          sendOnLoadCallback, 
@@ -38,6 +35,39 @@ export interface ICellEditorDate extends ICellEditor{
 /** Interface for DateCellEditor */
 export interface IEditorDate extends IEditor{
     cellEditor: ICellEditorDate
+}
+
+const dateTimeFormats = [
+    "dd.MM.yyyy HH:mm", 
+    "dd-MM-yyyy HH:mm", 
+    "dd/MM/yyyy HH:mm", 
+    "dd.MMMMM.yy HH:mm", 
+    "dd-MMMMM-yyyy HH:mm", 
+    "dd/MMMM/yyyyy HH:mm", 
+]
+
+const dateFormats = [
+    "dd.MM.yyyy", 
+    "dd-MM-yyyy", 
+    "dd/MM/yyyy", 
+    "dd.MMMMM.yy", 
+    "dd-MMMMM-yyyy", 
+    "dd/MMMM/yyyyy"
+]
+
+const parseMultiple = (
+    dateString: string,
+    formatString: string[],
+    referenceDate: Date,
+    options?: Parameters<typeof parse>[3]
+) => {
+    let result;
+    for (let i = 0; i < formatString.length; i++) {
+        if(!formatString[i]) continue;
+        result = parse(dateString, formatString[i], referenceDate, options);
+        if (isValid(result)) { break; }
+    }
+    return result;
 }
 
 /**
@@ -65,7 +95,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
     /** Current state of dateFormat for PrimeReact Calendar */
-    const [dateFormat, setDateFormat] = useState(selectedRow ? parseDateFormatTable(props.cellEditor.dateFormat, selectedRow) : "")
+    const dateFormat = props.cellEditor.dateFormat;
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
     /** Wether the DateCellEditor is a time-editor */
@@ -119,40 +149,25 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[selectedRow])
 
     /**
-     * When a date is entered in the inputfield in some possible formats, use moment to get its date object, then call onBlurCallback
+     * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call onBlurCallback
      * to send the date to the server and remove PrimeReact time if necassary
      */
     const handleDateInput = () => {
         let inputDate:Date = new Date()
         if (showTime) {
             //@ts-ignore
-            inputDate = moment(calendarInput.current.value, [
-                parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), 
-                "DD.MM.YYYY HH:mm", 
-                "DD-MM-YYYY HH:mm", 
-                "DD/MM/YYYY HH:mm", 
-                "DD.MMMMM.YY HH:mm", 
-                "DD-MMMMM-YYYY HH:mm", 
-                "DD/MMMM/YYYYY HH:mm", 
-                "DD.MM.YYYY", 
-                "DD-MM-YYYY", 
-                "DD/MM/YYYY", 
-                "DD.MMMMM.YY", 
-                "DD-MMMMM-YYYY", 
-                "DD/MMMM/YYYYY"
-            ]).toDate();
+            inputDate = parseMultiple(calendarInput.current.value, [
+                props.cellEditor.dateFormat || '', 
+                ...dateTimeFormats,
+                ...dateFormats
+            ], new Date());
         }
         else {
             //@ts-ignore
-            inputDate = moment(calendarInput.current.value, [
-                parseDateFormatTable(props.cellEditor.dateFormat, new Date(selectedRow).getTime()), 
-                "DD.MM.YYYY", 
-                "DD-MM-YYYY", 
-                "DD/MM/YYYY", 
-                "DD.MMMMM.YY", 
-                "DD-MMMMM-YYYY", 
-                "DD/MMMM/YYYYY"
-            ]).toDate();
+            inputDate = parseMultiple(calendarInput.current.value, [
+                props.cellEditor.dateFormat || '', 
+                ...dateFormats
+            ], new Date());
         }
         
         onBlurCallback(
@@ -183,19 +198,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             }
         }
     });
-
-    /** 
-     * When selectedRow is changed, get the new dateformat and set the state of dateformat
-     * dateformat is changed because PrimeReact doesn't support every token, so the values 
-     * which are not supported need to be passed between singlequotes in dateformat
-     */
-    useEffect(() => {
-        if (props.cellEditor_editable_) {
-            setTimeout(() => setDateFormat(selectedRow ? parseDateFormatTable(props.cellEditor.dateFormat, selectedRow) : ""), 75)
-        } else {
-            setDateFormat("")
-        }
-    }, [props.cellEditor_editable_, props.cellEditor.dateFormat, selectedRow]);
 
     return(
         <CustomCalendar
@@ -228,29 +230,24 @@ class CustomCalendar extends Calendar {
         let formattedValue = null;
         if (date) {
             if (this.props.timeOnly) {
-                formattedValue = moment(date).format(this.props.dateFormat);
+                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat) : formatISO(date);
             } else {
-                formattedValue = moment(date).format(this.props.dateFormat);
+                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat) : formatISO(date);
             }
         }
 
         return formattedValue;
     }
     parseDateTime(text: string) {
-        let date;
-        let mom = moment(text, this.props.dateFormat);
+        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date()) || new Date();
 
         if (this.props.timeOnly) {
             date = new Date();
-            date.setHours(mom.hours());
-            date.setMinutes(mom.minutes());
-            date.setSeconds(mom.seconds());
-        } else {
-            if (this.props.showTime) {
-                date = mom.toDate()
-            } else {
-                date = mom.startOf('day').toDate();
-            }
+            date.setHours(date.getHours());
+            date.setMinutes(date.getMinutes());
+            date.setSeconds(date.getSeconds());
+        } else if (!this.props.showTime) {
+            date = startOfDay(date);
         }
 
         return date;
