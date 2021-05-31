@@ -9,6 +9,7 @@ export interface ICellEditor{
     verticalAlignment?: 0 | 1 | 2| 3,
     directCellEditor?: boolean,
     preferredEditorMode?: number
+    autoOpenPopup?: boolean
 }
 
 /** Base Interface for CellEditors */

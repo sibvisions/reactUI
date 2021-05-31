@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -79,9 +79,9 @@ const parseMultiple = (
  */
 const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for the calendar element */
-    const calendar = useRef(null);
+    const calendar = useRef<CustomCalendar>(null);
     /** Reference for calendar input element */
-    const calendarInput = useRef(null);
+    const calendarInput = useRef<HTMLInputElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -164,14 +164,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 props.cellEditor.dateFormat || '', 
                 ...dateTimeFormats,
                 ...dateFormats
-            ], new Date());
+            ], new Date(), { locale: getDateLocale() });
         }
         else {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
                 props.cellEditor.dateFormat || '', 
                 ...dateFormats
-            ], new Date());
+            ], new Date(), { locale: getDateLocale() });
         }
         
         onBlurCallback(
@@ -188,20 +188,19 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         );
     }
 
-    /**
-     * When enter is pressed "submit" the date
-     */
-    useEffect(() => {
-        if (calendar.current) {
-            //@ts-ignore
-            calendarInput.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
-                event.stopPropagation();
-                if (event.key === "Enter") {
-                    handleDateInput()
-                }
-            }
+    useEventHandler(calendarInput.current || undefined, "keydown", (event) => {
+        event.stopPropagation();
+        if ((event as KeyboardEvent).key === "Enter") {
+            (calendar.current as any).hideOverlay();
+            handleDateInput()
         }
-    });
+    })
+
+    useEffect(() => {
+        if(calendar.current && props.cellEditor.autoOpenPopup) {
+            setTimeout(() => (calendar.current as any).showOverlay(), 33);
+        }
+    }, [calendar.current])
 
     return(
         <CustomCalendar
@@ -243,7 +242,7 @@ class CustomCalendar extends Calendar {
         return formattedValue;
     }
     parseDateTime(text: string) {
-        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date()) || new Date();
+        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date(), { locale: getDateLocale() }) || new Date();
 
         if (this.props.timeOnly) {
             date = new Date();
