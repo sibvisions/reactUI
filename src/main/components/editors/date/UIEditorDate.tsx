@@ -18,7 +18,9 @@ import { getEditorCompId,
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
-         parseMaxSize } from "../../util";
+         parseMaxSize, 
+         getDateLocale,
+         setDateLocale} from "../../util";
 import { getTextAlignment } from "../../compprops";
 
 /** Interface for cellEditor property of DateCellEditor */
@@ -104,6 +106,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const showSeconds = props.cellEditor.isSecondEditor;
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
+
+    setDateLocale(context.contentStore.locale);
 
     /**
      * When a date is selected in the Datepicker call the onBlurCallBack function to send the value to the server
@@ -230,9 +234,9 @@ class CustomCalendar extends Calendar {
         let formattedValue = null;
         if (date) {
             if (this.props.timeOnly) {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat) : formatISO(date);
+                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
             } else {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat) : formatISO(date);
+                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
             }
         }
 

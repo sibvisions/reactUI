@@ -12,7 +12,7 @@ import { getBooleanValue,
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
-import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
+import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
 /** 
@@ -67,7 +67,7 @@ export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumn
             else if (metaData.cellEditor.className === "DateCellEditor") {
                 const castedCellEditor = metaData.cellEditor as ICellEditorDate;
                 if (isValid(cellData))
-                    return castedCellEditor.dateFormat ? format(cellData, castedCellEditor.dateFormat) : formatISO(cellData);
+                    return castedCellEditor.dateFormat ? format(cellData, castedCellEditor.dateFormat, { locale: getDateLocale(locale) }) : formatISO(cellData);
                 else
                     return null;
             }
