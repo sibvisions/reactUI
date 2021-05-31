@@ -255,21 +255,27 @@ class Server {
      * @param selectedRowIndex - the index of the selectedRow
      * @param dataProvider - the dataprovider
      */
-    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath){
+    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string){
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath);
+            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
             this.subManager.emitRowSelect(compId, dataProvider);
         } else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
                 const selectedRow = this.contentStore.getDataRow(compId, dataProvider, treePath.getLast());
-                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath())
+                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
             }
             else {
                 this.contentStore.clearSelectedRow(compId, dataProvider);
             }
+            this.subManager.emitRowSelect(compId, dataProvider);
+        }
+        else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
+            const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).dataRow;
+            const idx = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).selectedIndex;
+            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
             this.subManager.emitRowSelect(compId, dataProvider);
         }
     }
@@ -311,11 +317,8 @@ class Server {
         
         this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
-        if (fetchData.selectedColumn) {
-            this.contentStore.setSelectedColumn(compId, fetchData.dataProvider, fetchData.selectedColumn);
-        }
-
-        this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined);
+        const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(fetchData.dataProvider)?.selectedColumn
+        this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
     }
 
     /**
@@ -340,10 +343,8 @@ class Server {
             await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
         }
         else {
-            if (changedProvider.selectedColumn) {
-                this.contentStore.setSelectedColumn(compId, changedProvider.dataProvider, changedProvider.selectedColumn);
-            }
-            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined);
+            const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
+            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
     }
 

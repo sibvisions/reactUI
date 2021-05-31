@@ -95,14 +95,6 @@ export class SubscriptionManager {
      */
     sortDefinitionSubscriber = new Map<string, Map<string, Array<Function>>>();
 
-    /**
-     * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useCellSelect hook, subscribe to the changes of a screens selected cell, the key is the screens component id and the
-     * value is another Map which key is the dataprovider and the value is an array of functions to update the
-     * subscribers selected cell state
-     */
-    selectedColumnSubscriber = new Map<string, Map<string, Array<Function>>>();
-
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -295,16 +287,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes components to selected columns, to change their selected column state
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the state
-     */
-    subscribeToSelectedColumn(compId:string, dataProvider:string, fn:Function) {
-        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.selectedColumnSubscriber);
-    }
-
-    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -442,16 +424,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes a component from selected columns
-     * @param compId - the component id of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update selected columns
-     */
-    unsubscribeFromSelectedColumns(compId:string, dataProvider:string, fn:Function) {
-        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.selectedColumnSubscriber);
-    }
-
-    /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
      */
@@ -499,10 +471,6 @@ export class SubscriptionManager {
      */
     notifySortDefinitionChange(compId:string, dataProvider:string) {
         this.sortDefinitionSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
-    }
-
-    notifySelectedColumnChange(compId:string, dataProvider:string) {
-        this.jobQueue.set("columnSelect_" + dataProvider, () => this.selectedColumnSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, [])));
     }
 
     /**

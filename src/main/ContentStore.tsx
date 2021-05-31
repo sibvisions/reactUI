@@ -633,11 +633,6 @@ export default class ContentStore{
         this.subManager.notifySortDefinitionChange(compId, dataProvider);
     }
 
-    setSelectedColumn(compId:string, dataProvider:string, selectedColumn:string) {
-        this.fillColumnDataProviderMap(compId, dataProvider, this.dataProviderSelectedColumns, selectedColumn);
-        this.subManager.notifySelectedColumnChange(compId, dataProvider);
-    }
-
     //Custom Screens
 
     /**

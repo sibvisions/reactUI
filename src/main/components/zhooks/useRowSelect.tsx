@@ -43,10 +43,10 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         const onRowSelection = (newRow: any) => {
             if (newRow) {
                 if(column && newRow.dataRow) {
-                    setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.selectedIndex});
+                    setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.selectedIndex, selectedColumn: newRow.selectedColumn});
                 }
                 else {
-                    setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.selectedIndex});
+                    setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.selectedIndex, selectedColumn: newRow.selectedColumn});
                 }
             }
             else {
