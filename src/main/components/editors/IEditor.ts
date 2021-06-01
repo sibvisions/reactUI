@@ -29,5 +29,5 @@ export interface IEditor extends BaseComponent{
     autoFocus?: boolean
     nullable?: boolean
     readonly?: boolean
-
+    stopCellEditing?: Function
 }

@@ -1,12 +1,12 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -15,7 +15,7 @@ import { appContext } from "../../../AppProvider";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback} from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, getMetaData} from "../../util";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -178,22 +178,44 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         setTimeout(() => {
             handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
         },150);
-    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, compId])
+    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, compId]);
+
+    /**
+     * When the input changes, send a filter request to the server
+     * @param event - Event that gets fired on inputchange
+     */
+    const sendFilter = useCallback(async (value:any) => {
+        context.contentStore.clearDataFromProvider(compId, props.cellEditor.linkReference.referencedDataBook||"")
+        const filterReq = createFilterRequest()
+        filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
+        filterReq.editorComponentId = props.name;
+        filterReq.value = value;
+        if (baseProps.id === "") {
+            filterReq.columnNames = [baseProps.columnName]
+        }
+        await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
+    }, [context.contentStore, context.server, props.cellEditor, props.name])
+
+    useEffect(() => {
+        if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.id === "")) {
+            sendFilter("")
+            setTimeout(() => (linkedRef.current as any).showOverlay(), 33);
+        }
+    }, [linkedRef.current])
 
     /**
      * When enter is pressed "submit" the value
      */
-    useEffect(() => {
-        if (linkedRef.current) {
-            //@ts-ignore
-            linkedInput.current.onkeydown = (event:React.KeyboardEvent<HTMLInputElement>) => {
-                event.stopPropagation();
-                if (event.key === "Enter") {
-                    handleInput();
-                }
+    useEventHandler(linkedInput.current || undefined, "keydown", (event) => {
+        event.stopPropagation();
+        if((event as KeyboardEvent).key === "Enter") {
+            (linkedRef.current as any).hideOverlay();
+            handleInput();
+            if (props.stopCellEditing) {
+                props.stopCellEditing();
             }
         }
-    });
+    })
 
     /** Returns the cached data based on first- and lastRow */
     const suggestionData = useMemo(() => {
@@ -252,6 +274,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      * @returns the suggestions to display at the dropdownlist
      */
     const buildSuggestions = (values:any) => {
+        console.log('test', suggestionData, id, providedData)
         let suggestions:any = []
         if (values.length > 0) {
             values.forEach((value:any) => {
@@ -266,22 +289,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         return suggestions
     }
 
-    /**
-     * When the input changes, send a filter request to the server
-     * @param event - Event that gets fired on inputchange
-     */
-    const onInputChange = (event:any) => {
-        context.contentStore.clearDataFromProvider(compId, props.cellEditor.linkReference.referencedDataBook||"")
-        const filterReq = createFilterRequest()
-        filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
-        filterReq.editorComponentId = props.name;
-        filterReq.value = event.query;
-        if (baseProps.id === "") {
-            filterReq.columnNames = [baseProps.columnName]
-        }
-        context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
-    }
-
     return (
         <AutoComplete
             ref={linkedRef}
@@ -294,7 +301,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             disabled={!props.cellEditor_editable_}
             dropdown
-            completeMethod={onInputChange}
+            completeMethod={(event) => sendFilter(event.query)}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
             onChange={event => {

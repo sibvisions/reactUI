@@ -21,7 +21,7 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
  * @param props - properties of the cell
  * @returns in-cell editor for the column
  */
-export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any) {
+export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any, stopCellEditing:Function) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
         editor = createEditor({
@@ -32,7 +32,8 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             id: "",
             cellEditor_editable_: true,
             editorStyle: {width: "100%", height: "100%"},
-            autoFocus: true
+            autoFocus: true,
+            stopCellEditing: stopCellEditing
         }) || editor;
     }
     return editor

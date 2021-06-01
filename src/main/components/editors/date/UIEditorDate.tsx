@@ -197,7 +197,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     })
 
     useEffect(() => {
-        if(calendar.current && props.cellEditor.autoOpenPopup) {
+        if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.id === "")) {
             setTimeout(() => (calendar.current as any).showOverlay(), 33);
         }
     }, [calendar.current])

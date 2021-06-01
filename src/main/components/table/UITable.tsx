@@ -4,7 +4,7 @@ import React, { createContext, FC, useCallback, useContext, useEffect, useLayout
 /** 3rd Party imports */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import _ from "underscore";
+import _, { wrap } from "underscore";
 
 /** Hook imports */
 import { useProperties, 
@@ -55,7 +55,8 @@ type CellEditor = {
     colName: string,
     metaData: MetaDataResponse | undefined,
     resource: string,
-    cellId: ISelectedCell
+    cellId: ISelectedCell,
+    tableContainer?: any
 }
 
 interface ISelectedCell {
@@ -99,6 +100,19 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [selectedRow, edit])
 
+    useEffect(() => {
+        if (edit && cellContext.selectedCellId !== props.cellId.selectedCellId) {
+            setEdit(false)
+        }
+    }, [cellContext.selectedCellId]);
+
+    const stopCellEditing = () => {
+        console.log(props.tableContainer)
+        setEdit(false)
+        props.tableContainer.focus();
+        console.log(document.activeElement)
+    };
+
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
 
@@ -117,7 +131,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         ((edit && !waiting) ? 
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props)}
+                {displayEditor(columnMetaData, props, stopCellEditing)}
             </div>
         :
             <div
@@ -140,7 +154,7 @@ const CellEditor: FC<CellEditor> = (props) => {
             </div>
             :
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props)}
+                {displayEditor(columnMetaData, props, stopCellEditing)}
             </div>)
 }
 
@@ -510,6 +524,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     metaData={metaData}
                     resource={context.server.RESOURCE_URL}
                     cellId={{selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}}
+                    //@ts-ignore
+                    tableContainer={wrapRef.current ? wrapRef.current : undefined}
                 />}
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
@@ -670,7 +686,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1];
             await sendSelectRequest(newSelectedColumn);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true)
@@ -682,7 +697,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (newSelectedColumnIndex >= 0 && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1];
             await sendSelectRequest(newSelectedColumn);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false)
@@ -697,7 +711,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
             await sendSelectRequest(undefined, filter);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true);
@@ -712,7 +725,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
             };
             await sendSelectRequest(undefined, filter);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false);
@@ -725,7 +737,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1];
             await sendSelectRequest(newSelectedColumn);
-            //scrollToSelectedCell();
         }
         else if (nextSelectedRowIndex < providerData.length) {
             let filter:SelectFilter = {
@@ -733,7 +744,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
             await sendSelectRequest(columnOrder[0], filter);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(true)
@@ -746,7 +756,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (prevSelectedColumnIndex >= 0 && selectedRow) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1];
             await sendSelectRequest(newSelectedColumn);
-            //scrollToSelectedCell();
         }
         else if (prevSelectedRowIndex >= 0) {
             let filter:SelectFilter = {
@@ -754,7 +763,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
             };
             await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
-            //scrollToSelectedCell();
         }
         else if (delegateFocus) {
             focusComponent(false)
@@ -773,7 +781,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
             await sendSelectRequest(undefined, filter);
-            //scrollToSelectedCell(true);
         }
         else if (delegateFocus) {
             focusComponent(true)
@@ -792,7 +799,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
             };
             await sendSelectRequest(undefined, filter);
-            //scrollToSelectedCell(false);
         }
         else if (delegateFocus) {
             focusComponent(false)
