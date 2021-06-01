@@ -31,6 +31,7 @@ export interface ICellEditorLinked extends ICellEditor{
 
     }
     clearColumns:Array<string>
+    displayReferencedColumnName?:string
 }
 
 /** Interface for LinkedCellEditor */
@@ -201,7 +202,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             sendFilter("")
             setTimeout(() => (linkedRef.current as any).showOverlay(), 33);
         }
-    }, [linkedRef.current])
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.id, sendFilter])
 
     /**
      * When enter is pressed "submit" the value
@@ -212,7 +213,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             (linkedRef.current as any).hideOverlay();
             handleInput();
             if (props.stopCellEditing) {
-                props.stopCellEditing();
+                props.stopCellEditing(event);
             }
         }
     })
@@ -228,19 +229,38 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      */
     const handleInput = () => {
         const newVal:any = {}
+
         /** Returns the values, of the databook, that match the input of the user */
         const foundData = providedData.filter((data:any) => {
             if (props.cellEditor) {
-                const refColNames = props.cellEditor.linkReference.referencedColumnNames
-                const colNames = props.cellEditor.linkReference.columnNames
-                const index = colNames.findIndex(col => col === props.columnName)
-                return data[refColNames[index]].includes(text)
+                if (props.cellEditor.linkReference.columnNames.length === 0 && props.cellEditor.linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                    return data[props.cellEditor.displayReferencedColumnName].includes(text);
+                }
+                else {
+                    const refColNames = props.cellEditor.linkReference.referencedColumnNames;
+                    const colNames = props.cellEditor.linkReference.columnNames;
+                    const index = colNames.findIndex(col => col === props.columnName);
+                    return data[refColNames[index]].includes(text);
+                }
+
             }
             return false
         });
+
+        const getSaveColumn = () => {
+            if (props.cellEditor.linkReference.columnNames.length === 0 && props.cellEditor.linkReference.referencedColumnNames.length === 1) {
+                return props.columnName;
+            }
+            else {
+                return props.cellEditor.linkReference.columnNames;
+            }
+        }
+
+        const columnNames = getSaveColumn()
+
         /** If the text is empty, send null to the server */
         if (!text) {
-            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, null, context.server));
+            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, null, context.server));
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -252,13 +272,17 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                      *          foundData = ID, ACADEMIC_TITLE
                      * foundData columnNames have to be adjusted to linkReference
                      */
-                    for (let i = 0; i < Object.values(foundData[0]).length; i++)
-                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i];                    
-                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, newVal, context.server));
+                    for (let i = 0; i < Object.values(foundData[0]).length; i++) {
+                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i]; 
+                    }
+                                           
+                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
-                else
-                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.cellEditor.linkReference.columnNames, text, context.server));
+                else {
+                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, text, context.server));
+                }
+                    
             }
         
         }
@@ -274,14 +298,19 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      * @returns the suggestions to display at the dropdownlist
      */
     const buildSuggestions = (values:any) => {
-        console.log('test', suggestionData, id, providedData)
         let suggestions:any = []
         if (values.length > 0) {
             values.forEach((value:any) => {
                 let text = ""
                 if (props.cellEditor) {
-                    const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
-                    text = value[props.cellEditor.linkReference.referencedColumnNames[colNameIndex]];
+                    if (props.cellEditor.displayReferencedColumnName) {
+                        text = value[props.cellEditor.displayReferencedColumnName]
+                    }
+                    else {
+                        const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
+                        text = value[props.cellEditor.linkReference.referencedColumnNames[colNameIndex]];
+                    }
+
                 } 
                 suggestions.push(text)
             });

@@ -56,11 +56,16 @@ type CellEditor = {
     metaData: MetaDataResponse | undefined,
     resource: string,
     cellId: ISelectedCell,
-    tableContainer?: any
+    tableContainer?: any,
+    selectNext:Function,
+    selectPrevious:Function,
+    enterNavigationMode:number,
+    tabNavigationMode:number
 }
 
 interface ISelectedCell {
-    selectedCellId?:string
+    selectedCellId?:string,
+    row?:any
 }
 
 export const SelectedCellContext = createContext<ISelectedCell>({})
@@ -106,11 +111,25 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [cellContext.selectedCellId]);
 
-    const stopCellEditing = () => {
-        console.log(props.tableContainer)
-        setEdit(false)
-        props.tableContainer.focus();
-        console.log(document.activeElement)
+    const stopCellEditing = (event:KeyboardEvent) => {
+        setEdit(false);
+        if (event.key === "Enter") {
+            if (event.shiftKey) {
+                props.selectPrevious(props.enterNavigationMode, cellContext.row);
+            }
+            else {
+                props.selectNext(props.enterNavigationMode, cellContext.row);
+            }
+        }
+        else if (event.key === "Tab") {
+            event.preventDefault();
+            if (event.shiftKey) {
+                props.selectPrevious(props.tabNavigationMode, cellContext.row);
+            }
+            else {
+                props.selectNext(props.tabNavigationMode, cellContext.row);
+            }
+        }
     };
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
@@ -212,7 +231,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
 
-    const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"})
+    const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet", row: selectedRow})
 
     const sendSelectRequest = async (selectedColumn?:string, filter?:SelectFilter) => {
         const selectReq = createSelectRowRequest();
@@ -302,7 +321,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     rowIndex: selectedRow.index,
                     value: selectedRow.data[selectedRow.selectedColumn]
                 }
-                setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex.toString() + "-" + newCell.cellIndex.toString()});
+                setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex.toString() + "-" + newCell.cellIndex.toString(), row: selectedRow});
                 scrollToSelectedCell(newCell);
                 return newCell
             }
@@ -476,12 +495,23 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [sortDefinitions, tableSelect]);
 
     useEffect(() => {
-        const selectedElems = tableSelect(true, 'tbody > tr td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr td.p-highlight');
-        for (const elem of selectedElems) {
-            if (!elem.parentElement.classList.contains("p-highlight")) {
-                elem.classList.remove("p-highlight");
+        setTimeout(() => {
+            const selectedTds = tableSelect(true, 'tbody > tr:not(.p-highlight) td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr:not(.p-highlight) td.p-highlight');
+            if (selectedTds) {
+                for (const elem of selectedTds) {
+                    elem.classList.remove("p-highlight");
+                }
             }
-        }
+
+            const highlightedRow = tableSelect(false, 'tbody > tr.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight');
+            if (selectedRow) {
+                const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
+                if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
+                    highlightedRow.children[colIdx].classList.add("p-highlight");
+                }
+            }
+        },0)
+
     }, [virtualRows])
 
     /** Building the columns */
@@ -526,6 +556,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellId={{selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}}
                     //@ts-ignore
                     tableContainer={wrapRef.current ? wrapRef.current : undefined}
+                    selectNext={selectNext}
+                    selectPrevious={selectPrevious}
+                    enterNavigationMode={enterNavigationMode}
+                    tabNavigationMode={tabNavigationMode}
                 />}
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
@@ -646,27 +680,27 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectNext = (navigationMode:number) => {
+    const selectNext = (navigationMode:number, row?:any) => {
         if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-            selectNextCell(true);
+            selectNextCell(true, row);
         }
         else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-            selectNextRow(true);
+            selectNextRow(true, row);
         }
         else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-            selectNextCellAndRow(true);
+            selectNextCellAndRow(true, row);
         }
     }
 
-    const selectPrevious = (navigationMode:number) => {
+    const selectPrevious = (navigationMode:number, row?:any) => {
         if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-            selectPreviousCell(true);
+            selectPreviousCell(true, row);
         }
         else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-            selectPreviousRow(true);
+            selectPreviousRow(true, row);
         }
         else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-            selectPreviousCellAndRow(true)
+            selectPreviousCellAndRow(true, row)
         }
     }
 
@@ -681,10 +715,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (focusable[next ? 2 : 0]) (focusable[next ? 2 : 0] as HTMLElement).focus();
     }
 
-    const selectNextCell = async (delegateFocus:boolean) => {
-        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
-        if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
-            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1];
+    const selectNextCell = async (delegateFocus:boolean, row?:any) => {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1;
+        if (newSelectedColumnIndex < columnOrder.length && (row ? row : selectedRow)) {
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1];
             await sendSelectRequest(newSelectedColumn);
         }
         else if (delegateFocus) {
@@ -692,10 +726,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectPreviousCell = async (delegateFocus:boolean) => {
-        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
-        if (newSelectedColumnIndex >= 0 && selectedRow) {
-            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1];
+    const selectPreviousCell = async (delegateFocus:boolean, row?:any) => {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) - 1;
+        if (newSelectedColumnIndex >= 0 && (row ? row : selectedRow)) {
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) - 1];
             await sendSelectRequest(newSelectedColumn);
         }
         else if (delegateFocus) {
@@ -703,8 +737,8 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectNextRow = async (delegateFocus:boolean) => {
-        const nextSelectedRowIndex = selectedRow.index + 1;
+    const selectNextRow = async (delegateFocus:boolean, row?:any) => {
+        const nextSelectedRowIndex = (row ? row : selectedRow).index + 1;
         if (nextSelectedRowIndex < providerData.length) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
@@ -717,8 +751,8 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectPreviousRow = async (delegateFocus:boolean) => {
-        const prevSelectedRowIndex = selectedRow.index - 1;
+    const selectPreviousRow = async (delegateFocus:boolean, row?:any) => {
+        const prevSelectedRowIndex = (row ? row : selectedRow).index - 1;
         if (prevSelectedRowIndex >= 0) {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
@@ -731,11 +765,11 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectNextCellAndRow =  async (delegateFocus:boolean) => {
-        const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
-        const nextSelectedRowIndex = selectedRow.index + 1;
-        if (newSelectedColumnIndex < columnOrder.length && selectedRow) {
-            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1];
+    const selectNextCellAndRow =  async (delegateFocus:boolean, row?:any) => {
+        const newSelectedColumnIndex = columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1;
+        const nextSelectedRowIndex = (row ? row : selectedRow).index + 1;
+        if (newSelectedColumnIndex < columnOrder.length && (row ? row : selectedRow)) {
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1];
             await sendSelectRequest(newSelectedColumn);
         }
         else if (nextSelectedRowIndex < providerData.length) {
@@ -750,11 +784,11 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectPreviousCellAndRow = async (delegateFocus:boolean) => {
-        const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
-        const prevSelectedRowIndex = selectedRow.index - 1;
-        if (prevSelectedColumnIndex >= 0 && selectedRow) {
-            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1];
+    const selectPreviousCellAndRow = async (delegateFocus:boolean, row?:any) => {
+        const prevSelectedColumnIndex = columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) - 1;
+        const prevSelectedRowIndex = (row ? row : selectedRow).index - 1;
+        if (prevSelectedColumnIndex >= 0 && (row ? row : selectedRow)) {
+            const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) - 1];
             await sendSelectRequest(newSelectedColumn);
         }
         else if (prevSelectedRowIndex >= 0) {

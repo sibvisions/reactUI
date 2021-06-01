@@ -14,6 +14,7 @@ import { appContext } from "../../AppProvider";
 const useRowSelect = (compId:string, dataProvider: string, column?: string, showIndex?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /**
      * Returns either the value of the column of the currently selectedRow or the entire selectedRow
      * @returns either the value of the column of the currently selectedRow or the entire selectedRow
@@ -22,15 +23,16 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
         if (sr) {
             if (column && sr.dataRow) {
-                return !showIndex ? sr.dataRow[column] : {data: sr.dataRow[column], index: sr.selectedIndex};
+                return !showIndex ? sr.dataRow[column] : {data: sr.dataRow[column], index: sr.selectedIndex, selectedColumn: sr.selectedColumn};
             }
             else {
-                return !showIndex ? sr.dataRow : {data: sr.dataRow, index: sr.selectedIndex};
+                return !showIndex ? sr.dataRow : {data: sr.dataRow, index: sr.selectedIndex, selectedColumn: sr.selectedColumn};
             }
         }
 
 
     }, [context.contentStore, dataProvider, column, compId]);
+
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
 

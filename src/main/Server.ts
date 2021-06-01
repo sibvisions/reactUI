@@ -262,7 +262,8 @@ class Server {
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
             this.subManager.emitRowSelect(compId, dataProvider);
-        } else if(selectedRowIndex === -1) {
+        } 
+        else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
                 const selectedRow = this.contentStore.getDataRow(compId, dataProvider, treePath.getLast());
                 this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
@@ -317,7 +318,7 @@ class Server {
         
         this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
-        const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(fetchData.dataProvider)?.selectedColumn
+        const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(fetchData.dataProvider)?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
     }
 

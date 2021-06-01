@@ -88,12 +88,6 @@ export default class ContentStore{
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value is the selectedColumn of a dataprovider
-     */
-    dataProviderSelectedColumns = new Map<string, Map<string, string>>();
-
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
 

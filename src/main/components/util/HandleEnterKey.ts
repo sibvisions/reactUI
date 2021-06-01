@@ -3,8 +3,11 @@
  * @param event - keyboardevent
  * @param sendSetValues - function to send values to the server
  */
-export function handleEnterKey(event:any, sendSetValues:Function) {
+export function handleEnterKey(event:any, sendSetValues:Function, stopEditing?:Function) {
     if (event.key === "Enter") {
         sendSetValues();
+        if (stopEditing) {
+            stopEditing(event)
+        }
     }
 }
