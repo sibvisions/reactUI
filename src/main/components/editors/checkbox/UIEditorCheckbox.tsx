@@ -77,8 +77,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
         }
     }
 
-
-
     /**
      * Returns the correct value which needs to be sent to the server based on the CheckBoxCellEditor type.
      * @param value - current CheckBox value 

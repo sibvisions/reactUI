@@ -45,6 +45,12 @@ enum Navigation {
     NAVIGATION_ROW_AND_FOCUS = 3
 }
 
+enum CellVisibility {
+    FULL_VISIBLE = 2,
+    PART_VISIBLE = 1,
+    NOT_VISIBLE = 0
+}
+
 /** Type for CellEditor */
 type CellEditor = {
     pk: any
@@ -112,6 +118,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     }, [cellContext.selectedCellId]);
 
     const stopCellEditing = (event:KeyboardEvent) => {
+        console.log('stop')
         setEdit(false);
         if (event.key === "Enter") {
             if (event.shiftKey) {
@@ -130,6 +137,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 props.selectNext(props.tabNavigationMode, cellContext.row);
             }
         }
+        props.tableContainer.focus()
     };
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
@@ -229,6 +237,8 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const pageKeyPressed = useRef<boolean>(false);
 
+    const lastSelectedRowIndex = useRef<number>(selectedRow ? selectedRow.index : undefined)
+
     const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
 
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet", row: selectedRow})
@@ -272,16 +282,33 @@ const UITable: FC<TableProps> = (baseProps) => {
         
             const containerTop = container.scrollTop;
             const containerBottom = containerTop + container.clientHeight;
+
+            let visLeft:CellVisibility = CellVisibility.NOT_VISIBLE;
+            let visTop:CellVisibility = CellVisibility.NOT_VISIBLE;
+
+            if (eleLeft >= containerLeft && eleRight <= containerRight) {
+                visLeft = CellVisibility.FULL_VISIBLE;
+            }
+            if ((eleLeft < containerLeft && containerLeft < eleRight) || (eleLeft < containerRight && containerRight < eleRight)) {
+                visLeft = CellVisibility.PART_VISIBLE;
+            }
+
+            if (eleTop >= containerTop && eleBottom <= containerBottom) {
+                visTop = CellVisibility.FULL_VISIBLE;
+            }
+            if ((eleTop < containerTop && containerTop < eleBottom) ||(eleTop < containerBottom && containerBottom < eleBottom)) {
+                visTop = CellVisibility.PART_VISIBLE;
+            }
         
             // The element is fully visible in the container
-            return {visLeft: eleLeft >= containerLeft && eleRight <= containerRight, visTop: eleTop >= containerTop && eleBottom <= containerBottom}
+            return {visLeft: visLeft, visTop: visTop}
         }
         else {
-            return {visLeft: false, visTop: false}
+            return {visLeft: CellVisibility.NOT_VISIBLE, visTop: CellVisibility.NOT_VISIBLE}
         }
     };
 
-    const scrollToSelectedCell = (cell:any) => {
+    const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
             const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
             //@ts-ignore
@@ -290,21 +317,30 @@ const UITable: FC<TableProps> = (baseProps) => {
             const loadingTable = tableRef.current.container.querySelector('.p-datatable-loading-virtual-table')
             
             if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
+                const moveDirections = isVisible(selectedElem, container, cell);
                 if (pageKeyPressed.current !== false) {
                     pageKeyPressed.current = false;
                     container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 37)
                 }
+                else if (selectedElem !== null) {
+                    let sLeft:number = container.scrollLeft
+                    let sTop:number = container.scrollTop
+
+                    if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
+                        sLeft = selectedElem.offsetLeft;
+                    }
+
+                    if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
+                        sTop = cell.rowIndex * 37;
+                    }
+                    else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
+                        sTop = container.scrollTop + (isNext ? 37 : -37);
+                    }
+
+                    container.scrollTo(sLeft, sTop);
+                }
                 else {
-                    const moveDirections = isVisible(selectedElem, container, cell);
-                    if (!moveDirections.visLeft && moveDirections.visTop) {
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, container.scrollTop);
-                    }
-                    else if (moveDirections.visLeft && !moveDirections.visTop) {
-                        container.scrollTo(container.scrollLeft, container.scrollTop + 37);
-                    }
-                    else if (!moveDirections.visLeft && !moveDirections.visTop) {
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : (cell.cellIndex === columnOrder.length ? 0 : container.scrollWidth - container.clientWidth), container.scrollTop + 37);
-                    }
+                    container.scrollTo(container.scrollLeft, cell.rowIndex * 37);
                 }
             }
         }, 0)
@@ -322,7 +358,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     value: selectedRow.data[selectedRow.selectedColumn]
                 }
                 setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex.toString() + "-" + newCell.cellIndex.toString(), row: selectedRow});
-                scrollToSelectedCell(newCell);
+                scrollToSelectedCell(newCell, lastSelectedRowIndex.current < selectedRow.index);
+                lastSelectedRowIndex.current = selectedRow.index;
                 return newCell
             }
             else {
@@ -495,7 +532,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [sortDefinitions, tableSelect]);
 
     useEffect(() => {
-        setTimeout(() => {
             const selectedTds = tableSelect(true, 'tbody > tr:not(.p-highlight) td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr:not(.p-highlight) td.p-highlight');
             if (selectedTds) {
                 for (const elem of selectedTds) {
@@ -510,9 +546,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     highlightedRow.children[colIdx].classList.add("p-highlight");
                 }
             }
-        },0)
-
-    }, [virtualRows])
+    }, [virtualRows, selectedRow, columnOrder, tableSelect])
 
     /** Building the columns */
     const columns = useMemo(() => {
@@ -636,7 +670,8 @@ const UITable: FC<TableProps> = (baseProps) => {
        setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
 
-    const handleTableKeys = (e:KeyboardEvent) => {
+    const handleTableKeys = (e:React.KeyboardEvent<HTMLDivElement>) => {
+        console.log(e.key)
         switch(e.key) {
             case "Enter":
                 if (e.shiftKey) {
@@ -681,6 +716,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     const selectNext = (navigationMode:number, row?:any) => {
+        console.log('next')
         if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
             selectNextCell(true, row);
         }
@@ -768,6 +804,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const selectNextCellAndRow =  async (delegateFocus:boolean, row?:any) => {
         const newSelectedColumnIndex = columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1;
         const nextSelectedRowIndex = (row ? row : selectedRow).index + 1;
+        console.log(newSelectedColumnIndex, nextSelectedRowIndex)
         if (newSelectedColumnIndex < columnOrder.length && (row ? row : selectedRow)) {
             const newSelectedColumn = columnOrder[columnOrder.findIndex(column => column === (row ? row : selectedRow).selectedColumn) + 1];
             await sendSelectRequest(newSelectedColumn);
@@ -879,7 +916,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     //@ts-ignore
-    useEventHandler(wrapRef.current ? wrapRef.current : undefined, 'keydown', (e:any) => handleTableKeys(e))
+    //useEventHandler(wrapRef.current ? wrapRef.current : undefined, 'keydown', (e:any) => handleTableKeys(e))
 
     /** Sort handler */
     useMultipleEventHandler(
@@ -914,6 +951,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     outline: "none"
                 }}
                 tabIndex={-1}
+                onKeyDown={(e) => handleTableKeys(e)}
             >
                 <DataTable
                     id={id}

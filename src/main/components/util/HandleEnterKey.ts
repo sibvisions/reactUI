@@ -3,9 +3,9 @@
  * @param event - keyboardevent
  * @param sendSetValues - function to send values to the server
  */
-export function handleEnterKey(event:any, sendSetValues:Function, stopEditing?:Function) {
+export function handleEnterKey(event:any, elem:any, stopEditing?:Function) {
     if (event.key === "Enter") {
-        sendSetValues();
+        elem.blur();
         if (stopEditing) {
             stopEditing(event)
         }

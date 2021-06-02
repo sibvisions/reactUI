@@ -93,14 +93,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
                 onKeyDown={event => {
                     event.stopPropagation();
-                    handleEnterKey(event,
-                        () => onBlurCallback(
-                            baseProps,
-                            text,
-                            lastValue.current,
-                            () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)), 
-                        props.stopCellEditing
-                    );
+                    handleEnterKey(event, event.target, props.stopCellEditing);
                 }}
             />
         )
@@ -122,14 +115,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
                 onKeyDown={event => {
                     event.stopPropagation();
-                    handleEnterKey(event,
-                        () => onBlurCallback(
-                            baseProps,
-                            text,
-                            lastValue.current,
-                            () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)), 
-                        props.stopCellEditing
-                    );
+                    handleEnterKey(event, event.target, props.stopCellEditing);
                 }}
             />
         )
@@ -148,16 +134,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 value={text || ""}
                 onChange={event => setText(event.currentTarget.value)}
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
-                onKeyDown={event => {
+                onKeyDown={(event) => {
                     event.stopPropagation();
-                    handleEnterKey(event,
-                        () => onBlurCallback(
-                            baseProps,
-                            text,
-                            lastValue.current,
-                            () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)), 
-                        props.stopCellEditing
-                    );
+                    handleEnterKey(event, event.target, props.stopCellEditing);
                 }}
             />
         )

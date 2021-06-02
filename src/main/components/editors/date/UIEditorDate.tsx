@@ -20,7 +20,8 @@ import { getEditorCompId,
          parseMinSize, 
          parseMaxSize, 
          getDateLocale,
-         setDateLocale} from "../../util";
+         setDateLocale,
+         handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
 
 /** Interface for cellEditor property of DateCellEditor */
@@ -192,7 +193,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         event.stopPropagation();
         if ((event as KeyboardEvent).key === "Enter") {
             (calendar.current as any).hideOverlay();
-            handleDateInput()
+            handleEnterKey(event, event.target, props.stopCellEditing)
+            // console.log(event.target);
+            // (event.target as HTMLElement).blur()
         }
     })
 
