@@ -46,7 +46,7 @@ export interface IEditorLinked extends IEditor{
  */
 const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor element */
-    const linkedRef = useRef(null);
+    const linkedRef = useRef<any>(null);
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef(null);
     /** Use context to gain access for contentstore and server methods */
@@ -65,10 +65,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const lastValue = useRef<any>();
     /** Current state of text value of input element */
     const [text, setText] = useState(selectedRow)
-    /** For lazy loading, current state of the first value in lazy load "cache" */
-    const [firstRow, setFirstRow] = useState(0);
-    /** For lazy loading, current state of the last value in lazy loading "cache" */
-    const [lastRow, setLastRow] = useState(100);
+    /** For lazy loading, current state of the data window lazy load "cache" */
+    const [lazyWindow, setLazyWindow] = useState([0, 100]);
     /** Current state of the height of an item in the LinkedCellEditor list, used for calculating position in lazy loading*/
     const itemHeight = useRef<number>();
     /** Extracting onLoadCallback and id from baseProps */
@@ -104,82 +102,101 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      * SetTimeout is required because the autocomplete panel can't be found if there is no timeout 
      */
     useEffect(() => {
-        if (linkedRef.current) {
-            setTimeout(() => {
-                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
-                if (autoPanel) {
-                    //@ts-ignore
-                    if (autoPanel.children[0].children[0]) {
-                        //@ts-ignore
-                        autoPanel.children[0].style.setProperty('--itemsHeight', Math.ceil(providedData.length * parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height))+'px');
-                        if(!itemHeight.current) {
-                            //@ts-ignore
-                            itemHeight.current = parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height)
-                        }
-                    }
+        const elem = linkedRef.current?.overlayRef?.current as HTMLElement;
+        if (elem) {
+            if (elem.children[0].children[0]) {
+                if(!itemHeight.current) {
+                    itemHeight.current = parseFloat(window.getComputedStyle(elem.children[0].children[0]).height)
                 }
-            }, 150);
+                elem.style.setProperty('--itemsHeight', Math.ceil(providedData.length * itemHeight.current) + 'px');
+            }
         }
-    },[providedData, id]);
+    }, [providedData]);
 
     /**
      * Sets the top style property of each dropdownitem based on the firstrow in cache (lazy loading)
      */
     useEffect(() => {
-        if (linkedRef.current) {
-            setTimeout(() => {
-                let autoPanel = document.getElementsByClassName("p-autocomplete-panel")[0];
-                if (autoPanel) {
-                    let itemsList:Array<any> = [...document.getElementsByClassName("p-autocomplete-item")];
-                    itemsList.map(element => element.style.setProperty('--itemTop', (parseFloat(window.getComputedStyle(autoPanel.children[0].children[0]).height) * firstRow)+'px'));
-                }
-            }, 150)
+        const elem = linkedRef.current?.overlayRef?.current as HTMLElement;
+        if (elem) {
+            elem.style.setProperty('--itemTop', parseFloat(window.getComputedStyle(elem.children[0].children[0]).height) * lazyWindow[0] + 'px');
         }
-    }, [firstRow, lastRow])
+    }, [lazyWindow])
 
-    /**
-     * Scrollevent, which manages the cache of the dropdownlist
-     */
+
+    const handleScroll = useRef<Function>();
     useEffect(() => {
-        const sendFetchRequest = () => {
+        const sendFetchRequest = _.once(() => {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
             fetchReq.rowCount = 400;
             context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
-        }
-        const fetches = _.once(() => sendFetchRequest());
-        const handleScroll = (elem:HTMLElement) => {
-            if (elem) {
-                elem.onscroll = _.debounce(() => {
-                    let itemH = itemHeight.current ? itemHeight.current : 33
-                    /** The current first item visible in the dropdownlist */
-                    let currFirstItem = elem.scrollTop / itemH;
-                    /** The current last item visible in the dropdownlist */
-                    let currLastItem = (elem.scrollTop + elem.offsetHeight) / itemH;
-                    /** If the current first item is "less" than the cached firstRow, set the new row states to reload the data */
-                    if (currFirstItem < firstRow) {
-                        setFirstRow(Math.floor(currFirstItem / 50) * 50);
-                        setLastRow(Math.floor(currFirstItem / 50) * 50 + 100);
-                        elem.scrollTop = itemH * (currLastItem - 3);
-                    }
-                    /** If the current last item is "greater" than the cached lastRow, set the new row states to reload the data */
-                    if (currLastItem > lastRow) {
-                        setFirstRow(Math.floor(currLastItem / 100) * 100);
-                        setLastRow(Math.ceil(currLastItem / 100) * 100);
-                        elem.scrollTop = itemH * (currFirstItem + 3)
-                    }
-                    /** If the current providedData length is smaller than the current first item + 400, send a fetchRequest to the server to fetch new data */
-                    if (providedData.length < (currFirstItem+400) && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
-                        fetches();
-                    }
-                }, 150);
+        })
+        let ignoreNextScroll = false;
+        let internalLazyWindow = lazyWindow;
+        handleScroll.current = _.debounce((elem:HTMLElement) => {
+            if (ignoreNextScroll) {
+                ignoreNextScroll = false;
+                return;
+            }
+            
+            const scroll = elem.scrollTop;
+            let itemH = itemHeight.current ? itemHeight.current : 33
+            /** The current first item visible in the dropdownlist */
+            let currFirstItem = scroll / itemH;
+            /** The current last item visible in the dropdownlist */
+            let currLastItem = (scroll + elem.offsetHeight) / itemH;
+            
+            /** If the current first item is "less" than the cached firstRow, set the new row states to reload the data */
+            if (currFirstItem < lazyWindow[0]) {
+                internalLazyWindow = [
+                    Math.floor(currFirstItem / 50) * 50,
+                    Math.floor(currFirstItem / 50) * 50 + 100
+                ]
+                setLazyWindow(internalLazyWindow);
+                ignoreNextScroll = true;
+                elem.scrollTop = scroll;
+            }
+            /** If the current last item is "greater" than the cached lastRow, set the new row states to reload the data */
+            if (currLastItem > lazyWindow[1]) {
+                internalLazyWindow = [
+                    Math.floor(currLastItem / 50) * 50 - 50,
+                    Math.floor(currLastItem / 50) * 50 + 50
+                ]
+                setLazyWindow(internalLazyWindow);
+                ignoreNextScroll = true;
+                elem.scrollTop = scroll;
+            }
+            /** If the current providedData length is smaller than the current first item + 400, send a fetchRequest to the server to fetch new data */
+            if (
+                providedData.length < currFirstItem + 400 && 
+                !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")
+            ) {
+                sendFetchRequest()
+            }
+        }, 150);
+    }, [context.contentStore, lazyWindow, compId, context.server, providedData.length, props.cellEditor.linkReference.referencedDataBook])
+
+    /**
+     * Scrollevent, which manages the cache of the dropdownlist
+     */
+    const handleShow = useCallback(() => {
+        const elem = linkedRef.current?.overlayRef?.current as HTMLElement;
+        if (elem) {
+            handleScroll.current && handleScroll.current(elem);
+            elem.onscroll = () => {
+                handleScroll.current && handleScroll.current(elem)
+            };
+
+            if (elem.children[0].children[0]) {
+                if(!itemHeight.current) {
+                    itemHeight.current = parseFloat(window.getComputedStyle(elem.children[0].children[0]).height)
+                }
+                elem.style.setProperty('--itemsHeight', Math.ceil(providedData.length * itemHeight.current) + 'px');
             }
         }
-        setTimeout(() => {
-            handleScroll(document.getElementsByClassName("p-autocomplete-panel")[0] as HTMLElement)
-        },150);
-    }, [context.contentStore, context.server, props, providedData, firstRow, lastRow, compId]);
+    }, [providedData.length]);
 
     /**
      * When the input changes, send a filter request to the server
@@ -191,6 +208,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
         filterReq.value = value;
+
         if (baseProps.id === "") {
             filterReq.columnNames = [baseProps.columnName]
         }
@@ -220,8 +238,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     /** Returns the cached data based on first- and lastRow */
     const suggestionData = useMemo(() => {
-        return providedData ? providedData.slice(firstRow, lastRow) : []
-    }, [providedData, firstRow, lastRow])
+        return providedData ? providedData.slice(lazyWindow[0], lazyWindow[1]) : []
+    }, [providedData, lazyWindow])
 
     /**
      * Handles the input, when the text is entered manually or via the dropdown menu and sends the value to the server
@@ -333,14 +351,14 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             completeMethod={(event) => sendFilter(event.query)}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
+            onShow={handleShow}
             onChange={event => {
                 setText(event.target.value)
             }}
             onBlur={() => {
                 /** On blur, close the dropdownmenu and set the cache to start */
                 if (document.querySelector(".p-autocomplete-panel")) {
-                    setFirstRow(0);
-                    setLastRow(100)
+                    setLazyWindow([0, 100]);
                 }
                 handleInput();
             }}/>
