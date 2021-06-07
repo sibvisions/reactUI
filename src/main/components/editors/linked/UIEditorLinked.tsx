@@ -15,7 +15,7 @@ import { appContext } from "../../../AppProvider";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, getMetaData} from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, getMetaData, handleEnterKey} from "../../util";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -48,7 +48,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
     /** Reference for the LinkedCellEditor input element */
-    const linkedInput = useRef(null);
+    const linkedInput = useRef<any>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -209,18 +209,18 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.editorComponentId = props.name;
         filterReq.value = value;
 
-        if (baseProps.id === "") {
+        if (props.stopCellEditing) {
             filterReq.columnNames = [baseProps.columnName]
         }
         await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
     }, [context.contentStore, context.server, props.cellEditor, props.name])
 
     useEffect(() => {
-        if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.id === "")) {
+        if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.stopCellEditing)) {
             sendFilter("")
             setTimeout(() => (linkedRef.current as any).showOverlay(), 33);
         }
-    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.id, sendFilter])
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.stopCellEditing, sendFilter])
 
     /**
      * When enter is pressed "submit" the value
@@ -230,9 +230,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         if((event as KeyboardEvent).key === "Enter") {
             (linkedRef.current as any).hideOverlay();
             handleInput();
-            if (props.stopCellEditing) {
-                props.stopCellEditing(event);
-            }
+            handleEnterKey(event, event.target, props.stopCellEditing)
         }
     })
 
@@ -247,16 +245,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      */
     const handleInput = () => {
         const newVal:any = {}
-
+        const linkReference = props.cellEditor.linkReference
         /** Returns the values, of the databook, that match the input of the user */
         const foundData = providedData.filter((data:any) => {
             if (props.cellEditor) {
-                if (props.cellEditor.linkReference.columnNames.length === 0 && props.cellEditor.linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
                     return data[props.cellEditor.displayReferencedColumnName].includes(text);
                 }
                 else {
-                    const refColNames = props.cellEditor.linkReference.referencedColumnNames;
-                    const colNames = props.cellEditor.linkReference.columnNames;
+                    const refColNames = linkReference.referencedColumnNames;
+                    const colNames = linkReference.columnNames;
                     const index = colNames.findIndex(col => col === props.columnName);
                     return data[refColNames[index]].includes(text);
                 }
@@ -265,16 +263,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             return false
         });
 
-        const getSaveColumn = () => {
-            if (props.cellEditor.linkReference.columnNames.length === 0 && props.cellEditor.linkReference.referencedColumnNames.length === 1) {
-                return props.columnName;
-            }
-            else {
-                return props.cellEditor.linkReference.columnNames;
-            }
-        }
-
-        const columnNames = getSaveColumn()
+        const columnNames = (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1) ? props.columnName : linkReference.columnNames
 
         /** If the text is empty, send null to the server */
         if (!text) {
@@ -283,7 +272,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
             if (props.cellEditor) {
-                if (props.cellEditor.linkReference.columnNames.length > 1) {
+                if (linkReference.columnNames.length > 1) {
                     /** 
                      * Columnnames in linkReference and foundData are not the same they need to be properly set to be sent to the server
                      * Example: linkReference.columnNames = ACTI_ID, ACTI_ACADEMIC_TITLE
@@ -291,7 +280,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                      * foundData columnNames have to be adjusted to linkReference
                      */
                     for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                        newVal[props.cellEditor.linkReference.columnNames[i]] = Object.values(foundData[0])[i]; 
+                        newVal[linkReference.columnNames[i]] = Object.values(foundData[0])[i]; 
                     }
                                            
                     onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server));
@@ -340,7 +329,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         <AutoComplete
             ref={linkedRef}
             inputRef={linkedInput}
-            autoFocus={props.autoFocus}
+            autoFocus={props.autoFocus ? true : props.stopCellEditing ? true : false}
             appendTo={document.body}
             className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
@@ -132,6 +132,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 context.server
             )
         );
+        if (calendarInput.current) {
+            calendarInput.current.focus();
+        }
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -148,6 +151,12 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        if (calendarInput.current && props.stopCellEditing) {
+            setTimeout(() => calendarInput.current?.focus(), 0)
+        }
+    },[])
 
     useEffect(() => {
         lastValue.current = selectedRow;
@@ -194,8 +203,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         if ((event as KeyboardEvent).key === "Enter") {
             (calendar.current as any).hideOverlay();
             handleEnterKey(event, event.target, props.stopCellEditing)
-            // console.log(event.target);
-            // (event.target as HTMLElement).blur()
         }
     })
 

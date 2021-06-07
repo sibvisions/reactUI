@@ -55,7 +55,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
     /** Reference for the NumberCellEditor input element */
-    const numberInput = useRef(null);
+    const numberInput = useRef<HTMLInputElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -131,15 +131,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
      * When enter is pressed "submit" the value. When the value before the comma reaches the max length, disable keyboard inputs
      * @param e - the browser event
      */
-    const handleKeyDown = (e: any) => {
-        handleEnterKey(e, () => sendSetValues(props.dataRow, props.name, props.columnName, selectedRow, context.server));
-        if (['ArrowLeft', 'ArrowRight'].indexOf(e.key) < 0) {
-            //@ts-ignore
-            if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + e.key).toString().length > decimalLength && isSelectedBeforeComma()) {
-                e.preventDefault();
-                return false;
-            }
-        }
+    const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) => {
+
     }
 
     /**
@@ -176,9 +169,24 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
+            onBlur={() => {onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}}
             disabled={!props.cellEditor_editable_}
-            onKeyDown={handleKeyDown}
+            autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
+            onKeyDown={(event) => {
+                if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
+                    if (event.key === "Enter") {
+                        (event.target as HTMLElement).blur()
+                        if (props.stopCellEditing) {
+                            onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server));
+                            props.stopCellEditing(event)
+                        }
+                    }
+                    if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+            }}
         />
     )
 }

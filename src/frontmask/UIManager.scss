@@ -35,10 +35,12 @@
   margin-left: var(--menuCollapsedWidth);
 }
 
-.screen-expanded.screen-no-mini {
-  margin-left: 0;
-}
-
 .transition-disable-overflow {
   overflow: hidden;
+}
+
+@media screen and (max-width: 600px) { 
+  .screen-expanded.screen-no-mini {
+    margin-left: 0;
+  }
 }
