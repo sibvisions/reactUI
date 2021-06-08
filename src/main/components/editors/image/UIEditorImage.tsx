@@ -29,20 +29,30 @@ export interface IEditorImage extends IEditor{
 const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+
     /** Extracting alignments from props */
     const {verticalAlignment, horizontalAlignment} = props
+
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     useEffect(() => {
         if (!props.cellEditor.defaultImageName) {
@@ -79,6 +89,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     return(
         <span className="rc-editor-image" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
             <img
+                id={!isCellEditor ? props.name : undefined}
                 style={imageStyle.img}
                 src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt="could not be loaded"

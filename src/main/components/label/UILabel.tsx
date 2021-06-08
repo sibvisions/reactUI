@@ -37,7 +37,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <span
-            id={props.id}
+            id={props.name}
             ref={labelRef}
             dangerouslySetInnerHTML={{ __html: props.text as string }}
             className={"rc-label" + ((props.text as string).includes("<html>") ? " rc-label-html" : "")}

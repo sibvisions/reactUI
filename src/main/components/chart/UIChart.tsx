@@ -543,6 +543,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     return (
         <span ref={chartRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
             <Chart
+                id={props.name}
                 type={chartType}
                 data={chartData}
                 options={options}/>

@@ -37,7 +37,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <InputText ref={inputRef} value={text||""} style={layoutValue.get(props.id)} onChange={event => setText(event.currentTarget.value)} />
+        <InputText ref={inputRef} id={props.name} value={text||""} style={layoutValue.get(props.id)} onChange={event => setText(event.currentTarget.value)} />
     )
 }
 export default UIText

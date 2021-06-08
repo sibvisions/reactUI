@@ -81,32 +81,48 @@ const parseMultiple = (
 const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
+
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** Current state of dateFormat for PrimeReact Calendar */
     const dateFormat = props.cellEditor.dateFormat;
+
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
+
     /** Wether the DateCellEditor is a time-editor */
     const showTime = props.cellEditor.isTimeEditor;
+
     /** Wether the DateCellEditor should show seconds */
     const showSeconds = props.cellEditor.isSecondEditor;
+
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     setDateLocale(context.contentStore.locale);
 
@@ -153,9 +169,12 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
-        if (calendarInput.current && props.stopCellEditing) {
-            setTimeout(() => calendarInput.current?.focus(), 0)
-        }
+        setTimeout(() => {
+            if (calendarInput.current && props.stopCellEditing) {
+                calendarInput.current?.focus()
+            }
+        },0)
+
     },[])
 
     useEffect(() => {
@@ -202,19 +221,26 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         event.stopPropagation();
         if ((event as KeyboardEvent).key === "Enter") {
             (calendar.current as any).hideOverlay();
-            handleEnterKey(event, event.target, props.stopCellEditing)
+            handleEnterKey(event, event.target, props.name, props.stopCellEditing)
+        }
+        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
+            (event.target as HTMLElement).blur()
+            props.stopCellEditing()
         }
     })
 
     useEffect(() => {
-        if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.id === "")) {
-            setTimeout(() => (calendar.current as any).showOverlay(), 33);
-        }
+        setTimeout(() => {
+            if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
+                (calendar.current as any).showOverlay();
+            }
+        }, 33)
     }, [calendar.current])
 
     return(
         <CustomCalendar
             ref={calendar}
+            id={!isCellEditor ? props.name : undefined}
             inputRef={calendarInput}
             className="rc-editor-text rc-editor-date"
             monthNavigator={true}

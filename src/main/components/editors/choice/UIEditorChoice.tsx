@@ -11,7 +11,7 @@ import { LayoutContext } from "../../../LayoutContext";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey } from "../../util";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
@@ -33,20 +33,30 @@ export interface IEditorChoice extends IEditor{
 const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -137,15 +147,24 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     useEffect(() => {
-        if (baseProps.id === "") {
+        if (isCellEditor) {
             handleClick()
         }
     }, []);
     
     return (
-        <span className="rc-editor-choice" style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}>
+        <span
+            className="rc-editor-choice"
+            style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
+            onKeyDown={(event) => {
+                if (!isCellEditor) {
+                    handleEnterKey(event, event.target, props.name, props.stopCellEditing)
+                }
+            }}
+            tabIndex={props.tabIndex ? props.tabIndex : 0}>
             <img
                 ref={imgRef}
+                id={props.id !== "" ? props.name : undefined}
                 className="rc-editor-choice-img"
                 alt=""
                 onClick={handleClick}

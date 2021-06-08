@@ -76,6 +76,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         >
             <ToggleButton
                 ref={buttonRef}
+                id={props.name}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnData.btnBorderPainted ? "border-notpainted" : '',

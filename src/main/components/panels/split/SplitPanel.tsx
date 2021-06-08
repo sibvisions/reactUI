@@ -17,6 +17,7 @@ export enum ORIENTATIONSPLIT {
 
 /** Interface for SplitPanel */
 interface ISplitPanel extends IForwardRef {
+    id:string
     dividerPosition: number
     orientation: 0|1
     forwardedRef?: any
@@ -125,7 +126,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
 
     return(
-        <div className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
+        <div id={props.id} className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
             <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-h" : "first-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>

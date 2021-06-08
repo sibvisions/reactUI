@@ -47,32 +47,48 @@ export interface IEditorLinked extends IEditor{
 const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
+
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
+
     /** Current state of text value of input element */
-    const [text, setText] = useState(selectedRow)
+    const [text, setText] = useState(selectedRow);
+
     /** For lazy loading, current state of the data window lazy load "cache" */
     const [lazyWindow, setLazyWindow] = useState([0, 100]);
+
     /** Current state of the height of an item in the LinkedCellEditor list, used for calculating position in lazy loading*/
     const itemHeight = useRef<number>();
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -99,7 +115,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** 
      * Sets the height for the dropdownlist based on the amount of providedData, 
      * and sets the state of itemHeight as the height of an item of the dropdownlist
-     * SetTimeout is required because the autocomplete panel can't be found if there is no timeout 
      */
     useEffect(() => {
         const elem = linkedRef.current?.overlayRef?.current as HTMLElement;
@@ -209,18 +224,21 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.editorComponentId = props.name;
         filterReq.value = value;
 
-        if (props.stopCellEditing) {
+        if (isCellEditor) {
             filterReq.columnNames = [baseProps.columnName]
         }
         await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
     }, [context.contentStore, context.server, props.cellEditor, props.name])
 
     useEffect(() => {
-        if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.stopCellEditing)) {
-            sendFilter("")
-            setTimeout(() => (linkedRef.current as any).showOverlay(), 33);
-        }
-    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.stopCellEditing, sendFilter])
+        setTimeout(() => {
+            if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
+                sendFilter("");
+                (linkedRef.current as any).showOverlay();
+            }
+        }, 33)
+
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, isCellEditor, sendFilter])
 
     /**
      * When enter is pressed "submit" the value
@@ -230,7 +248,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         if((event as KeyboardEvent).key === "Enter") {
             (linkedRef.current as any).hideOverlay();
             handleInput();
-            handleEnterKey(event, event.target, props.stopCellEditing)
+            handleEnterKey(event, event.target, props.name, props.stopCellEditing)
         }
     })
 
@@ -328,8 +346,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     return (
         <AutoComplete
             ref={linkedRef}
+            id={props.id !== "" ? props.name : undefined}
             inputRef={linkedInput}
-            autoFocus={props.autoFocus ? true : props.stopCellEditing ? true : false}
+            autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
             appendTo={document.body}
             className="rc-editor-linked"
             style={layoutValue.get(props.id) || baseProps.editorStyle}

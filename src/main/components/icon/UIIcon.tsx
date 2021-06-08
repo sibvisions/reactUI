@@ -69,9 +69,10 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(icon.includes('fa fa-'))
-                return <i className={icon}/>
+                return <i id={props.name} className={icon}/>
             else {
                 return <img
+                id={props.name}
                 alt="icon"
                 src={context.server.RESOURCE_URL + iconProps.icon}
                 style={{...imageStyle.img, height: preferredSize?.height, width: preferredSize?.width}}

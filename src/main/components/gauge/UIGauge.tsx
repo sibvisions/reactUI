@@ -70,7 +70,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue} = props;
+    const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -104,7 +104,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         <span ref={wrapperRef} className="ui-gauge" style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
             <div className="ui-gauge__title">{title}</div>
             <Gauge 
-                id={id}
+                id={name}
                 value={data} 
                 label={columnLabel} 
                 max={maxValue}

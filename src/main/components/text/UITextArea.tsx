@@ -37,7 +37,7 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <InputTextarea ref={inputRef} value={text||""} style={{...layoutValue.get(props.id), resize: 'none'}} onChange={event => setText(event.currentTarget.value)} />
+        <InputTextarea ref={inputRef} id={props.name} value={text||""} style={{...layoutValue.get(props.id), resize: 'none'}} onChange={event => setText(event.currentTarget.value)} />
     )
 }
 export default UITextArea

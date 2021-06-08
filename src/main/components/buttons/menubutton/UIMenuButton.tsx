@@ -97,6 +97,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         >
             <SplitButton
                 ref={buttonRef}
+                id={props.name}
                 className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',

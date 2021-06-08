@@ -72,6 +72,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return(
         <span ref={buttonWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
             <Button
+                id={props.name}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",

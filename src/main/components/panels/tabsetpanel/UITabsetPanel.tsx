@@ -149,6 +149,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         <LayoutContext.Provider value={componentSizes}>
             <TabView
                 ref={panelRef}
+                id={props.name}
                 style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutValue.get(baseProps.id), backgroundColor: props.background}}
                 activeIndex={props.selectedIndex}
                 onTabChange={event => {

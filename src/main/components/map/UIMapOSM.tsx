@@ -79,7 +79,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     if (layoutValue.has(id)) {
         return (
             <div ref={mapRef} style={layoutValue.get(id)}>
-                <MapContainer center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
+                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom}/>
                 </MapContainer>
             </div>

@@ -19,10 +19,10 @@ import { useProperties,
 import BaseComponent from "../BaseComponent";
 import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
-import { createFetchRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
+import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { MetaDataResponse } from "../../response";
-import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
+import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, focusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 
 
@@ -150,13 +150,10 @@ const CellEditor: FC<CellEditor> = (props) => {
                 case "F2":
                         setEdit(true);
                     break;
-                case "Enter": case "Tab":
-                    if (edit) {
-                        props.tableContainer.focus();
-                    }
-                    break;
                 default:
-                    e.stopPropagation();
+                    if (edit) {
+                        e.stopPropagation();
+                    }
             }
         }
 
@@ -562,17 +559,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectedRowRef.current = selectedRow
     }, [selectedRow])
 
-    const focusComponent = useCallback((next:boolean) => {
-        let focusable = Array.from(document.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable], #" + id)).filter((e: any) => {
-            if (e.disabled || e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0 || e.tagName === "TD") return false
-            return true;
-        }).sort((a: any, b: any) => {
-            return (parseFloat(a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.getAttribute("tabindex") || 99999) || 99999);
-        })
-        focusable = focusable.slice(focusable.findIndex(e => e.id === id) - 1, _.findLastIndex(focusable, (e) => e.id === id) + 2);
-        if (focusable[next ? 2 : 0]) (focusable[next ? 2 : 0] as HTMLElement).focus();
-    }, [id])
-
     const selectNextCell = useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRowRef.current!.selectedColumn) + 1;
@@ -581,10 +567,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(newSelectedColumn);
             }
             else if (delegateFocus) {
-                focusComponent(true)
+                focusComponent(props.name, true);
             }
         }
-    }, [selectedRow, columnOrder, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, true);
+        }
+    }, [selectedRow, columnOrder, sendSelectRequest])
 
     const selectPreviousCell = useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
@@ -594,10 +583,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(newSelectedColumn);
             }
             else if (delegateFocus) {
-                focusComponent(false)
+                focusComponent(props.name, false);
             }
         }
-    }, [selectedRow, columnOrder, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, false);
+        }
+    }, [selectedRow, columnOrder, sendSelectRequest])
 
     const selectNextRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
@@ -610,10 +602,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(true);
+                focusComponent(props.name, true);
             }
         }
-    }, [selectedRow, primaryKeys, providerData, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, true);
+        }
+    }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
     const selectPreviousRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
@@ -626,10 +621,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(false);
+                focusComponent(props.name, false);
             }
         }
-    }, [selectedRow, primaryKeys, providerData, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, false);
+        }
+    }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
     const selectNextCellAndRow =  useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
@@ -647,10 +645,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(columnOrder[0], filter);
             }
             else if (delegateFocus) {
-                focusComponent(true)
+                focusComponent(props.name, true);
             }
         }
-    }, [selectedRow, primaryKeys, columnOrder, providerData, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, true);
+        }
+    }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
     const selectPreviousCellAndRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRowRef.current !== undefined) {
@@ -668,10 +669,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
             }
             else if (delegateFocus) {
-                focusComponent(false)
+                focusComponent(props.name, false);
             }
         }
-    }, [selectedRow, primaryKeys, columnOrder, providerData, focusComponent, sendSelectRequest])
+        else if (delegateFocus) {
+            focusComponent(props.name, false);
+        }
+    }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
     const selectNextPage = async (delegateFocus: boolean) => {
         if (selectedRow) {
@@ -688,7 +692,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(true)
+                focusComponent(props.name, true);
             }
         }
     }
@@ -708,7 +712,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(false)
+                focusComponent(props.name, false);
             }
         }
     }
@@ -902,6 +906,13 @@ const UITable: FC<TableProps> = (baseProps) => {
             case "ArrowRight":
                 selectNextCell(false);
                 break;
+            case "Insert":
+                if (metaData?.insertEnabled) {
+                    const insertReq = createInsertRecordRequest();
+                    insertReq.dataProvider = props.dataBook;
+                    context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD);
+                }
+                break;
         }
     }
 
@@ -976,11 +987,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                     width: layoutContext.get(props.id)?.width as number - 2,
                     outline: "none"
                 }}
-                tabIndex={-1}
+                tabIndex={0}
                 onKeyDown={(e) => handleTableKeys(e)}
             >
                 <DataTable
-                    id={id}
+                    id={props.name}
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",

@@ -58,7 +58,8 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
 
     return (
         <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            <span 
+            <span
+                id={props.name}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-checkbox",

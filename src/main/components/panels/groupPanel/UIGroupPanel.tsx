@@ -61,10 +61,10 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     }
 
     return(
-        <div className="rc-panel-group" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
+        <div className="rc-panel-group" id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutContext.get(baseProps.id), backgroundColor: props.background}}>
             <div className="rc-panel-group-caption"><span>{props.text}</span></div>
             <Layout
-                id={id}
+                id={props.id}
                 layoutData={props.layoutData}
                 layout={props.layout}
                 reportSize={reportSize}

@@ -72,7 +72,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
 
     return(
         <div 
-            id={props.id} 
+            id={props.name} 
             style={props.screen_modal_ ? { 
                 height: prefSize?.height, 
                 width: prefSize?.width 

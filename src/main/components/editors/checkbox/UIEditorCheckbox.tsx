@@ -5,13 +5,13 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
-import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey } from "../../util";
 import { getAlignments } from "../../compprops";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
@@ -45,19 +45,31 @@ export function getBooleanValue(input: string | boolean | number | undefined) {
  */
 const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
-    const cbxRef = useRef(null);
+    const cbxWrapperRef = useRef(null);
+
+    /** Reference for the checkbox */
+    const cbxRef = useRef<any>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorCheckBox>(baseProps.id, baseProps)
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     /**
      * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:
@@ -109,8 +121,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && cbxRef.current){
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), cbxRef.current, onLoadCallback)
+        if(onLoadCallback && cbxWrapperRef.current){
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), cbxWrapperRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
@@ -129,9 +141,15 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
         }
     }, []);
 
+    useEventHandler(cbxRef.current ? cbxRef.current.element : undefined, "keydown", (event) => {
+        event.stopPropagation();
+        handleEnterKey(event, event.target, props.id, props.stopCellEditing)
+    });
+
     return (
         <span
-            ref={cbxRef}
+            ref={cbxWrapperRef}
+            id={props.id !== "" ? props.name : undefined}
             className="rc-editor-checkbox"
             style={{
                 ...layoutValue.get(props.id) || baseProps.editorStyle,
@@ -140,9 +158,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                 alignItems: alignments?.va
             }}>
             <Checkbox
+                ref={cbxRef}
                 inputId={id}
                 checked={checked}
-                onChange={() => handleOnChange()} 
+                onChange={() => handleOnChange()}
             />
             {baseProps.id !== "" &&
                 <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>

@@ -40,28 +40,42 @@ export interface IEditorText extends IEditor {
 const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** The metadata for the TextCellEditor */
     const cellEditorMetaData:LengthBasedColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as LengthBasedColumnDescription;
+
     /** Returns the maximum length for the TextCellEditor */
     const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);
+
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
@@ -80,20 +94,28 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     if (props.cellEditor.contentType?.includes("multiline")) {
         return (
             <InputTextarea
-                autoFocus={baseProps.autoFocus}
                 ref={textRef}
+                id={!isCellEditor ? props.name : undefined}
                 className="rc-editor-textarea"
                 style={layoutValue.get(props.id) ?
                     { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
                     { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ }}
                 maxLength={length}
+                autoResize={false}
                 disabled={!props.cellEditor_editable_}
+                autoFocus={baseProps.autoFocus}
                 value={text || ""}
-                onChange={event => setText(event.currentTarget.value)}
+                onChange={event => {
+                    console.log(event)
+                    setText(event.currentTarget.value)
+                }}
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
                 onKeyDown={event => {
+                    console.log(event.target, textRef.current, event.key)
                     event.stopPropagation();
-                    handleEnterKey(event, event.target, props.stopCellEditing);
+                    if (event.key === "Enter" && event.shiftKey) {
+                        handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                    }
                 }}
             />
         )
@@ -101,8 +123,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     else if (props.cellEditor.contentType?.includes("password")) {
         return (
             <Password
-                autoFocus={baseProps.autoFocus}
                 inputRef={textRef}
+                id={!isCellEditor ? props.name : undefined}
                 className="rc-editor-password"
                 style={layoutValue.get(props.id) ?
                     { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
@@ -110,33 +132,38 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 maxLength={length}
                 feedback={false}
                 disabled={!props.cellEditor_editable_}
+                autoFocus={baseProps.autoFocus}
                 value={text || ""}
                 onChange={event => setText(event.currentTarget.value)}
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
                 onKeyDown={event => {
                     event.stopPropagation();
-                    handleEnterKey(event, event.target, props.stopCellEditing);
+                    handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 }}
             />
         )
     }
     else {
         return(
-            <InputText
-                autoFocus={baseProps.autoFocus}
+            <InputText 
                 ref={textRef}
+                id={!isCellEditor ? props.name : undefined}
                 className={"rc-editor-text" + (props.borderVisible === false ? " invisible-border" : "")}
                 style={layoutValue.get(props.id) ?
                     { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ } :
                     { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ }}
                 maxLength={length}
                 disabled={!props.cellEditor_editable_}
+                autoFocus={baseProps.autoFocus}
                 value={text || ""}
                 onChange={event => setText(event.currentTarget.value)}
                 onBlur={() => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))}
                 onKeyDown={(event) => {
                     event.stopPropagation();
-                    handleEnterKey(event, event.target, props.stopCellEditing);
+                    handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                    if (event.key === "Tab" && props.stopCellEditing) {
+                        props.stopCellEditing();
+                    }
                 }}
             />
         )

@@ -14,7 +14,8 @@ import { StartupRequest,
          SaveRequest,
          CloseScreenRequest,
          SelectTreeRequest, 
-         SortRequest} from "../request";
+         SortRequest,
+         InsertRecordRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -264,5 +265,13 @@ export const createSortRequest = (values?: SortRequest): SortRequest => {
         dataProvider: values?.dataProvider,
         sortDefinition: values?.sortDefinition
     };
+    return req;
+}
+
+export const createInsertRecordRequest = (values?: InsertRecordRequest): InsertRecordRequest => {
+    const req:InsertRecordRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider
+    }
     return req;
 }

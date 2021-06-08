@@ -64,7 +64,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     }
 
     return(
-        <div id={props.id} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width, overflow: 'auto'} : {...layoutContext.get(baseProps.id), overflow: 'auto'}}>
+        <div id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width, overflow: 'auto'} : {...layoutContext.get(baseProps.id), overflow: 'auto'}}>
             <Layout
                 id={id}
                 layoutData={props.layoutData}

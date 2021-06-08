@@ -18,12 +18,12 @@ import { getEditorCompId,
          getPrimePrefix, 
          getScaleDigits, 
          sendSetValues, 
-         handleEnterKey, 
          onBlurCallback, 
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
-         parseMaxSize} from "../../util";
+         parseMaxSize,
+         focusComponent} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
 
@@ -54,29 +54,42 @@ export interface ScaleType {
 const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
+
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
+
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+
     /** Current state value of input element */
     const [value, setValue] = useState<number>(selectedRow);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The metadata for the NumberCellEditor */
     const cellEditorMetaData:NumericColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as NumericColumnDescription;
+
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
@@ -128,14 +141,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     },[selectedRow]);
 
     /**
-     * When enter is pressed "submit" the value. When the value before the comma reaches the max length, disable keyboard inputs
-     * @param e - the browser event
-     */
-    const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) => {
-
-    }
-
-    /**
      * When a value is pasted check if the value isn't too big for the max length
      * @param e - the browser event
      */
@@ -158,6 +163,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     return (
         <InputNumber
             ref={numberRef}
+            id={!isCellEditor ? props.name : undefined}
             inputRef={numberInput}
             className="rc-editor-number"
             useGrouping={useGrouping}
@@ -176,9 +182,17 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
                     if (event.key === "Enter") {
                         (event.target as HTMLElement).blur()
-                        if (props.stopCellEditing) {
+                        if (isCellEditor && props.stopCellEditing) {
                             onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server));
                             props.stopCellEditing(event)
+                        }
+                        else {
+                            if (event.shiftKey) {
+                                focusComponent(props.name, false);
+                            }
+                            else {
+                                focusComponent(props.name, true);
+                            }
                         }
                     }
                     if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {

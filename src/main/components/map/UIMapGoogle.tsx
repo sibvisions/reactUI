@@ -214,9 +214,9 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} style={{width: '100px', height: '100px'}}/>
+        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} style={layoutValue.get(id)}>
+        <div ref={mapWrapperRef} id={props.name} style={layoutValue.get(id)}>
             <GMap ref={mapInnerRef} options={options} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}} />
         </div>
     )
