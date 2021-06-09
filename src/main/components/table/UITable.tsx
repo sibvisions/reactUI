@@ -861,10 +861,10 @@ const UITable: FC<TableProps> = (baseProps) => {
        setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
 
-    const handleTableKeys = (e:React.KeyboardEvent<HTMLDivElement>) => {
-        switch(e.key) {
+    const handleTableKeys = (event:React.KeyboardEvent<HTMLDivElement>) => {
+        switch(event.key) {
             case "Enter":
-                if (e.shiftKey) {
+                if (event.shiftKey) {
                     selectPrevious(enterNavigationMode);
                 }
                 else {
@@ -872,8 +872,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 break;
             case "Tab":
-                e.preventDefault();
-                if (e.shiftKey) {
+                event.preventDefault();
+                if (event.shiftKey) {
                     selectPrevious(tabNavigationMode);
                 }
                 else {
@@ -882,12 +882,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "PageUp":
                 pageKeyPressed.current = true;
-                e.preventDefault();
+                event.preventDefault();
                 selectPreviousPage(false);
                 break;
             case "PageDown":
                 pageKeyPressed.current = true;
-                e.preventDefault();
+                event.preventDefault();
                 selectNextPage(false);
                 break;
             case "ArrowUp":

@@ -233,7 +233,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useEffect(() => {
         setTimeout(() => {
             if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
-                sendFilter("");
+                sendFilter(null);
                 (linkedRef.current as any).showOverlay();
             }
         }, 33)
@@ -247,8 +247,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         event.stopPropagation();
         if((event as KeyboardEvent).key === "Enter") {
             (linkedRef.current as any).hideOverlay();
-            handleInput();
-            handleEnterKey(event, event.target, props.name, props.stopCellEditing)
+            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+        }
+        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
+            (event.target as HTMLElement).blur()
+            props.stopCellEditing(event)
         }
     })
 
@@ -356,7 +359,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             disabled={!props.cellEditor_editable_}
             dropdown
-            completeMethod={(event) => sendFilter(event.query)}
+            completeMethod={(event) =>  sendFilter(event.query ? event.query : null)}
             suggestions={buildSuggestions(suggestionData)}
             value={text}
             onShow={handleShow}

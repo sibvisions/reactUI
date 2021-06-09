@@ -7,7 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks"
+import { useEventHandler, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -123,7 +123,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
-    const handleOnKeyDown = useCallback((event:React.KeyboardEvent, textArea:boolean) => {
+    const handleOnKeyDown = useCallback((event:any, textArea:boolean) => {
         event.stopPropagation();
         if (textArea) {
             if (event.key === "Enter" && event.shiftKey) {
@@ -131,16 +131,31 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             }
         }
         else {
-            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+            if (event.key === "Enter" && fieldType === FieldTypes.PASSWORD && isCellEditor && props.stopCellEditing) {
+                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server));
+                props.stopCellEditing(event)
+            }
+            else {
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+            }     
         }
-        if (event.key === "Tab" && props.stopCellEditing) {
+        if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
+            if (fieldType === FieldTypes.PASSWORD) {
+                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server));
+            }
+            else {
+                (event.target as HTMLElement).blur();
+            }
             props.stopCellEditing(event);
         }
-    }, [props])
+    }, [props, text, isCellEditor, baseProps, context.server, fieldType])
+
+    //useEventHandler(textRef.current ? textRef.current : undefined, "keydown", (e) => handleOnKeyDown(e, fieldType === FieldTypes.TEXTAREA ? true : false))
 
     const primeProps: any = useMemo(() => {
         return {
-            ref: textRef,
+            ref: fieldType !== FieldTypes.PASSWORD ? textRef : undefined,
+            inputRef: fieldType === FieldTypes.PASSWORD ? textRef : undefined,
             id: isCellEditor ? undefined : props.name,
             className: getClassName(fieldType),
             style: layoutValue.get(props.id) ?
@@ -152,8 +167,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onBlur: () => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)),
-            onKeyDown: (event: React.KeyboardEvent) => handleOnKeyDown(event, fieldType === FieldTypes.TEXTAREA ? true : false)
+            onBlur: () => {console.log(text, lastValue); onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))},
+            onKeyDown: (e:any) => handleOnKeyDown(e, fieldType === FieldTypes.TEXTAREA ? true : false)
         }
     }, [baseProps, context.server, fieldType, handleOnKeyDown, isCellEditor, layoutValue, 
         length, props.autoFocus, props.cellEditor_background_, props.cellEditor_editable_, 

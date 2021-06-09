@@ -95,7 +95,8 @@ class Server {
      * @param endpoint - the endpoint to send the request to
      */
     sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean){
-        return this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
+        return new Promise<void>((resolve) => {
+            this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
             .then(() => {
@@ -109,9 +110,11 @@ class Server {
                     this.subManager.jobQueue.clear()
                 }
             })
+            .then(() => resolve())
             .catch(error => {
                 console.error(error)
             });
+        }) 
     }
 
     /**
@@ -261,7 +264,6 @@ class Server {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
-            this.subManager.emitRowSelect(compId, dataProvider);
         } 
         else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
@@ -271,13 +273,11 @@ class Server {
             else {
                 this.contentStore.clearSelectedRow(compId, dataProvider);
             }
-            this.subManager.emitRowSelect(compId, dataProvider);
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
             const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).dataRow;
             const idx = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).selectedIndex;
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
-            this.subManager.emitRowSelect(compId, dataProvider);
         }
     }
 

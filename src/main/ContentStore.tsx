@@ -555,6 +555,7 @@ export default class ContentStore{
             tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath, selectedColumn: selectedColumn});
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
+        this.subManager.emitRowSelect(compId, dataProvider);
     }
 
     /**
@@ -564,6 +565,7 @@ export default class ContentStore{
      */
     clearSelectedRow(compId:string, dataProvider: string) {
         this.dataProviderSelectedRow.get(compId)?.delete(dataProvider);
+        this.subManager.emitRowSelect(compId, dataProvider);
     }
 
     clearDataFromSubPage(compId:string, detailReferences?:MetaDataReference[]) {
