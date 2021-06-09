@@ -23,7 +23,8 @@ import { getEditorCompId,
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize,
-         focusComponent} from "../../util";
+         focusComponent,
+         handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
 
@@ -148,7 +149,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         if (e.clipboardData && decimalLength) {
             const pastedValue = parseInt(e.clipboardData.getData('text'));
             if (!isNaN(pastedValue)) {
-                //@ts-ignore
                 if (isSelectedBeforeComma() && (value ? value.toString().split('.')[0] : "").length + pastedValue.toString().length > decimalLength) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -157,8 +157,22 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         }
     }
 
-    //@ts-ignore
-    useEventHandler(numberRef.current ? numberInput.current : undefined, 'paste', handlePaste)
+    useEventHandler(numberInput.current ? numberInput.current : undefined, 'paste', (event:any) => handlePaste(event));
+
+    useEventHandler(numberInput.current ? numberInput.current : undefined, 'keydown', (event:any) => {
+        event.stopPropagation();
+        if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
+            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+            if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
+                (event.target as HTMLElement).blur();
+                props.stopCellEditing(event);
+            }
+            if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
+                event.preventDefault();
+                return false;
+            }
+        }
+    });
 
     return (
         <InputNumber
@@ -174,33 +188,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             value={value}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
-            onChange={event => setValue(event.value)}
-            onBlur={() => {onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}}
+            onChange={event => {console.log(event.value); setValue(event.value)}}
+            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
             disabled={!props.cellEditor_editable_}
             autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
-            onKeyDown={(event) => {
-                if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
-                    if (event.key === "Enter") {
-                        (event.target as HTMLElement).blur()
-                        if (isCellEditor && props.stopCellEditing) {
-                            onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server));
-                            props.stopCellEditing(event)
-                        }
-                        else {
-                            if (event.shiftKey) {
-                                focusComponent(props.name, false);
-                            }
-                            else {
-                                focusComponent(props.name, true);
-                            }
-                        }
-                    }
-                    if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
-                        event.preventDefault();
-                        return false;
-                    }
-                }
-            }}
         />
     )
 }

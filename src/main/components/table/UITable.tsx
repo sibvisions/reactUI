@@ -4,7 +4,7 @@ import React, { createContext, FC, useCallback, useContext, useEffect, useLayout
 /** 3rd Party imports */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import _, { wrap } from "underscore";
+import _ from "underscore";
 
 /** Hook imports */
 import { useProperties, 
@@ -150,10 +150,6 @@ const CellEditor: FC<CellEditor> = (props) => {
                 case "F2":
                         setEdit(true);
                     break;
-                default:
-                    if (edit) {
-                        e.stopPropagation();
-                    }
             }
         }
 
@@ -871,10 +867,10 @@ const UITable: FC<TableProps> = (baseProps) => {
        setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
 
-    const handleTableKeys = (e:React.KeyboardEvent<HTMLDivElement>) => {
-        switch(e.key) {
+    const handleTableKeys = (event:React.KeyboardEvent<HTMLDivElement>) => {
+        switch(event.key) {
             case "Enter":
-                if (e.shiftKey) {
+                if (event.shiftKey) {
                     selectPrevious.current && selectPrevious.current(enterNavigationMode);
                 }
                 else {
@@ -882,8 +878,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 break;
             case "Tab":
-                e.preventDefault();
-                if (e.shiftKey) {
+                event.preventDefault();
+                if (event.shiftKey) {
                     selectPrevious.current && selectPrevious.current(tabNavigationMode);
                 }
                 else {
@@ -892,12 +888,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "PageUp":
                 pageKeyPressed.current = true;
-                e.preventDefault();
+                event.preventDefault();
                 selectPreviousPage(false);
                 break;
             case "PageDown":
                 pageKeyPressed.current = true;
-                e.preventDefault();
+                event.preventDefault();
                 selectNextPage(false);
                 break;
             case "ArrowUp":

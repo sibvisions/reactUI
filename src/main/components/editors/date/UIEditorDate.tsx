@@ -224,8 +224,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             handleEnterKey(event, event.target, props.name, props.stopCellEditing)
         }
         if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
-            (event.target as HTMLElement).blur()
-            props.stopCellEditing()
+            (event.target as HTMLElement).blur();
+            props.stopCellEditing(event);
         }
     })
 
