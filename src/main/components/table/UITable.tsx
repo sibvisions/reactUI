@@ -66,7 +66,8 @@ type CellEditor = {
     selectNext:Function,
     selectPrevious:Function,
     enterNavigationMode:number,
-    tabNavigationMode:number
+    tabNavigationMode:number,
+    selectedRowRef: React.MutableRefObject<any>,
 }
 
 interface ISelectedCell {
@@ -80,6 +81,8 @@ export const SelectedCellContext = createContext<ISelectedCell>({})
  * @param props - props received by Table
  */
 const CellEditor: FC<CellEditor> = (props) => {
+    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
+    
     /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);
 
@@ -92,21 +95,18 @@ const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(props.compId, props.metaData!.dataProvider);
+    const columnMetaData = useMemo(() => props.metaData?.columns.find(column => column.name === props.colName), [props.metaData?.columns]);
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
     /** When a new selectedRow is set, set waiting to false */
     useEffect(() => {        
-        const pickedVals = _.pick(selectedRow, Object.keys(props.pk))
+        const pickedVals = _.pick(props.selectedRowRef, Object.keys(props.pk))
         if (waiting && _.isEqual(pickedVals, props.pk)) {
             setWaiting(false);
         }
-    }, [selectedRow, edit])
+    }, [props.selectedRowRef, edit])
 
     useEffect(() => {
         if (edit && cellContext.selectedCellId !== props.cellId.selectedCellId) {
@@ -114,37 +114,37 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [cellContext.selectedCellId]);
 
-    const stopCellEditing = (event?:KeyboardEvent) => {
+    const stopCellEditing = useCallback((event?:KeyboardEvent) => {
         setEdit(false);
         if (event) {
             if (event.key === "Enter") {
                 if (event.shiftKey) {
-                    props.selectPrevious(props.enterNavigationMode);
+                    selectPrevious(enterNavigationMode);
                 }
                 else {
-                    props.selectNext(props.enterNavigationMode);
+                    selectNext(enterNavigationMode);
                 }
             }
             else if (event.key === "Tab") {
                 event.preventDefault();
                 if (event.shiftKey) {
-                    props.selectPrevious(props.tabNavigationMode);
+                    selectPrevious(tabNavigationMode);
                 }
                 else {
-                    props.selectNext(props.tabNavigationMode);
+                    selectNext(tabNavigationMode);
                 }
             }
         }
         else {
-            props.selectNext(props.enterNavigationMode);
+            selectNext(enterNavigationMode);
         }
-        props.tableContainer.focus()
-    };
+        tableContainer.focus()
+    }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
 
-    const handleCellKeyDown = (e:KeyboardEvent) => {
+    const handleCellKeyDown = useCallback((e:KeyboardEvent) => {
         if (cellContext.selectedCellId === props.cellId.selectedCellId) {
             switch (e.key) {
                 case "F2":
@@ -152,8 +152,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     break;
             }
         }
-
-    }
+    }, [cellContext.selectedCellId, setEdit])
 
     useEventHandler(document.body, "keydown", (e:any) => handleCellKeyDown(e));
 
@@ -251,7 +250,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.dataProvider = props.dataBook;
         selectReq.componentId = props.name;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
-        if (filter) selectReq.filter = filter
+        if (filter) selectReq.filter = filter;
         await context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
     }, [props.dataBook, props.name, context.server])
 
@@ -788,6 +787,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     selectPrevious={() => selectPrevious.current && selectPrevious.current()}
                     enterNavigationMode={enterNavigationMode}
                     tabNavigationMode={tabNavigationMode}
+                    selectedRowRef={selectedRowRef}
                 />
                 }
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
