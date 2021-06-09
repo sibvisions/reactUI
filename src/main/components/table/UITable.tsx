@@ -717,27 +717,33 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
-    const selectNext = useCallback((navigationMode:number) => {
-        if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-            selectNextCell(true);
-        }
-        else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-            selectNextRow(true);
-        }
-        else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-            selectNextCellAndRow(true);
+    const selectNext = useRef<Function>();
+    useEffect(() => {
+        selectNext.current = (navigationMode:number) => {
+            if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
+                selectNextCell(true);
+            }
+            else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
+                selectNextRow(true);
+            }
+            else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
+                selectNextCellAndRow(true);
+            }
         }
     }, [selectNextCell, selectNextRow, selectNextCellAndRow]);
 
-    const selectPrevious = useCallback((navigationMode:number, row?:any) => {
-        if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-            selectPreviousCell(true);
-        }
-        else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-            selectPreviousRow(true);
-        }
-        else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-            selectPreviousCellAndRow(true)
+    const selectPrevious = useRef<Function>();
+    useEffect(() => {   
+        selectPrevious.current = (navigationMode:number, row?:any) => {
+            if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
+                selectPreviousCell(true);
+            }
+            else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
+                selectPreviousRow(true);
+            }
+            else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
+                selectPreviousCellAndRow(true)
+            }
         }
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow])
 
@@ -782,8 +788,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     resource={context.server.RESOURCE_URL}
                     cellId={{ selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() }}
                     tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                    selectNext={selectNext}
-                    selectPrevious={selectPrevious}
+                    selectNext={() => selectNext.current && selectNext.current()}
+                    selectPrevious={() => selectPrevious.current && selectPrevious.current()}
                     enterNavigationMode={enterNavigationMode}
                     tabNavigationMode={tabNavigationMode}
                 />
@@ -795,7 +801,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id, 
        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-       enterNavigationMode, tabNavigationMode, metaData, primaryKeys, selectNext, selectPrevious])
+       enterNavigationMode, tabNavigationMode, metaData, primaryKeys])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
@@ -869,19 +875,19 @@ const UITable: FC<TableProps> = (baseProps) => {
         switch(e.key) {
             case "Enter":
                 if (e.shiftKey) {
-                    selectPrevious(enterNavigationMode);
+                    selectPrevious.current && selectPrevious.current(enterNavigationMode);
                 }
                 else {
-                    selectNext(enterNavigationMode);
+                    selectNext.current && selectNext.current(enterNavigationMode);
                 }
                 break;
             case "Tab":
                 e.preventDefault();
                 if (e.shiftKey) {
-                    selectPrevious(tabNavigationMode);
+                    selectPrevious.current && selectPrevious.current(tabNavigationMode);
                 }
                 else {
-                    selectNext(tabNavigationMode);
+                    selectNext.current && selectNext.current(tabNavigationMode);
                 }
                 break;
             case "PageUp":
