@@ -95,7 +95,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = useMemo(() => props.metaData?.columns.find(column => column.name === props.colName), [props.metaData?.columns]);
+    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -797,7 +797,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id, 
        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-       enterNavigationMode, tabNavigationMode, metaData, primaryKeys])
+       enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
@@ -844,6 +844,8 @@ const UITable: FC<TableProps> = (baseProps) => {
             //@ts-ignore
             if (!tableRef.current.table) {
                 //@ts-ignore
+                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
+                //@ts-ignore
                 const tColGroupHeader = tableRef.current.container.querySelector('.p-datatable-scrollable-header-table > colgroup');
                 //@ts-ignore
                 const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
@@ -851,9 +853,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 const width = tColGroup[0].offsetWidth;
                 for (let i = 0; i < tCols1.length; i++) {
-                    tCols1[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
-                    tCols2[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
-                    tColGroupHeader.children[i].style.setProperty('width', `${100 * tCols1[i].offsetWidth / width}%`)
+                    const w = 100 * tCols1[i].offsetWidth / width;
+                    theader[i].style.setProperty('width', `${w}%`)
+                    tCols1[i].style.setProperty('width', `${w}%`)
+                    tCols2[i].style.setProperty('width', `${w}%`)
+                    tColGroupHeader.children[i].style.setProperty('width', `${w}%`)
                 }
             }
         }
@@ -864,8 +868,30 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param e - the event
      */
     const handleColReorder = (e:any) => {
-       setColumnOrder(e.columns.map((column:any) => column.props.field));
+        setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
+
+    useLayoutEffect(() => {
+        if (tableRef.current) {
+            //@ts-ignore
+            if (!tableRef.current.table) {
+                //@ts-ignore
+                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
+                //@ts-ignore
+                const tColGroupHeader = tableRef.current.container.querySelector('.p-datatable-scrollable-header-table > colgroup');
+                //@ts-ignore
+                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
+                const tCols1 = tColGroup[0].querySelectorAll('col');
+                const tCols2 = tColGroup[1].querySelectorAll('col');
+                for (let i = 0; i < tCols1.length; i++) {
+                    const w = theader[i].style.getPropertyValue('width');
+                    tCols1[i].style.setProperty('width', w)
+                    tCols2[i].style.setProperty('width', w)
+                    tColGroupHeader.children[i].style.setProperty('width', w)
+                }
+            }
+        }
+    }, [columnOrder])
 
     const handleTableKeys = (event:React.KeyboardEvent<HTMLDivElement>) => {
         switch(event.key) {
