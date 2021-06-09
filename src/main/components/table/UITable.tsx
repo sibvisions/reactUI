@@ -4,7 +4,7 @@ import React, { createContext, FC, useCallback, useContext, useEffect, useLayout
 /** 3rd Party imports */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import _, { wrap } from "underscore";
+import _ from "underscore";
 
 /** Hook imports */
 import { useProperties, 
@@ -150,10 +150,6 @@ const CellEditor: FC<CellEditor> = (props) => {
                 case "F2":
                         setEdit(true);
                     break;
-                default:
-                    if (edit) {
-                        e.stopPropagation();
-                    }
             }
         }
 
