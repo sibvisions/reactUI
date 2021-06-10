@@ -40,8 +40,6 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const [selectedMarker, setSelectedMarker] = useState<google.maps.Marker>();
     /** The state if the maps data has already been set */
     const [dataSet, setDataSet] = useState<boolean>(false);
-    /** The state if the maps data has already been set */
-    const [xd, setXD] = useState<boolean>(false);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
@@ -102,7 +100,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Fetch Mapdata from server */
     useEffect(() => {
         const test = async () => {
-            sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server).then(() => setXD(true));
+            sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server).then(() => setDataSet(true));
         }
         test();
     },[context.server, props.groupDataBook, props.pointsDataBook]);
@@ -110,7 +108,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Adding the data to the Map */
     useEffect(() => {
         /** If data is not already set */
-        if (mapInnerRef.current) {
+        if (mapInnerRef.current && dataSet) {
             //@ts-ignore
             const map = mapInnerRef.current.map
             const latColName = props.latitudeColumnName;
@@ -135,7 +133,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
 
 
-    }, [xd, props.longitudeColumnName, props.latitudeColumnName,
+    }, [props.longitudeColumnName, props.latitudeColumnName,
         polyColors.strokeColor, polyColors.fillColor, context.server.RESOURCE_URL,
         props.marker, props.markerImageColumnName, dataSet]
     );

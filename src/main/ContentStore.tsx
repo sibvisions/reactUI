@@ -452,7 +452,7 @@ export default class ContentStore{
      * @param newDataSet - the new data
      * @param to - to which row will be set/updated
      * @param from - from which row will be set/updated
-     * @param referenceKey - the primary key value of the master-reference 
+     * @param referenceKey - the primary key value of the master-reference
      * @param selectedRow - the currently selected row of the master-reference
      */
     updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, treePath?:number[], referenceKey?:string) {
@@ -505,6 +505,54 @@ export default class ContentStore{
     }
 
     /**
+     * Inserts a new datarow into an existing dataset. Always inserts the datarow into the next row of the selected-row.
+     * If there is no row selected, the row is inserted at index 0.
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider 
+     * @param referenceKey - the primary key value of the master-reference
+     */
+    insertDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
+        const existingMap = this.dataProviderData.get(compId);
+        if (existingMap) {
+            const existingProvider = existingMap.get(dataProvider);
+            if (existingProvider) {
+                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+                if (existingData) {
+                    const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+                    if (selectedRow) {
+                        existingData.splice(selectedRow.index + 1, 0, {});
+                    }
+                    else {
+                        existingData.splice(0, 0, {});
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes a datarow from an existing dataset. Deletes the selected-row
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider 
+     * @param referenceKey - the primary key value of the master-reference
+     */
+    deleteDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
+        const existingMap = this.dataProviderData.get(compId);
+        if (existingMap) {
+            const existingProvider = existingMap.get(dataProvider);
+            if (existingProvider) {
+                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+                if (existingData) {
+                    const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+                    if (selectedRow) {
+                        existingData.splice(selectedRow.index, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Returns either a part of the data of a dataprovider specified by "from" and "to" or all data
      * @param compId - the component id of a screen
      * @param dataProvider - the dataprovider
@@ -548,11 +596,11 @@ export default class ContentStore{
     setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
         const existingMapRow = this.dataProviderSelectedRow.get(compId);
         if (existingMapRow) {
-            existingMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath, selectedColumn: selectedColumn});
+            existingMapRow.set(dataProvider, {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn});
         }
         else {
             const tempMapRow:Map<string, any> = new Map<string, any>();
-            tempMapRow.set(dataProvider, {dataRow: dataRow, selectedIndex: index, treePath: treePath, selectedColumn: selectedColumn});
+            tempMapRow.set(dataProvider, {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn});
             this.dataProviderSelectedRow.set(compId, tempMapRow);
         }
         this.subManager.emitRowSelect(compId, dataProvider);

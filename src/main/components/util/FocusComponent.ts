@@ -1,5 +1,3 @@
-import _ from "underscore";
-
 /**
  * Focuses the next or previous element based on tabindex.
  * @param id - the id of the currently focused element

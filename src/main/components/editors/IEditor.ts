@@ -30,4 +30,5 @@ export interface IEditor extends BaseComponent{
     nullable?: boolean
     readonly?: boolean
     stopCellEditing?: Function
+    clicked?: boolean
 }

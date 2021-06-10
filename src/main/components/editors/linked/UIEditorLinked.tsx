@@ -15,7 +15,7 @@ import { appContext } from "../../../AppProvider";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, getMetaData, handleEnterKey} from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey} from "../../util";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{

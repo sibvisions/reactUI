@@ -29,7 +29,6 @@ import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
-import { getMetaData } from "./components/util";
 
 /** Type for query */
 type queryType = {
@@ -276,7 +275,7 @@ class Server {
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
             const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).dataRow;
-            const idx = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).selectedIndex;
+            const idx = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).index;
             this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
         }
     }

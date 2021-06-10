@@ -63,11 +63,12 @@ type CellEditor = {
     resource: string,
     cellId: ISelectedCell,
     tableContainer?: any,
-    selectNext:Function,
-    selectPrevious:Function,
-    enterNavigationMode:number,
-    tabNavigationMode:number,
-    selectedRowRef: React.MutableRefObject<any>,
+    selectNext: Function,
+    selectPrevious: Function,
+    enterNavigationMode: number,
+    tabNavigationMode: number,
+    selectedRow: any,
+    className?: string
 }
 
 interface ISelectedCell {
@@ -81,13 +82,15 @@ export const SelectedCellContext = createContext<ISelectedCell>({})
  * @param props - props received by Table
  */
 const CellEditor: FC<CellEditor> = (props) => {
-    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
+    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer, className } = props;
     
     /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);
 
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
+
+    const clickRef = useRef<boolean>(false)
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -101,16 +104,24 @@ const CellEditor: FC<CellEditor> = (props) => {
     const [waiting, setWaiting] = useState<boolean>(false);
 
     /** When a new selectedRow is set, set waiting to false */
-    useEffect(() => {        
-        const pickedVals = _.pick(props.selectedRowRef, Object.keys(props.pk))
-        if (waiting && _.isEqual(pickedVals, props.pk)) {
-            setWaiting(false);
+    useEffect(() => {
+        if (props.selectedRow) {
+            const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
+            if (waiting && _.isEqual(pickedVals, props.pk)) {
+                setWaiting(false);
+            }
         }
-    }, [props.selectedRowRef, edit])
+    }, [props.selectedRow, edit])
 
     useEffect(() => {
-        if (edit && cellContext.selectedCellId !== props.cellId.selectedCellId) {
-            setEdit(false)
+        if (cellContext.selectedCellId !== props.cellId.selectedCellId) {
+            if (edit) {
+                setEdit(false);
+            }
+            clickRef.current = false;
+        }
+        if (cellContext.selectedCellId === props.cellId.selectedCellId && (className === "ChoiceCellEditor" || className === "CheckBoxCellEditor")) {
+            setEdit(true);
         }
     }, [cellContext.selectedCellId]);
 
@@ -156,11 +167,12 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     useEventHandler(document.body, "keydown", (e:any) => handleCellKeyDown(e));
 
+
     /** Either return the correctly rendered value or a in-cell editor */
     return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         ((edit && !waiting) ? 
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing)}
+                {displayEditor(columnMetaData, props, stopCellEditing, clickRef.current)}
             </div>
         :
             <div
@@ -171,7 +183,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                         setEdit(true);
                     }
                 }}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true); clickRef.current = true})}
             </div>
         ) : (!edit ? 
             <div
@@ -181,7 +193,7 @@ const CellEditor: FC<CellEditor> = (props) => {
             </div>
             :
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing)}
+                {displayEditor(columnMetaData, props, stopCellEditing, clickRef.current)}
             </div>)
 }
 
@@ -235,8 +247,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
-    const selectedRowRef = useRef<any>(selectedRow)
-
     const pageKeyPressed = useRef<boolean>(false);
 
     const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined)
@@ -279,7 +289,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const containerLeft = container.scrollLeft;
             const containerRight = containerLeft + container.clientWidth;
     
-            const eleTop = cell.rowIndex * 37;
+            const eleTop = cell.rowIndex * 35;
             const eleBottom = eleTop + ele.clientHeight;
         
             const containerTop = container.scrollTop;
@@ -322,7 +332,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const moveDirections = isVisible(selectedElem, container, cell);
                 if (pageKeyPressed.current !== false) {
                     pageKeyPressed.current = false;
-                    container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 37)
+                    container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 35)
                 }
                 else if (selectedElem !== null) {
                     let sLeft:number = container.scrollLeft
@@ -333,16 +343,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                     }
 
                     if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                        sTop = cell.rowIndex * 37;
+                        sTop = cell.rowIndex * 35;
                     }
                     else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                        sTop = container.scrollTop + (isNext ? 37 : -37);
+                        sTop = container.scrollTop + (isNext ? 35 : -35);
                     }
 
                     container.scrollTo(sLeft, sTop);
                 }
                 else {
-                    container.scrollTo(container.scrollLeft, cell.rowIndex * 37);
+                    container.scrollTo(container.scrollLeft, cell.rowIndex * 35);
                 }
             }
         }, 0)
@@ -409,7 +419,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length*37 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length*35 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+4}
                     sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
@@ -550,13 +560,9 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
     }, [virtualRows, selectedRow, columnOrder, tableSelect]);
 
-    useEffect(() => {
-        selectedRowRef.current = selectedRow
-    }, [selectedRow])
-
     const selectNextCell = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRowRef.current!.selectedColumn) + 1;
+        if (selectedRow !== undefined) {
+            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
                 await sendSelectRequest(newSelectedColumn);
@@ -571,8 +577,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectedRow, columnOrder, sendSelectRequest])
 
     const selectPreviousCell = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRowRef.current!.selectedColumn) - 1;
+        if (selectedRow !== undefined) {
+            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
                 await sendSelectRequest(newSelectedColumn);
@@ -587,8 +593,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectedRow, columnOrder, sendSelectRequest])
 
     const selectNextRow = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const nextSelectedRowIndex = selectedRowRef.current.index + 1;
+        if (selectedRow !== undefined) {
+            const nextSelectedRowIndex = selectedRow.index + 1;
             if (nextSelectedRowIndex < providerData.length) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
@@ -606,8 +612,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
     const selectPreviousRow = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const prevSelectedRowIndex = selectedRowRef.current.index - 1;
+        if (selectedRow !== undefined) {
+            const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedRowIndex >= 0) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
@@ -625,9 +631,9 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
     const selectNextCellAndRow =  useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRowRef.current!.selectedColumn) + 1;
-            const nextSelectedRowIndex = selectedRowRef.current.index + 1;
+        if (selectedRow !== undefined) {
+            const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
+            const nextSelectedRowIndex = selectedRow.index + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
                 await sendSelectRequest(newSelectedColumn);
@@ -649,9 +655,9 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
     const selectPreviousCellAndRow = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRowRef.current !== undefined) {
-            const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRowRef.current!.selectedColumn) - 1;
-            const prevSelectedRowIndex = selectedRowRef.current.index - 1;
+        if (selectedRow !== undefined) {
+            const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
+            const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[prevSelectedColumnIndex];
                 await sendSelectRequest(newSelectedColumn);
@@ -783,11 +789,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                     resource={context.server.RESOURCE_URL}
                     cellId={{ selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() }}
                     tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                    selectNext={() => selectNext.current && selectNext.current()}
-                    selectPrevious={() => selectPrevious.current && selectPrevious.current()}
+                    selectNext={(navigationMode:Navigation) => selectNext.current && selectNext.current(navigationMode)}
+                    selectPrevious={(navigationMode:Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
                     enterNavigationMode={enterNavigationMode}
                     tabNavigationMode={tabNavigationMode}
-                    selectedRowRef={selectedRowRef}
+                    selectedRow={selectedRow}
+                    className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
                 />
                 }
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
@@ -797,7 +804,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id, 
        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-       enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder])
+       enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
@@ -936,11 +943,20 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "Insert":
                 if (metaData?.insertEnabled) {
+                    context.contentStore.insertDataProviderData(compId, props.dataBook);
                     const insertReq = createInsertRecordRequest();
                     insertReq.dataProvider = props.dataBook;
                     context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD);
                 }
                 break;
+            case "Delete":
+                if (metaData?.deleteEnabled) {
+                    context.contentStore.deleteDataProviderData(compId, props.dataBook);
+                    const selectReq = createSelectRowRequest();
+                    selectReq.dataProvider = props.dataBook;
+                    selectReq.componentId = props.name;
+                    context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.DELETE_RECORD)
+                }
         }
     }
 
@@ -1035,7 +1051,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     virtualScroll={virtualEnabled}
                     rows={rows}
                     totalRecords={providerData.length}
-                    virtualRowHeight={37}
+                    virtualRowHeight={35}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns
@@ -1044,13 +1060,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                     onColumnResizeEnd={handleColResizeEnd}
                     onColReorder={handleColReorder}
                     rowClassName={(data) => {
-                        const rowIndex = providerData.findIndex((x: any) => x === data)
-                        let test: any = {}
-                        test["__" + rowIndex] = true;
+                        let cn: any = {}
                         if (selectedRow && selectedRow.data === data) {
-                            test["p-highlight"] = true;
+                            cn["p-highlight"] = true;
                         }
-                        return test
+                        return cn
                     }}
                     tabIndex={props.tabIndex}>
                     {columns}

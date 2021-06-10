@@ -45,7 +45,7 @@ export function getBooleanValue(input: string | boolean | number | undefined) {
  */
 const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
-    const cbxWrapperRef = useRef(null);
+    const cbxWrapperRef = useRef<any>(null);
 
     /** Reference for the checkbox */
     const cbxRef = useRef<any>(null);
@@ -114,8 +114,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     /** The CheckBox type */
     const cbxType = getCbxType(props.cellEditor.selectedValue)
+
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(getBooleanValue(selectedRow))
+    const [checked, setChecked] = useState(getBooleanValue(selectedRow));
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
@@ -136,7 +138,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     }
 
     useEffect(() => {
-        if (baseProps.id === "") {
+        if (isCellEditor && props.clicked) {
             handleOnChange()
         }
     }, []);
@@ -144,6 +146,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     useEventHandler(cbxRef.current ? cbxRef.current.element : undefined, "keydown", (event) => {
         event.stopPropagation();
         handleEnterKey(event, event.target, props.id, props.stopCellEditing)
+        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
+            props.stopCellEditing(event)
+        }
+        if ((event as KeyboardEvent).key === " ") {
+            event.preventDefault();
+            handleOnChange();
+        }
     });
 
     return (

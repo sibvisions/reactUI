@@ -1,22 +1,17 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
-import { useParams } from "react-router";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useTranslation, useMenuItems, useProfileMenuItems } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
-import { createLogoutRequest } from "../../main/factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../main/request";
-import { serverMenuButtons } from "../../main/response";
-import { parseIconData } from "../../main/components/compprops";
 import { IForwardRef } from "../../main/IForwardRef";
-import { MenuItemCommandParams, MenuItem } from "primereact/api";
+import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 
 /** Extends the PrimeReact MenuItem with componentId */

@@ -34,6 +34,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
+    const wrapRef = useRef<HTMLSpanElement>(null);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -125,9 +127,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     /**
-     * When the ChoiceCellEditor is clicked, send a setValuesRequest to the server
+     * Send a sendValues request with the next value to the server
      */
-    const handleClick = () => {
+    const setNextValue = () => {
         const setValReq = createSetValuesRequest();
         setValReq.componentId = props.name;
         setValReq.columnNames = [props.columnName];
@@ -147,27 +149,36 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }
 
     useEffect(() => {
-        if (isCellEditor) {
-            handleClick()
+        if (wrapRef.current) {
+            wrapRef.current.focus()
         }
+        if (isCellEditor && props.clicked) {
+            setNextValue()
+        } 
     }, []);
     
     return (
         <span
+            ref={wrapRef}
             className="rc-editor-choice"
             style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
             onKeyDown={(event) => {
-                if (!isCellEditor) {
-                    handleEnterKey(event, event.target, props.name, props.stopCellEditing)
+                event.stopPropagation();
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
+                    props.stopCellEditing(event)
+                }
+                if (event.key === " ") {
+                    setNextValue()
                 }
             }}
             tabIndex={props.tabIndex ? props.tabIndex : 0}>
             <img
                 ref={imgRef}
-                id={props.id !== "" ? props.name : undefined}
+                id={!isCellEditor ? props.name : undefined}
                 className="rc-editor-choice-img"
                 alt=""
-                onClick={handleClick}
+                onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?
                     context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
                         currentImageValue

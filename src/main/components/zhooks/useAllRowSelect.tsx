@@ -27,7 +27,7 @@ const useAllRowSelect = (compId:string, dataBooks:string[], column?:string) => {
 
         context.subscriptions.subscribeToScreenRowChange(compId, onScreenSelectedRowChange);
         return () => context.subscriptions.unsubscribeFromScreenRowChange(compId);
-    }, [context.contentStore, context.subscriptions, compId, dataBooks]);
+    }, [context.contentStore, context.subscriptions, compId, dataBooks, column]);
 
     return selectedRowMap;
 }

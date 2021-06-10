@@ -23,10 +23,10 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
         if (sr) {
             if (column && sr.dataRow) {
-                return !showIndex ? sr.dataRow[column] : {data: sr.dataRow[column], index: sr.selectedIndex, selectedColumn: sr.selectedColumn};
+                return !showIndex ? sr.dataRow[column] : {data: sr.dataRow[column], index: sr.index, selectedColumn: sr.selectedColumn};
             }
             else {
-                return !showIndex ? sr.dataRow : {data: sr.dataRow, index: sr.selectedIndex, selectedColumn: sr.selectedColumn};
+                return !showIndex ? sr.dataRow : {data: sr.dataRow, index: sr.index, selectedColumn: sr.selectedColumn};
             }
         }
 
@@ -45,10 +45,10 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         const onRowSelection = (newRow: any) => {
             if (newRow) {
                 if(column && newRow.dataRow) {
-                    setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.selectedIndex, selectedColumn: newRow.selectedColumn});
+                    setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.index, selectedColumn: newRow.selectedColumn});
                 }
                 else {
-                    setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.selectedIndex, selectedColumn: newRow.selectedColumn});
+                    setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.index, selectedColumn: newRow.selectedColumn});
                 }
             }
             else {

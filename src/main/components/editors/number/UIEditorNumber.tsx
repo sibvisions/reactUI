@@ -23,7 +23,6 @@ import { getEditorCompId,
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize,
-         focusComponent,
          handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
@@ -188,7 +187,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             value={value}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
-            onChange={event => {console.log(event.value); setValue(event.value)}}
+            onChange={event => setValue(event.value)}
             onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
             disabled={!props.cellEditor_editable_}
             autoFocus={props.autoFocus ? true : props.id === "" ? true : false}

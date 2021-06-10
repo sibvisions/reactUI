@@ -7,7 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useEventHandler, useProperties, useRowSelect } from "../../zhooks"
+import { useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -69,7 +69,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** The metadata for the TextCellEditor */
     const cellEditorMetaData:LengthBasedColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as LengthBasedColumnDescription;
@@ -123,32 +123,35 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
-    const handleOnKeyDown = useCallback((event:any, textArea:boolean) => {
+    const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
-        if (textArea) {
-            if (event.key === "Enter" && event.shiftKey) {
-                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+        handleEnterKey(event, event.target, name, stopCellEditing);  
+        if (event.key === "Tab" && isCellEditor && stopCellEditing) {
+            (event.target as HTMLElement).blur();
+            stopCellEditing(event);
+        }
+    }, [name, stopCellEditing, isCellEditor]);
+
+    const taOnKeyDown = useCallback((event:any) => {
+        event.stopPropagation();
+        if (event.key === "Enter" && event.shiftKey) {
+            handleEnterKey(event, event.target, name, stopCellEditing);
+        }
+        else if (event.key === "Tab" && isCellEditor && stopCellEditing) {
+            (event.target as HTMLElement).blur();
+            stopCellEditing(event);
+        }
+    },[name, stopCellEditing, isCellEditor])
+
+    const pwOnKeyDown = useCallback((event:any) => {
+        event.stopPropagation();
+        if (isCellEditor && stopCellEditing) {
+            if (event.key === "Enter" || event.key === "Tab") {
+                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(dataRow, name, columnName, text, context.server));
+                stopCellEditing(event);
             }
         }
-        else {
-            if (event.key === "Enter" && fieldType === FieldTypes.PASSWORD && isCellEditor && props.stopCellEditing) {
-                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server));
-                props.stopCellEditing(event)
-            }
-            else {
-                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-            }     
-        }
-        if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
-            if (fieldType === FieldTypes.PASSWORD) {
-                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server));
-            }
-            else {
-                (event.target as HTMLElement).blur();
-            }
-            props.stopCellEditing(event);
-        }
-    }, [props, text, isCellEditor, baseProps, context.server, fieldType])
+    }, [baseProps, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
 
     //useEventHandler(textRef.current ? textRef.current : undefined, "keydown", (e) => handleOnKeyDown(e, fieldType === FieldTypes.TEXTAREA ? true : false))
 
@@ -167,10 +170,10 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onBlur: () => {console.log(text, lastValue); onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))},
-            onKeyDown: (e:any) => handleOnKeyDown(e, fieldType === FieldTypes.TEXTAREA ? true : false)
+            onBlur: () => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)),
+            onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
         }
-    }, [baseProps, context.server, fieldType, handleOnKeyDown, isCellEditor, layoutValue, 
+    }, [baseProps, context.server, fieldType, isCellEditor, layoutValue, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.cellEditor_editable_, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign]);
 

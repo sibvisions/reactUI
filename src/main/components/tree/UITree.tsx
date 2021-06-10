@@ -319,7 +319,7 @@ const UITree: FC<ITree> = (baseProps) => {
 
         for (let [key, data] of sortedSR.entries()) {
             if (!isSelfJoined(key)) {
-                selectedIndices.push(data.selectedIndex);
+                selectedIndices.push(data.index);
                 const path = new TreePath(selectedIndices);
                 if (path.getParentPath().length() > 0) {
                     expKeys[path.getParentPath().toString()] = true;
@@ -327,7 +327,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 if (getDataBook(path.length())) {
                     if (props.detectEndNode !== false) {
                         const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
-                        const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.selectedIndex]];
+                        const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.index]];
                         for (let [i, value] of dataRowChildren.entries()) {
                             await sendTreeFetch(value, getReferencedNode(path.length() !== 1 ? path.getParentPath().getChildPath(i) : path))
                             .then((response:any) => tempTreeMap = new Map([...tempTreeMap, ...response.treeMap]));
@@ -348,7 +348,7 @@ const UITree: FC<ITree> = (baseProps) => {
         if (isSelfJoined(lastDatabook)) {
             const responseValue = sortedSR.get(lastDatabook);
             const metaData = getMetaData(compId, lastDatabook, context.contentStore);
-            const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.selectedIndex);
+            const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.index);
             //init the previous row with the root reference
             let prevRow = getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames);
 

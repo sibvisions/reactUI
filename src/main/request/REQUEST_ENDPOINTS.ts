@@ -8,6 +8,7 @@ enum REQUEST_ENDPOINTS  {
     OPEN_SCREEN = "/api/v2/openScreen",
     DEVICE_STATUS = "/api/deviceStatus",
     UPLOAD = "/upload",
+    DELETE_RECORD = "/api/dal/deleteRecord",
     INSERT_RECORD = "/api/dal/insertRecord",
     SELECT_ROW = "/api/dal/selectRecord",
     SELECT_COLUMN = "/api/dal/selectColumn",

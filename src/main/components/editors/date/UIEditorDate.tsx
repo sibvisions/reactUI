@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
@@ -223,11 +223,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             (calendar.current as any).hideOverlay();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing)
         }
-        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
-            (event.target as HTMLElement).blur();
-            props.stopCellEditing(event);
+        if ((event as KeyboardEvent).key === "Tab") {
+            (calendar.current as any).hideOverlay();
+            if (isCellEditor && props.stopCellEditing) {
+                (event.target as HTMLElement).blur();
+                props.stopCellEditing(event);
+            }
         }
-    })
+    });
 
     useEffect(() => {
         setTimeout(() => {
@@ -257,7 +260,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             value={selectedRow ? new Date(selectedRow) : undefined}
             appendTo={document.body}
             onChange={event => onSelectCallback(event.value)}
-            onBlur={handleDateInput}
+            onBlur={() => handleDateInput()}
             disabled={!props.cellEditor_editable_}
         />
     )
