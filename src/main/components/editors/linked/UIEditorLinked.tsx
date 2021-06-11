@@ -249,11 +249,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             (linkedRef.current as any).hideOverlay();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
-        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
-            (event.target as HTMLElement).blur()
-            props.stopCellEditing(event)
+        else if (isCellEditor && props.stopCellEditing) {
+            if ((event as KeyboardEvent).key === "Tab") {
+                (event.target as HTMLElement).blur()
+                props.stopCellEditing(event);
+            }
+            else if ((event as KeyboardEvent).key === "Escape") {
+                props.stopCellEditing(event)
+            }
         }
-    })
+    });
 
     /** Returns the cached data based on first- and lastRow */
     const suggestionData = useMemo(() => {

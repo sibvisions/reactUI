@@ -162,9 +162,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         event.stopPropagation();
         if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-            if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
-                (event.target as HTMLElement).blur();
-                props.stopCellEditing(event);
+            if (isCellEditor && props.stopCellEditing) {
+                if ((event as KeyboardEvent).key === "Tab") {
+                    (event.target as HTMLElement).blur();
+                    props.stopCellEditing(event);
+                }
+                else if ((event as KeyboardEvent).key === "Escape") {
+                    props.stopCellEditing(event);
+                }
             }
             if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
                 event.preventDefault();
@@ -188,7 +193,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
+            onBlur={() => {console.log('blur'); onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}}
             disabled={!props.cellEditor_editable_}
             autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
         />

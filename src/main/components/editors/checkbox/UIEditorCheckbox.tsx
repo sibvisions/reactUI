@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useEventHandler, useProperties, useRowSelect } from "../../zhooks";
+import { useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -45,10 +45,7 @@ export function getBooleanValue(input: string | boolean | number | undefined) {
  */
 const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
-    const cbxWrapperRef = useRef<any>(null);
-
-    /** Reference for the checkbox */
-    const cbxRef = useRef<any>(null);
+    const wrapRef = useRef<any>(null);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -123,8 +120,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && cbxWrapperRef.current){
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), cbxWrapperRef.current, onLoadCallback)
+        if(onLoadCallback && wrapRef.current){
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
@@ -138,36 +135,38 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     }
 
     useEffect(() => {
+        if (wrapRef.current) {
+            wrapRef.current.focus()
+        }
         if (isCellEditor && props.clicked) {
-            handleOnChange()
+            handleOnChange();
         }
     }, []);
 
-    useEventHandler(cbxRef.current ? cbxRef.current.element : undefined, "keydown", (event) => {
-        event.stopPropagation();
-        handleEnterKey(event, event.target, props.id, props.stopCellEditing)
-        if ((event as KeyboardEvent).key === "Tab" && isCellEditor && props.stopCellEditing) {
-            props.stopCellEditing(event)
-        }
-        if ((event as KeyboardEvent).key === " ") {
-            event.preventDefault();
-            handleOnChange();
-        }
-    });
-
     return (
         <span
-            ref={cbxWrapperRef}
-            id={props.id !== "" ? props.name : undefined}
+            ref={wrapRef}
+            id={!isCellEditor ? props.name : undefined}
             className="rc-editor-checkbox"
             style={{
                 ...layoutValue.get(props.id) || baseProps.editorStyle,
                 backgroundColor: props.cellEditor_background_,
                 justifyContent: alignments?.ha,
                 alignItems: alignments?.va
-            }}>
+            }}
+            onKeyDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
+                    props.stopCellEditing(event)
+                }
+                if (event.key === " ") {
+                    handleOnChange()
+                }
+            }}
+            tabIndex={props.tabIndex ? props.tabIndex : 0}>
             <Checkbox
-                ref={cbxRef}
                 inputId={id}
                 checked={checked}
                 onChange={() => handleOnChange()}

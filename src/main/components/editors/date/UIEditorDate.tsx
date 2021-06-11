@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
@@ -100,6 +100,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
 
+    const [dateValue, setDateValue] = useState<any>(selectedRow);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
@@ -124,34 +126,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    setDateLocale(context.contentStore.locale);
+    const escapePressed = useRef<boolean>(false);
 
-    /**
-     * When a date is selected in the Datepicker call the onBlurCallBack function to send the value to the server
-     * and call overridePrime to remove PrimeReact time if needed
-     * @param submitValue 
-     */
-    const onSelectCallback = (submitValue:any) => {
-        onBlurCallback(
-            baseProps, 
-            submitValue 
-                ? submitValue.getTime() 
-                : null, 
-            lastValue.current, 
-            () => sendSetValues(
-                props.dataRow, 
-                props.name, 
-                props.columnName, 
-                submitValue 
-                    ? submitValue.getTime() 
-                    : null, 
-                context.server
-            )
-        );
-        if (calendarInput.current) {
-            calendarInput.current.focus();
-        }
-    }
+    setDateLocale(context.contentStore.locale);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -170,7 +147,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     useEffect(() => {
         setTimeout(() => {
-            if (calendarInput.current && props.stopCellEditing) {
+            if (calendarInput.current && isCellEditor) {
                 calendarInput.current?.focus()
             }
         },0)
@@ -178,7 +155,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[])
 
     useEffect(() => {
-        lastValue.current = selectedRow;
+        lastValue.current = dateValue;
     },[selectedRow])
 
     /**
@@ -220,16 +197,21 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEventHandler(calendarInput.current || undefined, "keydown", (event) => {
         event.stopPropagation();
         if ((event as KeyboardEvent).key === "Enter") {
-            (calendar.current as any).hideOverlay();
-            handleEnterKey(event, event.target, props.name, props.stopCellEditing)
+            handleDateInput();
+            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
-        if ((event as KeyboardEvent).key === "Tab") {
-            (calendar.current as any).hideOverlay();
-            if (isCellEditor && props.stopCellEditing) {
-                (event.target as HTMLElement).blur();
+        else if (isCellEditor && props.stopCellEditing) {
+            if ((event as KeyboardEvent).key === "Tab") {
+                handleDateInput();
+                props.stopCellEditing!(event);
+            }
+            else if ((event as KeyboardEvent).key === "Escape") {
+                escapePressed.current = true;
                 props.stopCellEditing(event);
+                
             }
         }
+
     });
 
     useEffect(() => {
@@ -240,7 +222,16 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }, 33)
     }, [calendar.current])
 
-    return(
+    useEffect(() => {
+        return () => {
+            if (isCellEditor && !escapePressed.current) {
+                handleDateInput();
+            } 
+        }
+    }, [])
+
+
+    return (
         <CustomCalendar
             ref={calendar}
             id={!isCellEditor ? props.name : undefined}
@@ -257,10 +248,15 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             showIcon={true}
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
-            value={selectedRow ? new Date(selectedRow) : undefined}
+            value={dateValue ? new Date(dateValue) : undefined}
             appendTo={document.body}
-            onChange={event => onSelectCallback(event.value)}
-            onBlur={() => handleDateInput()}
+            onChange={event => {
+                setDateValue(event.value ? (event.value as Date).getTime() : null);
+                if (calendarInput.current) {
+                    calendarInput.current.focus();
+                }
+            }}
+            onHide={() =>  handleDateInput()}
             disabled={!props.cellEditor_editable_}
         />
     )

@@ -17,12 +17,13 @@ const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDes
     useEffect(() => {
         const handleClickOutside = (event: any) => {
             if (ref.current && !ref.current.contains(event.target) && !event.target.classList.contains('p-autocomplete-item') && !event.target.closest(".p-datepicker")) {
-                if (metaData?.cellEditor?.className === "LinkedCellEditor" || metaData?.cellEditor?.className === "DateCellEditor") {
+                if (metaData?.cellEditor.contentType?.includes("multiline") || metaData?.cellEditor.contentType?.includes("singleline")) {
+                    ref.current.children[0].blur();
+                }
+                else {
                     ref.current.children[0].children[0].blur();
                 }
-                else
-                    ref.current.children[0].blur();
-                setEdit(false)
+                setEdit(false);
             }
         }
 

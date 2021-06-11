@@ -83,6 +83,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    const escapePressed = useRef<boolean>(false)
+
     const getFieldType = useCallback(() => {
         const contentType = props.cellEditor.contentType
         if (contentType?.includes("multiline")) {
@@ -125,10 +127,16 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
-        handleEnterKey(event, event.target, name, stopCellEditing);  
-        if (event.key === "Tab" && isCellEditor && stopCellEditing) {
-            (event.target as HTMLElement).blur();
-            stopCellEditing(event);
+        handleEnterKey(event, event.target, name, stopCellEditing);
+        if (isCellEditor && stopCellEditing) {
+            if (event.key === "Tab") {
+                (event.target as HTMLElement).blur();
+                stopCellEditing(event);
+            }
+            else if (event.key === "Escape") {
+                escapePressed.current = true;
+                stopCellEditing(event);
+            }
         }
     }, [name, stopCellEditing, isCellEditor]);
 
@@ -137,9 +145,15 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         if (event.key === "Enter" && event.shiftKey) {
             handleEnterKey(event, event.target, name, stopCellEditing);
         }
-        else if (event.key === "Tab" && isCellEditor && stopCellEditing) {
-            (event.target as HTMLElement).blur();
-            stopCellEditing(event);
+        if (isCellEditor && stopCellEditing) {
+            if (event.key === "Tab") {
+                (event.target as HTMLElement).blur();
+                stopCellEditing(event);
+            }
+            else if (event.key === "Escape") {
+                escapePressed.current = true;
+                stopCellEditing(event);
+            }
         }
     },[name, stopCellEditing, isCellEditor])
 
@@ -150,10 +164,12 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(dataRow, name, columnName, text, context.server));
                 stopCellEditing(event);
             }
+            else if (event.key === "Escape") {
+                escapePressed.current = true;
+                stopCellEditing(event);
+            }
         }
     }, [baseProps, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
-
-    //useEventHandler(textRef.current ? textRef.current : undefined, "keydown", (e) => handleOnKeyDown(e, fieldType === FieldTypes.TEXTAREA ? true : false))
 
     const primeProps: any = useMemo(() => {
         return {
@@ -170,7 +186,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onBlur: () => onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server)),
+            onBlur: () => {
+                if (!escapePressed.current) {
+                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))
+                }
+            },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
         }
     }, [baseProps, context.server, fieldType, isCellEditor, layoutValue, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
