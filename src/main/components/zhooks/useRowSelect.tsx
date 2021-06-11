@@ -31,7 +31,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         }
 
 
-    }, [context.contentStore, dataProvider, column, compId]);
+    }, [context.contentStore.dataProviderSelectedRow, dataProvider, column, compId]);
 
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);

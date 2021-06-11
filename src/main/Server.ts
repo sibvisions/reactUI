@@ -49,6 +49,7 @@ class Server {
         this.contentStore = store
         this.subManager = subManager
         this.history = history;
+        this.openRequests = new Map<any, Promise<any>>();
     }
 
     /** Application name */
@@ -63,6 +64,8 @@ class Server {
     subManager:SubscriptionManager;
     /** the react routers history object */
     history?:History<any>;
+    /** a map of still open requests */
+    openRequests: Map<any, Promise<any>>;
     /**
      * Function to show a toast
      * @param message - message to show
@@ -93,8 +96,8 @@ class Server {
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
      */
-    sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean){
-        return new Promise<void>((resolve) => {
+    sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean, waitForOpenRequests?:boolean){
+        let promise = new Promise<void>((resolve) => {
             this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
@@ -112,8 +115,19 @@ class Server {
             .then(() => resolve())
             .catch(error => {
                 console.error(error)
+            }).finally(() => {
+                this.openRequests.delete(request);
             });
-        }) 
+        })
+
+        if (waitForOpenRequests && this.openRequests.size) {
+            const singlePromise = promise;
+            promise = Promise.all(this.openRequests.values()).then(() => singlePromise);
+            this.openRequests.set(request, promise);
+        } else {
+            this.openRequests.set(request, promise);
+        }
+        return promise;
     }
 
     /**
@@ -258,6 +272,7 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string){
+        console.log('process', selectedColumn);
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
@@ -318,6 +333,7 @@ class Server {
         this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
         const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(fetchData.dataProvider)?.selectedColumn;
+        console.log('process fetch');
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
     }
 
@@ -343,6 +359,7 @@ class Server {
             await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
         }
         else {
+            console.log('process change')
             const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
