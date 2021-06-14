@@ -261,7 +261,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.componentId = props.name;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN);
+        await context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true);
     }, [props.dataBook, props.name, context.server])
 
     const tableSelect = useCallback((multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
