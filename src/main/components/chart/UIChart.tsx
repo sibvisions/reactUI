@@ -16,6 +16,7 @@ import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
+import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -66,24 +67,6 @@ enum CHART_STYLES {
     /** Style constant for showing a ring chart. */
     RING = 103,
 }
-
-/**
- * Fetches the chart color & point settings from the css variables
- * @param elem - Optional reference element to use for css variable fetching
- * @returns An Object with the colors, points & overlapOpacity value
- */
- function getSettingsFromCSSVar(elem?: HTMLElement | null) {
-    const style = getComputedStyle(elem || document.body);
-    const colors = style.getPropertyValue('--chart-colors').split(',').map(v => v.trim());
-    const points = style.getPropertyValue('--chart-points').split(',').map(v => v.trim());
-    const overlapOpacity = parseFloat(style.getPropertyValue('--chart-overlap-opacity')) || .5;
-    return {
-        colors,
-        points,
-        overlapOpacity,
-    }
-}
-
 
 const pointStyles = [
     'rect',
@@ -355,7 +338,21 @@ const UIChart: FC<IChart> = (baseProps) => {
         //if pie chart & multiple y-Axes use the y column labels otherwise generate labels based on x-values
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(rows);
-        const {colors, points, overlapOpacity} = getSettingsFromCSSVar(chartRef.current);
+        const {colors, points, overlapOpacity} = getSettingsFromCSSVar({
+            colors: {
+                cssVar: '--chart-colors',
+                transform: 'csv'
+            },            
+            points: {
+                cssVar: '--chart-points',
+                transform: 'csv'
+            },
+            overlapOpacity:  {
+                cssVar: '--chart-overlap-opacity',
+                transform: 'float',
+                defaultValue: .5
+            }
+        }, chartRef.current);
 
         const opacity = [
             CHART_STYLES.AREA,
