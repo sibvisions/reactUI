@@ -13,5 +13,5 @@ export function sendSaveRequest(dataProvider:string, onlySelected:boolean, serve
     const req = createSaveRequest();
     req.dataProvider = dataProvider;
     req.onlySelected = onlySelected;
-    server.sendRequest(req, REQUEST_ENDPOINTS.SAVE);
+    return server.sendRequest(req, REQUEST_ENDPOINTS.SAVE);
 }

@@ -9,6 +9,7 @@ import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
 import { createCloseScreenRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
+import { TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -22,12 +23,17 @@ export interface IPopup extends IPanel {
 const UIPopupWrapper: FC<IPopup> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
         const csRequest = createCloseScreenRequest();
         csRequest.componentId = baseProps.name;
-        context.server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
+        topbar.show();
+        context.server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).finally(() => {
+            topbar.hide();
+        });
         context.contentStore.closeScreen(baseProps.name as string)
     }
 

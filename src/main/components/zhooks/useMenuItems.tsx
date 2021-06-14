@@ -5,10 +5,13 @@ import { serverMenuButtons } from "../../../main/response";
 import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../compprops";
 import { useParams } from "react-router";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 const useMenuItems = (onUpdate?: (primeMenu: Array<MenuItem>) => void) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItem>>();
     /** The react router params */
@@ -28,7 +31,7 @@ const useMenuItems = (onUpdate?: (primeMenu: Array<MenuItem>) => void) => {
                     items: value.map(menuItems => {
                         const iconData = parseIconData(undefined, menuItems.image)
                         const subMenuItem: MenuItemCustom = {
-                            command: e => menuItems.action(),
+                            command: e => showTopBar(menuItems.action(), topbar),
                             label: menuItems.text,
                             componentId: menuItems.componentId,
                             icon: iconData.icon,

@@ -7,7 +7,7 @@ export type serverMenuButtons = {
     group: string,
     text: string,
     image: string,
-    action: Function,
+    action: () => Promise<any>,
 }
 
 /** Interface for ManuResponse */

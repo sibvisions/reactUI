@@ -13,6 +13,7 @@ import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey } from "../../util";
 import { getAlignments } from "../../compprops";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -67,6 +68,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /**
      * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:
@@ -131,7 +135,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     const handleOnChange = () => {
         setChecked(prevState => !prevState);
-        sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server)
+        showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server), topbar);
     }
 
     useEffect(() => {

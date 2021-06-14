@@ -4,6 +4,7 @@ import { appContext } from "../../../main/AppProvider";
 import { createLogoutRequest } from "../../../main/factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
+import { TopBarContext } from "../topbar/TopBar";
 
 
 const useProfileMenuItems = () => {
@@ -11,6 +12,8 @@ const useProfileMenuItems = () => {
     const context = useContext(appContext);
     /** Current state of translations */
     const translations = useTranslation()
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
     
     const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
 
@@ -19,7 +22,10 @@ const useProfileMenuItems = () => {
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
         context.contentStore.reset();
-        context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT);
+        topbar.show();
+        context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT).finally(() => {
+            topbar.hide();
+        });
     }, [context.server, context.contentStore]);
     
     useEffect(() => {

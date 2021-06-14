@@ -46,6 +46,7 @@
     "react-leaflet": "^3.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
+    "react-topbar-progress-indicator": "^4.1.0",
     "react-transition-group": "^4.4.1",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.2",

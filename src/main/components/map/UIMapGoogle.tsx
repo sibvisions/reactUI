@@ -24,6 +24,7 @@ import { getMarkerIcon,
          sendSaveRequest } from "../util";
 import { IMap } from ".";
 import { IconProps } from "../compprops";
+import { TopBarContext } from "../topbar/TopBar";
 
 /**
  * This component displays a map view with Google Maps
@@ -44,6 +45,8 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const context = useContext(appContext);
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
     /** ComponentId of the screen */

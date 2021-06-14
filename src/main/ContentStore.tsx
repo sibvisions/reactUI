@@ -723,6 +723,7 @@ export default class ContentStore{
             text: title,
             action: () => {
                 window.location.hash = "/home/"+title;
+                return Promise.resolve(true);
             }
         }
 

@@ -12,6 +12,7 @@ import { useTranslation } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
+import { TopBarContext } from "src/main/components/topbar/TopBar";
 
 
 /** Component which handles logging in */
@@ -24,6 +25,8 @@ const Login: FC = () => {
     const context = useContext(appContext);
     /** Current state of translations */
     const translations = useTranslation()
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
@@ -33,7 +36,10 @@ const Login: FC = () => {
         let loginRequestBody = createLoginRequest();
         loginRequestBody.username = username;
         loginRequestBody.password = password;
-        context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN);
+        topbar.show();
+        context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN).finally(() => {
+            topbar.hide();
+        });
         context.subscriptions.emitRegisterCustom();
         context.subscriptions.emitMenuUpdate();
     }

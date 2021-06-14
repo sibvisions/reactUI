@@ -16,6 +16,7 @@ import { createFetchRequest, createFilterRequest } from "../../../factories/Requ
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey} from "../../util";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -56,6 +57,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
@@ -297,7 +301,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
         /** If the text is empty, send null to the server */
         if (!text) {
-            onBlurCallback(baseProps, null, lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, null, context.server));
+            onBlurCallback(baseProps, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, context.server), topbar));
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -313,11 +317,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                         newVal[linkReference.columnNames[i]] = Object.values(foundData[0])[i]; 
                     }
                                            
-                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server));
+                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server), topbar));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
-                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, columnNames, text, context.server));
+                    onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, text, context.server), topbar));
                 }
                     
             }

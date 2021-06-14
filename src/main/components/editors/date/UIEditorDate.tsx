@@ -23,6 +23,7 @@ import { getEditorCompId,
          setDateLocale,
          handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -90,6 +91,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
@@ -201,13 +205,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             baseProps, 
             inputDate instanceof Date && !isNaN(inputDate.getTime()) ? inputDate.getTime() : lastValue.current, 
             lastValue.current, 
-            () => sendSetValues(
-                props.dataRow, 
-                props.name, 
-                props.columnName, 
-                inputDate.getTime(), 
-                context.server
-            )
+            () => showTopBar(sendSetValues(
+                    props.dataRow, 
+                    props.name, 
+                    props.columnName, 
+                    inputDate.getTime(), 
+                    context.server
+                ), topbar)
         );
     }
 

@@ -26,6 +26,7 @@ import { getEditorCompId,
          handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -63,6 +64,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
@@ -204,7 +208,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
+            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))}
             disabled={!props.cellEditor_editable_}
             autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
         />

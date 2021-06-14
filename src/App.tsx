@@ -20,6 +20,7 @@ import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
 import { createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
+import TopBar from './main/components/topbar/TopBar';
 
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
@@ -202,6 +203,7 @@ const App: FC<ICustomContent> = (props) => {
             <Dialog header="Server Error!" visible={showTimeOut} onHide={() => setShowTimeOut(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
+            <TopBar>
             {appReady
                 ? <Switch>
                     <Route exact path={"/login"} render={() => <Login />} />
@@ -211,7 +213,7 @@ const App: FC<ICustomContent> = (props) => {
                 </Switch>
                 : <LoadingScreen />
             }
-
+            </TopBar>
         </>
   );
 }

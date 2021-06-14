@@ -258,7 +258,7 @@ class Server {
             menuItem.action = () => {
                 const openScreenReq = createOpenScreenRequest();
                 openScreenReq.componentId = menuItem.componentId;
-                this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
             }
             this.contentStore.addMenuItem(menuItem, true);
         });

@@ -24,6 +24,7 @@ import { getEditorCompId,
          parseMinSize, 
          parseMaxSize } from "../../util";
 import { LengthBasedColumnDescription } from "../../../response";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -52,6 +53,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
@@ -167,7 +171,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         event.stopPropagation();
         if (isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(dataRow, name, columnName, text, context.server));
+                onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -194,7 +198,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
             onBlur: () => {
                 if (!escapePressed.current) {
-                    onBlurCallback(baseProps, text, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, text, context.server))
+                    onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
