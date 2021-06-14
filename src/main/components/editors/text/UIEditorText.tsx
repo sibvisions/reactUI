@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -124,6 +124,12 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         setText(selectedRow);
         lastValue.current = selectedRow;
     },[selectedRow]);
+
+    useEffect(() => {
+        if (isCellEditor && props.passedKey) {
+            setText("");
+        }
+    }, [])
 
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();

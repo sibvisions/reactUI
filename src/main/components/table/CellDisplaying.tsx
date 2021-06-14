@@ -14,6 +14,7 @@ import { getBooleanValue,
 import { createEditor } from "../../factories/UIFactory";
 import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
+import { PassedToEditor } from "./UITable";
 
 /** 
  * Returns an in-cell editor for the column 
@@ -21,7 +22,7 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
  * @param props - properties of the cell
  * @returns in-cell editor for the column
  */
-export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any, stopCellEditing:Function, clicked:boolean) {
+export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any, stopCellEditing:Function, passedValues:PassedToEditor) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
         editor = createEditor({
@@ -34,7 +35,8 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             editorStyle: {width: "100%", height: "100%"},
             autoFocus: true,
             stopCellEditing: stopCellEditing,
-            clicked: clicked
+            clicked: passedValues.click,
+            passedKey: passedValues.passKey
         }) || editor;
     }
     return editor

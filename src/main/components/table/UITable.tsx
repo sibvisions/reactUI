@@ -53,9 +53,9 @@ enum CellVisibility {
 
 /** Type for CellEditor */
 type CellEditor = {
-    pk: any
-    compId: string
-    name: string
+    pk: any,
+    compId: string,
+    name: string,
     cellData: any,
     dataProvider: string,
     colName: string,
@@ -69,6 +69,11 @@ type CellEditor = {
     tabNavigationMode: number,
     selectedRow: any,
     className?: string
+}
+
+export type PassedToEditor = {
+    click:boolean,
+    passKey:string
 }
 
 interface ISelectedCell {
@@ -90,7 +95,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
 
-    const clickRef = useRef<boolean>(false)
+    const passRef = useRef<PassedToEditor>({click: false, passKey: ""})
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -106,6 +111,9 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** When a new selectedRow is set, set waiting to false */
     useEffect(() => {
         if (props.selectedRow) {
+            if (!edit) {
+                passRef.current = {click: false, passKey: ""};
+            }
             const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
             if (waiting && _.isEqual(pickedVals, props.pk)) {
                 setWaiting(false);
@@ -118,7 +126,6 @@ const CellEditor: FC<CellEditor> = (props) => {
             if (edit) {
                 setEdit(false);
             }
-            clickRef.current = false;
         }
         if (cellContext.selectedCellId === props.cellId.selectedCellId && (className === "ChoiceCellEditor" || className === "CheckBoxCellEditor")) {
             setEdit(true);
@@ -155,24 +162,29 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
 
-    const handleCellKeyDown = useCallback((e:KeyboardEvent) => {
+    const handleCellKeyDown = useCallback((e: KeyboardEvent) => {
         if (cellContext.selectedCellId === props.cellId.selectedCellId) {
             switch (e.key) {
                 case "F2":
-                        setEdit(true);
+                    setEdit(true);
                     break;
+                default:
+                    if (e.key.length === 1) {
+                        passRef.current.passKey = e.key;
+                        setEdit(true);
+                    }
             }
         }
     }, [cellContext.selectedCellId, setEdit])
 
-    useEventHandler(document.body, "keydown", (e:any) => handleCellKeyDown(e));
+    useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
 
     /** Either return the correctly rendered value or a in-cell editor */
     return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         ((edit && !waiting) ? 
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing, clickRef.current)}
+                {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
             </div>
         :
             <div
@@ -183,7 +195,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                         setEdit(true);
                     }
                 }}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true); clickRef.current = true})}
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true); passRef.current.click = true})}
             </div>
         ) : (!edit ? 
             <div
@@ -193,7 +205,7 @@ const CellEditor: FC<CellEditor> = (props) => {
             </div>
             :
             <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing, clickRef.current)}
+                {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
             </div>)
 }
 

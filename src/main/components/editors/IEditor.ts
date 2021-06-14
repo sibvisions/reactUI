@@ -23,12 +23,13 @@ export interface IEditor extends BaseComponent{
     columnName: string,
     dataRow: string,
     eventFocusedGain?: boolean,
-    text:string
-    onSubmit?: Function
-    editorStyle?: CSSProperties
-    autoFocus?: boolean
-    nullable?: boolean
-    readonly?: boolean
-    stopCellEditing?: Function
-    clicked?: boolean
+    text:string,
+    onSubmit?: Function,
+    editorStyle?: CSSProperties,
+    autoFocus?: boolean,
+    nullable?: boolean,
+    readonly?: boolean,
+    stopCellEditing?: Function,
+    clicked?: boolean,
+    passedKey?: string
 }

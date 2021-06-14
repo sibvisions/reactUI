@@ -102,6 +102,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
 
+    /** Mounted state used because useEventHandler ref is null when cell-editor is opened -> not added */
+    const [mounted, setMounted] = useState<boolean>(false)
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
@@ -126,7 +129,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    const escapePressed = useRef<boolean>(false);
+    const alreadySaved = useRef<boolean>(false);
 
     setDateLocale(context.contentStore.locale);
 
@@ -146,16 +149,21 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
+        setMounted(true)
         setTimeout(() => {
             if (calendarInput.current && isCellEditor) {
                 calendarInput.current?.focus()
+                if (props.passedKey) {
+                    //TODO: Value changing isn't very good here but setting the state is not possible because the state needs to be a date...
+                    calendarInput.current.value = props.passedKey
+                }
             }
         },0)
-
     },[])
 
     useEffect(() => {
-        lastValue.current = dateValue;
+        setDateValue(new Date(selectedRow));
+        lastValue.current = selectedRow;
     },[selectedRow])
 
     /**
@@ -179,10 +187,19 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 ...dateFormats
             ], new Date(), { locale: getDateLocale() });
         }
+
+        const isValidDate = inputDate instanceof Date && !isNaN(inputDate.getTime());
+
+        if (isValidDate) {
+            setDateValue(inputDate)
+        }
+        else {
+            setDateValue(new Date(lastValue.current));
+        }
         
         onBlurCallback(
             baseProps, 
-            inputDate.getTime(), 
+            inputDate instanceof Date && !isNaN(inputDate.getTime()) ? inputDate.getTime() : lastValue.current, 
             lastValue.current, 
             () => sendSetValues(
                 props.dataRow, 
@@ -198,20 +215,25 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         event.stopPropagation();
         if ((event as KeyboardEvent).key === "Enter") {
             handleDateInput();
+            alreadySaved.current = true;
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-        }
-        else if (isCellEditor && props.stopCellEditing) {
-            if ((event as KeyboardEvent).key === "Tab") {
-                handleDateInput();
-                props.stopCellEditing!(event);
+            if (calendar.current) {
+                (calendar.current as any).hideOverlay();
             }
-            else if ((event as KeyboardEvent).key === "Escape") {
-                escapePressed.current = true;
+        }
+        else if ((event as KeyboardEvent).key === "Tab") {
+            handleDateInput();
+            alreadySaved.current = true;
+            if (isCellEditor && props.stopCellEditing) {
                 props.stopCellEditing(event);
-                
+            }
+            else if (calendar.current) {
+                (calendar.current as any).hideOverlay();
             }
         }
-
+        else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
+            props.stopCellEditing(event);
+        }
     });
 
     useEffect(() => {
@@ -221,15 +243,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             }
         }, 33)
     }, [calendar.current])
-
-    useEffect(() => {
-        return () => {
-            if (isCellEditor && !escapePressed.current) {
-                handleDateInput();
-            } 
-        }
-    }, [])
-
 
     return (
         <CustomCalendar
@@ -256,7 +269,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     calendarInput.current.focus();
                 }
             }}
-            onHide={() =>  handleDateInput()}
+            onHide={() =>  !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
             disabled={!props.cellEditor_editable_}
         />
     )

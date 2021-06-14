@@ -1,7 +1,5 @@
 @mixin btnHover {
-    background: var(--background);
-
-    &.p-button:not(a):not(.p-disabled):hover {
+    &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover {
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
 
@@ -15,6 +13,7 @@
     }
 
     &:not(.border-notpainted) {
+        background: var(--background);
         border-color: var(--background);
     }
 }

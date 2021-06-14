@@ -20,6 +20,7 @@
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
+    @include btnHover;
 }
 
 .p-splitbutton-defaultbutton, .p-splitbutton-menubutton {

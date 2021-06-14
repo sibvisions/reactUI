@@ -156,7 +156,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
             }}
             onKeyDown={(event) => {
                 event.preventDefault();
-                event.stopPropagation();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
                     props.stopCellEditing(event)

@@ -98,19 +98,23 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** disable dropdownbutton tabIndex */
-    useEffect(() => {
-        const autoRef:any = linkedRef.current
-        if (autoRef) {
-            autoRef.dropdownButton.tabIndex = -1;
-        }
-    },[]);
-
     /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
     useEffect(() => {
         setText(selectedRow);
         lastValue.current = selectedRow;
-    }, [selectedRow])
+    }, [selectedRow]);
+
+    /** disable dropdownbutton tabIndex */
+    useEffect(() => {
+        const autoRef: any = linkedRef.current
+        if (autoRef) {
+            autoRef.dropdownButton.tabIndex = -1;
+        }
+
+        if (isCellEditor && props.passedKey) {
+            setText("");
+        }
+    }, []);
 
     /** 
      * Sets the height for the dropdownlist based on the amount of providedData, 
@@ -368,9 +372,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             suggestions={buildSuggestions(suggestionData)}
             value={text}
             onShow={handleShow}
-            onChange={event => {
-                setText(event.target.value)
-            }}
+            onChange={event => setText(event.target.value)}
             onBlur={() => {
                 /** On blur, close the dropdownmenu and set the cache to start */
                 if (document.querySelector(".p-autocomplete-panel")) {

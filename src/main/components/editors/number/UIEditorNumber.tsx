@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputNumber } from "primereact/inputnumber";
@@ -140,6 +140,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         lastValue.current = selectedRow;
     },[selectedRow]);
 
+    useEffect(() => {
+        if (isCellEditor && props.passedKey) {
+            if (/^[0-9]$/i.test(props.passedKey)) {
+                setValue(null as any)
+            }
+        }
+    }, [])
+
     /**
      * When a value is pasted check if the value isn't too big for the max length
      * @param e - the browser event
@@ -159,8 +167,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     useEventHandler(numberInput.current ? numberInput.current : undefined, 'paste', (event:any) => handlePaste(event));
 
     useEventHandler(numberInput.current ? numberInput.current : undefined, 'keydown', (event:any) => {
-        event.stopPropagation();
-        if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(event.key) >= 0) {
+            event.stopPropagation();
+        }
+        else if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             if (isCellEditor && props.stopCellEditing) {
                 if ((event as KeyboardEvent).key === "Tab") {
@@ -176,6 +186,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 return false;
             }
         }
+
     });
 
     return (
@@ -193,7 +204,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             style={layoutValue.get(props.id) || baseProps.editorStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
-            onBlur={() => {console.log('blur'); onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}}
+            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => sendSetValues(props.dataRow, props.name, props.columnName, value, context.server))}
             disabled={!props.cellEditor_editable_}
             autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
         />

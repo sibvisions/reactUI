@@ -163,7 +163,6 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             className="rc-editor-choice"
             style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
             onKeyDown={(event) => {
-                event.stopPropagation();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
                     props.stopCellEditing(event)
