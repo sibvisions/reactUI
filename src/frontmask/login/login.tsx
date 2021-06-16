@@ -12,7 +12,7 @@ import { useTranslation } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
-import { TopBarContext } from "src/main/components/topbar/TopBar";
+import { TopBarContext } from "../../main/components/topbar/TopBar";
 
 
 /** Component which handles logging in */

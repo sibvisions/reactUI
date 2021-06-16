@@ -10,7 +10,7 @@ export * from './main/components/panels'
 export { default as UITable } from './main/components/table/UITable';
 export * from './main/components/text'
 export { default as UIPassword } from './main/components/text/UIPassword';
-export { CustomDisplayWrapper } from './main/components/customComp/index';
+export { CustomOverlayWrapper } from './main/components/customComp/index';
 export * from './main/components/zhooks'
 export * from './main/factories/RequestFactory';
 export { default as ReactUI } from './MiddleMan';

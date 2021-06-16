@@ -9,8 +9,8 @@ import { appContext } from "../../AppProvider"
 import { getScreenIdFromNavigation } from "../util";
 import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
 
-/** This component for global custom displays, decides wether the screen should display a custom display or just the workscreen */
-const CustomDisplayManager:FC = () => {
+/** This component for global custom overlays, decides wether the screen should display a custom overlay or just the workscreen */
+const CustomOverlayManager:FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** ComponentId of Screen extracted by useParams hook */
@@ -18,8 +18,8 @@ const CustomDisplayManager:FC = () => {
     /** The ID of the screen based on the navigation-name */
     const screenId = getScreenIdFromNavigation(componentId, context.contentStore)
 
-    return context.contentStore.customDisplays.has(screenId) ? 
-        context.contentStore.customDisplays.get(screenId || "")?.display as ReactElement : 
+    return context.contentStore.customOverlays.has(screenId) ? 
+        context.contentStore.customOverlays.get(screenId || "")?.overlay as ReactElement : 
         <WorkScreen/>
 }
-export default CustomDisplayManager;
+export default CustomOverlayManager;

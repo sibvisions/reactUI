@@ -99,8 +99,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const scaleDigits:ScaleType = useMemo(() => getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale),
-    [cellEditorMetaData.scale, props.cellEditor.numberFormat]);
+    const scaleDigits:ScaleType = useMemo(() => cellEditorMetaData ? getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale) : {minScale: 0, maxScale: 0}, [cellEditorMetaData, props.cellEditor.numberFormat]);
 
     /** Wether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
@@ -117,7 +116,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
      * Returns the maximal length before the deciaml seperator
      * @returns the maximal length before the deciaml seperator
      */
-    const decimalLength = useMemo(() => getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale), [cellEditorMetaData.precision, cellEditorMetaData.scale]);
+    const decimalLength = useMemo(() => cellEditorMetaData ? getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale) : undefined, [cellEditorMetaData]);
 
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {

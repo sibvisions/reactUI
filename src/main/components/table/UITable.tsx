@@ -71,15 +71,18 @@ type CellEditor = {
     className?: string
 }
 
+/** Type for inputs passed to the editors */
 export type PassedToEditor = {
     click:boolean,
     passKey:string
 }
 
+/** Interface for selected cells */
 interface ISelectedCell {
     selectedCellId?:string
 }
 
+/** A Context which contains the currently selected cell */
 export const SelectedCellContext = createContext<ISelectedCell>({})
 
 /**
@@ -95,11 +98,13 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
 
+    /** Reference which contains data if a cellEditor was clicked (for Choice and Checkbox) or the pressed key for input editors */
     const passRef = useRef<PassedToEditor>({click: false, passKey: ""})
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Context for the selected cell */
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
@@ -108,7 +113,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
-    /** When a new selectedRow is set, set waiting to false */
+    /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
     useEffect(() => {
         if (props.selectedRow) {
             if (!edit) {
@@ -121,17 +126,22 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [props.selectedRow, edit])
 
+    /** Whenn the selected cell changes and the editor is editable close it except choice and checkbox, always open choice and checkbox*/
     useEffect(() => {
         if (cellContext.selectedCellId !== props.cellId.selectedCellId) {
-            if (edit) {
+            if (edit && !(className === "ChoiceCellEditor" || className === "CheckBoxCellEditor")) {
                 setEdit(false);
             }
         }
-        if (cellContext.selectedCellId === props.cellId.selectedCellId && (className === "ChoiceCellEditor" || className === "CheckBoxCellEditor")) {
+        if (cellContext.selectedCellId === props.cellId.selectedCellId && (className === "ChoiceCellEditor" || className === "CheckBoxCellEditor") && !edit) {
             setEdit(true);
         }
     }, [cellContext.selectedCellId]);
 
+    /**
+     * Callback for stopping the cell editing process, closes editor and based on keyboard input, selects the next or previous cell/row
+     * @param event - the KeyboardEvent
+     */
     const stopCellEditing = useCallback((event?:KeyboardEvent) => {
         setEdit(false);
         if (event) {
@@ -162,21 +172,25 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, setEdit, columnMetaData);
 
-    const handleCellKeyDown = useCallback((e: KeyboardEvent) => {
+    /**
+     * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
+     */
+    const handleCellKeyDown = useCallback((event: KeyboardEvent) => {
         if (cellContext.selectedCellId === props.cellId.selectedCellId) {
-            switch (e.key) {
+            switch (event.key) {
                 case "F2":
                     setEdit(true);
                     break;
                 default:
-                    if (e.key.length === 1) {
-                        passRef.current.passKey = e.key;
+                    if (event.key.length === 1) {
+                        passRef.current.passKey = event.key;
                         setEdit(true);
                     }
             }
         }
     }, [cellContext.selectedCellId, setEdit])
 
+    /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
 
@@ -232,6 +246,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
 
+    /** Metadata of the databook */
     const metaData = getMetaData(compId, props.dataBook, context.contentStore);
 
     /** The data provided by the databook */
@@ -254,19 +269,29 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
 
+    /** The current order of the columns */
     const [columnOrder, setColumnOrder] = useState<string[]>(metaData!.columnView_table_);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
+    /** Reference if the page up/down key was pressed */
     const pageKeyPressed = useRef<boolean>(false);
 
+    /** Reference of the last selected row used for scrolling */
     const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined)
 
+    /** The primary keys of a table */
     const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
 
+    /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
+    /**
+     * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
+     * @param selectedColumn - the selected column
+     * @param filter - if a new row is selected, the filter to send to the server
+     */
     const sendSelectRequest = useCallback(async (selectedColumn?:string, filter?:SelectFilter) => {
         const selectReq = createSelectRowRequest();
         selectReq.dataProvider = props.dataBook;
@@ -288,11 +313,22 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     },[virtualEnabled]);
 
+    /**
+     * Returns the number of records visible based on row height.
+     * @returns the number of records visible based on row height.
+     */
     const getNumberOfRowsPerPage = () => {
         //TODO: In the future with custom styles it's possible that the header or row height could have another height!
         return Math.ceil((layoutContext.get(baseProps.id)?.height as number - 41) / 44)
     }
 
+    /**
+     * Helper function to see if the next element in a container is fully or partly visible
+     * @param ele - the element which needs to be checked
+     * @param container - the container of the element
+     * @param cell  - the current cell
+     * @returns if the element is fully or partly visible
+     */
     const isVisible = (ele:HTMLElement, container:HTMLElement, cell:any) => {
         if (ele) {
             const eleLeft = ele.offsetLeft;
@@ -332,6 +368,11 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     };
 
+    /**
+     * Scrolls the table to the selected cell
+     * @param cell - the selected cell
+     * @param isNext - if the new selected cell is below or above the previous
+     */
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
             const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
@@ -396,8 +437,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
+    /** The navigation-mode for the enter key sent by the server default: cell and focus */
     const enterNavigationMode = props.enterNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
+    /** The navigation-mode for the tab key sent by the server default: cell and focus */
     const tabNavigationMode = props.tabNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
     /** Extracting onLoadCallback and id from baseProps */
@@ -534,6 +577,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
 
+    /** Adds the sort classnames to the headers for styling */
     useEffect(() => {
         const allTableColumns = tableSelect(true, "th", ".p-datatable-scrollable-header-table th");
         for (const col of allTableColumns) {
@@ -555,6 +599,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [sortDefinitions, tableSelect]);
 
+    /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
     useEffect(() => {
             const selectedTds = tableSelect(true, 'tbody > tr:not(.p-highlight) td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr:not(.p-highlight) td.p-highlight');
             if (selectedTds) {
@@ -572,6 +617,10 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
     }, [virtualRows, selectedRow, columnOrder, tableSelect]);
 
+    /**
+     * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
+     * @param delegateFocus - true if the next component should be focused if there are no more cells
+     */
     const selectNextCell = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
@@ -588,6 +637,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
+    /**
+     * Selects the previous cell, if there is no cell anymore and delegateFocus is true, focus the previous component
+     * @param delegateFocus - true if the previous component should be focused if there are no more cells
+     */
     const selectPreviousCell = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
@@ -604,6 +657,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
+    /**
+     * Selects the next row, if there is no row anymore and delegateFocus is true, focus the next component
+     * @param delegateFocus - true if the next component should be focused if there are no more rows
+     */
     const selectNextRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const nextSelectedRowIndex = selectedRow.index + 1;
@@ -623,6 +680,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
+    /**
+     * Selects the previous row, if there is no row anymore and delegateFocus is true, focus the previous component
+     * @param delegateFocus - true if the previous component should be focused if there are no more rows
+     */
     const selectPreviousRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const prevSelectedRowIndex = selectedRow.index - 1;
@@ -642,6 +703,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
+    /**
+     * Selects the next cell, if there is no cell anymore select the next row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
+     * @param delegateFocus - true if the next component should be focused if there are no more cells/rows
+     */
     const selectNextCellAndRow =  useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
@@ -666,6 +731,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
+    /**
+     * Selects the previous cell, if there is no cell anymore select the previous row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
+     * @param delegateFocus - true if the previous component should be focused if there are no more cells/rows
+     */
     const selectPreviousCellAndRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
@@ -690,6 +759,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
+    /** 
+     * Selects a row which is further down based on the height of the table if there are no more rows and delegate Focus is true, focus the next component
+     * @param delegateFocus - true if the next component should be focused if there are no more rows
+     */
     const selectNextPage = async (delegateFocus: boolean) => {
         if (selectedRow) {
             let nextSelectedRowIndex = selectedRow.index;
@@ -710,6 +783,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    /** 
+     * Selects a row which is further up based on the height of the table if there are no more rows and delegate Focus is true, focus the previous component
+     * @param delegateFocus - true if the previous component should be focused if there are no more rows
+     */
     const selectPreviousPage = async (delegateFocus: boolean) => {
         if (selectedRow) {
             let nextSelectedRowIndex = selectedRow.index;
@@ -730,6 +807,9 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }
 
+    /**
+     * Chooses which next select function should be used based on the navigation mode
+     */
     const selectNext = useRef<Function>();
     useEffect(() => {
         selectNext.current = (navigationMode:number) => {
@@ -745,6 +825,9 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [selectNextCell, selectNextRow, selectNextCellAndRow]);
 
+    /**
+     * Chooses which previous select function should be used based on the navigation mode
+     */
     const selectPrevious = useRef<Function>();
     useEffect(() => {   
         selectPrevious.current = (navigationMode:number, row?:any) => {
@@ -912,6 +995,10 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, [columnOrder])
 
+    /**
+     * Keylistener for the table
+     * @param event - the keyboardevent
+     */
     const handleTableKeys = (event:React.KeyboardEvent<HTMLDivElement>) => {
         switch(event.key) {
             case "Enter":

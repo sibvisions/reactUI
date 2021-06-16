@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomDisplayOptions } from "./customTypes";
+import { CustomOverlayOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 
@@ -54,8 +54,8 @@ export default class ContentStore{
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
 
-    /** A Map which stores custom display names for screens, key is the screen-name and the value is the object of the custom display */
-    customDisplays = new Map<string, {display: ReactElement, options: CustomDisplayOptions}>();
+    /** A Map which stores custom overlay names for screens, key is the screen-name and the value is the object of the custom overlay */
+    customOverlays = new Map<string, {overlay: ReactElement, options: CustomOverlayOptions}>();
 
     //DataProvider Maps
     /**
@@ -332,7 +332,7 @@ export default class ContentStore{
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.customProperties.clear();
-        this.customDisplays.clear();
+        this.customOverlays.clear();
         this.subManager.propertiesSubscriber.clear();
         this.subManager.parentSubscriber.clear();
         this.subManager.rowSelectionSubscriber.clear();
@@ -776,15 +776,15 @@ export default class ContentStore{
     }
 
     /**
-     * Adds a custom display for screens
-     * @param screenName - the screen/s in which the custom display should be displayed
-     * @param customDisplay - the name of the custom display component
-     * @param pOptions - the options for the custom display component
+     * Adds a custom overlay for screens
+     * @param screenName - the screen/s in which the custom overlay should be displayed
+     * @param Overlay - the name of the custom overlay component
+     * @param pOptions - the options for the custom overlay component
      */
-    registerCustomDisplay(screenName:string|string[], customDisplay:ReactElement, pOptions?:CustomDisplayOptions) {
+    registerCustomOverlay(screenName:string|string[], customOverlay:ReactElement, pOptions?:CustomOverlayOptions) {
         if (Array.isArray(screenName))
-            screenName.forEach(name => this.customDisplays.set(name, {display: customDisplay, options: pOptions ? pOptions : {global: true}}));
+            screenName.forEach(name => this.customOverlays.set(name, {overlay: customOverlay, options: pOptions ? pOptions : {global: true}}));
         else 
-            this.customDisplays.set(screenName, {display: customDisplay, options: pOptions ? pOptions : {global: true}});
+            this.customOverlays.set(screenName, {overlay: customOverlay, options: pOptions ? pOptions : {global: true}});
     }
 }
