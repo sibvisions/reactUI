@@ -16,11 +16,11 @@ export interface IScreenContext {
 
 export const ScreenContext = createContext<IScreenContext>({});
 
-/** Displays either CustomOverlays set by the user or the workscreen */
+/** Displays either ScreenWrappers set by the user or the workscreen */
 const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    const { contentStore, contentStore: { customOverlays } } = context;
+    const { contentStore, contentStore: { screenWrappers } } = context;
     /** ComponentId of Screen extracted by useParams hook */
     const {componentId} = useParams<any>();
     /** The ID of the screen based on the navigation-name */
@@ -28,26 +28,26 @@ const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
 
     const screen = <WorkScreen forwardedRef={forwardedRef} />;
 
-    /** If there is a custom-overlay for this screen, check if there is a global and global should be shown, if true show global if false don't */
-    if (customOverlays.has(screenId)) {
-        const customOverlay = customOverlays.get(screenId)
-        if (customOverlays.has('global') && customOverlay?.options.global){
+    /** If there is a screen-wrapper for this screen, check if there is a global and global should be shown, if true show global if false don't */
+    if (screenWrappers.has(screenId)) {
+        const screenWrapper = screenWrappers.get(screenId)
+        if (screenWrappers.has('global') && screenWrapper?.options.global){
             const content = <ScreenContext.Provider value={{screen}}>
-                {customOverlay?.overlay}
+                {screenWrapper?.wrapper}
             </ScreenContext.Provider>
             return <ScreenContext.Provider value={{screen: content}}>
-                {customOverlays.get('global')?.overlay}
+                {screenWrappers.get('global')?.wrapper}
             </ScreenContext.Provider>
         } else { 
             return <ScreenContext.Provider value={{screen}}>
-                {customOverlay?.overlay}
+                {screenWrapper?.wrapper}
             </ScreenContext.Provider>
         }
     }
-    /** If there is a custom-global-overlay show it, if not just show the workscreen */
-    else if (customOverlays.has('global')) {
+    /** If there is a global-screen-wrapper show it, if not just show the workscreen */
+    else if (screenWrappers.has('global')) {
         return <ScreenContext.Provider value={{screen}}>
-            {customOverlays.get('global')?.overlay}
+            {screenWrappers.get('global')?.wrapper}
         </ScreenContext.Provider>
     } else {
         return screen

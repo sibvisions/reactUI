@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomOverlayOptions } from "./customTypes";
+import { ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 
@@ -54,8 +54,8 @@ export default class ContentStore{
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
 
-    /** A Map which stores custom overlay names for screens, key is the screen-name and the value is the object of the custom overlay */
-    customOverlays = new Map<string, {overlay: ReactElement, options: CustomOverlayOptions}>();
+    /** A Map which stores screeen-wrapper names for screens, key is the screen-name and the value is the object of the screen-wrapper */
+    screenWrappers = new Map<string, {wrapper: ReactElement, options: ScreenWrapperOptions}>();
 
     //DataProvider Maps
     /**
@@ -332,7 +332,7 @@ export default class ContentStore{
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.customProperties.clear();
-        this.customOverlays.clear();
+        this.screenWrappers.clear();
         this.subManager.propertiesSubscriber.clear();
         this.subManager.parentSubscriber.clear();
         this.subManager.rowSelectionSubscriber.clear();
@@ -776,15 +776,15 @@ export default class ContentStore{
     }
 
     /**
-     * Adds a custom overlay for screens
-     * @param screenName - the screen/s in which the custom overlay should be displayed
-     * @param Overlay - the name of the custom overlay component
-     * @param pOptions - the options for the custom overlay component
+     * Adds a screen-wrapper for screens
+     * @param screenName - the screen/s in which the screen-wrapper should be displayed
+     * @param wrapper - the name of the screen-wrapper component
+     * @param pOptions - the options for the screen-wrapper component
      */
-    registerCustomOverlay(screenName:string|string[], customOverlay:ReactElement, pOptions?:CustomOverlayOptions) {
+    registerScreenWrapper(screenName:string|string[], wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
         if (Array.isArray(screenName))
-            screenName.forEach(name => this.customOverlays.set(name, {overlay: customOverlay, options: pOptions ? pOptions : {global: true}}));
+            screenName.forEach(name => this.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}}));
         else 
-            this.customOverlays.set(screenName, {overlay: customOverlay, options: pOptions ? pOptions : {global: true}});
+            this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
     }
 }

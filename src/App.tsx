@@ -96,8 +96,8 @@ const App: FC<ICustomContent> = (props) => {
         });
 
         props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
-        props.customOverlays?.forEach(co => context.contentStore.registerCustomOverlay(co.screen, co.overlay, co.options))
-    },[context.contentStore, props.customScreens, props.customComponents, props.customOverlays, registerCustom]);
+        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options))
+    },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */
     useEffect(() => {
