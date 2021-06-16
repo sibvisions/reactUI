@@ -155,13 +155,15 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     return(
         CustomWrapper ? 
-            <CustomWrapper>
-                <LayoutContext.Provider value={componentSize}>
-                    <div id="reactUI-main" className="main">
-                        <ScreenManager forwardedRef={sizeRef} />
-                    </div>
-                </LayoutContext.Provider>
-            </CustomWrapper>
+            <div className="reactUI">
+                <CustomWrapper>
+                    <LayoutContext.Provider value={componentSize}>
+                        <div id="reactUI-main" className="main">
+                            <ScreenManager forwardedRef={sizeRef} />
+                        </div>
+                    </LayoutContext.Provider>
+                </CustomWrapper>
+            </div>
         : <div className="reactUI">
             <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>
             <LayoutContext.Provider value={componentSize}>
