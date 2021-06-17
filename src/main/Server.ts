@@ -316,7 +316,7 @@ class Server {
      * @param referenceKey - the referenced key which should be added to the map
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
-        const builtData = this.buildDatasets(fetchData)
+        const builtData = this.buildDatasets(fetchData);
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
@@ -354,7 +354,7 @@ class Server {
             fetchReq.rowCount = 1;
             fetchReq.fromRow = changedProvider.reload;
             fetchReq.dataProvider = changedProvider.dataProvider;
-            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, true);
+            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
         }
         else {
             const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
