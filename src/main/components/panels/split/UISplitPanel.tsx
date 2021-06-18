@@ -2,7 +2,7 @@
 import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
@@ -25,10 +25,10 @@ export interface ISplit extends BaseComponent{
 const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutContext = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** The Childcomponents of this SplitPanel */
     const children = useMemo(() => {
         return context.contentStore.getChildren(props.id);
@@ -91,9 +91,9 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
                 id={props.name}
-                style={layoutContext.get(props.id)}
+                style={layoutStyle}
                 forwardedRef={splitRef}
-                trigger={layoutContext}
+                trigger={layoutStyle}
                 onTrigger={handleResize}
                 onResize={handleResize}
                 leftComponent={firstChild}

@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { InputText } from "primereact/inputtext";
 
 /** Hook imports */
-import { useProperties } from "../zhooks";
+import { useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -19,14 +19,14 @@ import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../
 const UIText: FC<BaseComponent> = (baseProps) => {
     /** Reference for the input field */
     const inputRef = useRef(null);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -37,7 +37,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <InputText ref={inputRef} id={props.name} value={text||""} style={layoutValue.get(props.id)} onChange={event => setText(event.currentTarget.value)} />
+        <InputText ref={inputRef} id={props.name} value={text||""} style={layoutStyle} onChange={event => setText(event.currentTarget.value)} />
     )
 }
 export default UIText

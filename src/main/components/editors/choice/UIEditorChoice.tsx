@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks";
+import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -39,11 +39,11 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -161,7 +161,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         <span
             ref={wrapRef}
             className="rc-editor-choice"
-            style={{ ...layoutValue.get(props.id) || baseProps.editorStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
+            style={{ ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
             onKeyDown={(event) => {
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {

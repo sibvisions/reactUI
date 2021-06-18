@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useImageStyle } from "../zhooks";
+import { useProperties, useImageStyle, useLayoutValue } from "../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../LayoutContext";
@@ -20,8 +20,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     const [preferredSize, setPreferredSize] = useState<Dimension>();
@@ -31,7 +29,9 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
     /**CSS properties for icon */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
-
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
+    
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
      * Only gets called when the icon is an image and not FontAwesome
@@ -86,7 +86,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     
 
     return (
-        <span ref={iconRef} className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} style={{...layoutValue.get(props.id), ...imageStyle.span}}>
+        <span ref={iconRef} className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} style={{...layoutStyle, ...imageStyle.span}}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

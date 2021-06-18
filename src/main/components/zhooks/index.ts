@@ -22,3 +22,4 @@ export { default as useWindowObserver } from './useWindowObserver';
 export { default as useSortDefinitions } from './useSortDefinitions';
 export { default as useMenuItems } from './useMenuItems';
 export { default as useProfileMenuItems } from './useProfileMenuItems';
+export { default as useLayoutValue } from './useLayoutValue';

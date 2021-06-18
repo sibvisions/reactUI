@@ -5,7 +5,7 @@ import React, { CSSProperties, FC, useCallback, useContext, useLayoutEffect, use
 import { TabView, TabPanel } from 'primereact/tabview';
 
 /** Hook imports */
-import { useProperties, useComponents } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../../LayoutContext";
@@ -30,12 +30,12 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const panelRef = useRef(null)
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, compSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
@@ -52,10 +52,10 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     useLayoutEffect(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
             const sizeMap = new Map<string, CSSProperties>();
-            const external = layoutValue.get(id) || {};
+            const external = layoutStyle;
             let width:number|undefined;
             let height:number|undefined;
-            if (external.width && external.height) {
+            if (external?.width && external?.height) {
                 width = external.width as number;
                 height = external.height as number - 48;
             }
@@ -63,7 +63,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 sizeMap.set(component.props.id, { width, height })
             });
             setComponentSizes(sizeMap);
-    }, [components, layoutValue, id]);
+    }, [components, layoutStyle, id]);
 
     /**
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -150,7 +150,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             <TabView
                 ref={panelRef}
                 id={props.name}
-                style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutValue.get(baseProps.id), backgroundColor: props.background}}
+                style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutStyle, backgroundColor: props.background}}
                 activeIndex={props.selectedIndex}
                 onTabChange={event => {
                     if (event.index !== props.selectedIndex)

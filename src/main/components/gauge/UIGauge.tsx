@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useProperties } from "../zhooks";
+import { useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../LayoutContext";
@@ -61,12 +61,12 @@ function getColor(value: number, steps?: [number, number, number, number]) {
 const UIGauge: FC<IGauge> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const wrapperRef = useRef<HTMLSpanElement>(null);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IGauge>(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** Extracting onLoadCallback and id from baseProps */
@@ -101,7 +101,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     }
 
     return (
-        <span ref={wrapperRef} className="ui-gauge" style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
+        <span ref={wrapperRef} className="ui-gauge" style={layoutStyle}>
             <div className="ui-gauge__title">{title}</div>
             <Gauge 
                 id={name}

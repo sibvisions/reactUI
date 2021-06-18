@@ -6,7 +6,7 @@ import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties } from "../../zhooks";
+import { useLayoutValue, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { appContext } from "../../../AppProvider";
@@ -29,8 +29,6 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IButtonSelectable>(baseProps.id, baseProps);
     /** Information on how to display the button, refreshes everytime the props change */
@@ -47,7 +45,9 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
     /** The amount of pixels to center the icon or radiobutton/checkbox respective to the label is hTextPos = 1 */
     const iconCenterGap = cbRef.current && labelRef.current ? labelRef.current.offsetWidth/2 - cbRef.current.element.offsetWidth/2 : 0;
-
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
+    
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
@@ -57,7 +57,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
-        <span ref={buttonWrapperRef} style={layoutValue.get(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+        <span ref={buttonWrapperRef} style={layoutStyle}>
             <span
                 id={props.name}
                 aria-label={props.ariaLabel}

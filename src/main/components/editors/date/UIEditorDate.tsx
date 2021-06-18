@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -89,14 +89,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -263,7 +263,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             timeOnly={timeOnly}
             hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
             showIcon={true}
-            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            style={layoutStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             value={dateValue ? new Date(dateValue) : undefined}
             appendTo={document.body}

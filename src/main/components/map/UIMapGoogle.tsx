@@ -7,7 +7,7 @@ import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData } from "../zhooks";
+import { useProperties, useDataProviderData, useLayoutValue } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -43,12 +43,12 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const [dataSet, setDataSet] = useState<boolean>(false);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The provided data for groups */
@@ -217,8 +217,8 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     if (mapReady === false)
         return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} id={props.name} style={layoutValue.get(id)}>
-            <GMap ref={mapInnerRef} options={options} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}} />
+        <div ref={mapWrapperRef} id={props.name} style={layoutStyle}>
+            <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )
 }

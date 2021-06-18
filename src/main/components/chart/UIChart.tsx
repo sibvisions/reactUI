@@ -9,7 +9,7 @@ import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useTranslation } from "../zhooks";
+import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -158,8 +158,6 @@ function getLabels(values:any[], translation?: Map<string,string>) {
 const UIChart: FC<IChart> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const chartRef = useRef<HTMLSpanElement>(null);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the properties for the component sent by the server */
@@ -174,6 +172,8 @@ const UIChart: FC<IChart> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Translations for labels */
     const translation = useTranslation();
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** process the providerData to geta usable data list as well as the min & max values */
     const [data, min, max] = useMemo(() => {
@@ -538,7 +538,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={chartRef} style={layoutValue.has(id) ? layoutValue.get(id) : {position: "absolute"}}>
+        <span ref={chartRef} style={layoutStyle}>
             <Chart
                 id={props.name}
                 type={chartType}

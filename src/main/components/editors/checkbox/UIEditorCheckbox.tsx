@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks";
+import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -51,11 +51,11 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorCheckBox>(baseProps.id, baseProps)
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -153,7 +153,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
             id={!isCellEditor ? props.name : undefined}
             className="rc-editor-checkbox"
             style={{
-                ...layoutValue.get(props.id) || baseProps.editorStyle,
+                ...layoutStyle,
                 backgroundColor: props.cellEditor_background_,
                 justifyContent: alignments?.ha,
                 alignItems: alignments?.va

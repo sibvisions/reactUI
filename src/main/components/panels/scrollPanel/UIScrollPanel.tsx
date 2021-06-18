@@ -2,7 +2,7 @@
 import React, { FC, useContext } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 
@@ -16,10 +16,10 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimensio
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
-    /** Use context for the positioning, size informations of the layout */
-    const layoutContext = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
@@ -35,13 +35,13 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         let s:React.CSSProperties;
         /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
         if (props.screen_modal_ && prefSize)
-            s = {...layoutContext.get(id), height: prefSize.height, width: prefSize.width};
+            s = {...layoutStyle, height: prefSize.height, width: prefSize.width};
         /** If no prefsize is set but it is a popup, set size to undefined, don't use provided layoutContext style */
         else if (props.screen_modal_)
-            s = {...layoutContext.get(id), height: undefined, width: undefined}
+            s = {...layoutStyle, height: undefined, width: undefined}
         /** Use provided layoutContext style*/
         else
-            s = {...layoutContext.get(id) || {}}
+            s = {...layoutStyle}
         if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
             s.top = undefined;
             s.left = undefined;
@@ -64,7 +64,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     }
 
     return(
-        <div id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width, overflow: 'auto'} : {...layoutContext.get(baseProps.id), overflow: 'auto'}}>
+        <div id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width, overflow: 'auto'} : {...layoutStyle, overflow: 'auto'}}>
             <Layout
                 id={id}
                 layoutData={props.layoutData}

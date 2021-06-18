@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect } from "react";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useImageStyle } from "../../zhooks";
+import { useProperties, useRowSelect, useImageStyle, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -30,11 +30,11 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -87,7 +87,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     }
 
     return(
-        <span className="rc-editor-image" style={{...layoutValue.get(props.id), ...imageStyle.span}}>
+        <span className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}}>
             <img
                 id={!isCellEditor ? props.name : undefined}
                 style={imageStyle.img}

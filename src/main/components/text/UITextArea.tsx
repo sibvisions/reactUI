@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { InputTextarea } from "primereact/inputtextarea";
 
 /** Hook imports */
-import { useProperties } from "../zhooks";
+import { useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -19,14 +19,14 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from ".
 const UITextArea: FC<BaseComponent> = (baseProps) => {
     /** Reference for the textarea */
     const inputRef = useRef(null);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -37,7 +37,7 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <InputTextarea ref={inputRef} id={props.name} value={text||""} style={{...layoutValue.get(props.id), resize: 'none'}} onChange={event => setText(event.currentTarget.value)} />
+        <InputTextarea ref={inputRef} id={props.name} value={text||""} style={{...layoutStyle, resize: 'none'}} onChange={event => setText(event.currentTarget.value)} />
     )
 }
 export default UITextArea

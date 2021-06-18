@@ -6,7 +6,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -55,14 +55,14 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -367,7 +367,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
             appendTo={document.body}
             className="rc-editor-linked"
-            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            style={layoutStyle}
             scrollHeight={"200px"}
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
             disabled={!props.cellEditor_editable_}

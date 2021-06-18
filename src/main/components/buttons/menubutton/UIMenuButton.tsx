@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties } from "../../zhooks";
+import { useLayoutValue, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -34,8 +34,6 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMenuButton>(baseProps.id, baseProps);
     /** Information on how to display the button, refreshes everytime the props change */
@@ -50,6 +48,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const btnVAlign = btnData.style.alignItems || "center";
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<any>>();
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -92,7 +92,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     return (
         <span 
             ref={buttonWrapperRef} 
-            style={{position: 'absolute', ...layoutValue.get(props.id)}}
+            style={{position: 'absolute', ...layoutStyle}}
             aria-label={props.ariaLabel}
         >
             <SplitButton

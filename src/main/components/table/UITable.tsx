@@ -13,7 +13,8 @@ import { useProperties,
          useOutsideClick, 
          useMultipleEventHandler, 
          useSortDefinitions, 
-         useEventHandler} from "../zhooks";
+         useEventHandler,
+         useLayoutValue} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -237,11 +238,11 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutContext = useContext(LayoutContext);
-
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
@@ -319,7 +320,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      */
     const getNumberOfRowsPerPage = () => {
         //TODO: In the future with custom styles it's possible that the header or row height could have another height!
-        return Math.ceil((layoutContext.get(baseProps.id)?.height as number - 41) / 44)
+        return Math.ceil((layoutStyle?.height as number - 41) / 44)
     }
 
     /**
@@ -1118,16 +1119,16 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     //to subtract header Height
     //TODO: In the future with custom styles it's possible that the header could have another height! Replace 35 then.
-    const heightNoHeaders = (layoutContext.get(baseProps.id)?.height as number - 41).toString() + "px" || undefined;
+    const heightNoHeaders = (layoutStyle?.height as number - 41).toString() + "px" || undefined;
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
                 ref={wrapRef}
                 style={{
-                    ...layoutContext.get(props.id),
-                    height: layoutContext.get(props.id)?.height as number - 2,
-                    width: layoutContext.get(props.id)?.width as number - 2,
+                    ...layoutStyle,
+                    height: layoutStyle?.height as number - 2,
+                    width: layoutStyle?.width as number - 2,
                     outline: "none"
                 }}
                 tabIndex={0}

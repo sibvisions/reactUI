@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useEventHandler } from "../../zhooks"
+import { useProperties, useRowSelect, useEventHandler, useLayoutValue } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -62,14 +62,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -204,7 +204,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
             minFractionDigits={scaleDigits.minScale}
             maxFractionDigits={scaleDigits.maxScale}
             value={value}
-            style={layoutValue.get(props.id) || baseProps.editorStyle}
+            style={layoutStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_}}
             onChange={event => setValue(event.value)}
             onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))}

@@ -7,7 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useProperties, useRowSelect } from "../../zhooks"
+import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -51,14 +51,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
-
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
+
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -187,10 +187,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             inputRef: fieldType === FieldTypes.PASSWORD ? textRef : undefined,
             id: isCellEditor ? undefined : props.name,
             className: getClassName(fieldType),
-            style: layoutValue.get(props.id) ?
-                { ...layoutValue.get(props.id), ...textAlign, background: props.cellEditor_background_ }
-                :
-                { ...baseProps.editorStyle, ...textAlign, background: props.cellEditor_background_ },
+            style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,
             disabled: !props.cellEditor_editable_,
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
@@ -203,7 +200,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
         }
-    }, [baseProps, context.server, fieldType, isCellEditor, layoutValue, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+    }, [baseProps, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.cellEditor_editable_, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign]);
 

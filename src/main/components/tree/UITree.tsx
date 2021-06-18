@@ -7,7 +7,7 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useAllDataProviderData, useAllRowSelect } from "../zhooks";
+import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -34,10 +34,10 @@ const UITree: FC<ITree> = (baseProps) => {
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<ITree>(baseProps.id, baseProps);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The data provided by the databooks */
@@ -464,7 +464,7 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [selectedRows]);
 
     return (
-        <span ref={treeWrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
+        <span ref={treeWrapperRef} style={layoutStyle}>
             <Tree
                 id={props.name}
                 value={nodes}

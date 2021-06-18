@@ -6,7 +6,7 @@ import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebut
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useButtonMouseImages } from "../../zhooks";
+import { useProperties, useButtonMouseImages, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -28,8 +28,6 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IButtonSelectable>(baseProps.id, baseProps);
     /** Information on how to display the button, refreshes everytime the props change */
@@ -52,6 +50,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const mouseOverIconData = parseIconData(props.foreground, props.mouseOverImage);
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current.container : undefined);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(props.id);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -71,7 +71,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     return (
         <span 
             ref={buttonWrapperRef} 
-            style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}} 
+            style={layoutStyle} 
             aria-label={props.ariaLabel} 
         >
             <ToggleButton
