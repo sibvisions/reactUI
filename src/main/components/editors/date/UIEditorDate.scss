@@ -2,7 +2,19 @@
 
 }
 
+.p-calendar {
+    .p-inputtext {
+        &:focus + .p-button {
+            outline: 0 none;
+            outline-offset: 0;
+            box-shadow: 0 0 0 0.2rem #a6d5fa;
+        }
+    }
+}
+
 .p-datepicker {
+    min-width: 0 !important;
+
     table td {
         padding: 0;
 
