@@ -18,7 +18,6 @@ import { useProperties,
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";

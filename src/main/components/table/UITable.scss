@@ -9,6 +9,7 @@ tr.p-highlight{
     border-collapse: collapse;
     &.no-auto-resize:not(.p-datatable-scrollable) table {
         width: unset;
+        margin-right: 100%;
     }
     .p-datatable-thead {
         >tr {
