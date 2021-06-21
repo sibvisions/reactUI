@@ -8,8 +8,8 @@ import { appContext } from "../../AppProvider";
  * This hook removes a component from the workscreen
  * @param compName - the component name of the component to remove
  */
-const useRemoveCompFromWorkscreen = (compName:string) => {
+const useRemoveComponent = (compName:string) => {
     const context = useContext(appContext);
     context.contentStore.registerCustomComponent(compName);
 }
-export default useRemoveCompFromWorkscreen;
+export default useRemoveComponent;

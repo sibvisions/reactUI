@@ -1,5 +1,5 @@
 import { CSSProperties, useContext } from "react"
-import { LayoutContext } from "src/main/LayoutContext"
+import { LayoutContext } from "../../LayoutContext"
 
 const check = ['left', 'top', 'width', 'height'];
 
