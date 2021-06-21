@@ -67,6 +67,8 @@
 .rc-button-icon {
     font-size: var(--iconHeight);
     color: var(--iconColor);
+    flex-shrink: 0;
+    flex-grow: 0;
     &:not([class*="fa fa-"]) {
         width: var(--iconWidth);
         height: var(--iconHeight);
