@@ -14,7 +14,7 @@ export { default as useAppContext } from './useAppContext';
 export { default as useMenuCollapser } from './useMenuCollapser';
 export { default as useOutsideClick } from './useOutsideClick';
 export { default as useProperties } from './useProperties';
-export { default as useRemoveCompFromWorkScreen } from './useRemoveCompFromWorkscreen';
+export { default as useRemoveComponent } from './useRemoveComponent';
 export { default as useResponsiveBreakpoints } from './useResponsiveBreakpoints';
 export { default as useRowSelect } from './useRowSelect';
 export { default as useTranslation } from './useTranslation';
