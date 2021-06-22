@@ -56,19 +56,18 @@
     flex: unset;
 }
 
-/// When there is only an icon it is possible that the padding for the button is to big and the icon is not displayed,
-/// margin minus padding displays the icon
-.p-button-icon-only {
+.p-button.p-button-icon-only {
+    width: unset;
+    padding: 0px 0.5rem;
     .rc-button-icon {
-        margin: calc(var(--btnPTB) * -1) calc(var(--btnPLR) * -1) !important;
+        align-self: center;
     }
 }
+
 
 .rc-button-icon {
     font-size: var(--iconHeight);
     color: var(--iconColor);
-    flex-shrink: 0;
-    flex-grow: 0;
     &:not([class*="fa fa-"]) {
         width: var(--iconWidth);
         height: var(--iconHeight);
@@ -81,16 +80,16 @@
     }
 
     @at-root #{selector-unify(&, "span")} {
-        .gap-top & {
+        .gap-top:not(.p-button-icon-only) & {
             margin-top: var(--iconTextGap);
         }
-        .gap-left & {
+        .gap-left:not(.p-button-icon-only) & {
             margin-left: var(--iconTextGap);
         }
-        .gap-right & {
+        .gap-right:not(.p-button-icon-only) & {
             margin-right: var(--iconTextGap);
         }
-        .gap-bottom & {
+        .gap-bottom:not(.p-button-icon-only) & {
             margin-bottom: var(--iconTextGap);
         }
         .icon-center-left & {
