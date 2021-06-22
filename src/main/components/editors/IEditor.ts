@@ -33,6 +33,6 @@ export interface IEditor extends BaseComponent{
     stopCellEditing?: Function,
     clicked?: boolean,
     passedKey?: string,
-    rowIndex?: number,
-    filter?: SelectFilter
+    rowIndex?: Function,
+    filter?: Function
 }

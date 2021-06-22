@@ -52,7 +52,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const isCellEditor = props.id === "";
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor ? props.rowIndex : undefined);
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
@@ -150,11 +150,10 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             setValReq.values = [props.cellEditor.allowedValues[0]];
         }
 
-        if (props.rowIndex !== undefined && selectedRow.index !== undefined && props.rowIndex !== selectedRow.index) {
-            setValReq.filter = props.filter;
+        if (props.rowIndex !== undefined && props.filter && selectedRow.index !== undefined && props.rowIndex() !== selectedRow.index) {
+            setValReq.filter = props.filter()
         }
         context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
-
     }
     
     return (

@@ -32,17 +32,18 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
             }
             else {
                 const data = context.contentStore.dataProviderData.get(compId)?.get(dataProvider).get("current")[rowIndex]
-                if (column) {
-                    const dataCol = data[column]
-                    return !showIndex ? dataCol : {data: dataCol, index: sr.index, selectedColumn: sr.selectedColumn}
-                }
-                else {
-                    return !showIndex ? data : {data: data, index: sr.index, selectedColumn: sr.selectedColumn}
-                }
-                
+                if (data) {
+                    if (column) {
+                        const dataCol = data[column]
+                        return !showIndex ? dataCol : {data: dataCol, index: sr.index, selectedColumn: sr.selectedColumn}
+                    }
+                    else {
+                        return !showIndex ? data : {data: data, index: sr.index, selectedColumn: sr.selectedColumn}
+                    }
+                }                
             }
         }
-    }, [context.contentStore.dataProviderSelectedRow, dataProvider, column, compId]);
+    }, [context.contentStore.dataProviderSelectedRow, dataProvider, column, compId, rowIndex]);
 
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
@@ -55,6 +56,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
     useEffect(() => {
         const onRowSelection = (newRow: any) => {
             if (newRow) {
+                console.log(newRow, rowIndex)
                 if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === newRow.index)) {
                     if(column && newRow.dataRow) {
                         setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.index, selectedColumn: newRow.selectedColumn});
@@ -64,14 +66,19 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                     }
                 }
                 else {
-                    const data = context.contentStore.dataProviderData.get(compId)?.get(dataProvider).get("current")[rowIndex]
-                    if (column) {
-                        const dataCol = data[column]
-                        setSelectedRow(!showIndex ? dataCol : {data: dataCol, index: newRow.index, selectedColumn: newRow.selectedColumn})
+                    const data = context.contentStore.dataProviderData.get(compId)?.get(dataProvider).get("current")[rowIndex];
+                    if (data) {
+                        if (column) {
+                            const dataCol = data[column];
+                            setSelectedRow(!showIndex ? dataCol : {data: dataCol, index: newRow.index, selectedColumn: newRow.selectedColumn});
+                        }
+                        else {
+                            setSelectedRow(!showIndex ? data : {data: data, index: newRow.index, selectedColumn: newRow.selectedColumn});
+                        }    
                     }
                     else {
-                        setSelectedRow(!showIndex ? data : {data: data, index: newRow.index, selectedColumn: newRow.selectedColumn})
-                    }              
+                        setSelectedRow(undefined)
+                    }
                 }
             }
             else {
@@ -84,7 +91,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
         return () => {
             context.subscriptions.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
         }
-    }, [context.subscriptions, dataProvider, column, compId])
+    }, [context.subscriptions, dataProvider, column, compId, rowIndex])
 
     return [selectedRow];
 }

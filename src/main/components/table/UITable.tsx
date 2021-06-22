@@ -62,7 +62,7 @@ type CellEditor = {
     colName: string,
     metaData: MetaDataResponse | undefined,
     resource: string,
-    cellId: ISelectedCell,
+    cellId: Function,
     tableContainer?: any,
     selectNext: Function,
     selectPrevious: Function,
@@ -123,7 +123,7 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
-        if (cellContext.selectedCellId !== props.cellId.selectedCellId) {
+        if (cellContext.selectedCellId !== props.cellId().selectedCellId) {
             if (edit) {
                 setEdit(false);
             }
@@ -168,7 +168,7 @@ const CellEditor: FC<CellEditor> = (props) => {
      * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
      */
     const handleCellKeyDown = useCallback((event: KeyboardEvent) => {
-        if (cellContext.selectedCellId === props.cellId.selectedCellId) {
+        if (cellContext.selectedCellId === props.cellId().selectedCellId) {
             switch (event.key) {
                 case "F2":
                     setEdit(true);
@@ -297,9 +297,8 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (tableRef.current) {
             if (multi) {
                 //@ts-ignore
-                return !virtualEnabled ? tableRef.current.table.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
+                return !virtualEnabled ? tableRef.current.container.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
             }
-
             //@ts-ignore
             return !virtualEnabled ? tableRef.current.table.querySelector(noVirtualSelector) : tableRef.current.container.querySelector(virtualSelector);
         }
@@ -868,7 +867,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 body={(rowData: any, tableInfo: any) => {
                     const columnMetaData = metaData?.columns.find(column => column.name === colName)
                     const className = columnMetaData?.cellEditor?.className;
-                    const currRow = firstRowIndex.current + tableInfo.rowIndex;
                     if (columnMetaData?.cellEditor.directCellEditor) {
                         return createEditor({
                             id: "",
@@ -879,8 +877,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                             cellEditor_editable_: true,
                             editorStyle: { width: "100%", height: "100%" },
                             autoFocus: true,
-                            rowIndex: currRow,
-                            filter: { columnNames: primaryKeys, values: primaryKeys.map(pk => providerData[currRow][pk]) }
+                            rowIndex: () => tableInfo.rowIndex + firstRowIndex.current,
+                            filter: () => {
+                                const currDataRow = providerData[tableInfo.rowIndex + firstRowIndex.current]
+                                return {
+                                    columnNames: primaryKeys,
+                                    values: primaryKeys.map(pk => currDataRow[pk])
+                                }
+                            }
                         })
                     }
                     else {
@@ -893,7 +897,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             cellData={rowData[colName]}
                             metaData={metaData}
                             resource={context.server.RESOURCE_URL}
-                            cellId={{ selectedCellId: props.id + "-" + currRow.toString() + "-" + colIndex.toString() }}
+                            cellId={() => { return { selectedCellId: props.id + "-" + (tableInfo.rowIndex + firstRowIndex.current).toString() + "-" + colIndex.toString() } }}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
                             selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
                             selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
@@ -909,9 +913,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
             />
         })
-    },[props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id, 
-       context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-       enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow])
+    }, [props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
+    context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
+        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {

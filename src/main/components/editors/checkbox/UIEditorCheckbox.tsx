@@ -64,7 +64,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     const isCellEditor = props.id === "";
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor ? props.rowIndex : undefined);
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
@@ -137,7 +137,16 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
 
     const handleOnChange = () => {
         setChecked(prevState => !prevState);
-        showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server, props.rowIndex, selectedRow.index, props.filter), topbar);
+        showTopBar(sendSetValues(
+            props.dataRow,
+            props.name,
+            props.columnName,
+            getColumnValue(checked, cbxType),
+            context.server,
+            props.rowIndex ? props.rowIndex() : undefined,
+            selectedRow.index,
+            props.filter ? props.filter() : undefined
+        ), topbar);
     }
 
     return (
