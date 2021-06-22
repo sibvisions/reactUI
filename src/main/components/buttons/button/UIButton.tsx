@@ -69,8 +69,6 @@ const UIButton: FC<IButton> = (baseProps) => {
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
 
-    console.log('button', layoutStyle);
-
     return(
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button

@@ -24,6 +24,7 @@ import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { MetaDataResponse } from "../../response";
 import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, focusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
+import { createEditor } from "../../factories/UIFactory";
 
 
 /** Interface for Table */
@@ -71,12 +72,6 @@ type CellEditor = {
     className?: string
 }
 
-/** Type for inputs passed to the editors */
-export type PassedToEditor = {
-    click:boolean,
-    passKey:string
-}
-
 /** Interface for selected cells */
 interface ISelectedCell {
     selectedCellId?:string
@@ -98,8 +93,8 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
 
-    /** Reference which contains data if a cellEditor was clicked (for Choice and Checkbox) or the pressed key for input editors */
-    const passRef = useRef<PassedToEditor>({click: false, passKey: ""})
+    /** Reference which contains the pressed key for input editors */
+    const passRef = useRef<string>("")
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -117,7 +112,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     useEffect(() => {
         if (props.selectedRow) {
             if (!edit) {
-                passRef.current = {click: false, passKey: ""};
+                passRef.current = "";
             }
             const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
             if (waiting && _.isEqual(pickedVals, props.pk)) {
@@ -126,15 +121,12 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [props.selectedRow, edit])
 
-    /** Whenn the selected cell changes and the editor is editable close it except choice and checkbox, always open choice and checkbox*/
+    /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
         if (cellContext.selectedCellId !== props.cellId.selectedCellId) {
-            if (edit && !(className === "ChoiceCellEditor" || className === "CheckBoxCellEditor")) {
+            if (edit) {
                 setEdit(false);
             }
-        }
-        if (cellContext.selectedCellId === props.cellId.selectedCellId && (className === "ChoiceCellEditor" || className === "CheckBoxCellEditor") && !edit) {
-            setEdit(true);
         }
     }, [cellContext.selectedCellId]);
 
@@ -183,7 +175,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     break;
                 default:
                     if (event.key.length === 1) {
-                        passRef.current.passKey = event.key;
+                        passRef.current = event.key;
                         setEdit(true);
                     }
             }
@@ -203,19 +195,19 @@ const CellEditor: FC<CellEditor> = (props) => {
         :
             <div
                 className="cell-data"
-                onClick={event => {
+                onClick={() => {
                     if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
                         setWaiting(true); 
                         setEdit(true);
                     }
                 }}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true); passRef.current.click = true})}
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
             </div>
         ) : (!edit ? 
             <div
                 className="cell-data"
-                onDoubleClick={event => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setEdit(true)})}
+                onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => setEdit(true))}
             </div>
             :
             <div ref={wrapperRef}>
@@ -873,24 +865,44 @@ const UITable: FC<TableProps> = (baseProps) => {
                     display: props.tableHeaderVisible === false ? 'none' : undefined,
                     '--columnName': colName
                 }}
-                body={(rowData: any, tableInfo: any) => <CellEditor
-                    pk={_.pick(rowData, primaryKeys)}
-                    compId={compId}
-                    name={props.name as string}
-                    colName={colName}
-                    dataProvider={props.dataBook}
-                    cellData={rowData[colName]}
-                    metaData={metaData}
-                    resource={context.server.RESOURCE_URL}
-                    cellId={{ selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() }}
-                    tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                    selectNext={(navigationMode:Navigation) => selectNext.current && selectNext.current(navigationMode)}
-                    selectPrevious={(navigationMode:Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
-                    enterNavigationMode={enterNavigationMode}
-                    tabNavigationMode={tabNavigationMode}
-                    selectedRow={selectedRow}
-                    className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
-                />
+                body={(rowData: any, tableInfo: any) => {
+                    const columnMetaData = metaData?.columns.find(column => column.name === colName)
+                    const className = columnMetaData?.cellEditor?.className;
+                    const currRow = firstRowIndex.current + tableInfo.rowIndex;
+                    if (columnMetaData?.cellEditor.directCellEditor) {
+                        return createEditor({
+                            id: "",
+                            ...columnMetaData,
+                            name: props.name,
+                            dataRow: props.dataBook,
+                            columnName: colName,
+                            cellEditor_editable_: true,
+                            editorStyle: { width: "100%", height: "100%" },
+                            autoFocus: true,
+                            rowIndex: currRow,
+                            filter: { columnNames: primaryKeys, values: primaryKeys.map(pk => providerData[currRow][pk]) }
+                        })
+                    }
+                    else {
+                        return <CellEditor
+                            pk={_.pick(rowData, primaryKeys)}
+                            compId={compId}
+                            name={props.name as string}
+                            colName={colName}
+                            dataProvider={props.dataBook}
+                            cellData={rowData[colName]}
+                            metaData={metaData}
+                            resource={context.server.RESOURCE_URL}
+                            cellId={{ selectedCellId: props.id + "-" + currRow.toString() + "-" + colIndex.toString() }}
+                            tableContainer={wrapRef.current ? wrapRef.current : undefined}
+                            selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
+                            selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
+                            enterNavigationMode={enterNavigationMode}
+                            tabNavigationMode={tabNavigationMode}
+                            selectedRow={selectedRow}
+                            className={className} />
+                    }
+                }
                 }
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
                 className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}

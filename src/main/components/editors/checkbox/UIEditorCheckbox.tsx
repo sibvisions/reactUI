@@ -60,14 +60,16 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
 
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor ? props.rowIndex : undefined);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
+
 
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
@@ -117,7 +119,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     const cbxType = getCbxType(props.cellEditor.selectedValue)
 
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(getBooleanValue(selectedRow));
+    const [checked, setChecked] = useState(getBooleanValue(selectedRow ? selectedRow.data : undefined));
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -130,22 +132,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
-        setChecked(getBooleanValue(selectedRow))
+        setChecked(getBooleanValue(selectedRow ? selectedRow.data : undefined))
     }, [selectedRow]);
 
     const handleOnChange = () => {
         setChecked(prevState => !prevState);
-        showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server), topbar);
+        showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, getColumnValue(checked, cbxType), context.server, props.rowIndex, selectedRow.index, props.filter), topbar);
     }
-
-    useEffect(() => {
-        if (wrapRef.current) {
-            wrapRef.current.focus()
-        }
-        if (isCellEditor && props.clicked) {
-            handleOnChange();
-        }
-    }, []);
 
     return (
         <span

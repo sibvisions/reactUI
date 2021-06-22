@@ -48,8 +48,11 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
 
+    /** If the editor is a cell-editor */
+    const isCellEditor = props.id === "";
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor ? props.rowIndex : undefined);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
@@ -57,8 +60,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
+
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -91,8 +93,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(selectedRow !== undefined && props.cellEditor.allowedValues.includes(selectedRow)) {
-            validImage = selectedRow
+        if(selectedRow !== undefined && props.cellEditor.allowedValues.includes(selectedRow.data)) {
+            validImage = selectedRow.data
         }
         else if (props.cellEditor.defaultImageName !== undefined) {
             validImage = props.cellEditor.defaultImageName;
@@ -139,23 +141,21 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         const index = props.cellEditor.allowedValues.indexOf(currentImageValue)
 
         /** If the index is not the last value in allowedValues, set to the next value */
-        if(props.cellEditor.allowedValues.length > index+1)
+        if(props.cellEditor.allowedValues.length > index+1) {
             setValReq.values = [props.cellEditor.allowedValues[index+1]];
+        }
+            
         /** If the index is the last value, set to the first value of allowedValues */
-        else
+        else {
             setValReq.values = [props.cellEditor.allowedValues[0]];
+        }
+
+        if (props.rowIndex !== undefined && selectedRow.index !== undefined && props.rowIndex !== selectedRow.index) {
+            setValReq.filter = props.filter;
+        }
         context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
 
     }
-
-    useEffect(() => {
-        if (wrapRef.current) {
-            wrapRef.current.focus()
-        }
-        if (isCellEditor && props.clicked) {
-            setNextValue()
-        } 
-    }, []);
     
     return (
         <span

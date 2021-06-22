@@ -11,7 +11,6 @@ export const useLayoutValue = (id: string, fallback?: CSSProperties): CSSPropert
         const v = (mout as any)[k];
         return v !== undefined && isNaN(v);
     }) ? fallback : mout;
-    //console.log(id, out, mout);
     return out;
 }
 

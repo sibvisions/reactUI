@@ -213,7 +213,8 @@ export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequ
         columnNames: values?.columnNames,
         componentId: values?.componentId,
         dataProvider: values?.dataProvider,
-        values: values?.values
+        values: values?.values,
+        filter: values?.filter
     };
     return req;
 }

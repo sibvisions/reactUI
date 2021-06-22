@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { SelectFilter } from "../../request";
 import BaseComponent from "../BaseComponent";
 
 /** Interface for cellEditor property of CellEditors */
@@ -31,5 +32,7 @@ export interface IEditor extends BaseComponent{
     readonly?: boolean,
     stopCellEditing?: Function,
     clicked?: boolean,
-    passedKey?: string
+    passedKey?: string,
+    rowIndex?: number,
+    filter?: SelectFilter
 }
