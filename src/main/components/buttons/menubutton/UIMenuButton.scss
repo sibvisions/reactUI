@@ -41,7 +41,7 @@
 .p-splitbutton {
     --menuBtnJustify: center;
     --menuBtnAlign: center;
-    --menuBtnPadding: var(--btnPTB) 0px var(--btnPTB) var(--btnPLR);
+    --menuBtnPadding: 0.5rem 0px 0.5rem 1rem;
 }
 
 .p-splitbutton-defaultbutton {
@@ -53,5 +53,5 @@
 /// Fixed width for menubutton part of splitbutton
 .p-button.p-splitbutton-menubutton {
     width: var(--menuBtnIconWidth);
-    padding: var(--btnPTB) var(--btnPLR) var(--btnPTB) 0px;
+    padding: 0.5rem 1rem 0.5rem 0px;
 }

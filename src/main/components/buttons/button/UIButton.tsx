@@ -69,6 +69,8 @@ const UIButton: FC<IButton> = (baseProps) => {
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
 
+    console.log(btnData.style.padding, props.name)
+
     return(
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
@@ -89,7 +91,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     borderColor: undefined,
                     '--btnJustify': btnHAlign, 
                     '--btnAlign': btnVAlign,
-                    '--btnPadding': btnData.style.padding,
+                    '--btnPadding': btnData.style.padding ? btnData.style.padding : undefined,
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
                     ...(btnData.iconProps?.icon ? {

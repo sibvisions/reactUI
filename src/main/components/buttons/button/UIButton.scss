@@ -4,14 +4,13 @@
 .rc-button {
     --btnJustify: center;
     --btnAlign: center;
-    --btnPadding: var(--btnPTB) var(--btnPLR);
 
     height: inherit;
     width: inherit;
 
     justify-content: var(--btnJustify);
     align-items: var(--btnAlign);
-    padding: var(--btnPadding);
+    padding: var(--btnPadding, 0.5rem 1rem);
 
     .p-button-icon-left {
         margin-right: 0;

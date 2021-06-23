@@ -12,7 +12,6 @@ import { useProperties, useButtonMouseImages, useLayoutValue } from "../../zhook
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { appContext } from "../../../AppProvider";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { LayoutContext } from "../../../LayoutContext";
 import { buttonProps, getGapPos, getIconCenterDirection, IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
