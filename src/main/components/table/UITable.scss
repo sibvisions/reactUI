@@ -12,6 +12,11 @@ tr.p-highlight{
         width: var(--table-width);
         margin-right: 100%;
     }
+    &.read-size {
+        td > * {
+            display: inline-block !important;
+        }
+    }
     .p-datatable-thead {
         >tr {
             >th {

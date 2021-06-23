@@ -480,8 +480,6 @@ const UITable: FC<TableProps> = (baseProps) => {
             const goThroughCellData = (trows: any, index: number) => {
                 const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *");
                 for (let j = 0; j < cellDatas.length; j++) {
-                    /** disable auto table layout it needs to be enabled later for column resizing */
-                    cellDatas[j].style.setProperty('display', 'inline-block');
                     let tempWidth: number;
                     if (cellDatas[j] !== undefined) {
                         /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
@@ -494,11 +492,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                         /** If the measured width is greater than the current widest width for the column, replace it */
                         if (tempWidth > cellDataWidthList[j]) {
                             cellDataWidthList[j] = tempWidth;
-                        }
-                            
+                        } 
                     }
-                    /** remove inline block */
-                    cellDatas[j].style.removeProperty('display')
                 }
             }
 
@@ -516,9 +511,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
                 }
                     
-                for (let i = 0; i < (trows.length < 20 ? trows.length : 20); i++) {
+                (tableRef.current as any).container.classList.add("read-size");
+                for (let i = 0; i < Math.min(trows.length, 100); i++) {
                     goThroughCellData(trows, i);
                 }
+                (tableRef.current as any).container.classList.remove("read-size");
 
                 let tempWidth: number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
@@ -547,9 +544,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 //@ts-ignore
                 const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
-                for (let i = 0; i < 20; i++) {
+                (tableRef.current as any).container.classList.add("read-size");
+                for (let i = 0; i < Math.min(trows.length, 100); i++) {
                     goThroughCellData(trows, i)
                 }
+                (tableRef.current as any).container.classList.remove("read-size");
 
                 let tempWidth:number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
