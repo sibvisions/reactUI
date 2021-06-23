@@ -10,7 +10,6 @@ import { useLayoutValue, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { appContext } from "../../../AppProvider";
-import { LayoutContext } from "../../../LayoutContext";
 import { IButtonSelectable, buttonProps, getGapPos, getIconCenterDirection } from "..";
 import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";

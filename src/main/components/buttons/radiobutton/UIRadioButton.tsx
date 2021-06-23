@@ -56,6 +56,8 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    console.log(props.style?.includes("actiongroup"))
+
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <span
@@ -64,7 +66,8 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                 className={concatClassnames(
                     "rc-radiobutton",
                     `gap-${gapPos}`,
-                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment),
+                    props.style?.includes("actiongroup") ? "radio-action-group" : ""
                     )} 
                 style={{
                     ...btnData.style,
