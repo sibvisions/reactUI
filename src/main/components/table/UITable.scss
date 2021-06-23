@@ -7,8 +7,9 @@ tr.p-highlight{
     height: 100%;
     border: 1px solid #d4d4d4;
     border-collapse: collapse;
-    &.no-auto-resize:not(.p-datatable-scrollable) table {
-        width: unset;
+    --table-width: unset;
+    &.no-auto-resize table {
+        width: var(--table-width);
         margin-right: 100%;
     }
     .p-datatable-thead {

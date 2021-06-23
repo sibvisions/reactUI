@@ -478,7 +478,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             let cellDataWidthList:Array<number> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows: any, index: number) => {
-                const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > .cell-data");
+                const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *");
                 for (let j = 0; j < cellDatas.length; j++) {
                     /** disable auto table layout it needs to be enabled later for column resizing */
                     cellDatas[j].style.setProperty('display', 'inline-block');
@@ -542,12 +542,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
-                for (let i = 0; i < theader.length; i++)
+                for (let i = 0; i < theader.length; i++) {
                     cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                }
                 //@ts-ignore
                 const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
-                for (let i = 0; i < 20; i++)
+                for (let i = 0; i < 20; i++) {
                     goThroughCellData(trows, i)
+                }
 
                 let tempWidth:number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
@@ -1144,8 +1146,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     ...layoutStyle,
                     height: layoutStyle?.height as number - 2,
                     width: layoutStyle?.width as number - 2,
-                    outline: "none"
-                }}
+                    outline: "none",
+                    ...(props.autoResize === false ? {"--table-width": `${estTableWidth}px`} : {})
+                } as any}
                 tabIndex={0}
                 onKeyDown={(e) => handleTableKeys(e)}
             >
