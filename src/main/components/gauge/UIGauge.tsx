@@ -5,7 +5,6 @@ import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 import { useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
-import { LayoutContext } from "../../LayoutContext";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";

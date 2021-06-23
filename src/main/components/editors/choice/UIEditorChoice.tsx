@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
@@ -7,7 +7,6 @@ import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
-import { LayoutContext } from "../../../LayoutContext";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";

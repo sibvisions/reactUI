@@ -11,7 +11,6 @@ import { useProperties, useDataProviderData, useLayoutValue } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { LayoutContext } from "../../LayoutContext";
 import { getMarkerIcon, 
          parseMapLocation, 
          parsePrefSize, 

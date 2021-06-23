@@ -12,7 +12,6 @@ import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
-import { LayoutContext } from "../../LayoutContext";
 import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";

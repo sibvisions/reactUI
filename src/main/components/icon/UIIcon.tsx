@@ -5,7 +5,6 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { useProperties, useImageStyle, useLayoutValue } from "../zhooks";
 
 /** Other imports */
-import { LayoutContext } from "../../LayoutContext";
 import { appContext } from "../../AppProvider";
 import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";

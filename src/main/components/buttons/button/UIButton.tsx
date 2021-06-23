@@ -11,7 +11,6 @@ import { useProperties, useButtonMouseImages, useLayoutValue } from "../../zhook
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { appContext } from "../../../AppProvider";
-import { LayoutContext } from "../../../LayoutContext";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
@@ -68,8 +67,6 @@ const UIButton: FC<IButton> = (baseProps) => {
         req.componentId = props.name;
         context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
     }
-
-    console.log(btnData.style.padding, props.name)
 
     return(
         <span ref={buttonWrapperRef} style={layoutStyle}>

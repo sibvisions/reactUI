@@ -85,7 +85,7 @@ export const SelectedCellContext = createContext<ISelectedCell>({})
  * @param props - props received by Table
  */
 const CellEditor: FC<CellEditor> = (props) => {
-    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer, className } = props;
+    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
     
     /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);

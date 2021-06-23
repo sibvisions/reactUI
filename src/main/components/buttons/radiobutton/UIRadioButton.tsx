@@ -56,8 +56,6 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    console.log(props.style?.includes("actiongroup"))
-
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <span

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
 import { useLayoutValue, useProperties } from "../zhooks";
@@ -26,12 +26,29 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
 
+    const testRef = useRef<number>(0)
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(labelRef.current && onLoadCallback) {
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
+            testRef.current = labelRef.current.offsetHeight + 1;
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useLayoutEffect(() => {
+        const testListener = () => {
+            if (labelRef.current) {
+                console.log(document.getElementsByTagName("p")[0].offsetHeight)
+                //console.log(labelRef.current.offsetHeight, testRef.current)
+            }
+        }
+
+        window.addEventListener("resize", testListener)
+        return () => window.removeEventListener("resize", testListener)
+    }, [])
+
+    
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

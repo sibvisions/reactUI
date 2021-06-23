@@ -9,7 +9,6 @@ import { useProperties, useRowSelect, useEventHandler, useLayoutValue } from "..
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, 
          getMetaData, 

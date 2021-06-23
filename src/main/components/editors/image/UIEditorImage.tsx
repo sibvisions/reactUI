@@ -6,7 +6,6 @@ import { useProperties, useRowSelect, useImageStyle, useLayoutValue } from "../.
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
 

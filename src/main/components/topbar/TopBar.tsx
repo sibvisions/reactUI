@@ -1,4 +1,4 @@
-import React, { FC, useState, createContext, PropsWithChildren } from "react";
+import React, { FC, useState, createContext } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 

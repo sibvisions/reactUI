@@ -14,7 +14,6 @@ import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLa
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
-import { LayoutContext } from "../../LayoutContext";
 import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 

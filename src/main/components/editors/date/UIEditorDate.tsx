@@ -10,7 +10,6 @@ import { useEventHandler, useLayoutValue, useProperties, useRowSelect } from "..
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { LayoutContext } from "../../../LayoutContext";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, 
          sendSetValues, 
@@ -109,6 +108,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Mounted state used because useEventHandler ref is null when cell-editor is opened -> not added */
     const [mounted, setMounted] = useState<boolean>(false)
 
+    const [visible, setVisible] = useState<boolean>(false);
+
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
@@ -162,7 +163,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     calendarInput.current.value = props.passedKey
                 }
             }
-        },0)
+        },0);
+
+        return () => handleDateInput();
     },[])
 
     useEffect(() => {
@@ -222,7 +225,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             alreadySaved.current = true;
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             if (calendar.current) {
-                (calendar.current as any).hideOverlay();
+                setVisible(false)
             }
         }
         else if ((event as KeyboardEvent).key === "Tab") {
@@ -232,7 +235,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 props.stopCellEditing(event);
             }
             else if (calendar.current) {
-                (calendar.current as any).hideOverlay();
+                setVisible(false)
             }
         }
         else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
@@ -240,13 +243,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
     });
 
-    useEffect(() => {
-        setTimeout(() => {
-            if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
-                (calendar.current as any).showOverlay();
-            }
-        }, 33)
-    }, [calendar.current])
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
+    //             //setVisible(true);
+    //         }
+    //     }, 33)
+    // }, [calendar.current])
 
     return (
         <CustomCalendar
@@ -261,6 +264,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             showTime={showTime}
             showSeconds={showSeconds}
             timeOnly={timeOnly}
+            visible={visible}
             hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
             showIcon={true}
             style={layoutStyle}
@@ -275,6 +279,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             }}
             onHide={() =>  !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
             disabled={!props.cellEditor_editable_}
+            onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
         />
     )
 }

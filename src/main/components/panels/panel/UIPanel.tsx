@@ -1,11 +1,10 @@
 /** React imports */
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
-import { LayoutContext } from "../../../LayoutContext";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
 import BaseComponent from "../../BaseComponent";
