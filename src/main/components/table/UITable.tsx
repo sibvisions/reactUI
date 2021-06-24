@@ -893,7 +893,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 <>
                     {props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *")}
                     <span className="p-sortable-column-icon pi pi-fw"></span>
-                    <span className="sort-index">{sortIndex}</span>
+                    <span className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
         }
 
@@ -963,6 +963,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 )}
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
                 reorderable={columnMetaData?.movable}
+                sortable
             />
         })
     }, [props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
@@ -1140,33 +1141,26 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /**
      * Sends a sort request to the server
-     * @param e - the mouse event
+     * @param columnName - the column name
      */
-    const handleSort = (e:MouseEvent) => {
-        if (e.target instanceof Element) {
-            const clickedCol = e.target.closest("th");
-            if (clickedCol && !clickedCol.classList.contains("not-sortable")) {
-                let sortColumnName = window.getComputedStyle(clickedCol).getPropertyValue('--columnName');
-                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === sortColumnName);
-                const sortReq = createSortRequest();
-                sortReq.dataProvider = props.dataBook;
-                let sortDefToSend:SortDefinition[] = sortDefinitions || [];
-                if (e.ctrlKey) {
-                    if (!sortDef) {
-                        sortDefToSend.push({columnName: sortColumnName, mode:"Ascending"})
-                    }
-                    else {
-                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === sortColumnName)] = {columnName: sortColumnName, mode: getNextSort(sortDef?.mode)}
-                    }
-                }
-                else {
-                    sortDefToSend = [{columnName: sortColumnName, mode: getNextSort(sortDef?.mode)}]
-                }
-                sortReq.sortDefinition = sortDefToSend;
-                context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
+    const handleSort = (columnName:string) => {
+        const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+        const sortReq = createSortRequest();
+        sortReq.dataProvider = props.dataBook;
+        let sortDefToSend: SortDefinition[] = sortDefinitions || [];
+        if (context.ctrlPressed) {
+            if (!sortDef) {
+                sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+            }
+            else {
+                sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
             }
         }
-        
+        else {
+            sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
+        }
+        sortReq.sortDefinition = sortDefToSend;
+        context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
     }
 
     /**
@@ -1176,13 +1170,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     const handleColResizeStart = (elem:Element) => {
         elem.parentElement?.style.setProperty('pointer-events', 'none')
     }
-
-    /** Sort handler */
-    useMultipleEventHandler(
-        tableRef.current ? tableSelect(true, "th", ".p-datatable-scrollable-header-table th") : undefined,
-        'click',
-        (e:any) => handleSort(e)
-    );
 
     /** Column-resize handler */
     useMultipleEventHandler(
@@ -1211,7 +1198,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     ...(props.autoResize === false ? {"--table-width": `${estTableWidth}px`} : {})
                 } as any}
                 tabIndex={0}
-                onKeyDown={(e) => handleTableKeys(e)}
+                onKeyDown={(event) => handleTableKeys(event)}
             >
                 <DataTable
                     id={props.name}
@@ -1238,6 +1225,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     onVirtualScroll={handleVirtualScroll}
                     onColumnResizeEnd={handleColResizeEnd}
                     onColReorder={handleColReorder}
+                    onSort={(event) => handleSort(event.sortField)}
                     rowClassName={(data) => {
                         let cn: any = {}
                         if (selectedRow && selectedRow.data === data) {

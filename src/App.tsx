@@ -21,6 +21,7 @@ import { appContext } from "./main/AppProvider";
 import { createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
+import { useEventHandler } from './main/components/zhooks';
 
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
@@ -192,6 +193,10 @@ const App: FC<ICustomContent> = (props) => {
         dialogRef.current.bodyMessage = body;
         setShowTimeOut(true);
     }
+
+    useEventHandler(document.body, "keydown", (event) => (event as any).key === "Control" ? context.ctrlPressed = true : undefined);
+
+    useEventHandler(document.body, "keyup", (event) => (event as any).key === "Control" ? context.ctrlPressed = false : undefined);
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (

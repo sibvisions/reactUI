@@ -27,6 +27,7 @@ tr.p-highlight{
                 background: white;
                 &:hover {
                     background: #e9ecef;
+                    color: inherit;
                 }
                 &.sort-asc, &.sort-des {
                     color: #2196F3;
@@ -34,9 +35,13 @@ tr.p-highlight{
                 .p-sortable-column-icon {
                     font-size: 14px;
                     margin-left: 4px;
+                    color: #2196F3
                 }
                 .sort-index {
                     font-size: 10px;
+                }
+                .pi-sort-alt {
+                    display: none;
                 }
             }
         }
@@ -129,6 +134,15 @@ tr.p-highlight{
 
 .p-column-title {
     user-select: none;
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+    &.sort-asc, &.sort-des {
+        color: #2196F3;
+        .p-sortable-column-icon {
+            color: #2196F3;
+        }
+    }
 }
 
 @keyframes pulse {

@@ -14,6 +14,7 @@ type AppContextType={
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
+    ctrlPressed: boolean
     //theme: string,
     //setTheme: Function
 }
@@ -30,7 +31,8 @@ contentStore.setSubscriptionManager(subscriptions);
 const initValue: AppContextType = {
     contentStore: contentStore,
     server: server,
-    subscriptions: subscriptions
+    subscriptions: subscriptions,
+    ctrlPressed: false
     //theme: "",
     //setTheme: () => {},
 }
@@ -61,7 +63,8 @@ const AppProvider: FC = ({children}) => {
             //setTheme: setTheme,
             contentStore: contentStore,
             server: server,
-            subscriptions: subscriptions
+            subscriptions: subscriptions,
+            ctrlPressed: false
         }
 
     }
