@@ -48,7 +48,7 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
  * @param locale - the current locale
  * @returns properly rendered values for cells based on their CellEditors
  */
-export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, cellData:any, resource:string, locale:string, stateFunc:Function) {
+export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, cellData:any, resource:string, locale:string, stateFunc?:Function) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
             /** If the cell is a ChoiceCellEditor get the index of the value in metaData and return the corresponding image */
@@ -59,7 +59,7 @@ export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumn
                     return <img
                         className="rc-editor-choice-img"
                         alt="choice" src={resource + castedCellEditor.imageNames[cellIndex]}
-                        onClick={() => stateFunc()}
+                        onClick={stateFunc ? () => stateFunc() : undefined}
                         onLoad={(e) => {
                             e.currentTarget.style.setProperty('--choiceMinW', `${e.currentTarget.naturalWidth}px`);
                             e.currentTarget.style.setProperty('--choiceMinH', `${e.currentTarget.naturalHeight}px`);
@@ -100,7 +100,7 @@ export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumn
                     }).format(cellData);
             }
             else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
-                return <span onClick={() => stateFunc()}>
+                return <span onClick={stateFunc ? () => stateFunc() : undefined}>
                     <Checkbox checked={getBooleanValue(cellData)} />
                 </span>
                 

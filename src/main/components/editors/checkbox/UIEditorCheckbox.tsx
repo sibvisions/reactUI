@@ -62,6 +62,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    /** If the CellEditor is read-only */
+    const isReadOnly = (isCellEditor && props.readonly) || !props.cellEditor_editable_
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
@@ -174,6 +177,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                 inputId={id}
                 checked={checked}
                 onChange={() => handleOnChange()}
+                disabled={isReadOnly}
             />
             {baseProps.id !== "" &&
                 <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>

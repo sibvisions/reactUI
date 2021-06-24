@@ -24,6 +24,7 @@ import { getEditorCompId,
          parseMaxSize } from "../../util";
 import { LengthBasedColumnDescription } from "../../../response";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { getColMetaData } from "../../table/UITable";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -74,8 +75,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
+    /** The metaData of the dataRow */
+    const metaData = getMetaData(compId, props.dataRow, context.contentStore)
+
     /** The metadata for the TextCellEditor */
-    const cellEditorMetaData:LengthBasedColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as LengthBasedColumnDescription;
+    const cellEditorMetaData:LengthBasedColumnDescription = getColMetaData(props.columnName, metaData) as LengthBasedColumnDescription;
 
     /** Returns the maximum length for the TextCellEditor */
     const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);

@@ -36,20 +36,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useLayoutEffect(() => {
-        const testListener = () => {
-            if (labelRef.current) {
-                console.log(document.getElementsByTagName("p")[0].offsetHeight)
-                //console.log(labelRef.current.offsetHeight, testRef.current)
-            }
-        }
-
-        window.addEventListener("resize", testListener)
-        return () => window.removeEventListener("resize", testListener)
-    }, [])
-
-    
-
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <span

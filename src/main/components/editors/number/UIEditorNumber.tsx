@@ -26,6 +26,7 @@ import { getEditorCompId,
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { getColMetaData } from "../../table/UITable";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -88,8 +89,11 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    /** The metadata for the NumberCellEditor */
-    const cellEditorMetaData:NumericColumnDescription = getMetaData(compId, props.dataRow, context.contentStore)?.columns.find(column => column.name === props.columnName) as NumericColumnDescription;
+    /** The metaData of the dataRow */
+    const metaData = getMetaData(compId, props.dataRow, context.contentStore)
+
+    /** The cell-editor metadata for the NumberCellEditor */
+    const cellEditorMetaData:NumericColumnDescription = getColMetaData(props.columnName, metaData) as NumericColumnDescription;
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";

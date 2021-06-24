@@ -13,5 +13,8 @@
     min-width: var(--choiceMinW);
     min-height: var(--choiceMinH);
 
-    cursor: pointer;
+    &:not(.choice-read-only) {
+        cursor: pointer;
+    }
+    
 }

@@ -69,7 +69,8 @@ type CellEditor = {
     enterNavigationMode: number,
     tabNavigationMode: number,
     selectedRow: any,
-    className?: string
+    className?: string,
+    readonly?: boolean
 }
 
 /** Interface for selected cells */
@@ -79,6 +80,10 @@ interface ISelectedCell {
 
 /** A Context which contains the currently selected cell */
 export const SelectedCellContext = createContext<ISelectedCell>({})
+
+export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
+    return metaData?.columns.find(column => column.name === colName);
+}
 
 /**
  * This component displays either just the value of the cell or an in-cell editor
@@ -103,7 +108,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = props.metaData?.columns.find(column => column.name === props.colName);
+    const columnMetaData = getColMetaData(props.colName, props.metaData);
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -186,33 +191,40 @@ const CellEditor: FC<CellEditor> = (props) => {
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
 
-    /** Either return the correctly rendered value or a in-cell editor */
-    return (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-        ((edit && !waiting) ? 
-            <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
+    /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
+    return (
+        !props.readonly ?
+            (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
+                ((edit && !waiting) ?
+                    <div ref={wrapperRef}>
+                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
+                    </div>
+                    :
+                    <div
+                        className="cell-data"
+                        onClick={() => {
+                            if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
+                                setWaiting(true);
+                                setEdit(true);
+                            }
+                        }}>
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => { setWaiting(true); setEdit(true) })}
+                    </div>
+                ) : (!edit ?
+                    <div
+                        className="cell-data"
+                        onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => setEdit(true))}
+                    </div>
+                    :
+                    <div ref={wrapperRef}>
+                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
+                    </div>)
+            : <div
+                className="cell-data">
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
             </div>
-        :
-            <div
-                className="cell-data"
-                onClick={() => {
-                    if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
-                        setWaiting(true); 
-                        setEdit(true);
-                    }
-                }}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => {setWaiting(true); setEdit(true)})}
-            </div>
-        ) : (!edit ? 
-            <div
-                className="cell-data"
-                onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => setEdit(true))}
-            </div>
-            :
-            <div ref={wrapperRef}>
-                {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
-            </div>)
+    )
 }
 
 /**
@@ -475,24 +487,26 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
         if (tableRef.current) {
-            let cellDataWidthList:Array<number> = [];
+            let cellDataWidthList:Array<{widthPreSet:boolean, width:number}> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows: any, index: number) => {
                 const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *");
                 for (let j = 0; j < cellDatas.length; j++) {
-                    let tempWidth: number;
-                    if (cellDatas[j] !== undefined) {
-                        /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
-                        if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
-                            tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
-                        /** Add 32 pixel to its measured width to display editor properly */
-                        else
-                            tempWidth = cellDatas[j].getBoundingClientRect().width;
-
-                        /** If the measured width is greater than the current widest width for the column, replace it */
-                        if (tempWidth > cellDataWidthList[j]) {
-                            cellDataWidthList[j] = tempWidth;
-                        } 
+                    if (!cellDataWidthList[j].widthPreSet) {
+                        let tempWidth: number;
+                        if (cellDatas[j] !== undefined) {
+                            /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
+                            if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
+                                tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
+                            /** Add 32 pixel to its measured width to display editor properly */
+                            else
+                                tempWidth = cellDatas[j].getBoundingClientRect().width;
+    
+                            /** If the measured width is greater than the current widest width for the column, replace it */
+                            if (tempWidth > cellDataWidthList[j].width) {
+                                cellDataWidthList[j].width = tempWidth;
+                            } 
+                        }
                     }
                 }
             }
@@ -508,7 +522,17 @@ const UITable: FC<TableProps> = (baseProps) => {
                 
                 /** First set width of headers for columns then rows */
                 for (let i = 0; i < theader.length; i++) {
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                    const newCellWidth = {widthPreSet: false, width: 0}
+                    const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
+                    const columnMetaData = getColMetaData(colName, metaData)
+                    if (columnMetaData?.width) {
+                        newCellWidth.width = columnMetaData.width;
+                        newCellWidth.widthPreSet = true
+                    }
+                    else {
+                        newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                    }
+                    cellDataWidthList.push(newCellWidth);
                 }
                     
                 (tableRef.current as any).container.classList.add("read-size");
@@ -519,15 +543,14 @@ const UITable: FC<TableProps> = (baseProps) => {
 
                 let tempWidth: number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
-                    tempWidth += cellDataWidth
+                    tempWidth += cellDataWidth.width
                 });
                 
                 /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width',`${100 * cellDataWidthList[i] / tempWidth}%`);
+                    theader[i].style.setProperty('width',`${100 * cellDataWidthList[i].width / tempWidth}%`);
                 }
                     
-
                 /** set EstTableWidth for size reporting */
                 setEstTableWidth(tempWidth);
             }
@@ -540,7 +563,17 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 for (let i = 0; i < theader.length; i++) {
-                    cellDataWidthList[i] = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                    const newCellWidth = {widthPreSet: false, width: 0}
+                    const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
+                    const columnMetaData = getColMetaData(colName, metaData)
+                    if (columnMetaData?.width) {
+                        newCellWidth.width = columnMetaData.width;
+                        newCellWidth.widthPreSet = true
+                    }
+                    else {
+                        newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                    }
+                    cellDataWidthList.push(newCellWidth);
                 }
                 //@ts-ignore
                 const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
@@ -552,19 +585,30 @@ const UITable: FC<TableProps> = (baseProps) => {
 
                 let tempWidth:number = 0;
                 cellDataWidthList.forEach(cellDataWidth => {
-                    tempWidth += cellDataWidth
+                    tempWidth += cellDataWidth.width
                 });
 
                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
-                    tCols1[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
-                    tCols2[i].style.setProperty('width', `${100 * cellDataWidthList[i] / tempWidth}%`);
+                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
+                    tCols1[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
+                    tCols2[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
                 }
-
                 setEstTableWidth(tempWidth)
             }
         }
     },[]);
+
+    useLayoutEffect(() => {
+        if (tableRef.current) {
+            //@ts-ignore
+            const colResizers = tableRef.current.container.getElementsByClassName("p-column-resizer");
+            for (const colResizer of colResizers) {
+                if (colResizer.parentElement.classList.contains("not-resizable")) {
+                    colResizer.style.setProperty("display", "none");
+                }
+            }
+        }
+    },[])
 
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
@@ -847,13 +891,15 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
             return (
                 <>
-                    {props.columnLabels[colIndex] + (metaData?.columns.find(column => column.name === colName)?.nullable ? "" : " *")}
+                    {props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *")}
                     <span className="p-sortable-column-icon pi pi-fw"></span>
                     <span className="sort-index">{sortIndex}</span>
                 </>)
         }
 
         return props.columnNames.map((colName, colIndex) => {
+            const columnMetaData = getColMetaData(colName, metaData)
+            const className = columnMetaData?.cellEditor?.className;
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
@@ -866,8 +912,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
-                    const columnMetaData = metaData?.columns.find(column => column.name === colName)
-                    const className = columnMetaData?.cellEditor?.className;
                     if (columnMetaData?.cellEditor.directCellEditor) {
                         return createEditor({
                             id: "",
@@ -885,7 +929,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                                     columnNames: primaryKeys,
                                     values: primaryKeys.map(pk => currDataRow[pk])
                                 }
-                            }
+                            },
+                            readonly: columnMetaData?.readonly
                         })
                     }
                     else {
@@ -905,13 +950,19 @@ const UITable: FC<TableProps> = (baseProps) => {
                             enterNavigationMode={enterNavigationMode}
                             tabNavigationMode={tabNavigationMode}
                             selectedRow={selectedRow}
-                            className={className} />
+                            className={className}
+                            readonly={columnMetaData?.readonly} />
                     }
                 }
                 }
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
-                className={metaData?.columns.find(column => column.name === colName)?.cellEditor?.className}
+                className={concatClassnames(
+                    className,
+                    !columnMetaData?.sortable ? "not-sortable" : "",
+                    !columnMetaData?.resizable ? "not-resizable" : ""
+                )}
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
+                reorderable={columnMetaData?.movable}
             />
         })
     }, [props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
@@ -958,7 +1009,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      *  @param e - the event
      */
     const handleColResizeEnd = (e:any) => {
-        e.element.style.setProperty('pointer-events', 'auto')
+        //e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
             //@ts-ignore
             if (!tableRef.current.table) {
@@ -977,6 +1028,17 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tCols1[i].style.setProperty('width', `${w}%`)
                     tCols2[i].style.setProperty('width', `${w}%`)
                     tColGroupHeader.children[i].style.setProperty('width', `${w}%`)
+                }
+            }
+            else {
+                //@ts-ignore
+                const theader = tableRef.current.container.querySelectorAll('th');
+                //@ts-ignore
+                const width = tableRef.current.table.offsetWidth
+                for (let i = 0; i < theader.length; i++) {
+                    const w = 100 * theader[i].offsetWidth / width;
+                    theader[i].style.setProperty('width', `${w}%`);
+                    theader[i].style.setProperty('pointer-events', 'auto')
                 }
             }
         }
@@ -1083,7 +1145,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const handleSort = (e:MouseEvent) => {
         if (e.target instanceof Element) {
             const clickedCol = e.target.closest("th");
-            if (clickedCol) {
+            if (clickedCol && !clickedCol.classList.contains("not-sortable")) {
                 let sortColumnName = window.getComputedStyle(clickedCol).getPropertyValue('--columnName');
                 const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === sortColumnName);
                 const sortReq = createSortRequest();

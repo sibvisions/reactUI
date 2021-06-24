@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useMemo, useRef } from "react";
+import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
@@ -10,7 +10,7 @@ import { appContext } from "../../../AppProvider";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey } from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
@@ -50,6 +50,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    /** If the CellEditor is read-only */
+    const isReadOnly = (isCellEditor && props.readonly) || !props.cellEditor_editable_
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
@@ -58,8 +61,6 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-
-
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -131,28 +132,30 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
      * Send a sendValues request with the next value to the server
      */
     const setNextValue = () => {
-        const setValReq = createSetValuesRequest();
-        setValReq.componentId = props.name;
-        setValReq.columnNames = [props.columnName];
-        setValReq.dataProvider = props.dataRow;
-
-        /** Get the index of the current image */
-        const index = props.cellEditor.allowedValues.indexOf(currentImageValue)
-
-        /** If the index is not the last value in allowedValues, set to the next value */
-        if(props.cellEditor.allowedValues.length > index+1) {
-            setValReq.values = [props.cellEditor.allowedValues[index+1]];
+        if (!isReadOnly) {
+            const setValReq = createSetValuesRequest();
+            setValReq.componentId = props.name;
+            setValReq.columnNames = [props.columnName];
+            setValReq.dataProvider = props.dataRow;
+    
+            /** Get the index of the current image */
+            const index = props.cellEditor.allowedValues.indexOf(currentImageValue)
+    
+            /** If the index is not the last value in allowedValues, set to the next value */
+            if(props.cellEditor.allowedValues.length > index+1) {
+                setValReq.values = [props.cellEditor.allowedValues[index+1]];
+            }
+                
+            /** If the index is the last value, set to the first value of allowedValues */
+            else {
+                setValReq.values = [props.cellEditor.allowedValues[0]];
+            }
+    
+            if (props.rowIndex !== undefined && props.filter && selectedRow.index !== undefined && props.rowIndex() !== selectedRow.index) {
+                setValReq.filter = props.filter()
+            }
+            context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
         }
-            
-        /** If the index is the last value, set to the first value of allowedValues */
-        else {
-            setValReq.values = [props.cellEditor.allowedValues[0]];
-        }
-
-        if (props.rowIndex !== undefined && props.filter && selectedRow.index !== undefined && props.rowIndex() !== selectedRow.index) {
-            setValReq.filter = props.filter()
-        }
-        context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
     }
     
     return (
@@ -173,7 +176,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             <img
                 ref={imgRef}
                 id={!isCellEditor ? props.name : undefined}
-                className="rc-editor-choice-img"
+                className={concatClassnames("rc-editor-choice-img", isReadOnly ? "choice-read-only" : "")} 
                 alt=""
                 onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?
