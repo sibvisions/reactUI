@@ -548,7 +548,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 
                 /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width',`${100 * cellDataWidthList[i].width / tempWidth}%`);
+                    let w = cellDataWidthList[i].width as any;
+                    if (props.autoResize === false) {
+                        w = `${w}px`;
+                    } else {
+                        w = `${100 * w / tempWidth}%`;
+                    }
+                    theader[i].style.setProperty('width', w);
                 }
                     
                 /** set EstTableWidth for size reporting */
@@ -589,9 +595,15 @@ const UITable: FC<TableProps> = (baseProps) => {
                 });
 
                 for (let i = 0; i < theader.length; i++) {
-                    theader[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
-                    tCols1[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
-                    tCols2[i].style.setProperty('width', `${100 * cellDataWidthList[i].width / tempWidth}%`);
+                    let w = cellDataWidthList[i].width as any;
+                    if (props.autoResize === false) {
+                        w = `${w}px`;
+                    } else {
+                        w = `${100 * w / tempWidth}%`;
+                    }
+                    theader[i].style.setProperty('width', w);
+                    tCols1[i].style.setProperty('width', w);
+                    tCols2[i].style.setProperty('width', w);
                 }
                 setEstTableWidth(tempWidth)
             }
@@ -1024,11 +1036,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 const width = tColGroup[0].offsetWidth;
                 for (let i = 0; i < tCols1.length; i++) {
-                    const w = 100 * tCols1[i].offsetWidth / width;
-                    theader[i].style.setProperty('width', `${w}%`)
-                    tCols1[i].style.setProperty('width', `${w}%`)
-                    tCols2[i].style.setProperty('width', `${w}%`)
-                    tColGroupHeader.children[i].style.setProperty('width', `${w}%`)
+                    let w = tCols1[i].offsetWidth;
+                    if (props.autoResize === false) {
+                        w = `${w}px`;
+                    } else {
+                        w = `${100 * w / width}%`;
+                    }
+                    theader[i].style.setProperty('width', w)
+                    tCols1[i].style.setProperty('width', w)
+                    tCols2[i].style.setProperty('width', w)
+                    tColGroupHeader.children[i].style.setProperty('width', w)
                 }
             }
             else {
@@ -1037,8 +1054,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 const width = tableRef.current.table.offsetWidth
                 for (let i = 0; i < theader.length; i++) {
-                    const w = 100 * theader[i].offsetWidth / width;
-                    theader[i].style.setProperty('width', `${w}%`);
+                    let w = theader[i].offsetWidth;
+                    if (props.autoResize === false) {
+                        w = `${w}px`;
+                    } else {
+                        w = `${100 * w / width}%`;
+                    }
+
+                    theader[i].style.setProperty('width', w);
                     theader[i].style.setProperty('pointer-events', 'auto')
                 }
             }
