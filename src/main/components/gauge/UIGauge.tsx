@@ -155,8 +155,8 @@ const RingGauge: React.FC<GaugeProps> = ({
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
             <defs>
                 <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
                 </linearGradient>
                 <mask id={maskID}>
                     <circle 
@@ -232,8 +232,8 @@ const ArcGauge: React.FC<GaugeProps> = ({
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
             <defs>
                 <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
                 </linearGradient>
                 <mask id={maskID}>
                     <path 
@@ -370,8 +370,8 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     />
                 </mask>
                 <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stop-color="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stop-color="var(--gauge-gradient__bottom)" />
+                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
+                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
                 </linearGradient>
             </defs>
 
@@ -415,8 +415,8 @@ const MeterGauge: React.FC<GaugeProps> = ({
                     strokeDasharray={dasharray.join(' ')}
                     strokeDashoffset={tickSize * .5}
                     stroke="var(--gauge-color__ticks)"
-                    marker-start={`url(#${markerID})`}
-                    marker-end={`url(#${markerID})`}
+                    markerStart={`url(#${markerID})`}
+                    markerEnd={`url(#${markerID})`}
                     fill="none"
                 />
 
