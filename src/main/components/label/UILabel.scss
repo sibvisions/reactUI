@@ -5,6 +5,14 @@
     align-items: flex-start;
     padding-top: 0.563rem;
     padding-bottom: 0.563rem;
+    overflow: hidden;
+
+    & > span {
+        flex-shrink: 0;
+        overflow: hidden;
+        width: 100%;
+        display: block;
+    }
 }
 
 .rc-label-html {

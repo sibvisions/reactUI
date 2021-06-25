@@ -77,7 +77,7 @@ export function getAlignments(props: IEditor|BaseComponent):Alignments {
     }
 }
 
-function translateTextAlign(pha:number|undefined): CSSProperties {
+export function translateTextAlign(pha:number|undefined): CSSProperties {
     if (pha === HORIZONTAL_ALIGNMENT.LEFT)
         return {textAlign: "left"};
     else if (pha === HORIZONTAL_ALIGNMENT.CENTER)
