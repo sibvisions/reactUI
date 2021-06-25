@@ -289,12 +289,11 @@ const UIChart: FC<IChart> = (baseProps) => {
             case CHART_STYLES.STACKEDBARS: 
             case CHART_STYLES.STACKEDPERCENTBARS: 
             case CHART_STYLES.OVERLAPPEDBARS: 
-                return "bar";
             case CHART_STYLES.HBARS: 
             case CHART_STYLES.STACKEDHBARS: 
             case CHART_STYLES.STACKEDPERCENTHBARS: 
             case CHART_STYLES.OVERLAPPEDHBARS: 
-                return "horizontalBar";
+                return "bar";
             case CHART_STYLES.LINES: 
             case CHART_STYLES.AREA: 
             case CHART_STYLES.STEPLINES: 
@@ -366,7 +365,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 const singleColor = getColor(idx, opacity, colors);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
                 return {
-                    ...(horizontal ? { yAxisID: axisID } : { xAxisID: axisID }),
+                    ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
                     label: yColumnLabels[idx],
                     data: data[idx],
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
@@ -378,7 +377,9 @@ const UIChart: FC<IChart> = (baseProps) => {
                     pointStyle: getPointStyle(idx, points),
                     pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
                     pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
-                    steppedLine: CHART_STYLES.STEPLINES === chartStyle,
+                    stepped: CHART_STYLES.STEPLINES === chartStyle,
+                    barPercentage: hasStringLabels && overlapped ? (0.9 - (idx * 0.15)) : 0.9,
+                    categoryPercentage: 0.8,
                 }
             })
         }
@@ -391,8 +392,8 @@ const UIChart: FC<IChart> = (baseProps) => {
      * @returns options for display
      */
     const options = useMemo(() => {
-        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle, yColumnNames, xColumnName, title: chartTitle } = props;
-        
+        const { chartStyle = CHART_STYLES.LINES, xAxisTitle, yAxisTitle, yColumnNames, yColumnLabels = [], xColumnName, title: chartTitle } = props;
+
         const percentage = [
             CHART_STYLES.STACKEDPERCENTAREA, 
             CHART_STYLES.STACKEDPERCENTBARS, 
@@ -433,7 +434,9 @@ const UIChart: FC<IChart> = (baseProps) => {
         const preferredSize = parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
         const aspectRatio = preferredSize.width / preferredSize.height;
 
-        const stringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
+        const rows = providerData.map(dataRow => dataRow[xColumnName]);
+        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
+        const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const tooltips = {
             callbacks: {
@@ -458,37 +461,38 @@ const UIChart: FC<IChart> = (baseProps) => {
                 tooltips
             }
         } else {
-            let xAxes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
+            let axes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
                 id: `axis-${idx}`,
+                axis: horizontal ? 'y' : 'x',
                 display: !idx,
-                scaleLabel: {
+                title: {
                     display: true,
-                    labelString: xAxisTitle,
+                    text: xAxisTitle,
                 },
                 stacked,
                 ticks: {
                     callback: (value:any) => {
                         //truncate
-                        value = value.toString();
+                        value = hasStringLabels ? labels[value] : value.toString();
                         return value.length > 12 ? `${value.substr(0, 10)}...` : value
                     } 
                 },
-                offset: stringLabels,
-                gridLines: {
-                    offsetGridLines: stringLabels
+                offset: hasStringLabels,
+                grid: {
+                    offset: hasStringLabels
                 },
                 //apparently bar chart defaults are only set correctly for the first axis
                 ...(idx ? {
                     type: 'category',
-                    barPercentage: stringLabels ? (0.9 - (idx * 0.15)) : 0.9,
-                    categoryPercentage: 0.8,
                 } : {}),
             }));
 
-            let yAxes:any[] = [{
-                scaleLabel: {
+            axes.push({
+                id: 'caxis-0',
+                axis: horizontal ? 'x' : 'y',
+                title: {
                     display: true,
-                    labelString: yAxisTitle,
+                    text: yAxisTitle,
                 },
                 stacked,
                 ticks: {
@@ -496,13 +500,15 @@ const UIChart: FC<IChart> = (baseProps) => {
                     max,
                     ...(percentage ? {callback: (value:any) => `${value}%`} : {})
                 }
-            }];
+            })
 
-            if (horizontal) {
-                const t = xAxes;
-                xAxes = yAxes;
-                yAxes = t;
-            }
+            axes.push({
+                id: 'x',
+                display: false,
+            },{
+                id: 'y',
+                display: false,
+            })
 
             return {
                 title,
@@ -514,10 +520,13 @@ const UIChart: FC<IChart> = (baseProps) => {
                     position: 'bottom'
                 },
                 scales: {
-                    xAxes,
-                    yAxes
+                    ...axes.reduce((agg, axis) => {
+                        agg[axis['id']] = axis;
+                        return agg;
+                    }, {})
                 },
                 tooltips,
+                indexAxis: horizontal ? 'y' : 'x',
             }
         }
     }, [props.chartStyle, providerData]);
