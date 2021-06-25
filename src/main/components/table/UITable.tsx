@@ -1018,11 +1018,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     }
 
     /**
-     *  When column-resizing stops, enable pointer-events for sorting, and adjust the width of resize
+     *  When column-resizing stops, adjust the width of resize
      *  @param e - the event
      */
     const handleColResizeEnd = (e:any) => {
-        //e.element.style.setProperty('pointer-events', 'auto')
         if (tableRef.current) {
             //@ts-ignore
             if (!tableRef.current.table) {
@@ -1046,6 +1045,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tCols1[i].style.setProperty('width', w)
                     tCols2[i].style.setProperty('width', w)
                     tColGroupHeader.children[i].style.setProperty('width', w)
+                    theader[i].style.removeProperty('pointer-events')
                 }
             }
             else {
@@ -1062,7 +1062,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     }
 
                     theader[i].style.setProperty('width', w);
-                    theader[i].style.setProperty('pointer-events', 'auto')
+                    theader[i].style.removeProperty('pointer-events')
                 }
             }
         }
@@ -1186,22 +1186,13 @@ const UITable: FC<TableProps> = (baseProps) => {
         context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
     }
 
-    /**
-     * When columns are resized disable pointer events, so when resize smaller sort is not called.
-     * @param elem - the element
-     */
-    const handleColResizeStart = (elem:Element) => {
-        elem.parentElement?.style.setProperty('pointer-events', 'none')
-    }
-
     /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
-        //@ts-ignore
-            tableRef.current.container.getElementsByClassName("p-column-resizer")
+            tableSelect(true, "th", ".p-datatable-scrollable-header-table th")
             : undefined,
         'mousedown',
-        handleColResizeStart,
+        (elem:any) => elem instanceof Element ? (elem as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,
         true
     )
 
