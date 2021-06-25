@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -61,6 +61,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
+    useFetchMissingData(compId, props.dataRow);
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value

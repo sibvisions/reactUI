@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -137,6 +137,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const alreadySaved = useRef<boolean>(false);
 
     setDateLocale(context.contentStore.locale);
+
+    useFetchMissingData(compId, props.dataRow);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

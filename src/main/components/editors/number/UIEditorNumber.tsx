@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useEventHandler, useLayoutValue } from "../../zhooks"
+import { useProperties, useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -97,6 +97,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
+
+    useFetchMissingData(compId, props.dataRow);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor

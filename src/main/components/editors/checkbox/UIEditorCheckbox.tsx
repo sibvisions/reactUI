@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -71,10 +71,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
-
-
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+
+    useFetchMissingData(compId, props.dataRow);
 
     /**
      * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:

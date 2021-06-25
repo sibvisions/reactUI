@@ -6,5 +6,6 @@ interface FetchRequest{
     filter?: {columnNames?:string[], values?: any[]},
     fromRow: number | undefined,
     rowCount: number | undefined,
+    includeMetaData?: boolean
 }
 export default FetchRequest

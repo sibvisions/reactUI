@@ -9,7 +9,7 @@ import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue } from "../zhooks";
+import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -521,6 +521,8 @@ const UIChart: FC<IChart> = (baseProps) => {
             }
         }
     }, [props.chartStyle, providerData]);
+
+    useFetchMissingData(compId, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

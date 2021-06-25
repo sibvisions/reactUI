@@ -167,7 +167,8 @@ export const createFetchRequest = (values?: FetchRequest): FetchRequest => {
         columnNames: values?.columnNames,
         filter: values?.filter,
         fromRow: values?.fromRow,
-        rowCount: values?.rowCount
+        rowCount: values?.rowCount,
+        includeMetaData: values?.includeMetaData
     }
     return req;
 }

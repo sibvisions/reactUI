@@ -6,7 +6,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -93,6 +93,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
+
+    useFetchMissingData(compId, props.dataRow);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

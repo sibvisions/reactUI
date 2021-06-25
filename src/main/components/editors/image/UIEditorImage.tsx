@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect } from "react";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useImageStyle, useLayoutValue } from "../../zhooks";
+import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -52,6 +52,8 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
+
+    useFetchMissingData(compId, props.dataRow);
 
     useEffect(() => {
         if (!props.cellEditor.defaultImageName) {

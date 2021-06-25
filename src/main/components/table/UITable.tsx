@@ -14,7 +14,8 @@ import { useProperties,
          useMultipleEventHandler, 
          useSortDefinitions, 
          useEventHandler,
-         useLayoutValue} from "../zhooks";
+         useLayoutValue,
+         useFetchMissingData} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -290,6 +291,8 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
+
+    useFetchMissingData(compId, props.dataBook);
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn

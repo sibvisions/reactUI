@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../zhooks";
+import { useFetchMissingData, useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
@@ -70,6 +70,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
+
+    useFetchMissingData(compId, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
