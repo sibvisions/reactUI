@@ -15,23 +15,23 @@ export function parsePrefSize(prefSize:string|undefined):Dimension|undefined {
         return undefined;
 }
 
-export function parseMinSize(minSize:string|undefined):Dimension {
+export function parseMinSize(minSize:string|undefined):Dimension|undefined {
     if (minSize) {
         const sizeSplitted = minSize.split(',');
         return {width: parseInt(sizeSplitted[0]), height: parseInt(sizeSplitted[1])};
     }
     else {
-        return {width: 0, height: 0};
+        return undefined;
     }
 }
 
-export function parseMaxSize(maxSize:string|undefined):Dimension {
+export function parseMaxSize(maxSize:string|undefined):Dimension|undefined {
     if (maxSize) {
         const sizeSplitted = maxSize.split(',');
         return {width: parseInt(sizeSplitted[0]), height: parseInt(sizeSplitted[1])};
     }
     else {
-        return {width: 0x80000000, height: 0x80000000};
+        return undefined;
     }
 }
 

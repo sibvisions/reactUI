@@ -34,7 +34,7 @@ function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxSize:Dim
  * @param ref - the reference of the component
  * @param onLoadCallback - the onLoadCallback function
  */
-export function sendOnLoadCallback(id: string, preferredSize:Dimension|undefined, maxSize: Dimension, minSize: Dimension, ref: any, onLoadCallback: Function | undefined) {
+export function sendOnLoadCallback(id: string, preferredSize:Dimension|undefined, maxSize: Dimension|undefined, minSize: Dimension|undefined, ref: any, onLoadCallback: Function | undefined) {
     let checkedSize:Dimension
     if (onLoadCallback) {
         if (preferredSize) {
