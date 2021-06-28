@@ -175,9 +175,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[])
 
     useEffect(() => {
-        if (isValidDate(new Date(selectedRow))) {
-            setDateValue(selectedRow ? new Date(selectedRow) : undefined);
-        }
+        setDateValue(selectedRow ? new Date(selectedRow) : undefined);
         lastValue.current = selectedRow;
     },[selectedRow])
 
@@ -187,6 +185,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
      */
     const handleDateInput = () => {
         let inputDate:Date = new Date();
+        //@ts-ignore
+        const emptyValue = calendarInput.current.value === ""
         if (showTime) {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
@@ -202,8 +202,12 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 ...dateFormats
             ], new Date(), { locale: getDateLocale() });
         }
+        
         if (isValidDate(inputDate)) {
             setDateValue(inputDate)
+        }
+        else if (emptyValue) {
+            setDateValue(null)
         }
         else {
             setDateValue(isValidDate(lastValue.current) ? new Date(lastValue.current) : null);
@@ -211,7 +215,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         
         onBlurCallback(
             baseProps, 
-            inputDate instanceof Date && !isNaN(inputDate.getTime()) ? inputDate.getTime() : lastValue.current, 
+            isValidDate(inputDate) ? inputDate.getTime() : (emptyValue ? null : lastValue.current), 
             lastValue.current, 
             () => showTopBar(sendSetValues(
                     props.dataRow, 
