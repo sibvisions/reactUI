@@ -140,6 +140,10 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     useFetchMissingData(compId, props.dataRow);
 
+    const isValidDate = (inputDate:any) => {
+        return inputDate instanceof Date && !isNaN(inputDate.getTime());
+    }
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && calendar.current) {
@@ -171,7 +175,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     },[])
 
     useEffect(() => {
-        setDateValue(new Date(selectedRow));
+        if (isValidDate(new Date(selectedRow))) {
+            setDateValue(selectedRow ? new Date(selectedRow) : undefined);
+        }
         lastValue.current = selectedRow;
     },[selectedRow])
 
@@ -180,7 +186,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
      * to send the date to the server and remove PrimeReact time if necassary
      */
     const handleDateInput = () => {
-        let inputDate:Date = new Date()
+        let inputDate:Date = new Date();
         if (showTime) {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
@@ -196,14 +202,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 ...dateFormats
             ], new Date(), { locale: getDateLocale() });
         }
-
-        const isValidDate = inputDate instanceof Date && !isNaN(inputDate.getTime());
-
-        if (isValidDate) {
+        if (isValidDate(inputDate)) {
             setDateValue(inputDate)
         }
         else {
-            setDateValue(new Date(lastValue.current));
+            setDateValue(isValidDate(lastValue.current) ? new Date(lastValue.current) : null);
         }
         
         onBlurCallback(
@@ -245,14 +248,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
     });
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         if(calendar.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
-    //             //setVisible(true);
-    //         }
-    //     }, 33)
-    // }, [calendar.current])
-
     return (
         <CustomCalendar
             ref={calendar}
@@ -271,15 +266,15 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             showIcon={true}
             style={layoutStyle}
             inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
-            value={dateValue ? new Date(dateValue) : undefined}
+            value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
             appendTo={document.body}
             onChange={event => {
-                setDateValue(event.value ? (event.value as Date).getTime() : null);
+                setDateValue(event.value ? (event.value as Date) : null);
                 if (calendarInput.current) {
                     calendarInput.current.focus();
                 }
             }}
-            onHide={() =>  !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
+            onBlur={() => !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
             disabled={!props.cellEditor_editable_}
             onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
         />
