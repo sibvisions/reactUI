@@ -83,7 +83,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 id={id}
                 layoutData={props.layoutData}
                 layout={props.layout}
-                preferredSize={props.preferredSize}
+                preferredSize={parsePrefSize(props.preferredSize)}
+                minimumSize={parseMinSize(props.minimumSize)}
+                maximumSize={parseMaxSize(props.maximumSize)}
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}

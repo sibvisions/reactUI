@@ -5,6 +5,7 @@ import { BorderLayout,
          GridLayout, 
          NullLayout } from './index';
 import { ComponentSizes } from "../zhooks";
+import { Dimension } from "../util";
 
 /**
  * General information for layouts:
@@ -18,7 +19,9 @@ export interface ILayout{
     id: string
     layout: string,
     layoutData: string,
-    preferredSize?: string,
+    preferredSize?: Dimension,
+    minimumSize?: Dimension,
+    maximumSize?: Dimension,
     components: Array<ReactElement>
     compSizes: Map<string, ComponentSizes> | undefined
     style: CSSProperties,

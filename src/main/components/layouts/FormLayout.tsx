@@ -7,6 +7,7 @@ import { LayoutContext } from "../../LayoutContext";
 import { Anchor, Constraints, Gaps, Margins, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ILayout } from ".";
 import { ComponentSizes } from "../zhooks";
 import BaseComponent from "../BaseComponent";
+import { Dimension } from "../util";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -451,6 +452,14 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
             /** Calculates all target size dependent anchors. This can only be done after the target has his correct size. */
             const calculateTargetDependentAnchors = () => {
+
+                const getMinimumSize = (calcMinWidth:number, calcMinHeight:number):Dimension => {
+                    if (baseProps.minimumSize) {
+                        return baseProps.minimumSize;
+                    }
+                    return {width: calcMinWidth, height: calcMinHeight};
+                }
+
                 /**
                  * Calculates the preferred size of relative anchors.
                  * @param leftTopAnchor - left or top anchor
@@ -458,6 +467,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  * @param preferredSize - the preferred size
                  */
                 const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
+
                     if(leftTopAnchor.relative){
                         const rightBottom = rightBottomAnchor.getRelativeAnchor();
                         if(rightBottom && rightBottom !== leftTopAnchor){
@@ -498,10 +508,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
-                if(calcSize.width < minimumWidth)
-                    calcSize.width = minimumWidth;
-                if(calcSize.height < minimumHeight)
-                    calcSize.height = minimumHeight;
+                const minSize = getMinimumSize(minimumWidth, minimumHeight);
+
+                if(calcSize.width < minSize.width)
+                    calcSize.width = minSize.width;
+                if(calcSize.height < minSize.height)
+                    calcSize.height = minSize.height;
 
                 const lba = anchors.get("l");
                 const rba = anchors.get("r");
@@ -658,10 +670,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if(onLayoutCallback){
                         /** If the layout has a preferredSize set, report it */
                         if (baseProps.preferredSize) {
-                            const size = baseProps.preferredSize.split(',');
-                            const width = parseInt(size[0]);
-                            const height = parseInt(size[1]);
-                            onLayoutCallback(height, width);
+                            onLayoutCallback(baseProps.preferredSize.height, baseProps.preferredSize.width);
                         }
                         /** Report the preferredSize to the parent layout */
                         else {

@@ -66,6 +66,9 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 id={props.id}
                 layoutData={props.layoutData}
                 layout={props.layout}
+                preferredSize={parsePrefSize(props.preferredSize)}
+                minimumSize={parseMinSize(props.minimumSize)}
+                maximumSize={parseMaxSize(props.maximumSize)}
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}
