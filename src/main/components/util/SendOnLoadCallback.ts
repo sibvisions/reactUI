@@ -43,7 +43,7 @@ export function sendOnLoadCallback(id: string, preferredSize:Dimension|undefined
         else {
             /** Measure how big the component wants to be initially */
             //const prefSize:Dimension = {width: ref.getBoundingClientRect().width, height: ref.getBoundingClientRect().height};
-            const prefSize:Dimension = {width: ref.offsetWidth, height: Math.max(ref.offsetHeight, ref.scrollHeight)};
+            const prefSize:Dimension = {width: ref.offsetWidth, height: ref.offsetHeight};
             checkedSize = checkSizes(prefSize, minSize, maxSize);
         }
         onLoadCallback(id, checkedSize, minSize, maxSize);

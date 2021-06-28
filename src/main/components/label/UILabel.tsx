@@ -32,13 +32,27 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         if(labelRef.current && onLoadCallback) {
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, layoutStyle?.width]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useLayoutEffect(() => {
+        if(labelRef.current && onLoadCallback) {
+            const resizeObserver = new ResizeObserver(entries => {
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
+                console.log('Size changed');
+            });
+
+            resizeObserver.observe(labelRef.current);
+            
+            return () => {
+                resizeObserver.disconnect();
+            };
+        }
+    }, [labelRef.current, onLoadCallback]);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <span
             id={props.name}
-            ref={labelRef}
             className={"rc-label" + ((props.text as string).includes("<html>") ? " rc-label-html" : "")}
             style={{
                 justifyContent: lblAlignments.ha,
@@ -49,7 +63,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 ...lblFont,
                 ...layoutStyle
             }}>
-            <span dangerouslySetInnerHTML={{ __html: props.text as string }} />
+            <span ref={labelRef} dangerouslySetInnerHTML={{ __html: props.text as string }} />
         </span>
     )
 }

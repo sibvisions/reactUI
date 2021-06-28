@@ -3,8 +3,6 @@
     display: inline-flex;
     justify-content: flex-start;
     align-items: flex-start;
-    padding-top: 0.563rem;
-    padding-bottom: 0.563rem;
     overflow: hidden;
 
     & > span {
@@ -12,6 +10,8 @@
         overflow: hidden;
         width: 100%;
         display: block;
+        padding-top: 0.563rem;
+        padding-bottom: 0.563rem;
     }
 }
 
