@@ -19,7 +19,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         compSizes,
         style,
         id,
-        reportSize
+        reportSize,
+        alignChildrenIfOverflow = true,
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -165,6 +166,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             else {
                 top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa);
                 height = prefSize.height;
+            }
+
+            if(top < 0 && !alignChildrenIfOverflow) {
+                top = 0;
             }
 
             /** The FlowLayout width */

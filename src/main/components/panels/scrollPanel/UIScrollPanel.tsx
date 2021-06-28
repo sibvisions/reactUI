@@ -93,6 +93,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}
+                alignChildrenIfOverflow={false}
                 style={getStyle()}/>
         </div>
     )

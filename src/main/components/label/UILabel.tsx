@@ -38,7 +38,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         if(labelRef.current && onLoadCallback) {
             const resizeObserver = new ResizeObserver(entries => {
                 sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
-                console.log('Size changed');
             });
 
             resizeObserver.observe(labelRef.current);
