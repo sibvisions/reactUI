@@ -42,9 +42,15 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             s = {...layoutStyle}
         s.top = undefined;
         s.left = undefined;
-        (s.width as number) -= 0;
+
+        if(s.width !== undefined) {
+            (s.width as number) -= 0;
+        }
         /** Tell layout that because of the header it is ~28px smaller */
-        (s.height as number) -= 28;
+        if(s.height !== undefined) {
+            (s.height as number) -= 28;
+        }
+
         return s
     }
 

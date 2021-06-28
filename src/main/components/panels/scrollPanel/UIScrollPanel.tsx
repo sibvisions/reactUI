@@ -45,9 +45,15 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             s.top = undefined;
             s.left = undefined;
         }
+
         /** Tell layout that because of the scrollbars it is ~20px smaller */
-        (s.width as number) -= 20;
-        (s.height as number) -= 20;
+        if(s.width !== undefined) {
+            (s.width as number) -= 20;
+        }
+        if(s.height !== undefined) {
+            (s.height as number) -= 20;
+        }
+
         return s
     }
 
