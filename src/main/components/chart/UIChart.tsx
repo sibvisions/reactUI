@@ -359,7 +359,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle) ? overlapOpacity : 1;
 
         const primeChart = {
-            labels: (horizontal && !hasStringLabels) ? labels.reverse() : labels,
+            labels,
             //a dataset per y-Axis unless for a pie chart where we only need a single data set
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx, opacity, colors);
@@ -383,6 +383,11 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             })
         }
+
+        if(horizontal) {
+            console.log(primeChart);
+        }
+
         return primeChart
     },[providerData, props.chartStyle, props.yColumnLabels]);
 
@@ -438,27 +443,30 @@ const UIChart: FC<IChart> = (baseProps) => {
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
-        const tooltips = {
+        const tooltip = {
             callbacks: {
-                label: (tooltipItem:any, data:any) => {
-                    let value = tooltipItem.value;
+                label: (context: any) => {
+                    const { formattedValue, raw } = context;
+                    let value = formattedValue;
                     if(pie && !value) {
-                        value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        value = raw;
                     }
                     
-                    return (pie || percentage) ? `${parseFloat(value).toFixed(2).replace('.00', '')}%` : tooltipItem.value;
+                    return (pie || percentage) ? `${parseFloat(value).toFixed(2).replace('.00', '')}%` : formattedValue;
                 }
             }
         }
 
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
-                title,
                 aspectRatio,
-                legend: {
-                    display: false
+                plugins: {
+                    title,
+                    tooltip,
+                    legend: {
+                        display: false
+                    },
                 },
-                tooltips
             }
         } else {
             let axes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
@@ -495,9 +503,9 @@ const UIChart: FC<IChart> = (baseProps) => {
                     text: yAxisTitle,
                 },
                 stacked,
+                min,
+                max,
                 ticks: {
-                    min,
-                    max,
                     ...(percentage ? {callback: (value:any) => `${value}%`} : {})
                 }
             })
@@ -511,13 +519,16 @@ const UIChart: FC<IChart> = (baseProps) => {
             })
 
             return {
-                title,
+                plugins: {
+                    title,
+                    tooltip,
+                    legend: {
+                        position: 'bottom'
+                    },
+                },
                 aspectRatio,
                 labels: {
                     usePointStyle: true,
-                },
-                legend: {
-                    position: 'bottom'
                 },
                 scales: {
                     ...axes.reduce((agg, axis) => {
@@ -525,7 +536,6 @@ const UIChart: FC<IChart> = (baseProps) => {
                         return agg;
                     }, {})
                 },
-                tooltips,
                 indexAxis: horizontal ? 'y' : 'x',
             }
         }
