@@ -19,3 +19,4 @@ export type { default as SessionExpiredResponse } from './SessionExpiredResponse
 export type { default as ShowDocumentResponse } from './ShowDocumentResponse';
 export type { default as UploadResponse } from './UploadResponse';
 export type { default as UserDataResponse } from './UserDataResponse';
+export type { default as MessageResponse } from './MessageResponse';
