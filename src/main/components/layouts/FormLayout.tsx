@@ -29,7 +29,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         compSizes,
         style,
         id,
-        reportSize
+        reportSize,
+        maximumSize
     } = baseProps;
 
     /** 
@@ -504,7 +505,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
                 const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
 
-
                 /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
 
@@ -514,6 +514,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     calcSize.width = minSize.width;
                 if(calcSize.height < minSize.height)
                     calcSize.height = minSize.height;
+
+                if(maximumSize) {
+                    if(calcSize.width > maximumSize.width)
+                        calcSize.width = maximumSize.width;
+                    if(calcSize.height > maximumSize.height)
+                        calcSize.height = maximumSize.height;
+                }
 
                 const lba = anchors.get("l");
                 const rba = anchors.get("r");
@@ -678,6 +685,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                             
                     }
+
                     /** Set the state of the calculated Style */
                     setCalculatedStyle( {
                         style: {
@@ -707,7 +715,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 
          */
-        if(compSizes && compSizes.size === children.size)
+        if(compSizes && compSizes.size === children.size){
             calculateLayout(
                 compSizes,
                 children,
@@ -716,8 +724,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 reportSize,
                 style
             )
+        }
     }, [layout, layoutData, compSizes, style, id, calculateLayout, context.contentStore, reportSize])
-
 
     return(
         /** Provide the allowed sizes of the children as a context */
