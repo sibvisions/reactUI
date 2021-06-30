@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import { TabView, TabPanel } from 'primereact/tabview';
@@ -144,6 +144,15 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         }
         return builtTabs;
     }, [components, props.foreground, buildTabRequest, context.server]);
+
+    useEffect(() => {
+        if (panelRef.current) {
+            //@ts-ignore
+            panelRef.current.nav.style.setProperty("--sliderLeft", `${panelRef.current["tab_"+props.selectedIndex].offsetLeft}px`);
+            //@ts-ignore
+            panelRef.current.nav.style.setProperty("--sliderTop", `${panelRef.current["tab_"+props.selectedIndex].offsetTop + 46}px`);
+        }
+    }, [layoutStyle])
 
     return (
         <LayoutContext.Provider value={componentSizes}>
