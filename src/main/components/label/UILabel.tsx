@@ -32,21 +32,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         if(labelRef.current && onLoadCallback) {
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    useLayoutEffect(() => {
-        if(labelRef.current && onLoadCallback) {
-            const resizeObserver = new ResizeObserver(entries => {
-                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
-            });
-
-            resizeObserver.observe(labelRef.current);
-            
-            return () => {
-                resizeObserver.disconnect();
-            };
-        }
-    }, [labelRef.current, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, layoutStyle?.width]);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
