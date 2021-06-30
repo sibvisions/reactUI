@@ -482,7 +482,7 @@ class Server {
     }
 
     showInfo(infoData: MessageResponse) {
-        this.showToast({severity: 'info', summary: infoData.message, sticky: true }, false);
+        this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
     }
  
     /**

@@ -155,7 +155,14 @@ body {
     background-image: url('assests/Split.png');
 }
 
-p {
-    margin-block-start: 0;
-    margin-block-end: 0;
+#toastInfo {
+    .p-toast-message.p-toast-message-info {
+        border: none;
+        background:white;
+        color: unset
+    }
+
+    .p-toast-message-content {
+        padding: 0;
+    }
 }

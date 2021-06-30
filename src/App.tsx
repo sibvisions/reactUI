@@ -198,15 +198,16 @@ const App: FC<ICustomContent> = (props) => {
             }
             else {
                 (messageObj as ToastMessage).content = (
-                    <div className="p-flex p-flex-column" style={{flex: '1'}}>
-                        <div className="p-text-center" style={{ display: "flex", flexDirection: "column" }}>
-                            <i className="pi pi-info-circle" style={{ fontSize: '3rem', marginBottom: "0.5rem" }}></i>
+                    <div className="p-flex p-flex-column" style={{ display: 'flex', flex: '1' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', color: 'white', background: "#347fae" }}>
+                            <span style={{ alignSelf: 'center', fontSize: '1rem', fontWeight: "bold" }}>Information Message</span>
+                            <i className="pi pi-info-circle" style={{ fontSize: '2rem'}}></i>
+                        </div>
+                        <div style={{ padding: "1.5rem 1rem" }}>
                             {(messageObj as ToastMessage).summary}
                         </div>
-                        <div className="p-grid p-fluid">
-                            <div className="p-col-6">
-                                <Button type="button" label="Yes" className="p-button-success" />
-                            </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: "0 0.5rem 0.5rem 0.5rem"}}>
+                            <Button type="button" label="OK" onClick={() => toastInfoRef.current!.clear()} />
                         </div>
                     </div>
                 )
@@ -234,8 +235,8 @@ const App: FC<ICustomContent> = (props) => {
             <Helmet>
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
-            <Toast ref={toastErrRef} position="top-right" />
-            <Toast ref={toastInfoRef} position="center" />
+            <Toast id="toastErr" ref={toastErrRef} position="top-right" />
+            <Toast id="toastInfo" ref={toastInfoRef} position="center" />
             <Dialog header="Server Error!" visible={showTimeOut} onHide={() => setShowTimeOut(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
