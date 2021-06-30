@@ -1,5 +1,5 @@
 /** Enum for ResponseNames */
-enum RESPONSE_NAMES{
+enum RESPONSE_NAMES {
     APPLICATION_META_DATA="applicationMetaData",
     USER_DATA="userData",
     MENU="menu",
@@ -17,6 +17,7 @@ enum RESPONSE_NAMES{
     ERROR="message.error",
     RESTART="restart",
     APPLICATION_PARAMETERS="applicationParameters",
-    LANGUAGE="language"
+    LANGUAGE="language",
+    INFORMATION="message.information"
 }
 export default RESPONSE_NAMES

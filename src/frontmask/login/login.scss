@@ -12,6 +12,10 @@
   text-align: center;
   background: var(--loginContainerBgd);  
   border-radius: 6px;
+
+  .p-fluid {
+    padding: var(--loginFormLogoGap) var(--loginFormLRPadding) var(--loginFormTBPadding);
+  }
 }
 
 .login-logo-wrapper {
@@ -23,10 +27,6 @@
 
 .login-logo {
   width: 100%;
-}
-
-.p-fluid {
-  padding: var(--loginFormLogoGap) var(--loginFormLRPadding) var(--loginFormTBPadding);
 }
 
 .p-field {

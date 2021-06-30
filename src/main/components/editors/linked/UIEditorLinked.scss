@@ -23,24 +23,9 @@
 
     .p-autocomplete-items {
         max-height: none !important;
-        height: var(--itemsHeight);
-        animation: pulse 0.7s infinite ease-in-out;
         padding: 0;
         .p-autocomplete-item {
-            top: var(--itemTop);
             background: white;
         }
-    }
-}
-
-@keyframes pulse {
-    0% {
-        background: rgba(165, 165, 165, 0.1)
-    }
-    50% {
-        background: rgba(165, 165, 165, 0.3)
-    }
-    100% {
-        background: rgba(165, 165, 165, 0.1)
     }
 }

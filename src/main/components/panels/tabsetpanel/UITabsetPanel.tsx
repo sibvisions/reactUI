@@ -139,7 +139,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                         className="tabview-button pi pi-times"
                         onClick={() => handleClose(component.props.id)}/>}
                 </span>
-                builtTabs.push(<TabPanel key={component.props.id} disabled={constraints[0] === "false"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
+                builtTabs.push(<TabPanel key={component.props.id} disabled={constraints[0] === "false"} headerClassName={"black"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
             });
         }
         return builtTabs;

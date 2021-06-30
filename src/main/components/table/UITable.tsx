@@ -1027,13 +1027,11 @@ const UITable: FC<TableProps> = (baseProps) => {
     const handleColResizeEnd = (e:any) => {
         if (tableRef.current) {
             //@ts-ignore
-            if (!tableRef.current.table) {
-                //@ts-ignore
-                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
-                //@ts-ignore
-                const tColGroupHeader = tableRef.current.container.querySelector('.p-datatable-scrollable-header-table > colgroup');
-                //@ts-ignore
-                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
+            const container = tableRef.current.container;
+            if (virtualEnabled) {
+                const theader = container.querySelectorAll('.p-datatable-scrollable-header-table th');
+                const tColGroupHeader = container.querySelector('.p-datatable-scrollable-header-table > colgroup');
+                const tColGroup = container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 const width = tColGroup[0].offsetWidth;
@@ -1050,10 +1048,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                     tColGroupHeader.children[i].style.setProperty('width', w)
                     theader[i].style.removeProperty('pointer-events')
                 }
+                if (props.autoResize === false) {
+                container.querySelector('.p-datatable-scrollable-header').style.setProperty("width", `${container.offsetWidth - 2}px`);
+                container.querySelector('.p-datatable-scrollable-body').style.setProperty("width", `${container.offsetWidth - 2}px`);
+                }
             }
             else {
-                //@ts-ignore
-                const theader = tableRef.current.container.querySelectorAll('th');
+                const theader = container.querySelectorAll('th');
                 //@ts-ignore
                 const width = tableRef.current.table.offsetWidth
                 for (let i = 0; i < theader.length; i++) {
@@ -1082,13 +1083,14 @@ const UITable: FC<TableProps> = (baseProps) => {
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore
-            if (!tableRef.current.table) {
+            const container = tableRef.current.container;
+            if (virtualEnabled) {
                 //@ts-ignore
-                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
+                const theader = container.querySelectorAll('.p-datatable-scrollable-header-table th');
                 //@ts-ignore
-                const tColGroupHeader = tableRef.current.container.querySelector('.p-datatable-scrollable-header-table > colgroup');
+                const tColGroupHeader = container.querySelector('.p-datatable-scrollable-header-table > colgroup');
                 //@ts-ignore
-                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
+                const tColGroup = container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
                 const tCols1 = tColGroup[0].querySelectorAll('col');
                 const tCols2 = tColGroup[1].querySelectorAll('col');
                 for (let i = 0; i < tCols1.length; i++) {

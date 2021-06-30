@@ -22,13 +22,15 @@ import { ApplicationMetaDataResponse,
          ErrorResponse,
          RestartResponse,
          ApplicationParametersResponse,
-         LanguageResponse } from "./response";
+         LanguageResponse, 
+         MessageResponse} from "./response";
 import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
+import { ToastMessageType } from "primereact/toast";
 
 /** Type for query */
 type queryType = {
@@ -70,7 +72,7 @@ class Server {
      * Function to show a toast
      * @param message - message to show
      */
-    showToast = (message: any) => {};
+    showToast = (message: ToastMessageType, err: boolean) => {};
     /**
      * Function to show te timeout dialog
      */
@@ -173,7 +175,8 @@ class Server {
         .set(RESPONSE_NAMES.ERROR, this.showError.bind(this))
         .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this))
-        .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this));
+        .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this))
+        .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -464,7 +467,7 @@ class Server {
         this.contentStore.reset();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
-        this.showToast({severity: 'error', summary: expData.title})
+        this.showToast({severity: 'error', summary: expData.title}, true)
         this.subManager.emitRegisterCustom()
         console.error(expData.title)
     }
@@ -474,16 +477,20 @@ class Server {
      * @param errData - the errorResponse
      */
     showError(errData: ErrorResponse) {
-        this.showToast({severity: 'error', summary: errData.message});
+        this.showToast({severity: 'error', summary: errData.message}, true);
         console.error(errData.details)
     }
 
+    showInfo(infoData: MessageResponse) {
+        this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
+    }
+ 
     /**
      * Shows a toast that the site needs to be reloaded
      * @param reData - the restartResponse
      */
     showRestart(reData:RestartResponse) {
-        this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info});
+        this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info}, true);
         console.warn(reData.info);
     }
 

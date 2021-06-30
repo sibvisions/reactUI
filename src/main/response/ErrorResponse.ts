@@ -1,10 +1,8 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { MessageResponse } from ".";
 
 /** Interface for ErrorResponse */
-interface ErrorResponse extends BaseResponse {
-    details?: string,
-    title?: string,
-    message?: string
+interface ErrorResponse extends MessageResponse {
+    details?: string
 }
 export default ErrorResponse

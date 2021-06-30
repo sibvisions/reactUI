@@ -2,8 +2,9 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 
 /** 3rd Party imports */
-import { Toast } from 'primereact/toast';
+import { Toast, ToastMessage, ToastMessageType } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
 import { Helmet } from "react-helmet";
@@ -47,19 +48,30 @@ type serverFailMessage = {
 const App: FC<ICustomContent> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Toast reference to use the show method of toast */
-    const toastRef = useRef<Toast>(null);
+
+    /** Toast reference for error messages */
+    const toastErrRef = useRef<Toast>(null);
+    
+    /** Toast reference for information messages */
+    const toastInfoRef = useRef<Toast>(null);
+
     /** History of react-router-dom */
-    const history = useHistory()
+    const history = useHistory();
+
     /** State of the current app-name to display it in the header */
     const [appName, setAppName] = useState<string>();
+
     /** Register custom content flip value, changes value when custom content needs to be re-registered */
     const [registerCustom, setRegisterCustom] = useState<boolean>(false);
     /** State if the app is ready */
+
     const [appReady, setAppReady] = useState<boolean>(false);
     /** If true the timeout dialog gets displayed */
+
+    /** State if timeout error should be shown */
     const [showTimeOut, setShowTimeOut] = useState<boolean>(false);
 
+    /** Reference for the dialog which shows the timeout error message */
     const dialogRef = useRef<serverFailMessage>({headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server."})
 
     /** PrimeReact ripple effect */
@@ -179,9 +191,28 @@ const App: FC<ICustomContent> = (props) => {
      * Method to show a toast
      * @param {ToastMessage} messageObj - PrimeReact ToastMessage object which contains display information for toast
      */
-    const msg = (messageObj:any) => {
-        if (toastRef.current) {
-            toastRef.current.show(messageObj)
+    const msg = (messageObj:ToastMessageType, err:boolean) => {
+        if (toastErrRef.current && toastInfoRef.current) {
+            if (err) {
+                toastErrRef.current.show(messageObj)
+            }
+            else {
+                (messageObj as ToastMessage).content = (
+                    <div className="p-flex p-flex-column" style={{ display: 'flex', flex: '1' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', color: 'white', background: "#347fae" }}>
+                            <span style={{ alignSelf: 'center', fontSize: '1rem', fontWeight: "bold" }}>Information Message</span>
+                            <i className="pi pi-info-circle" style={{ fontSize: '2rem'}}></i>
+                        </div>
+                        <div style={{ padding: "1.5rem 1rem" }}>
+                            {(messageObj as ToastMessage).summary}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: "0 0.5rem 0.5rem 0.5rem"}}>
+                            <Button type="button" label="OK" onClick={() => toastInfoRef.current!.clear()} />
+                        </div>
+                    </div>
+                )
+                toastInfoRef.current.show(messageObj);
+            }
         }
     }
 
@@ -204,7 +235,8 @@ const App: FC<ICustomContent> = (props) => {
             <Helmet>
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
-            <Toast ref={toastRef} position="top-right" />
+            <Toast id="toastErr" ref={toastErrRef} position="top-right" />
+            <Toast id="toastInfo" ref={toastInfoRef} position="center" />
             <Dialog header="Server Error!" visible={showTimeOut} onHide={() => setShowTimeOut(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
