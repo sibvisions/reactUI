@@ -46,7 +46,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 resizeObserver.disconnect();
             };
         }
-    }, [labelRef.current, onLoadCallback]);
+    }, [labelRef.current, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

@@ -267,7 +267,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div style={{...style, position:"absolute"}}>
+            <div data-layout="flow" style={{...style, position:"absolute"}}>
                 {components}
             </div>
         </LayoutContext.Provider>

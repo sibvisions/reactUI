@@ -7,7 +7,7 @@ import { LayoutContext } from "../../LayoutContext";
 import { Anchor, Constraints, Gaps, Margins, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ILayout } from ".";
 import { ComponentSizes } from "../zhooks";
 import BaseComponent from "../BaseComponent";
-import { Dimension } from "../util";
+import { Dimension, parseMinSize } from "../util";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -311,10 +311,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         const constraint = componentConstraints.get(component.id);
 
                         const preferredComponentSize = compSizes.get(component.id)?.preferredSize;
-                        const minimumComponentSize = component.minimumSize || isPanel(component.className) ? 
+                        const minimumComponentSize = component.minimumSize && parseMinSize(component.minimumSize) || (isPanel(component.className) ? 
                                                      compSizes.get(component.id)?.minimumSize
                                                      :
-                                                     compSizes.get(component.id)?.preferredSize
+                                                     compSizes.get(component.id)?.preferredSize)
+                                                     || { width: 0, height: 0 };
 
                         if(constraint && preferredComponentSize && minimumComponentSize){
                             if(constraint.rightAnchor.getBorderAnchor().name === "l"){
@@ -411,8 +412,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
                 }
-
-
 
                 /** Preferred height */
                 if(topHeight !== 0 && bottomHeight !== 0){
@@ -730,7 +729,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div style={{...calculatedStyle?.style}}>
+            <div data-layout="form" style={{...calculatedStyle?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>
