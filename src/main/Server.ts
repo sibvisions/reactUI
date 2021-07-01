@@ -23,7 +23,8 @@ import { ApplicationMetaDataResponse,
          RestartResponse,
          ApplicationParametersResponse,
          LanguageResponse, 
-         MessageResponse} from "./response";
+         MessageResponse,
+         LoginResponse} from "./response";
 import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -231,7 +232,8 @@ class Server {
      * Resets the contentStore
      * @param login - the loginDataResponse
      */
-    login(login: any){
+    login(login: LoginResponse){
+        this.contentStore.setLoginMode(login.mode, "login");
         this.contentStore.reset();
     }
 

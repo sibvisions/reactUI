@@ -7,12 +7,18 @@ import { UserDataResponse } from "../response";
 class UserData implements UserDataResponse {
     /** The display name of the user which will be showed in the menu */
     displayName: string;
+
     /** Email of the user */
     email: string;
+
     /** Name of the user */
     name: string;
+
     /** Profileimage of the user */
     profileImage?: string;
+
+    /** Username of the user */
+    userName:string;
 
     /**
      * @constructor constructs a new user
@@ -23,6 +29,7 @@ class UserData implements UserDataResponse {
         this.email = newUser?.email || "";
         this.name = newUser?.name || "";
         this.profileImage = newUser?.profileImage;
+        this.userName = newUser?.userName || "";
     }
 
 }

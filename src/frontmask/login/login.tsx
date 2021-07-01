@@ -1,9 +1,10 @@
 /** React imports */
-import React, { FC, FormEvent, useContext, useState } from "react";
+import React, { FC, FormEvent, useContext, useEffect, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { Dialog } from 'primereact/dialog';
 
 /** Hook imports */
 import { useTranslation } from "../../main/components/zhooks";
@@ -12,19 +13,24 @@ import { useTranslation } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
-import { TopBarContext } from "../../main/components/topbar/TopBar";
+import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
 
 
 /** Component which handles logging in */
 const Login: FC = () => {
     /** Current state of username */
     const [username, setUsername] = useState<string>("");
+
     /** Current state of password */
     const [password, setPassword] = useState<string>("");
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Current state of translations */
     const translations = useTranslation()
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
@@ -33,19 +39,21 @@ const Login: FC = () => {
      */
     const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        let loginRequestBody = createLoginRequest();
-        loginRequestBody.username = username;
-        loginRequestBody.password = password;
-        topbar.show();
-        context.server.sendRequest(loginRequestBody, REQUEST_ENDPOINTS.LOGIN).finally(() => {
-            topbar.hide();
-        });
+        const loginReq = createLoginRequest();
+        loginReq.username = username;
+        loginReq.password = password;
+        loginReq.mode = "manual";
+        showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
         context.subscriptions.emitRegisterCustom();
         context.subscriptions.emitMenuUpdate();
     }
 
     return(
         <div className="login-container">
+            <ChangePasswordDialog 
+                username={username} 
+                password={password} 
+                loggedIn={false} />
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
                     <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_LOGIN} alt="logo" />

@@ -1,8 +1,8 @@
+import { BaseRequest } from ".";
 import { SelectFilter } from "./SelectRowRequest";
 
 /** Interface for SetValuesRequest */
-interface SetValuesRequest{
-    clientId: string | undefined,
+interface SetValuesRequest extends BaseRequest {
     componentId: string | undefined,
     dataProvider: string | undefined,
     columnNames: Array<string> | undefined,

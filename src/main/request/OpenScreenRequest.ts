@@ -1,6 +1,7 @@
+import { BaseRequest } from ".";
+
 /** Interface for OpenScreenRequest */
-interface OpenScreenRequest {
-    clientId: string | undefined,
+interface OpenScreenRequest extends BaseRequest {
     componentId: string | undefined
 }
 export default OpenScreenRequest;

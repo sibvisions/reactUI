@@ -1,6 +1,7 @@
+import { BaseRequest } from ".";
+
 /** Interface for PressButtonRequest */
-interface PressButtonRequest{
-    clientId: string | undefined,
+interface PressButtonRequest extends BaseRequest{
     componentId: string | undefined
 }
 export default PressButtonRequest

@@ -1,3 +1,5 @@
+import { BaseRequest } from ".";
+
 /** Type for selecteRecord/selectTree Filters */
 export type SelectFilter = {
     columnNames: string[],
@@ -5,8 +7,7 @@ export type SelectFilter = {
 }
 
 /** Interface for SelectRowRequest */
-interface SelectRowRequest {
-    clientId: string,
+interface SelectRowRequest extends BaseRequest {
     componentId: string | undefined,
     dataProvider: string | undefined,
     filter: SelectFilter | undefined,

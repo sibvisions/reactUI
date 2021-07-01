@@ -119,7 +119,15 @@ const App: FC<ICustomContent> = (props) => {
         .set("Password", "Password")
         .set("Login", "Login")
         .set("Logout", "Logout")
-        .set("Settings", "Settings");
+        .set("Settings", "Settings")
+        .set("Change password", "Change password")
+        .set("Please enter and confirm the new password.", "Please enter and confirm the new password.")
+        .set("New Password", "New Password")
+        .set("Confirm Password", "Confirm Password")
+        .set("The new Password is empty", "The new Password is empty")
+        .set("The passwords are different!", "The passwords are different!")
+        .set("The old and new password are the same", "The old and new password are the same")
+        .set("Change password", "Change password");
     },[context.contentStore])
 
     /**
@@ -156,6 +164,7 @@ const App: FC<ICustomContent> = (props) => {
             }
             context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP);
             context.server.showToast = msg;
+            context.showToast = msg;
             context.server.showDialog = showDialog;
         }
 
@@ -215,6 +224,8 @@ const App: FC<ICustomContent> = (props) => {
             }
         }
     }
+
+    
 
     /**
      * Sets the showTimeOut state to show the dialog

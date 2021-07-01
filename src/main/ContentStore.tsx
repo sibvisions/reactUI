@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
-import { serverMenuButtons, MetaDataResponse, MetaDataReference } from "./response";
+import { serverMenuButtons, MetaDataResponse, MetaDataReference, LoginModeType } from "./response";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
@@ -112,7 +112,10 @@ export default class ContentStore{
     /** True, if the menu should overlay the layout in mini mode */
     menuOverlaying:boolean = true;
 
+    /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
+
+    loginMode:LoginModeType;
 
     /**
      * Sets the subscription-manager
@@ -122,12 +125,28 @@ export default class ContentStore{
         this.subManager = subManager;
     }
 
+    /**
+     * Sets the currently active screens
+     * @param screenName - the screenName of the newly opened screen
+     * @param popup - true, if the newly opened screen is a popup
+     */
     setActiveScreen(screenName:string, popup?:boolean) {
         if (popup) {
             this.activeScreens.push(screenName);
         }
         else {
             this.activeScreens = [screenName];
+        }
+    }
+
+    /**
+     * Sets the current login-mode
+     * @param mode - the login-mode
+     */
+    setLoginMode(mode:LoginModeType, id:string) {
+        this.loginMode = mode;
+        if (mode === "changePassword") {
+            this.subManager.emitShowDialog();
         }
     }
 

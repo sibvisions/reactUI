@@ -27,7 +27,7 @@ export interface ITabsetPanel extends IPanel {
  */
 const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** Reference for TabsetPanel element */
-    const panelRef = useRef(null)
+    const panelRef = useRef<any>()
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of componentSizes */
@@ -148,9 +148,14 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     useEffect(() => {
         if (panelRef.current) {
             //@ts-ignore
-            panelRef.current.nav.style.setProperty("--sliderLeft", `${panelRef.current["tab_"+props.selectedIndex].offsetLeft}px`);
+            const tabNav = panelRef.current.nav
             //@ts-ignore
-            panelRef.current.nav.style.setProperty("--sliderTop", `${panelRef.current["tab_"+props.selectedIndex].offsetTop + 46}px`);
+            const selectedTab = panelRef.current!["tab_"+props.selectedIndex];
+            const tabNavStyle = window.getComputedStyle(tabNav);
+            if (selectedTab.offsetLeft !== tabNavStyle.getPropertyValue('--sliderLeft') || selectedTab.offsetTop !== tabNavStyle.getPropertyValue('--sliderTop')) {
+                tabNav.style.setProperty("--sliderLeft", `${panelRef.current!["tab_"+props.selectedIndex].offsetLeft}px`);
+                tabNav.style.setProperty("--sliderTop", `${panelRef.current["tab_"+props.selectedIndex].offsetTop + 46}px`);
+            }
         }
     }, [layoutStyle])
 

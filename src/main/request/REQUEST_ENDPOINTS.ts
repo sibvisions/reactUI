@@ -1,6 +1,6 @@
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS  {
-    STARTUP = "/api/startup",
+    STARTUP = "/api/v3/startup",
     LOGIN = "/api/v2/login",
     LOGOUT = "/api/logout",
     CLOSE_SCREEN = "/api/closeScreen",
@@ -20,6 +20,7 @@ enum REQUEST_ENDPOINTS  {
     SELECT_TAB = "/api/comp/selectTab",
     CLOSE_TAB = "/api/comp/closeTab",
     SAVE = "/api/dal/save",
-    SORT = "/api/dal/sort"
+    SORT = "/api/dal/sort",
+    CHANGE_PASSWORD = "/api/changePassword"
 }
 export default REQUEST_ENDPOINTS

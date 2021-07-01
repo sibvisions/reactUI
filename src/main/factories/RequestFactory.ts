@@ -16,6 +16,7 @@ import { StartupRequest,
          SelectTreeRequest, 
          SortRequest,
          InsertRecordRequest} from "../request";
+import ChangePasswordRequest from "../request/ChangePasswordRequest";
 
 /**
  * Returns the ClientId from the local storage
@@ -68,6 +69,8 @@ export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
         createAuthKey: values?.createAuthKey || true,
         username: values?.username,
         password: values?.password,
+        newPassword: values?.newPassword,
+        mode: values?.mode
     }
     return req;
 }
@@ -274,6 +277,15 @@ export const createInsertRecordRequest = (values?: InsertRecordRequest): InsertR
     const req:InsertRecordRequest = {
         clientId: values?.clientId || getClientId(),
         dataProvider: values?.dataProvider
+    }
+    return req;
+}
+
+export const createChangePasswordRequest = (values?: ChangePasswordRequest): ChangePasswordRequest => {
+    const req:ChangePasswordRequest = {
+        clientId: values?.clientId || getClientId(),
+        password: values?.password,
+        newPassword: values?.newPassword
     }
     return req;
 }

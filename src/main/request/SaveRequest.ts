@@ -1,6 +1,7 @@
+import { BaseRequest } from ".";
+
 /** Interface for SaveRequest */
-interface SaveRequest {
-    clientId?: string
+interface SaveRequest extends BaseRequest{
     dataProvider?: string
     onlySelected?: boolean
 }

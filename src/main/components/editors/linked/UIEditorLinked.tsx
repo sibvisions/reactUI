@@ -3,7 +3,6 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 
 /** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
-import * as _ from 'underscore'
 
 /** Hook imports */
 import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData} from "../../zhooks"

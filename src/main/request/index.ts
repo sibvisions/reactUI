@@ -17,4 +17,5 @@ export type { default as StartupRequest } from './StartupRequest';
 export type { default as TabRequest } from './TabRequest';
 export type { default as SortRequest } from './SortRequest';
 export type { SortDefinition } from './SortRequest';
-export type { default as InsertRecordRequest } from './InsertRecordRequest'
+export type { default as InsertRecordRequest } from './InsertRecordRequest';
+export type { default as BaseRequest } from './BaseRequest';

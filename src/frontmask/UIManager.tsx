@@ -17,6 +17,7 @@ import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { appContext } from "../main/AppProvider";
 import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
+import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
 
 export interface IUIManagerProps {
     screenId: string
@@ -156,6 +157,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     return(
         CustomWrapper ? 
             <div className="reactUI">
+                <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
                 <CustomWrapper>
                     <LayoutContext.Provider value={componentSize}>
                         <div id="reactUI-main" className="main">
@@ -165,6 +167,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 </CustomWrapper>
             </div>
         : <div className="reactUI">
+            <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
             <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={concatClassnames(

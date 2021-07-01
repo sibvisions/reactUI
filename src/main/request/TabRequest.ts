@@ -1,6 +1,7 @@
+import { BaseRequest } from ".";
+
 /** Interface for TabRequest */
-interface TabRequest {
-    clientId?: string,
+interface TabRequest extends BaseRequest {
     componentId?: string,
     index?: number,
 }

@@ -44,12 +44,20 @@ const useProfileMenuItems = () => {
                     //     }
                     // },
                     {
+                        label: translations.get("Change password"),
+                        icon: "pi pi-lock-open",
+                        command(e:MenuItemCommandParams) {
+                            context.subscriptions.emitShowDialog()
+                        }
+                    },
+                    {
                         label: translations.get("Logout"),
                         icon: "pi pi-power-off",
                         command(e:MenuItemCommandParams) {
                             sendLogout()
                         }
                     }
+
                 ]
             }
         ])

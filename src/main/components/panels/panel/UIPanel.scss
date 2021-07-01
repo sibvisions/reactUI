@@ -10,6 +10,9 @@
             padding-left: 0.5rem;
             font-weight: 600;
             font-size: 1.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .p-dialog-header-icon:focus {
             box-shadow: none;
@@ -26,5 +29,7 @@
     .p-dialog-content {
         padding: 0;
         overflow-y: hidden;
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
     }
 }

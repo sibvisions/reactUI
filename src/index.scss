@@ -32,6 +32,7 @@
 @import './main/components/table/UITable.scss';
 @import './main/components/tree/UITree.scss';
 @import './main/components/topbar/TopBar.scss';
+@import './frontmask/changePassword/ChangePasswordDialog.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
@@ -156,6 +157,8 @@ body {
 }
 
 #toastInfo {
+    z-index: 3000 !important;
+    opacity: 1;
     .p-toast-message.p-toast-message-info {
         border: none;
         background:white;

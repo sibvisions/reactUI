@@ -8,13 +8,15 @@ import { useHistory } from "react-router";
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { ToastMessageType } from "primereact/toast";
 
 /** Type for AppContext */
 type AppContextType={
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
-    ctrlPressed: boolean
+    ctrlPressed: boolean,
+    showToast:Function
     //theme: string,
     //setTheme: Function
 }
@@ -32,7 +34,8 @@ const initValue: AppContextType = {
     contentStore: contentStore,
     server: server,
     subscriptions: subscriptions,
-    ctrlPressed: false
+    ctrlPressed: false,
+    showToast: (message: ToastMessageType, err: boolean) => {}
     //theme: "",
     //setTheme: () => {},
 }
@@ -64,7 +67,8 @@ const AppProvider: FC = ({children}) => {
             contentStore: contentStore,
             server: server,
             subscriptions: subscriptions,
-            ctrlPressed: false
+            ctrlPressed: false,
+            showToast: () => {}
         }
 
     }
