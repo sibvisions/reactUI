@@ -1,3 +1,6 @@
+export type { default as BaseRequest } from './BaseRequest';
+export type { default as ComponentRequest } from './ComponentRequest';
+export type { default as DataProviderRequest } from './DataProviderRequest'
 export type { default as CloseScreenRequest } from './CloseScreenRequest';
 export type { default as DeviceStatusRequest } from './DeviceStatusRequest';
 export type { default as FetchRequest } from './FetchRequest';
@@ -18,4 +21,3 @@ export type { default as TabRequest } from './TabRequest';
 export type { default as SortRequest } from './SortRequest';
 export type { SortDefinition } from './SortRequest';
 export type { default as InsertRecordRequest } from './InsertRecordRequest';
-export type { default as BaseRequest } from './BaseRequest';

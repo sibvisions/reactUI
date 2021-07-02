@@ -1,4 +1,4 @@
-import { BaseRequest } from ".";
+import { ComponentRequest, DataProviderRequest } from ".";
 
 /** Type for selecteRecord/selectTree Filters */
 export type SelectFilter = {
@@ -7,9 +7,7 @@ export type SelectFilter = {
 }
 
 /** Interface for SelectRowRequest */
-interface SelectRowRequest extends BaseRequest {
-    componentId: string | undefined,
-    dataProvider: string | undefined,
+interface SelectRowRequest extends ComponentRequest, DataProviderRequest {
     filter: SelectFilter | undefined,
     selectedColumn?: string
 }

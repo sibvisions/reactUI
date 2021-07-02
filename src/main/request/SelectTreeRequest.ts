@@ -1,10 +1,7 @@
-import { SelectFilter } from ".";
-import { BaseRequest } from ".";
+import { ComponentRequest, SelectFilter, DataProviderRequest } from ".";
 
 /** Interface for SelectTreeRequest */
-interface SelectTreeRequest extends BaseRequest {
-    componentId: string | undefined,
-    dataProvider: string[] | undefined,
+interface SelectTreeRequest extends ComponentRequest, DataProviderRequest {
     filter: Array<SelectFilter|null> | undefined
 }
 export default SelectTreeRequest

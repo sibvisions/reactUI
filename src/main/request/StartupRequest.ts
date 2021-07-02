@@ -1,6 +1,5 @@
 /** Interface for StartupRequest */
 interface StartupRequest {
-    layoutMode: string
     appMode: string
     applicationName: string
 

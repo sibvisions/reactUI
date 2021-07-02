@@ -1,8 +1,7 @@
-import { BaseRequest } from ".";
+import { DataProviderRequest } from ".";
 
 /** Interface for FetchRequest */
-interface FetchRequest extends BaseRequest{
-    dataProvider: string | undefined,
+interface FetchRequest extends DataProviderRequest {
     columnNames?: string[],
     filter?: {columnNames?:string[], values?: any[]},
     fromRow: number | undefined,

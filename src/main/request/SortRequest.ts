@@ -1,12 +1,11 @@
-import { BaseRequest } from ".";
+import { DataProviderRequest } from ".";
 
 export type SortDefinition = {
     columnName: string,
     mode: "None"|"Ascending"|"Descending"
 }
 
-interface SortRequest extends BaseRequest {
-    dataProvider?: string,
+interface SortRequest extends DataProviderRequest {
     sortDefinition?: SortDefinition[]
 }
 export default SortRequest

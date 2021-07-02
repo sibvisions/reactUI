@@ -1,7 +1,7 @@
-import { BaseRequest } from ".";
+import { DataProviderRequest } from ".";
 
 /** Interface for InsertRecordRequest */
-interface InsertRecordRequest extends BaseRequest {
-    dataProvider?:string
+interface InsertRecordRequest extends DataProviderRequest {
+    
 }
 export default InsertRecordRequest;

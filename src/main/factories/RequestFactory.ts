@@ -15,7 +15,10 @@ import { StartupRequest,
          CloseScreenRequest,
          SelectTreeRequest, 
          SortRequest,
-         InsertRecordRequest} from "../request";
+         InsertRecordRequest,
+         BaseRequest,
+         ComponentRequest,
+         DataProviderRequest} from "../request";
 import ChangePasswordRequest from "../request/ChangePasswordRequest";
 
 /**
@@ -33,7 +36,6 @@ const getClientId = (): string => {
  */
 export const createStartupRequest = (values?: StartupRequest): StartupRequest => {
     const req: StartupRequest = {
-        layoutMode: values?.layoutMode || "generic",
         appMode: values?.appMode || "full",
         applicationName: values?.applicationName || "demo",
 
@@ -58,6 +60,39 @@ export const createStartupRequest = (values?: StartupRequest): StartupRequest =>
     return  req;
 }
 
+/**
+ * Returns a base-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the base-request
+ * @returns a base-request object
+ */
+export const createBaseRequest = (values?: BaseRequest): BaseRequest => {
+    const req: BaseRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+/**
+ * Returns a component-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the component-request
+ * @returns a component-request object
+ */
+export const createComponentRequest = (values?: ComponentRequest): ComponentRequest => {
+    const req: ComponentRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
+export const createDataProviderRequest = (values?: DataProviderRequest): DataProviderRequest => {
+    const req: DataProviderRequest = {
+        clientId: values?.clientId || getClientId(),
+        dataProvider: values?.dataProvider
+    }
+    return req;
+}
+ 
 /**
  * Returns a loginRequest object with either properties which can be overwritten or properties as parameters
  * @param values - properties for the loginRequest
@@ -264,6 +299,11 @@ export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScre
     return req;
 }
 
+/**
+ * Returns a sort-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the sort-request
+ * @returns a sort-request object
+ */
 export const createSortRequest = (values?: SortRequest): SortRequest => {
     const req:SortRequest = {
         clientId: values?.clientId || getClientId(),
@@ -273,6 +313,11 @@ export const createSortRequest = (values?: SortRequest): SortRequest => {
     return req;
 }
 
+/**
+ * Returns a insert-record-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the insert-record-request
+ * @returns a insert-record-request object
+ */
 export const createInsertRecordRequest = (values?: InsertRecordRequest): InsertRecordRequest => {
     const req:InsertRecordRequest = {
         clientId: values?.clientId || getClientId(),
@@ -281,6 +326,11 @@ export const createInsertRecordRequest = (values?: InsertRecordRequest): InsertR
     return req;
 }
 
+/**
+ * Returns a change-password-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the change-password-request
+ * @returns a change-password-request object
+ */
 export const createChangePasswordRequest = (values?: ChangePasswordRequest): ChangePasswordRequest => {
     const req:ChangePasswordRequest = {
         clientId: values?.clientId || getClientId(),

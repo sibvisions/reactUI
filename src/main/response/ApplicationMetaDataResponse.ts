@@ -7,5 +7,6 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     clientId: string
     langCode: string
     languageResource: string
+    lostPasswordEnabled: boolean
 }
 export default ApplicationMetaDataResponse;

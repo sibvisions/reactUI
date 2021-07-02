@@ -1,8 +1,8 @@
 import { LoginModeType } from "../response";
+import { BaseRequest } from ".";
 
 /** Interface for LoginRequest */
-interface LoginRequest {
-    clientId: string | undefined,
+interface LoginRequest extends BaseRequest {
     username: string | undefined,
     password: string | undefined,
     newPassword: string | undefined,

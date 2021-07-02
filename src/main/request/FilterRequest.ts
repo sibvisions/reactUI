@@ -1,10 +1,9 @@
 import FilterCondition from "../model/FilterCondition";
-import { BaseRequest } from ".";
+import { DataProviderRequest } from ".";
 
 
 /** Interface for FilterRequest */
-interface FilterRequest extends BaseRequest {
-    dataProvider: string|undefined,
+interface FilterRequest extends DataProviderRequest {
     editorComponentId: string|undefined,
     value: string,
     columnNames?:string[],

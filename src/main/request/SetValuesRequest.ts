@@ -1,10 +1,7 @@
-import { BaseRequest } from ".";
-import { SelectFilter } from "./SelectRowRequest";
+import { ComponentRequest, SelectFilter, DataProviderRequest } from ".";
 
 /** Interface for SetValuesRequest */
-interface SetValuesRequest extends BaseRequest {
-    componentId: string | undefined,
-    dataProvider: string | undefined,
+interface SetValuesRequest extends ComponentRequest, DataProviderRequest {
     columnNames: Array<string> | undefined,
     filter: SelectFilter | undefined,
     values: Array<any> | undefined

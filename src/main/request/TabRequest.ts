@@ -1,8 +1,7 @@
-import { BaseRequest } from ".";
+import { ComponentRequest } from ".";
 
 /** Interface for TabRequest */
-interface TabRequest extends BaseRequest {
-    componentId?: string,
+interface TabRequest extends ComponentRequest {
     index?: number,
 }
 export default TabRequest

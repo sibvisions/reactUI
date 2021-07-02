@@ -1,7 +1,7 @@
-import { BaseRequest } from ".";
+import { ComponentRequest } from ".";
 
 /** Interface for CloseScreenRequest */
-interface CloseScreenRequest extends BaseRequest {
-    componentId?:string
+interface CloseScreenRequest extends ComponentRequest {
+
 }
 export default CloseScreenRequest;
