@@ -18,6 +18,7 @@ export interface IPanel extends BaseComponent{
     screen_modal_?: boolean
     screen_navigationName_?:string
     screen_title_?: string,
+    screen_className_?: string
 }
 
 /**

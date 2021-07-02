@@ -90,6 +90,9 @@ export class SubscriptionManager {
     /** A function to set the changeDialog flag of login */
     changeDialogSubscriber:Function = () => {};
 
+    /** A function to update the selectedMenuItem */
+    selectedMenuItemSubscriber:Function = () => {};
+
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
      * useSortDefinitions hook, subscribe to the changes of a screens sort-definitions, the key is the screens component id and the
@@ -299,6 +302,15 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes the login to change-dialog, to change the change-dialog state, to show the
+     * change-password-dialog
+     * @param fn - the function to change the change-dialog state
+     */
+    subscribeToSelectedMenuItem(fn:Function) {
+        this.selectedMenuItemSubscriber = fn;
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -433,6 +445,13 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes login from change-dialog
+     */
+    unsubscribeFromSelectedMenuItem() {
+        this.selectedMenuItemSubscriber = () => {};
+    }
+
+    /**
      * Unsubscribes a component from sort-definition
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
@@ -543,5 +562,9 @@ export class SubscriptionManager {
 
     emitShowDialog() {
         this.changeDialogSubscriber.apply(undefined, [])
+    }
+
+    emitSelectedMenuItem(menuItem:string) {
+        this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 }

@@ -7,7 +7,7 @@ import { parseIconData } from "../compprops";
 import { useParams } from "react-router";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
-const useMenuItems = (onUpdate?: (primeMenu: Array<MenuItem>) => void) => {
+const useMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** topbar context to show progress */
@@ -34,6 +34,7 @@ const useMenuItems = (onUpdate?: (primeMenu: Array<MenuItem>) => void) => {
                             command: e => showTopBar(menuItems.action(), topbar),
                             label: menuItems.text,
                             componentId: menuItems.componentId,
+                            screenClassName: menuItems.componentId.split(':')[0],
                             icon: iconData.icon,
                             className: menuItems.componentId && menuItems.componentId.includes(`.${params.componentId}WorkScreen`) || menuItems.text === params.componentId ? "p-menuitem--active" : undefined,
                         }
@@ -43,7 +44,6 @@ const useMenuItems = (onUpdate?: (primeMenu: Array<MenuItem>) => void) => {
                 primeMenu.push(primeMenuItem);
             });
             setMenuItems(primeMenu);
-            onUpdate && onUpdate(primeMenu);
         }
         receiveNewMenuItems(context.contentStore.mergedMenuItems);
         context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);

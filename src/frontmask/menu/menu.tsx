@@ -17,6 +17,7 @@ import { concatClassnames } from "../../main/components/util";
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
     componentId:string
+    screenClassName:string
 }
 
 interface IMenu extends IForwardRef {
@@ -42,26 +43,32 @@ export const ProfileMenu = () => {
 const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
+
     /** Flag if menu should be collapsed based on windowsize */
     const windowSize = useWindowObserver();
+
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
+
     /** Reference for logo container element*/
     const menuLogoRef = useRef<HTMLDivElement>(null);
+
     /** Reference for logo container when devicemode is mini */
     const menuLogoMiniRef = useRef<HTMLDivElement>(null);
+
     /** Reference for fadeout element when menu is collapsed */
     const fadeRef = useRef<HTMLDivElement>(null);
+
     /** a reference to the current panelmenu reactelement */
     const panelMenu = useRef<PanelMenu>(null);
+
+    const [selectedMenuItem, setSelectedMenuItem] = useState<string>(context.contentStore.selectedMenuItem);
+
     /** get menu items */
-    const menuItems = useMenuItems((primeMenu) => {
-        //TODO in the latest primereact version the expanded state can be set via the menu model.
-        //XXX tried using expanded prop -> doesn't seem to work in our case
-        panelMenu.current?.setState({activeItem: primeMenu.find(m => m.label === panelMenu.current?.state.activeItem?.label)});
-    })
+    const menuItems = useMenuItems()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -81,9 +88,11 @@ const Menu: FC<IMenu> = (props) => {
         context.subscriptions.subscribeToScreenName('x', (appName:string) => {
             setScreenTitle(appName)
         });
+        context.subscriptions.subscribeToSelectedMenuItem((menuItem:string) => setSelectedMenuItem(menuItem));
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('x');
+            context.subscriptions.unsubscribeFromSelectedMenuItem();
         }
     },[context.subscriptions]);
 
@@ -102,6 +111,18 @@ const Menu: FC<IMenu> = (props) => {
                     context.subscriptions.emitMenuCollapse(1);
             }
     },[context.contentStore, context.subscriptions, windowSize])
+
+    useEffect(() => {
+        if (menuItems) {
+            let foundMenuItem:MenuItem|undefined = undefined
+            menuItems.forEach(m => {
+                if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+                    foundMenuItem = m
+                }
+            });
+            panelMenu.current?.setState({ activeItem: foundMenuItem })
+        }
+    }, [selectedMenuItem, menuItems])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,

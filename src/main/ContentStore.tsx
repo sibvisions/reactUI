@@ -117,6 +117,8 @@ export default class ContentStore{
 
     loginMode:LoginModeType;
 
+    selectedMenuItem:string = "";
+
     /**
      * Sets the subscription-manager
      * @param subManager - the subscription-manager instance 
@@ -268,6 +270,11 @@ export default class ContentStore{
                 this.subManager.popupSubscriber.forEach(ps => {
                     ps.apply(undefined, [newCompAsPanel.screen_navigationName_, false])
                 })
+            }
+
+            if (newCompAsPanel.screen_className_) {
+                this.selectedMenuItem = newCompAsPanel.screen_className_
+                this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
             }
         });
 
