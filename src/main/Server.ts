@@ -100,11 +100,11 @@ class Server {
      * @param endpoint - the endpoint to send the request to
      */
     sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean, waitForOpenRequests?:boolean){
-        let promise = new Promise<void>((resolve) => {
+        let promise = new Promise<any>((resolve) => {
             this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
-            .then(() => {
+            .then(results => {
                 if (fn) {
                     fn.forEach(func => func.apply(undefined, []))
                 }
@@ -114,9 +114,10 @@ class Server {
                     }
                     this.subManager.jobQueue.clear()
                 }
-            })
-            .then(() => resolve())
-            .catch(error => {
+                return results;
+            }).then(results => {
+                resolve(results);
+            }).catch(error => {
                 console.error(error)
             }).finally(() => {
                 this.openRequests.delete(request);
@@ -191,6 +192,7 @@ class Server {
             }   
         }
         this.routingDecider(responses);
+        return responses;
     }
 
     /**

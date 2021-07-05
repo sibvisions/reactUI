@@ -162,7 +162,29 @@ const App: FC<ICustomContent> = (props) => {
             if (props.customStartupProps?.length) {
                 props.customStartupProps.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
-            context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP);
+
+            const startupRequestHash = [
+                'startup', 
+                startupReq.appMode,
+                startupReq.applicationName,
+                startupReq.userName,
+                startupReq.technology,
+                startupReq.deviceMode,
+            ].join('::');
+
+            const startupRequestCache = sessionStorage.getItem(startupRequestHash);
+            if(startupRequestCache) {
+                for (let [, value] of context.server.subManager.jobQueue.entries()) {
+                    value();
+                }
+                context.server.subManager.jobQueue.clear();
+                context.server.responseHandler(JSON.parse(startupRequestCache));
+            } else {
+                context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
+                    sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
+                });
+            }
+
             context.server.showToast = msg;
             context.showToast = msg;
             context.server.showDialog = showDialog;
