@@ -1,4 +1,5 @@
 /** Request imports */
+import { values } from "underscore";
 import { StartupRequest,
          LoginRequest,
          PressButtonRequest,
@@ -18,8 +19,10 @@ import { StartupRequest,
          InsertRecordRequest,
          BaseRequest,
          ComponentRequest,
-         DataProviderRequest} from "../request";
-import ChangePasswordRequest from "../request/ChangePasswordRequest";
+         DataProviderRequest,
+         ChangePasswordRequest,
+         ResetPasswordRequest,
+         SetScreenParameterRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -336,6 +339,33 @@ export const createChangePasswordRequest = (values?: ChangePasswordRequest): Cha
         clientId: values?.clientId || getClientId(),
         password: values?.password,
         newPassword: values?.newPassword
+    }
+    return req;
+}
+
+/**
+ * Returns a reset-password-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the reset-password-request
+ * @returns a reset-password-request object
+ */
+export const createResetPasswordRequest = (values?: ResetPasswordRequest): ResetPasswordRequest => {
+    const req:ResetPasswordRequest = {
+        clientId: values?.clientId || getClientId(),
+        identifier: values?.identifier
+    }
+    return req;
+}
+
+/**
+ * Returns a set-screen-parameter-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the set-screen-parameter-request
+ * @returns a set-screen-parameter-request object
+ */
+export const createSetScreenParameterRequest = (values?: SetScreenParameterRequest): SetScreenParameterRequest => {
+    const req:SetScreenParameterRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        parameter: values?.parameter
     }
     return req;
 }

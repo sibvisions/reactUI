@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { ScreenWrapperOptions } from "./customTypes";
+import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 
@@ -88,6 +88,12 @@ export default class ContentStore{
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
+    /**
+     * A Map which stores the screen parameters, that are being sent to the server when a screen is opened.
+     * key is the screen name, value are the parameters to be sent.
+     */
+    screenParameters = new Map<string, any>();
+
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
 
@@ -115,9 +121,14 @@ export default class ContentStore{
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
 
+    /** The current login mode sent by the server */
     loginMode:LoginModeType;
 
+    /** The currently selected menu item */
     selectedMenuItem:string = "";
+
+    /** Whether lost-password is enabled to reset passwords */
+    lostPasswordEnabled:boolean = false;
 
     /**
      * Sets the subscription-manager
@@ -145,11 +156,19 @@ export default class ContentStore{
      * Sets the current login-mode
      * @param mode - the login-mode
      */
-    setLoginMode(mode:LoginModeType, id:string) {
+    setLoginMode(mode:LoginModeType) {
         this.loginMode = mode;
-        if (mode === "changePassword") {
+        if (mode === "changePassword" || mode === "changeOneTimePassword") {
             this.subManager.emitShowDialog();
         }
+    }
+
+    /**
+     * Sets if lost-password is enabled or not
+     * @param lpe - True if lost-password is enabled
+     */
+    setLostPasswordEnabled(lpe:boolean) {
+        this.lostPasswordEnabled = lpe;
     }
 
     //Content
@@ -812,5 +831,16 @@ export default class ContentStore{
             screenName.forEach(name => this.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}}));
         else 
             this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
+    }
+
+    setCustomScreenParameter(screenParameters:CustomScreenParameter[]) {
+        screenParameters.forEach(sp => {
+            if (Array.isArray(sp.name)) {
+                sp.name.forEach(screenName => this.screenParameters.set(screenName, sp.parameter));
+            }
+            else {
+                this.screenParameters.set(sp.name, sp.parameter);
+            }
+        });
     }
 }

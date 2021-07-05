@@ -21,6 +21,8 @@ enum REQUEST_ENDPOINTS  {
     CLOSE_TAB = "/api/comp/closeTab",
     SAVE = "/api/dal/save",
     SORT = "/api/dal/sort",
-    CHANGE_PASSWORD = "/api/changePassword"
+    CHANGE_PASSWORD = "/api/changePassword",
+    RESET_PASSWORD = "/api/resetPassword",
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter"
 }
 export default REQUEST_ENDPOINTS

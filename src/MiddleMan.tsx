@@ -10,7 +10,7 @@ import { HashRouter } from 'react-router-dom';
 /** Other imports */
 import App from './App';
 import AppProvider from "./main/AppProvider";
-import { CustomScreenType, CustomComponentType, CustomStartupProps, ScreenWrapperType } from './main/customTypes';
+import { CustomScreenType, CustomComponentType, CustomStartupProps, ScreenWrapperType, CustomScreenParameter } from './main/customTypes';
 import { IUIManagerProps } from './frontmask/UIManager';
 
 export interface ICustomContent {
@@ -19,6 +19,7 @@ export interface ICustomContent {
     customStartupProps?: CustomStartupProps[]
     screenWrappers?: ScreenWrapperType[]
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
+    customScreenParameter?: CustomScreenParameter[]
 }
 
 /**

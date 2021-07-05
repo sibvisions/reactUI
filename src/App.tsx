@@ -109,7 +109,11 @@ const App: FC<ICustomContent> = (props) => {
         });
 
         props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
-        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options))
+        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
+
+        if (props.customScreenParameter) {
+            context.contentStore.setCustomScreenParameter(props.customScreenParameter);
+        }
     },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */
@@ -127,7 +131,17 @@ const App: FC<ICustomContent> = (props) => {
         .set("The new Password is empty", "The new Password is empty")
         .set("The passwords are different!", "The passwords are different!")
         .set("The old and new password are the same", "The old and new password are the same")
-        .set("Change password", "Change password");
+        .set("Change password", "Change password")
+        .set("Reset password", "Reset password")
+        .set("Lost password", "Lost password")
+        .set("Remember me?", "Remember me?")
+        .set("Email", "Email")
+        .set("Request", "Request")
+        .set("Please enter your e-mail address.", "Please enter your e-mail address.")
+        .set("The email is required", "The email is required")
+        .set("One-time password", "One-time password")
+        .set("Please enter your one-time password and set a new password", "Please enter your one-time password and set a new password")
+        .set("Please enter your e-mail address.", "Please enter your e-mail address.");
     },[context.contentStore])
 
     /**
