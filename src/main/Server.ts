@@ -197,8 +197,9 @@ class Server {
      * Sets the clientId in the sessionStorage
      * @param metaData - the applicationMetaDataResponse
      */
-    applicationMetaData(metaData: ApplicationMetaDataResponse){
+    applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
+        this.contentStore.setLostPasswordEnabled(metaData.lostPasswordEnabled)
     }
 
     /**
@@ -216,7 +217,7 @@ class Server {
      * Sets the currentUser in contentStore
      * @param userData - the userDataResponse
      */
-    userData(userData: UserDataResponse){
+    userData(userData: UserDataResponse) {
         this.contentStore.currentUser = userData;
     }
 
@@ -224,7 +225,7 @@ class Server {
      * Sets the authKey in localStorage
      * @param authData - the authenticationDataResponse
      */
-    authenticationData(authData: AuthenticationDataResponse){
+    authenticationData(authData: AuthenticationDataResponse) {
         localStorage.setItem("authKey", authData.authKey);
     }
 
@@ -233,7 +234,7 @@ class Server {
      * @param login - the loginDataResponse
      */
     login(login: LoginResponse){
-        this.contentStore.setLoginMode(login.mode, "login");
+        this.contentStore.setLoginMode(login.mode);
         this.contentStore.reset();
     }
 

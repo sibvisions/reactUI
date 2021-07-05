@@ -182,6 +182,12 @@
             }
         }
 
+        >.p-menuitem >.p-menuitem-link {
+            display: flex;
+            width: 200px;
+            justify-content: flex-end;
+        }
+
         /// Primereact sets a default width which is way too big
         .p-submenu-list {
             width: 100%;
@@ -326,6 +332,11 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
+
+            >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
+                margin-left: 0.5rem;
+            }
+
             /// Submenu styling needed because primereact button menu looks different we have to redesign
             .p-submenu-list {
                 position: absolute;
@@ -361,21 +372,29 @@
         }
     }
 
+    .profile-menu {
+        margin-right: 0;
+    }
+
     /// In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
     .p-menubar {
         .p-menubar-root-list {
             .p-submenu-list {
-                left: -91px;
-                width: 163px;
+                left: -125px;
+                width: 180px;
             }
             >.p-menuitem {
                 >.p-menuitem-link {
+                    width: unset;
                     .p-menuitem-icon {
                         margin-right: 0;
                     }
                     .p-menuitem-text, .p-submenu-icon {
                         display: none;
                     }
+                }
+                >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                    padding: 0.5rem 0.625rem
                 }
             }
         }

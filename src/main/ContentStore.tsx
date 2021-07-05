@@ -115,9 +115,14 @@ export default class ContentStore{
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
 
+    /** The current login mode sent by the server */
     loginMode:LoginModeType;
 
+    /** The currently selected menu item */
     selectedMenuItem:string = "";
+
+    /** Whether lost-password is enabled to reset passwords */
+    lostPasswordEnabled:boolean = false;
 
     /**
      * Sets the subscription-manager
@@ -145,11 +150,19 @@ export default class ContentStore{
      * Sets the current login-mode
      * @param mode - the login-mode
      */
-    setLoginMode(mode:LoginModeType, id:string) {
+    setLoginMode(mode:LoginModeType) {
         this.loginMode = mode;
-        if (mode === "changePassword") {
+        if (mode === "changePassword" || mode === "changeOneTimePassword") {
             this.subManager.emitShowDialog();
         }
+    }
+
+    /**
+     * Sets if lost-password is enabled or not
+     * @param lpe - True if lost-password is enabled
+     */
+    setLostPasswordEnabled(lpe:boolean) {
+        this.lostPasswordEnabled = lpe;
     }
 
     //Content
