@@ -109,7 +109,11 @@ const App: FC<ICustomContent> = (props) => {
         });
 
         props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
-        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options))
+        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
+
+        if (props.customScreenParameter) {
+            context.contentStore.setCustomScreenParameter(props.customScreenParameter);
+        }
     },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */

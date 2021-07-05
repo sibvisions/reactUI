@@ -23,3 +23,4 @@ export type { SortDefinition } from './SortRequest';
 export type { default as InsertRecordRequest } from './InsertRecordRequest';
 export type { default as ChangePasswordRequest } from './ChangePasswordRequest';
 export type { default as ResetPasswordRequest } from './ResetPasswordRequest';
+export type { default as SetScreenParameterRequest } from './SetScreenParameterRequest';

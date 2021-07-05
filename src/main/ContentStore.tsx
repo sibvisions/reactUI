@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { ScreenWrapperOptions } from "./customTypes";
+import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 
@@ -87,6 +87,12 @@ export default class ContentStore{
      * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
+
+    /**
+     * A Map which stores the screen parameters, that are being sent to the server when a screen is opened.
+     * key is the screen name, value are the parameters to be sent.
+     */
+    screenParameters = new Map<string, any>();
 
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
@@ -825,5 +831,16 @@ export default class ContentStore{
             screenName.forEach(name => this.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}}));
         else 
             this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
+    }
+
+    setCustomScreenParameter(screenParameters:CustomScreenParameter[]) {
+        screenParameters.forEach(sp => {
+            if (Array.isArray(sp.name)) {
+                sp.name.forEach(screenName => this.screenParameters.set(screenName, sp.parameter));
+            }
+            else {
+                this.screenParameters.set(sp.name, sp.parameter);
+            }
+        });
     }
 }

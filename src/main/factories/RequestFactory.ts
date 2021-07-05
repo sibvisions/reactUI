@@ -1,4 +1,5 @@
 /** Request imports */
+import { values } from "underscore";
 import { StartupRequest,
          LoginRequest,
          PressButtonRequest,
@@ -20,7 +21,8 @@ import { StartupRequest,
          ComponentRequest,
          DataProviderRequest,
          ChangePasswordRequest,
-         ResetPasswordRequest} from "../request";
+         ResetPasswordRequest,
+         SetScreenParameterRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -350,6 +352,20 @@ export const createResetPasswordRequest = (values?: ResetPasswordRequest): Reset
     const req:ResetPasswordRequest = {
         clientId: values?.clientId || getClientId(),
         identifier: values?.identifier
+    }
+    return req;
+}
+
+/**
+ * Returns a set-screen-parameter-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the set-screen-parameter-request
+ * @returns a set-screen-parameter-request object
+ */
+export const createSetScreenParameterRequest = (values?: SetScreenParameterRequest): SetScreenParameterRequest => {
+    const req:SetScreenParameterRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        parameter: values?.parameter
     }
     return req;
 }

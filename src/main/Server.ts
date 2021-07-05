@@ -25,7 +25,7 @@ import { ApplicationMetaDataResponse,
          LanguageResponse, 
          MessageResponse,
          LoginResponse} from "./response";
-import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -247,6 +247,14 @@ class Server {
         if (!genericData.update) {
             const workScreen = genericData.changedComponents[0] as IPanel
             this.contentStore.setActiveScreen(workScreen.name, workScreen.screen_modal_);
+            if (this.contentStore.screenParameters.has(workScreen.name)) {
+                const parameterReq = createSetScreenParameterRequest();
+                parameterReq.componentId = workScreen.name;
+                parameterReq.parameter = this.contentStore.screenParameters.get(workScreen.name);
+                //TODO: topbar
+                this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+                this.contentStore.screenParameters.delete(workScreen.name);
+            }
         }
         this.contentStore.updateContent(genericData.changedComponents);
     }
