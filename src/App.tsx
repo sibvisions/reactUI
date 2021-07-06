@@ -112,7 +112,7 @@ const App: FC<ICustomContent> = (props) => {
         props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
 
         if (props.customScreenParameter) {
-            context.contentStore.setCustomScreenParameter(props.customScreenParameter);
+            context.contentStore.addScreenParameter(props.customScreenParameter)
         }
     },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 

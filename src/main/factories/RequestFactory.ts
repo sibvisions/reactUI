@@ -297,7 +297,8 @@ export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
 export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScreenRequest => {
     const req:CloseScreenRequest = {
         clientId: values?.clientId || getClientId(),
-        componentId: values?.componentId
+        componentId: values?.componentId,
+        parameter: values?.parameter
     };
     return req;
 }

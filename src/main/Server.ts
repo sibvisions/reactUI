@@ -25,7 +25,7 @@ import { ApplicationMetaDataResponse,
          LanguageResponse, 
          MessageResponse,
          LoginResponse} from "./response";
-import { createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -56,11 +56,14 @@ class Server {
     }
 
     /** Application name */
-    APP_NAME = ""
+    APP_NAME = "";
+
     /** Base url for requests */
-    BASE_URL = ""
+    BASE_URL = "";
+
     /** Resource url for receiving images etc. */
-    RESOURCE_URL = ""
+    RESOURCE_URL = "";
+
     /** Contentstore instance */
     contentStore: ContentStore;
     /** subscriptionManager instance */
@@ -69,6 +72,9 @@ class Server {
     history?:History<any>;
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
+
+    /** ----------APP-FUNCTIONS---------- */
+
     /**
      * Function to show a toast
      * @param message - message to show
@@ -92,6 +98,8 @@ class Server {
         };
         return reqOpt;
     }
+
+    /** ----------SENDING-REQUESTS---------- */
  
     /**
      * Sends a request to the server and handles its response, if there are jobs in the
@@ -157,6 +165,8 @@ class Server {
                 });
         });
     }
+
+    /** ----------HANDLING-RESPONSES---------- */
 
     /** A Map which checks which function needs to be called when a response is received */
     responseMap = new Map<string, Function>()
@@ -249,20 +259,31 @@ class Server {
         if (!genericData.update) {
             const workScreen = genericData.changedComponents[0] as IPanel
             this.contentStore.setActiveScreen(workScreen.name, workScreen.screen_modal_);
-            if (this.contentStore.screenParameters.has(workScreen.name)) {
+            if (this.contentStore.openScreenParameters.has(workScreen.name)) {
                 const parameterReq = createSetScreenParameterRequest();
                 parameterReq.componentId = workScreen.name;
-                parameterReq.parameter = this.contentStore.screenParameters.get(workScreen.name);
+                parameterReq.parameter = this.contentStore.openScreenParameters.get(workScreen.name);
                 //TODO: topbar
                 this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-                this.contentStore.screenParameters.delete(workScreen.name);
+                this.contentStore.openScreenParameters.delete(workScreen.name);
             }
         }
         this.contentStore.updateContent(genericData.changedComponents);
     }
 
+    /**
+     * Close Screen handling
+     * @param closeScreenData - the close screen response 
+     */
     // closeScreen(closeScreenData: CloseScreenResponse){
-    //     this.contentStore.closeScreen(closeScreenData.componentId);
+    //     if (this.contentStore.closeScreenParameters.has(closeScreenData.componentId)) {
+    //         const parameterReq = createSetScreenParameterRequest();
+    //         parameterReq.componentId = closeScreenData.name;
+    //         parameterReq.parameter = this.contentStore.closeScreenParameters.get(closeScreenData.componentId);
+    //         //TODO: topbar
+    //         this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+    //         this.contentStore.openScreenParameters.delete(closeScreenData.name);
+    //     }
     // }
 
     /**
@@ -490,7 +511,9 @@ class Server {
      * @param errData - the errorResponse
      */
     showError(errData: ErrorResponse) {
-        this.showToast({severity: 'error', summary: errData.message}, true);
+        if (!errData.silentAbort) {
+            this.showToast({severity: 'error', summary: errData.message}, true);
+        }
         console.error(errData.details)
     }
 
@@ -519,6 +542,8 @@ class Server {
             this.subManager.emitTranslation();
         }))
     }
+
+    /** ----------ROUTING---------- */
 
     /**
      * Decides if and where to the user should be routed based on all responses.
@@ -581,6 +606,31 @@ class Server {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
         }
+    }
+
+    /** ----------SERVER-API-FUNCTIONS---------- */
+
+    /**
+     * Sends screen-parameters for the given screen to the server.
+     * @param screenName - the screen-name
+     * @param parameter - the screen-parameters
+     */
+    sendScreenParameter(screenName:string, parameter:{ [key:string]:any }) {
+        const parameterReq = createSetScreenParameterRequest();
+        parameterReq.componentId = screenName;
+        parameterReq.parameter = parameter;
+        this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+    }
+
+    closeScreen(screenName:string) {
+        const csRequest = createCloseScreenRequest();
+        csRequest.componentId = screenName;
+        if (this.contentStore.closeScreenParameters.has(screenName)) {
+            csRequest.parameter = this.contentStore.closeScreenParameters.get(screenName);
+        }
+        //TODO topbar
+        this.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
+        this.contentStore.closeScreen(screenName);
     }
 }
 export default Server

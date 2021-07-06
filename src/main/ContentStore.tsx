@@ -92,7 +92,13 @@ export default class ContentStore{
      * A Map which stores the screen parameters, that are being sent to the server when a screen is opened.
      * key is the screen name, value are the parameters to be sent.
      */
-    screenParameters = new Map<string, any>();
+    openScreenParameters = new Map<string, any>();
+
+    /**
+     * A Map which stores the screen parameters, that are being sent to the server when a screen is closed.
+     * key is the screen name, value are the parameters to be sent.
+     */
+    closeScreenParameters = new Map<string, any>();
 
     /** The logo to display when the menu is expanded */
     LOGO_BIG:string = "/assets/logo_big.png";
@@ -833,13 +839,13 @@ export default class ContentStore{
             this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
     }
 
-    setCustomScreenParameter(screenParameters:CustomScreenParameter[]) {
+    addScreenParameter(screenParameters:CustomScreenParameter[]) {
         screenParameters.forEach(sp => {
             if (Array.isArray(sp.name)) {
-                sp.name.forEach(screenName => this.screenParameters.set(screenName, sp.parameter));
+                sp.name.forEach(screenName => (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(screenName, sp.parameter));
             }
             else {
-                this.screenParameters.set(sp.name, sp.parameter);
+                (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(sp.name, sp.parameter);
             }
         });
     }

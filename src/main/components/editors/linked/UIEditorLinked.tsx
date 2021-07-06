@@ -275,7 +275,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             value={text}
             onChange={event => setText(event.target.value)}
             onBlur={() => handleInput()}
-            onSelect={(event) => handleInput(event.value)}
+            //onSelect={(event) => handleInput(event.value)}
             virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }}/>
     )
 }
