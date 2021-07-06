@@ -165,31 +165,36 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      * Handles the input, when the text is entered manually or via the dropdown menu and sends the value to the server
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
-    const handleInput = (value?:string) => {
+    const handleInput = () => {
         const newVal:any = {}
-        const linkReference = props.cellEditor.linkReference
-        const newText = value ? value : text
+        const linkReference = props.cellEditor.linkReference;
+        
+        const refColNames = linkReference.referencedColumnNames;
+        const colNames = linkReference.columnNames;
+        const index = colNames.findIndex(col => col === props.columnName);
+    
         /** Returns the values, of the databook, that match the input of the user */
-        const foundData = providedData.filter((data:any) => {
-            if (props.cellEditor) {
-                if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-                    return data[props.cellEditor.displayReferencedColumnName].includes(newText);
-                }
-                else {
-                    const refColNames = linkReference.referencedColumnNames;
-                    const colNames = linkReference.columnNames;
-                    const index = colNames.findIndex(col => col === props.columnName);
-                    return data[refColNames[index]].includes(newText);
-                }
+        let foundData = providedData.some((data: any) => data[refColNames[index]] === text) ?
+            providedData.find((data: any) => data[refColNames[index]] === text) :
+            providedData.filter((data: any) => {
+                if (props.cellEditor) {
+                    if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                        return data[props.cellEditor.displayReferencedColumnName].includes(text);
+                    }
+                    else {
+                        return data[refColNames[index]].includes(text);
+                    }
 
-            }
-            return false
-        });
+                }
+                return false
+            });
+
+        foundData = Array.isArray(foundData) ? foundData : [foundData];
 
         const columnNames = (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1) ? props.columnName : linkReference.columnNames
 
         /** If the text is empty, send null to the server */
-        if (!newText) {
+        if (!text) {
             onBlurCallback(baseProps, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, context.server), topbar));
         }
         /** If there is a match found send the value to the server */
@@ -203,14 +208,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                      * foundData columnNames have to be adjusted to linkReference
                      */
                     for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                        newVal[linkReference.columnNames[i]] = Object.values(foundData[0])[i]; 
+                        newVal[linkReference.columnNames[i]] = Object.values(foundData[0])[i];
                     }
-                                           
+                    if (newVal[props.columnName] === lastValue.current) {
+                        setText(lastValue.current)
+                    }
                     onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server), topbar));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
-                    onBlurCallback(baseProps, newText, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newText, context.server), topbar));
+                    onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, text, context.server), topbar));
                 }
                     
             }
@@ -275,7 +282,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             value={text}
             onChange={event => setText(event.target.value)}
             onBlur={() => handleInput()}
-            //onSelect={(event) => handleInput(event.value)}
             virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }}/>
     )
 }
