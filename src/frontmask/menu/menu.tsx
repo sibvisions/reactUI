@@ -67,6 +67,8 @@ const Menu: FC<IMenu> = (props) => {
 
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>(context.contentStore.selectedMenuItem);
 
+    const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
+
     /** get menu items */
     const menuItems = useMenuItems()
 
@@ -114,15 +116,31 @@ const Menu: FC<IMenu> = (props) => {
 
     useEffect(() => {
         if (menuItems) {
-            let foundMenuItem:MenuItem|undefined = undefined
+            let foundMenuItem:MenuItem = {}
             menuItems.forEach(m => {
                 if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
                     foundMenuItem = m
                 }
             });
-            panelMenu.current?.setState({ activeItem: foundMenuItem })
+
+            if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                panelMenu.current?.setState({ activeItem: foundMenuItem });
+                setActiveItemChanged(prev => !prev)
+            }
+            else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem) {
+                panelMenu.current?.setState({ activeItem: foundMenuItem });
+                setActiveItemChanged(prev => !prev)
+            }
         }
     }, [selectedMenuItem, menuItems])
+
+    useEffect(() => {
+        Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+        const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+        if (menuElem) {
+            menuElem.classList.add("p-menuitem--active");
+        } 
+    },[activeItemChanged])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,

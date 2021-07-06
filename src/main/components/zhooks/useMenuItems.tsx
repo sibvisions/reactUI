@@ -36,7 +36,7 @@ const useMenuItems = () => {
                             componentId: menuItems.componentId,
                             screenClassName: menuItems.componentId.split(':')[0],
                             icon: iconData.icon,
-                            className: menuItems.componentId && menuItems.componentId.includes(`.${params.componentId}WorkScreen`) || menuItems.text === params.componentId ? "p-menuitem--active" : undefined,
+                            className: menuItems.componentId.split(':')[0]
                         }
                         return subMenuItem
                     })
@@ -51,7 +51,7 @@ const useMenuItems = () => {
         return () => {
             context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
-    }, [params, context.subscriptions, context.contentStore.mergedMenuItems]);
+    }, [context.subscriptions, context.contentStore.mergedMenuItems]);
 
     return menuItems;
 }
