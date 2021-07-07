@@ -260,7 +260,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
             fetchReq.rowCount = 400;
-            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH)
+            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
         }
     }
 

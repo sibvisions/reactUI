@@ -15,6 +15,7 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /**
  * This component displays a basic button
@@ -51,6 +52,8 @@ const UIButton: FC<IButton> = (baseProps) => {
     useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current.element : undefined);
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -65,7 +68,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     const onButtonPress = () => {
         const req = createPressButtonRequest();
         req.componentId = props.name;
-        context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
     }
 
     return(

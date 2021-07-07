@@ -15,6 +15,7 @@ import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {
@@ -44,6 +45,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const closing = useRef(false);
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel
@@ -90,7 +93,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
     const handleSelect = (tabId:number) => {
         if(!closing.current)
-            context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB);
+            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB), topbar);
         closing.current = false;
     }
 
@@ -101,7 +104,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const buildTabs = useMemo(() => {
         /** When a tab is closed send a tabCloseRequest to the server */
         const handleClose = (tabId:number) => {
-            context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB);
+            showTopBar(context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB), topbar);
             closing.current = true
         }
         /** Array for the built tabs */

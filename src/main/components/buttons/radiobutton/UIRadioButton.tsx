@@ -15,6 +15,7 @@ import { buttonProps, getGapPos, getIconCenterDirection, IButtonSelectable } fro
 import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize} from "../../util";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /**
  * This component displays a RadioButton and its label
@@ -47,6 +48,8 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const iconCenterGap = rbRef.current && labelRef.current ? labelRef.current.offsetWidth/2 - rbRef.current.element.offsetWidth/2 : 0;
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -92,7 +95,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                         const req = createSetValueRequest();
                         req.componentId = props.name;
                         req.value = checked;
-                        context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE);
+                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
                     }}
                 />
                 <label 

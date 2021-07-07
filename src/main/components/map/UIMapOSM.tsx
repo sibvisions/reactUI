@@ -25,6 +25,7 @@ import { getMarkerIcon,
          sendSaveRequest } from "../util";
 import BaseComponent from "../BaseComponent";
 import { IconProps } from "../compprops";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {
@@ -105,6 +106,8 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const markerRefs = useRef<any>([]);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
     /** The provided data for groups */
@@ -139,7 +142,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             shadowUrl: require("leaflet/dist/images/marker-shadow.png")
           });
 
-        sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server);
+        showTopBar(sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server), topbar);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
     /** Set the last marker as selectedMarker */
@@ -171,7 +174,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server);
-            setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
+            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
 
@@ -180,7 +183,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], context.server);
-            setTimeout(() => sendSaveRequest(props.pointsDataBook, true, context.server), 200);
+            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
 

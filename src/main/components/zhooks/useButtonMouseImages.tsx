@@ -21,6 +21,13 @@ const removeIcon = (elem:HTMLElement, iconName:string) => {
     }
 }
 
+/**
+ * Hook for buttons that listens to mouse-events to change a buttons icon
+ * @param iconData - the parsed icon-data of the button
+ * @param mousePressedIconData - the parsed icon-data which is shown when the mouse is pressed
+ * @param mouseOverIconData - the parsed icon-data which is shown when the mouse is hovered over the button
+ * @param btnElement - the element of the button
+ */
 const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconProps, mouseOverIconData?:IconProps, btnElement?:HTMLElement) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

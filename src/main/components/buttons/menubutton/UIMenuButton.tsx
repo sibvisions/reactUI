@@ -16,6 +16,7 @@ import { IButton, buttonProps, getGapPos } from "..";
 import { parseIconData } from "../../compprops";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -49,6 +50,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const [items, setItems] = useState<Array<any>>();
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -75,7 +78,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     command: () => {
                         const req = createPressButtonRequest();
                         req.componentId = item.name;
-                        context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
                     }
                 });
             });

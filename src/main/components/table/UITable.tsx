@@ -26,6 +26,7 @@ import { MetaDataResponse } from "../../response";
 import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, focusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 
 /** Interface for Table */
@@ -242,6 +243,9 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<TableProps>(baseProps.id, baseProps);
 
@@ -305,7 +309,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.componentId = props.name;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true), topbar);
     }, [props.dataBook, props.name, context.server])
 
     const tableSelect = useCallback((multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
@@ -1014,7 +1018,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             fetchReq.dataProvider = props.dataBook;
             fetchReq.fromRow = providerData.length;
             fetchReq.rowCount = e.rows*4;
-            context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
         } else {
             setVirtualRows(slicedProviderData);
         }
@@ -1153,7 +1157,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     context.contentStore.insertDataProviderData(compId, props.dataBook);
                     const insertReq = createInsertRecordRequest();
                     insertReq.dataProvider = props.dataBook;
-                    context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD);
+                    showTopBar(context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD), topbar);
                 }
                 break;
             case "Delete":
@@ -1162,7 +1166,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const selectReq = createSelectRowRequest();
                     selectReq.dataProvider = props.dataBook;
                     selectReq.componentId = props.name;
-                    context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.DELETE_RECORD)
+                    showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.DELETE_RECORD), topbar)
                 }
         }
     }
@@ -1188,7 +1192,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
         }
         sortReq.sortDefinition = sortDefToSend;
-        context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT);
+        showTopBar(context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT), topbar);
     }
 
     /** Column-resize handler */

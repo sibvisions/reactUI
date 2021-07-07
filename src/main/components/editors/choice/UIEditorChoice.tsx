@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
@@ -11,6 +11,7 @@ import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
@@ -61,6 +62,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -156,7 +160,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             if (props.rowIndex !== undefined && props.filter && selectedRow.index !== undefined && props.rowIndex() !== selectedRow.index) {
                 setValReq.filter = props.filter()
             }
-            context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES);
+            showTopBar(context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES), topbar);
         }
     }
     

@@ -17,6 +17,7 @@ import { createFetchRequest, createSelectTreeRequest } from "../../factories/Req
 import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -60,6 +61,8 @@ const UITree: FC<ITree> = (baseProps) => {
     const [initRender, setInitRender] = useState<boolean>(false)
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -194,7 +197,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         values: Object.values(pkObj)
                     }
                     //TODO: try sendRequest with optional parameter
-                    context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
+                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
                     .then((response:any) => response.json())
                     .then((fetchResponse:FetchResponse[]) => {
                         const builtData = context.server.buildDatasets(fetchResponse[0]);
@@ -202,7 +205,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         context.server.processFetch(fetchResponse[0], JSON.stringify(pkObj));
                         addNodesToParent(builtData);
                     })
-                    .then(() => resolve({treeMap: tempTreeMap}))
+                    .then(() => resolve({treeMap: tempTreeMap})), topbar)
                 }
                 else {
                     //the data is already fetched so don't send a fetch and get the data by pkObj
@@ -277,7 +280,7 @@ const UITree: FC<ITree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = props.dataBooks
             selectReq.filter = selectedFilters;
-            context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_TREE);
+            showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_TREE), topbar);
         }
     }
 
@@ -404,7 +407,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 columnNames: metaData!.masterReference!.referencedColumnNames,
                 values: [null]
             }
-            const response:any = await context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 10000)
+            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 10000), topbar)
             const fetchResponse = await response.json();
             context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
             const builtData = context.server.buildDatasets(fetchResponse[0])

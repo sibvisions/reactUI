@@ -4,7 +4,7 @@ import { appContext } from "../../../main/AppProvider";
 import { createLogoutRequest } from "../../../main/factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
-import { TopBarContext } from "../topbar/TopBar";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 
 const useProfileMenuItems = () => {
@@ -22,10 +22,7 @@ const useProfileMenuItems = () => {
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
         context.contentStore.reset();
-        topbar.show();
-        context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT).finally(() => {
-            topbar.hide();
-        });
+        showTopBar(context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
     
     useEffect(() => {

@@ -15,6 +15,7 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { buttonProps, getGapPos, getIconCenterDirection, IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -51,6 +52,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current.container : undefined);
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -64,7 +67,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const handleOnChange = () => {
         const req = createPressButtonRequest();
         req.componentId = props.name;
-        context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
     }
 
     return (
