@@ -5,7 +5,7 @@ import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../zhooks";
+import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -17,7 +17,7 @@ import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../
  */
 const UIPassword: FC<BaseComponent> = (baseProps) => {
     /** Reference for the password field */
-    const passwordRef = useRef(null);
+    const passwordRef = useRef<any>(null);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     /** Current state of password value */
@@ -26,6 +26,8 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, passwordRef.current ? passwordRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

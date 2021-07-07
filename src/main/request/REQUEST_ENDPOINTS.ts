@@ -23,6 +23,9 @@ enum REQUEST_ENDPOINTS  {
     SORT = "/api/dal/sort",
     CHANGE_PASSWORD = "/api/changePassword",
     RESET_PASSWORD = "/api/resetPassword",
-    SET_SCREEN_PARAMETER = "/api/setScreenParameter"
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    MOUSE_CLICKED = "/api/mouseClicked",
+    MOUSE_PRESSED = "/api/mousePressed",
+    MOUSE_RELEASED = "/api/mouseReleased"
 }
 export default REQUEST_ENDPOINTS

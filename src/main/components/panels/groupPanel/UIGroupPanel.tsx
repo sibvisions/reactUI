@@ -1,8 +1,8 @@
 /** React imports */
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -24,6 +24,9 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
+    const panelRef = useRef<any>(null)
+    /** Hook for MouseListener */
+    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Returns the style of the panel/layout
@@ -66,7 +69,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     }
 
     return(
-        <div className="rc-panel-group" id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutStyle, backgroundColor: props.background}}>
+        <div ref={panelRef} className="rc-panel-group" id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutStyle, backgroundColor: props.background}}>
             <div className="rc-panel-group-caption"><span>{props.text}</span></div>
             <Layout
                 id={props.id}

@@ -5,7 +5,7 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayout
 import { TabView, TabPanel } from 'primereact/tabview';
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../../LayoutContext";
@@ -47,6 +47,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const prefSize = parsePrefSize(props.preferredSize);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel

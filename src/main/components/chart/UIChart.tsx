@@ -9,7 +9,7 @@ import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData } from "../zhooks";
+import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -173,6 +173,8 @@ const UIChart: FC<IChart> = (baseProps) => {
     const translation = useTranslation();
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** process the providerData to geta usable data list as well as the min & max values */
     const [data, min, max] = useMemo(() => {
@@ -383,11 +385,6 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }
             })
         }
-
-        if(horizontal) {
-            console.log(primeChart);
-        }
-
         return primeChart
     },[providerData, props.chartStyle, props.yColumnLabels]);
 

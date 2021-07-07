@@ -5,7 +5,7 @@ import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../zhooks";
+import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -17,7 +17,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from ".
  */
 const UITextArea: FC<BaseComponent> = (baseProps) => {
     /** Reference for the textarea */
-    const inputRef = useRef(null);
+    const inputRef = useRef<any>(null);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
     /** Current state of the textarea value */
@@ -26,6 +26,8 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

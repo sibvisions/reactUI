@@ -7,28 +7,31 @@ import { LoadCallBack } from "./util";
 interface BaseComponent {
     onLoadCallback?: LoadCallBack
     id: string,
-    parent?: string
+    parent?: string,
     name: string,
     className?: string,
-    "~remove"?: boolean
-    "~destroy"?: boolean
-    visible?: boolean
-    constraints: string
-    bounds?: string
-    preferredSize?: string
-    maximumSize?: string
-    minimumSize?: string
-    background?: string
-    foreground?: string
-    margins?: string|Margins
-    horizontalAlignment?: 0 | 1 | 2 | 3
-    verticalAlignment?: 0 | 1 | 2 | 3
-    font?: string|UIFont
-    image?: string
-    focusable?: boolean
-    tabIndex?: number
-    style?: string
-    text?: string
-    indexOf?: number;
+    "~remove"?: boolean,
+    "~destroy"?: boolean,
+    visible?: boolean,
+    constraints: string,
+    bounds?: string,
+    preferredSize?: string,
+    maximumSize?: string,
+    minimumSize?: string,
+    background?: string,
+    foreground?: string,
+    margins?: string|Margins,
+    horizontalAlignment?: 0 | 1 | 2 | 3,
+    verticalAlignment?: 0 | 1 | 2 | 3,
+    font?: string|UIFont,
+    image?: string,
+    focusable?: boolean,
+    tabIndex?: number,
+    style?: string,
+    text?: string,
+    indexOf?: number,
+    eventMouseClicked?: boolean,
+    eventMousePressed?: boolean,
+    eventMouseReleased?: boolean
 }
 export default BaseComponent

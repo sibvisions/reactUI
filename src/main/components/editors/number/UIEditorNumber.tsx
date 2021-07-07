@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData } from "../../zhooks"
+import { useProperties, useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -99,6 +99,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const isCellEditor = props.id === "";
 
     useFetchMissingData(compId, props.dataRow);
+
+    /** Hook for MouseListener */ // @ts-ignore
+    useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor

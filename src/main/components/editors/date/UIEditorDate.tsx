@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -143,6 +143,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const isValidDate = (inputDate:any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());
     }
+
+    /** Hook for MouseListener */ //@ts-ignore
+    useMouseListener(props.name, calendar.current ? calendar.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

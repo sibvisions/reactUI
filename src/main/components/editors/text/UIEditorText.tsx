@@ -7,7 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks"
+import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -94,6 +94,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const escapePressed = useRef<boolean>(false)
 
     useFetchMissingData(compId, props.dataRow);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const getFieldType = useCallback(() => {
         const contentType = props.cellEditor.contentType

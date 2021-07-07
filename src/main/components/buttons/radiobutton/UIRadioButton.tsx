@@ -6,7 +6,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../../zhooks";
+import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { appContext } from "../../../AppProvider";
@@ -50,6 +50,8 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -103,7 +105,8 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     className={concatClassnames(
                         "p-radiobutton-label",
                         btnData.style.color ? 'textcolor-set' : '',
-                        btnData.btnBorderPainted && tinycolor(rbBgd).isDark() ? "bright" : "dark"
+                        btnData.btnBorderPainted && tinycolor(rbBgd).isDark() ? "bright" : "dark",
+                        props.eventMousePressed ? "mouse-pressed-event" : ""
                         )} 
                     htmlFor={props.id} 
                     style={{order: btnData.iconPos === 'left' ? 2 : 1}}>

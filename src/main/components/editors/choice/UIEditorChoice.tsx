@@ -2,7 +2,7 @@
 import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -67,6 +67,9 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     const topbar = useContext(TopBarContext);
 
     useFetchMissingData(compId, props.dataRow);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value

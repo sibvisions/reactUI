@@ -7,7 +7,7 @@ import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useLayoutValue } from "../zhooks";
+import { useProperties, useDataProviderData, useLayoutValue, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -31,7 +31,7 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
  */
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Reference for the div that is wrapping the map containing layout information */
-    const mapWrapperRef = useRef(null);
+    const mapWrapperRef = useRef<any>(null);
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
     /** The state if the map is loaded and ready */
@@ -58,6 +58,8 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const {onLoadCallback, id} = props;
     /** The center position of the map */
     const centerPosition = parseMapLocation(props.center);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, mapWrapperRef.current ? mapWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
     /** Options for map controls/display */
     const options = {
         center: centerPosition ? { lat: centerPosition.latitude, lng: centerPosition.longitude} : { lat: 0, lng: 0 },

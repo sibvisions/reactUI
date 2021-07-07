@@ -6,7 +6,7 @@ import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebut
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useButtonMouseImages, useLayoutValue } from "../../zhooks";
+import { useProperties, useButtonMouseImages, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -54,6 +54,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

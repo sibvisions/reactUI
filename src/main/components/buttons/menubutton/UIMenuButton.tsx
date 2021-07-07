@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../../zhooks";
+import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -52,6 +52,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

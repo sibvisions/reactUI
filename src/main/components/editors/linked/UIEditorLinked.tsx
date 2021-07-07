@@ -5,7 +5,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 import { AutoComplete } from 'primereact/autocomplete';
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -88,10 +88,12 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     useFetchMissingData(compId, props.dataRow);
 
+    /** Hook for MouseListener */
+    useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && linkedRef.current){
-            // @ts-ignore
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), linkedRef.current.container, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);

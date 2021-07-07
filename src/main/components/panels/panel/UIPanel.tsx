@@ -1,8 +1,8 @@
 /** React imports */
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -36,6 +36,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
+    const panelRef = useRef<any>(null)
+    /** Hook for MouseListener */
+    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Returns the style of the panel/layout
@@ -71,7 +74,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     }
 
     return(
-        <div 
+        <div
+            ref={panelRef}
             id={props.name} 
             style={props.screen_modal_ ? { 
                 height: prefSize?.height, 

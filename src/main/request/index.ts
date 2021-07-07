@@ -24,3 +24,5 @@ export type { default as InsertRecordRequest } from './InsertRecordRequest';
 export type { default as ChangePasswordRequest } from './ChangePasswordRequest';
 export type { default as ResetPasswordRequest } from './ResetPasswordRequest';
 export type { default as SetScreenParameterRequest } from './SetScreenParameterRequest';
+export type { default as MouseRequest } from './MouseRequest';
+export type { default as MouseClickedRequest } from './MouseClickedRequest';

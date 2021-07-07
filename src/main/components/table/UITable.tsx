@@ -15,7 +15,8 @@ import { useProperties,
          useSortDefinitions, 
          useEventHandler,
          useLayoutValue,
-         useFetchMissingData} from "../zhooks";
+         useFetchMissingData,
+         useMouseListener} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -297,6 +298,9 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
     useFetchMissingData(compId, props.dataBook);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn

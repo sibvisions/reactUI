@@ -8,7 +8,7 @@ import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData } from "../zhooks";
+import { useProperties, useDataProviderData, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -53,7 +53,7 @@ export interface IMap extends BaseComponent {
  */
 const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Reference for the map element */
-    const mapRef = useRef(null);
+    const mapRef = useRef<any>(null);
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
     /** Current state of the properties for the component sent by the server */
@@ -64,6 +64,8 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     const centerPosition = parseMapLocation(props.center);
     /** Start zoom value is switched in Google and OSM */
     const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 10);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

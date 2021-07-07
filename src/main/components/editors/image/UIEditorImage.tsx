@@ -1,8 +1,8 @@
 /** React imports */
-import React, { FC, useContext, useEffect } from "react";
+import React, { FC, useContext, useEffect, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData } from "../../zhooks";
+import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -32,6 +32,9 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
 
+    /** Reference for wrapper span */
+    const wrapRef = useRef<HTMLSpanElement>(null);
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
 
@@ -54,6 +57,9 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const isCellEditor = props.id === "";
 
     useFetchMissingData(compId, props.dataRow);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     useEffect(() => {
         if (!props.cellEditor.defaultImageName) {
@@ -88,7 +94,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     }
 
     return(
-        <span className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}}>
+        <span ref={wrapRef} className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}}>
             <img
                 id={!isCellEditor ? props.name : undefined}
                 style={imageStyle.img}

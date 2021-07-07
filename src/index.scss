@@ -169,3 +169,8 @@ body {
         padding: 0;
     }
 }
+
+.mouse-pressed-event {
+    -webkit-user-select: none; 
+    user-select: none; 
+}

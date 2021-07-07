@@ -7,7 +7,7 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue } from "../zhooks";
+import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -63,6 +63,8 @@ const UITree: FC<ITree> = (baseProps) => {
     const { onLoadCallback, id } = baseProps;
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, treeWrapperRef.current ? treeWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

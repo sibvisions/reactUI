@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useRef } from "react";
 
 /** Other imports */
 import BaseComponent from "./BaseComponent";
@@ -17,6 +17,10 @@ const Dummy: FC<BaseComponent> = (props) => {
     const layoutStyle = useLayoutValue(props.id);
     /** Reference for the dummy */
     const ref = useRef<HTMLSpanElement>(null);
+
+    useLayoutEffect(() => {
+        console.log(props)
+    },[])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

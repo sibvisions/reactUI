@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useImageStyle, useLayoutValue } from "../zhooks";
+import { useProperties, useImageStyle, useLayoutValue, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -30,6 +30,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+    /** Hook for MouseListener */
+    useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.

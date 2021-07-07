@@ -5,12 +5,12 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
-import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey } from "../../util";
+import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames } from "../../util";
 import { getAlignments } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
@@ -75,6 +75,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     const topbar = useContext(TopBarContext);
 
     useFetchMissingData(compId, props.dataRow);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:
@@ -180,7 +183,14 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                 disabled={isReadOnly}
             />
             {baseProps.id !== "" &&
-                <label className="rc-editor-checkbox-label" htmlFor={id}>{props.cellEditor?.text}</label>
+                <label
+                    className={concatClassnames(
+                        "rc-editor-checkbox-label",
+                        props.eventMousePressed ? "mouse-pressed-event" : ""
+                    )}
+                    htmlFor={id}>
+                    {props.cellEditor?.text}
+                </label>
             }
             
         </span>

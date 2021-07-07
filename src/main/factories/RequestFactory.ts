@@ -22,7 +22,9 @@ import { StartupRequest,
          DataProviderRequest,
          ChangePasswordRequest,
          ResetPasswordRequest,
-         SetScreenParameterRequest} from "../request";
+         SetScreenParameterRequest,
+         MouseRequest,
+         MouseClickedRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -367,6 +369,39 @@ export const createSetScreenParameterRequest = (values?: SetScreenParameterReque
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
         parameter: values?.parameter
+    }
+    return req;
+}
+
+/**
+ * Returns a mouse-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the mouse-request
+ * @returns a mouse-request object
+ */
+export const createMouseRequest = (values?: MouseRequest): MouseRequest => {
+    const req:MouseRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        button: values?.button,
+        x: values?.x,
+        y: values?.y
+    }
+    return req;
+}
+
+/**
+ * Returns a mouse-clicked-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the mouse-clicked-request
+ * @returns a mouse-clicked-request object
+ */
+ export const createMouseClickedRequest = (values?: MouseClickedRequest): MouseClickedRequest => {
+    const req:MouseClickedRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        button: values?.button,
+        x: values?.x,
+        y: values?.y,
+        clickCount: values?.clickCount
     }
     return req;
 }

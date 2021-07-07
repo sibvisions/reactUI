@@ -2,7 +2,7 @@
 import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
@@ -57,9 +57,11 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** The "second" Childcomponent in the SplitPanel */
     const secondChild = getChildByConstraint("SECOND_COMPONENT");
     /** Reference for the SplitPanel which gets forwarded to inner component */
-    const splitRef = useRef(null);
+    const splitRef = useRef<any>(null);
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+    /** Hook for MouseListener */
+    useMouseListener(props.name, splitRef.current ? splitRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

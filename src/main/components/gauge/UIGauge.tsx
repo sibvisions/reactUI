@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useProperties } from "../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 
 /** Other imports */
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
@@ -72,6 +72,9 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
     useFetchMissingData(compId, props.dataBook);
+
+    /** Hook for MouseListener */
+    useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
