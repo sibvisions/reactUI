@@ -209,9 +209,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                      *          foundData = ID, ACADEMIC_TITLE
                      * foundData columnNames have to be adjusted to linkReference
                      */
-                    for (let i = 0; i < Object.values(foundData[0]).length; i++) {
-                        newVal[linkReference.columnNames[i]] = Object.values(foundData[0])[i];
-                    }
+                    linkReference.referencedColumnNames.forEach((refCol, i) => newVal[linkReference.columnNames[i]] = foundData[0][refCol])
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
