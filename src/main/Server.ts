@@ -174,7 +174,7 @@ class Server {
         .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
-        //.set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
         .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -275,7 +275,8 @@ class Server {
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
-    // closeScreen(closeScreenData: CloseScreenResponse){
+    closeScreen(closeScreenData: CloseScreenResponse) {
+        this.contentStore.closeScreen(closeScreenData.componentId);
     //     if (this.contentStore.closeScreenParameters.has(closeScreenData.componentId)) {
     //         const parameterReq = createSetScreenParameterRequest();
     //         parameterReq.componentId = closeScreenData.name;
@@ -284,7 +285,7 @@ class Server {
     //         this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     //         this.contentStore.openScreenParameters.delete(closeScreenData.name);
     //     }
-    // }
+    }
 
     /**
      * Sets the menuAction for each menuData and passes it to the contentstore and then triggers its update
@@ -577,7 +578,7 @@ class Server {
                 let wasPopup: boolean = false;
                 for (let entry of this.contentStore.flatContent.entries()) {
                     if (entry[1].name === CSResponse.componentId) {
-                        this.contentStore.closeScreen(entry[1].name);
+                        //this.contentStore.closeScreen(entry[1].name);
                         if ((entry[1] as IPanel).screen_modal_) {
                             wasPopup = true;
                         }
@@ -622,7 +623,7 @@ class Server {
         this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     }
 
-    closeScreen(screenName:string) {
+    sendCloseScreen(screenName:string) {
         const csRequest = createCloseScreenRequest();
         csRequest.componentId = screenName;
         if (this.contentStore.closeScreenParameters.has(screenName)) {

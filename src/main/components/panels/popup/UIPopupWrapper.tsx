@@ -23,7 +23,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
 
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
-        context.server.closeScreen(baseProps.name)
+        context.server.sendCloseScreen(baseProps.name)
     }
 
     return (
