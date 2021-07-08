@@ -6,7 +6,7 @@ import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
@@ -188,6 +188,16 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
     },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
+
+    useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
+        if ((event as any).propertyName === "max-height") {
+            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+            if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
+                console.log(menuElem)
+                menuElem.classList.add("p-menuitem--active")
+            }
+        }
+    })
 
     /** 
      * Handles the click on the menu-toggler. It closes a currently opened panel and switches
