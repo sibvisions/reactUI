@@ -77,8 +77,10 @@ const Menu: FC<IMenu> = (props) => {
      * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
      */
     const closeOpenedMenuPanel = useCallback(() => {
-        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
+        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
+            props.forwardedRef.current.scrollTop = 0;
             props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+        }
     },[props.forwardedRef])
 
     /** 
@@ -193,7 +195,6 @@ const Menu: FC<IMenu> = (props) => {
         if ((event as any).propertyName === "max-height") {
             const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
             if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
-                console.log(menuElem)
                 menuElem.classList.add("p-menuitem--active")
             }
         }
