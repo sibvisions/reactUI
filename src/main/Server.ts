@@ -47,6 +47,9 @@ class Server {
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
+     * @param subManager - subscription-manager instance
+     * @param history - the history
+     * @param openRequests - the current open requests
      */
     constructor(store: ContentStore, subManager:SubscriptionManager, history?: History<any>) {
         this.contentStore = store
@@ -607,31 +610,6 @@ class Server {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
         }
-    }
-
-    /** ----------SERVER-API-FUNCTIONS---------- */
-
-    /**
-     * Sends screen-parameters for the given screen to the server.
-     * @param screenName - the screen-name
-     * @param parameter - the screen-parameters
-     */
-    sendScreenParameter(screenName:string, parameter:{ [key:string]:any }) {
-        const parameterReq = createSetScreenParameterRequest();
-        parameterReq.componentId = screenName;
-        parameterReq.parameter = parameter;
-        this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-    }
-
-    sendCloseScreen(screenName:string) {
-        const csRequest = createCloseScreenRequest();
-        csRequest.componentId = screenName;
-        if (this.contentStore.closeScreenParameters.has(screenName)) {
-            csRequest.parameter = this.contentStore.closeScreenParameters.get(screenName);
-        }
-        //TODO topbar
-        this.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
-        this.contentStore.closeScreen(screenName);
     }
 }
 export default Server

@@ -7,6 +7,7 @@ import { Dialog } from 'primereact/dialog';
 /** Other imports */
 import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
+import { useAPI } from "../../zhooks";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -18,12 +19,12 @@ export interface IPopup extends IPanel {
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIPopupWrapper: FC<IPopup> = (baseProps) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** access to api functions */
+    const api = useAPI()
 
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
-        context.server.sendCloseScreen(baseProps.name)
+        api.sendCloseScreen(baseProps.name)
     }
 
     return (
