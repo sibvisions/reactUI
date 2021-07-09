@@ -7,17 +7,17 @@ import { REQUEST_ENDPOINTS } from "./request";
 /** Contains the API functions */
 class API {
     /** Server instance */
-    server:Server;
+    #server:Server;
     /** Contentstore instance */
-    contentStore:ContentStore
+    #contentStore:ContentStore
 
     /**
      * @constructor constructs api instance
      * @param server - server instance
      */
     constructor (server: Server, store:ContentStore) {
-        this.server = server
-        this.contentStore = store
+        this.#server = server
+        this.#contentStore = store
     }
 
     /**
@@ -29,7 +29,7 @@ class API {
         const parameterReq = createSetScreenParameterRequest();
         parameterReq.componentId = screenName;
         parameterReq.parameter = parameter;
-        this.server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+        this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     }
 
     /**
@@ -39,12 +39,12 @@ class API {
     sendCloseScreen(screenName: string) {
         const csRequest = createCloseScreenRequest();
         csRequest.componentId = screenName;
-        if (this.contentStore.closeScreenParameters.has(screenName)) {
-            csRequest.parameter = this.contentStore.closeScreenParameters.get(screenName);
+        if (this.#contentStore.closeScreenParameters.has(screenName)) {
+            csRequest.parameter = this.#contentStore.closeScreenParameters.get(screenName);
         }
         //TODO topbar
-        this.server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
-        this.contentStore.closeScreen(screenName);
+        this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
+        this.#contentStore.closeScreen(screenName);
     }
 }
 export default API
