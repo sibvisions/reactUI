@@ -8,7 +8,7 @@ import { Button } from 'primereact/button';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
 import { Helmet } from "react-helmet";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
 
 /** UI imports */
 import Home from "./frontmask/home/home";
@@ -19,10 +19,11 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createStartupRequest } from "./main/factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest, createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
 import { useEventHandler } from './main/components/zhooks';
+import { getScreenIdFromNavigation } from './main/components/util';
 
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
@@ -64,8 +65,9 @@ const App: FC<ICustomContent> = (props) => {
     /** Register custom content flip value, changes value when custom content needs to be re-registered */
     const [registerCustom, setRegisterCustom] = useState<boolean>(false);
     /** State if the app is ready */
-
     const [appReady, setAppReady] = useState<boolean>(false);
+    const [startupDone, setStartupDone] = useState<boolean>(false);
+
     /** If true the timeout dialog gets displayed */
 
     /** State if timeout error should be shown */
@@ -76,6 +78,9 @@ const App: FC<ICustomContent> = (props) => {
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
+
+    /** the currently requested componentId */
+    let routeMatch = useRouteMatch<{ componentId: string }>("/home/:componentId");
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -150,9 +155,25 @@ const App: FC<ICustomContent> = (props) => {
      * Sets Appname for header, and sends StartupRequest.
      */
     useEffect(() => {
-        history.replace("/home")
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
+
+        const maybeOpenScreen = async () => {
+            if (routeMatch?.params.componentId) {
+                const openScreenReq = createOpenScreenRequest();
+                const check = new RegExp(`\.${routeMatch?.params.componentId}(WorkScreen)?\:`);
+                context.contentStore.serverMenuItems.forEach(list => {
+                    const item = list.find(item => item.componentId.match(check));
+                    if (item) {
+                        openScreenReq.componentId = item.componentId;
+                    }
+                })
+                if (openScreenReq.componentId) {
+                    return context.server.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                }
+            }
+            return null;
+        }
 
         const startUpByURL = (startupReq:StartupRequest) => {
             if(queryParams.appName && queryParams.baseUrl){
@@ -192,10 +213,13 @@ const App: FC<ICustomContent> = (props) => {
                     value();
                 }
                 context.server.subManager.jobQueue.clear();
-                context.server.responseHandler(JSON.parse(startupRequestCache));
+                context.server.responseHandler(JSON.parse(startupRequestCache)).then(() => {
+                    maybeOpenScreen().then(() => setStartupDone(true));
+                });
             } else {
                 context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
+                    maybeOpenScreen().then(() => setStartupDone(true));
                 });
             }
 
@@ -288,7 +312,7 @@ const App: FC<ICustomContent> = (props) => {
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
             <TopBar>
-            {appReady
+            {appReady && startupDone
                 ? <Switch>
                     <Route exact path={"/login"} render={() => <Login />} />
                     <Route exact path={"/home/:componentId"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />

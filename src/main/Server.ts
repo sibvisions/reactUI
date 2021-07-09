@@ -574,6 +574,26 @@ class Server {
             }
             else if (response.name === RESPONSE_NAMES.CLOSE_SCREEN) {
                 const CSResponse = (response as CloseScreenResponse);
+                
+                //let's do a sanitycheck in case of a reload by checking if the screen to close 
+                //should actually be opened by the same request
+                if(responses.find(r => 
+                    r.name === RESPONSE_NAMES.SCREEN_GENERIC 
+                    && (r as GenericResponse).componentId === CSResponse.componentId
+                )) {
+                    //count how many components for that screen there are
+                    let c = 0;
+                    this.contentStore.flatContent.forEach((value) => {
+                        if(value.name === CSResponse.componentId) {
+                            c++;
+                        }
+                    });
+                    //if there is only one don't remove it
+                    if(c <= 1) {
+                        return;
+                    }
+                }
+                
                 let wasPopup: boolean = false;
                 for (let entry of this.contentStore.flatContent.entries()) {
                     if (entry[1].name === CSResponse.componentId) {
