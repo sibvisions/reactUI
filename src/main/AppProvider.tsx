@@ -9,12 +9,14 @@ import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { ToastMessageType } from "primereact/toast";
+import API from "./API";
 
 /** Type for AppContext */
 type AppContextType={
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
+    api: API
     ctrlPressed: boolean,
     showToast:Function
     //theme: string,
@@ -23,16 +25,19 @@ type AppContextType={
 
 /** Contentstore instance */
 const contentStore = new ContentStore();
-/** subscriptionManager instance */
+/** SubscriptionManager instance */
 const subscriptions = new SubscriptionManager(contentStore)
 /** Server instance */
 const server = new Server(contentStore, subscriptions);
+/** API instance */
+const api = new API(server, contentStore);
 
 contentStore.setSubscriptionManager(subscriptions);
 /** Initial value for state */
 const initValue: AppContextType = {
     contentStore: contentStore,
     server: server,
+    api: api,
     subscriptions: subscriptions,
     ctrlPressed: false,
     showToast: (message: ToastMessageType, err: boolean) => {}
@@ -58,6 +63,7 @@ const AppProvider: FC = ({children}) => {
         const contentStore = new ContentStore();
         const subscriptions = new SubscriptionManager(contentStore);
         const server = new Server(contentStore, subscriptions, history);
+        const api = new API(server, contentStore);
         
         contentStore.setSubscriptionManager(subscriptions)
 
@@ -66,6 +72,7 @@ const AppProvider: FC = ({children}) => {
             //setTheme: setTheme,
             contentStore: contentStore,
             server: server,
+            api: api,
             subscriptions: subscriptions,
             ctrlPressed: false,
             showToast: () => {}

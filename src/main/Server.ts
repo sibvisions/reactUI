@@ -47,6 +47,9 @@ class Server {
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
+     * @param subManager - subscription-manager instance
+     * @param history - the history
+     * @param openRequests - the current open requests
      */
     constructor(store: ContentStore, subManager:SubscriptionManager, history?: History<any>) {
         this.contentStore = store
@@ -174,7 +177,7 @@ class Server {
         .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
-        //.set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
         .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
         .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -275,7 +278,8 @@ class Server {
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
-    // closeScreen(closeScreenData: CloseScreenResponse){
+    closeScreen(closeScreenData: CloseScreenResponse) {
+        this.contentStore.closeScreen(closeScreenData.componentId);
     //     if (this.contentStore.closeScreenParameters.has(closeScreenData.componentId)) {
     //         const parameterReq = createSetScreenParameterRequest();
     //         parameterReq.componentId = closeScreenData.name;
@@ -284,7 +288,7 @@ class Server {
     //         this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     //         this.contentStore.openScreenParameters.delete(closeScreenData.name);
     //     }
-    // }
+    }
 
     /**
      * Sets the menuAction for each menuData and passes it to the contentstore and then triggers its update
@@ -597,7 +601,7 @@ class Server {
                 let wasPopup: boolean = false;
                 for (let entry of this.contentStore.flatContent.entries()) {
                     if (entry[1].name === CSResponse.componentId) {
-                        this.contentStore.closeScreen(entry[1].name);
+                        //this.contentStore.closeScreen(entry[1].name);
                         if ((entry[1] as IPanel).screen_modal_) {
                             wasPopup = true;
                         }
@@ -626,31 +630,6 @@ class Server {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
         }
-    }
-
-    /** ----------SERVER-API-FUNCTIONS---------- */
-
-    /**
-     * Sends screen-parameters for the given screen to the server.
-     * @param screenName - the screen-name
-     * @param parameter - the screen-parameters
-     */
-    sendScreenParameter(screenName:string, parameter:{ [key:string]:any }) {
-        const parameterReq = createSetScreenParameterRequest();
-        parameterReq.componentId = screenName;
-        parameterReq.parameter = parameter;
-        this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-    }
-
-    closeScreen(screenName:string) {
-        const csRequest = createCloseScreenRequest();
-        csRequest.componentId = screenName;
-        if (this.contentStore.closeScreenParameters.has(screenName)) {
-            csRequest.parameter = this.contentStore.closeScreenParameters.get(screenName);
-        }
-        //TODO topbar
-        this.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
-        this.contentStore.closeScreen(screenName);
     }
 }
 export default Server

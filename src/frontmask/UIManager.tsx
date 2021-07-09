@@ -119,10 +119,16 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
         if (menuRef.current && currSizeRef) {
-            menuRef.current.addEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
-            menuRef.current.addEventListener("transitionend", () => {
-                setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
-                doResize();
+            menuRef.current.addEventListener("transitionstart", (event:any) => {
+                if (event.propertyName === "width") {
+                    currSizeRef.classList.add('transition-disable-overflow');
+                }
+            });
+            menuRef.current.addEventListener("transitionend", (event:any) => {
+                if (event.propertyName === "width") {
+                    setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
+                    doResize();
+                }
             });
         }
 
@@ -130,10 +136,16 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             window.removeEventListener("resize", handleDeviceStatus);
             window.removeEventListener("resize", resizeListenerCall);
             if (currSizeRef) {
-                currSizeRef.removeEventListener("transitionstart", () => currSizeRef.classList.add('transition-disable-overflow'));
-                currSizeRef.removeEventListener("transitionend", () => {
-                    setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0);
-                    doResize();
+                currSizeRef.removeEventListener("transitionstart", (event:any) => {
+                    if (event.propertyName === "width") {
+                        currSizeRef.classList.add('transition-disable-overflow')
+                    }
+                });
+                currSizeRef.removeEventListener("transitionend", (event:any) => {
+                    if (event.propertyName === "width") {
+                        setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0);
+                        doResize();
+                    }
                 });
             }
 

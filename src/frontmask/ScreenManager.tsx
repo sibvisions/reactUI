@@ -33,14 +33,14 @@ const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
         const screenWrapper = screenWrappers.get(screenId)
         if (screenWrappers.has('global') && screenWrapper?.options.global){
             const content = <ScreenContext.Provider value={{screen}}>
-                {screenWrapper?.wrapper}
+                {React.cloneElement(screenWrapper.wrapper, {screenName: screenId})}
             </ScreenContext.Provider>
             return <ScreenContext.Provider value={{screen: content}}>
                 {screenWrappers.get('global')?.wrapper}
             </ScreenContext.Provider>
         } else { 
             return <ScreenContext.Provider value={{screen}}>
-                {screenWrapper?.wrapper}
+                {React.cloneElement(screenWrapper!.wrapper, {screenName: screenId})}
             </ScreenContext.Provider>
         }
     }

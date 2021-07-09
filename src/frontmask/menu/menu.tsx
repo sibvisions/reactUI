@@ -6,7 +6,7 @@ import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
@@ -77,8 +77,10 @@ const Menu: FC<IMenu> = (props) => {
      * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
      */
     const closeOpenedMenuPanel = useCallback(() => {
-        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null)
+        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
+            props.forwardedRef.current.scrollTop = 0;
             props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+        }
     },[props.forwardedRef])
 
     /** 
@@ -188,6 +190,15 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
     },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
+
+    useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
+        if ((event as any).propertyName === "max-height") {
+            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+            if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
+                menuElem.classList.add("p-menuitem--active")
+            }
+        }
+    })
 
     /** 
      * Handles the click on the menu-toggler. It closes a currently opened panel and switches
