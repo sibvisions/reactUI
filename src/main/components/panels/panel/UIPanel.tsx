@@ -94,8 +94,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}
-                style={getStyle()}
-                parent={props.parent}/>
+                style={getStyle()}/>
         </div>
     )
 }
