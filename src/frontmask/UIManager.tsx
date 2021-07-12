@@ -68,11 +68,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
      */
     const doResize = useCallback(() => {
         if(sizeRef.current || document.querySelector('#workscreen')){
-            const size = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
+            const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
+            const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
+            //const size = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children,child => {
                 const childWithProps = (child as ChildWithProps);
-                sizeMap.set(childWithProps.props.id, {width: size.width, height: size.height});
+                sizeMap.set(childWithProps.props.id, {width: width, height: height});
             });
 
             //TODO: maybe fetch ids via screenId instead of relying on the children 
@@ -82,7 +84,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     },[props.children])
 
     /** Using underscore throttle for throttling resize event */
-    const handleResize = _.throttle(doResize, 23);
+    const handleResize = useCallback(_.throttle(doResize, 23),[doResize]);
 
     /** Using underscore debounce to debounce sending the current devicestatus (screen-container height and width) to the server */
     const handleDeviceStatus = _.debounce(() => {
@@ -97,8 +99,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
     useLayoutEffect(() => {
-        doResize();
-    }, [props.children, doResize, menuSize])
+        handleResize();
+    }, [props.children, handleResize, menuSize])
 
     /** 
      * Resize event handling, resize measuring and adding disable overflow while resizing to disable flickering scrollbar 
@@ -127,7 +129,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             menuRef.current.addEventListener("transitionend", (event:any) => {
                 if (event.propertyName === "width") {
                     setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
-                    doResize();
+                    handleResize();
                 }
             });
         }
@@ -144,7 +146,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 currSizeRef.removeEventListener("transitionend", (event:any) => {
                     if (event.propertyName === "width") {
                         setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0);
-                        doResize();
+                        handleResize();
                     }
                 });
             }

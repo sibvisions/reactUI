@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
 import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
@@ -7,6 +7,7 @@ import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {getFont, getAlignments, translateTextAlign} from "../compprops";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
+import _ from "underscore";
 
 /**
  * Displays a simple label
@@ -21,6 +22,9 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
+    /** True, if this is the first mount */
+    const [first, setFirst] = useState<boolean>(true);
 
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
@@ -37,10 +41,12 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(labelRef.current && onLoadCallback) {
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
+        
+        if (labelRef.current && onLoadCallback) {
+            console.log(onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, layoutStyle?.width, props.text)
+            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, layoutStyle?.width, props.text]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

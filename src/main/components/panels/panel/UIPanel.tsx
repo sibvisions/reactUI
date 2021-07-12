@@ -29,7 +29,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'}, props.parent);
+    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id);
     /** Extracting onLoadCallback and id from baseProps */
@@ -94,7 +94,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}
-                style={getStyle()}/>
+                style={getStyle()}
+                parent={props.parent}/>
         </div>
     )
 }

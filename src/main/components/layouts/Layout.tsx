@@ -27,6 +27,7 @@ export interface ILayout{
     style: CSSProperties,
     reportSize: Function,
     alignChildrenIfOverflow?: boolean,
+    parent?: string
 }
 
 /**

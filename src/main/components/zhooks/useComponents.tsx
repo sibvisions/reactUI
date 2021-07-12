@@ -64,6 +64,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             tempSizes.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
             if((tempSizes.size === children.size || id.includes('TP')) && sizesChanged(preferredComp, prefSize, minSize, maxSize)) {
+                console.log(compId)
                 setPreferredSizes(new Map(tempSizes));
             }
                 
