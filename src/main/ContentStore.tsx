@@ -201,7 +201,7 @@ export default class ContentStore{
                                 this.removedCustomContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))){
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))) {
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
                     this.flatContent.set(newComponent.id, existingComponent);
@@ -226,26 +226,7 @@ export default class ContentStore{
                     notifyList.push(newComponent.parent);
             }
 
-            /** 
-             * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
-             * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
-             */
-            if((newComponent["~remove"] || newComponent["~destroy"]) && existingComponent) {
-                if (!isCustom) {
-                    this.flatContent.delete(newComponent.id);
-                    if(newComponent["~remove"])
-                        this.removedContent.set(newComponent.id, existingComponent);
-                    else
-                        this.removedContent.delete(newComponent.id);
-                }
-                else {
-                    this.replacedContent.delete(newComponent.id);
-                    if (newComponent["~remove"])
-                        this.removedCustomContent.set(newComponent.id, existingComponent);
-                    else
-                        this.removedCustomContent.delete(newComponent.id);
-                }
-            }
+
 
             /** Add new Component or updated Properties */
             if(existingComponent) {
@@ -270,6 +251,33 @@ export default class ContentStore{
                     maximumSize: newComponent.maximumSize
                 };
                 this.replacedContent.set(newComponent.id, newComp)
+            }
+
+            /** 
+             * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
+             * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
+             */
+            if (newComponent["~remove"] && existingComponent) {
+                if (!isCustom) {
+                    this.flatContent.delete(newComponent.id);
+                    this.removedContent.set(newComponent.id, existingComponent);
+                }
+                else {
+                    this.replacedContent.delete(newComponent.id);
+                    this.removedCustomContent.set(newComponent.id, existingComponent);
+                }
+            }
+
+
+
+            if (newComponent["~destroy"]) {
+                this.flatContent.delete(newComponent.id)
+                if (!isCustom) {
+                    this.removedContent.delete(newComponent.id);
+                }
+                else {
+                    this.removedCustomContent.delete(newComponent.id);
+                }
             }
             
             /** Cast newComponent as Panel */

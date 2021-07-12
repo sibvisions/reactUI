@@ -692,6 +692,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
                             left:  style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
                             top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
+                            visibility: style.visibility,
                             position: "relative",
                         },
                         componentSizes: sizeMap
