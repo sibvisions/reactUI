@@ -280,7 +280,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
 
     /** The current order of the columns */
-    const [columnOrder, setColumnOrder] = useState<string[]>(metaData!.columnView_table_);
+    const [columnOrder, setColumnOrder] = useState<string[]|undefined>(metaData?.columnView_table_);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
@@ -427,7 +427,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        if (selectedRow) {
+        if (selectedRow && columnOrder) {
             if (selectedRow.selectedColumn) {
                 const newCell = {
                     cellIndex: columnOrder.findIndex(column => column === selectedRow.selectedColumn),
@@ -668,7 +668,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
 
             const highlightedRow = tableSelect(false, 'tbody > tr.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight');
-            if (selectedRow) {
+            if (selectedRow && columnOrder) {
                 const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
                 if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
                     highlightedRow.children[colIdx].classList.add("p-highlight");
@@ -681,7 +681,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param delegateFocus - true if the next component should be focused if there are no more cells
      */
     const selectNextCell = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRow !== undefined) {
+        if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
@@ -701,7 +701,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param delegateFocus - true if the previous component should be focused if there are no more cells
      */
     const selectPreviousCell = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRow !== undefined) {
+        if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
@@ -767,7 +767,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param delegateFocus - true if the next component should be focused if there are no more cells/rows
      */
     const selectNextCellAndRow =  useCallback(async (delegateFocus:boolean) => {
-        if (selectedRow !== undefined) {
+        if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             const nextSelectedRowIndex = selectedRow.index + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
@@ -795,7 +795,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param delegateFocus - true if the previous component should be focused if there are no more cells/rows
      */
     const selectPreviousCellAndRow = useCallback(async (delegateFocus:boolean) => {
-        if (selectedRow !== undefined) {
+        if (selectedRow !== undefined && columnOrder) {
             const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedColumnIndex >= 0) {
