@@ -8,8 +8,8 @@
     & > span {
         flex-shrink: 0;
         overflow: hidden;
-        width: 100%;
-        display: block;
+        max-width: 100%;
+        display: inline-block;
         padding-top: 0.563rem;
         padding-bottom: 0.563rem;
     }
