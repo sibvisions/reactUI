@@ -28,7 +28,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'}, props.parent);
     /** The Childcomponents of this SplitPanel */
     const children = useMemo(() => {
         return context.contentStore.getChildren(props.id);

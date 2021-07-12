@@ -26,13 +26,7 @@ const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:numbe
         return new ResizeObserver(entries => {
             /** Get the current width */
             const {width} = entries[0].contentRect;
-            /** Change breakpoints only if menu state changes */
-            if (menuCollapsed !== lastMenuValue.current) {
-                setBreakSize(findBreakPoint(width+1))
-                /** Update lastMenuValue*/
-                if ((menuCollapsed && width+1 === breakPoints.slice(-1).pop()) || (!menuCollapsed && width+1 === breakPoints[0]))
-                    lastMenuValue.current = menuCollapsed;
-            }
+            setBreakSize(findBreakPoint(width+1))
             
         })
     },[menuCollapsed, breakPoints, elRef])
