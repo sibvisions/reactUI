@@ -7,7 +7,6 @@ import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {getFont, getAlignments, translateTextAlign} from "../compprops";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
-import _ from "underscore";
 
 /**
  * Displays a simple label
@@ -22,9 +21,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-
-    /** True, if this is the first mount */
-    const [first, setFirst] = useState<boolean>(true);
 
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
@@ -43,7 +39,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     useLayoutEffect(() => {
         
         if (labelRef.current && onLoadCallback) {
-            console.log(onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, layoutStyle?.width, props.text)
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);

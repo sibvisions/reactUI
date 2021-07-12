@@ -26,8 +26,7 @@ export interface ILayout{
     compSizes: Map<string, ComponentSizes> | undefined
     style: CSSProperties,
     reportSize: Function,
-    alignChildrenIfOverflow?: boolean,
-    parent?: string
+    alignChildrenIfOverflow?: boolean
 }
 
 /**

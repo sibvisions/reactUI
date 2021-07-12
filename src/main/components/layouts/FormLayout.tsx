@@ -685,18 +685,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             
                     }
 
-                    const parentHidden = () => {
-                        if (baseProps.parent && context.contentStore.flatContent.has(baseProps.parent)) {
-                            const parentElem = document.getElementById(context.contentStore.flatContent.get(baseProps.parent)?.name as string) as Element;
-                            if (window.getComputedStyle(parentElem).visibility === "hidden") {
-                                return true
-                            }
-                        }
-                        return false
-                    }
-
-                    console.log(borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position, id)
-
                     /** Set the state of the calculated Style */
                     setCalculatedStyle( {
                         style: {
@@ -704,7 +692,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
                             left:  style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
                             top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
-                            visibility: parentHidden() ? "hidden" : undefined,
                             position: "relative",
                         },
                         componentSizes: sizeMap

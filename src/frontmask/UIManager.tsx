@@ -8,7 +8,7 @@ import * as _ from 'underscore'
 import Menu from "./menu/menu";
 
 /** Hook imports */
-import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
+import { useEventHandler, useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
 
 /** Other imports */
 import { ChildWithProps, concatClassnames } from "../main/components/util";
@@ -78,7 +78,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             });
 
             //TODO: maybe fetch ids via screenId instead of relying on the children 
-
             setComponentSize(sizeMap);
         }
     },[props.children])
@@ -120,40 +119,43 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         }
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
-        if (menuRef.current && currSizeRef) {
-            menuRef.current.addEventListener("transitionstart", (event:any) => {
-                if (event.propertyName === "width") {
-                    currSizeRef.classList.add('transition-disable-overflow');
-                }
-            });
-            menuRef.current.addEventListener("transitionend", (event:any) => {
-                if (event.propertyName === "width") {
-                    setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
-                    handleResize();
-                }
-            });
-        }
+        // if (menuRef.current && currSizeRef) {
+        //     menuRef.current.addEventListener("transitionstart", (event:any) => {
+        //         if (event.propertyName === "width") {
+        //             currSizeRef.classList.add('transition-disable-overflow');
+        //         }
+        //     });
+        // }
 
         return () => {
             window.removeEventListener("resize", handleDeviceStatus);
             window.removeEventListener("resize", resizeListenerCall);
-            if (currSizeRef) {
-                currSizeRef.removeEventListener("transitionstart", (event:any) => {
-                    if (event.propertyName === "width") {
-                        currSizeRef.classList.add('transition-disable-overflow')
-                    }
-                });
-                currSizeRef.removeEventListener("transitionend", (event:any) => {
-                    if (event.propertyName === "width") {
-                        setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0);
-                        handleResize();
-                    }
-                });
-            }
+            // if (currSizeRef) {
+            //     currSizeRef.removeEventListener("transitionstart", (event:any) => {
+            //         if (event.propertyName === "width") {
+            //             currSizeRef.classList.add('transition-disable-overflow')
+            //         }
+            //     });
+            // }
 
         }
     // eslint-disable-next-line
     },[doResize]);
+
+    useEventHandler(menuRef.current ? menuRef.current : undefined, 'transitionstart', (event:any) => {
+        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
+            const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
+            currSizeRef.classList.add('transition-disable-overflow');
+        }
+    })
+
+    useEventHandler(menuRef.current ? menuRef.current : undefined, 'transitionend', (event:any) => {
+        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
+            const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
+            setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
+            handleResize()
+        }
+    });
 
     /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
     useEffect(() => {
