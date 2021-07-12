@@ -503,6 +503,7 @@ class Server {
         startUpRequest.screenWidth = window.innerWidth;
         startUpRequest.deviceMode = "desktop";
         this.contentStore.reset();
+        sessionStorage.clear();
         this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title}, true)
