@@ -19,13 +19,15 @@ enum REQUEST_ENDPOINTS  {
     SET_VALUES = "/api/dal/setValues",
     SELECT_TAB = "/api/comp/selectTab",
     CLOSE_TAB = "/api/comp/closeTab",
-    SAVE = "/api/dal/save",
+    SAVE = "/api/save",
+    DAL_SAVE = "/api/dal/save",
     SORT = "/api/dal/sort",
     CHANGE_PASSWORD = "/api/changePassword",
     RESET_PASSWORD = "/api/resetPassword",
     SET_SCREEN_PARAMETER = "/api/setScreenParameter",
     MOUSE_CLICKED = "/api/mouseClicked",
     MOUSE_PRESSED = "/api/mousePressed",
-    MOUSE_RELEASED = "/api/mouseReleased"
+    MOUSE_RELEASED = "/api/mouseReleased",
+    RELOAD = "/api/reload"
 }
 export default REQUEST_ENDPOINTS

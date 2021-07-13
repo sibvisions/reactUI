@@ -19,11 +19,10 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createCloseScreenRequest, createOpenScreenRequest, createStartupRequest } from "./main/factories/RequestFactory";
+import { createOpenScreenRequest, createStartupRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
 import { useEventHandler } from './main/components/zhooks';
-import { getScreenIdFromNavigation } from './main/components/util';
 
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";

@@ -13,6 +13,10 @@ import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
+import { Button } from "primereact/button";
+import { createReloadRequest, createSaveRequest } from "../../main/factories/RequestFactory";
+import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { REQUEST_ENDPOINTS } from "../../main/request";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -43,6 +47,9 @@ export const ProfileMenu = () => {
 const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
@@ -212,6 +219,16 @@ const Menu: FC<IMenu> = (props) => {
         context.subscriptions.emitMenuCollapse(2);
     }
 
+    const handleSave = () => {
+        const saveReq = createSaveRequest();
+        showTopBar(context.server.sendRequest(saveReq, REQUEST_ENDPOINTS.SAVE), topbar);
+    }
+
+    const handleReload = () => {
+        const reloadReq = createReloadRequest();
+        showTopBar(context.server.sendRequest(reloadReq, REQUEST_ENDPOINTS.RELOAD), topbar);
+    }
+
     return(
         <div className={concatClassnames(
             "menu",
@@ -223,9 +240,30 @@ const Menu: FC<IMenu> = (props) => {
                     <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
                 </div>
                 <div className="menu-upper">
-                    <i onClick={handleToggleClick} className="menu-toggler pi pi-bars" />
-                    <span className="menu-screen-title">{screenTitle}</span>
-                    <ProfileMenu />
+                    <div className="menu-upper-left">
+                        <div style={{ borderRight: "2px solid #454b52"}}>
+                            <Button
+                                icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
+                                className="menu-upper-buttons"
+                                onClick={() => handleToggleClick()}
+                                style={{ marginRight: "4px", marginLeft: "10px" }} />
+                        </div>
+                        <span className="menu-screen-title">{screenTitle}</span>
+                    </div>
+                    <div className="menu-upper-right">
+                        <Button icon="fa fa-home" className="menu-upper-buttons" style={{ marginRight: "1rem" }} />
+                        <Button 
+                            icon="fa fa-refresh"
+                            className="menu-upper-buttons" 
+                            style={{ marginRight: "1rem" }} 
+                            onClick={handleReload} />
+                        <Button 
+                            icon="fa fa-save" 
+                            className="menu-upper-buttons" 
+                            style={{ marginRight: "1rem" }} 
+                            onClick={handleSave} />
+                        <ProfileMenu />
+                    </div>
                 </div>
             </div>
             <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">

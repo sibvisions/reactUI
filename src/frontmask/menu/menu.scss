@@ -56,7 +56,7 @@
 %profile-image {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 25%;
 }
 
 /// Mixin for menu-transitions
@@ -131,16 +131,27 @@
     display: flex;
     flex-grow: 1;
     align-items: center;
+    justify-content: space-between;
 }
 
-/// Menu-toggler styling
-.menu-toggler {
-    padding: 0 10px;
+.menu-upper-left, .menu-upper-right {
+    display: flex;
+    align-items: center;
+}
+
+.p-button.p-button-icon-only.menu-upper-buttons {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: initial;
     color: var(--menuFgdColor);
-    font-size: 25px;
+    border: 0;
+    border-radius: 4px;
+    //margin-right: 1rem;
     &:hover {
-        color: var(--menuHoverColor);
-        cursor: pointer;
+        background-color: #454b52;
+    }
+    .pi, .fa {
+        font-size: 1.5rem;
     }
 }
 
@@ -149,16 +160,18 @@
     color: var(--menuFgdColor);
     font-size: 22px;
     font-weight: bold;
+    margin-left: 20px;
 }
 
 /// Margin-left, so the profile is on the far right
 .profile-menu {
-    margin-left: auto;
     margin-right: 10px;
+    border-left: 2px solid #454b52;
+
     
     .p-menubar .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
         display: flex;
-        width: 200px;
+        padding: 0.5rem 1rem;
         justify-content: flex-end;
     }
 }
@@ -174,15 +187,15 @@
             > .p-menuitem-link:not(.p-disabled) {
                 background: var(--menuTopBar);
                 color: var(--menuFgdColor);
-                padding: 0.5rem 0rem;
+                margin-left: 4px;
                 .p-menuitem-text, .p-submenu-icon {
                     color: var(--menuFgdColor);
                 }
                 &:hover {
-                    background: var(--menuTopBar);
+                    background: #454b52;
                     color: var(--menuFgdColor);
                     .p-menuitem-text, .p-submenu-icon {
-                        color: var(--menuHoverColor);
+                        color: var(--menuFgdColor);
                     }
                 }
             }
@@ -332,6 +345,10 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
+
+            >.p-menuitem {
+                background-color: var(--menuTopBar);
+            }
 
             >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
                 margin-left: 0.5rem;

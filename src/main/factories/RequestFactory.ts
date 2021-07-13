@@ -1,5 +1,4 @@
 /** Request imports */
-import { values } from "underscore";
 import { StartupRequest,
          LoginRequest,
          PressButtonRequest,
@@ -12,7 +11,7 @@ import { StartupRequest,
          FilterRequest,
          SetValueRequest,
          TabRequest,
-         SaveRequest,
+         DALSaveRequest,
          CloseScreenRequest,
          SelectTreeRequest, 
          SortRequest,
@@ -24,7 +23,9 @@ import { StartupRequest,
          ResetPasswordRequest,
          SetScreenParameterRequest,
          MouseRequest,
-         MouseClickedRequest} from "../request";
+         MouseClickedRequest,
+         SaveRequest,
+         ReloadRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -282,8 +283,8 @@ export const createTabRequest = (values?: TabRequest): TabRequest => {
  * @param values - properties for the saveRequest
  * @returns a saveRequest object
  */
-export const createSaveRequest = (values?: SaveRequest): SaveRequest => {
-    const req:SaveRequest = {
+export const createDALSaveRequest = (values?: DALSaveRequest): DALSaveRequest => {
+    const req:DALSaveRequest = {
         clientId: values?.clientId || getClientId(),
         dataProvider: values?.dataProvider,
         onlySelected: values?.onlySelected
@@ -402,6 +403,30 @@ export const createMouseRequest = (values?: MouseRequest): MouseRequest => {
         x: values?.x,
         y: values?.y,
         clickCount: values?.clickCount
+    }
+    return req;
+}
+
+/**
+ * Returns a save-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the save-request
+ * @returns a save-request object
+ */
+export const createSaveRequest = (values?: SaveRequest) : SaveRequest => {
+    const req:SaveRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+/**
+ * Returns a save-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the save-request
+ * @returns a save-request object
+ */
+export const createReloadRequest = (values?: ReloadRequest): ReloadRequest => {
+    const req: ReloadRequest = {
+        clientId: values?.clientId || getClientId()
     }
     return req;
 }
