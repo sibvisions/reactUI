@@ -201,6 +201,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             disabled: !props.cellEditor_editable_,
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
+            ariaLabel: props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
             onBlur: () => {
                 if (!escapePressed.current) {

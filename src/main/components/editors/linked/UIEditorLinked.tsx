@@ -265,24 +265,27 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }
 
     return (
-        <AutoComplete
-            ref={linkedRef}
-            id={props.id !== "" ? props.name : undefined}
-            inputRef={linkedInput}
-            autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
-            appendTo={document.body}
-            className="rc-editor-linked"
-            style={layoutStyle}
-            scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
-            inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
-            disabled={!props.cellEditor_editable_}
-            dropdown
-            completeMethod={(event) =>  sendFilter(event.query)}
-            suggestions={buildSuggestions(providedData)}
-            value={text}
-            onChange={event => setText(event.target.value)}
-            onBlur={() => handleInput()}
-            virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }}/>
+        <span aria-label={props.ariaLabel} style={layoutStyle}>
+            <AutoComplete
+                ref={linkedRef}
+                id={props.id !== "" ? props.name : undefined}
+                style={{ width: '100%' }}
+                inputRef={linkedInput}
+                autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
+                appendTo={document.body}
+                className="rc-editor-linked"
+                scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
+                inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
+                disabled={!props.cellEditor_editable_}
+                dropdown
+                completeMethod={(event) => sendFilter(event.query)}
+                suggestions={buildSuggestions(providedData)}
+                value={text}
+                onChange={event => setText(event.target.value)}
+                onBlur={() => handleInput()}
+                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }} />
+        </span>
+
     )
 }
 export default UIEditorLinked

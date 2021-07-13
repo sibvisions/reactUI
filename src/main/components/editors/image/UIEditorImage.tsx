@@ -94,7 +94,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     }
 
     return(
-        <span ref={wrapRef} className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}}>
+        <span ref={wrapRef} className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}} aria-label={props.ariaLabel}>
             <img
                 id={!isCellEditor ? props.name : undefined}
                 style={imageStyle.img}

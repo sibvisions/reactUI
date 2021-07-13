@@ -405,6 +405,8 @@ export default class ContentStore{
         this.dataProviderMetaData.clear();
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
+        this.activeScreens = [];
+        this.selectedMenuItem = "";
     }
 
     /**

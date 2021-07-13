@@ -76,7 +76,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         <span 
             ref={buttonWrapperRef} 
             style={layoutStyle} 
-            aria-label={props.ariaLabel} 
+            aria-label={props.ariaLabel}
+            aria-pressed={props.ariaPressed}
         >
             <ToggleButton
                 ref={buttonRef}

@@ -66,7 +66,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                 id={props.name}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
-                    "rc-checkbox",
+                    //"rc-checkbox",
                     `gap-${gapPos}`,
                     getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
                     )} 

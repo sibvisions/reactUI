@@ -201,24 +201,27 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     });
 
     return (
-        <InputNumber
-            ref={numberRef}
-            id={!isCellEditor ? props.name : undefined}
-            inputRef={numberInput}
-            className="rc-editor-number"
-            useGrouping={useGrouping}
-            locale={context.contentStore.locale}
-            prefix={prefixLength}
-            minFractionDigits={scaleDigits.minScale}
-            maxFractionDigits={scaleDigits.maxScale}
-            value={value}
-            style={layoutStyle}
-            inputStyle={{...textAlignment, background: props.cellEditor_background_}}
-            onChange={event => setValue(event.value)}
-            onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))}
-            disabled={!props.cellEditor_editable_}
-            autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
-        />
+        <span aria-label={props.ariaLabel} style={layoutStyle}>
+            <InputNumber
+                ref={numberRef}
+                id={!isCellEditor ? props.name : undefined}
+                inputRef={numberInput}
+                className="rc-editor-number"
+                useGrouping={useGrouping}
+                locale={context.contentStore.locale}
+                prefix={prefixLength}
+                minFractionDigits={scaleDigits.minScale}
+                maxFractionDigits={scaleDigits.maxScale}
+                value={value}
+                style={{width: '100%'}}
+                inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
+                onChange={event => setValue(event.value)}
+                onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))}
+                disabled={!props.cellEditor_editable_}
+                autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
+            />
+        </span>
+
     )
 }
 export default UIEditorNumber

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useMemo, useRef } from "react";
+import React, { FC, useCallback, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
@@ -15,7 +15,7 @@ import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
-    allowedValues: Array<string>,
+    allowedValues: Array<string|boolean>,
     defaultImageName?: string
     imageNames: Array<string>,
 }
@@ -71,6 +71,14 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Returns the given value as string */
+    const getValAsString = useCallback((val) => val === null ? "null" : val.toString(), [])
+
+    /** Check if the ChoiceCellEditor only accepts two values */
+    const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
+
+
+
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
      * @returns an object of the allowed values as key and the corresponding image as value
@@ -83,16 +91,16 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
          * @param values - the array which should represent the values of the merged object
          * @returns merged object of two arrays
          */
-        const mergeObject = (keys:Array<string>, values:Array<string>) => {
+        const mergeObject = (keys:Array<string|boolean>, values:Array<string>) => {
             let mergedObj:any = {};
             if (keys && values) {
                 for (let i = 0; i < keys.length; i++) {
-                    mergedObj[keys[i]] = values[i];
+                    mergedObj[getValAsString(keys[i])] = values[i];
                 }
             }
             return mergedObj;
         }
-            mergedValImg = mergeObject(props.cellEditor.allowedValues, props.cellEditor.imageNames);
+        mergedValImg = mergeObject(props.cellEditor.allowedValues, props.cellEditor.imageNames);
         return mergedValImg;
     }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
 
@@ -109,7 +117,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             validImage = props.cellEditor.defaultImageName;
         }
         return validImage;
-    }, [selectedRow, validImages, props.cellEditor.defaultImageName])
+    }, [selectedRow, validImages, props.cellEditor.defaultImageName, props.cellEditor.allowedValues])
 
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
@@ -171,6 +179,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
         <span
             ref={wrapRef}
             className="rc-editor-choice"
+            aria-label={props.ariaLabel}
+            aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
             style={{ ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
             onKeyDown={(event) => {
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);

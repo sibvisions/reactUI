@@ -158,6 +158,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
         <span
             ref={wrapRef}
             id={!isCellEditor ? props.name : undefined}
+            aria-label={props.ariaLabel}
             className="rc-editor-checkbox"
             style={{
                 ...layoutStyle,

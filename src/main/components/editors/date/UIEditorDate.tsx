@@ -256,35 +256,37 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     });
 
     return (
-        <CustomCalendar
-            ref={calendar}
-            id={!isCellEditor ? props.name : undefined}
-            inputRef={calendarInput}
-            className="rc-editor-text rc-editor-date"
-            monthNavigator={true}
-            yearNavigator={true}
-            yearRange="1900:2030"
-            dateFormat={dateFormat}
-            showTime={showTime}
-            showSeconds={showSeconds}
-            timeOnly={timeOnly}
-            visible={visible}
-            hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
-            showIcon={true}
-            style={layoutStyle}
-            inputStyle={{...textAlignment, background: props.cellEditor_background_, borderRight: "none"}}
-            value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
-            appendTo={document.body}
-            onChange={event => {
-                setDateValue(event.value ? (event.value as Date) : null);
-                if (calendarInput.current) {
-                    calendarInput.current.focus();
-                }
-            }}
-            onBlur={() => !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
-            disabled={!props.cellEditor_editable_}
-            onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
-        />
+        <span aria-label={props.ariaLabel} aria-expanded={visible} style={layoutStyle}>
+            <CustomCalendar
+                ref={calendar}
+                id={!isCellEditor ? props.name : undefined}
+                inputRef={calendarInput}
+                className="rc-editor-text rc-editor-date"
+                monthNavigator={true}
+                yearNavigator={true}
+                yearRange="1900:2030"
+                dateFormat={dateFormat}
+                showTime={showTime}
+                showSeconds={showSeconds}
+                timeOnly={timeOnly}
+                visible={visible}
+                hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
+                showIcon={true}
+                inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
+                value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
+                appendTo={document.body}
+                onChange={event => {
+                    setDateValue(event.value ? (event.value as Date) : null);
+                    if (calendarInput.current) {
+                        calendarInput.current.focus();
+                    }
+                }}
+                onBlur={() => !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
+                disabled={!props.cellEditor_editable_}
+                onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
+            />
+        </span>
+
     )
 }
 export default UIEditorDate

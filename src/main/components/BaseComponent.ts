@@ -32,6 +32,8 @@ interface BaseComponent {
     indexOf?: number,
     eventMouseClicked?: boolean,
     eventMousePressed?: boolean,
-    eventMouseReleased?: boolean
+    eventMouseReleased?: boolean,
+    ariaLabel?:string,
+    ariaPressed?:boolean
 }
 export default BaseComponent
