@@ -1,4 +1,3 @@
-/// Inherit height and width from parent who has set it by the layout
 /// Inline-flex for alignment
 .rc-radiobutton {
     --radioJustify: flex-start;
@@ -9,8 +8,6 @@
     }
     
     display: inline-flex;
-    height: inherit;
-    width: inherit;
 
     justify-content: var(--radioJustify);
     align-items: var(--radioAlign);
