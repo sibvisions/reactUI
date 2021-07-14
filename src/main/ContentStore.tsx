@@ -145,16 +145,21 @@ export default class ContentStore{
     }
 
     /**
-     * Sets the currently active screens
-     * @param screenName - the screenName of the newly opened screen
+     * Sets the currently active screens or clears the array
+     * @param screenName - the screenName of the newly opened screen or nothing to clear active screens
      * @param popup - true, if the newly opened screen is a popup
      */
-    setActiveScreen(screenName:string, popup?:boolean) {
-        if (popup) {
-            this.activeScreens.push(screenName);
+    setActiveScreen(screenName?:string, popup?:boolean) {
+        if (screenName) {
+            if (popup) {
+                this.activeScreens.push(screenName);
+            }
+            else {
+                this.activeScreens = [screenName];
+            }
         }
         else {
-            this.activeScreens = [screenName];
+            this.activeScreens = [];
         }
     }
 

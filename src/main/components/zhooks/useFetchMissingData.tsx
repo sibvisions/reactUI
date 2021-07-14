@@ -11,7 +11,7 @@ const useFetchMissingData = (compId:string, dataProvider:string) => {
     const topbar = useContext(TopBarContext);
 
     useLayoutEffect(() => {
-        if (!context.contentStore.dataProviderData.get(compId)?.has(dataProvider)) {
+        if (dataProvider && !context.contentStore.dataProviderData.get(compId)?.has(dataProvider)) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = dataProvider;
             if (!context.contentStore.dataProviderMetaData.get(compId)?.has(dataProvider)) {

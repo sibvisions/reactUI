@@ -14,9 +14,10 @@ import { IForwardRef } from "../../main/IForwardRef";
 import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 import { Button } from "primereact/button";
-import { createReloadRequest, createSaveRequest } from "../../main/factories/RequestFactory";
+import { createCloseScreenRequest, createReloadRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
+import { useHistory } from "react-router";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -72,12 +73,17 @@ const Menu: FC<IMenu> = (props) => {
     /** a reference to the current panelmenu reactelement */
     const panelMenu = useRef<PanelMenu>(null);
 
+    /** The currently selected-menuitem */
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>(context.contentStore.selectedMenuItem);
 
+    /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
     /** get menu items */
     const menuItems = useMenuItems()
+
+    /** History of react-router-dom */
+    const history = useHistory();
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -198,6 +204,7 @@ const Menu: FC<IMenu> = (props) => {
         }
     },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
 
+    /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
         if ((event as any).propertyName === "max-height") {
             const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
@@ -219,16 +226,6 @@ const Menu: FC<IMenu> = (props) => {
         context.subscriptions.emitMenuCollapse(2);
     }
 
-    const handleSave = () => {
-        const saveReq = createSaveRequest();
-        showTopBar(context.server.sendRequest(saveReq, REQUEST_ENDPOINTS.SAVE), topbar);
-    }
-
-    const handleReload = () => {
-        const reloadReq = createReloadRequest();
-        showTopBar(context.server.sendRequest(reloadReq, REQUEST_ENDPOINTS.RELOAD), topbar);
-    }
-
     return(
         <div className={concatClassnames(
             "menu",
@@ -241,27 +238,36 @@ const Menu: FC<IMenu> = (props) => {
                 </div>
                 <div className="menu-upper">
                     <div className="menu-upper-left">
-                        <div style={{ borderRight: "2px solid #454b52"}}>
-                            <Button
-                                icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
-                                className="menu-upper-buttons"
-                                onClick={() => handleToggleClick()}
-                                style={{ marginRight: "4px", marginLeft: "10px" }} />
-                        </div>
+                        <Button
+                            icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
+                            className="menu-upper-buttons menu-toggler"
+                            onClick={() => handleToggleClick()}
+                            style={{ marginRight: "4px", marginLeft: "10px" }} />
                         <span className="menu-screen-title">{screenTitle}</span>
                     </div>
                     <div className="menu-upper-right">
-                        <Button icon="fa fa-home" className="menu-upper-buttons" style={{ marginRight: "1rem" }} />
+                        <Button
+                            icon="fa fa-home"
+                            className="menu-upper-buttons"
+                            style={{ marginRight: "1rem" }}
+                            onClick={() => {
+                                const closeReq = createCloseScreenRequest();
+                                closeReq.componentId = context.contentStore.activeScreens[0];
+                                context.contentStore.setActiveScreen();
+                                context.subscriptions.emitSelectedMenuItem("");
+                                showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
+                                history.push('/home')
+                            }} />
                         <Button 
                             icon="fa fa-refresh"
                             className="menu-upper-buttons" 
                             style={{ marginRight: "1rem" }} 
-                            onClick={handleReload} />
+                            onClick={() => showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)} />
                         <Button 
                             icon="fa fa-save" 
                             className="menu-upper-buttons" 
                             style={{ marginRight: "1rem" }} 
-                            onClick={handleSave} />
+                            onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)} />
                         <ProfileMenu />
                     </div>
                 </div>

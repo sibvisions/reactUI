@@ -140,8 +140,9 @@
 }
 
 .p-button.p-button-icon-only.menu-upper-buttons {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: var(--menuButtonsBig);
+    height: var(--menuButtonsBig);
+    flex: 1;
     background-color: initial;
     color: var(--menuFgdColor);
     border: 0;
@@ -166,13 +167,14 @@
 /// Margin-left, so the profile is on the far right
 .profile-menu {
     margin-right: 10px;
-    border-left: 2px solid #454b52;
+    border-left: 2px solid rgb(60, 66, 73);
 
     
     .p-menubar .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
         display: flex;
         padding: 0.5rem 1rem;
         justify-content: flex-end;
+        height: var(--profileMenuHeight);
     }
 }
 
