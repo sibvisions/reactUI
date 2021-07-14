@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -724,7 +724,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 style
             )
         }
-    }, [layout, layoutData, compSizes, style, id, calculateLayout, context.contentStore, reportSize])
+    }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore])
 
     return(
         /** Provide the allowed sizes of the children as a context */
@@ -735,4 +735,5 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         </LayoutContext.Provider>
     )
 }
+
 export default FormLayout

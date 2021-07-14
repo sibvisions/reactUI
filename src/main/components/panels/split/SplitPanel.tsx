@@ -122,7 +122,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** At the start and when layoutContext value for SplitPanel changes resize */
     useLayoutEffect(() => {
         callOnResize();
-    }, [props.trigger])
+    }, [props.trigger.width, props.trigger.height])
 
 
     return(
