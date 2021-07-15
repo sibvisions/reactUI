@@ -93,6 +93,12 @@ export class SubscriptionManager {
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
 
+    /** A function to update which menubuttons should be visible */
+    appSettingsSubscriber:Function = () => {};
+
+    /** A function to update if changePassword is enabled */
+    changePasswordSubscriber:Function = () => {};
+ 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
      * useSortDefinitions hook, subscribe to the changes of a screens sort-definitions, the key is the screens component id and the
@@ -311,6 +317,23 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes the menu to app-settings, to change the app-settings state, to show the menu-buttons or not
+     * @param fn - the function to change the app-settings state
+     */
+    subscribeToAppSettings(fn: Function) {
+        this.appSettingsSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the profile-menu to changepassword, to change the changepassword state, to show the changepassword or not
+     * @param fn - the function to change the changepassword state
+     */
+     subscribeToChangePassword(fn: Function) {
+        this.changePasswordSubscriber = fn;
+    }
+    
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -452,6 +475,20 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes login from change-dialog
+     */
+     unsubscribeFromAppSettings() {
+        this.appSettingsSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribes login from change-dialog
+     */
+     unsubscribeFromChangePassword() {
+        this.changePasswordSubscriber = () => {};
+    }
+
+    /**
      * Unsubscribes a component from sort-definition
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
@@ -566,5 +603,13 @@ export class SubscriptionManager {
 
     emitSelectedMenuItem(menuItem:string) {
         this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
+    }
+
+    emitAppSettings(reload:boolean, rollback:boolean, save:boolean) {
+        this.appSettingsSubscriber.apply(undefined, [reload, rollback, save]);
+    }
+
+    emitChangePasswordEnabled(cpe:boolean) {
+        this.changePasswordSubscriber.apply(undefined, [cpe]);
     }
 }

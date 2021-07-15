@@ -6,7 +6,7 @@ import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler } from '../../main/components/zhooks'
+import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
@@ -14,7 +14,7 @@ import { IForwardRef } from "../../main/IForwardRef";
 import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 import { Button } from "primereact/button";
-import { createCloseScreenRequest, createReloadRequest, createSaveRequest } from "../../main/factories/RequestFactory";
+import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { useHistory } from "react-router";
@@ -27,6 +27,12 @@ export interface MenuItemCustom extends MenuItem {
 
 interface IMenu extends IForwardRef {
     showMenuMini:boolean
+}
+
+export type VisibleButtons = {
+    reload:boolean
+    rollback:boolean
+    save:boolean
 }
 
 export const ProfileMenu = () => {
@@ -79,11 +85,16 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.contentStore.visibleButtons);
+
     /** get menu items */
     const menuItems = useMenuItems()
 
     /** History of react-router-dom */
     const history = useHistory();
+
+    /** Current state of translations */
+    const translations = useTranslation()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -106,10 +117,12 @@ const Menu: FC<IMenu> = (props) => {
             setScreenTitle(appName)
         });
         context.subscriptions.subscribeToSelectedMenuItem((menuItem:string) => setSelectedMenuItem(menuItem));
+        context.subscriptions.subscribeToAppSettings((reload:boolean, rollback:boolean, save:boolean) => setVisibleButtons({ reload: reload, rollback: rollback, save: save }));
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('x');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
+            context.subscriptions.unsubscribeFromAppSettings();
         }
     },[context.subscriptions]);
 
@@ -257,17 +270,31 @@ const Menu: FC<IMenu> = (props) => {
                                 context.subscriptions.emitSelectedMenuItem("");
                                 showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
                                 history.push('/home')
-                            }} />
-                        <Button 
-                            icon="fa fa-refresh"
-                            className="menu-upper-buttons" 
-                            style={{ marginRight: "1rem" }} 
-                            onClick={() => showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)} />
-                        <Button 
-                            icon="fa fa-save" 
-                            className="menu-upper-buttons" 
-                            style={{ marginRight: "1rem" }} 
-                            onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)} />
+                            }} 
+                            tooltip="Home"
+                            tooltipOptions={{ style: {opacity: "0.85"} }} />
+                        {visibleButtons.save && <Button
+                            icon="fa fa-save"
+                            className="menu-upper-buttons"
+                            style={{ marginRight: "1rem" }}
+                            onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)} 
+                            tooltip={translations.get("Save")}
+                            tooltipOptions={{ style: {opacity: "0.85"} }} />}
+                        {(visibleButtons.reload || visibleButtons.rollback) &&
+                            <Button
+                                icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                                className="menu-upper-buttons"
+                                style={{ marginRight: "1rem" }}
+                                onClick={() => {
+                                    if (visibleButtons.reload && !visibleButtons.rollback) {
+                                        showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
+                                    }
+                                    else {
+                                        showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
+                                    }
+                                }} 
+                                tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                                tooltipOptions={{ style: {opacity: "0.85"} }} />}
                         <ProfileMenu />
                     </div>
                 </div>

@@ -18,6 +18,7 @@ enum RESPONSE_NAMES {
     RESTART="restart",
     APPLICATION_PARAMETERS="applicationParameters",
     LANGUAGE="language",
-    INFORMATION="message.information"
+    INFORMATION="message.information",
+    APPLICATION_SETTINGS="applicationSettings"
 }
 export default RESPONSE_NAMES

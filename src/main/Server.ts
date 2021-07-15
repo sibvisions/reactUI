@@ -24,7 +24,8 @@ import { ApplicationMetaDataResponse,
          ApplicationParametersResponse,
          LanguageResponse, 
          MessageResponse,
-         LoginResponse} from "./response";
+         LoginResponse,
+         ApplicationSettingsResponse} from "./response";
 import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -191,7 +192,8 @@ class Server {
         .set(RESPONSE_NAMES.RESTART, this.showRestart.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this))
         .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this))
-        .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this));
+        .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
+        .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -214,7 +216,8 @@ class Server {
      */
     applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
-        this.contentStore.setLostPasswordEnabled(metaData.lostPasswordEnabled)
+        this.contentStore.setApplicationMetaData(metaData);
+
     }
 
     /**
@@ -536,8 +539,8 @@ class Server {
     }
 
     /**
-     * 
-     * @param languageData 
+     * Fetches the languageResource and fills the translation map
+     * @param langData 
      */
     language(langData:LanguageResponse) {
         this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
@@ -546,6 +549,12 @@ class Server {
             result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
             this.subManager.emitTranslation();
         }))
+    }
+
+    applicationSettings(appSettings:ApplicationSettingsResponse) {
+        this.contentStore.setAppSettings(appSettings)
+        this.subManager.emitAppSettings(appSettings.reload, appSettings.rollback, appSettings.save);
+        this.subManager.emitChangePasswordEnabled(appSettings.changePassword);
     }
 
     /** ----------ROUTING---------- */

@@ -105,12 +105,12 @@ const Login: FC = () => {
                     </div>
                     <div className={concatClassnames(
                         "login-extra-options",
-                        context.contentStore.lostPasswordEnabled ? "lost-password-enabled" : "")} >
+                        context.contentStore.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
                         <div className="login-cbx-container">
                             <Checkbox inputId="rememberMe" className="remember-me-cbx" checked={rememberMe} onChange={(event) => setRememberMe(event.checked)} />
                             <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
                         </div>
-                        {context.contentStore.lostPasswordEnabled && 
+                        {context.contentStore.applicationMetaData.lostPasswordEnabled && 
                             <Button 
                                 className="lost-password-button" 
                                 label={translations.get("Lost password")} 

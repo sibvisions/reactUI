@@ -20,3 +20,4 @@ export type { default as UploadResponse } from './UploadResponse';
 export type { default as UserDataResponse } from './UserDataResponse';
 export type { default as MessageResponse } from './MessageResponse';
 export type { default as LoginResponse, LoginModeType } from './LoginResponse';
+export type { default as ApplicationSettingsResponse } from './ApplicationSettingsResponse';

@@ -25,7 +25,9 @@ import { StartupRequest,
          MouseRequest,
          MouseClickedRequest,
          SaveRequest,
-         ReloadRequest} from "../request";
+         ReloadRequest,
+         UIRefreshRequest,
+         RollbackRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -426,6 +428,20 @@ export const createSaveRequest = (values?: SaveRequest) : SaveRequest => {
  */
 export const createReloadRequest = (values?: ReloadRequest): ReloadRequest => {
     const req: ReloadRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+export const createUIRefreshRequest = (values?: UIRefreshRequest): UIRefreshRequest => {
+    const req: UIRefreshRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+export const createRollbackRequest = (values?: RollbackRequest): RollbackRequest => {
+    const req: RollbackRequest = {
         clientId: values?.clientId || getClientId()
     }
     return req;

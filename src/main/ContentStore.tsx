@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
-import { serverMenuButtons, MetaDataResponse, MetaDataReference, LoginModeType } from "./response";
+import { serverMenuButtons, MetaDataResponse, MetaDataReference, LoginModeType, ApplicationMetaDataResponse, ApplicationSettingsResponse } from "./response";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
@@ -12,6 +12,16 @@ import { IPanel } from './components/panels'
 import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
+import { VisibleButtons } from "../frontmask/menu/menu";
+
+type ApplicationMetaData = {
+    version: string
+    clientId: string
+    langCode: string
+    languageResource: string
+    lostPasswordEnabled: boolean
+    preserveOnReload: boolean
+}
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -133,8 +143,14 @@ export default class ContentStore{
     /** The currently selected menu item */
     selectedMenuItem:string = "";
 
-    /** Whether lost-password is enabled to reset passwords */
-    lostPasswordEnabled:boolean = false;
+    /** The application-metadata object */
+    applicationMetaData:ApplicationMetaData = { version: "", clientId: "", langCode: "", languageResource: "", lostPasswordEnabled: false, preserveOnReload: false };
+
+    /** The application-settings object */
+    visibleButtons:VisibleButtons = { reload: false, rollback: false, save: false }
+
+    /** True, if change password enabled */
+    changePasswordEnabled = false;
 
     /**
      * Sets the subscription-manager
@@ -175,11 +191,27 @@ export default class ContentStore{
     }
 
     /**
-     * Sets if lost-password is enabled or not
-     * @param lpe - True if lost-password is enabled
+     * Sets the application-metadata
+     * @param appMetaData - The application-metadata
      */
-    setLostPasswordEnabled(lpe:boolean) {
-        this.lostPasswordEnabled = lpe;
+    setApplicationMetaData(appMetaData:ApplicationMetaDataResponse) {
+        this.applicationMetaData.version = appMetaData.version;
+        this.applicationMetaData.clientId = appMetaData.clientId;
+        this.applicationMetaData.langCode = appMetaData.langCode;
+        this.applicationMetaData.languageResource = appMetaData.languageResource;
+        this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
+        this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
+    }
+
+    /**
+     * Sets the application-settings
+     * @param appSettings - the application-settings
+     */
+    setAppSettings(appSettings:ApplicationSettingsResponse) {
+        this.visibleButtons.reload = appSettings.reload;
+        this.visibleButtons.rollback = appSettings.rollback;
+        this.visibleButtons.save = appSettings.save;
+        this.changePasswordEnabled = appSettings.changePassword;
     }
 
     //Content

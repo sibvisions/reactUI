@@ -17,6 +17,8 @@ const useProfileMenuItems = () => {
     
     const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
 
+    const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.contentStore.changePasswordEnabled);
+
     /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
     const sendLogout = useCallback(() => {
         const logoutRequest = createLogoutRequest();
@@ -24,41 +26,63 @@ const useProfileMenuItems = () => {
         context.contentStore.reset();
         showTopBar(context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToChangePassword((changePassword:boolean) => setChangePwEnabled(changePassword));
+
+        return () => context.subscriptions.unsubscribeFromChangePassword();
+    },[])
     
     useEffect(() => {
         const currUser = context.contentStore.currentUser;
-
+        const profileMenuItems = changePwEnabled ? 
+            [
+                // {
+                //     label: "Settings",
+                //     icon: "pi pi-cog",
+                //     command: () => {
+                //         context.server.routingDecider([{ name: "settings" }])
+                //     }
+                // },
+                {
+                    label: translations.get("Change password"),
+                    icon: "pi pi-lock-open",
+                    command(e: MenuItemCommandParams) {
+                        context.subscriptions.emitShowDialog()
+                    }
+                },
+                {
+                    label: translations.get("Logout"),
+                    icon: "pi pi-power-off",
+                    command(e: MenuItemCommandParams) {
+                        sendLogout()
+                    }
+                }
+            ] :
+            [
+                // {
+                //     label: "Settings",
+                //     icon: "pi pi-cog",
+                //     command: () => {
+                //         context.server.routingDecider([{ name: "settings" }])
+                //     }
+                // },
+                {
+                    label: translations.get("Logout"),
+                    icon: "pi pi-power-off",
+                    command(e: MenuItemCommandParams) {
+                        sendLogout()
+                    }
+                }
+            ]
         setSlideOptions([
             {
                 label: currUser.displayName,
                 icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fa fa-user',
-                items: [
-                    // {
-                    //     label: "Settings",
-                    //     icon: "pi pi-cog",
-                    //     command: () => {
-                    //         context.server.routingDecider([{ name: "settings" }])
-                    //     }
-                    // },
-                    {
-                        label: translations.get("Change password"),
-                        icon: "pi pi-lock-open",
-                        command(e:MenuItemCommandParams) {
-                            context.subscriptions.emitShowDialog()
-                        }
-                    },
-                    {
-                        label: translations.get("Logout"),
-                        icon: "pi pi-power-off",
-                        command(e:MenuItemCommandParams) {
-                            sendLogout()
-                        }
-                    }
-
-                ]
+                items: profileMenuItems
             }
         ])
-    }, [context.contentStore.currentUser, translations])
+    }, [context.contentStore.currentUser, translations, changePwEnabled])
 
     return slideOptions;
 }

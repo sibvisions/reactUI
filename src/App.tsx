@@ -19,7 +19,7 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createOpenScreenRequest, createStartupRequest } from "./main/factories/RequestFactory";
+import { createOpenScreenRequest, createStartupRequest, createUIRefreshRequest } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
 import { useEventHandler } from './main/components/zhooks';
@@ -145,7 +145,10 @@ const App: FC<ICustomContent> = (props) => {
         .set("The email is required", "The email is required")
         .set("One-time password", "One-time password")
         .set("Please enter your one-time password and set a new password", "Please enter your one-time password and set a new password")
-        .set("Please enter your e-mail address.", "Please enter your e-mail address.");
+        .set("Please enter your e-mail address.", "Please enter your e-mail address.")
+        .set("Save", "Save")
+        .set("Reload", "Reload")
+        .set("Rollback", "Rollback");
     },[context.contentStore])
 
     /**
@@ -157,22 +160,22 @@ const App: FC<ICustomContent> = (props) => {
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
 
-        const maybeOpenScreen = async () => {
-            if (routeMatch?.params.componentId) {
-                const openScreenReq = createOpenScreenRequest();
-                const check = new RegExp(`\.${routeMatch?.params.componentId}(WorkScreen)?\:`);
-                context.contentStore.serverMenuItems.forEach(list => {
-                    const item = list.find(item => item.componentId.match(check));
-                    if (item) {
-                        openScreenReq.componentId = item.componentId;
-                    }
-                })
-                if (openScreenReq.componentId) {
-                    return context.server.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
-                }
-            }
-            return null;
-        }
+        // const maybeOpenScreen = async () => {
+        //     if (routeMatch?.params.componentId) {
+        //         const openScreenReq = createOpenScreenRequest();
+        //         const check = new RegExp(`\.${routeMatch?.params.componentId}(WorkScreen)?\:`);
+        //         context.contentStore.serverMenuItems.forEach(list => {
+        //             const item = list.find(item => item.componentId.match(check));
+        //             if (item) {
+        //                 openScreenReq.componentId = item.componentId;
+        //             }
+        //         })
+        //         if (openScreenReq.componentId) {
+        //             return context.server.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+        //         }
+        //     }
+        //     return null;
+        // }
 
         const startUpByURL = (startupReq:StartupRequest) => {
             if(queryParams.appName && queryParams.baseUrl){
@@ -207,18 +210,30 @@ const App: FC<ICustomContent> = (props) => {
             ].join('::');
 
             const startupRequestCache = sessionStorage.getItem(startupRequestHash);
-            if(startupRequestCache) {
-                for (let [, value] of context.server.subManager.jobQueue.entries()) {
-                    value();
-                }
-                context.server.subManager.jobQueue.clear();
-                context.server.responseHandler(JSON.parse(startupRequestCache)).then(() => {
-                    maybeOpenScreen().then(() => setStartupDone(true));
+            if (startupRequestCache) {
+                let preserveOnReload = false;
+                (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
+                    if (response.preserveOnReload) {
+                        preserveOnReload = true;
+                    }
                 });
+                if (preserveOnReload) {
+                    for (let [, value] of context.server.subManager.jobQueue.entries()) {
+                        value();
+                    }
+                    context.server.subManager.jobQueue.clear();
+                    context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(() => setStartupDone(true));
+                }
+                else {
+                    context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
+                        sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
+                        setStartupDone(true);
+                    });
+                }
             } else {
                 context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
-                    maybeOpenScreen().then(() => setStartupDone(true));
+                    setStartupDone(true);
                 });
             }
 
