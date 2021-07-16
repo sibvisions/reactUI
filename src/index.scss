@@ -7,6 +7,7 @@
 @import './frontmask/loading/loadingscreen.scss';
 @import './frontmask/login/login.scss';
 @import './frontmask/menu/menu.scss';
+@import './frontmask/menu/corporateMenu.scss';
 @import './frontmask/UIManager.scss';
 @import './main/components/buttons/button/UIButton.scss';
 @import './main/components/buttons/menubutton/UIMenuButton.scss';
@@ -59,6 +60,12 @@
     --menuLogoCollapsedWidth: 60px;
     /// Logo height
     --menuLogoHeight: 60px;
+    /// Logo width corp
+    --cMenuLogoWidth: 210px;
+    /// menubar corporate menu height
+    --cMenuHeight: 40px;
+    /// corp menu quicknav width
+    --cMenuQuickWidth: 100px;
     /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
     --menuFadeoutWidth: 20px;
     /// Fadeout positioning

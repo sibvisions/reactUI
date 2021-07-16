@@ -4,6 +4,8 @@ import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 
 /** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
+import { useHistory } from "react-router";
+import { Button } from "primereact/button";
 
 /** Hook imports */
 import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation } from '../../main/components/zhooks'
@@ -13,11 +15,9 @@ import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
-import { Button } from "primereact/button";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
-import { useHistory } from "react-router";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -35,16 +35,79 @@ export type VisibleButtons = {
     save:boolean
 }
 
-export const ProfileMenu = () => {
+export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
-    const { contentStore: { currentUser: { profileImage } } } = useContext(appContext);
+    // const { 
+    //     contentStore: { 
+    //         currentUser: { profileImage }, 
+    //         setActiveScreen,
+    //         activeScreens
+    //     },
+    //     server: {
+    //         sendRequest
+    //     },
+    //     subscriptions: { 
+    //         emitSelectedMenuItem
+    //      } 
+    // } = useContext(appContext);
+    const context = useContext(appContext);
     const slideOptions = useProfileMenuItems();
+    /** History of react-router-dom */
+    const history = useHistory();
+
+    /** Current state of translations */
+    const translations = useTranslation();
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
+
+    const { visibleButtons } = props
     
-    return <div className="profile-menu">
-        <Menubar
-            style={profileImage ? {"--profileImage": `url(data:image/jpeg;base64,${profileImage})`} : {}}
-            model={slideOptions}/>
-    </div>
+    return (
+        <>
+            <Button
+                icon="fa fa-home"
+                className="menu-upper-buttons"
+                style={{ marginRight: "1rem" }}
+                onClick={() => {
+                    const closeReq = createCloseScreenRequest();
+                    closeReq.componentId = context.contentStore.activeScreens[0];
+                    context.contentStore.setActiveScreen();
+                    context.subscriptions.emitSelectedMenuItem("");
+                    showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
+                    history.push('/home')
+                }}
+                tooltip="Home"
+                tooltipOptions={{ style: { opacity: "0.85" } }} />
+            {visibleButtons.save && <Button
+                icon="fa fa-save"
+                className="menu-upper-buttons"
+                style={{ marginRight: "1rem" }}
+                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
+                tooltip={translations.get("Save")}
+                tooltipOptions={{ style: { opacity: "0.85" } }} />}
+            {(visibleButtons.reload || visibleButtons.rollback) &&
+                <Button
+                    icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                    className="menu-upper-buttons"
+                    style={{ marginRight: "1rem" }}
+                    onClick={() => {
+                        if (visibleButtons.reload && !visibleButtons.rollback) {
+                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
+                        }
+                        else {
+                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
+                        }
+                    }}
+                    tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltipOptions={{ style: { opacity: "0.85" } }} />}
+            <div className="profile-menu">
+                <Menubar
+                    style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
+                    model={slideOptions} />
+            </div>
+        </>
+    )
 }
 
 /**
@@ -54,9 +117,6 @@ export const ProfileMenu = () => {
 const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
@@ -108,19 +168,19 @@ const Menu: FC<IMenu> = (props) => {
     },[props.forwardedRef])
 
     /** 
-     * The menu subscribes to the screen name, so everytime the screen name changes the state of the menu screen title,
+     * The standard-menu subscribes to the screen name, selectedMenuItem and app-settings, so everytime these properties change the state
      * will get updated.
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('x', (appName:string) => {
+        context.subscriptions.subscribeToScreenName('s-menu', (appName:string) => {
             setScreenTitle(appName)
         });
         context.subscriptions.subscribeToSelectedMenuItem((menuItem:string) => setSelectedMenuItem(menuItem));
         context.subscriptions.subscribeToAppSettings((reload:boolean, rollback:boolean, save:boolean) => setVisibleButtons({ reload: reload, rollback: rollback, save: save }));
 
         return () => {
-            context.subscriptions.unsubscribeFromScreenName('x');
+            context.subscriptions.unsubscribeFromScreenName('s-menu');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
             context.subscriptions.unsubscribeFromAppSettings();
         }
@@ -259,43 +319,7 @@ const Menu: FC<IMenu> = (props) => {
                         <span className="menu-screen-title">{screenTitle}</span>
                     </div>
                     <div className="menu-upper-right">
-                        <Button
-                            icon="fa fa-home"
-                            className="menu-upper-buttons"
-                            style={{ marginRight: "1rem" }}
-                            onClick={() => {
-                                const closeReq = createCloseScreenRequest();
-                                closeReq.componentId = context.contentStore.activeScreens[0];
-                                context.contentStore.setActiveScreen();
-                                context.subscriptions.emitSelectedMenuItem("");
-                                showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
-                                history.push('/home')
-                            }} 
-                            tooltip="Home"
-                            tooltipOptions={{ style: {opacity: "0.85"} }} />
-                        {visibleButtons.save && <Button
-                            icon="fa fa-save"
-                            className="menu-upper-buttons"
-                            style={{ marginRight: "1rem" }}
-                            onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)} 
-                            tooltip={translations.get("Save")}
-                            tooltipOptions={{ style: {opacity: "0.85"} }} />}
-                        {(visibleButtons.reload || visibleButtons.rollback) &&
-                            <Button
-                                icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
-                                className="menu-upper-buttons"
-                                style={{ marginRight: "1rem" }}
-                                onClick={() => {
-                                    if (visibleButtons.reload && !visibleButtons.rollback) {
-                                        showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
-                                    }
-                                    else {
-                                        showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
-                                    }
-                                }} 
-                                tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
-                                tooltipOptions={{ style: {opacity: "0.85"} }} />}
-                        <ProfileMenu />
+                        <ProfileMenu visibleButtons={visibleButtons} />
                     </div>
                 </div>
             </div>

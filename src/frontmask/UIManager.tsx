@@ -18,6 +18,7 @@ import { appContext } from "../main/AppProvider";
 import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
 import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
+import CorporateMenu from "./menu/corporateMenu";
 
 export interface IUIManagerProps {
     screenId: string
@@ -182,9 +183,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     </LayoutContext.Provider>
                 </CustomWrapper>
             </div>
-        : <div className="reactUI">
+        : <div className="reactUI corporate">
             <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-            <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>
+            {/* <Menu forwardedRef={menuRef} showMenuMini={menuMini}/> */}
+            <CorporateMenu />
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={concatClassnames(
                     "main",

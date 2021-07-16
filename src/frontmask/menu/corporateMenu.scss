@@ -1,0 +1,48 @@
+@import '../scssmixin/scrollbar.scss';
+
+.c-menu-header {
+    display: flex;
+    justify-content: space-between;
+    background: var(--menuTopBar);
+    align-items: center;
+    height: var(--profileMenuHeight);
+}
+
+.c-menu-profile {
+    display: flex;
+    align-items: center;
+}
+
+.c-menu-menubar {
+    background: var(--menuTopBar);
+    padding-left: 6px;
+    .p-menubar {
+        border-radius: 0;
+        height: var(--cMenuHeight);
+        .p-submenu-list {
+            max-height: 600px;
+            overflow: auto;
+            width: 150%;
+            margin-left: 4px;
+        }
+    }
+}
+
+.c-menu-logo-wrapper {
+    margin-left: 10px;
+}
+
+.c-menu-quicknav-wrapper {
+    @include styledScrollbar();
+    position: fixed;
+    width: var(--cMenuQuickWidth);
+    height: 100%;
+
+    .p-menu {
+        height: 100%;
+        width: 100%;
+        .p-submenu-header {
+            display: none;
+        }
+    }
+}

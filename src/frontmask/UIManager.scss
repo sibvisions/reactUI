@@ -9,6 +9,9 @@
 .reactUI{
   height: 100vh;
   display: flex;
+  &.corporate {
+    flex-direction: column;
+  }
 }
 
 .main {
