@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
-import { serverMenuButtons, MetaDataResponse, MetaDataReference, LoginModeType, ApplicationMetaDataResponse, ApplicationSettingsResponse } from "./response";
+import { serverMenuButtons, MetaDataResponse, MetaDataReference } from "./response";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
@@ -12,16 +12,6 @@ import { IPanel } from './components/panels'
 import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
-import { VisibleButtons } from "../frontmask/menu/menu";
-
-type ApplicationMetaData = {
-    version: string
-    clientId: string
-    langCode: string
-    languageResource: string
-    lostPasswordEnabled: boolean
-    preserveOnReload: boolean
-}
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -110,47 +100,11 @@ export default class ContentStore{
      */
     closeScreenParameters = new Map<string, any>();
 
-    /** The logo to display when the menu is expanded */
-    LOGO_BIG:string = "/assets/logo_big.png";
-
-    /** The logo to display when the menu is collapsed */
-    LOGO_SMALL:string = "/assets/logo_small.png";
-
-    /** The logo to display at the login screen */
-    LOGO_LOGIN:string = "/assets/logo_login.png";
-
-    /** The current region */
-    locale:string = "de-DE";
-
-    /** True, if the menu is collapsed, default value based on window width */
-    menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
-
-    /**
-     * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
-     * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
-     */
-    menuModeAuto:boolean = true;
-
-    /** True, if the menu should overlay the layout in mini mode */
-    menuOverlaying:boolean = true;
-
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
 
-    /** The current login mode sent by the server */
-    loginMode:LoginModeType;
-
     /** The currently selected menu item */
     selectedMenuItem:string = "";
-
-    /** The application-metadata object */
-    applicationMetaData:ApplicationMetaData = { version: "", clientId: "", langCode: "", languageResource: "", lostPasswordEnabled: false, preserveOnReload: false };
-
-    /** The application-settings object */
-    visibleButtons:VisibleButtons = { reload: false, rollback: false, save: false }
-
-    /** True, if change password enabled */
-    changePasswordEnabled = false;
 
     /**
      * Sets the subscription-manager
@@ -177,41 +131,6 @@ export default class ContentStore{
         else {
             this.activeScreens = [];
         }
-    }
-
-    /**
-     * Sets the current login-mode
-     * @param mode - the login-mode
-     */
-    setLoginMode(mode:LoginModeType) {
-        this.loginMode = mode;
-        if (mode === "changePassword" || mode === "changeOneTimePassword") {
-            this.subManager.emitShowDialog();
-        }
-    }
-
-    /**
-     * Sets the application-metadata
-     * @param appMetaData - The application-metadata
-     */
-    setApplicationMetaData(appMetaData:ApplicationMetaDataResponse) {
-        this.applicationMetaData.version = appMetaData.version;
-        this.applicationMetaData.clientId = appMetaData.clientId;
-        this.applicationMetaData.langCode = appMetaData.langCode;
-        this.applicationMetaData.languageResource = appMetaData.languageResource;
-        this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
-        this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
-    }
-
-    /**
-     * Sets the application-settings
-     * @param appSettings - the application-settings
-     */
-    setAppSettings(appSettings:ApplicationSettingsResponse) {
-        this.visibleButtons.reload = appSettings.reload;
-        this.visibleButtons.rollback = appSettings.rollback;
-        this.visibleButtons.save = appSettings.save;
-        this.changePasswordEnabled = appSettings.changePassword;
     }
 
     //Content
@@ -527,14 +446,6 @@ export default class ContentStore{
 
         }
         return comp?.name
-    }
-
-    /**
-     * Sets the menu-mode
-     * @param value - the menu-mode
-     */
-    setMenuModeAuto(value: boolean) {
-        this.menuModeAuto = value;
     }
 
     //Data Provider Management

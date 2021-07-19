@@ -251,15 +251,15 @@ const App: FC<ICustomContent> = (props) => {
             context.server.BASE_URL = data.baseURL;
             context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
             if (data.logoBig)
-                context.contentStore.LOGO_BIG = data.logoBig;
+                context.appSettings.LOGO_BIG = data.logoBig;
             if (data.logoSmall)
-                context.contentStore.LOGO_SMALL = data.logoSmall;
+                context.appSettings.LOGO_SMALL = data.logoSmall;
             else if (data.logoBig)
-                context.contentStore.LOGO_SMALL = data.logoBig;
+                context.appSettings.LOGO_SMALL = data.logoBig;
             if (data.logoLogin)
-                context.contentStore.LOGO_LOGIN = data.logoLogin;
+                context.appSettings.LOGO_LOGIN = data.logoLogin;
             else if (data.logoBig)
-                context.contentStore.LOGO_LOGIN = data.logoBig;
+                context.appSettings.LOGO_LOGIN = data.logoBig;
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
             startUpRequest.language = data.language ? data.language : 'de';

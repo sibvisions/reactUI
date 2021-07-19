@@ -21,7 +21,7 @@ const CorporateMenu:FC = () => {
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
 
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.contentStore.visibleButtons);
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     /** get menu items */
     const menuItems = useMenuItems();
@@ -55,7 +55,7 @@ const CorporateMenu:FC = () => {
             <div className="c-menu-topbar">
                 <div className="c-menu-header"> 
                     <div className="c-menu-logo-wrapper">
-                        <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG} alt="logo" />
+                        <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                     </div>
                     <span className="menu-screen-title">{screenTitle}</span>
                     <div className="c-menu-profile">

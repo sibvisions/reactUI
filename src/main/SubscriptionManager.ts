@@ -1,10 +1,14 @@
 /** Other imports */
+import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
     /** Contentstore instance */
     contentStore: ContentStore;
+
+    /** AppSettings instance */
+    appSettings: AppSettings;
 
     /** 
      * A Map which stores components which want to subscribe to their properties, 
@@ -118,7 +122,12 @@ export class SubscriptionManager {
      * @param store - contentstore instance
      */
     constructor(store: ContentStore) {
-        this.contentStore = store
+        this.contentStore = store;
+        this.appSettings = new AppSettings(store, this);
+    }
+
+    setAppSettings(appSettings:AppSettings) {
+        this.appSettings = appSettings
     }
 
     handleCompIdDataProviderSubscriptions(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
@@ -574,12 +583,12 @@ export class SubscriptionManager {
      */
     emitMenuCollapse(collapseVal:number) {
         this.menuCollapseSubscriber.forEach(subFunction => subFunction.apply(undefined, [collapseVal]))
-        if (collapseVal === 0 && !this.contentStore.menuCollapsed)
-            this.contentStore.menuCollapsed = true;
-        else if (collapseVal === 1 && this.contentStore.menuCollapsed)
-            this.contentStore.menuCollapsed = false;
+        if (collapseVal === 0 && !this.appSettings.menuCollapsed)
+            this.appSettings.menuCollapsed = true;
+        else if (collapseVal === 1 && this.appSettings.menuCollapsed)
+            this.appSettings.menuCollapsed = false;
         else if (collapseVal === 2)
-            this.contentStore.menuCollapsed = !this.contentStore.menuCollapsed;
+            this.appSettings.menuCollapsed = !this.appSettings.menuCollapsed;
     }
 
     /** When the translation is loaded, notify the subscribers */
@@ -605,7 +614,7 @@ export class SubscriptionManager {
         this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 
-    emitAppSettings(reload:boolean, rollback:boolean, save:boolean) {
+    emitVisibleButtons(reload:boolean, rollback:boolean, save:boolean) {
         this.appSettingsSubscriber.apply(undefined, [reload, rollback, save]);
     }
 

@@ -145,7 +145,7 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.contentStore.visibleButtons);
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     /** get menu items */
     const menuItems = useMenuItems()
@@ -188,8 +188,8 @@ const Menu: FC<IMenu> = (props) => {
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
-            if (!context.contentStore.menuModeAuto) {
-                context.contentStore.setMenuModeAuto(true)
+            if (!context.appSettings.menuModeAuto) {
+                context.appSettings.setMenuModeAuto(true)
             }
             else {
                 if (!windowSize) {
@@ -244,8 +244,8 @@ const Menu: FC<IMenu> = (props) => {
                 if (testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.remove("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
                         fadeRef.current.style.setProperty('display', 'none');
                     }
                 }
@@ -254,8 +254,8 @@ const Menu: FC<IMenu> = (props) => {
                 if (!testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.add("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');
                     }
                     closeOpenedMenuPanel();
@@ -275,7 +275,7 @@ const Menu: FC<IMenu> = (props) => {
                 menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
-    },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
+    },[menuCollapsed, props.forwardedRef, context.appSettings.LOGO_BIG, context.appSettings.LOGO_SMALL, closeOpenedMenuPanel]);
 
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
@@ -295,7 +295,7 @@ const Menu: FC<IMenu> = (props) => {
      */
     const handleToggleClick = () => {
         closeOpenedMenuPanel();
-        context.contentStore.setMenuModeAuto(!context.contentStore.menuModeAuto)
+        context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
         context.subscriptions.emitMenuCollapse(2);
     }
 
@@ -307,7 +307,7 @@ const Menu: FC<IMenu> = (props) => {
         )}>
             <div className={"menu-topbar"}>
                 <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
+                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                 </div>
                 <div className="menu-upper">
                     <div className="menu-upper-left">
@@ -325,7 +325,7 @@ const Menu: FC<IMenu> = (props) => {
             </div>
             <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                 <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
-                    <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
+                    <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                 </div>
                 <PanelMenu model={menuItems} ref={panelMenu} />
                 {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}

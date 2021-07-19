@@ -33,6 +33,7 @@ import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
 import { ToastMessageType } from "primereact/toast";
+import AppSettings from "./AppSettings";
 
 /** Type for query */
 type queryType = {
@@ -52,9 +53,10 @@ class Server {
      * @param history - the history
      * @param openRequests - the current open requests
      */
-    constructor(store: ContentStore, subManager:SubscriptionManager, history?: History<any>) {
-        this.contentStore = store
-        this.subManager = subManager
+    constructor(store: ContentStore, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
+        this.contentStore = store;
+        this.subManager = subManager;
+        this.appSettings = appSettings;
         this.history = history;
         this.openRequests = new Map<any, Promise<any>>();
     }
@@ -70,8 +72,10 @@ class Server {
 
     /** Contentstore instance */
     contentStore: ContentStore;
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager:SubscriptionManager;
+    /** AppSettings instance */
+    appSettings:AppSettings;
     /** the react routers history object */
     history?:History<any>;
     /** a map of still open requests */
@@ -216,7 +220,7 @@ class Server {
      */
     applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
-        this.contentStore.setApplicationMetaData(metaData);
+        this.appSettings.setApplicationMetaData(metaData);
 
     }
 
@@ -252,7 +256,7 @@ class Server {
      * @param login - the loginDataResponse
      */
     login(login: LoginResponse){
-        this.contentStore.setLoginMode(login.mode);
+        this.appSettings.setLoginMode(login.mode);
         this.contentStore.reset();
     }
 
@@ -552,9 +556,8 @@ class Server {
     }
 
     applicationSettings(appSettings:ApplicationSettingsResponse) {
-        this.contentStore.setAppSettings(appSettings)
-        this.subManager.emitAppSettings(appSettings.reload, appSettings.rollback, appSettings.save);
-        this.subManager.emitChangePasswordEnabled(appSettings.changePassword);
+        this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
+        this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
     }
 
     /** ----------ROUTING---------- */

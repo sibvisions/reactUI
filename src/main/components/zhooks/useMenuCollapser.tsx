@@ -12,7 +12,7 @@ const useMenuCollapser = (id:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the menu, true, if the menu is collapsed */
-    const [menuCollapsed, setMenuCollapsed] = useState<boolean>(context.contentStore.menuCollapsed);
+    const [menuCollapsed, setMenuCollapsed] = useState<boolean>(context.appSettings.menuCollapsed);
 
     /** 
      * Subscribes to menuCollapse 

@@ -10,13 +10,15 @@ import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { ToastMessageType } from "primereact/toast";
 import API from "./API";
+import AppSettings from "./AppSettings";
 
 /** Type for AppContext */
 type AppContextType={
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
-    api: API
+    api: API,
+    appSettings: AppSettings,
     ctrlPressed: boolean,
     showToast:Function
     //theme: string,
@@ -27,10 +29,13 @@ type AppContextType={
 const contentStore = new ContentStore();
 /** SubscriptionManager instance */
 const subscriptions = new SubscriptionManager(contentStore)
+/** AppSettings instance */
+const appSettings = new AppSettings(contentStore, subscriptions);
 /** Server instance */
-const server = new Server(contentStore, subscriptions);
+const server = new Server(contentStore, subscriptions, appSettings);
 /** API instance */
 const api = new API(server, contentStore);
+
 
 contentStore.setSubscriptionManager(subscriptions);
 /** Initial value for state */
@@ -38,6 +43,7 @@ const initValue: AppContextType = {
     contentStore: contentStore,
     server: server,
     api: api,
+    appSettings: appSettings,
     subscriptions: subscriptions,
     ctrlPressed: false,
     showToast: (message: ToastMessageType, err: boolean) => {}
@@ -62,10 +68,12 @@ const AppProvider: FC = ({children}) => {
         // }
         const contentStore = new ContentStore();
         const subscriptions = new SubscriptionManager(contentStore);
-        const server = new Server(contentStore, subscriptions, history);
+        const appSettings = new AppSettings(contentStore, subscriptions);
+        const server = new Server(contentStore, subscriptions, appSettings, history);
         const api = new API(server, contentStore);
         
-        contentStore.setSubscriptionManager(subscriptions)
+        contentStore.setSubscriptionManager(subscriptions);
+        subscriptions.setAppSettings(appSettings);
 
         return {
             //theme: "dark",
@@ -73,6 +81,7 @@ const AppProvider: FC = ({children}) => {
             contentStore: contentStore,
             server: server,
             api: api,
+            appSettings: appSettings,
             subscriptions: subscriptions,
             ctrlPressed: false,
             showToast: () => {}

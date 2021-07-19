@@ -17,7 +17,7 @@ const useProfileMenuItems = () => {
     
     const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
 
-    const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.contentStore.changePasswordEnabled);
+    const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.appSettings.changePasswordEnabled);
 
     /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
     const sendLogout = useCallback(() => {

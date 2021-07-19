@@ -211,13 +211,13 @@ const CellEditor: FC<CellEditor> = (props) => {
                                 setEdit(true);
                             }
                         }}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => { setWaiting(true); setEdit(true) })}
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
                     </div>
                 ) : (!edit ?
                     <div
                         className="cell-data"
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => setEdit(true))}
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                     </div>
                     :
                     <div ref={wrapperRef}>
@@ -225,7 +225,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     </div>)
             : <div
                 className="cell-data">
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
             </div>
     )
 }

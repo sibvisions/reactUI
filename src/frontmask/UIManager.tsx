@@ -120,24 +120,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         }
         window.addEventListener("resize", resizeListenerCall)
         window.addEventListener("resize", handleDeviceStatus);
-        // if (menuRef.current && currSizeRef) {
-        //     menuRef.current.addEventListener("transitionstart", (event:any) => {
-        //         if (event.propertyName === "width") {
-        //             currSizeRef.classList.add('transition-disable-overflow');
-        //         }
-        //     });
-        // }
 
         return () => {
             window.removeEventListener("resize", handleDeviceStatus);
             window.removeEventListener("resize", resizeListenerCall);
-            // if (currSizeRef) {
-            //     currSizeRef.removeEventListener("transitionstart", (event:any) => {
-            //         if (event.propertyName === "width") {
-            //             currSizeRef.classList.add('transition-disable-overflow')
-            //         }
-            //     });
-            // }
 
         }
     // eslint-disable-next-line
@@ -185,13 +171,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             </div>
         : <div className="reactUI corporate">
             <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-            {/* <Menu forwardedRef={menuRef} showMenuMini={menuMini}/> */}
-            <CorporateMenu />
+            {context.appSettings.applicationMetaData.applicationLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>}
             <LayoutContext.Provider value={componentSize}>
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    "main--with-menu",
-                    (menuCollapsed || (window.innerWidth <= 600 && context.contentStore.menuOverlaying)) ? " screen-expanded" : "",
+                    context.appSettings.applicationMetaData.applicationLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
+                    (menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini"
                 )}>
                     <ScreenManager forwardedRef={sizeRef} />
