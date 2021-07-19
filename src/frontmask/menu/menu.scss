@@ -343,13 +343,15 @@
         /// Initial to undo Primereact changes
         .p-menubar-root-list {
             position:initial;
-            display: initial;
+            display: inline-flex;
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
+            background: var(--menuTopBar);
 
             >.p-menuitem {
                 background-color: var(--menuTopBar);
+                width: initial;
             }
 
             >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
@@ -393,31 +395,33 @@
 
     .profile-menu {
         margin-right: 0;
-    }
 
-    /// In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
-    .p-menubar {
-        .p-menubar-root-list {
-            .p-submenu-list {
-                left: -125px;
-                width: 180px;
-            }
-            >.p-menuitem {
-                >.p-menuitem-link {
-                    width: unset;
-                    .p-menuitem-icon {
-                        margin-right: 0;
-                    }
-                    .p-menuitem-text, .p-submenu-icon {
-                        display: none;
-                    }
+        /// In mini mode, Primereacts submenu position needs to be corrected and don't display name and submenu arrow
+        .p-menubar {
+            .p-menubar-root-list {
+                .p-submenu-list {
+                    left: -125px;
+                    width: 180px;
                 }
-                >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                    padding: 0.5rem 0.625rem
+                >.p-menuitem {
+                    >.p-menuitem-link {
+                        width: unset;
+                        .p-menuitem-icon {
+                            margin-right: 0;
+                        }
+                        .p-menuitem-text, .p-submenu-icon {
+                            display: none;
+                        }
+                    }
+                    >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                        padding: 0.5rem 0.625rem
+                    }
                 }
             }
         }
     }
+
+
 
     /// Show logo-mini-wrapper
     .menu-logo-mini-wrapper {

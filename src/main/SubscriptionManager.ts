@@ -1,6 +1,7 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
+import { ApplicationSettingsResponse } from "./response";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
@@ -98,10 +99,7 @@ export class SubscriptionManager {
     selectedMenuItemSubscriber:Function = () => {};
 
     /** A function to update which menubuttons should be visible */
-    appSettingsSubscriber:Function = () => {};
-
-    /** A function to update if changePassword is enabled */
-    changePasswordSubscriber:Function = () => {};
+    appSettingsSubscriber = new Array<Function>();
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
@@ -330,17 +328,8 @@ export class SubscriptionManager {
      * @param fn - the function to change the app-settings state
      */
     subscribeToAppSettings(fn: Function) {
-        this.appSettingsSubscriber = fn;
+        this.appSettingsSubscriber.push(fn)
     }
-
-    /**
-     * Subscribes the profile-menu to changepassword, to change the changepassword state, to show the changepassword or not
-     * @param fn - the function to change the changepassword state
-     */
-     subscribeToChangePassword(fn: Function) {
-        this.changePasswordSubscriber = fn;
-    }
-    
 
     /**
      * Unsubscribes a component from popUpChanges
@@ -486,15 +475,8 @@ export class SubscriptionManager {
     /**
      * Unsubscribes login from change-dialog
      */
-     unsubscribeFromAppSettings() {
-        this.appSettingsSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes login from change-dialog
-     */
-     unsubscribeFromChangePassword() {
-        this.changePasswordSubscriber = () => {};
+     unsubscribeFromAppSettings(fn:Function) {
+        this.appSettingsSubscriber.splice(this.appSettingsSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -614,11 +596,7 @@ export class SubscriptionManager {
         this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 
-    emitVisibleButtons(reload:boolean, rollback:boolean, save:boolean) {
-        this.appSettingsSubscriber.apply(undefined, [reload, rollback, save]);
-    }
-
-    emitChangePasswordEnabled(cpe:boolean) {
-        this.changePasswordSubscriber.apply(undefined, [cpe]);
+    emitAppSettings(appSettings:ApplicationSettingsResponse) {
+        this.appSettingsSubscriber.forEach((subFunc) => subFunc.apply(undefined, [appSettings]));
     }
 }

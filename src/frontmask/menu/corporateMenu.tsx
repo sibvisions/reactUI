@@ -10,7 +10,9 @@ import { useMenuItems } from "../../main/components/zhooks";
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
-import { ProfileMenu, VisibleButtons } from "./menu";
+import { ProfileMenu } from "./menu";
+import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
+import { ApplicationSettingsResponse } from "../../main/response";
 
 
 
@@ -21,7 +23,11 @@ const CorporateMenu:FC = () => {
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
 
+    /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
+
+    /** State of menu-visibility */
+    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** get menu items */
     const menuItems = useMenuItems();
@@ -40,15 +46,35 @@ const CorporateMenu:FC = () => {
      * will get updated.
      *  @returns unsubscribing from the screen name on unmounting
      */
-     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('c-menu', (appName:string) => setScreenTitle(appName));
-        context.subscriptions.subscribeToAppSettings((reload:boolean, rollback:boolean, save:boolean) => setVisibleButtons({ reload: reload, rollback: rollback, save: save }));
+    useEffect(() => {
+        context.subscriptions.subscribeToScreenName('c-menu', (appName: string) => setScreenTitle(appName));
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+            setMenuVisibility({
+                menuBar: appSettings.menuBar,
+                toolBar: appSettings.toolBar
+            })
+        });
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('c-menu');
-            context.subscriptions.unsubscribeFromAppSettings();
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                });
+                setMenuVisibility({
+                    menuBar: appSettings.menuBar,
+                    toolBar: appSettings.toolBar
+                })
+            });
         }
-    },[context.subscriptions]);
+    }, [context.subscriptions]);
 
     return (
         <div className="c-menu">

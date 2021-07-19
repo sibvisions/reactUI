@@ -40,6 +40,7 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
+    enabled?: boolean
 }
 
 enum Navigation {
@@ -73,7 +74,8 @@ type CellEditor = {
     tabNavigationMode: number,
     selectedRow: any,
     className?: string,
-    readonly?: boolean
+    readonly?: boolean,
+    tableEnabled?: boolean
 }
 
 /** Interface for selected cells */
@@ -196,7 +198,7 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        !props.readonly ?
+        (!props.readonly && props.tableEnabled !== false) ?
             (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
                     <div ref={wrapperRef}>
@@ -974,7 +976,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                             tabNavigationMode={tabNavigationMode}
                             selectedRow={selectedRow}
                             className={className}
-                            readonly={columnMetaData?.readonly} />
+                            readonly={columnMetaData?.readonly}
+                            tableEnabled={props.enabled} />
                     }
                 }
                 }

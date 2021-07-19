@@ -18,6 +18,8 @@ import { concatClassnames } from "../../main/components/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
+import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
+import { ApplicationSettingsResponse } from "../../main/response";
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -27,12 +29,6 @@ export interface MenuItemCustom extends MenuItem {
 
 interface IMenu extends IForwardRef {
     showMenuMini:boolean
-}
-
-export type VisibleButtons = {
-    reload:boolean
-    rollback:boolean
-    save:boolean
 }
 
 export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
@@ -145,7 +141,11 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
+    /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
+
+    /** State of menu-visibility */
+    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** get menu items */
     const menuItems = useMenuItems()
@@ -173,18 +173,38 @@ const Menu: FC<IMenu> = (props) => {
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('s-menu', (appName:string) => {
+        context.subscriptions.subscribeToScreenName('s-menu', (appName: string) => {
             setScreenTitle(appName)
         });
-        context.subscriptions.subscribeToSelectedMenuItem((menuItem:string) => setSelectedMenuItem(menuItem));
-        context.subscriptions.subscribeToAppSettings((reload:boolean, rollback:boolean, save:boolean) => setVisibleButtons({ reload: reload, rollback: rollback, save: save }));
+        context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+            setMenuVisibility({
+                menuBar: appSettings.menuBar,
+                toolBar: appSettings.toolBar
+            })
+        });
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('s-menu');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
-            context.subscriptions.unsubscribeFromAppSettings();
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                });
+                setMenuVisibility({
+                    menuBar: appSettings.menuBar,
+                    toolBar: appSettings.toolBar
+                })
+            });
         }
-    },[context.subscriptions]);
+    }, [context.subscriptions]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {

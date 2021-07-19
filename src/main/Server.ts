@@ -558,6 +558,8 @@ class Server {
     applicationSettings(appSettings:ApplicationSettingsResponse) {
         this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
+        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
+        this.subManager.emitAppSettings(appSettings);
     }
 
     /** ----------ROUTING---------- */

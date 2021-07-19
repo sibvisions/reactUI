@@ -35,14 +35,24 @@
 .c-menu-quicknav-wrapper {
     @include styledScrollbar();
     position: fixed;
-    width: var(--cMenuQuickWidth);
-    height: 100%;
+    width: var(--cMenuToolBarWidth);
+    height: calc(100% - var(--profileMenuHeight) - var(--cMenuHeight));
 
     .p-menu {
         height: 100%;
         width: 100%;
         .p-submenu-header {
             display: none;
+        }
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .c-menu-menubar {
+        .p-menubar {
+            .p-submenu-list {
+                width: unset;
+            }
         }
     }
 }

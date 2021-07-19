@@ -1,4 +1,3 @@
-import { VisibleButtons } from "../frontmask/menu/menu";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -11,6 +10,19 @@ type ApplicationMetaData = {
     lostPasswordEnabled: boolean
     preserveOnReload: boolean
     applicationLayout: "standard"|"corporation"|"modern"
+}
+
+/** Interface for whether specific buttons should be visible or not */
+export type VisibleButtons = {
+    reload:boolean
+    rollback:boolean
+    save:boolean
+}
+
+/** Interface if the toolbar or the menubar should be visible or not */
+export type MenuVisibility = {
+    toolBar:boolean
+    menuBar:boolean
 }
 
 /** The AppSettings stores settings and flags for the application */
@@ -63,12 +75,19 @@ export default class AppSettings {
         applicationLayout: "standard" 
     };
 
-    /** The application-settings object */
+    /** The visible-buttons object */
     visibleButtons:VisibleButtons = { 
         reload: false, 
         rollback: false, 
         save: false 
     }
+
+    menuVisibility:MenuVisibility = {
+        menuBar: false,
+        toolBar: false
+    }
+
+    /** The menu-visibility object */
 
     /** True, if change password enabled */
     changePasswordEnabled = false;
@@ -116,11 +135,18 @@ export default class AppSettings {
         this.visibleButtons.reload = reload;
         this.visibleButtons.rollback = rollback;
         this.visibleButtons.save = save;
-        this.#subManager.emitVisibleButtons(reload, rollback, save);
     }
 
+    /**
+     * Sets if change-password is enabled
+     * @param cpe - changed-password enabled value
+     */
     setChangePasswordEnabled(cpe:boolean) {
         this.changePasswordEnabled = cpe;
-        this.#subManager.emitChangePasswordEnabled(cpe);
+    }
+
+    setMenuVisibility(menuBar:boolean, toolBar:boolean) {
+        this.menuVisibility.menuBar = menuBar;
+        this.menuVisibility.toolBar = toolBar;
     }
 }

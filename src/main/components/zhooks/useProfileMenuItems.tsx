@@ -5,6 +5,7 @@ import { createLogoutRequest } from "../../../main/factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { ApplicationSettingsResponse } from "../../response";
 
 
 const useProfileMenuItems = () => {
@@ -28,9 +29,9 @@ const useProfileMenuItems = () => {
     }, [context.server, context.contentStore]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToChangePassword((changePassword:boolean) => setChangePwEnabled(changePassword));
+        context.subscriptions.subscribeToAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
 
-        return () => context.subscriptions.unsubscribeFromChangePassword();
+        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
     },[])
     
     useEffect(() => {
