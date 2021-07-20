@@ -269,7 +269,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             <AutoComplete
                 ref={linkedRef}
                 id={props.id !== "" ? props.name : undefined}
-                style={{ width: '100%' }}
+                style={{ width: 'inherit' }}
                 inputRef={linkedInput}
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
