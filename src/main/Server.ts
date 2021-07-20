@@ -25,7 +25,8 @@ import { ApplicationMetaDataResponse,
          LanguageResponse, 
          MessageResponse,
          LoginResponse,
-         ApplicationSettingsResponse} from "./response";
+         ApplicationSettingsResponse,
+         DeviceStatusResponse} from "./response";
 import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -197,7 +198,8 @@ class Server {
         .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this))
         .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this))
         .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
-        .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this));
+        .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
+        .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -544,7 +546,7 @@ class Server {
 
     /**
      * Fetches the languageResource and fills the translation map
-     * @param langData 
+     * @param langData - the language data
      */
     language(langData:LanguageResponse) {
         this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
@@ -555,11 +557,20 @@ class Server {
         }))
     }
 
+    /** 
+     * Sets the application-settings and notifies the subscribers
+     * @param appSettings
+     */
     applicationSettings(appSettings:ApplicationSettingsResponse) {
         this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
         this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
         this.subManager.emitAppSettings(appSettings);
+    }
+
+    deviceStatus(deviceStatus:DeviceStatusResponse) {
+        this.appSettings.setDeviceStatus(deviceStatus.layoutMode);
+        this.subManager.emitDeviceMode(deviceStatus.layoutMode);
     }
 
     /** ----------ROUTING---------- */

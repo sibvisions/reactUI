@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { MenuItem, MenuItemCommandParams } from "primereact/api";
+import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../../main/AppProvider";
 import { createLogoutRequest } from "../../../main/factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../main/request";
@@ -12,7 +12,7 @@ const useProfileMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of translations */
-    const translations = useTranslation()
+    const translations = useTranslation();
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
     

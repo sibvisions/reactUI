@@ -1,7 +1,8 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
-import { ApplicationSettingsResponse } from "./response";
+import { ApplicationSettingsResponse, DeviceStatusResponse } from "./response";
+import { DeviceStatus } from "./response/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
@@ -100,6 +101,9 @@ export class SubscriptionManager {
 
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
+
+    /** An array of functions to change the deviceMode state */
+    deviceModeSubscriber = new Array<Function>();
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
@@ -332,6 +336,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes to deviceMode, to change the device-mode state
+     * @param fn - the function to change the device-mode state
+     */
+    subscribeToDeviceMode(fn: Function) {
+        this.deviceModeSubscriber.push(fn)
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -473,10 +485,17 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes login from change-dialog
+     * Unsubscribes from app-settings
      */
      unsubscribeFromAppSettings(fn:Function) {
         this.appSettingsSubscriber.splice(this.appSettingsSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /**
+     * Unsubscribes from device-mode
+     */
+     unsubscribeFromDeviceMode(fn:Function) {
+        this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -588,15 +607,23 @@ export class SubscriptionManager {
         this.appReadySubscriber.apply(undefined, []);
     }
 
+    /** Tell the subscribers to show the change-password-dialog */
     emitShowDialog() {
         this.changeDialogSubscriber.apply(undefined, [])
     }
 
+    /** Tell the subscribers to change their selectedmenuitem */
     emitSelectedMenuItem(menuItem:string) {
         this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 
+    /** Tell the subscribers to update their app-settings */
     emitAppSettings(appSettings:ApplicationSettingsResponse) {
         this.appSettingsSubscriber.forEach((subFunc) => subFunc.apply(undefined, [appSettings]));
+    }
+
+    /** Tell the subscribers to update their app-settings */
+    emitDeviceMode(deviceMode:DeviceStatus) {
+        this.deviceModeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [deviceMode]));
     }
 }

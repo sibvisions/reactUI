@@ -1,4 +1,4 @@
-import { MenuItem } from "primereact/api";
+import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../frontmask/menu/menu";
 import { serverMenuButtons } from "../../../main/response";

@@ -6,20 +6,22 @@ import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
 import { Button } from "primereact/button";
+import { MenuItem } from "primereact/menuitem";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation } from '../../main/components/zhooks'
+import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation, useDeviceStatus } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
-import { MenuItem } from "primereact/api";
+//import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { ApplicationSettingsResponse } from "../../main/response";
+
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -57,14 +59,15 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const { visibleButtons } = props
+    const { visibleButtons } = props;
+
+    const deviceStatus = useDeviceStatus();
     
     return (
         <>
             <Button
                 icon="fa fa-home"
                 className="menu-upper-buttons"
-                style={{ marginRight: "1rem" }}
                 onClick={() => {
                     const closeReq = createCloseScreenRequest();
                     closeReq.componentId = context.contentStore.activeScreens[0];
@@ -78,7 +81,6 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
             {visibleButtons.save && <Button
                 icon="fa fa-save"
                 className="menu-upper-buttons"
-                style={{ marginRight: "1rem" }}
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" } }} />}
@@ -86,7 +88,6 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                 <Button
                     icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
                     className="menu-upper-buttons"
-                    style={{ marginRight: "1rem" }}
                     onClick={() => {
                         if (visibleButtons.reload && !visibleButtons.rollback) {
                             showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
@@ -117,8 +118,8 @@ const Menu: FC<IMenu> = (props) => {
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
 
-    /** Flag if menu should be collapsed based on windowsize */
-    const windowSize = useWindowObserver();
+    /** The current state of device-status */
+    const deviceStatus = useDeviceStatus();
 
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
@@ -149,12 +150,6 @@ const Menu: FC<IMenu> = (props) => {
 
     /** get menu items */
     const menuItems = useMenuItems()
-
-    /** History of react-router-dom */
-    const history = useHistory();
-
-    /** Current state of translations */
-    const translations = useTranslation()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -212,15 +207,14 @@ const Menu: FC<IMenu> = (props) => {
                 context.appSettings.setMenuModeAuto(true)
             }
             else {
-                if (!windowSize) {
+                if (deviceStatus === "Small" || deviceStatus === "Mini") {
                     closeOpenedMenuPanel();
                     context.subscriptions.emitMenuCollapse(0);
                 }
-                    
                 else
                     context.subscriptions.emitMenuCollapse(1);
             }
-    },[context.contentStore, context.subscriptions, windowSize])
+    },[context.contentStore, context.subscriptions, deviceStatus])
 
     useEffect(() => {
         if (menuItems) {
@@ -327,7 +321,7 @@ const Menu: FC<IMenu> = (props) => {
         )}>
             <div className={"menu-topbar"}>
                 <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                    <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                 </div>
                 <div className="menu-upper">
                     <div className="menu-upper-left">
@@ -343,13 +337,15 @@ const Menu: FC<IMenu> = (props) => {
                     </div>
                 </div>
             </div>
-            <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
-                <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
-                    <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+            {menuVisibility.menuBar &&
+                <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
+                    <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
+                        <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                    </div>
+                    <PanelMenu model={menuItems} ref={panelMenu} />
+                    {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                 </div>
-                <PanelMenu model={menuItems} ref={panelMenu} />
-                {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
-            </div>
+            }
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
+import { DeviceStatus } from "./response/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 
 type ApplicationMetaData = {
@@ -82,15 +83,16 @@ export default class AppSettings {
         save: false 
     }
 
+    /** The menu-visibility object */
     menuVisibility:MenuVisibility = {
         menuBar: false,
         toolBar: false
     }
 
-    /** The menu-visibility object */
-
     /** True, if change password enabled */
     changePasswordEnabled = false;
+
+    deviceStatus:DeviceStatus = "Full";
 
     /**
      * Sets the menu-mode
@@ -145,8 +147,17 @@ export default class AppSettings {
         this.changePasswordEnabled = cpe;
     }
 
+    /**
+     * Sets the menu-visibility
+     * @param menuBar - True, if the menubar is visible
+     * @param toolBar - True, if the toolbar is visible
+     */
     setMenuVisibility(menuBar:boolean, toolBar:boolean) {
         this.menuVisibility.menuBar = menuBar;
         this.menuVisibility.toolBar = toolBar;
+    }
+
+    setDeviceStatus(deviceStatus:DeviceStatus) {
+        this.deviceStatus = deviceStatus;
     }
 }

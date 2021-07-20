@@ -3,16 +3,18 @@ import React, { FC, useContext, useEffect, useState } from "react";
 
 /** 3rd Party imports */
 import { Menubar } from 'primereact/menubar';
+import { SpeedDial } from "primereact/speeddial";
 import { Menu } from 'primereact/menu'
 
 /** Hook imports */
-import { useMenuItems } from "../../main/components/zhooks";
+import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { ProfileMenu } from "./menu";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { ApplicationSettingsResponse } from "../../main/response";
+import { Button } from "primereact/button";
 
 
 
@@ -32,13 +34,12 @@ const CorporateMenu:FC = () => {
     /** get menu items */
     const menuItems = useMenuItems();
 
+    /** The current state of device-status */
+    const deviceStatus = useDeviceStatus();
+
     const testItems = [
-        {
-            items: [
-                {label: "First", icon: "fa fa-arrow-right"},
-                {label: "Second", icon: "fa fa-arrow-left"}
-            ]
-        }
+        {label: "First", icon: "fa fa-arrow-right"},
+        {label: "Second", icon: "fa fa-arrow-left"}
     ]
 
     /** 
@@ -79,21 +80,28 @@ const CorporateMenu:FC = () => {
     return (
         <div className="c-menu">
             <div className="c-menu-topbar">
-                <div className="c-menu-header"> 
+                <div className="c-menu-header">
                     <div className="c-menu-logo-wrapper">
-                        <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
+                        <img
+                            className="menu-logo"
+                            draggable="false"
+                            src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                     </div>
                     <span className="menu-screen-title">{screenTitle}</span>
                     <div className="c-menu-profile">
                         <ProfileMenu visibleButtons={visibleButtons} />
                     </div>
                 </div>
-                <div className="c-menu-menubar">
-                    <Menubar model={menuItems} />
-                </div>
-            </div>
-            <div className="c-menu-quicknav-wrapper">
-                <Menu model={testItems} />
+                {menuVisibility.menuBar &&
+                    <div className="c-menu-menubar">
+                        {menuVisibility.toolBar &&
+                            <div style={{ height: "32px", width: "32px" }}>
+                                <SpeedDial model={testItems} direction="down" />
+                            </div>
+                        }
+                        <Menubar model={menuItems} />
+                    </div>
+                }
             </div>
         </div>
     )

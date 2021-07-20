@@ -118,7 +118,7 @@
 .menu-logo {
     @include menuTransitions();
     align-self: center;
-    width: var(--menuLogoWidth);
+    min-width: var(--menuLogoWidth);
     border-radius: 5%;
     max-height: var(--menuLogoHeight);
     object-fit: contain;
@@ -147,7 +147,7 @@
     color: var(--menuFgdColor);
     border: 0;
     border-radius: 4px;
-    //margin-right: 1rem;
+    margin-right: 0.5rem;
     &:hover {
         background-color: #454b52;
     }
@@ -161,7 +161,6 @@
     color: var(--menuFgdColor);
     font-size: 22px;
     font-weight: bold;
-    margin-left: 20px;
 }
 
 /// Margin-left, so the profile is on the far right
@@ -170,11 +169,17 @@
     border-left: 2px solid rgb(60, 66, 73);
 
     
-    .p-menubar .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-        display: flex;
-        padding: 0.5rem 1rem;
-        justify-content: flex-end;
-        height: var(--profileMenuHeight);
+    .p-menubar  {
+        .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+            display: flex;
+            padding: 0.5rem 1rem;
+            justify-content: flex-end;
+            height: var(--profileMenuHeight);
+        }
+
+        .p-submenu-list {
+            left: -35px;
+        }
     }
 }
 
@@ -204,9 +209,7 @@
         }
 
         /// Primereact sets a default width which is way too big
-        .p-submenu-list {
-            width: 100%;
-        }
+
     }
 }
 
@@ -355,7 +358,7 @@
             }
 
             >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
-                margin-left: 0.5rem;
+                margin-left: 0.75rem;
             }
 
             /// Submenu styling needed because primereact button menu looks different we have to redesign
@@ -364,32 +367,13 @@
                 -webkit-box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 border: 1px solid #c8c8c8;
+                width: 12.5rem;
                 li {
                     a {
                         padding: 0.75rem;
                     }
                 }
             }
-        }
-    }
-}
-
-@media screen and (max-width: 600px) {
-    /// Don't show the logo wrapper ever, width 0 for transition
-    .menu-logo-wrapper {
-        &, .menu-collapsed & {
-            visibility: hidden;
-            width: 0px;
-            .menu-logo {
-                width: 0px;
-            }
-        }
-    }
-
-    /// Colored part of menu always on the left side
-    .menu-upper {
-        &, .menu-collapsed & {
-            margin-left: 0px;
         }
     }
 
@@ -400,8 +384,8 @@
         .p-menubar {
             .p-menubar-root-list {
                 .p-submenu-list {
-                    left: -125px;
-                    width: 180px;
+                    width: 10rem;
+                    left: -96px;
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {
@@ -420,8 +404,26 @@
             }
         }
     }
+}
 
+@media screen and (max-width: 530px) {
+    /// Don't show the logo wrapper ever, width 0 for transition
+    .menu-logo-wrapper {
+        &, .menu-collapsed & {
+            visibility: hidden;
+            width: 0px;
+            .menu-logo {
+                width: 0px;
+            }
+        }
+    }
 
+    /// Colored part of menu always on the left side
+    .menu-upper {
+        &, .menu-collapsed & {
+            margin-left: 0px;
+        }
+    }
 
     /// Show logo-mini-wrapper
     .menu-logo-mini-wrapper {
@@ -448,6 +450,11 @@
                 width: 0px;
             }
         }
+    }
+
+    .p-button.p-button-icon-only.menu-upper-buttons {
+        width: 40px;
+        height: 40px;
     }
 }
 
