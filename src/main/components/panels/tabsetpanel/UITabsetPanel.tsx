@@ -68,7 +68,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 sizeMap.set(component.props.id, { width, height })
             });
             setComponentSizes(sizeMap);
-    }, [components, layoutStyle, id]);
+    }, [components, layoutStyle?.width, layoutStyle?.height, id]);
 
     /**
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout

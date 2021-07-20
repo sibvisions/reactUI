@@ -32,6 +32,8 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
 
+    const isHTML = (props.text as string).includes("<html>");
+
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -49,12 +51,13 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
             id={props.name}
             className={concatClassnames(
                 "rc-label",
-                (props.text as string).includes("<html>") ? " rc-label-html" : "",
+                isHTML ? " rc-label-html" : "",
                 props.eventMousePressed ? "mouse-pressed-event" : ""
             )}
             style={{
-                justifyContent: lblAlignments.ha,
-                alignItems: lblAlignments.va,
+                //When the label is html, flex direction is column va and ha alignments need to be swapped
+                justifyContent: !isHTML ? lblAlignments.ha : lblAlignments.va,
+                alignItems: !isHTML ? lblAlignments.va : lblAlignments.ha,
                 backgroundColor: props.background,
                 color: props.foreground,
                 ...lblTextAlignment,
