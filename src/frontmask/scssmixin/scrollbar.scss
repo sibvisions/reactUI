@@ -1,5 +1,5 @@
 /// Custom scrollbar for the Panelmenu
-@mixin styledScrollbar() {
+@mixin styledScrollbarPanel() {
     &::-webkit-scrollbar {
         width: 7px;
     }
@@ -8,6 +8,27 @@
     }
     &::-webkit-scrollbar-track {
         background: white; 
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgb(230, 230, 230);
+        border-radius: 10px;
+        &:hover {
+            background: rgb(202, 202, 202);
+        }
+    }
+}
+
+/// Custom scrollbar for the menubar in corporate mode
+@mixin styledScrollbarCorp() {
+    &::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+    &::-webkit-scrollbar-button:start:decrement {
+        height: 70px;
+    }
+    &::-webkit-scrollbar-track {
+        background: #49525e; 
     }
     &::-webkit-scrollbar-thumb {
         background: rgb(230, 230, 230);

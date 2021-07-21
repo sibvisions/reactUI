@@ -69,12 +69,14 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                 icon="fa fa-home"
                 className="menu-upper-buttons"
                 onClick={() => {
-                    const closeReq = createCloseScreenRequest();
-                    closeReq.componentId = context.contentStore.activeScreens[0];
-                    context.contentStore.setActiveScreen();
-                    context.subscriptions.emitSelectedMenuItem("");
-                    showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
-                    history.push('/home')
+                    if (context.contentStore.activeScreens.length) {
+                        const closeReq = createCloseScreenRequest();
+                        closeReq.componentId = context.contentStore.activeScreens[0];
+                        context.contentStore.setActiveScreen();
+                        context.subscriptions.emitSelectedMenuItem("");
+                        showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
+                        history.push('/home')
+                    }
                 }}
                 tooltip="Home"
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />

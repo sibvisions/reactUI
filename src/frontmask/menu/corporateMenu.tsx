@@ -95,7 +95,7 @@ const CorporateMenu:FC = () => {
                 {menuVisibility.menuBar &&
                     <div className="c-menu-menubar">
                         {menuVisibility.toolBar &&
-                            <div style={{ height: "32px", width: "32px" }}>
+                            <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                 <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
                                 <SpeedDial model={testItems} direction="down" />
                             </div>

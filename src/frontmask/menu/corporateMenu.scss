@@ -30,11 +30,27 @@
 .c-menu-logo-wrapper {
     margin-left: 10px;
     display: flex;
+    max-width: var(--menuLogoWidth);
+    transition: max-width 0.5s ease-out;
 }
 
 .c-menu-menubar {
     display: flex;
     align-items: center;
+
+    .p-menubar {
+        .p-menubar-root-list {
+            @include styledScrollbarCorp();
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: inherit;
+
+            >.p-menuitem {
+                float: left;
+                position: unset;
+            }
+        }
+    }
 }
 
 .p-speeddial {
@@ -57,4 +73,18 @@
         width: 2rem;
         height: 2rem;
     }
+}
+
+@media screen and (max-width: 530px) {
+    .c-menu-header {
+        justify-content: unset;
+        .c-menu-logo-wrapper {
+            max-width: 0px;
+            transition: max-width 0.5s ease-out;
+        }
+        .c-menu-profile {
+            margin-left: auto;
+        }
+    }
+
 }

@@ -118,7 +118,7 @@
 .menu-logo {
     @include menuTransitions();
     align-self: center;
-    min-width: var(--menuLogoWidth);
+    width: var(--menuLogoWidth);
     border-radius: 5%;
     max-height: var(--menuLogoHeight);
     object-fit: contain;
@@ -161,6 +161,10 @@
     color: var(--menuFgdColor);
     font-size: 22px;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
 }
 
 /// Margin-left, so the profile is on the far right
@@ -178,8 +182,24 @@
         }
 
         .p-submenu-list {
-            left: -35px;
+            left: -45px;
         }
+
+        .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+            .p-menuitem-text {
+                opacity: 1;
+                max-width: 140px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                transition: max-width 0.5s, opacity 0.5s ease-out;
+            }
+            .p-submenu-icon {
+                opacity: 1;
+                max-width: 16px;
+                transition: max-width 0.5s, opacity 0.5s ease-out;
+            }
+        } 
     }
 }
 
@@ -188,6 +208,7 @@
     padding: 0;
     border: none;
     background: var(--menuTopBar);
+
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
             /// Sets menubar style on hover and active for text, subicon color and background
@@ -207,9 +228,6 @@
                 }
             }
         }
-
-        /// Primereact sets a default width which is way too big
-
     }
 }
 
@@ -231,7 +249,7 @@
 /// Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
     @include menuTransitions();
-    @include styledScrollbar();
+    @include styledScrollbarPanel();
     position: fixed;
     padding-top: var(--menuHeight);
     z-index: 10;
@@ -346,7 +364,7 @@
         /// Initial to undo Primereact changes
         .p-menubar-root-list {
             position:initial;
-            display: inline-flex;
+            display: inline-block;
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
@@ -358,16 +376,18 @@
             }
 
             >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
-                margin-left: 0.75rem;
+                margin-left: 0.5rem;
+                font-size: 1rem;
             }
 
             /// Submenu styling needed because primereact button menu looks different we have to redesign
             .p-submenu-list {
-                position: absolute;
+                position: fixed;
                 -webkit-box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 border: 1px solid #c8c8c8;
                 width: 12.5rem;
+                top: calc(var(--profileMenuHeight) + var(--cMenuHeight));
                 li {
                     a {
                         padding: 0.75rem;
@@ -384,8 +404,10 @@
         .p-menubar {
             .p-menubar-root-list {
                 .p-submenu-list {
+                    position: absolute;
                     width: 10rem;
                     left: -96px;
+                    top: unset;
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {
@@ -394,7 +416,10 @@
                             margin-right: 0;
                         }
                         .p-menuitem-text, .p-submenu-icon {
-                            display: none;
+                            opacity: 0;
+                            max-width: 0px;
+                            margin-left: 0;
+                            transition: max-width 0.5s, opacity 0.5s ease-out;
                         }
                     }
                     >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
