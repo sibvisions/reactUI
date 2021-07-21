@@ -40,6 +40,7 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
+    enabled?: boolean
 }
 
 enum Navigation {
@@ -73,7 +74,8 @@ type CellEditor = {
     tabNavigationMode: number,
     selectedRow: any,
     className?: string,
-    readonly?: boolean
+    readonly?: boolean,
+    tableEnabled?: boolean
 }
 
 /** Interface for selected cells */
@@ -196,7 +198,7 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        !props.readonly ?
+        (!props.readonly && props.tableEnabled !== false) ?
             (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
                     <div ref={wrapperRef}>
@@ -211,13 +213,13 @@ const CellEditor: FC<CellEditor> = (props) => {
                                 setEdit(true);
                             }
                         }}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => { setWaiting(true); setEdit(true) })}
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
                     </div>
                 ) : (!edit ?
                     <div
                         className="cell-data"
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale, () => setEdit(true))}
+                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                     </div>
                     :
                     <div ref={wrapperRef}>
@@ -225,7 +227,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     </div>)
             : <div
                 className="cell-data">
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.contentStore.locale)}
+                {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
             </div>
     )
 }
@@ -974,7 +976,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                             tabNavigationMode={tabNavigationMode}
                             selectedRow={selectedRow}
                             className={className}
-                            readonly={columnMetaData?.readonly} />
+                            readonly={columnMetaData?.readonly}
+                            tableEnabled={props.enabled} />
                     }
                 }
                 }

@@ -208,7 +208,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 inputRef={numberInput}
                 className="rc-editor-number"
                 useGrouping={useGrouping}
-                locale={context.contentStore.locale}
+                locale={context.appSettings.locale}
                 prefix={prefixLength}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}

@@ -9,5 +9,6 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     languageResource: string
     lostPasswordEnabled: boolean
     preserveOnReload: boolean
+    applicationLayout: "standard"|"corporation" |"modern"
 }
 export default ApplicationMetaDataResponse;

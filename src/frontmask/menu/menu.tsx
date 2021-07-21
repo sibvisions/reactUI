@@ -4,20 +4,24 @@ import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 
 /** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
+import { useHistory } from "react-router";
+import { Button } from "primereact/button";
+import { MenuItem } from "primereact/menuitem";
 
 /** Hook imports */
-import { useMenuCollapser, useWindowObserver, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation } from '../../main/components/zhooks'
+import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation, useDeviceStatus } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
-import { MenuItem } from "primereact/api";
+//import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
-import { Button } from "primereact/button";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
-import { useHistory } from "react-router";
+import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
+import { ApplicationSettingsResponse } from "../../main/response";
+
 
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
@@ -29,22 +33,78 @@ interface IMenu extends IForwardRef {
     showMenuMini:boolean
 }
 
-export type VisibleButtons = {
-    reload:boolean
-    rollback:boolean
-    save:boolean
-}
-
-export const ProfileMenu = () => {
+export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
-    const { contentStore: { currentUser: { profileImage } } } = useContext(appContext);
+    // const { 
+    //     contentStore: { 
+    //         currentUser: { profileImage }, 
+    //         setActiveScreen,
+    //         activeScreens
+    //     },
+    //     server: {
+    //         sendRequest
+    //     },
+    //     subscriptions: { 
+    //         emitSelectedMenuItem
+    //      } 
+    // } = useContext(appContext);
+    const context = useContext(appContext);
     const slideOptions = useProfileMenuItems();
+    /** History of react-router-dom */
+    const history = useHistory();
+
+    /** Current state of translations */
+    const translations = useTranslation();
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
+
+    const { visibleButtons } = props;
+
+    const deviceStatus = useDeviceStatus();
     
-    return <div className="profile-menu">
-        <Menubar
-            style={profileImage ? {"--profileImage": `url(data:image/jpeg;base64,${profileImage})`} : {}}
-            model={slideOptions}/>
-    </div>
+    return (
+        <>
+            <Button
+                icon="fa fa-home"
+                className="menu-upper-buttons"
+                onClick={() => {
+                    const closeReq = createCloseScreenRequest();
+                    closeReq.componentId = context.contentStore.activeScreens[0];
+                    context.contentStore.setActiveScreen();
+                    context.subscriptions.emitSelectedMenuItem("");
+                    showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
+                    history.push('/home')
+                }}
+                tooltip="Home"
+                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
+            {visibleButtons.save && <Button
+                icon="fa fa-save"
+                className="menu-upper-buttons"
+                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
+                tooltip={translations.get("Save")}
+                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
+            {(visibleButtons.reload || visibleButtons.rollback) &&
+                <Button
+                    icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                    className="menu-upper-buttons"
+                    onClick={() => {
+                        if (visibleButtons.reload && !visibleButtons.rollback) {
+                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
+                        }
+                        else {
+                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
+                        }
+                    }}
+                    tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
+            <div className="profile-menu">
+                <Menubar
+                    style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
+                    model={slideOptions} />
+            </div>
+        </>
+    )
 }
 
 /**
@@ -55,14 +115,11 @@ const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
 
-    /** Flag if menu should be collapsed based on windowsize */
-    const windowSize = useWindowObserver();
+    /** The current state of device-status */
+    const deviceStatus = useDeviceStatus();
 
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
@@ -85,16 +142,14 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.contentStore.visibleButtons);
+    /** State of button-visibility */
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
+
+    /** State of menu-visibility */
+    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** get menu items */
     const menuItems = useMenuItems()
-
-    /** History of react-router-dom */
-    const history = useHistory();
-
-    /** Current state of translations */
-    const translations = useTranslation()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -108,39 +163,58 @@ const Menu: FC<IMenu> = (props) => {
     },[props.forwardedRef])
 
     /** 
-     * The menu subscribes to the screen name, so everytime the screen name changes the state of the menu screen title,
+     * The standard-menu subscribes to the screen name, selectedMenuItem and app-settings, so everytime these properties change the state
      * will get updated.
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('x', (appName:string) => {
+        context.subscriptions.subscribeToScreenName('s-menu', (appName: string) => {
             setScreenTitle(appName)
         });
-        context.subscriptions.subscribeToSelectedMenuItem((menuItem:string) => setSelectedMenuItem(menuItem));
-        context.subscriptions.subscribeToAppSettings((reload:boolean, rollback:boolean, save:boolean) => setVisibleButtons({ reload: reload, rollback: rollback, save: save }));
+        context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+            setMenuVisibility({
+                menuBar: appSettings.menuBar,
+                toolBar: appSettings.toolBar
+            })
+        });
 
         return () => {
-            context.subscriptions.unsubscribeFromScreenName('x');
+            context.subscriptions.unsubscribeFromScreenName('s-menu');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
-            context.subscriptions.unsubscribeFromAppSettings();
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                });
+                setMenuVisibility({
+                    menuBar: appSettings.menuBar,
+                    toolBar: appSettings.toolBar
+                })
+            });
         }
-    },[context.subscriptions]);
+    }, [context.subscriptions]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
-            if (!context.contentStore.menuModeAuto) {
-                context.contentStore.setMenuModeAuto(true)
+            if (!context.appSettings.menuModeAuto) {
+                context.appSettings.setMenuModeAuto(true)
             }
             else {
-                if (!windowSize) {
+                if (deviceStatus === "Small" || deviceStatus === "Mini") {
                     closeOpenedMenuPanel();
                     context.subscriptions.emitMenuCollapse(0);
                 }
-                    
                 else
                     context.subscriptions.emitMenuCollapse(1);
             }
-    },[context.contentStore, context.subscriptions, windowSize])
+    },[context.contentStore, context.subscriptions, deviceStatus])
 
     useEffect(() => {
         if (menuItems) {
@@ -184,8 +258,8 @@ const Menu: FC<IMenu> = (props) => {
                 if (testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.remove("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_BIG;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
                         fadeRef.current.style.setProperty('display', 'none');
                     }
                 }
@@ -194,8 +268,8 @@ const Menu: FC<IMenu> = (props) => {
                 if (!testRef.classList.contains("menu-collapsed")) {
                     testRef.classList.add("menu-collapsed");
                     if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_SMALL;
+                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
+                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
                         fadeRef.current.style.removeProperty('display');
                     }
                     closeOpenedMenuPanel();
@@ -215,7 +289,7 @@ const Menu: FC<IMenu> = (props) => {
                 menuRef.removeEventListener('mouseleave', hoverCollapse);
             }
         }
-    },[menuCollapsed, props.forwardedRef, context.contentStore.LOGO_BIG, context.contentStore.LOGO_SMALL, closeOpenedMenuPanel]);
+    },[menuCollapsed, props.forwardedRef, context.appSettings.LOGO_BIG, context.appSettings.LOGO_SMALL, closeOpenedMenuPanel]);
 
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
@@ -235,7 +309,7 @@ const Menu: FC<IMenu> = (props) => {
      */
     const handleToggleClick = () => {
         closeOpenedMenuPanel();
-        context.contentStore.setMenuModeAuto(!context.contentStore.menuModeAuto)
+        context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
         context.subscriptions.emitMenuCollapse(2);
     }
 
@@ -247,7 +321,7 @@ const Menu: FC<IMenu> = (props) => {
         )}>
             <div className={"menu-topbar"}>
                 <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                    <img className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
+                    <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                 </div>
                 <div className="menu-upper">
                     <div className="menu-upper-left">
@@ -259,53 +333,19 @@ const Menu: FC<IMenu> = (props) => {
                         <span className="menu-screen-title">{screenTitle}</span>
                     </div>
                     <div className="menu-upper-right">
-                        <Button
-                            icon="fa fa-home"
-                            className="menu-upper-buttons"
-                            style={{ marginRight: "1rem" }}
-                            onClick={() => {
-                                const closeReq = createCloseScreenRequest();
-                                closeReq.componentId = context.contentStore.activeScreens[0];
-                                context.contentStore.setActiveScreen();
-                                context.subscriptions.emitSelectedMenuItem("");
-                                showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
-                                history.push('/home')
-                            }} 
-                            tooltip="Home"
-                            tooltipOptions={{ style: {opacity: "0.85"} }} />
-                        {visibleButtons.save && <Button
-                            icon="fa fa-save"
-                            className="menu-upper-buttons"
-                            style={{ marginRight: "1rem" }}
-                            onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)} 
-                            tooltip={translations.get("Save")}
-                            tooltipOptions={{ style: {opacity: "0.85"} }} />}
-                        {(visibleButtons.reload || visibleButtons.rollback) &&
-                            <Button
-                                icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
-                                className="menu-upper-buttons"
-                                style={{ marginRight: "1rem" }}
-                                onClick={() => {
-                                    if (visibleButtons.reload && !visibleButtons.rollback) {
-                                        showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
-                                    }
-                                    else {
-                                        showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
-                                    }
-                                }} 
-                                tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
-                                tooltipOptions={{ style: {opacity: "0.85"} }} />}
-                        <ProfileMenu />
+                        <ProfileMenu visibleButtons={visibleButtons} />
                     </div>
                 </div>
             </div>
-            <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
-                <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
-                    <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.contentStore.LOGO_SMALL : context.contentStore.LOGO_BIG)} alt="logo" />
+            {menuVisibility.menuBar &&
+                <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
+                    <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
+                        <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                    </div>
+                    <PanelMenu model={menuItems} ref={panelMenu} />
+                    {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                 </div>
-                <PanelMenu model={menuItems} ref={panelMenu} />
-                {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
-            </div>
+            }
         </div>
     )
 }

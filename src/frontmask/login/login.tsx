@@ -79,7 +79,7 @@ const Login: FC = () => {
                 loggedIn={false} />
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
-                    <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.contentStore.LOGO_LOGIN} alt="logo" />
+                    <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
                 </div>
                 {!showResetMask ? 
                 <div className="p-fluid">
@@ -105,12 +105,12 @@ const Login: FC = () => {
                     </div>
                     <div className={concatClassnames(
                         "login-extra-options",
-                        context.contentStore.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
+                        context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
                         <div className="login-cbx-container">
                             <Checkbox inputId="rememberMe" className="remember-me-cbx" checked={rememberMe} onChange={(event) => setRememberMe(event.checked)} />
                             <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
                         </div>
-                        {context.contentStore.applicationMetaData.lostPasswordEnabled && 
+                        {context.appSettings.applicationMetaData.lostPasswordEnabled && 
                             <Button 
                                 className="lost-password-button" 
                                 label={translations.get("Lost password")} 

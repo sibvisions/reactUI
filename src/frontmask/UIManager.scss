@@ -9,6 +9,9 @@
 .reactUI{
   height: 100vh;
   display: flex;
+  &.corporate {
+    flex-direction: column;
+  }
 }
 
 .main {
@@ -18,11 +21,18 @@
   flex-direction: column;
   overflow: hidden;
 
-  &--with-menu {
+  &--with-s-menu {
     margin-top: calc(var(--menuHeight) + 10px);
     margin-left: calc(var(--menuWidth) + 10px);
     margin-bottom: 10px;
     margin-right: 10px;
+  }
+
+  &--with-c-menu {
+    margin: 10px;
+    &.toolbar-visible {
+      margin: 10px 10px 10px calc(var(--cMenuToolBarWidth) + 10px);
+    }
   }
 }
 

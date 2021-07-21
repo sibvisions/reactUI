@@ -25,7 +25,8 @@ import { ApplicationMetaDataResponse,
          LanguageResponse, 
          MessageResponse,
          LoginResponse,
-         ApplicationSettingsResponse} from "./response";
+         ApplicationSettingsResponse,
+         DeviceStatusResponse} from "./response";
 import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -33,6 +34,7 @@ import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
 import { ToastMessageType } from "primereact/toast";
+import AppSettings from "./AppSettings";
 
 /** Type for query */
 type queryType = {
@@ -52,9 +54,10 @@ class Server {
      * @param history - the history
      * @param openRequests - the current open requests
      */
-    constructor(store: ContentStore, subManager:SubscriptionManager, history?: History<any>) {
-        this.contentStore = store
-        this.subManager = subManager
+    constructor(store: ContentStore, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
+        this.contentStore = store;
+        this.subManager = subManager;
+        this.appSettings = appSettings;
         this.history = history;
         this.openRequests = new Map<any, Promise<any>>();
     }
@@ -70,8 +73,10 @@ class Server {
 
     /** Contentstore instance */
     contentStore: ContentStore;
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager:SubscriptionManager;
+    /** AppSettings instance */
+    appSettings:AppSettings;
     /** the react routers history object */
     history?:History<any>;
     /** a map of still open requests */
@@ -193,7 +198,8 @@ class Server {
         .set(RESPONSE_NAMES.APPLICATION_PARAMETERS, this.applicationParameters.bind(this))
         .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this))
         .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
-        .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this));
+        .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
+        .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -216,7 +222,7 @@ class Server {
      */
     applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
-        this.contentStore.setApplicationMetaData(metaData);
+        this.appSettings.setApplicationMetaData(metaData);
 
     }
 
@@ -252,7 +258,7 @@ class Server {
      * @param login - the loginDataResponse
      */
     login(login: LoginResponse){
-        this.contentStore.setLoginMode(login.mode);
+        this.appSettings.setLoginMode(login.mode);
         this.contentStore.reset();
     }
 
@@ -540,7 +546,7 @@ class Server {
 
     /**
      * Fetches the languageResource and fills the translation map
-     * @param langData 
+     * @param langData - the language data
      */
     language(langData:LanguageResponse) {
         this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
@@ -551,10 +557,20 @@ class Server {
         }))
     }
 
+    /** 
+     * Sets the application-settings and notifies the subscribers
+     * @param appSettings
+     */
     applicationSettings(appSettings:ApplicationSettingsResponse) {
-        this.contentStore.setAppSettings(appSettings)
-        this.subManager.emitAppSettings(appSettings.reload, appSettings.rollback, appSettings.save);
-        this.subManager.emitChangePasswordEnabled(appSettings.changePassword);
+        this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
+        this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
+        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
+        this.subManager.emitAppSettings(appSettings);
+    }
+
+    deviceStatus(deviceStatus:DeviceStatusResponse) {
+        this.appSettings.setDeviceStatus(deviceStatus.layoutMode);
+        this.subManager.emitDeviceMode(deviceStatus.layoutMode);
     }
 
     /** ----------ROUTING---------- */

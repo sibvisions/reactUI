@@ -56,7 +56,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         setDialogVisible(false)
     };
 
-    const isReset = context.contentStore.loginMode === "changeOneTimePassword";
+    const isReset = context.appSettings.loginMode === "changeOneTimePassword";
 
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -81,7 +81,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.username = username;
                 loginReq.password = password;
                 loginReq.newPassword = newPassword;
-                loginReq.mode = context.contentStore.loginMode;
+                loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
                 showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
                 context.subscriptions.emitRegisterCustom();

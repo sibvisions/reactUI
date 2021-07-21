@@ -1,23 +1,24 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { MenuItem, MenuItemCommandParams } from "primereact/api";
+import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../../main/AppProvider";
 import { createLogoutRequest } from "../../../main/factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { ApplicationSettingsResponse } from "../../response";
 
 
 const useProfileMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of translations */
-    const translations = useTranslation()
+    const translations = useTranslation();
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
     
     const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
 
-    const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.contentStore.changePasswordEnabled);
+    const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.appSettings.changePasswordEnabled);
 
     /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
     const sendLogout = useCallback(() => {
@@ -28,9 +29,9 @@ const useProfileMenuItems = () => {
     }, [context.server, context.contentStore]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToChangePassword((changePassword:boolean) => setChangePwEnabled(changePassword));
+        context.subscriptions.subscribeToAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
 
-        return () => context.subscriptions.unsubscribeFromChangePassword();
+        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
     },[])
     
     useEffect(() => {

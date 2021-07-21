@@ -136,7 +136,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     const alreadySaved = useRef<boolean>(false);
 
-    setDateLocale(context.contentStore.locale);
+    setDateLocale(context.appSettings.locale);
 
     useFetchMissingData(compId, props.dataRow);
 

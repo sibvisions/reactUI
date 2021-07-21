@@ -1,10 +1,16 @@
 /** Other imports */
+import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
+import { ApplicationSettingsResponse, DeviceStatusResponse } from "./response";
+import { DeviceStatus } from "./response/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
     /** Contentstore instance */
     contentStore: ContentStore;
+
+    /** AppSettings instance */
+    appSettings: AppSettings;
 
     /** 
      * A Map which stores components which want to subscribe to their properties, 
@@ -94,10 +100,10 @@ export class SubscriptionManager {
     selectedMenuItemSubscriber:Function = () => {};
 
     /** A function to update which menubuttons should be visible */
-    appSettingsSubscriber:Function = () => {};
+    appSettingsSubscriber = new Array<Function>();
 
-    /** A function to update if changePassword is enabled */
-    changePasswordSubscriber:Function = () => {};
+    /** An array of functions to change the deviceMode state */
+    deviceModeSubscriber = new Array<Function>();
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
@@ -118,7 +124,12 @@ export class SubscriptionManager {
      * @param store - contentstore instance
      */
     constructor(store: ContentStore) {
-        this.contentStore = store
+        this.contentStore = store;
+        this.appSettings = new AppSettings(store, this);
+    }
+
+    setAppSettings(appSettings:AppSettings) {
+        this.appSettings = appSettings
     }
 
     handleCompIdDataProviderSubscriptions(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
@@ -321,17 +332,16 @@ export class SubscriptionManager {
      * @param fn - the function to change the app-settings state
      */
     subscribeToAppSettings(fn: Function) {
-        this.appSettingsSubscriber = fn;
+        this.appSettingsSubscriber.push(fn)
     }
 
     /**
-     * Subscribes the profile-menu to changepassword, to change the changepassword state, to show the changepassword or not
-     * @param fn - the function to change the changepassword state
+     * Subscribes to deviceMode, to change the device-mode state
+     * @param fn - the function to change the device-mode state
      */
-     subscribeToChangePassword(fn: Function) {
-        this.changePasswordSubscriber = fn;
+    subscribeToDeviceMode(fn: Function) {
+        this.deviceModeSubscriber.push(fn)
     }
-    
 
     /**
      * Unsubscribes a component from popUpChanges
@@ -475,17 +485,17 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes login from change-dialog
+     * Unsubscribes from app-settings
      */
-     unsubscribeFromAppSettings() {
-        this.appSettingsSubscriber = () => {};
+     unsubscribeFromAppSettings(fn:Function) {
+        this.appSettingsSubscriber.splice(this.appSettingsSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
-     * Unsubscribes login from change-dialog
+     * Unsubscribes from device-mode
      */
-     unsubscribeFromChangePassword() {
-        this.changePasswordSubscriber = () => {};
+     unsubscribeFromDeviceMode(fn:Function) {
+        this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -574,12 +584,12 @@ export class SubscriptionManager {
      */
     emitMenuCollapse(collapseVal:number) {
         this.menuCollapseSubscriber.forEach(subFunction => subFunction.apply(undefined, [collapseVal]))
-        if (collapseVal === 0 && !this.contentStore.menuCollapsed)
-            this.contentStore.menuCollapsed = true;
-        else if (collapseVal === 1 && this.contentStore.menuCollapsed)
-            this.contentStore.menuCollapsed = false;
+        if (collapseVal === 0 && !this.appSettings.menuCollapsed)
+            this.appSettings.menuCollapsed = true;
+        else if (collapseVal === 1 && this.appSettings.menuCollapsed)
+            this.appSettings.menuCollapsed = false;
         else if (collapseVal === 2)
-            this.contentStore.menuCollapsed = !this.contentStore.menuCollapsed;
+            this.appSettings.menuCollapsed = !this.appSettings.menuCollapsed;
     }
 
     /** When the translation is loaded, notify the subscribers */
@@ -597,19 +607,23 @@ export class SubscriptionManager {
         this.appReadySubscriber.apply(undefined, []);
     }
 
+    /** Tell the subscribers to show the change-password-dialog */
     emitShowDialog() {
         this.changeDialogSubscriber.apply(undefined, [])
     }
 
+    /** Tell the subscribers to change their selectedmenuitem */
     emitSelectedMenuItem(menuItem:string) {
         this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 
-    emitAppSettings(reload:boolean, rollback:boolean, save:boolean) {
-        this.appSettingsSubscriber.apply(undefined, [reload, rollback, save]);
+    /** Tell the subscribers to update their app-settings */
+    emitAppSettings(appSettings:ApplicationSettingsResponse) {
+        this.appSettingsSubscriber.forEach((subFunc) => subFunc.apply(undefined, [appSettings]));
     }
 
-    emitChangePasswordEnabled(cpe:boolean) {
-        this.changePasswordSubscriber.apply(undefined, [cpe]);
+    /** Tell the subscribers to update their app-settings */
+    emitDeviceMode(deviceMode:DeviceStatus) {
+        this.deviceModeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [deviceMode]));
     }
 }
