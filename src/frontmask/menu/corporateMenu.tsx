@@ -4,7 +4,7 @@ import React, { FC, useContext, useEffect, useState } from "react";
 /** 3rd Party imports */
 import { Menubar } from 'primereact/menubar';
 import { SpeedDial } from "primereact/speeddial";
-import { Menu } from 'primereact/menu'
+import { Tooltip } from 'primereact/tooltip'
 
 /** Hook imports */
 import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
@@ -96,6 +96,7 @@ const CorporateMenu:FC = () => {
                     <div className="c-menu-menubar">
                         {menuVisibility.toolBar &&
                             <div style={{ height: "32px", width: "32px" }}>
+                                <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
                                 <SpeedDial model={testItems} direction="down" />
                             </div>
                         }

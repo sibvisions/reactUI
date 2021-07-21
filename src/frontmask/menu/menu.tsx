@@ -77,13 +77,13 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                     history.push('/home')
                 }}
                 tooltip="Home"
-                tooltipOptions={{ style: { opacity: "0.85" } }} />
+                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
             {visibleButtons.save && <Button
                 icon="fa fa-save"
                 className="menu-upper-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
-                tooltipOptions={{ style: { opacity: "0.85" } }} />}
+                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
             {(visibleButtons.reload || visibleButtons.rollback) &&
                 <Button
                     icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
@@ -97,7 +97,7 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                         }
                     }}
                     tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
-                    tooltipOptions={{ style: { opacity: "0.85" } }} />}
+                    tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
             <div className="profile-menu">
                 <Menubar
                     style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
