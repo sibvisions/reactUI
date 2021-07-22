@@ -100,8 +100,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         const prefSize = compSizes.get(component.id)?.preferredSize || { width: 0, height: 0 };
                         if (isRowOrientation) {
                             /** If this isn't the first component add the gap between components*/
-                            if (!bFirst)
+                            if (!bFirst) {
                                 calcWidth += gaps.horizontalGap;
+                            }
                             calcWidth += prefSize.width;
                             /** Check for the tallest component in row orientation */
                             height = Math.max(height, prefSize.height);
@@ -111,8 +112,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 calcWidth = prefSize.width;
                                 anzRows++;
                             }
-                            else if (bFirst)
+                            else if (bFirst) {
                                 bFirst = false;
+                            }
                             /** Check if the current row is wider than the current width of the FlowLayout */
                             width = Math.max(width, calcWidth);
                         }
@@ -257,8 +259,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             })
 
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
-            if((reportSize && !style.width && !style.height) || (flowLayoutInfo.gridHeight !== style.height || flowLayoutInfo.gridWidth !== style.width)){
-                reportSize(flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth);
+            if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
+                console.log("reporting size", id, flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth)
+                reportSize(prefSize.height, prefSize.width);
             }
         }
         return sizeMap;
