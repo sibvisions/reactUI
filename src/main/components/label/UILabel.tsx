@@ -43,7 +43,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         if (labelRef.current && onLoadCallback) {
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
