@@ -80,7 +80,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 const prefSize:Dimension = {height: selectedPanel.height + 48, width: selectedPanel.width};
                 sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
             }
-                
         }
     }, [id, compSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
 
@@ -154,15 +153,17 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         if (panelRef.current) {
             //@ts-ignore
             const tabNav = panelRef.current.nav
-            //@ts-ignore
-            const selectedTab = panelRef.current!["tab_"+props.selectedIndex];
-            const tabNavStyle = window.getComputedStyle(tabNav);
-            if (selectedTab.offsetLeft !== tabNavStyle.getPropertyValue('--sliderLeft') || selectedTab.offsetTop !== tabNavStyle.getPropertyValue('--sliderTop')) {
-                tabNav.style.setProperty("--sliderLeft", `${panelRef.current!["tab_"+props.selectedIndex].offsetLeft}px`);
-                tabNav.style.setProperty("--sliderTop", `${panelRef.current["tab_"+props.selectedIndex].offsetTop + 46}px`);
+            if (panelRef.current["tab_" + props.selectedIndex]) {
+                //@ts-ignore
+                const selectedTab = panelRef.current["tab_" + props.selectedIndex];
+                const tabNavStyle = window.getComputedStyle(tabNav);
+                if (selectedTab.offsetLeft !== tabNavStyle.getPropertyValue('--sliderLeft') || selectedTab.offsetTop !== tabNavStyle.getPropertyValue('--sliderTop')) {
+                    tabNav.style.setProperty("--sliderLeft", `${panelRef.current!["tab_" + props.selectedIndex].offsetLeft}px`);
+                    tabNav.style.setProperty("--sliderTop", `${panelRef.current["tab_" + props.selectedIndex].offsetTop + 46}px`);
+                }
             }
         }
-    }, [layoutStyle])
+    }, [layoutStyle?.width, layoutStyle?.height])
 
     return (
         <LayoutContext.Provider value={componentSizes}>
