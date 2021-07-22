@@ -74,11 +74,17 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      */
     useLayoutEffect(() => {
-        if (onLoadCallback && compSizes && compSizes.size > 0 && props.selectedIndex !== -1) {
-            const selectedPanel = compSizes.get(components[(props.selectedIndex as number)].props.id)?.preferredSize;
-            if (selectedPanel) {
-                const prefSize:Dimension = {height: selectedPanel.height + 48, width: selectedPanel.width};
-                sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
+        if (onLoadCallback) {
+            if (compSizes && compSizes.size > 0 && props.selectedIndex && props.selectedIndex !== -1) {
+                const selectedPanel = compSizes.get(components[(props.selectedIndex as number)].props.id)?.preferredSize;
+                if (selectedPanel) {
+                    const prefSize:Dimension = {height: selectedPanel.height + 48, width: selectedPanel.width};
+                    sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
+                }
+            }
+            // If there are tabs or no tabs are selected, send a default size
+            else {
+                sendOnLoadCallback(id, { height: 0, width: 0 }, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
             }
         }
     }, [id, compSizes, onLoadCallback, components, props.selectedIndex, props.maximumSize, props.minimumSize])
