@@ -60,9 +60,9 @@ const UIButton: FC<IButton> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
-        if (wrapperRef)
+        if (wrapperRef) {
             sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
-
+        }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
 

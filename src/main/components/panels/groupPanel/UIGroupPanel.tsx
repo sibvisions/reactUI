@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useRef } from "react";
+import React, { CSSProperties, FC, useContext, useRef } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -8,6 +8,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { appContext } from "../../../AppProvider";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -16,6 +17,8 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallbac
 const UIGroupPanel: FC<IPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
     /** Current state of all Childcomponents as react children and their preferred sizes */
@@ -64,26 +67,40 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Dimension = {height: height+28, width: width};
-            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
-    return(
-        <div ref={panelRef} className="rc-panel-group" id={props.name} style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutStyle, backgroundColor: props.background}}>
-            <div className="rc-panel-group-caption"><span>{props.text}</span></div>
-            <Layout
-                id={props.id}
-                layoutData={props.layoutData}
-                layout={props.layout}
-                preferredSize={parsePrefSize(props.preferredSize)}
-                minimumSize={parseMinSize(props.minimumSize)}
-                maximumSize={parseMaxSize(props.maximumSize)}
-                reportSize={reportSize}
-                compSizes={componentSizes}
-                components={components}
-                style={{...getStyle()}}/>
+    return (
+        <div
+            ref={panelRef}
+            className="rc-panel-group"
+            id={props.name}
+            style={props.screen_modal_ ?
+                { height: (prefSize?.height as number), width: prefSize?.width }
+                : { ...layoutStyle, backgroundColor: props.background }} >
+            <div
+                className="rc-panel-group-caption">
+                <span>
+                    {props.text}
+                </span>
+            </div>
+            <div 
+                className="rc-panel-group-content"
+                style={{...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
+                <Layout
+                    id={props.id}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    reportSize={reportSize}
+                    compSizes={componentSizes}
+                    components={components}
+                    style={{ ...getStyle() }} />
+            </div>
         </div>
-
     )
 }
 

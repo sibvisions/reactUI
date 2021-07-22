@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useRef } from "react";
+import React, { CSSProperties, FC, useContext, useRef } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -9,6 +9,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../../util";
+import { appContext } from "../../../AppProvider";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -17,6 +18,8 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimensio
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
     /** Current state of all Childcomponents as react children and their preferred sizes */
@@ -67,23 +70,26 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Dimension = {height: height+20, width: width+20};
-            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
     return(
         <div 
             ref={panelRef}
-            id={props.name} 
+            id={props.name}
+            className="rc-scrollpanel" 
             style={props.screen_modal_ 
                 ? { 
                     height: (prefSize?.height as number), 
                     width: prefSize?.width, 
-                    overflow: 'auto'
+                    overflow: 'auto',
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                 } 
                 : {
                     ...layoutStyle, 
-                    overflow: 'auto'
+                    overflow: 'auto',
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                 }
             }
         >

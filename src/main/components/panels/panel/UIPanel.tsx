@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useRef } from "react";
+import React, { FC, useContext, useRef } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -8,12 +8,14 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
 import BaseComponent from "../../BaseComponent";
+import { appContext } from "../../../AppProvider";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent{
     orientation: number,
     layout: string,
     layoutData: string,
+    backgroundImage?: string,
     "mobile.autoclose": boolean,
     screen_modal_?: boolean
     screen_navigationName_?:string
@@ -28,6 +30,8 @@ export interface IPanel extends BaseComponent{
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
     /** Current state of all Childcomponents as react children and their preferred sizes */
@@ -69,20 +73,23 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Dimension = {height, width}
-            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
 
     return(
         <div
+            className="rc-panel"
             ref={panelRef}
             id={props.name} 
             style={props.screen_modal_ ? { 
                 height: prefSize?.height, 
-                width: prefSize?.width 
+                width: prefSize?.width,
+                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
             } : {
                 ...layoutStyle, 
-                backgroundColor: props.background
+                backgroundColor: props.background,
+                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
             }}>
             <Layout
                 id={id}

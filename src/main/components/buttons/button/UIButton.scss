@@ -40,8 +40,8 @@
 
 /// When the border is not painted background and border are transparent and the color is set to standard
 .border-notpainted, .border-notpainted:enabled:hover {
-    background: transparent;
-    border-color: transparent;
+    background: transparent !important;
+    border-color: transparent !important;
     color: var(--standardTextColor);
 }
 
@@ -57,10 +57,16 @@
 
 .p-button.p-button-icon-only {
     width: unset;
+    //height: inherit;
     padding: 0px 0.5rem;
     .rc-button-icon {
         align-self: center;
     }
+}
+
+.rc-button.p-button.p-button-icon-only {
+    width: inherit;
+    height: inherit;
 }
 
 
