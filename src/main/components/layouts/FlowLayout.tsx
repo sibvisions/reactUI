@@ -260,7 +260,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
-                console.log("reporting size", id, flowLayoutInfo.gridHeight, flowLayoutInfo.gridWidth)
                 reportSize(prefSize.height, prefSize.width);
             }
         }
