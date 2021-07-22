@@ -19,7 +19,7 @@ const Dummy: FC<BaseComponent> = (props) => {
     const ref = useRef<HTMLSpanElement>(null);
 
     useLayoutEffect(() => {
-        console.log(props)
+        console.log(props.id, props)
     },[])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -31,7 +31,7 @@ const Dummy: FC<BaseComponent> = (props) => {
 
     return(
         <span ref={ref} style={layoutStyle}>
-           {`Unsupported UI Component "${props.className}"`}
+           {`Unsupported UI Component "${props.className} ${props.id}"`}
         </span>
     )
 }
