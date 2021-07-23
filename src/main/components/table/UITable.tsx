@@ -118,6 +118,14 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
+    const showDropDownArrow = useCallback(() => {
+        if (columnMetaData?.cellEditor.className === "LinkedCellEditor"
+            || columnMetaData?.cellEditor.className === "DateCellEditor") {
+            return true;
+        }
+        return false;
+    }, [columnMetaData])
+
     /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
     useEffect(() => {
         if (props.selectedRow) {
@@ -214,12 +222,23 @@ const CellEditor: FC<CellEditor> = (props) => {
                             }
                         }}>
                         {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
+                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
                     </div>
                 ) : (!edit ?
                     <div
                         className="cell-data"
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
                         {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
+                        {showDropDownArrow() &&
+                            <div style={{ float: "right" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
+                                <i
+                                    style={{
+                                        visibility: props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1]) ?
+                                            "visible" : "hidden"
+                                    }}
+                                    className="pi pi-chevron-down cell-editor-arrow"
+                                />
+                            </div>}
                     </div>
                     :
                     <div ref={wrapperRef}>
@@ -228,6 +247,7 @@ const CellEditor: FC<CellEditor> = (props) => {
             : <div
                 className="cell-data">
                 {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
+                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
             </div>
     )
 }
