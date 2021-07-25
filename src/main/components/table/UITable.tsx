@@ -1245,7 +1245,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     height: layoutStyle?.height as number - 2,
                     width: layoutStyle?.width as number - 2,
                     outline: "none",
-                    ...(props.autoResize === false ? {"--table-width": `${estTableWidth}px`} : {})
                 } as any}
                 tabIndex={0}
                 onKeyDown={(event) => handleTableKeys(event)}
