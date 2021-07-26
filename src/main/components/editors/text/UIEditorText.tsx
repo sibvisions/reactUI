@@ -5,6 +5,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
+import { Editor } from "primereact/editor";
 
 /** Hook imports */
 import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
@@ -36,7 +37,8 @@ export interface IEditorText extends IEditor {
 enum FieldTypes {
     TEXTFIELD = 0,
     TEXTAREA = 1,
-    PASSWORD = 2
+    PASSWORD = 2,
+    HTML = 3
 }
 
 /**
@@ -105,6 +107,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
         else if (contentType?.includes("password")) {
             return FieldTypes.PASSWORD;
+        } 
+        else if (contentType === 'text/html') {
+            return FieldTypes.HTML;
         }
         else {
             return FieldTypes.TEXTFIELD;
@@ -119,6 +124,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
         else if (fieldType === FieldTypes.PASSWORD) {
             return "rc-editor-password";
+        }
+        else if (fieldType === FieldTypes.HTML) {
+            return "rc-editor-html";
         }
         else {
             return "rc-editor-text";
@@ -191,7 +199,58 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     }, [baseProps, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
 
     const primeProps: any = useMemo(() => {
-        return {
+        return fieldType === FieldTypes.HTML ? {
+            onTextChange: (value: string) => setText(value),
+            value: text || "",
+            headerTemplate: (
+                <>
+                <span className="ql-formats">
+                    <select className="ql-size">
+                        <option value="small"></option>
+                        <option selected></option>
+                        <option value="large"></option>
+                        <option value="huge"></option>
+                    </select>
+                </span>
+                <span className="ql-formats">
+                    <select className="ql-font">
+                        <option ></option>
+                        <option value="serif"></option>
+                        <option value="monospace"></option>
+                    </select>
+                </span>
+                <span className="ql-formats">
+                    <button className="ql-bold" aria-label="Bold"></button>
+                    <button className="ql-italic" aria-label="Italic"></button>
+                    <button className="ql-underline" aria-label="Underline"></button>
+                </span>
+                <span className="ql-formats">
+                    <button className="ql-script" value="sub"></button>
+                    <button className="ql-script" value="super"></button>
+                </span>
+                <span className="ql-formats">
+                    <select className="ql-color"></select>
+                    <select className="ql-background"></select>
+                </span>
+                <span className="ql-formats">
+                    <button type="button" className="ql-list" value="ordered" aria-label="Ordered List"></button>
+                    <button type="button" className="ql-list" value="bullet" aria-label="Unordered List"></button>
+                    <select className="ql-align">
+                        <option ></option>
+                        <option value="center"></option>
+                        <option value="right"></option>
+                        <option value="justify"></option>
+                    </select>
+                </span>
+                <span className="ql-formats">
+                    <button className="ql-strike" aria-label="Strike"></button>
+                </span>
+                <span className="ql-formats">
+                    <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
+                </span>
+                </>
+            )
+        } : {
             ref: fieldType !== FieldTypes.PASSWORD ? textRef : undefined,
             inputRef: fieldType === FieldTypes.PASSWORD ? textRef : undefined,
             id: isCellEditor ? undefined : props.name,
@@ -216,18 +275,22 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
-        fieldType === FieldTypes.TEXTAREA ?
-            <InputTextarea
-                {...primeProps}
-                autoResize={false} />
+        fieldType === FieldTypes.HTML ?
+            <Editor 
+                {...primeProps} />
             :
-            fieldType === FieldTypes.PASSWORD ?
-                <Password
+            fieldType === FieldTypes.TEXTAREA ?
+                <InputTextarea
                     {...primeProps}
-                    feedback={false} />
+                    autoResize={false} />
                 :
-                <InputText
-                    {...primeProps} />
+                fieldType === FieldTypes.PASSWORD ?
+                    <Password
+                        {...primeProps}
+                        feedback={false} />
+                    :
+                    <InputText
+                        {...primeProps} />
     )
 }
 export default UIEditorText
