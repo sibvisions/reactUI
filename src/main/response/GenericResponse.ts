@@ -7,5 +7,6 @@ interface GenericResponse extends BaseResponse {
     componentId: string,
     changedComponents: Array<BaseComponent>,
     update: boolean,
+    home: boolean
 }
 export default GenericResponse

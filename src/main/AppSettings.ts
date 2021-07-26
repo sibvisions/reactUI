@@ -94,6 +94,8 @@ export default class AppSettings {
 
     deviceStatus:DeviceStatus = "Full";
 
+    welcomeScreen:string = "";
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
@@ -159,5 +161,9 @@ export default class AppSettings {
 
     setDeviceStatus(deviceStatus:DeviceStatus) {
         this.deviceStatus = deviceStatus;
+    }
+
+    setWelcomeScreen(welcomeScreen:string) {
+        this.welcomeScreen = welcomeScreen;
     }
 }

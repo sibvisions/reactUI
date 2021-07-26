@@ -26,7 +26,8 @@ import { ApplicationMetaDataResponse,
          MessageResponse,
          LoginResponse,
          ApplicationSettingsResponse,
-         DeviceStatusResponse} from "./response";
+         DeviceStatusResponse,
+         WelcomeDataResponse} from "./response";
 import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -199,7 +200,8 @@ class Server {
         .set(RESPONSE_NAMES.LANGUAGE, this.language.bind(this))
         .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
-        .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this));
+        .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
+        .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -269,18 +271,23 @@ class Server {
      */
     generic(genericData: GenericResponse) {
         if (!genericData.update) {
-            const workScreen = genericData.changedComponents[0] as IPanel
-            this.contentStore.setActiveScreen(workScreen.name, workScreen.screen_modal_);
-            if (this.contentStore.openScreenParameters.has(workScreen.name)) {
+            let workScreen:IPanel|undefined
+            if(genericData.changedComponents && genericData.changedComponents.length) {
+                workScreen = genericData.changedComponents[0] as IPanel
+            }
+            this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
+            if (this.contentStore.openScreenParameters.has(genericData.componentId)) {
                 const parameterReq = createSetScreenParameterRequest();
-                parameterReq.componentId = workScreen.name;
-                parameterReq.parameter = this.contentStore.openScreenParameters.get(workScreen.name);
+                parameterReq.componentId = genericData.componentId;
+                parameterReq.parameter = this.contentStore.openScreenParameters.get(genericData.componentId);
                 //TODO: topbar
                 this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-                this.contentStore.openScreenParameters.delete(workScreen.name);
+                this.contentStore.openScreenParameters.delete(genericData.componentId);
             }
         }
-        this.contentStore.updateContent(genericData.changedComponents);
+        if (genericData.changedComponents && genericData.changedComponents.length) {
+            this.contentStore.updateContent(genericData.changedComponents);
+        }
     }
 
     /**
@@ -568,9 +575,21 @@ class Server {
         this.subManager.emitAppSettings(appSettings);
     }
 
+    /**
+     * Sets the device-status in app-settings and triggers an event to update the subscribers
+     * @param deviceStatus - the device-status response
+     */
     deviceStatus(deviceStatus:DeviceStatusResponse) {
         this.appSettings.setDeviceStatus(deviceStatus.layoutMode);
         this.subManager.emitDeviceMode(deviceStatus.layoutMode);
+    }
+
+    /**
+     * Sets the welcome-screen in app-settings
+     * @param welcomeData - the welcome-data response
+     */
+    welcomeData(welcomeData:WelcomeDataResponse) {
+        this.appSettings.setWelcomeScreen(welcomeData.homeScreen);
     }
 
     /** ----------ROUTING---------- */
@@ -594,8 +613,11 @@ class Server {
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
                 const GResponse = (response as GenericResponse);
-                const firstComp = (GResponse.changedComponents[0] as IPanel)
-                if (!GResponse.update && !firstComp.screen_modal_) {
+                let firstComp;
+                if (GResponse.changedComponents && GResponse.changedComponents.length) {
+                    firstComp = GResponse.changedComponents[0] as IPanel
+                }
+                if (!GResponse.update && firstComp && !firstComp.screen_modal_) {
                     if (highestPriority < 2) {
                         highestPriority = 2;
                         routeTo = "home/" + this.contentStore.navigationNames.get(GResponse.componentId);

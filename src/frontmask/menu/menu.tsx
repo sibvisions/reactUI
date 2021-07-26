@@ -16,7 +16,7 @@ import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 //import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
-import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
@@ -74,8 +74,16 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                         closeReq.componentId = context.contentStore.activeScreens[0];
                         context.contentStore.setActiveScreen();
                         context.subscriptions.emitSelectedMenuItem("");
-                        showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar);
-                        history.push('/home')
+                        showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then(() => {
+                            if (context.appSettings.welcomeScreen) {
+                                const openReq = createOpenScreenRequest();
+                                openReq.className = context.appSettings.welcomeScreen;
+                                showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN), topbar);
+                            }
+                            else {
+                                history.push('/home');
+                            }
+                        });
                     }
                 }}
                 tooltip="Home"

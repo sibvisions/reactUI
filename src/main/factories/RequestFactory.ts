@@ -139,7 +139,8 @@ export const createPressButtonRequest = (values?: PressButtonRequest): PressButt
 export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenRequest => {
     const req: OpenScreenRequest = {
         clientId: values?.clientId || getClientId(),
-        componentId: values?.componentId
+        componentId: values?.componentId,
+        className: values?.className
     }
     return req;
 }

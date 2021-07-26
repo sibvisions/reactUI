@@ -20,6 +20,7 @@ enum RESPONSE_NAMES {
     LANGUAGE="language",
     INFORMATION="message.information",
     APPLICATION_SETTINGS="applicationSettings",
-    DEVICE_STATUS="deviceStatus"
+    DEVICE_STATUS="deviceStatus",
+    WELCOME_DATA="welcomeData"
 }
 export default RESPONSE_NAMES

@@ -233,7 +233,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                             <div style={{ float: "right" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
                                 <i
                                     style={{
-                                        visibility: props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1]) ?
+                                        visibility: (props.selectedRow && props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1])) ?
                                             "visible" : "hidden"
                                     }}
                                     className="pi pi-chevron-down cell-editor-arrow"
