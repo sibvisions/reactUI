@@ -449,7 +449,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        if (selectedRow && columnOrder) {
+        if (selectedRow && columnOrder && tableRef.current) {
             if (selectedRow.selectedColumn) {
                 const newCell = {
                     cellIndex: columnOrder.findIndex(column => column === selectedRow.selectedColumn),

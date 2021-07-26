@@ -45,6 +45,12 @@
     color: var(--standardTextColor);
 }
 
+.mouse-border:enabled {
+    background: transparent;
+    border-color: transparent;
+    color: var(--standardTextColor);
+}
+
 /// Show that a button without border is hovered
 .mouse-border:enabled:hover {
     background: var(--background);

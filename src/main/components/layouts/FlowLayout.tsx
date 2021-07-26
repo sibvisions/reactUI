@@ -6,6 +6,7 @@ import {appContext} from "../../AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from ".";
 import { Dimension } from "../util";
+import Margins from "./models/Margins";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.
@@ -25,6 +26,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Margins of the BorderLayout */
+    const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
@@ -143,8 +147,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
 
             const flowLayoutInfo = calculateGrid();
-            const prefSize:Dimension = {width: flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1),
-                                   height: flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)};
+            const prefSize:Dimension = { width: (flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1)) + margins.marginLeft + margins.marginRight,
+                                         height: (flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)) + margins.marginTop + margins.marginBottom };
             
             let left:number;
             let width:number;
