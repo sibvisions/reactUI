@@ -54,6 +54,7 @@
 }
 
 .p-speeddial {
+    z-index: auto;
     position: relative;
     .p-speeddial-button.p-button.p-button-icon-only {
         width: 2rem;
@@ -72,6 +73,12 @@
     .p-speeddial-action {
         width: 2rem;
         height: 2rem;
+    }
+
+    &.p-speeddial-opened {
+        .p-speeddial-list {
+            z-index: 1;
+        }
     }
 }
 

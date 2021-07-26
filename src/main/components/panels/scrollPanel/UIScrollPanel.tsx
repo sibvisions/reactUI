@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -31,10 +31,11 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const panelRef = useRef<any>(null);
     const minusWidth = useRef<boolean>(false);
     const minusHeight = useRef<boolean>(false);
+    const [layoutSize, setLayoutSize] = useState<Dimension>()
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    const testStyle = useMemo(() => {
+    const scrollStyle = useMemo(() => {
         let s:React.CSSProperties;
         /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
         if (props.screen_modal_ && prefSize)
@@ -52,7 +53,6 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {
-
             if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
                 foundHigher = true
             }
@@ -61,8 +61,15 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             }
         });
 
+        if (s.height !== undefined && layoutSize && (s.height as number) < layoutSize.height) {
+            foundHigher = true
+        }
+        if (s.width !== undefined && layoutSize && (s.width as number) < layoutSize.width) {
+            foundWider = true
+        }
+
         if (foundHigher) {
-            (s.width as number) -= 20;
+            (s.width as number) -= 17;
             minusWidth.current = true;
         }
         else {
@@ -70,7 +77,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         }
 
         if (foundWider) {
-            (s.height as number) -= 20;
+            (s.height as number) -= 17;
             minusHeight.current = true;
         }
         else {
@@ -79,7 +86,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
         return s;
 
-    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_])
+    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, layoutSize])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -88,6 +95,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
             const prefSize:Dimension = {height: height + (minusHeight.current ? 20 : 0), width: width + (minusWidth.current ? 20 : 0)};
+            setLayoutSize({height: prefSize.height, width: prefSize.width})
             sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
@@ -122,7 +130,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 compSizes={componentSizes}
                 components={components}
                 alignChildrenIfOverflow={false}
-                style={testStyle}/>
+                style={scrollStyle}/>
         </div>
     )
 }

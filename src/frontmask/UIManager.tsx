@@ -1,5 +1,5 @@
 /** React imports */
-import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import * as _ from 'underscore'
@@ -51,6 +51,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     const menuMini = false;
+
+    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout, [context.appSettings.applicationMetaData])
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -179,9 +181,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const CustomWrapper = props.customAppWrapper;
 
-    return(
-        CustomWrapper ? 
-            <div className="reactUI">
+    return (
+        CustomWrapper ?
+            <div
+                className={concatClassnames(
+                    "reactUI",
+                    appLayout === "corporation" ? "corporation" : ""
+                )}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
                 <CustomWrapper>
                     <LayoutContext.Provider value={componentSize}>
@@ -191,21 +197,25 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     </LayoutContext.Provider>
                 </CustomWrapper>
             </div>
-        : <div className="reactUI corporate">
-            <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-            {context.appSettings.applicationMetaData.applicationLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini}/>}
-            <LayoutContext.Provider value={componentSize}>
-                <div id="reactUI-main" className={concatClassnames(
-                    "main",
-                    context.appSettings.applicationMetaData.applicationLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                    (menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) ? " screen-expanded" : "",
-                    menuMini ? "" : "screen-no-mini",
-                    menuVisibility.toolBar ? "toolbar-visible" : ""
+            : <div
+                className={concatClassnames(
+                    "reactUI",
+                    appLayout === "corporation" ? "corporation" : ""
                 )}>
-                    <ScreenManager forwardedRef={sizeRef} />
-                </div>
-            </LayoutContext.Provider>
-        </div>
+                <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
+                {appLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini} />}
+                <LayoutContext.Provider value={componentSize}>
+                    <div id="reactUI-main" className={concatClassnames(
+                        "main",
+                        appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
+                        ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && appLayout === "standard") ? " screen-expanded" : "",
+                        menuMini ? "" : "screen-no-mini",
+                        menuVisibility.toolBar ? "toolbar-visible" : ""
+                    )}>
+                        <ScreenManager forwardedRef={sizeRef} />
+                    </div>
+                </LayoutContext.Provider>
+            </div>
 
     )
 }

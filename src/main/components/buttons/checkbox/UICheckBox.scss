@@ -4,7 +4,7 @@
     --checkAlign: center;
     --checkPadding: 0;
 
-    display: inline-flex;
+    display: flex;
 
     justify-content: var(--checkJustify);
     align-items: var(--checkAlign);
