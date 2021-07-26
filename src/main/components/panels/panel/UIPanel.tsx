@@ -77,7 +77,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         }
     }
 
-    return(
+    return (
         <div
             className="rc-panel"
             ref={panelRef}

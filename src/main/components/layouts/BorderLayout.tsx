@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useMemo } from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 
 /** Other imports */
 import { LayoutContext } from "../../LayoutContext"
@@ -35,6 +35,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Current state of the calculatedStyle by the FormLayout */
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
+
     /** Margins of the BorderLayout */
     const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
 
@@ -87,9 +91,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 /** The biggest preferredSize height of west, center and east */
                 let centerHeight = Math.max(...[constraintSizes.center.height, constraintSizes.east.height, constraintSizes.west.height]);
                 /** If this layout has a set height by another layout, calculate the centerHeight */
-                if(style.height)
+                if(style.height) {
                     centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
-                return centerHeight - margins.marginTop - margins.marginBottom;
+                }
+                return centerHeight - margins.marginTop - margins.marginBottom
             }
 
             /**
@@ -99,8 +104,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             const getCenterWidth = () => {
                 let centerWidth = constraintSizes.center.width;
                 /** If this layout has a set width by another layout, calculate the width of center */
-                if(style.width)
+                if(style.width) {
                     centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width;
+                }
                 return centerWidth - margins.marginLeft - margins.marginRight;
             }
 
@@ -112,8 +118,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 /** Left of east is the sum of the widths of west and center */
                 let eastLeft = constraintSizes.west.width + constraintSizes.center.width;
                 /** If this layout has a set width by another layout, left of east is the width of the layout substracted by margin right and east width */
-                if(style.width)
+                if(style.width) {
                     eastLeft = style.width as number - constraintSizes.east.width - margins.marginRight
+                }
                 return eastLeft;
             }
 
@@ -126,10 +133,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 let southTop = constraintSizes.north.height + constraintSizes.center.height;
                 /** If this layout has a set width by another layout, top of south is the height of the layout substracted by south height */
                 if(style.height) {
-                    southTop = style.height as number - constraintSizes.south.height;
+                    southTop = style.height as number - constraintSizes.south.height - margins.marginBottom;
                 }
                 /** substract bottom margin */
-                return southTop - margins.marginBottom;
+                return southTop;
             }
 
             /** Sets the style properties for north component */
@@ -180,16 +187,21 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
             /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
             children.forEach(component => {
-                if(component.constraints === "North")
+                if(component.constraints === "North") {
                     sizeMap.set(component.id, northCSS);
-                else if(component.constraints === "South")
+                }
+                else if(component.constraints === "South") {
                     sizeMap.set(component.id, southCSS);
-                else if(component.constraints === "Center")
+                }
+                else if(component.constraints === "Center") {
                     sizeMap.set(component.id, centerCSS);
-                else if (component.constraints === "West")
+                }
+                else if (component.constraints === "West") {
                     sizeMap.set(component.id, westCSS);
-                else if (component.constraints === "East")
+                }
+                else if (component.constraints === "East") {
                     sizeMap.set(component.id, eastCSS);
+                }
             });
             const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]) + margins.marginLeft + margins.marginRight;
             const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height + margins.marginTop + margins.marginBottom;
@@ -197,6 +209,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             if((reportSize && !style.width && !style.height) || (preferredHeight !== style.height || preferredWidth !== style.width)) {
                 reportSize(preferredHeight, preferredWidth)
             }
+            setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative'})
         }
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
@@ -204,7 +217,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div style={{ position: "relative", ...style}}>
+            <div style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>
