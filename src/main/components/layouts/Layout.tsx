@@ -20,6 +20,7 @@ export interface ILayout{
     layout: string,
     layoutData: string,
     preferredSize?: Dimension,
+    popupSize?: Dimension,
     minimumSize?: Dimension,
     maximumSize?: Dimension,
     components: Array<ReactElement>

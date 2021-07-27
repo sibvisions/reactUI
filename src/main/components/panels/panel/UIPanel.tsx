@@ -20,7 +20,8 @@ export interface IPanel extends BaseComponent{
     screen_modal_?: boolean
     screen_navigationName_?:string
     screen_title_?: string,
-    screen_className_?: string
+    screen_className_?: string,
+    screen_size_?: string
 }
 
 /**
@@ -49,16 +50,17 @@ const UIPanel: FC<IPanel> = (baseProps) => {
      * @returns style of panel/layout
      */
     const getStyle = () => {
-        let s:React.CSSProperties;
+        let s:React.CSSProperties = {};
         /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_ && prefSize)
-            s = {...layoutStyle, height: prefSize.height, width: prefSize.width};
-        /** If no prefsize is set but it is a popup, set size to undefined, don't use provided layoutContext style */
-        else if (props.screen_modal_) {
-            s = {...layoutStyle, height: undefined, width: undefined};
+        if (props.screen_modal_) {
+            const screenSize = parsePrefSize(props.screen_size_);
+            if (screenSize) {
+                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
+            }
+            else if (prefSize) {
+                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
+            }
         }
-            
-        /** Use provided layoutContext style*/
         else {
             s = {...layoutStyle}
         }
@@ -102,6 +104,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 preferredSize={parsePrefSize(props.preferredSize)}
                 minimumSize={parseMinSize(props.minimumSize)}
                 maximumSize={parseMaxSize(props.maximumSize)}
+                popupSize={parsePrefSize(props.screen_size_)}
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}

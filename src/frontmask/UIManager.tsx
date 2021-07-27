@@ -208,7 +208,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     <div id="reactUI-main" className={concatClassnames(
                         "main",
                         appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                        ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && appLayout === "standard") ? " screen-expanded" : "",
+                        ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
                         menuMini ? "" : "screen-no-mini",
                         menuVisibility.toolBar ? "toolbar-visible" : ""
                     )}>

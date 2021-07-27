@@ -36,16 +36,21 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
      * @returns style of panel/layout
      */
     const getStyle = () => {
-        let s:React.CSSProperties;
-        /** If GroupPanel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_ && prefSize)
-            s = {...layoutStyle, height: prefSize.height, width: prefSize.width};
-        /** If no prefsize is set but it is a popup, set size to undefined, don't use provided layoutContext style */
-        else if (props.screen_modal_)
-            s = {...layoutStyle, height: undefined, width: undefined};
-        /** Use provided layoutContext style*/
-        else
+        let s:React.CSSProperties = {};
+        /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
+        if (props.screen_modal_) {
+            const screenSize = parsePrefSize(props.screen_size_);
+            if (screenSize) {
+                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
+            }
+            else if (prefSize) {
+                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
+            }
+
+        }
+        else {
             s = {...layoutStyle}
+        }
         s.top = undefined;
         s.left = undefined;
 
@@ -95,10 +100,11 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                     preferredSize={parsePrefSize(props.preferredSize)}
                     minimumSize={parseMinSize(props.minimumSize)}
                     maximumSize={parseMaxSize(props.maximumSize)}
+                    popupSize={parsePrefSize(props.screen_size_)}
                     reportSize={reportSize}
                     compSizes={componentSizes}
                     components={components}
-                    style={{ ...getStyle() }} />
+                    style={getStyle()} />
             </div>
         </div>
     )

@@ -36,16 +36,20 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties;
+        let s:React.CSSProperties = {};
         /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_ && prefSize)
-            s = {...layoutStyle, height: prefSize.height, width: prefSize.width};
-        /** If no prefsize is set but it is a popup, set size to undefined, don't use provided layoutContext style */
-        else if (props.screen_modal_)
-            s = {...layoutStyle, height: undefined, width: undefined}
-        /** Use provided layoutContext style*/
-        else
+        if (props.screen_modal_) {
+            const screenSize = parsePrefSize(props.screen_size_);
+            if (screenSize) {
+                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
+            }
+            else if (prefSize) {
+                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
+            }
+        }
+        else {
             s = {...layoutStyle}
+        }
         if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
             s.top = undefined;
             s.left = undefined;
@@ -128,6 +132,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 preferredSize={parsePrefSize(props.preferredSize)}
                 minimumSize={parseMinSize(props.minimumSize)}
                 maximumSize={parseMaxSize(props.maximumSize)}
+                popupSize={parsePrefSize(props.screen_size_)}
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components}

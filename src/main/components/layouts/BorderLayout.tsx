@@ -243,7 +243,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 height: constraintSizes.south.height,
             }
 
-            let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0 ;
+            let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0;
             let addHGap = hCompCount > 0 ? (hCompCount - 1) * gaps.horizontalGap : 0;
             /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
             children.forEach(component => {
@@ -265,11 +265,22 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             });
             const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]) + margins.marginLeft + margins.marginRight + addHGap;
             const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
-            /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
-            if((reportSize && !style.width && !style.height) || (preferredHeight !== style.height || preferredWidth !== style.width)) {
-                reportSize(preferredHeight, preferredWidth)
+            if (reportSize) {
+                if (baseProps.preferredSize) {
+                    reportSize(baseProps.preferredSize.height, baseProps.preferredSize.width)
+                }
+                else if ((!style.width && !style.height) || (preferredHeight !== style.height || preferredWidth !== style.width)) {
+                    reportSize(preferredHeight, preferredWidth)
+                }
             }
-            setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative'})
+
+            if (baseProps.popupSize) {
+                setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
+            }
+            else {
+                setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative'});
+            }
+            
         }
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
