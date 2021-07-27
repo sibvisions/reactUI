@@ -1,10 +1,11 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useState } from "react";
 
 /** 3rd Party imports */
 import { Menubar } from 'primereact/menubar';
 import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
+import { MenuItem } from "primereact/menuitem";
 
 /** Hook imports */
 import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
@@ -13,14 +14,18 @@ import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
 import { ProfileMenu } from "./menu";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
-import { ApplicationSettingsResponse } from "../../main/response";
-import { Button } from "primereact/button";
+import { ApplicationSettingsResponse, BaseMenuButton } from "../../main/response";
+import { parseIconData } from "../../main/components/compprops";
+import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 
 
 
 const CorporateMenu:FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
@@ -34,13 +39,27 @@ const CorporateMenu:FC = () => {
     /** get menu items */
     const menuItems = useMenuItems();
 
+
+
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
-    const testItems = [
-        {label: "First", icon: "fa fa-arrow-right"},
-        {label: "Second", icon: "fa fa-arrow-left"}
-    ]
+    const handleNewToolbarItems = useCallback((toolbarItems: Array<MenuItem>) => {
+        const tbItems = new Array<MenuItem>();
+        toolbarItems.forEach(item => {
+            const iconData = parseIconData(undefined, item.image)
+            const toolbarItem:MenuItem = {
+                label: item.text,
+                icon: iconData.icon,
+                command: () => showTopBar(item.action(), topbar)
+            }
+            tbItems.push(toolbarItem);
+        });
+        return tbItems
+    }, [topbar])
+
+    /** State of the toolbar-items */
+    const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems(context.contentStore.toolbarItems));
 
     /** 
      * The corporate-menu subscribes to the screen name and app-settings, so everytime these properties change the state
@@ -60,6 +79,7 @@ const CorporateMenu:FC = () => {
                 toolBar: appSettings.toolBar
             })
         });
+        context.subscriptions.subscribeToToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('c-menu');
@@ -74,6 +94,7 @@ const CorporateMenu:FC = () => {
                     toolBar: appSettings.toolBar
                 })
             });
+            context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
         }
     }, [context.subscriptions]);
 
@@ -97,7 +118,7 @@ const CorporateMenu:FC = () => {
                         {menuVisibility.toolBar &&
                             <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                 <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
-                                <SpeedDial model={testItems} direction="down" />
+                                <SpeedDial model={toolbarItems} direction="down" />
                             </div>
                         }
                         <Menubar model={menuItems} />

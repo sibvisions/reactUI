@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
-import { serverMenuButtons, MetaDataResponse, MetaDataReference } from "./response";
+import { ServerMenuButtons, MetaDataResponse, MetaDataReference, BaseMenuButton } from "./response";
 import BaseComponent from "./components/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
@@ -34,13 +34,16 @@ export default class ContentStore{
     replacedContent = new Map<string, BaseComponent>();
 
     /** A Map which stores the menuitems sent by the server, the key is the group of the menuitems and the value is the menuitem */
-    serverMenuItems = new Map<string, Array<serverMenuButtons>>();
+    serverMenuItems = new Map<string, Array<ServerMenuButtons>>();
 
     /** A Map which stores custom menuitems, the key is the group of the menuitems and the value is the menuitem */
-    customMenuItems = new Map<string, Array<serverMenuButtons>>();
+    customMenuItems = new Map<string, Array<ServerMenuButtons>>();
 
-    /** Combines serverMenuItems and customMenuItems */
-    mergedMenuItems = new Map<string, Array<serverMenuButtons>>();
+    /** Combines ServerMenuItems and customMenuItems */
+    mergedMenuItems = new Map<string, Array<ServerMenuButtons>>();
+
+    /** The toolbar-entries sent by the server */
+    toolbarItems = Array<BaseMenuButton>();
 
     /** The current logged in user */
     currentUser: UserData = new UserData();
@@ -686,14 +689,12 @@ export default class ContentStore{
         this.subManager.notifySortDefinitionChange(compId, dataProvider);
     }
 
-    //Custom Screens
-
     /**
      * Adds a menuItem to serverMenuItems or customMenuItems to the contentStore, depending on server sent or not, merges the menuItems
      * @param menuItem - the menuItem
      * @param fromServer - if the server sent the menuItem or if it is custom
      */
-    addMenuItem(menuItem: serverMenuButtons, fromServer:boolean){
+    addMenuItem(menuItem: ServerMenuButtons, fromServer:boolean){
         const menuGroup = fromServer ? this.serverMenuItems.get(menuItem.group) : this.customMenuItems.get(menuItem.group);
         if(menuGroup)
             menuGroup.push(menuItem);
@@ -703,10 +704,22 @@ export default class ContentStore{
         this.mergeMenuButtons();
     }
 
+    /**
+     * Adds a toolbarItem to toolbarItems
+     * @param toolbarItem - the toolbar-item
+     */
+    addToolbarItem(toolbarItem:BaseMenuButton) {
+        if (!this.toolbarItems.some(item => item === toolbarItem)) {
+            this.toolbarItems.push(toolbarItem);
+        }
+    }
+
     /** Merges the server sent menuItems and the custom menuItems */
     mergeMenuButtons() {
         this.mergedMenuItems = new Map([...this.serverMenuItems, ...this.customMenuItems])
     }
+
+    //Custom Screens
 
     /**
      * Adds a customScreen to customContent
@@ -724,7 +737,7 @@ export default class ContentStore{
      * @param customScreen - the function to build the component
      */
     registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement, icon?:string){
-        const menuButton: serverMenuButtons = {
+        const menuButton: ServerMenuButtons = {
             group: group,
 
             componentId: "",

@@ -9,7 +9,7 @@ export type { default as ErrorResponse } from './ErrorResponse';
 export type { default as FetchResponse } from './FetchResponse';
 export type { default as GenericResponse } from './GenericResponse';
 export type { default as LanguageResponse } from './LanguageResponse';
-export type { default as MenuResponse, serverMenuButtons } from './MenuResponse';
+export type { default as MenuResponse, ServerMenuButtons, BaseMenuButton } from './MenuResponse';
 export type { default as MetaDataResponse } from './MetaDataResponse';
 export type { MetaDataReference, NumericColumnDescription, LengthBasedColumnDescription, ColumnDescription } from './MetaDataResponse'
 export { default as RESPONSE_NAMES } from './RESPONSE_NAMES';

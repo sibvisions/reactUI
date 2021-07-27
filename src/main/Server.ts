@@ -311,15 +311,29 @@ class Server {
      * @param menuData - the menuResponse
      */
     menu(menuData: MenuResponse){
-        menuData.entries.forEach(menuItem => {
-            menuItem.action = () => {
-                const openScreenReq = createOpenScreenRequest();
-                openScreenReq.componentId = menuItem.componentId;
-                return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
-            }
-            this.contentStore.addMenuItem(menuItem, true);
-        });
-        this.subManager.emitMenuUpdate();
+        if (menuData.entries && menuData.entries.length) {
+            menuData.entries.forEach(menuItem => {
+                menuItem.action = () => {
+                    const openScreenReq = createOpenScreenRequest();
+                    openScreenReq.componentId = menuItem.componentId;
+                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                }
+                this.contentStore.addMenuItem(menuItem, true);
+            });
+            this.subManager.emitMenuUpdate();
+        }
+        if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
+            menuData.toolBarEntries.forEach(toolbarItem => {
+                toolbarItem.action = () => {
+                    const openScreenReq = createOpenScreenRequest();
+                    openScreenReq.componentId = toolbarItem.componentId;
+                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                }
+                this.contentStore.addToolbarItem(toolbarItem);
+            })
+            this.subManager.emitToolBarUpdate();
+        }
+        
     }
 
     //Dal

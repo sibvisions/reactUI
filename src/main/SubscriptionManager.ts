@@ -113,6 +113,9 @@ export class SubscriptionManager {
      */
     sortDefinitionSubscriber = new Map<string, Map<string, Array<Function>>>();
 
+    /** An array of functions to update the toolbar items */
+    toolbarSubscriber = new Array<Function>();
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -344,6 +347,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes to the toolbar-items, to have the newest toolbar-items
+     * @param fn - the function to update the toolbar-items
+     */
+    subscribeToToolBarItems(fn: Function) {
+        this.toolbarSubscriber.push(fn);
+    }
+
+    /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
      */
@@ -507,6 +518,14 @@ export class SubscriptionManager {
     unsubscribeFromSortDefinitions(compId:string, dataProvider:string, fn: Function) {
         this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.sortDefinitionSubscriber);
     }
+    
+    /**
+     * Unsubscribes a component from toolbar-items
+     * @param fn - the function to update the toolbar-items
+     */
+    unsubscribeFromToolBarItems(fn:Function) {
+        this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
 
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
@@ -625,5 +644,9 @@ export class SubscriptionManager {
     /** Tell the subscribers to update their app-settings */
     emitDeviceMode(deviceMode:DeviceStatus) {
         this.deviceModeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [deviceMode]));
+    }
+
+    emitToolBarUpdate() {
+        this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.toolbarItems]));
     }
 }

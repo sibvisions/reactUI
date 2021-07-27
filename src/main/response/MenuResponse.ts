@@ -1,18 +1,22 @@
 /** Other imports */
 import { BaseResponse } from ".";
 
-/** Interface for serverMenuButtons */
-export type serverMenuButtons = {
+export interface BaseMenuButton {
     componentId: string,
-    group: string,
     text: string,
-    image: string,
-    action: () => Promise<any>,
+    image:string,
+    action: () => Promise<any>
+}
+
+/** Interface for serverMenuButtons */
+export interface ServerMenuButtons extends BaseMenuButton {
+    group: string,
 }
 
 /** Interface for ManuResponse */
-interface MenuResponse extends BaseResponse{
+interface MenuResponse extends BaseResponse {
     componentId: string,
-    entries: Array<serverMenuButtons>
+    entries: Array<ServerMenuButtons>
+    toolBarEntries: Array<BaseMenuButton>
 }
 export default MenuResponse
