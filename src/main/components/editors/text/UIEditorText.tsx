@@ -95,6 +95,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference if escape has been pressed */
     const escapePressed = useRef<boolean>(false)
 
+    const [showSource, setShowSource] = useState<boolean>(false);
+
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
@@ -200,11 +202,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
-            onTextChange: (value: string) => setText(value),
+            onTextChange: showSource ? () => {} : (value: string) => setText(value),
             value: text || "",
             headerTemplate: (
                 <>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <select className="ql-size">
                         <option value="small"></option>
                         <option selected></option>
@@ -212,27 +214,27 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                         <option value="huge"></option>
                     </select>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <select className="ql-font">
                         <option ></option>
                         <option value="serif"></option>
                         <option value="monospace"></option>
                     </select>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button className="ql-bold" aria-label="Bold"></button>
                     <button className="ql-italic" aria-label="Italic"></button>
                     <button className="ql-underline" aria-label="Underline"></button>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button className="ql-script" value="sub"></button>
                     <button className="ql-script" value="super"></button>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <select className="ql-color"></select>
                     <select className="ql-background"></select>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button type="button" className="ql-list" value="ordered" aria-label="Ordered List"></button>
                     <button type="button" className="ql-list" value="bullet" aria-label="Unordered List"></button>
                     <select className="ql-align">
@@ -242,11 +244,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                         <option value="justify"></option>
                     </select>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button className="ql-strike" aria-label="Strike"></button>
                 </span>
-                <span className="ql-formats">
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
+                </span>
+                <span className="ql-formats">
+                    <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>Source</button>
                 </span>
                 </>
             )
@@ -271,15 +276,21 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [baseProps, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.cellEditor_editable_, 
-        props.columnName, props.dataRow, props.id, props.name, text, textAlign]);
+        props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
         fieldType === FieldTypes.HTML ?
-            <Editor 
-                {...primeProps} />
+            <div ref={textRef} style={{ ...layoutStyle, background: props.cellEditor_background_ }} className={getClassName(fieldType)} >
+                <Editor {...primeProps} />
+                {showSource ? <InputTextarea
+                    onChange={event => setText(event.currentTarget.value)}
+                    value={ text || ""}  
+                /> : null}
+            </div>
             :
-            fieldType === FieldTypes.TEXTAREA ?
+            fieldType === FieldTypes.TEXTAREA 
+                ?
                 <InputTextarea
                     {...primeProps}
                     autoResize={false} />

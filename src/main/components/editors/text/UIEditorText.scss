@@ -12,3 +12,28 @@
 .rc-editor-textarea {
     resize: none
 }
+
+.rc-editor-html {
+    position: relative;
+
+    .ql-formats--disabled {
+        pointer-events: none;
+        opacity: .5;
+    }
+
+    .p-editor-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .p-inputtextarea {
+        position: absolute; 
+        top: 40px;
+        left: 0;
+        right: 0;
+        resize: none;
+        width: 100%;
+        height: calc(100% - 40px);
+    }
+}
