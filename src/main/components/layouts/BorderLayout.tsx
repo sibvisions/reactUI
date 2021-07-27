@@ -92,9 +92,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 let centerHeight = Math.max(...[constraintSizes.center.height, constraintSizes.east.height, constraintSizes.west.height]);
                 /** If this layout has a set height by another layout, calculate the centerHeight */
                 if(style.height) {
-                    centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height;
+                    centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height - margins.marginTop - margins.marginBottom;
                 }
-                return centerHeight - margins.marginTop - margins.marginBottom
+                return centerHeight;
             }
 
             /**
@@ -105,9 +105,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 let centerWidth = constraintSizes.center.width;
                 /** If this layout has a set width by another layout, calculate the width of center */
                 if(style.width) {
-                    centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width;
+                    centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width - margins.marginLeft - margins.marginRight;
                 }
-                return centerWidth - margins.marginLeft - margins.marginRight;
+                return centerWidth;
             }
 
             /**
@@ -145,7 +145,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 top: margins.marginTop,
                 left: margins.marginLeft,
                 /** If this layout has a set width by another layout, use the width */
-                width: (style.width as number || constraintSizes.north.width) - margins.marginLeft - margins.marginRight,
+                width: style.width as number - margins.marginLeft - margins.marginRight || Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]),
                 height: constraintSizes.north.height
             }
 
@@ -181,7 +181,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 position: "absolute",
                 top: getSouthTop(),
                 left: margins.marginLeft,
-                width: (style.width as number || constraintSizes.south.width) - margins.marginLeft - margins.marginRight,
+                width: (style.width as number - margins.marginLeft - margins.marginRight || Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width])),
                 height: constraintSizes.south.height,
             }
 

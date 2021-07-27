@@ -54,11 +54,15 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         if (props.screen_modal_ && prefSize)
             s = {...layoutStyle, height: prefSize.height, width: prefSize.width};
         /** If no prefsize is set but it is a popup, set size to undefined, don't use provided layoutContext style */
-        else if (props.screen_modal_)
+        else if (props.screen_modal_) {
             s = {...layoutStyle, height: undefined, width: undefined};
+        }
+            
         /** Use provided layoutContext style*/
-        else
+        else {
             s = {...layoutStyle}
+        }
+            
         if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
             s.top = undefined;
             s.left = undefined;

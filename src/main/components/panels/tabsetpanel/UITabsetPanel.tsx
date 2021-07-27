@@ -159,9 +159,11 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         if (panelRef.current) {
             //@ts-ignore
             const tabNav = panelRef.current.nav
+            console.log(panelRef.current)
             if (panelRef.current["tab_" + props.selectedIndex]) {
                 //@ts-ignore
                 const selectedTab = panelRef.current["tab_" + props.selectedIndex];
+                console.log(selectedTab)
                 const tabNavStyle = window.getComputedStyle(tabNav);
                 if (selectedTab.offsetLeft !== tabNavStyle.getPropertyValue('--sliderLeft') || selectedTab.offsetTop !== tabNavStyle.getPropertyValue('--sliderTop')) {
                     tabNav.style.setProperty("--sliderLeft", `${panelRef.current!["tab_" + props.selectedIndex].offsetLeft}px`);
@@ -169,7 +171,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 }
             }
         }
-    }, [layoutStyle?.width, layoutStyle?.height])
+    }, [layoutStyle?.width, layoutStyle?.height, props.selectedIndex])
 
     return (
         <LayoutContext.Provider value={componentSizes}>
