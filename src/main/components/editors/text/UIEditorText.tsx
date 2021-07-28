@@ -209,9 +209,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             headerTemplate: (
                 <>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <select className="ql-size">
+                    <select className="ql-size" defaultValue="">
                         <option value="small"></option>
-                        <option selected></option>
+                        <option ></option>
                         <option value="large"></option>
                         <option value="huge"></option>
                     </select>
@@ -253,7 +253,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                     <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
                 </span>
                 <span className="ql-formats">
-                    <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>Source</button>
+                    <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>
+                        <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path className="ql-fill" d="M58.059,14.795C55.938,14.23 53.676,15.502 53.11,17.764L36.71,80.254C36.145,82.375 37.417,84.637 39.679,85.202C39.962,85.344 40.386,85.344 40.669,85.344C42.507,85.344 44.203,84.071 44.628,82.233L61.028,19.602C61.593,17.482 60.321,15.361 58.059,14.795ZM30.49,26.247C28.934,24.692 26.248,24.692 24.693,26.247L3.91,47.171C2.355,48.726 2.355,51.413 3.91,52.968L24.552,73.892C25.4,74.74 26.39,75.164 27.521,75.164C28.51,75.164 29.641,74.74 30.348,74.033C31.903,72.478 31.903,69.792 30.348,68.237L12.676,49.999L30.49,32.044C32.045,30.347 32.045,27.802 30.49,26.247ZM96.09,47.171L75.307,26.247C73.752,24.692 71.066,24.692 69.51,26.247C67.955,27.802 67.955,30.488 69.51,32.044L87.324,49.999L69.51,67.954C67.955,69.509 67.955,72.196 69.51,73.751C70.359,74.599 71.348,74.882 72.338,74.882C73.328,74.882 74.459,74.458 75.307,73.609L96.09,52.826C97.645,51.271 97.645,48.726 96.09,47.171Z" />
+                        </svg>
+                    </button>
                 </span>
                 </>
             )
@@ -277,7 +281,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
         }
     }, [baseProps, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
-        length, props.autoFocus, props.cellEditor_background_, props.cellEditor_editable_, 
+        length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
@@ -290,7 +294,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 aria-label={props.ariaLabel}
                 className={[
                     getClassName(fieldType), 
-                    disabled ? null : 'rc-editor-html--disabled'
+                    disabled ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')} 
             >
                 <Editor {...primeProps} />
