@@ -18,7 +18,7 @@ import { UIButton,
         UIRadioButton } from "../components/buttons"
 import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
-import { UIEditorCheckBox,
+import { CellEditorWrapper, UIEditorCheckBox,
         UIEditorChoice,
         UIEditorDate,
         UIEditorImage,
@@ -112,7 +112,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set("RadioButton", props => <UIRadioButton {...props} />)
     .set("CheckBox", props => <UICheckBox {...props} />)
     .set("Label", props => <UILabel {...props} />)
-    .set("Editor", props => <Editor {...props} />)
+    .set("Editor", props => <CellEditorWrapper {...props} />)
     .set("Table", props => <UITable {...props} />)
     .set("Icon", props => <UIIcon {...props} />)
     .set("TextField", props => <UIText {...props} />)

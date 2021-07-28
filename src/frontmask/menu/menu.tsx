@@ -33,7 +33,7 @@ interface IMenu extends IForwardRef {
     showMenuMini:boolean
 }
 
-export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
+export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     // const { 
     //     contentStore: { 
@@ -59,13 +59,34 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const { visibleButtons } = props;
+    /** State of button-visibility */
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     const deviceStatus = useDeviceStatus();
+
+    useEffect(() => {
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            })
+        });
+
+        return () => {
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                })
+            });
+        }
+    }, [context.subscriptions])
     
     return (
         <>
-            <Button
+            {props.showButtons && <Button
                 icon="fa fa-home"
                 className="menu-upper-buttons"
                 onClick={() => {
@@ -88,13 +109,14 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                 }}
                 tooltip="Home"
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
-            {visibleButtons.save && <Button
+            }
+            {props.showButtons && visibleButtons.save && <Button
                 icon="fa fa-save"
                 className="menu-upper-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
-            {(visibleButtons.reload || visibleButtons.rollback) &&
+            {((visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
                 <Button
                     icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
                     className="menu-upper-buttons"
@@ -107,7 +129,7 @@ export const ProfileMenu:FC<{visibleButtons:VisibleButtons}> = (props) => {
                         }
                     }}
                     tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
-                    tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
+                    tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} /> }
             <div className="profile-menu">
                 <Menubar
                     style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
@@ -152,9 +174,6 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
-    /** State of button-visibility */
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
-
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
@@ -183,11 +202,6 @@ const Menu: FC<IMenu> = (props) => {
         });
         context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
-            });
             setMenuVisibility({
                 menuBar: appSettings.menuBar,
                 toolBar: appSettings.toolBar
@@ -198,11 +212,6 @@ const Menu: FC<IMenu> = (props) => {
             context.subscriptions.unsubscribeFromScreenName('s-menu');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
             context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
-                });
                 setMenuVisibility({
                     menuBar: appSettings.menuBar,
                     toolBar: appSettings.toolBar
@@ -343,7 +352,7 @@ const Menu: FC<IMenu> = (props) => {
                         <span className="menu-screen-title">{screenTitle}</span>
                     </div>
                     <div className="menu-upper-right">
-                        <ProfileMenu visibleButtons={visibleButtons} />
+                        <ProfileMenu showButtons />
                     </div>
                 </div>
             </div>

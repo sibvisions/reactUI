@@ -197,11 +197,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     </LayoutContext.Provider>
                 </CustomWrapper>
             </div>
-            : <div
-                className={concatClassnames(
-                    "reactUI",
-                    appLayout === "corporation" ? "corporation" : ""
-                )}>
+            : <div className={concatClassnames("reactUI", appLayout === "corporation" ? "corporation" : "")}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
                 {appLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini} />}
                 <LayoutContext.Provider value={componentSize}>
@@ -216,7 +212,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     </div>
                 </LayoutContext.Provider>
             </div>
-
     )
 }
 export default UIManager

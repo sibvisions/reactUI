@@ -34,7 +34,7 @@ const appSettings = new AppSettings(contentStore, subscriptions);
 /** Server instance */
 const server = new Server(contentStore, subscriptions, appSettings);
 /** API instance */
-const api = new API(server, contentStore);
+const api = new API(server, contentStore, appSettings);
 
 
 contentStore.setSubscriptionManager(subscriptions);
@@ -66,11 +66,11 @@ const AppProvider: FC = ({children}) => {
         // const setTheme = (newTheme: string) => {
         //     setContextState({...contextState, theme: newTheme});
         // }
-        const contentStore = new ContentStore();
+        const contentStore = new ContentStore(history);
         const subscriptions = new SubscriptionManager(contentStore);
         const appSettings = new AppSettings(contentStore, subscriptions);
         const server = new Server(contentStore, subscriptions, appSettings, history);
-        const api = new API(server, contentStore);
+        const api = new API(server, contentStore, appSettings);
         
         contentStore.setSubscriptionManager(subscriptions);
         subscriptions.setAppSettings(appSettings);

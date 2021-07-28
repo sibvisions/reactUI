@@ -12,6 +12,7 @@ import { IPanel } from './components/panels'
 import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
+import { History } from "history";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
@@ -108,6 +109,13 @@ export default class ContentStore{
 
     /** The currently selected menu item */
     selectedMenuItem:string = "";
+
+    /** the react routers history object */
+    history?:History<any>;
+
+    constructor(history?:History<any>) {
+        this.history = history;
+    }
 
     /**
      * Sets the subscription-manager
@@ -366,6 +374,7 @@ export default class ContentStore{
         this.dataProviderSelectedRow.clear();
         this.activeScreens = [];
         this.selectedMenuItem = "";
+        this.toolbarItems = [];
     }
 
     /**
@@ -744,7 +753,7 @@ export default class ContentStore{
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,
             action: () => {
-                window.location.hash = "/home/"+title;
+                this.history?.push("/home/"+title);
                 return Promise.resolve(true);
             }
         }

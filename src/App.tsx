@@ -118,6 +118,10 @@ const App: FC<ICustomContent> = (props) => {
         if (props.customScreenParameter) {
             context.contentStore.addScreenParameter(props.customScreenParameter)
         }
+
+        if (props.customToolbarItems && props.customToolbarItems.length) {
+            context.api.addToolbarItem(props.customToolbarItems);
+        }
     },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */

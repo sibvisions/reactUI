@@ -78,7 +78,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
 
     /** Current state value of input element */
-    const [value, setValue] = useState<number>(selectedRow);
+    const [value, setValue] = useState<number|string>(selectedRow);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -212,7 +212,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 prefix={prefixLength}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
-                value={value}
+                value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g,'').replace(',', '.')) : value}
                 style={{width: '100%'}}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
                 onChange={event => setValue(event.value)}

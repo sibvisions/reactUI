@@ -30,16 +30,11 @@ const CorporateMenu:FC = () => {
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
 
-    /** State of button-visibility */
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
-
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** get menu items */
     const menuItems = useMenuItems();
-
-
 
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
@@ -69,11 +64,6 @@ const CorporateMenu:FC = () => {
     useEffect(() => {
         context.subscriptions.subscribeToScreenName('c-menu', (appName: string) => setScreenTitle(appName));
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
-            });
             setMenuVisibility({
                 menuBar: appSettings.menuBar,
                 toolBar: appSettings.toolBar
@@ -84,11 +74,6 @@ const CorporateMenu:FC = () => {
         return () => {
             context.subscriptions.unsubscribeFromScreenName('c-menu');
             context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
-                });
                 setMenuVisibility({
                     menuBar: appSettings.menuBar,
                     toolBar: appSettings.toolBar
@@ -110,12 +95,12 @@ const CorporateMenu:FC = () => {
                     </div>
                     <span className="menu-screen-title">{screenTitle}</span>
                     <div className="c-menu-profile">
-                        <ProfileMenu visibleButtons={visibleButtons} />
+                        <ProfileMenu showButtons />
                     </div>
                 </div>
                 {menuVisibility.menuBar &&
                     <div className="c-menu-menubar">
-                        {menuVisibility.toolBar &&
+                        {menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
                             <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                 <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
                                 <SpeedDial model={toolbarItems} direction="down" />

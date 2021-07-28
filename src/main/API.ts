@@ -1,8 +1,12 @@
 /** Other imports */
 import Server from "./Server";
 import ContentStore from "./ContentStore";
-import { createCloseScreenRequest, createSetScreenParameterRequest } from "./factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
+import { BaseMenuButton } from "./response";
+import AppSettings from "./AppSettings";
+import { CustomToolbarItem } from "./customTypes";
+import { History } from "history";
 
 /** Contains the API functions */
 class API {
@@ -10,14 +14,21 @@ class API {
     #server:Server;
     /** Contentstore instance */
     #contentStore:ContentStore
+    /** AppSettings instance */
+    #appSettings:AppSettings
+    /** the react routers history object */
+    history?:History<any>;
+
 
     /**
      * @constructor constructs api instance
      * @param server - server instance
      */
-    constructor (server: Server, store:ContentStore) {
-        this.#server = server
-        this.#contentStore = store
+    constructor (server: Server, store:ContentStore, appSettings:AppSettings, history?:History<any>) {
+        this.#server = server;
+        this.#contentStore = store;
+        this.#appSettings = appSettings;
+        this.history = history;
     }
 
     /**
@@ -45,6 +56,46 @@ class API {
         //TODO topbar
         this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
         this.#contentStore.closeScreen(screenName);
+    }
+
+    getToolbarItems() {
+        return [...this.#contentStore.toolbarItems]
+    }
+
+    setToolbarItems(toolBarItems: Array<BaseMenuButton>) {
+        toolBarItems.forEach(item => {
+            if (item.action === undefined) {
+                item.action = () => {
+                    this.history?.push("/home/"+item.componentId);
+                    return Promise.resolve(true);
+                }
+            }
+        })
+        this.#contentStore.toolbarItems = toolBarItems;
+        this.#contentStore.subManager.emitToolBarUpdate();
+    }
+
+    addToolbarItem(toolbarItem: CustomToolbarItem | Array<CustomToolbarItem>) {
+        if (Array.isArray(toolbarItem)) {
+            toolbarItem.forEach(item => {
+                const itemAction = () => {
+                    const openReq = createOpenScreenRequest();
+                    openReq.componentId = item.componentId;
+                    return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                }
+                this.#contentStore.addToolbarItem({ componentId: item.componentId, text: item.text, image: item.image.includes("fa") ? "fa " + item.image : "pi " + item.image, action: itemAction })
+            })
+        }
+        else {
+            const itemAction = () => {
+                const openReq = createOpenScreenRequest();
+                openReq.componentId = toolbarItem.componentId;
+                return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+            }
+            const newItem: BaseMenuButton = { componentId: toolbarItem.componentId, text: toolbarItem.text, image: toolbarItem.image, action: itemAction }
+            this.#contentStore.addToolbarItem(newItem);
+        }
+        this.#contentStore.subManager.emitToolBarUpdate();
     }
 }
 export default API

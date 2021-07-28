@@ -5,12 +5,13 @@ export interface BaseMenuButton {
     componentId: string,
     text: string,
     image:string,
-    action: () => Promise<any>
+    action?: () => Promise<any>
 }
 
 /** Interface for serverMenuButtons */
 export interface ServerMenuButtons extends BaseMenuButton {
     group: string,
+    action: () => Promise<any>
 }
 
 /** Interface for ManuResponse */
