@@ -16,6 +16,11 @@
 .rc-editor-html {
     position: relative;
 
+    &--disabled {
+        pointer-events: none;
+        opacity: .8;
+    }
+
     .ql-formats--disabled {
         pointer-events: none;
         opacity: .5;
@@ -35,5 +40,12 @@
         resize: none;
         width: 100%;
         height: calc(100% - 40px);
+        font-family: monospace;
+        border-radius: 0 0 3px 3px;
+        border: 1px solid #dee2e6 !important;
+
+        &:enabled:focus {
+            box-shadow: none !important;
+        }
     }
 }

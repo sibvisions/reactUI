@@ -200,9 +200,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [baseProps, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
 
+    const disabled = !props.cellEditor_editable_;
+
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
-            onTextChange: showSource ? () => {} : (value: string) => setText(value),
+            onTextChange: showSource || disabled ? () => {} : (value: any) => setText(value.htmlValue),
             value: text || "",
             headerTemplate: (
                 <>
@@ -262,7 +264,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             className: getClassName(fieldType),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,
-            disabled: !props.cellEditor_editable_,
+            disabled,
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
             ariaLabel: props.ariaLabel,
@@ -281,7 +283,16 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
         fieldType === FieldTypes.HTML ?
-            <div ref={textRef} style={{ ...layoutStyle, background: props.cellEditor_background_ }} className={getClassName(fieldType)} >
+            <div 
+                ref={textRef} 
+                style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
+                id={isCellEditor ? undefined : props.name}
+                aria-label={props.ariaLabel}
+                className={[
+                    getClassName(fieldType), 
+                    disabled ? null : 'rc-editor-html--disabled'
+                ].filter(Boolean).join(' ')} 
+            >
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
                     onChange={event => setText(event.currentTarget.value)}
