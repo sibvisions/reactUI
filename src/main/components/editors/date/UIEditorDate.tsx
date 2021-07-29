@@ -76,9 +76,9 @@ const parseMultiple = (
 /**
  * The DateCellEditor displays an input field to enter a date value and a button
  * which opens a datepicker to choose a date and change the value in its databook
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate> = (baseProps) => {
+const UIEditorDate: FC<IEditorDate> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
@@ -91,11 +91,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorDate>(baseProps.id, baseProps);
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -113,8 +110,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
-    /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    /** Extracting onLoadCallback and id from props */
+    const {onLoadCallback, id} = props;
 
     /** Current state of dateFormat for PrimeReact Calendar */
     const dateFormat = props.cellEditor.dateFormat;
@@ -221,7 +218,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         }
         
         onBlurCallback(
-            baseProps, 
+            props, 
             isValidDate(inputDate) ? inputDate.getTime() : (emptyValue ? null : lastValue.current), 
             lastValue.current, 
             () => showTopBar(sendSetValues(

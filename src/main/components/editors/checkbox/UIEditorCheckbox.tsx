@@ -43,18 +43,15 @@ export function getBooleanValue(input: string | boolean | number | undefined) {
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
+const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorCheckBox>(baseProps.id, baseProps)
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -127,7 +124,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     const [checked, setChecked] = useState(getBooleanValue(selectedRow ? selectedRow.data : undefined));
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -183,7 +180,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
             />
-            {baseProps.id !== "" &&
+            {isCellEditor &&
                 <label
                     className={concatClassnames(
                         "rc-editor-checkbox-label",

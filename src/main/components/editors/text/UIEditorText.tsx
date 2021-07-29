@@ -44,9 +44,9 @@ enum FieldTypes {
 /**
  * TextCellEditor is an inputfield which allows to enter text. Based on the contentType the server sends it is decided wether
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText> = (baseProps) => {
+const UIEditorText: FC<IEditorText> = (props) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
@@ -56,11 +56,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorText>(baseProps.id, baseProps);
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -74,7 +71,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
-    /** Extracting onLoadCallback and id from baseProps */
+    /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** The metaData of the dataRow */
@@ -190,7 +187,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         event.stopPropagation();
         if (isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
+                onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -198,7 +195,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 stopCellEditing(event);
             }
         }
-    }, [baseProps, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
+    }, [props, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
 
     const disabled = !props.cellEditor_editable_;
 
@@ -275,12 +272,12 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
             onBlur: () => {
                 if (!escapePressed.current) {
-                    onBlurCallback(baseProps, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                    onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
         }
-    }, [baseProps, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+    }, [props, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 

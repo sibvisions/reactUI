@@ -28,9 +28,9 @@ export interface IEditorChoice extends IEditor{
 /**
  * The ChoiceCellEditor displays images sent by the server which change value by 
  * being clicked different images then will be displayed and the value in the databook will be changed
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
+const UIEditorChoice: FC<IEditorChoice> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
@@ -39,11 +39,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorChoice>(baseProps.id, baseProps);
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -60,8 +57,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
-    /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    /** Extracting onLoadCallback and id from props */
+    const {onLoadCallback, id} = props;
 
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);

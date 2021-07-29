@@ -50,9 +50,9 @@ export interface ScaleType {
 /**
  * NumberCellEditor is an inputfield which only displays numbers, 
  * when the value is changed the databook on the server is changed
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
+const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
 
@@ -65,11 +65,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorNumber>(baseProps.id, baseProps);
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -83,8 +80,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
-    /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    /** Extracting onLoadCallback and id from props */
+    const {onLoadCallback, id} = props;
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
@@ -157,6 +154,13 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 setValue(null as any)
             }
         }
+
+        return () => {
+            if (context.contentStore.activeScreens.indexOf(compId) !== -1 && isCellEditor && numberInput.current) {
+                numberInput.current.blur();
+                //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))
+            }
+        }
     }, [])
 
     /**
@@ -201,7 +205,28 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     });
 
     return (
-        <span aria-label={props.ariaLabel} style={layoutStyle}>
+        (!isCellEditor) ?
+            <span aria-label={props.ariaLabel} style={layoutStyle}>
+                <InputNumber
+                    ref={numberRef}
+                    id={!isCellEditor ? props.name : undefined}
+                    inputRef={numberInput}
+                    className="rc-editor-number"
+                    useGrouping={useGrouping}
+                    locale={context.appSettings.locale}
+                    prefix={prefixLength}
+                    minFractionDigits={scaleDigits.minScale}
+                    maxFractionDigits={scaleDigits.maxScale}
+                    value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
+                    style={{ width: '100%' }}
+                    inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
+                    onChange={event => { console.log(event.value); setValue(event.value) }}
+                    onBlur={() => { console.log('blurring'); onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }}
+                    disabled={!props.cellEditor_editable_}
+                    autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
+                />
+            </span>
+            :
             <InputNumber
                 ref={numberRef}
                 id={!isCellEditor ? props.name : undefined}
@@ -212,16 +237,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 prefix={prefixLength}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
-                value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g,'').replace(',', '.')) : value}
-                style={{width: '100%'}}
+                value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
+                style={layoutStyle}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
-                onChange={event => setValue(event.value)}
-                onBlur={() => onBlurCallback(baseProps, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))}
+                onChange={event => { console.log(event.value); setValue(event.value) }}
+                onBlur={() => { console.log('blurring'); onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }}
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
             />
-        </span>
-
     )
 }
 export default UIEditorNumber

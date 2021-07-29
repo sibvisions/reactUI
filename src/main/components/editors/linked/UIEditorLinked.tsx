@@ -41,9 +41,9 @@ export interface IEditorLinked extends IEditor{
 /**
  * This component displays an input field with a button which provides a dropdownlist with values of a databook
  * when text is entered into the inputfield, the dropdownlist gets filtered
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
+const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
@@ -56,11 +56,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorLinked>(baseProps.id, baseProps);
-
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, baseProps.editorStyle);
+    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
 
     /** ComponentId of the screen */
     const compId = getEditorCompId(props.id, context.contentStore);
@@ -77,8 +74,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Current state of text value of input element */
     const [text, setText] = useState(selectedRow);
 
-    /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    /** Extracting onLoadCallback and id from props */
+    const {onLoadCallback, id} = props;
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
@@ -128,7 +125,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         filterReq.value = value;
 
         if (isCellEditor) {
-            filterReq.columnNames = [baseProps.columnName]
+            filterReq.columnNames = [props.columnName]
         }
         await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
     }, [context.contentStore, context.server, props.cellEditor, props.name])
@@ -199,7 +196,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
         /** If the text is empty, send null to the server */
         if (!inputVal) {
-            onBlurCallback(baseProps, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, context.server), topbar));
+            onBlurCallback(props, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, context.server), topbar));
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -215,11 +212,11 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    onBlurCallback(baseProps, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server), topbar));
+                    onBlurCallback(props, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server), topbar));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
-                    onBlurCallback(baseProps, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, context.server), topbar));
+                    onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, context.server), topbar));
                 }
                     
             }

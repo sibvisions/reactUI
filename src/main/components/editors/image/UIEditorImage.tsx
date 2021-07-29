@@ -23,14 +23,11 @@ export interface IEditorImage extends IEditor{
 
 /**
  *  This component displays an image
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorImage: FC<IEditorImage> = (baseProps) => {
+const UIEditorImage: FC<IEditorImage> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IEditorImage>(baseProps.id, baseProps);
 
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
@@ -44,8 +41,8 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
 
-    /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps
+    /** Extracting onLoadCallback and id from props */
+    const {onLoadCallback, id} = props
 
     /** Extracting alignments from props */
     const {verticalAlignment, horizontalAlignment} = props

@@ -19,6 +19,6 @@ const useFetchMissingData = (compId:string, dataProvider:string) => {
             }
             showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
         }
-    },[])
+    },[dataProvider])
 }
 export default useFetchMissingData
