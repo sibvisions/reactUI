@@ -56,8 +56,10 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
     useEffect(() => {
         const onRowSelection = (newRow: any) => {
             if (newRow) {
+                console.log(newRow, rowIndex, dataProvider)
                 if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === newRow.index)) {
                     if(column && newRow.dataRow) {
+                        console.log(newRow.dataRow[column], selectedRow)
                         setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.index, selectedColumn: newRow.selectedColumn});
                     }
                     else {
@@ -84,7 +86,6 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 setSelectedRow(undefined)
             }
         }
-
         context.subscriptions.subscribeToRowSelection(compId, dataProvider, onRowSelection);
 
         return () => {

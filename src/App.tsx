@@ -120,8 +120,14 @@ const App: FC<ICustomContent> = (props) => {
         }
 
         if (props.customToolbarItems && props.customToolbarItems.length) {
-            context.api.addToolbarItem(props.customToolbarItems);
+            //context.api.addToolbarItem(props.customToolbarItems);
+            context.contentStore.customToolbarItems = props.customToolbarItems;
         }
+
+        if (props.editedMenuItems && props.editedMenuItems.length) {
+            context.contentStore.editedMenuItems = props.editedMenuItems;
+        }
+
     },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */

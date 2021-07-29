@@ -27,7 +27,9 @@ import { ApplicationMetaDataResponse,
          LoginResponse,
          ApplicationSettingsResponse,
          DeviceStatusResponse,
-         WelcomeDataResponse} from "./response";
+         WelcomeDataResponse,
+         ServerMenuButtons,
+         BaseMenuButton} from "./response";
 import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -36,6 +38,7 @@ import { History } from "history";
 import TreePath from "./model/TreePath";
 import { ToastMessageType } from "primereact/toast";
 import AppSettings from "./AppSettings";
+import { CustomToolbarItem, EditableMenuItem } from "./customTypes";
 
 /** Type for query */
 type queryType = {
@@ -310,7 +313,31 @@ class Server {
      * Sets the menuAction for each menuData and passes it to the contentstore and then triggers its update
      * @param menuData - the menuResponse
      */
-    menu(menuData: MenuResponse){
+    menu(menuData: MenuResponse) {
+
+        const checkForEditedItems = (editedList:Array<EditableMenuItem|CustomToolbarItem>, menuItem:ServerMenuButtons|BaseMenuButton, menu:boolean) => {
+            if (editedList.some(editItem => editItem.title === menuItem.text)) {
+                const editedItem = editedList.find(item => item.title === menuItem.text) as EditableMenuItem;
+                if (editedItem) {
+                    if (editedItem.remove) {
+                        return
+                    }
+                    if (editedItem.newTitle) {
+                        menuItem.text = editedItem.newTitle;
+                    }
+                    if (editedItem.newIcon) {
+                        menuItem.image = editedItem.newIcon.includes("fa") ? "fa " + editedItem.newIcon : "pi " + editedItem.newIcon;
+                    }
+                }
+            }
+            if (menu) {
+                this.contentStore.addMenuItem(menuItem as ServerMenuButtons, true);
+            }
+            else {
+                this.contentStore.addToolbarItem(menuItem)
+            }
+        }
+
         if (menuData.entries && menuData.entries.length) {
             menuData.entries.forEach(menuItem => {
                 menuItem.action = () => {
@@ -318,7 +345,8 @@ class Server {
                     openScreenReq.componentId = menuItem.componentId;
                     return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-                this.contentStore.addMenuItem(menuItem, true);
+                checkForEditedItems(this.contentStore.editedMenuItems, menuItem, true)
+                
             });
             this.subManager.emitMenuUpdate();
         }
@@ -329,11 +357,23 @@ class Server {
                     openScreenReq.componentId = toolbarItem.componentId;
                     return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-                this.contentStore.addToolbarItem(toolbarItem);
+                checkForEditedItems(this.contentStore.customToolbarItems, toolbarItem, false);
+            });
+            this.contentStore.customToolbarItems.forEach(customItem => {
+                if (!this.contentStore.toolbarItems.find(item => item.text === customItem.title)) {
+                    const castedItem = customItem as CustomToolbarItem
+                    const itemAction = () => {
+                        const openScreenReq = createOpenScreenRequest();
+                        openScreenReq.componentId = (customItem as CustomToolbarItem).componentId;
+                        return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                    }
+                    const newImage = castedItem.image.includes("fa") ? "fa " + castedItem.image : "pi " + castedItem.image;
+                    const newItem:BaseMenuButton = { componentId: castedItem.componentId, text: castedItem.title, image: newImage, action: itemAction }
+                    this.contentStore.toolbarItems.push(newItem)
+                }
             })
             this.subManager.emitToolBarUpdate();
         }
-        
     }
 
     //Dal

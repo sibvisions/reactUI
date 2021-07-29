@@ -83,7 +83,7 @@ class API {
                     openReq.componentId = item.componentId;
                     return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-                this.#contentStore.addToolbarItem({ componentId: item.componentId, text: item.text, image: item.image.includes("fa") ? "fa " + item.image : "pi " + item.image, action: itemAction })
+                this.#contentStore.addToolbarItem({ componentId: item.componentId, text: item.title, image: item.image.includes("fa") ? "fa " + item.image : "pi " + item.image, action: itemAction })
             })
         }
         else {
@@ -92,7 +92,7 @@ class API {
                 openReq.componentId = toolbarItem.componentId;
                 return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
             }
-            const newItem: BaseMenuButton = { componentId: toolbarItem.componentId, text: toolbarItem.text, image: toolbarItem.image, action: itemAction }
+            const newItem: BaseMenuButton = { componentId: toolbarItem.componentId, text: toolbarItem.title, image: toolbarItem.image, action: itemAction }
             this.#contentStore.addToolbarItem(newItem);
         }
         this.#contentStore.subManager.emitToolBarUpdate();

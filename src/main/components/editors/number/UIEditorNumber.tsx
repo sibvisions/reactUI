@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks"
+import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -220,8 +220,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                     style={{ width: '100%' }}
                     inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
-                    onChange={event => { console.log(event.value); setValue(event.value) }}
-                    onBlur={() => { console.log('blurring'); onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }}
+                    onChange={event => setValue(event.value) }
+                    onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
                     disabled={!props.cellEditor_editable_}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 />
@@ -240,8 +240,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                 style={layoutStyle}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
-                onChange={event => { console.log(event.value); setValue(event.value) }}
-                onBlur={() => { console.log('blurring'); onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }}
+                onChange={event => setValue(event.value) }
+                onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
             />

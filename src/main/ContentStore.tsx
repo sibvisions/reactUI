@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomScreenParameter, ScreenWrapperOptions } from "./customTypes";
+import { CustomScreenParameter, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 import { History } from "history";
@@ -103,6 +103,10 @@ export default class ContentStore{
      * key is the screen name, value are the parameters to be sent.
      */
     closeScreenParameters = new Map<string, any>();
+
+    editedMenuItems = new Array<EditableMenuItem>();
+
+    customToolbarItems = new Array<CustomToolbarItem|EditableMenuItem>();
 
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
@@ -282,7 +286,7 @@ export default class ContentStore{
         componentsToUpdate.forEach(value => {
             const existingComp = this.flatContent.get(value.id) || this.replacedContent.get(value.id) || this.removedContent.get(value.id);
             const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
-            if(existingComp && updateFunction){
+            if(existingComp && updateFunction) {
                 updateFunction(existingComp);
             }
         });
@@ -719,6 +723,7 @@ export default class ContentStore{
      */
     addToolbarItem(toolbarItem:BaseMenuButton) {
         if (!this.toolbarItems.some(item => item === toolbarItem)) {
+            console.log(toolbarItem)
             this.toolbarItems.push(toolbarItem);
         }
     }

@@ -1,7 +1,7 @@
 /** Interface for CustomToolbarItems */
 interface CustomToolbarItem {
     componentId: string,
-    text: string,
+    title: string,
     image:string
 }
 export default CustomToolbarItem;

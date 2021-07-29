@@ -586,10 +586,13 @@ export class SubscriptionManager {
         const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
         const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider);
-        if(rowSubscriber)
+        if(rowSubscriber) {
             this.jobQueue.set("rowSelect_" + dataProvider, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
-        if (screenRowSubs)
+        }
+            
+        if (screenRowSubs) {
             this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
+        }
     }
 
     /** When the menu-items change, call the function of the menu-subscriber */
