@@ -1,11 +1,11 @@
 /** Type for EditableMenuItem */
 type EditableMenuItem = {
-    title: string,
+    screenName: string,
     newTitle?: string,
     newIcon?: string
     remove?: false
 } | {
-    title: string,
+    screenName: string,
     remove: true
 }
 export default EditableMenuItem;

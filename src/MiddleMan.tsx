@@ -20,7 +20,7 @@ export interface ICustomContent {
     screenWrappers?: ScreenWrapperType[]
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
     customScreenParameter?: CustomScreenParameter[]
-    customToolbarItems?: CustomToolbarItem[]
+    customToolbarItems?: Array<EditableMenuItem|CustomToolbarItem>
     editedMenuItems?: EditableMenuItem[]
 }
 

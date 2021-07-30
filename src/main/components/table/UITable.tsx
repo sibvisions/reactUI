@@ -682,7 +682,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
     useEffect(() => {
-            const selectedTds = tableSelect(true, 'tbody > tr:not(.p-highlight) td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr:not(.p-highlight) td.p-highlight');
+            const selectedTds = tableSelect(true, 'tbody > tr td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr td.p-highlight');
             if (selectedTds) {
                 for (const elem of selectedTds) {
                     elem.classList.remove("p-highlight");

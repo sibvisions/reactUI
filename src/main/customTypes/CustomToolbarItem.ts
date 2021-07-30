@@ -1,6 +1,6 @@
 /** Interface for CustomToolbarItems */
 interface CustomToolbarItem {
-    componentId: string,
+    screenName: string,
     title: string,
     image:string
 }

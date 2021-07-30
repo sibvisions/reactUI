@@ -80,19 +80,19 @@ class API {
             toolbarItem.forEach(item => {
                 const itemAction = () => {
                     const openReq = createOpenScreenRequest();
-                    openReq.componentId = item.componentId;
+                    openReq.componentId = item.screenName;
                     return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-                this.#contentStore.addToolbarItem({ componentId: item.componentId, text: item.title, image: item.image.includes("fa") ? "fa " + item.image : "pi " + item.image, action: itemAction })
+                this.#contentStore.addToolbarItem({ componentId: item.screenName, text: item.title, image: item.image.includes("fa") ? "fa " + item.image : "pi " + item.image, action: itemAction })
             })
         }
         else {
             const itemAction = () => {
                 const openReq = createOpenScreenRequest();
-                openReq.componentId = toolbarItem.componentId;
+                openReq.componentId = toolbarItem.screenName;
                 return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
             }
-            const newItem: BaseMenuButton = { componentId: toolbarItem.componentId, text: toolbarItem.title, image: toolbarItem.image, action: itemAction }
+            const newItem: BaseMenuButton = { componentId: toolbarItem.screenName, text: toolbarItem.title, image: toolbarItem.image, action: itemAction }
             this.#contentStore.addToolbarItem(newItem);
         }
         this.#contentStore.subManager.emitToolBarUpdate();

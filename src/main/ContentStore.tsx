@@ -723,7 +723,6 @@ export default class ContentStore{
      */
     addToolbarItem(toolbarItem:BaseMenuButton) {
         if (!this.toolbarItems.some(item => item === toolbarItem)) {
-            console.log(toolbarItem)
             this.toolbarItems.push(toolbarItem);
         }
     }

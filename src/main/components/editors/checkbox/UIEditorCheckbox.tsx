@@ -180,7 +180,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
             />
-            {isCellEditor &&
+            {!isCellEditor &&
                 <label
                     className={concatClassnames(
                         "rc-editor-checkbox-label",

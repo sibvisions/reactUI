@@ -315,65 +315,63 @@ class Server {
      */
     menu(menuData: MenuResponse) {
 
-        const checkForEditedItems = (editedList:Array<EditableMenuItem|CustomToolbarItem>, menuItem:ServerMenuButtons|BaseMenuButton, menu:boolean) => {
-            if (editedList.some(editItem => editItem.title === menuItem.text)) {
-                const editedItem = editedList.find(item => item.title === menuItem.text) as EditableMenuItem;
-                if (editedItem) {
-                    if (editedItem.remove) {
-                        return
-                    }
-                    if (editedItem.newTitle) {
-                        menuItem.text = editedItem.newTitle;
-                    }
-                    if (editedItem.newIcon) {
-                        menuItem.image = editedItem.newIcon.includes("fa") ? "fa " + editedItem.newIcon : "pi " + editedItem.newIcon;
-                    }
+        const handleMenuItems = (entries:Array<ServerMenuButtons|BaseMenuButton>, editedList:Array<EditableMenuItem|CustomToolbarItem>, menu:boolean) => {
+            entries.forEach(entry => {
+                entry.action = () => {
+                    const openScreenReq = createOpenScreenRequest();
+                    openScreenReq.componentId = entry.componentId;
+                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-            }
-            if (menu) {
-                this.contentStore.addMenuItem(menuItem as ServerMenuButtons, true);
-            }
-            else {
-                this.contentStore.addToolbarItem(menuItem)
-            }
+                if (editedList.some(editItem => editItem.screenName === entry.componentId.split(':')[0])) {
+                    const editedItem = editedList.find(item => item.screenName === entry.componentId.split(':')[0]) as EditableMenuItem;
+                    const editedItemIndex = editedList.findIndex(item => item.screenName === entry.componentId.split(':')[0]);
+                    if (editedItem) {
+                        if (editedItem.remove) {
+                            editedList.splice(editedItemIndex, 1);
+                            return
+                        }
+                        if (editedItem.newTitle) {
+                            entry.text = editedItem.newTitle;
+                        }
+                        if (editedItem.newIcon) {
+                            entry.image = editedItem.newIcon.includes("fa") ? "fa " + editedItem.newIcon : "pi " + editedItem.newIcon;
+                        }
+                    }
+                    editedList.splice(editedItemIndex, 1);
+                }
+                if (menu) {
+                    this.contentStore.addMenuItem(entry as ServerMenuButtons, true);
+                }
+                else {
+                    this.contentStore.addToolbarItem(entry)
+                }
+            })
         }
 
         if (menuData.entries && menuData.entries.length) {
-            menuData.entries.forEach(menuItem => {
-                menuItem.action = () => {
-                    const openScreenReq = createOpenScreenRequest();
-                    openScreenReq.componentId = menuItem.componentId;
-                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
-                }
-                checkForEditedItems(this.contentStore.editedMenuItems, menuItem, true)
-                
-            });
+            handleMenuItems(menuData.entries, this.contentStore.editedMenuItems, true)
             this.subManager.emitMenuUpdate();
         }
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
-            menuData.toolBarEntries.forEach(toolbarItem => {
-                toolbarItem.action = () => {
-                    const openScreenReq = createOpenScreenRequest();
-                    openScreenReq.componentId = toolbarItem.componentId;
-                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
-                }
-                checkForEditedItems(this.contentStore.customToolbarItems, toolbarItem, false);
-            });
+            handleMenuItems(menuData.toolBarEntries, this.contentStore.customToolbarItems, false);
+            this.subManager.emitToolBarUpdate();
+        }
+        if (this.contentStore.customToolbarItems && this.contentStore.customToolbarItems.length) {
             this.contentStore.customToolbarItems.forEach(customItem => {
-                if (!this.contentStore.toolbarItems.find(item => item.text === customItem.title)) {
+                if (!this.contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === customItem.screenName)) {
                     const castedItem = customItem as CustomToolbarItem
                     const itemAction = () => {
-                        const openScreenReq = createOpenScreenRequest();
-                        openScreenReq.componentId = (customItem as CustomToolbarItem).componentId;
-                        return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                        this.history?.push("/home/" + (customItem as CustomToolbarItem).screenName);
+                        return Promise.resolve(true)
                     }
                     const newImage = castedItem.image.includes("fa") ? "fa " + castedItem.image : "pi " + castedItem.image;
-                    const newItem:BaseMenuButton = { componentId: castedItem.componentId, text: castedItem.title, image: newImage, action: itemAction }
+                    const newItem:BaseMenuButton = { componentId: castedItem.screenName, text: castedItem.title, image: newImage, action: itemAction }
                     this.contentStore.toolbarItems.push(newItem)
                 }
             })
             this.subManager.emitToolBarUpdate();
         }
+
     }
 
     //Dal
