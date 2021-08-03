@@ -63,37 +63,16 @@ const AppProvider: FC = ({children}) => {
 
     /** Sets the initial state */
     const initState = (): AppContextType => {
-        // const setTheme = (newTheme: string) => {
-        //     setContextState({...contextState, theme: newTheme});
-        // }
-        const contentStore = new ContentStore(history);
-        const subscriptions = new SubscriptionManager(contentStore);
-        const appSettings = new AppSettings(contentStore, subscriptions);
-        const server = new Server(contentStore, subscriptions, appSettings, history);
-        const api = new API(server, contentStore, appSettings);
-        
-        contentStore.setSubscriptionManager(subscriptions);
-        subscriptions.setAppSettings(appSettings);
-
+        initValue.contentStore.history = history;
+        initValue.api.history = history;
+        initValue.server.history = history;
         return {
-            //theme: "dark",
-            //setTheme: setTheme,
-            contentStore: contentStore,
-            server: server,
-            api: api,
-            appSettings: appSettings,
-            subscriptions: subscriptions,
-            ctrlPressed: false,
-            showToast: () => {}
+            ...initValue,
         }
-
     }
 
     /** Current State of the context */
     const [contextState, setContextState] = useState<AppContextType>(initState())
-
-
-
 
     return (
         <appContext.Provider value={contextState}>
