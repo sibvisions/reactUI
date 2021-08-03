@@ -20,6 +20,9 @@ class UserData implements UserDataResponse {
     /** Username of the user */
     userName:string;
 
+    /** Roles of the user */
+    roles:string[];
+
     /**
      * @constructor constructs a new user
      * @param newUser - the user data
@@ -30,6 +33,7 @@ class UserData implements UserDataResponse {
         this.name = newUser?.name || "";
         this.profileImage = newUser?.profileImage;
         this.userName = newUser?.userName || "";
+        this.roles = newUser?.roles || [];
     }
 
 }

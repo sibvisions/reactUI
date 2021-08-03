@@ -1,16 +1,12 @@
-/** React imports */
-import { ReactElement } from "react";
-
 /** Interface for CustomScreens */
 type CustomScreenType = {
-    name: string,
-    screen: ReactElement,
+    id: string,
+    text: string,
     menuGroup: string,
     icon?: string,
     replace?: false,
 } | {
-    name: string,
-    screen: ReactElement,
+    id: string,
     replace: true,
 }
 export default CustomScreenType;

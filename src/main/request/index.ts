@@ -30,3 +30,4 @@ export type { default as SaveRequest } from './SaveRequest';
 export type { default as ReloadRequest } from './ReloadRequest';
 export type { default as UIRefreshRequest } from './UIRefreshRequest';
 export type { default as RollbackRequest } from './RollbackRequest';
+export type { default as ChangesRequest } from './ChangesRequest'

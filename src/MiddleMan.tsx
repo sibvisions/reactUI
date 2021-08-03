@@ -22,6 +22,8 @@ export interface ICustomContent {
     customScreenParameter?: CustomScreenParameter[]
     customToolbarItems?: Array<EditableMenuItem|CustomToolbarItem>
     editedMenuItems?: EditableMenuItem[]
+    onRegister?: Function
+    onMenu?: Function
 }
 
 /**

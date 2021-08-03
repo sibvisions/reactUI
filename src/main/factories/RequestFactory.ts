@@ -27,13 +27,14 @@ import { StartupRequest,
          SaveRequest,
          ReloadRequest,
          UIRefreshRequest,
-         RollbackRequest} from "../request";
+         RollbackRequest,
+         ChangesRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
  * @returns the ClientId from the local storage
  */
-const getClientId = (): string => {
+export const getClientId = (): string => {
     return sessionStorage.getItem("clientId") || "ClientIdNotFound"
 }
 
@@ -434,6 +435,11 @@ export const createReloadRequest = (values?: ReloadRequest): ReloadRequest => {
     return req;
 }
 
+/**
+ * Returns a ui-refresh-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the ui-refresh-request
+ * @returns a ui-refresh-request object
+ */
 export const createUIRefreshRequest = (values?: UIRefreshRequest): UIRefreshRequest => {
     const req: UIRefreshRequest = {
         clientId: values?.clientId || getClientId()
@@ -441,8 +447,25 @@ export const createUIRefreshRequest = (values?: UIRefreshRequest): UIRefreshRequ
     return req;
 }
 
+/**
+ * Returns a rollback-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the rollback-request
+ * @returns a rollback-request object
+ */
 export const createRollbackRequest = (values?: RollbackRequest): RollbackRequest => {
     const req: RollbackRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+/**
+ * Returns a changes-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the changes-request
+ * @returns a changes-request object
+ */
+export const createChangesRequest = (values?: ChangesRequest): ChangesRequest => {
+    const req: ChangesRequest = {
         clientId: values?.clientId || getClientId()
     }
     return req;

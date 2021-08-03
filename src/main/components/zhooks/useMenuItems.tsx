@@ -30,6 +30,7 @@ const useMenuItems = () => {
                     icon: undefined,
                     items: value.map(menuItems => {
                         const iconData = parseIconData(undefined, menuItems.image)
+                        console.log(menuItems)
                         const subMenuItem: MenuItemCustom = {
                             command: e => showTopBar(menuItems.action(), topbar),
                             label: menuItems.text,
@@ -45,13 +46,13 @@ const useMenuItems = () => {
             });
             setMenuItems(primeMenu);
         }
-        receiveNewMenuItems(context.contentStore.mergedMenuItems);
+        receiveNewMenuItems(context.contentStore.menuItems);
         context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);
 
         return () => {
             context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
         }
-    }, [context.subscriptions, context.contentStore.mergedMenuItems]);
+    }, [context.subscriptions, context.contentStore.menuItems]);
 
     return menuItems;
 }

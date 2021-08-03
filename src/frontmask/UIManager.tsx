@@ -182,7 +182,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const CustomWrapper = props.customAppWrapper;
 
     return (
-        CustomWrapper ?
+        (CustomWrapper) ?
             <div
                 className={concatClassnames(
                     "reactUI",

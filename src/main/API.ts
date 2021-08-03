@@ -3,21 +3,15 @@ import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
-import { BaseMenuButton } from "./response";
+import { BaseMenuButton, ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
-import { CustomToolbarItem } from "./customTypes";
+import { CustomScreenType, CustomToolbarItem } from "./customTypes";
 import { History } from "history";
+import { ReactElement } from "react";
 
 /** Contains the API functions */
 class API {
-    /** Server instance */
-    #server:Server;
-    /** Contentstore instance */
-    #contentStore:ContentStore
-    /** AppSettings instance */
-    #appSettings:AppSettings
-    /** the react routers history object */
-    history?:History<any>;
+
 
 
     /**
@@ -26,10 +20,20 @@ class API {
      */
     constructor (server: Server, store:ContentStore, appSettings:AppSettings, history?:History<any>) {
         this.#server = server;
+        console.log(store)
         this.#contentStore = store;
         this.#appSettings = appSettings;
         this.history = history;
     }
+
+    /** Server instance */
+    #server: Server;
+    /** Contentstore instance */
+    #contentStore: ContentStore
+    /** AppSettings instance */
+    #appSettings: AppSettings
+    /** the react routers history object */
+    history?: History<any>;
 
     /**
      * Sends screen-parameters for the given screen to the server.
@@ -56,6 +60,36 @@ class API {
         //TODO topbar
         this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
         this.#contentStore.closeScreen(screenName);
+    }
+
+    registerScreen(id:string, screen:ReactElement) {
+        this.#contentStore.addCustomScreen(id, screen)
+    }
+
+    addMenuItem(menuItem:CustomScreenType) {
+        console.log(menuItem)
+        if (!menuItem.replace) {
+            const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
+            const itemAction = () =>{
+                this.history?.push("/home/"+menuItem.id);
+                return Promise.resolve(true);
+            };
+            const newItem:ServerMenuButtons = { 
+                componentId: menuItem.id, 
+                text: menuItem.text, 
+                group: menuItem.menuGroup, 
+                image: menuItem.icon ? menuItem.icon.substring(0,2) + " " + menuItem.icon : "", 
+                action: itemAction 
+            };
+            if (menuGroup) {
+                menuGroup.push(newItem);
+                console.log(menuGroup)
+            }
+            else {
+                this.#contentStore.menuItems.set(menuItem.menuGroup, [newItem]);
+            }
+        }
+        
     }
 
     getToolbarItems() {

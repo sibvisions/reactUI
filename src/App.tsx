@@ -19,7 +19,7 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createOpenScreenRequest, createStartupRequest, createUIRefreshRequest } from "./main/factories/RequestFactory";
+import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
 import { useEventHandler } from './main/components/zhooks';
@@ -36,7 +36,7 @@ type queryType = {
     baseUrl?: string
 }
 
-type serverFailMessage = {
+type ServerFailMessage = {
     headerMessage:string,
     bodyMessage:string
 }
@@ -73,13 +73,15 @@ const App: FC<ICustomContent> = (props) => {
     const [showTimeOut, setShowTimeOut] = useState<boolean>(false);
 
     /** Reference for the dialog which shows the timeout error message */
-    const dialogRef = useRef<serverFailMessage>({headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server."})
+    const dialogRef = useRef<ServerFailMessage>({headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server."})
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
 
     /** the currently requested componentId */
     let routeMatch = useRouteMatch<{ componentId: string }>("/home/:componentId");
+
+    const ws = useRef<WebSocket|null>(null);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -101,34 +103,6 @@ const App: FC<ICustomContent> = (props) => {
     //     context.contentStore.registerReplaceScreen("Cha-OL", <CustomChartScreen/>);
     //     context.contentStore.registerCustomComponent("Fir-N7_B_DOOPEN", <CustomHelloScreen/>);
     // }, [context.contentStore, registerCustom]);
-
-    /** Sets custom- or replace screens/components when reactUI is used as library based on props */
-    useEffect(() => {
-        props.customScreens?.forEach(s => {
-            if (s.replace) {
-                context.contentStore.registerReplaceScreen(s.name, s.screen)
-            } else {
-                context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
-            }
-        });
-
-        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
-        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
-
-        if (props.customScreenParameter) {
-            context.contentStore.addScreenParameter(props.customScreenParameter)
-        }
-
-        if (props.customToolbarItems && props.customToolbarItems.length) {
-            //context.api.addToolbarItem(props.customToolbarItems);
-            context.contentStore.customToolbarItems = props.customToolbarItems;
-        }
-
-        if (props.editedMenuItems && props.editedMenuItems.length) {
-            context.contentStore.editedMenuItems = props.editedMenuItems;
-        }
-
-    },[context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /** Default values for translation */
     useEffect(() => {
@@ -187,6 +161,18 @@ const App: FC<ICustomContent> = (props) => {
         //     return null;
         // }
 
+        const initWS = (baseURL:string) => {
+            const urlSubstr = baseURL.substring(context.server.BASE_URL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
+            ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
+            ws.current.onopen = () => console.log("ws opened");
+            ws.current.onclose = () => console.log("ws closed");
+            ws.current.onmessage = (e) => {
+                if (e.data === "api/changes") {
+                    context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                }
+            }
+        }
+
         const startUpByURL = (startupReq:StartupRequest) => {
             if(queryParams.appName && queryParams.baseUrl){
                 startupReq.applicationName = queryParams.appName;
@@ -218,7 +204,6 @@ const App: FC<ICustomContent> = (props) => {
                 startupReq.technology,
                 startupReq.deviceMode,
             ].join('::');
-
             const startupRequestCache = sessionStorage.getItem(startupRequestHash);
             if (startupRequestCache) {
                 let preserveOnReload = false;
@@ -232,18 +217,24 @@ const App: FC<ICustomContent> = (props) => {
                         value();
                     }
                     context.server.subManager.jobQueue.clear();
-                    context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(() => setStartupDone(true));
+                    context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(() => {
+                        setStartupDone(true);
+                        initWS(context.server.BASE_URL);
+                    });
                 }
                 else {
                     context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                         sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                         setStartupDone(true);
+                        console.log(context.server.BASE_URL.substring(context.server.BASE_URL.indexOf("//"), context.server.BASE_URL.indexOf("/services/mobile")))
+                        initWS(context.server.BASE_URL);
                     });
                 }
             } else {
                 context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                     setStartupDone(true);
+                    initWS(context.server.BASE_URL);
                 });
             }
 
@@ -277,8 +268,49 @@ const App: FC<ICustomContent> = (props) => {
             startUpByURL(startUpRequest)
         }).catch(() => {
             startUpByURL(startUpRequest);
-        })
+        });
+
+        return () => {
+            ws.current?.close();
+        }
     }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions]);
+
+    /** Sets custom- or replace screens/components when reactUI is used as library based on props */
+    useEffect(() => {
+        props.customScreens?.forEach(s => {
+            if (s.replace) {
+                //context.contentStore.registerReplaceScreen(s.name, s.screen)
+            } else {
+                //context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
+                //context.contentStore.addCustomScreen(s)
+            }
+        });
+
+        if (props.onRegister) {
+            props.onRegister();
+        }
+
+        if (props.onMenu) {
+            context.contentStore.setOnMenuFunc(props.onMenu);
+        }
+
+        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
+        props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
+
+        if (props.customScreenParameter) {
+            context.contentStore.addScreenParameter(props.customScreenParameter)
+        }
+
+        if (props.customToolbarItems && props.customToolbarItems.length) {
+            //context.api.addToolbarItem(props.customToolbarItems);
+            context.contentStore.customToolbarItems = props.customToolbarItems;
+        }
+
+        if (props.editedMenuItems && props.editedMenuItems.length) {
+            context.contentStore.editedMenuItems = props.editedMenuItems;
+        }
+
+    }, [context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
 
     /**
      * Method to show a toast

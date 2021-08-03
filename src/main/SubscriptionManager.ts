@@ -597,7 +597,8 @@ export class SubscriptionManager {
 
     /** When the menu-items change, call the function of the menu-subscriber */
     emitMenuUpdate(){
-        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.mergedMenuItems]));
+        console.log(this.contentStore.menuItems)
+        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.menuItems]));
     }
 
     /**

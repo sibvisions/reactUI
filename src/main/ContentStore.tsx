@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomScreenParameter, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomScreenParameter, CustomScreenType, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 import { History } from "history";
@@ -26,22 +26,24 @@ export default class ContentStore{
     removedContent = new Map<string, BaseComponent>();
 
     /** A Map which stores custom components made by the user, the key is the components title and the value a function to build the component*/
-    customContent = new Map<string, Function>();
+    //customContent = new Map<string, Function>();
+
+    /** A Map which stores custom-screens made by the user, the key is the components title and the value a function to build the custom-screen*/
+    customScreens = new Map<string, Function>();
+
+    /** A Map which stores custom components made by the user, the key is the components title and the value a function to build the component*/
+    customComponents = new Map<string, Function>();
+
+    /** A Map which stores replace-screens made by the user, the key is the components title and the value a function to build the replace-screen*/
+    replaceScreens = new Map<string, Function>();
 
     /** A Map which stores removed, but not deleted custom components, the key is the components id and the value the component */
-    removedCustomContent = new Map<string, BaseComponent>();
+    removedCustomComponent = new Map<string, BaseComponent>();
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
 
-    /** A Map which stores the menuitems sent by the server, the key is the group of the menuitems and the value is the menuitem */
-    serverMenuItems = new Map<string, Array<ServerMenuButtons>>();
-
-    /** A Map which stores custom menuitems, the key is the group of the menuitems and the value is the menuitem */
-    customMenuItems = new Map<string, Array<ServerMenuButtons>>();
-
-    /** Combines ServerMenuItems and customMenuItems */
-    mergedMenuItems = new Map<string, Array<ServerMenuButtons>>();
+    menuItems = new Map<string, Array<ServerMenuButtons>>();
 
     /** The toolbar-entries sent by the server */
     toolbarItems = Array<BaseMenuButton>();
@@ -108,6 +110,8 @@ export default class ContentStore{
 
     customToolbarItems = new Array<CustomToolbarItem|EditableMenuItem>();
 
+    onMenuFunc:Function = () => {};
+
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
 
@@ -148,13 +152,18 @@ export default class ContentStore{
         }
     }
 
+    setOnMenuFunc(fn: Function) {
+        this.onMenuFunc = fn;
+    }
+
     //Content
     /**
      * Sets or updates flatContent, removedContent, replacedContent, updates properties and notifies subscriber
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
      */
-    updateContent(componentsToUpdate: Array<BaseComponent>){
+    updateContent(componentsToUpdate: Array<BaseComponent>) {
+        console.log(this.customScreens)
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
         /** 
@@ -165,20 +174,20 @@ export default class ContentStore{
 
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
-            const isCustom:boolean = this.customContent.has(newComponent.name as string);
+            const isCustom:boolean = this.customComponents.has(newComponent.name as string);
             existingComponent = this.flatContent.get(newComponent.id) || 
                                 this.replacedContent.get(newComponent.id) || 
                                 this.removedContent.get(newComponent.id) || 
-                                this.removedCustomContent.get(newComponent.id);
+                                this.removedCustomComponent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))) {
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomComponent.has(newComponent.id))) {
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
                     this.flatContent.set(newComponent.id, existingComponent);
                 }
                 else {
-                    this.removedCustomContent.delete(newComponent.id);
+                    this.removedCustomComponent.delete(newComponent.id);
                     this.replacedContent.set(newComponent.id, existingComponent);
                 }
             }
@@ -226,7 +235,7 @@ export default class ContentStore{
 
             /** 
              * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
-             * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
+             * and add it to removedContent/removedCustomComponent, if newComponent has "destroy", delete it from all maps
              */
             if (newComponent["~remove"] && existingComponent) {
                 if (!isCustom) {
@@ -235,7 +244,7 @@ export default class ContentStore{
                 }
                 else {
                     this.replacedContent.delete(newComponent.id);
-                    this.removedCustomContent.set(newComponent.id, existingComponent);
+                    this.removedCustomComponent.set(newComponent.id, existingComponent);
                 }
             }
 
@@ -247,7 +256,7 @@ export default class ContentStore{
                     this.removedContent.delete(newComponent.id);
                 }
                 else {
-                    this.removedCustomContent.delete(newComponent.id);
+                    this.removedCustomComponent.delete(newComponent.id);
                 }
             }
             
@@ -353,12 +362,11 @@ export default class ContentStore{
     reset(){
         this.flatContent.clear();
         this.removedContent.clear();
-        this.customContent.clear();
-        this.removedCustomContent.clear();
+        this.customScreens.clear();
+        this.customComponents.clear();
+        this.removedCustomComponent.clear();
         this.replacedContent.clear();
-        this.serverMenuItems.clear();
-        this.customMenuItems.clear();
-        this.mergedMenuItems.clear();
+        this.menuItems.clear();
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.customProperties.clear();
@@ -399,12 +407,19 @@ export default class ContentStore{
      * @param windowName - the name of the window
      * @returns the built window
      */
-    getWindow(windowName: string): ReactElement {
+    getWindow(windowName: string) {
         const windowData = this.getComponentByName(windowName);
-        if (windowData)
+        if (windowData) {
             return componentHandler(windowData);
-        else
-            return this.customContent.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+        }
+        else {
+            if (this.customScreens.has(windowName)) {
+                return this.customScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+            }
+            else if (this.replaceScreens.has(windowName)) {
+                return this.replaceScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+            }
+        }
     }
 
     /**
@@ -703,18 +718,16 @@ export default class ContentStore{
     }
 
     /**
-     * Adds a menuItem to serverMenuItems or customMenuItems to the contentStore, depending on server sent or not, merges the menuItems
+     * Adds a menuItem to the contentStor
      * @param menuItem - the menuItem
-     * @param fromServer - if the server sent the menuItem or if it is custom
      */
-    addMenuItem(menuItem: ServerMenuButtons, fromServer:boolean){
-        const menuGroup = fromServer ? this.serverMenuItems.get(menuItem.group) : this.customMenuItems.get(menuItem.group);
+     addMenuItem(menuItem: ServerMenuButtons){
+        const menuGroup = this.menuItems.get(menuItem.group);
         if(menuGroup)
             menuGroup.push(menuItem);
         else {
-            fromServer ? this.serverMenuItems.set(menuItem.group, [menuItem]) : this.customMenuItems.set(menuItem.group, [menuItem]);
+            this.menuItems.set(menuItem.group, [menuItem]);
         }
-        this.mergeMenuButtons();
     }
 
     /**
@@ -727,20 +740,16 @@ export default class ContentStore{
         }
     }
 
-    /** Merges the server sent menuItems and the custom menuItems */
-    mergeMenuButtons() {
-        this.mergedMenuItems = new Map([...this.serverMenuItems, ...this.customMenuItems])
-    }
-
     //Custom Screens
 
     /**
-     * Adds a customScreen to customContent
+     * Adds a customScreen to customScreen
      * @param title - the title of the custom screen
      * @param customScreen - the custom screen
      */
-    addCustomScreen(title: string, customScreen: ReactElement){
-        this.customContent.set(title, () => customScreen);
+    addCustomScreen(id:string, screen:ReactElement) {
+        console.log(id, screen)
+        this.customScreens.set(id, () => screen);
     }
 
     /**
@@ -762,29 +771,31 @@ export default class ContentStore{
             }
         }
 
-        this.addCustomScreen(title, customScreen);
-        this.addMenuItem(menuButton, false);
+        //this.addCustomScreen(title, customScreen);
+        this.addMenuItem(menuButton);
     }
 
     /**
-     * Registers a replaceScreen to the customContent
+     * Registers a replaceScreen to the replaceScreens
      * @param title - the title of the replaceScreen
      * @param replaceScreen - the replaceScreen
      */
     registerReplaceScreen(title: string, replaceScreen: ReactElement){
-        this.customContent.set(title, (x:any) => React.cloneElement(replaceScreen, x));
+        this.replaceScreens.set(title, (x:any) => React.cloneElement(replaceScreen, x));
     }
 
     /**
-     * Registers a customComponent to the customContent
+     * Registers a customComponent to the customComponents
      * @param title - the title of the customComponent
      * @param customComp - the custom component
      */
     registerCustomComponent(title:string, customComp?:ReactElement) {
-        if (customComp === undefined)
-            this.customContent.set(title, () => null)
-        else
-            this.customContent.set(title, () => customComp);
+        if (customComp === undefined) {
+            this.customComponents.set(title, () => null);
+        }
+        else {
+            this.customComponents.set(title, () => customComp);
+        }
         /** Notifies the parent that a custom component has replaced a server sent component */
         if (this.getComponentByName(title)) {
             const customComp = this.getComponentByName(title) as BaseComponent

@@ -30,6 +30,7 @@ enum REQUEST_ENDPOINTS  {
     MOUSE_RELEASED = "/api/mouseReleased",
     RELOAD = "/api/reload",
     UI_REFRESH = "/api/uiRefresh",
-    ROLLBACK = "/api/rollback"
+    ROLLBACK = "/api/rollback",
+    CHANGES = "/api/changes"
 }
 export default REQUEST_ENDPOINTS

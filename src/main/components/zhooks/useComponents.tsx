@@ -98,12 +98,12 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         children.forEach(child => {
             let reactChild;
             child.onLoadCallback = componentHasLoaded;
-            if (!context.contentStore.customContent.has(child.name))
+            if (!context.contentStore.customComponents.has(child.name))
                 reactChild = componentHandler(child);
                 
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
             else {
-                let customComp = context.contentStore.customContent.get(child.name)?.apply(undefined, []);
+                let customComp = context.contentStore.customComponents.get(child.name)?.apply(undefined, []);
                 reactChild = createCustomComponentWrapper(child, customComp);
             }
                 
@@ -131,7 +131,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 let alreadyAdded = false
                 /** Checks if the new component is already added in the current components if yes add the old component else the new one */
                 components.forEach(oc => {
-                    if(nc.props.id === oc.props.id && !context.contentStore.customContent.has(nc.props.name)){
+                    if(nc.props.id === oc.props.id && !context.contentStore.customComponents.has(nc.props.name)){
                         alreadyAdded = true
                         cl.push(oc);
                     }
@@ -146,7 +146,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         return () => {
             context.subscriptions.unsubscribeFromParentChange(id);
         }
-    }, [context.subscriptions, id, components, buildComponents, context.contentStore.customContent]);
+    }, [context.subscriptions, id, components, buildComponents, context.contentStore.customComponents]);
 
     return [components, preferredSizes];
 }

@@ -112,6 +112,10 @@ class Server {
         return reqOpt;
     }
 
+    test() {
+        this.contentStore.customScreens.set('hallo', () => {});
+    }
+
     /** ----------SENDING-REQUESTS---------- */
  
     /**
@@ -334,13 +338,14 @@ class Server {
                             entry.text = editedItem.newTitle;
                         }
                         if (editedItem.newIcon) {
-                            entry.image = editedItem.newIcon.includes("fa") ? "fa " + editedItem.newIcon : "pi " + editedItem.newIcon;
+                            entry.image = editedItem.newIcon.substring(0, 2) + editedItem.newIcon;
                         }
                     }
                     editedList.splice(editedItemIndex, 1);
                 }
                 if (menu) {
-                    this.contentStore.addMenuItem(entry as ServerMenuButtons, true);
+                    console.log(entry)
+                    this.contentStore.addMenuItem(entry as ServerMenuButtons);
                 }
                 else {
                     this.contentStore.addToolbarItem(entry)
@@ -349,22 +354,44 @@ class Server {
         }
 
         if (menuData.entries && menuData.entries.length) {
-            handleMenuItems(menuData.entries, this.contentStore.editedMenuItems, true)
+            this.contentStore.customScreens.set("test", () => {});
+            handleMenuItems(menuData.entries, this.contentStore.editedMenuItems, true);
+            this.contentStore.onMenuFunc();
+            console.log(this.contentStore.menuItems)
             this.subManager.emitMenuUpdate();
         }
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
             handleMenuItems(menuData.toolBarEntries, this.contentStore.customToolbarItems, false);
             this.subManager.emitToolBarUpdate();
         }
-        if (this.contentStore.customToolbarItems && this.contentStore.customToolbarItems.length) {
+
+        // if (this.contentStore.customScreens.size) {
+        //     this.contentStore.customScreens.forEach(cs => {
+        //         if (cs.userRole && !cs.replace) {
+        //             if (Array.isArray(cs.userRole)) {
+        //                 if (cs.userRole.some(role => this.contentStore.currentUser.roles.includes(role))) {
+        //                     this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
+        //                 }
+        //             }
+        //             else if (this.contentStore.currentUser.roles.includes(cs.userRole as string)) {
+        //                 this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
+        //             }
+        //         }
+        //         else if (!cs.replace) {
+        //             this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
+        //         }
+        //     });
+        // }
+
+        if (this.contentStore.customToolbarItems.length) {
             this.contentStore.customToolbarItems.forEach(customItem => {
-                if (!this.contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === customItem.screenName)) {
+                if (!this.contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === customItem.screenName) && (customItem as CustomToolbarItem).title !== undefined) {
                     const castedItem = customItem as CustomToolbarItem
                     const itemAction = () => {
                         this.history?.push("/home/" + (customItem as CustomToolbarItem).screenName);
                         return Promise.resolve(true)
                     }
-                    const newImage = castedItem.image.includes("fa") ? "fa " + castedItem.image : "pi " + castedItem.image;
+                    const newImage = castedItem.image.substring(0, 2) + castedItem.image;
                     const newItem:BaseMenuButton = { componentId: castedItem.screenName, text: castedItem.title, image: newImage, action: itemAction }
                     this.contentStore.toolbarItems.push(newItem)
                 }
