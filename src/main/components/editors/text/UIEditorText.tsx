@@ -26,6 +26,7 @@ import { getEditorCompId,
 import { LengthBasedColumnDescription } from "../../../response";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { getColMetaData } from "../../table/UITable";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -270,9 +271,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
             value: text || "",
             ariaLabel: props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
+            onFocus: props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined,
             onBlur: () => {
                 if (!escapePressed.current) {
                     onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                }
+                if (props.eventFocusLost) {
+                    showTopBar(onFocusLost(props.name, context.server), topbar)
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e))
@@ -292,12 +297,15 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 className={[
                     getClassName(fieldType), 
                     disabled ? 'rc-editor-html--disabled' : null
-                ].filter(Boolean).join(' ')} 
+                ].filter(Boolean).join(' ')}
+                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
             >
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
                     onChange={event => setText(event.currentTarget.value)}
-                    value={ text || ""}  
+                    value={ text || "" }  
                 /> : null}
             </div>
             :

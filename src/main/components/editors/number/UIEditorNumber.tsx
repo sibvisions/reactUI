@@ -27,6 +27,7 @@ import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { getColMetaData } from "../../table/UITable";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -209,7 +210,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             <span aria-label={props.ariaLabel} style={layoutStyle}>
                 <InputNumber
                     ref={numberRef}
-                    id={!isCellEditor ? props.name : undefined}
+                    id={props.name}
                     inputRef={numberInput}
                     className="rc-editor-number"
                     useGrouping={useGrouping}
@@ -221,7 +222,13 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     style={{ width: '100%' }}
                     inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
                     onChange={event => setValue(event.value) }
-                    onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
+                    onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                    onBlur={() => {
+                        if (props.eventFocusLost) {
+                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                        }
+                        onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar));
+                    }}
                     disabled={!props.cellEditor_editable_}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 />
@@ -229,7 +236,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             :
             <InputNumber
                 ref={numberRef}
-                id={!isCellEditor ? props.name : undefined}
                 inputRef={numberInput}
                 className="rc-editor-number"
                 useGrouping={useGrouping}

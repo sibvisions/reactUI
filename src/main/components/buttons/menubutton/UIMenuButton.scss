@@ -16,11 +16,18 @@
         }
     }
     /// When either of the children is focused, display a blue shadow to show the button is focused
-    &:focus-within {
+    &:focus {
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     @include btnHover;
+}
+
+.rc-popupmenubutton-wrapper:focus {
+    .rc-popupmenubutton {
+        box-shadow: 0 0 0 0.2rem #8dcdff;
+        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
+    }
 }
 
 .p-splitbutton-defaultbutton, .p-splitbutton-menubutton {

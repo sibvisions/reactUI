@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
+import { useEventHandler, useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -17,6 +17,7 @@ import { parseIconData } from "../../compprops";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -63,6 +64,13 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    useLayoutEffect(() => {
+        //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact
+        if (buttonRef.current) {
+            (document.getElementsByClassName("p-splitbutton-menubutton")[0] as HTMLElement).setAttribute("tabindex", "-1");
+        }
+    },[])
+
     /** Builds the menuitems and sets the state */
     useEffect(() => {
         const buildMenu = (foundItems:Map<string, BaseComponent>) => {
@@ -94,10 +102,14 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
     return (
-        <span 
+        <span
+            className="rc-popupmenubutton-wrapper"
             ref={buttonWrapperRef} 
             style={{position: 'absolute', ...layoutStyle}}
             aria-label={props.ariaLabel}
+            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+            tabIndex={btnData.tabIndex}
         >
             <SplitButton
                 ref={buttonRef}
@@ -128,7 +140,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 }}
                 label={props.text}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
-                tabIndex={btnData.tabIndex}
+                tabIndex={-1}
                 model={items}
                 //@ts-ignore
                 onClick={() => buttonRef.current.show()} />

@@ -10,9 +10,10 @@ import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, u
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
-import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames } from "../../util";
+import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, focusComponent } from "../../util";
 import { getAlignments } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -163,22 +164,34 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 justifyContent: alignments?.ha,
                 alignItems: alignments?.va
             }}
+            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
             onKeyDown={(event) => {
                 event.preventDefault();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-                if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
-                    props.stopCellEditing(event)
-                }
                 if (event.key === " ") {
                     handleOnChange()
                 }
-            }}
-            tabIndex={props.tabIndex ? props.tabIndex : 0}>
+                if (event.key === "Tab") {
+                    if (isCellEditor && props.stopCellEditing) {
+                        props.stopCellEditing(event)
+                    }
+                    else {
+                        if (event.shiftKey) {
+                            focusComponent(id, false);
+                        }
+                        else {
+                            focusComponent(id, true);
+                        }
+                    }
+                }
+            }}>
             <Checkbox
                 inputId={id}
                 checked={checked}
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
+                tabIndex={props.tabIndex ? props.tabIndex : 0} 
             />
             {!isCellEditor &&
                 <label

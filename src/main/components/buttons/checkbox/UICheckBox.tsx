@@ -15,6 +15,7 @@ import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
  * This component displays a CheckBox and its label
@@ -69,7 +70,9 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     "rc-checkbox",
                     `gap-${gapPos}`,
                     getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
-                    )} 
+                    )}
+                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
                 style={{
                     ...btnData.style,
                     '--checkJustify': cbHAlign, 

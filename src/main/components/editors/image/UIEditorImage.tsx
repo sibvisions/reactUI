@@ -8,6 +8,8 @@ import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMis
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor{
@@ -53,6 +55,9 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
+
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
@@ -91,11 +96,19 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     }
 
     return(
-        <span ref={wrapRef} className="rc-editor-image" style={{...layoutStyle, ...imageStyle.span}} aria-label={props.ariaLabel}>
+        <span 
+            ref={wrapRef} 
+            className="rc-editor-image" 
+            style={{...layoutStyle, ...imageStyle.span}} 
+            aria-label={props.ariaLabel}
+            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+            tabIndex={selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
+        >
             <img
                 id={!isCellEditor ? props.name : undefined}
                 style={imageStyle.img}
-                src={ selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                src={selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt="could not be loaded"
                 onLoad={imageLoaded}
                 onError={e => (e.target as HTMLImageElement).style.display = 'none'}

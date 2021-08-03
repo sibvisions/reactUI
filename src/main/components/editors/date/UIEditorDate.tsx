@@ -23,6 +23,7 @@ import { getEditorCompId,
          handleEnterKey} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -132,6 +133,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     const isCellEditor = props.id === "";
 
     const alreadySaved = useRef<boolean>(false);
+
+    const alreadyFocused = useRef<boolean>(false);
 
     setDateLocale(context.appSettings.locale);
 
@@ -282,7 +285,23 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                         calendarInput.current.focus();
                     }
                 }}
-                onBlur={() => !alreadySaved.current ? handleDateInput() : alreadySaved.current = false}
+                onFocus={() => {
+                    if (!alreadyFocused.current) {
+                        if (props.eventFocusedGain) {
+                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                        }
+                        alreadyFocused.current = true;
+                    }
+                }}
+                onBlur={() => {
+                    if (!visible) {
+                        if (props.eventFocusLost) {
+                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                        }
+                        alreadyFocused.current = false;
+                    }
+                    !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
+                }}
                 disabled={!props.cellEditor_editable_}
                 onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
             />

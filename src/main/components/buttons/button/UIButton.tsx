@@ -9,13 +9,14 @@ import tinycolor from 'tinycolor2';
 import { useProperties, useButtonMouseImages, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
+import { createFocusGainedRequest, createFocusLostRequest, createPressButtonRequest } from "../../../factories/RequestFactory";
 import { appContext } from "../../../AppProvider";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
  * This component displays a basic button
@@ -111,6 +112,8 @@ const UIButton: FC<IButton> = (baseProps) => {
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}
+                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
                 disabled={props.enabled === false}
             />
         </span>

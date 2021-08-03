@@ -16,6 +16,7 @@ import { buttonProps, getGapPos, getIconCenterDirection, IButtonSelectable } fro
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
 import { parseIconData } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -117,6 +118,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}
                 onChange={handleOnChange}
+                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
             />
         </span>
     )

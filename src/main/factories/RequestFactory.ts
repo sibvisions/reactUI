@@ -28,7 +28,9 @@ import { StartupRequest,
          ReloadRequest,
          UIRefreshRequest,
          RollbackRequest,
-         ChangesRequest} from "../request";
+         ChangesRequest,
+         FocusGainedRequest,
+         FocusLostRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -467,6 +469,32 @@ export const createRollbackRequest = (values?: RollbackRequest): RollbackRequest
 export const createChangesRequest = (values?: ChangesRequest): ChangesRequest => {
     const req: ChangesRequest = {
         clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+/**
+ * Returns a pressButtonRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the pressButtonRequest
+ * @returns a pressButtonRequest object
+ */
+ export const createFocusGainedRequest = (values?: FocusGainedRequest): FocusGainedRequest => {
+    const req: FocusGainedRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
+/**
+ * Returns a pressButtonRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the pressButtonRequest
+ * @returns a pressButtonRequest object
+ */
+ export const createFocusLostRequest = (values?: FocusLostRequest): FocusLostRequest => {
+    const req: FocusLostRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
     }
     return req;
 }

@@ -31,6 +31,8 @@ enum REQUEST_ENDPOINTS  {
     RELOAD = "/api/reload",
     UI_REFRESH = "/api/uiRefresh",
     ROLLBACK = "/api/rollback",
-    CHANGES = "/api/changes"
+    CHANGES = "/api/changes",
+    FOCUS_GAINED = "/api/focusGained",
+    FOCUS_LOST = "/api/focusLost"
 }
 export default REQUEST_ENDPOINTS

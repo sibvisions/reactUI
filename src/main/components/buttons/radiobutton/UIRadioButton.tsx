@@ -10,12 +10,12 @@ import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { appContext } from "../../../AppProvider";
-import { LayoutContext } from "../../../LayoutContext";
 import { buttonProps, getGapPos, getIconCenterDirection, IButtonSelectable } from "..";
 import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize} from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
  * This component displays a RadioButton and its label
@@ -71,7 +71,9 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     `gap-${gapPos}`,
                     getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment),
                     props.style?.includes("actiongroup") ? "radio-action-group" : ""
-                    )} 
+                    )}
+                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
                 style={{
                     ...btnData.style,
                     '--radioJustify': rbHAlign, 

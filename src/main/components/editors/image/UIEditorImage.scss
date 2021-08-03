@@ -4,4 +4,9 @@
     position: absolute;
     justify-content: flex-start;
     align-items: flex-start;
+
+    &:focus img {
+        box-shadow: 0 0 0 0.2rem #8dcdff;
+        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
+    }
 }

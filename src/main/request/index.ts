@@ -31,3 +31,5 @@ export type { default as ReloadRequest } from './ReloadRequest';
 export type { default as UIRefreshRequest } from './UIRefreshRequest';
 export type { default as RollbackRequest } from './RollbackRequest';
 export type { default as ChangesRequest } from './ChangesRequest'
+export type { default as FocusGainedRequest } from './FocusGainedRequest';
+export type { default as FocusLostRequest } from './FocusLostRequest';

@@ -12,6 +12,7 @@ import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
@@ -188,6 +189,8 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                     setNextValue()
                 }
             }}
+            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
             tabIndex={props.tabIndex ? props.tabIndex : 0}>
             <img
                 ref={imgRef}

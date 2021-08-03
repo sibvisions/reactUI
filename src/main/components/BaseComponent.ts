@@ -33,6 +33,8 @@ interface BaseComponent {
     eventMouseClicked?: boolean,
     eventMousePressed?: boolean,
     eventMouseReleased?: boolean,
+    eventFocusGained?: boolean,
+    eventFocusLost?: boolean,
     ariaLabel?:string,
     ariaPressed?:boolean
 }
