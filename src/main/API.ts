@@ -20,10 +20,10 @@ class API {
      */
     constructor (server: Server, store:ContentStore, appSettings:AppSettings, history?:History<any>) {
         this.#server = server;
-        console.log(store)
         this.#contentStore = store;
         this.#appSettings = appSettings;
         this.history = history;
+        this.registerScreen = this.registerScreen.bind(this);
     }
 
     /** Server instance */
@@ -67,7 +67,6 @@ class API {
     }
 
     addMenuItem(menuItem:CustomScreenType) {
-        console.log(menuItem)
         if (!menuItem.replace) {
             const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
             const itemAction = () =>{
@@ -83,7 +82,6 @@ class API {
             };
             if (menuGroup) {
                 menuGroup.push(newItem);
-                console.log(menuGroup)
             }
             else {
                 this.#contentStore.menuItems.set(menuItem.menuGroup, [newItem]);

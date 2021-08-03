@@ -65,9 +65,10 @@ const App: FC<ICustomContent> = (props) => {
     const [registerCustom, setRegisterCustom] = useState<boolean>(false);
     /** State if the app is ready */
     const [appReady, setAppReady] = useState<boolean>(false);
+
     const [startupDone, setStartupDone] = useState<boolean>(false);
 
-    /** If true the timeout dialog gets displayed */
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
     /** State if timeout error should be shown */
     const [showTimeOut, setShowTimeOut] = useState<boolean>(false);
@@ -90,10 +91,12 @@ const App: FC<ICustomContent> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToAppReady(() => setAppReady(true));
         context.subscriptions.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
+        context.subscriptions.subscribeToSessionExpired(() => setSessionExpired(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppReady();
             context.subscriptions.unsubscribeFromRegisterCustom();
+            context.subscriptions.unsubscribeFromSessionExpired();
         }
     },[context.subscriptions]);
 
@@ -226,7 +229,6 @@ const App: FC<ICustomContent> = (props) => {
                     context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                         sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                         setStartupDone(true);
-                        console.log(context.server.BASE_URL.substring(context.server.BASE_URL.indexOf("//"), context.server.BASE_URL.indexOf("/services/mobile")))
                         initWS(context.server.BASE_URL);
                     });
                 }
@@ -273,7 +275,7 @@ const App: FC<ICustomContent> = (props) => {
         return () => {
             ws.current?.close();
         }
-    }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions]);
+    }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions, sessionExpired]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {

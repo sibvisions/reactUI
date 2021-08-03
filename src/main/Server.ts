@@ -344,7 +344,6 @@ class Server {
                     editedList.splice(editedItemIndex, 1);
                 }
                 if (menu) {
-                    console.log(entry)
                     this.contentStore.addMenuItem(entry as ServerMenuButtons);
                 }
                 else {
@@ -354,10 +353,8 @@ class Server {
         }
 
         if (menuData.entries && menuData.entries.length) {
-            this.contentStore.customScreens.set("test", () => {});
             handleMenuItems(menuData.entries, this.contentStore.editedMenuItems, true);
             this.contentStore.onMenuFunc();
-            console.log(this.contentStore.menuItems)
             this.subManager.emitMenuUpdate();
         }
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
@@ -599,7 +596,8 @@ class Server {
         startUpRequest.deviceMode = "desktop";
         this.contentStore.reset();
         sessionStorage.clear();
-        this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
+        //this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
+        this.subManager.emitSessionExpired();
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title}, true)
         this.subManager.emitRegisterCustom()

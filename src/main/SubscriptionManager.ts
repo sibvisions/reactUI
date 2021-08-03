@@ -99,6 +99,8 @@ export class SubscriptionManager {
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
 
+    sessionExpiredSubscriber:Function = () => {};
+
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
 
@@ -354,6 +356,10 @@ export class SubscriptionManager {
         this.toolbarSubscriber.push(fn);
     }
 
+    subscribeToSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber = fn;
+    }
+
     /**
      * Unsubscribes a component from popUpChanges
      * @param fn - the function to add or remove popups to the state
@@ -527,6 +533,10 @@ export class SubscriptionManager {
         this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    unsubscribeFromSessionExpired() {
+        this.sessionExpiredSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -597,7 +607,6 @@ export class SubscriptionManager {
 
     /** When the menu-items change, call the function of the menu-subscriber */
     emitMenuUpdate(){
-        console.log(this.contentStore.menuItems)
         this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.menuItems]));
     }
 
@@ -652,5 +661,9 @@ export class SubscriptionManager {
 
     emitToolBarUpdate() {
         this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.toolbarItems]));
+    }
+
+    emitSessionExpired() {
+        this.sessionExpiredSubscriber.apply(undefined, []);
     }
 }

@@ -123,6 +123,7 @@ export default class ContentStore{
 
     constructor(history?:History<any>) {
         this.history = history;
+        this.addCustomScreen = this.addCustomScreen.bind(this);
     }
 
     /**
@@ -163,7 +164,6 @@ export default class ContentStore{
      * @param componentsToUpdate - an array of components sent by the server
      */
     updateContent(componentsToUpdate: Array<BaseComponent>) {
-        console.log(this.customScreens)
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
         /** 
@@ -748,7 +748,6 @@ export default class ContentStore{
      * @param customScreen - the custom screen
      */
     addCustomScreen(id:string, screen:ReactElement) {
-        console.log(id, screen)
         this.customScreens.set(id, () => screen);
     }
 

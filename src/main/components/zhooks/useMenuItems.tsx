@@ -30,7 +30,6 @@ const useMenuItems = () => {
                     icon: undefined,
                     items: value.map(menuItems => {
                         const iconData = parseIconData(undefined, menuItems.image)
-                        console.log(menuItems)
                         const subMenuItem: MenuItemCustom = {
                             command: e => showTopBar(menuItems.action(), topbar),
                             label: menuItems.text,
