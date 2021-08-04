@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -134,7 +134,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     const alreadySaved = useRef<boolean>(false);
 
-    const alreadyFocused = useRef<boolean>(false);
+    const focused = useRef<boolean>(false);
 
     setDateLocale(context.appSettings.locale);
 
@@ -234,14 +234,46 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         );
     }
 
-    useEventHandler(calendarInput.current || undefined, "keydown", (event) => {
+    // useEventHandler(calendarInput.current || undefined, "keydown", (event) => {
+    //     event.stopPropagation();
+    //     if ((event as KeyboardEvent).key === "Enter") {
+    //         handleDateInput();
+    //         alreadySaved.current = true;
+    //         handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+    //         if (calendar.current) {
+    //             setVisible(false)
+    //         }
+    //     }
+    //     else if ((event as KeyboardEvent).key === "Tab") {
+    //         handleDateInput();
+    //         alreadySaved.current = true;
+    //         if (isCellEditor && props.stopCellEditing) {
+    //             props.stopCellEditing(event);
+    //         }
+    //         else if (calendar.current) {
+    //             setVisible(false)
+    //         }
+    //     }
+    //     else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
+    //         props.stopCellEditing(event);
+    //     }
+    // });
+
+    useMultipleEventHandler(calendar.current && calendarInput.current ? 
+        //@ts-ignore
+        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
         event.stopPropagation();
         if ((event as KeyboardEvent).key === "Enter") {
             handleDateInput();
             alreadySaved.current = true;
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             if (calendar.current) {
-                setVisible(false)
+                setVisible(false);
+                if ((event.target as HTMLElement).tagName === "BUTTON") {
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, context.server), topbar);
+                    }
+                }
             }
         }
         else if ((event as KeyboardEvent).key === "Tab") {
@@ -251,7 +283,12 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 props.stopCellEditing(event);
             }
             else if (calendar.current) {
-                setVisible(false)
+                setVisible(false);
+                if ((event.target as HTMLElement).tagName === "BUTTON") {
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, context.server), topbar);
+                    }
+                }
             }
         }
         else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
@@ -276,6 +313,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 visible={visible}
                 hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
                 showIcon={true}
+                showOnFocus={false}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
@@ -286,24 +324,39 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                 }}
                 onFocus={() => {
-                    if (!alreadyFocused.current) {
-                        if (props.eventFocusedGain) {
+                    if (!focused.current) {
+                        if (props.eventFocusGained) {
                             showTopBar(onFocusGained(props.name, context.server), topbar);
                         }
-                        alreadyFocused.current = true;
+                        focused.current = true;
                     }
                 }}
-                onBlur={() => {
-                    if (!visible) {
+                onBlur={event => {
+                    //@ts-ignore
+                    if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
                             showTopBar(onFocusLost(props.name, context.server), topbar);
                         }
-                        alreadyFocused.current = false;
+                        focused.current = false;
                     }
                     !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
                 disabled={!props.cellEditor_editable_}
-                onVisibleChange={(e) => setVisible(e.type === 'dateselect' || !visible)}
+                onVisibleChange={event => {
+                    setVisible(event.type === 'dateselect' || !visible);
+                    if (!focused.current) {
+                        if (props.eventFocusGained) {
+                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                        }
+                        focused.current = true;
+                    }
+                    if (event.type === 'outside') {
+                        if (props.eventFocusLost) {
+                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                        }
+                        focused.current = false;
+                    }
+                }}
             />
         </span>
 

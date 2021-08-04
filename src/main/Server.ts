@@ -417,7 +417,8 @@ class Server {
                 this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
             }
             else {
-                this.contentStore.clearSelectedRow(compId, dataProvider);
+                //this.contentStore.clearSelectedRow(compId, dataProvider);
+                this.contentStore.setSelectedRow(compId, dataProvider, {}, -1, undefined, selectedColumn)
             }
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {

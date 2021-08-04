@@ -18,6 +18,7 @@ import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -467,8 +468,30 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     }, [selectedRows]);
 
+    const focused = useRef<boolean>(false);
+
     return (
-        <span ref={treeWrapperRef} style={layoutStyle}>
+        <span 
+            ref={treeWrapperRef} 
+            style={layoutStyle}
+            tabIndex={props.tabIndex ? props.tabIndex : 0}
+            onFocus={() => {
+                if (!focused.current) {
+                    if (props.eventFocusGained) {
+                        showTopBar(onFocusGained(props.name, context.server), topbar);
+                    }
+                    focused.current = true;
+                }
+            }}
+            onBlur={event => {
+                if (treeWrapperRef.current && !treeWrapperRef.current.contains(event.relatedTarget as Node)) {
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, context.server), topbar);
+                    }
+                    focused.current = false;
+                }
+            }}
+        >
             <Tree
                 id={props.name}
                 value={nodes}

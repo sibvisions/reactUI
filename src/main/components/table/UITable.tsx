@@ -28,6 +28,7 @@ import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallb
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 
 /** Interface for Table */
@@ -411,37 +412,39 @@ const UITable: FC<TableProps> = (baseProps) => {
      */
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
-            const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
-            //@ts-ignore
-            const container = tableRef.current.container.querySelector(!virtualEnabled ? '.p-datatable-wrapper' : '.p-datatable-scrollable-body');
-            //@ts-ignore
-            const loadingTable = tableRef.current.container.querySelector('.p-datatable-loading-virtual-table')
-            
-            if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
-                const moveDirections = isVisible(selectedElem, container, cell);
-                if (pageKeyPressed.current !== false) {
-                    pageKeyPressed.current = false;
-                    container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 35)
-                }
-                else if (selectedElem !== null) {
-                    let sLeft:number = container.scrollLeft
-                    let sTop:number = container.scrollTop
-
-                    if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
-                        sLeft = selectedElem.offsetLeft;
+            if (tableRef.current) {
+                const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
+                //@ts-ignore
+                const container = tableRef.current.container.querySelector(!virtualEnabled ? '.p-datatable-wrapper' : '.p-datatable-scrollable-body');
+                //@ts-ignore
+                const loadingTable = tableRef.current.container.querySelector('.p-datatable-loading-virtual-table')
+                
+                if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
+                    const moveDirections = isVisible(selectedElem, container, cell);
+                    if (pageKeyPressed.current !== false) {
+                        pageKeyPressed.current = false;
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 35)
                     }
-
-                    if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                        sTop = cell.rowIndex * 35;
+                    else if (selectedElem !== null) {
+                        let sLeft:number = container.scrollLeft
+                        let sTop:number = container.scrollTop
+    
+                        if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
+                            sLeft = selectedElem.offsetLeft;
+                        }
+    
+                        if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
+                            sTop = cell.rowIndex * 35;
+                        }
+                        else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
+                            sTop = container.scrollTop + (isNext ? 35 : -35);
+                        }
+    
+                        container.scrollTo(sLeft, sTop);
                     }
-                    else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                        sTop = container.scrollTop + (isNext ? 35 : -35);
+                    else {
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * 35);
                     }
-
-                    container.scrollTo(sLeft, sTop);
-                }
-                else {
-                    container.scrollTo(container.scrollLeft, cell.rowIndex * 35);
                 }
             }
         }, 0)
@@ -449,7 +452,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        if (selectedRow && columnOrder && tableRef.current) {
+        if (selectedRow && columnOrder) {
             if (selectedRow.selectedColumn) {
                 const newCell = {
                     cellIndex: columnOrder.findIndex(column => column === selectedRow.selectedColumn),
@@ -1233,8 +1236,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     )
 
     //to subtract header Height
-    //TODO: In the future with custom styles it's possible that the header could have another height! Replace 35 then.
+    //TODO: In the future with custom styles it's possible that the header could have another height!
     const heightNoHeaders = (layoutStyle?.height as number - 41).toString() + "px" || undefined;
+
+    const focused = useRef<boolean>(false);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
@@ -1246,7 +1251,23 @@ const UITable: FC<TableProps> = (baseProps) => {
                     width: layoutStyle?.width as number - 2,
                     outline: "none",
                 } as any}
-                tabIndex={0}
+                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                onFocus={() => {
+                    if (!focused.current) {
+                        if (props.eventFocusGained) {
+                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                        }
+                        focused.current = true;
+                    }
+                }}
+                onBlur={event => {
+                    if (wrapRef.current && !wrapRef.current.contains(event.relatedTarget as Node)) {
+                        if (props.eventFocusLost) {
+                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                        }
+                        focused.current = false;
+                    }
+                }}
                 onKeyDown={(event) => handleTableKeys(event)}
             >
                 <DataTable

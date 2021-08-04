@@ -15,6 +15,7 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey} from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -82,6 +83,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
+
+    const focused = useRef<boolean>(false);
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -273,17 +276,44 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
                 className="rc-editor-linked"
+                panelClassName={"dropdown-"+props.name}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 disabled={!props.cellEditor_editable_}
                 dropdown
-                completeMethod={(event) => sendFilter(event.query)}
+                completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}
                 value={text}
                 onChange={event => setText(event.target.value)}
-                onBlur={() => handleInput()}
-                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }} 
-                onSelect={(event) => handleInput(event.value)} />
+                onFocus={() => {
+                    if (!focused.current) {
+                        if (props.eventFocusGained) {
+                            setTimeout(() => showTopBar(onFocusGained(props.name, context.server), topbar), 50);
+                        }
+                        focused.current = true
+                    }
+                }}
+                onBlur={event => {
+                    handleInput();
+                    const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
+                    if (dropDownElem) {
+                        if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                            if (props.eventFocusLost) {
+                                showTopBar(onFocusLost(props.name, context.server), topbar);
+                            }
+                            focused.current = false
+                        }
+                    }
+                    else if (!linkedRef.current.container.contains(event.relatedTarget)) {
+                        if (props.eventFocusLost) {
+                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                        }
+                        focused.current = false
+                    }
+                }}
+                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }}
+                onSelect={(event) => handleInput(event.value)}
+            />
         </span>
 
     )
