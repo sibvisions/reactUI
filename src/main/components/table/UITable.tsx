@@ -1258,6 +1258,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                             showTopBar(onFocusGained(props.name, context.server), topbar);
                         }
                         focused.current = true;
+                        if (columnOrder) {
+                            sendSelectRequest(columnOrder[0]);
+                        }
+                        
                     }
                 }}
                 onBlur={event => {

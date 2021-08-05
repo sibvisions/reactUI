@@ -17,7 +17,8 @@ export function focusComponent(id:string, next:boolean) {
     //if next and elem last focus first elem, if prev and elem first focus last elem
     let indexToFocus = next ? (currElemIsLast ? 0 : elemIndex + 1) : (currElemIsFirst ? focusable.length - 1 : elemIndex - 1);
     //loop if the next focusable element is a child of the current element skip it. eg. datepicker/linked overlay
-    while (focusable[elemIndex].contains(focusable[indexToFocus])) {
+    while (focusable[elemIndex] && focusable[elemIndex].contains(focusable[indexToFocus])) {
+        
         indexToFocus++
     }
     if (focusable[indexToFocus]) (focusable[indexToFocus] as HTMLElement).focus();
