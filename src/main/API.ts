@@ -23,7 +23,6 @@ class API {
         this.#contentStore = store;
         this.#appSettings = appSettings;
         this.history = history;
-        this.registerScreen = this.registerScreen.bind(this);
     }
 
     /** Server instance */
@@ -62,14 +61,15 @@ class API {
         this.#contentStore.closeScreen(screenName);
     }
 
-    registerScreen(id:string, screen:ReactElement) {
-        this.#contentStore.addCustomScreen(id, screen)
+    addCustomScreen(id:string, screen:ReactElement) {
+        this.#contentStore.customScreens.set(id, () => screen);
     }
 
     addMenuItem(menuItem:CustomScreenType) {
         if (!menuItem.replace) {
             const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
-            const itemAction = () =>{
+            const itemAction = () => {
+                this.#contentStore.setActiveScreen(menuItem.id);
                 this.history?.push("/home/"+menuItem.id);
                 return Promise.resolve(true);
             };

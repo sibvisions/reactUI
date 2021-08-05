@@ -123,7 +123,6 @@ export default class ContentStore{
 
     constructor(history?:History<any>) {
         this.history = history;
-        this.addCustomScreen = this.addCustomScreen.bind(this);
     }
 
     /**
@@ -200,7 +199,6 @@ export default class ContentStore{
                 newComponent.visible !== undefined || 
                 newComponent.constraints
             ){
-                //Double add??
                 notifyList.push(existingComponent?.parent || "");
                 if(newComponent.parent)
                     notifyList.push(newComponent.parent);
@@ -429,14 +427,15 @@ export default class ContentStore{
      */
     getComponentByName(componentName: string): BaseComponent | undefined {
         let componentEntries = this.flatContent.entries();
+        let foundEntry:BaseComponent|undefined;
         let entry = componentEntries.next();
         while (!entry.done) {
             if (entry.value[1].name === componentName) {
-                return entry.value[1];
+                foundEntry = entry.value[1];
             }
             entry = componentEntries.next();
         }
-        return undefined;
+        return foundEntry;
     }
 
     /**
@@ -741,15 +740,6 @@ export default class ContentStore{
     }
 
     //Custom Screens
-
-    /**
-     * Adds a customScreen to customScreen
-     * @param title - the title of the custom screen
-     * @param customScreen - the custom screen
-     */
-    addCustomScreen(id:string, screen:ReactElement) {
-        this.customScreens.set(id, () => screen);
-    }
 
     /**
      * Registers a customScreen to the contentStore, which will create a menuButton, add the screen to the content and add a menuItem

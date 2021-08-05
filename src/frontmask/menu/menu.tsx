@@ -90,21 +90,32 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                 icon="fa fa-home"
                 className="menu-upper-buttons"
                 onClick={() => {
+                    const openWelcomeOrHome = () => {
+                        if (context.appSettings.welcomeScreen) {
+                            const openReq = createOpenScreenRequest();
+                            openReq.className = context.appSettings.welcomeScreen;
+                            return context.server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                        }
+                        else {
+                            history.push('/home');
+                            return Promise.resolve(true);
+                        }
+                    }
+
                     if (context.contentStore.activeScreens.length) {
-                        const closeReq = createCloseScreenRequest();
-                        closeReq.componentId = context.contentStore.activeScreens[0];
-                        context.contentStore.setActiveScreen();
                         context.subscriptions.emitSelectedMenuItem("");
-                        showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then(() => {
-                            if (context.appSettings.welcomeScreen) {
-                                const openReq = createOpenScreenRequest();
-                                openReq.className = context.appSettings.welcomeScreen;
-                                showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN), topbar);
-                            }
-                            else {
-                                history.push('/home');
-                            }
-                        });
+                        if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0])) {
+                            context.contentStore.setActiveScreen();
+                            const closeReq = createCloseScreenRequest();
+                            closeReq.componentId = context.contentStore.activeScreens[0];
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then(() => {
+                                showTopBar(openWelcomeOrHome(), topbar);
+                            });
+                        }
+                        else {
+                            context.contentStore.setActiveScreen();
+                            showTopBar(openWelcomeOrHome(), topbar);
+                        }
                     }
                 }}
                 tooltip="Home"

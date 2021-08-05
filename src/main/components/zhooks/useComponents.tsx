@@ -98,9 +98,9 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         children.forEach(child => {
             let reactChild;
             child.onLoadCallback = componentHasLoaded;
-            if (!context.contentStore.customComponents.has(child.name))
+            if (!context.contentStore.customComponents.has(child.name)) {
                 reactChild = componentHandler(child);
-                
+            }
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
             else {
                 let customComp = context.contentStore.customComponents.get(child.name)?.apply(undefined, []);
