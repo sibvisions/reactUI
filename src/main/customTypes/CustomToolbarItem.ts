@@ -1,7 +1,7 @@
 /** Interface for CustomToolbarItems */
 interface CustomToolbarItem {
-    screenName: string,
+    id: string,
     title: string,
-    image:string
+    icon:string
 }
 export default CustomToolbarItem;

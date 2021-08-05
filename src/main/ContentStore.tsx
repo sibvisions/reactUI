@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomScreenParameter, CustomScreenType, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomScreenParameter, CustomScreenType, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 import { History } from "history";
@@ -110,7 +110,11 @@ export default class ContentStore{
 
     customToolbarItems = new Array<CustomToolbarItem|EditableMenuItem>();
 
+    customStartUpProperties = new Array<CustomStartupProps>();
+
     onMenuFunc:Function = () => {};
+
+    onOpenScreenFunc:Function = () => {};
 
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
@@ -120,6 +124,8 @@ export default class ContentStore{
 
     /** the react routers history object */
     history?:History<any>;
+
+    sentOpenScreenParameters = new Array<string>();
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -154,6 +160,14 @@ export default class ContentStore{
 
     setOnMenuFunc(fn: Function) {
         this.onMenuFunc = fn;
+    }
+
+    setOnOpenScreenFunc(fn: Function) {
+        this.onOpenScreenFunc = fn;
+    }
+
+    setStartupProperties(arr:CustomStartupProps[]) {
+        this.customStartUpProperties = [...this.customStartUpProperties, ...arr];
     }
 
     //Content
@@ -407,16 +421,14 @@ export default class ContentStore{
      */
     getWindow(windowName: string) {
         const windowData = this.getComponentByName(windowName);
-        if (windowData) {
+        if (this.replaceScreens.has(windowName)) {
+            return this.replaceScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+        }
+        else if (windowData) {
             return componentHandler(windowData);
         }
-        else {
-            if (this.customScreens.has(windowName)) {
-                return this.customScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
-            }
-            else if (this.replaceScreens.has(windowName)) {
-                return this.replaceScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
-            }
+        else if (this.customScreens.has(windowName)) {
+            return this.customScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
         }
     }
 
@@ -823,14 +835,14 @@ export default class ContentStore{
             this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
     }
 
-    addScreenParameter(screenParameters:CustomScreenParameter[]) {
-        screenParameters.forEach(sp => {
-            if (Array.isArray(sp.name)) {
-                sp.name.forEach(screenName => (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(screenName, sp.parameter));
-            }
-            else {
-                (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(sp.name, sp.parameter);
-            }
-        });
-    }
+    // addScreenParameter(screenParameters:CustomScreenParameter[]) {
+    //     screenParameters.forEach(sp => {
+    //         if (Array.isArray(sp.name)) {
+    //             sp.name.forEach(screenName => (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(screenName, sp.parameter));
+    //         }
+    //         else {
+    //             (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(sp.name, sp.parameter);
+    //         }
+    //     });
+    // }
 }

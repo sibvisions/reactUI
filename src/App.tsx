@@ -147,22 +147,9 @@ const App: FC<ICustomContent> = (props) => {
         const queryParams: queryType = queryString.parse(window.location.search);
         const authKey = localStorage.getItem("authKey");
 
-        // const maybeOpenScreen = async () => {
-        //     if (routeMatch?.params.componentId) {
-        //         const openScreenReq = createOpenScreenRequest();
-        //         const check = new RegExp(`\.${routeMatch?.params.componentId}(WorkScreen)?\:`);
-        //         context.contentStore.serverMenuItems.forEach(list => {
-        //             const item = list.find(item => item.componentId.match(check));
-        //             if (item) {
-        //                 openScreenReq.componentId = item.componentId;
-        //             }
-        //         })
-        //         if (openScreenReq.componentId) {
-        //             return context.server.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
-        //         }
-        //     }
-        //     return null;
-        // }
+        if (props.onStartup) {
+            props.onStartup();
+        }
 
         const initWS = (baseURL:string) => {
             const urlSubstr = baseURL.substring(context.server.BASE_URL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -195,8 +182,8 @@ const App: FC<ICustomContent> = (props) => {
             startupReq.deviceMode = "desktop";
             startupReq.screenHeight = window.innerHeight;
             startupReq.screenWidth = window.innerWidth;
-            if (props.customStartupProps?.length) {
-                props.customStartupProps.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
+            if (context.contentStore.customStartUpProperties.length) {
+                context.contentStore.customStartUpProperties.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
 
             const startupRequestHash = [
@@ -279,29 +266,29 @@ const App: FC<ICustomContent> = (props) => {
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
-        props.customScreens?.forEach(s => {
-            if (s.replace) {
-                //context.contentStore.registerReplaceScreen(s.name, s.screen)
-            } else {
-                //context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
-                //context.contentStore.addCustomScreen(s)
-            }
-        });
-
-        if (props.onRegister) {
-            props.onRegister();
-        }
+        // props.customScreens?.forEach(s => {
+        //     if (s.replace) {
+        //         context.contentStore.registerReplaceScreen(s.name, s.screen)
+        //     } else {
+        //         context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
+        //         context.contentStore.addCustomScreen(s)
+        //     }
+        // });
 
         if (props.onMenu) {
             context.contentStore.setOnMenuFunc(props.onMenu);
         }
 
+        if (props.onOpenScreen) {
+            context.contentStore.setOnOpenScreenFunc(props.onOpenScreen);
+        }
+
         props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
         props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
 
-        if (props.customScreenParameter) {
-            context.contentStore.addScreenParameter(props.customScreenParameter)
-        }
+        // if (props.customScreenParameter) {
+        //     context.contentStore.addScreenParameter(props.customScreenParameter)
+        // }
 
         if (props.customToolbarItems && props.customToolbarItems.length) {
             //context.api.addToolbarItem(props.customToolbarItems);

@@ -5,7 +5,7 @@ export type ScreenWrapperOptions = {
     global?: boolean
 }
 
-/** Interface for ReplaceScreens */
+/** Interface for ScreenWrappers */
 interface ScreenWrapperType {
     screen: string|string[],
     wrapper: ReactElement,

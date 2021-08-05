@@ -283,13 +283,16 @@ class Server {
                 workScreen = genericData.changedComponents[0] as IPanel
             }
             this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
-            if (this.contentStore.openScreenParameters.has(genericData.componentId)) {
-                const parameterReq = createSetScreenParameterRequest();
-                parameterReq.componentId = genericData.componentId;
-                parameterReq.parameter = this.contentStore.openScreenParameters.get(genericData.componentId);
-                //TODO: topbar
-                this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-                this.contentStore.openScreenParameters.delete(genericData.componentId);
+            // if (this.contentStore.openScreenParameters.has(genericData.componentId)) {
+            //     const parameterReq = createSetScreenParameterRequest();
+            //     parameterReq.componentId = genericData.componentId;
+            //     parameterReq.parameter = this.contentStore.openScreenParameters.get(genericData.componentId);
+            //     //TODO: topbar
+            //     this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+            //     this.contentStore.openScreenParameters.delete(genericData.componentId);
+            // }
+            if (this.contentStore.onOpenScreenFunc) {
+                this.contentStore.onOpenScreenFunc.apply(undefined, [genericData.componentId]);
             }
         }
         if (genericData.changedComponents && genericData.changedComponents.length) {
@@ -318,84 +321,29 @@ class Server {
      * @param menuData - the menuResponse
      */
     menu(menuData: MenuResponse) {
-
-        const handleMenuItems = (entries:Array<ServerMenuButtons|BaseMenuButton>, editedList:Array<EditableMenuItem|CustomToolbarItem>, menu:boolean) => {
-            entries.forEach(entry => {
+        if (menuData.entries && menuData.entries.length) {
+            menuData.entries.forEach(entry => {
                 entry.action = () => {
                     const openScreenReq = createOpenScreenRequest();
                     openScreenReq.componentId = entry.componentId;
                     return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
-                if (editedList.some(editItem => editItem.screenName === entry.componentId.split(':')[0])) {
-                    const editedItem = editedList.find(item => item.screenName === entry.componentId.split(':')[0]) as EditableMenuItem;
-                    const editedItemIndex = editedList.findIndex(item => item.screenName === entry.componentId.split(':')[0]);
-                    if (editedItem) {
-                        if (editedItem.remove) {
-                            editedList.splice(editedItemIndex, 1);
-                            return
-                        }
-                        if (editedItem.newTitle) {
-                            entry.text = editedItem.newTitle;
-                        }
-                        if (editedItem.newIcon) {
-                            entry.image = editedItem.newIcon.substring(0, 2) + editedItem.newIcon;
-                        }
-                    }
-                    editedList.splice(editedItemIndex, 1);
-                }
-                if (menu) {
-                    this.contentStore.addMenuItem(entry as ServerMenuButtons);
-                }
-                else {
-                    this.contentStore.addToolbarItem(entry)
-                }
+                this.contentStore.addMenuItem(entry);
             })
-        }
-
-        if (menuData.entries && menuData.entries.length) {
-            handleMenuItems(menuData.entries, this.contentStore.editedMenuItems, true);
-            this.contentStore.onMenuFunc();
-            this.subManager.emitMenuUpdate();
         }
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
-            handleMenuItems(menuData.toolBarEntries, this.contentStore.customToolbarItems, false);
-            this.subManager.emitToolBarUpdate();
-        }
-
-        // if (this.contentStore.customScreens.size) {
-        //     this.contentStore.customScreens.forEach(cs => {
-        //         if (cs.userRole && !cs.replace) {
-        //             if (Array.isArray(cs.userRole)) {
-        //                 if (cs.userRole.some(role => this.contentStore.currentUser.roles.includes(role))) {
-        //                     this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
-        //                 }
-        //             }
-        //             else if (this.contentStore.currentUser.roles.includes(cs.userRole as string)) {
-        //                 this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
-        //             }
-        //         }
-        //         else if (!cs.replace) {
-        //             this.contentStore.registerCustomOfflineScreen(cs.name, cs.menuGroup, cs.screen, cs.icon);
-        //         }
-        //     });
-        // }
-
-        if (this.contentStore.customToolbarItems.length) {
-            this.contentStore.customToolbarItems.forEach(customItem => {
-                if (!this.contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === customItem.screenName) && (customItem as CustomToolbarItem).title !== undefined) {
-                    const castedItem = customItem as CustomToolbarItem
-                    const itemAction = () => {
-                        this.history?.push("/home/" + (customItem as CustomToolbarItem).screenName);
-                        return Promise.resolve(true)
-                    }
-                    const newImage = castedItem.image.substring(0, 2) + castedItem.image;
-                    const newItem:BaseMenuButton = { componentId: castedItem.screenName, text: castedItem.title, image: newImage, action: itemAction }
-                    this.contentStore.toolbarItems.push(newItem)
+            menuData.toolBarEntries.forEach(entry => {
+                entry.action = () => {
+                    const openScreenReq = createOpenScreenRequest();
+                    openScreenReq.componentId = entry.componentId;
+                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
                 }
+                this.contentStore.addToolbarItem(entry);
             })
-            this.subManager.emitToolBarUpdate();
         }
-
+        this.contentStore.onMenuFunc();
+        this.subManager.emitMenuUpdate();
+        this.subManager.emitToolBarUpdate();
     }
 
     //Dal
