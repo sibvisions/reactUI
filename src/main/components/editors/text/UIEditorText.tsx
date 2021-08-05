@@ -43,6 +43,112 @@ enum FieldTypes {
 }
 
 /**
+ * DOM transforms:
+ * <strong> -> <b>
+ * <em> -> <i>
+ * <p class="ql-align-center"> -> <p align="center">
+ * <p class="ql-align-right"> -> <p align="right">
+ * <p class="ql-align-justify"> -> <p align="justify">
+ * <span class="ql-font-serif"> -> <font face="serif">
+ * <span class="ql-size-huge"> -> <font size="7">
+ * <span style="color: rgb(230, 0, 0);"> -> <font color="#ffff00">
+ */
+
+const namedSizes: Record<string, number> = {
+    'small': 2,
+    'large': 6,
+    'huge': 7,
+}
+
+const fontFaces: Record<string, string> = {
+    'monospace': 'monospaced',
+    'serif': 'serif',
+    'sans-serif': 'sans-serif',
+}
+
+function nameForSize(size: number) {
+    return (Object.entries(namedSizes).find(e => e[1] === size) ?? [''])[0];
+}
+
+function fontForFace(face: String) {
+    return (Object.entries(fontFaces).find(e => e[1] === face) ?? [''])[0];
+}
+
+function transformHTMLFromQuill(html: string):string {
+    html = html.replace(/<(\/ *)?strong>/g, (m, a = '') => `<${a}b>`);
+    html = html.replace(/<(\/ *)?em>/g, (m, a = '') => `<${a}i>`);
+    html = html.replace(/<p class="ql-align-([a-z]+)">/g, (m, a) => `<p align="${a}">`);
+    
+    const parser = new DOMParser();
+    const d = parser.parseFromString(html, "text/html");
+
+    for (let span of d.querySelectorAll('span')) {
+        const font = span.className.match(/ql-font-([a-z\-]+)/);
+        const size = span.className.match(/ql-size-([a-z\-]+)/);
+        const color = span.style.color;
+
+        const f = d.createElement('font');
+        if(font) {
+            f.setAttribute('face', fontFaces[font[1]]);
+        }
+        if(size) {
+            f.setAttribute('size', namedSizes[size[1]].toString());
+        }
+        if(color) {
+            f.setAttribute('color', color);
+        }
+
+        f.innerHTML = span.innerHTML;
+
+        span.parentElement?.insertBefore(f, span);
+        span.remove();
+    }
+
+    html = d.body.innerHTML;
+
+    console.log('q ->', html);
+
+    return html;
+}
+
+function transformHTMLToQuill(html: string):string {
+    html = html.replace(/<(\/ *)?b>/g, (m, a = '') => `<${a}strong>`);
+    html = html.replace(/<(\/ *)?i>/g, (m, a = '') => `<${a}em>`);
+    html = html.replace(/<p align="([a-z]+)">/g, (m, a) => `<p class="ql-align-${a}">`);
+
+    const parser = new DOMParser();
+    const d = parser.parseFromString(html, "text/html");
+
+    for (let font of d.querySelectorAll('font')) {
+        const face = font.getAttribute('face');
+        const size = font.getAttribute('size');
+        const color = font.getAttribute("color");
+
+        const s = d.createElement('span');
+        if(face) {
+            s.classList.add(`ql-font-${fontForFace(face)}`)
+        }
+        if(size) {
+            s.classList.add(`ql-size-${nameForSize(parseInt(size))}`)
+        }
+        if(color) {
+            s.style.color = color;
+        }
+
+        s.innerHTML = font.innerHTML;
+
+        font.parentElement?.insertBefore(s, font);
+        font.remove();
+    }
+
+    html = d.body.innerHTML;
+
+    console.log('-> q', html);
+
+    return html;
+}
+
+/**
  * TextCellEditor is an inputfield which allows to enter text. Based on the contentType the server sends it is decided wether
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
@@ -202,8 +308,9 @@ const UIEditorText: FC<IEditorText> = (props) => {
 
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
-            onTextChange: showSource || disabled ? () => {} : (value: any) => setText(value.htmlValue),
-            value: text || "",
+            onTextChange: showSource || disabled ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
+            value: transformHTMLToQuill(text) || "",
+            formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script"],
             headerTemplate: (
                 <>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
