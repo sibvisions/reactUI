@@ -31,8 +31,9 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (wrapperRef.current)
+        if (wrapperRef.current) {
             sendOnLoadCallback(id, undefined, {width: 0x80000000, height: 0x80000000}, {width: 0, height: 0}, wrapperRef.current, onLoadCallback);
+        }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (

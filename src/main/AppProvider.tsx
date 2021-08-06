@@ -34,7 +34,7 @@ const appSettings = new AppSettings(contentStore, subscriptions);
 /** Server instance */
 const server = new Server(contentStore, subscriptions, appSettings);
 /** API instance */
-const api = new API(server, contentStore, appSettings);
+const api = new API(server, contentStore, appSettings, subscriptions);
 
 
 contentStore.setSubscriptionManager(subscriptions);

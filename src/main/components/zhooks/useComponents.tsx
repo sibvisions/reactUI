@@ -1,5 +1,5 @@
 /** React imports */
-import { ReactElement, useCallback, useContext, useEffect, useState } from "react";
+import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import _ from "underscore";
@@ -25,22 +25,24 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+    /** Gets the Childcomponents of the parent */
+    const children = context.contentStore.getChildren(id);
+
+    const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>());
 
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
-        let tempSizes = new Map<string, ComponentSizes>();
+        
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
-            tempSizes = preferredSizes
-            tempSizes.forEach((val, key) => {
+            tempSizes.current = preferredSizes
+            tempSizes.current.forEach((val, key) => {
                 if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
-                    tempSizes.delete(key)
+                    tempSizes.current.delete(key)
                 }
             });
         }
 
-        /** Gets the Childcomponents of the parent */
-        const children = context.contentStore.getChildren(id);
         const reactChildrenArray: Array<ReactElement> = [];
         /**
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
@@ -59,12 +61,12 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
             }
         }
 
-        const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension)=> {
-            const preferredComp = tempSizes.get(compId)
-            tempSizes.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+        const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
+            const preferredComp = tempSizes.current.get(compId)
+            tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if((tempSizes.size === children.size || id.includes('TP')) && sizesChanged(preferredComp, prefSize, minSize, maxSize)) {
-                setPreferredSizes(new Map(tempSizes));
+            if((tempSizes.current.size === children.size || id.includes('TP')) && sizesChanged(preferredComp, prefSize, minSize, maxSize)) {
+                setPreferredSizes(new Map(tempSizes.current));
             }
                 
             //Set Preferred Sizes of changed Components
@@ -85,13 +87,17 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         }
 
         /** If there are components in tempSizes which are not longer in the current children (got removed, invisible), remove them and set preferredSize */
-        if (tempSizes.size > children.size) {
-            tempSizes.forEach((value, key) => {
-                if(!children.has(key))
-                    tempSizes.delete(key)
+        if (tempSizes.current.size > children.size) {
+            tempSizes.current.forEach((value, key) => {
+                if(!children.has(key)) {
+                    tempSizes.current.delete(key)
+                }
+                    
             });
-            if (tempSizes.size === children.size)
-                setPreferredSizes(new Map(tempSizes))
+            if (tempSizes.current.size === children.size) {
+                setPreferredSizes(new Map(tempSizes.current))
+            }
+                
         }
 
         /** Create the reactchildren */

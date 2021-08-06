@@ -218,7 +218,7 @@ export default class ContentStore{
                     notifyList.push(newComponent.parent);
             }
 
-
+            
 
             /** Add new Component or updated Properties */
             if(existingComponent) {

@@ -5,9 +5,11 @@ import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParam
 import { REQUEST_ENDPOINTS } from "./request";
 import { BaseMenuButton, ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
-import { CustomScreenType, CustomStartupProps, CustomToolbarItem, EditableMenuItem } from "./customTypes";
+import { CustomScreenType, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { History } from "history";
 import React, { ReactElement } from "react";
+import BaseComponent from "./components/BaseComponent";
+import { SubscriptionManager } from "./SubscriptionManager";
 
 /** Contains the API functions */
 class API {
@@ -15,11 +17,12 @@ class API {
      * @constructor constructs api instance
      * @param server - server instance
      */
-    constructor (server: Server, store:ContentStore, appSettings:AppSettings, history?:History<any>) {
+    constructor (server: Server, store:ContentStore, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
         this.#server = server;
         this.#contentStore = store;
         this.#appSettings = appSettings;
         this.history = history;
+        this.#subManager = sub;
     }
 
     /** Server instance */
@@ -30,6 +33,8 @@ class API {
     #appSettings: AppSettings
     /** the react routers history object */
     history?: History<any>;
+    /** Subscription-Manager instance */
+    #subManager: SubscriptionManager
 
     /**
      * Sends screen-parameters for the given screen to the server.
@@ -64,6 +69,15 @@ class API {
 
     addReplaceScreen(id:string, screen:ReactElement) {
         this.#contentStore.replaceScreens.set(id, (x:any) => React.cloneElement(screen, x));
+    }
+
+    addScreenWrapper(screenName:string|string[], wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+        if (Array.isArray(screenName)) {
+            screenName.forEach(name => this.#contentStore.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }}));
+        }
+        else {
+            this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
+        }
     }
 
     addMenuItem(menuItem: CustomScreenType) {
@@ -185,6 +199,23 @@ class API {
             this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
             this.#contentStore.sentOpenScreenParameters.push(id);
         }
+    }
+
+    addCustomComponent(name:string, customComp:ReactElement) {
+        if (this.#contentStore.getComponentByName(name)) {
+            this.#contentStore.customComponents.set(name, () => customComp);
+            const comp = this.#contentStore.getComponentByName(name) as BaseComponent;
+            const notifyList = new Array<string>();
+            if (comp.parent) {
+                notifyList.push(comp.parent);
+            }
+            notifyList.filter(this.#contentStore.onlyUniqueFilter).forEach(parentId => this.#subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        }
+        else {
+            this.#server.showToast({ severity: "error", summary: "Error while adding custom-component. Could not find name: " + name + "!" }, true);
+            console.error("Error while adding custom-component. Could not find name: " + name + "!");
+        }
+        
     }
 }
 export default API

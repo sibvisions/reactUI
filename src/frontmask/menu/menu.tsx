@@ -105,9 +105,9 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                     if (context.contentStore.activeScreens.length) {
                         context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0])) {
-                            context.contentStore.setActiveScreen();
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = context.contentStore.activeScreens[0];
+                            context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then(() => {
                                 showTopBar(openWelcomeOrHome(), topbar);
                             });
