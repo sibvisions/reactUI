@@ -10,7 +10,7 @@ import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
 const ScreenWrapper:FC<{
     screen?: typeof WorkScreen,
     children: (screen?: ReactElement) => ReactElement,
-    onLoad: Function
+    onOpen?: Function
 }> = ({screen, children, ...props}) => {
 
     /** 
@@ -18,8 +18,8 @@ const ScreenWrapper:FC<{
      * so workscreen can fill the remaining space.
      */
     useEffect(() => {
-        if (props.onLoad) {
-            props.onLoad()
+        if (props.onOpen) {
+            props.onOpen();
         }
 
         let test = document.getElementById("workscreen")?.parentElement

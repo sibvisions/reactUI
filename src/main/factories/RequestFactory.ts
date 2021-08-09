@@ -143,7 +143,8 @@ export const createOpenScreenRequest = (values?: OpenScreenRequest): OpenScreenR
     const req: OpenScreenRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
-        className: values?.className
+        className: values?.className,
+        parameter: values?.parameter
     }
     return req;
 }
@@ -307,6 +308,7 @@ export const createCloseScreenRequest = (values?: CloseScreenRequest): CloseScre
     const req:CloseScreenRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
+        className: values?.className,
         parameter: values?.parameter
     };
     return req;

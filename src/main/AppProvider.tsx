@@ -38,6 +38,7 @@ const api = new API(server, contentStore, appSettings, subscriptions);
 
 
 contentStore.setSubscriptionManager(subscriptions);
+server.setAPI(api);
 /** Initial value for state */
 const initValue: AppContextType = {
     contentStore: contentStore,

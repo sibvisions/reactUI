@@ -10,18 +10,10 @@ import { HashRouter } from 'react-router-dom';
 /** Other imports */
 import App from './App';
 import AppProvider from "./main/AppProvider";
-import { CustomScreenType, CustomComponentType, CustomStartupProps, ScreenWrapperType, CustomScreenParameter, CustomToolbarItem, EditableMenuItem } from './main/customTypes';
 import { IUIManagerProps } from './frontmask/UIManager';
 
 export interface ICustomContent {
-    customScreens?: CustomScreenType[]
-    customComponents?: CustomComponentType[]
-    customStartupProps?: CustomStartupProps[]
-    screenWrappers?: ScreenWrapperType[]
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
-    customScreenParameter?: CustomScreenParameter[]
-    customToolbarItems?: Array<EditableMenuItem|CustomToolbarItem>
-    editedMenuItems?: EditableMenuItem[]
     onStartup?: Function
     onMenu?: Function
     onOpenScreen?: Function

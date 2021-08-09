@@ -16,7 +16,7 @@ import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 //import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
-import { createCloseScreenRequest, createOpenScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
+import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
@@ -92,9 +92,7 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                 onClick={() => {
                     const openWelcomeOrHome = () => {
                         if (context.appSettings.welcomeScreen) {
-                            const openReq = createOpenScreenRequest();
-                            openReq.className = context.appSettings.welcomeScreen;
-                            return context.server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen, undefined, true);
                         }
                         else {
                             history.push('/home');

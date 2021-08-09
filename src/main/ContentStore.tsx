@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomScreenParameter, CustomScreenType, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
 import { SortDefinition } from "./request"
 import { History } from "history";
@@ -38,7 +38,9 @@ export default class ContentStore{
     replaceScreens = new Map<string, Function>();
 
     /** A Map which stores removed, but not deleted custom components, the key is the components id and the value the component */
-    removedCustomComponent = new Map<string, BaseComponent>();
+    removedCustomContent = new Map<string, BaseComponent>();
+
+    removedCustomComponents = new Array<string>();
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
@@ -125,8 +127,6 @@ export default class ContentStore{
     /** the react routers history object */
     history?:History<any>;
 
-    sentOpenScreenParameters = new Array<string>();
-
     constructor(history?:History<any>) {
         this.history = history;
     }
@@ -191,16 +191,16 @@ export default class ContentStore{
             existingComponent = this.flatContent.get(newComponent.id) || 
                                 this.replacedContent.get(newComponent.id) || 
                                 this.removedContent.get(newComponent.id) || 
-                                this.removedCustomComponent.get(newComponent.id);
+                                this.removedCustomContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomComponent.has(newComponent.id))) {
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))) {
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
                     this.flatContent.set(newComponent.id, existingComponent);
                 }
                 else {
-                    this.removedCustomComponent.delete(newComponent.id);
+                    this.removedCustomContent.delete(newComponent.id);
                     this.replacedContent.set(newComponent.id, existingComponent);
                 }
             }
@@ -247,7 +247,7 @@ export default class ContentStore{
 
             /** 
              * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
-             * and add it to removedContent/removedCustomComponent, if newComponent has "destroy", delete it from all maps
+             * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
              */
             if (newComponent["~remove"] && existingComponent) {
                 if (!isCustom) {
@@ -256,7 +256,7 @@ export default class ContentStore{
                 }
                 else {
                     this.replacedContent.delete(newComponent.id);
-                    this.removedCustomComponent.set(newComponent.id, existingComponent);
+                    this.removedCustomContent.set(newComponent.id, existingComponent);
                 }
             }
 
@@ -268,7 +268,7 @@ export default class ContentStore{
                     this.removedContent.delete(newComponent.id);
                 }
                 else {
-                    this.removedCustomComponent.delete(newComponent.id);
+                    this.removedCustomContent.delete(newComponent.id);
                 }
             }
             
@@ -376,7 +376,7 @@ export default class ContentStore{
         this.removedContent.clear();
         this.customScreens.clear();
         this.customComponents.clear();
-        this.removedCustomComponent.clear();
+        this.removedCustomContent.clear();
         this.replacedContent.clear();
         this.menuItems.clear();
         this.currentUser = new UserData();
@@ -462,11 +462,11 @@ export default class ContentStore{
         let entry = componentEntries.next();
         while (!entry.done) {
             if (parentId.includes("TP")) {
-                if (entry.value[1].parent === parentId) {
+                if (entry.value[1].parent === parentId && !this.removedCustomComponents.includes(entry.value[1].name)) {
                     children.set(entry.value[1].id, entry.value[1]);
                 }
             }
-            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false) {
+            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false && !this.removedCustomComponents.includes(entry.value[1].name)) {
                 children.set(entry.value[1].id, entry.value[1]);
             }
             entry = componentEntries.next();
@@ -734,8 +734,9 @@ export default class ContentStore{
      */
      addMenuItem(menuItem: ServerMenuButtons){
         const menuGroup = this.menuItems.get(menuItem.group);
-        if(menuGroup)
+        if(menuGroup) {
             menuGroup.push(menuItem);
+        }
         else {
             this.menuItems.set(menuItem.group, [menuItem]);
         }

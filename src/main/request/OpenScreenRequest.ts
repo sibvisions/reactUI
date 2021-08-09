@@ -1,7 +1,7 @@
-import { ComponentRequest } from ".";
+import { ParameterRequest } from ".";
 
 /** Interface for OpenScreenRequest */
-interface OpenScreenRequest extends ComponentRequest {
+interface OpenScreenRequest extends ParameterRequest {
     className?:string
 }
 export default OpenScreenRequest;

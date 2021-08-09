@@ -30,7 +30,7 @@ import { ApplicationMetaDataResponse,
          WelcomeDataResponse,
          ServerMenuButtons,
          BaseMenuButton} from "./response";
-import { createCloseScreenRequest, createFetchRequest, createOpenScreenRequest, createSetScreenParameterRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -39,6 +39,7 @@ import TreePath from "./model/TreePath";
 import { ToastMessageType } from "primereact/toast";
 import AppSettings from "./AppSettings";
 import { CustomToolbarItem, EditableMenuItem } from "./customTypes";
+import API from "./API";
 
 /** Type for query */
 type queryType = {
@@ -64,6 +65,7 @@ class Server {
         this.appSettings = appSettings;
         this.history = history;
         this.openRequests = new Map<any, Promise<any>>();
+        this.api = new API(this, store, appSettings, subManager, history);
     }
 
     /** Application name */
@@ -85,6 +87,12 @@ class Server {
     history?:History<any>;
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
+
+    api:API;
+
+    setAPI(api:API) {
+        this.api = api;
+    }
 
     /** ----------APP-FUNCTIONS---------- */
 
@@ -292,7 +300,7 @@ class Server {
             //     this.contentStore.openScreenParameters.delete(genericData.componentId);
             // }
             if (this.contentStore.onOpenScreenFunc) {
-                this.contentStore.onOpenScreenFunc.apply(undefined, [genericData.componentId]);
+                this.contentStore.onOpenScreenFunc.apply(undefined, []);
             }
         }
         if (genericData.changedComponents && genericData.changedComponents.length) {
@@ -324,9 +332,7 @@ class Server {
         if (menuData.entries && menuData.entries.length) {
             menuData.entries.forEach(entry => {
                 entry.action = () => {
-                    const openScreenReq = createOpenScreenRequest();
-                    openScreenReq.componentId = entry.componentId;
-                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                    return this.api.sendOpenScreenRequest(entry.componentId)
                 }
                 this.contentStore.addMenuItem(entry);
             })
@@ -334,9 +340,7 @@ class Server {
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
             menuData.toolBarEntries.forEach(entry => {
                 entry.action = () => {
-                    const openScreenReq = createOpenScreenRequest();
-                    openScreenReq.componentId = entry.componentId;
-                    return this.sendRequest(openScreenReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                    return this.api.sendOpenScreenRequest(entry.componentId)
                 }
                 this.contentStore.addToolbarItem(entry);
             })

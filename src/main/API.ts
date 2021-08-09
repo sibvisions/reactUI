@@ -5,7 +5,7 @@ import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParam
 import { REQUEST_ENDPOINTS } from "./request";
 import { BaseMenuButton, ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
-import { CustomScreenType, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./components/BaseComponent";
@@ -36,6 +36,20 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
+    sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }, useClassName?:boolean) {
+        const openReq = createOpenScreenRequest();
+        if (useClassName) {
+            openReq.className = id;
+        }
+        else {
+            openReq.componentId = id;
+        }
+        if (parameter) {
+            openReq.parameter = parameter;
+        }
+        return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+    }
+
     /**
      * Sends screen-parameters for the given screen to the server.
      * @param screenName - the screen-name
@@ -52,15 +66,22 @@ class API {
      * Sends a closeScreenRequest to the server for the given screen.
      * @param screenName - the screen to be closed
      */
-    sendCloseScreen(screenName: string) {
+    sendCloseScreen(id: string, parameter?: { [key: string]: any }, useClassName?:boolean) {
         const csRequest = createCloseScreenRequest();
-        csRequest.componentId = screenName;
-        if (this.#contentStore.closeScreenParameters.has(screenName)) {
-            csRequest.parameter = this.#contentStore.closeScreenParameters.get(screenName);
+        if (useClassName) {
+            csRequest.className = id;
+        }
+        else {
+            csRequest.componentId = id;
+        }
+        if (parameter) {
+            csRequest.parameter = parameter;
         }
         //TODO topbar
         this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
-        this.#contentStore.closeScreen(screenName);
+        this.#contentStore.closeScreen(id);
+        this.history?.push("/home")
+        
     }
 
     addCustomScreen(id:string, screen:ReactElement) {
@@ -71,16 +92,11 @@ class API {
         this.#contentStore.replaceScreens.set(id, (x:any) => React.cloneElement(screen, x));
     }
 
-    addScreenWrapper(screenName:string|string[], wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
-        if (Array.isArray(screenName)) {
-            screenName.forEach(name => this.#contentStore.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }}));
-        }
-        else {
-            this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
-        }
+    addScreenWrapper(screenName:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+        this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
     }
 
-    addMenuItem(menuItem: CustomScreenType) {
+    addMenuItem(menuItem: CustomMenuItem) {
         const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
         const itemAction = () => {
             this.#contentStore.setActiveScreen(menuItem.id);
@@ -147,9 +163,7 @@ class API {
                 return Promise.resolve(true);
             }
             else {
-                const openReq = createOpenScreenRequest();
-                openReq.componentId = toolbarItem.id;
-                return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+                return this.sendOpenScreenRequest(toolbarItem.id, undefined, true);
             }
         }
         this.#contentStore.addToolbarItem({ 
@@ -191,14 +205,11 @@ class API {
         this.#contentStore.setStartupProperties(startupProps);
     }
 
-    sendOpenScreenParameters(id:string, parameter: { [key:string]: any }) {
-        if (!this.#contentStore.sentOpenScreenParameters.includes(id)) {
-            const parameterReq = createSetScreenParameterRequest();
-            parameterReq.componentId = id;
-            parameterReq.parameter = parameter;
-            this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-            this.#contentStore.sentOpenScreenParameters.push(id);
-        }
+    sendCloseScreenParameters(id: string, parameter: { [key: string]: any }) {
+        const parameterReq = createSetScreenParameterRequest();
+        parameterReq.componentId = id;
+        parameterReq.parameter = parameter;
+        this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     }
 
     addCustomComponent(name:string, customComp:ReactElement) {
@@ -215,7 +226,26 @@ class API {
             this.#server.showToast({ severity: "error", summary: "Error while adding custom-component. Could not find name: " + name + "!" }, true);
             console.error("Error while adding custom-component. Could not find name: " + name + "!");
         }
-        
+    }
+
+    removeComponent(name:string) {
+        if (this.#contentStore.getComponentByName(name)) {
+            this.#contentStore.removedCustomComponents.push(name);
+            const comp = this.#contentStore.getComponentByName(name) as BaseComponent;
+            const notifyList = new Array<string>();
+            if (comp.parent) {
+                notifyList.push(comp.parent);
+            }
+            notifyList.filter(this.#contentStore.onlyUniqueFilter).forEach(parentId => this.#subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        }
+        else {
+            this.#server.showToast({ severity: "error", summary: "Error while removing component. Could not find name: " + name + "!" }, true);
+            console.error("Error while removing component. Could not find name: " + name + "!");
+        }
+    }
+
+    getUser() {
+        return this.#contentStore.currentUser;
     }
 }
 export default API

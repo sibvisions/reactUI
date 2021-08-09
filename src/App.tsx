@@ -19,7 +19,7 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
+import { createChangesRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar from './main/components/topbar/TopBar';
 import { useEventHandler } from './main/components/zhooks';
@@ -262,19 +262,10 @@ const App: FC<ICustomContent> = (props) => {
         return () => {
             ws.current?.close();
         }
-    }, [context.server, context.contentStore, history, props.customStartupProps, context.subscriptions, sessionExpired]);
+    }, [context.server, context.contentStore, history, context.subscriptions, sessionExpired]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
-        // props.customScreens?.forEach(s => {
-        //     if (s.replace) {
-        //         context.contentStore.registerReplaceScreen(s.name, s.screen)
-        //     } else {
-        //         context.contentStore.registerCustomOfflineScreen(s.name, s.menuGroup, s.screen, s.icon)
-        //         context.contentStore.addCustomScreen(s)
-        //     }
-        // });
-
         if (props.onMenu) {
             context.contentStore.setOnMenuFunc(props.onMenu);
         }
@@ -283,23 +274,7 @@ const App: FC<ICustomContent> = (props) => {
             context.contentStore.setOnOpenScreenFunc(props.onOpenScreen);
         }
 
-        props.customComponents?.forEach(rc => context.contentStore.registerCustomComponent(rc.name, rc.component));
-        //props.screenWrappers?.forEach(sw => context.contentStore.registerScreenWrapper(sw.screen, sw.wrapper, sw.options));
-
-        // if (props.customScreenParameter) {
-        //     context.contentStore.addScreenParameter(props.customScreenParameter)
-        // }
-
-        if (props.customToolbarItems && props.customToolbarItems.length) {
-            //context.api.addToolbarItem(props.customToolbarItems);
-            context.contentStore.customToolbarItems = props.customToolbarItems;
-        }
-
-        if (props.editedMenuItems && props.editedMenuItems.length) {
-            context.contentStore.editedMenuItems = props.editedMenuItems;
-        }
-
-    }, [context.contentStore, props.customScreens, props.customComponents, props.screenWrappers, registerCustom]);
+    }, [context.contentStore, registerCustom]);
 
     /**
      * Method to show a toast

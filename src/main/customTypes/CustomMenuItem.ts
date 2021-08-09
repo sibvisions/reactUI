@@ -1,8 +1,8 @@
 /** Interface for CustomScreens */
-type CustomScreenType = {
+type CustomMenuItem = {
     id: string,
     text: string,
     menuGroup: string,
     icon?: string,
 }
-export default CustomScreenType;
+export default CustomMenuItem;

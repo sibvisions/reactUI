@@ -33,3 +33,4 @@ export type { default as RollbackRequest } from './RollbackRequest';
 export type { default as ChangesRequest } from './ChangesRequest'
 export type { default as FocusGainedRequest } from './FocusGainedRequest';
 export type { default as FocusLostRequest } from './FocusLostRequest';
+export type { default as ParameterRequest } from './ParameterRequest'

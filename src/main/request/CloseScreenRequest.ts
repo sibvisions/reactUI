@@ -1,7 +1,6 @@
-import { ComponentRequest } from ".";
-
+import { ParameterRequest } from ".";
 /** Interface for CloseScreenRequest */
-interface CloseScreenRequest extends ComponentRequest {
-    parameter?: { [key:string]:any }
+interface CloseScreenRequest extends ParameterRequest {
+    className?:string
 }
 export default CloseScreenRequest;
