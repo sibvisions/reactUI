@@ -1,6 +1,7 @@
 /** Other imports */
 import { BaseResponse } from ".";
 import { SortDefinition } from "../request";
+import { RecordFormat } from "../request";
 
 /** Interface for FetchResponse */
 interface FetchResponse extends BaseResponse{
@@ -14,5 +15,6 @@ interface FetchResponse extends BaseResponse{
     treePath?: number[];
     selectedColumn?: string;
     sortDefinition?: SortDefinition[]
+    recordFormat?: RecordFormat;
 }
 export default FetchResponse
