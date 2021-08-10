@@ -19,7 +19,7 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createChangesRequest, createPressButtonRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
+import { createChangesRequest, createFocusLostRequest, createPressButtonRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
 import TopBar, { showTopBar, TopBarContext } from './main/components/topbar/TopBar';
 import { useEventHandler, useTranslation } from './main/components/zhooks';
@@ -430,6 +430,13 @@ const App: FC<ICustomContent> = (props) => {
                             <div className={concatClassnames("toast-header", getHeaderType(dialogResponse.iconType))}>
                                 <span className="toast-header-text">{headerContent(dialogResponse.iconType).text}</span>
                                 <i className={concatClassnames("toast-header-icon", headerContent(dialogResponse.iconType).icon)} />
+                            <button
+                                className="tabview-button pi pi-times"
+                                onClick={() => {
+                                    const req = createFocusLostRequest();
+                                    req.componentId = dialogResponse.componentId;
+                                    showTopBar(context.server.sendRequest(req, "/api/closeFrame"), topbar)
+                                }} />
                             </div>
                             <div className="toast-content">
                                 {(messageObj as ToastMessage).summary}
