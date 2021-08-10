@@ -103,11 +103,15 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                     if (context.contentStore.activeScreens.length) {
                         context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0])) {
+                            const compId = context.contentStore.activeScreens[0];
                             const closeReq = createCloseScreenRequest();
-                            closeReq.componentId = context.contentStore.activeScreens[0];
+                            closeReq.componentId = compId;
                             context.contentStore.setActiveScreen();
-                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then(() => {
-                                showTopBar(openWelcomeOrHome(), topbar);
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then((res) => {
+                                if (res[0] === undefined || res[0].name !== "message.error") {
+                                    context.contentStore.closeScreen(compId);
+                                    showTopBar(openWelcomeOrHome(), topbar);
+                                }
                             });
                         }
                         else {

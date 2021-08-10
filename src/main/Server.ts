@@ -291,14 +291,6 @@ class Server {
                 workScreen = genericData.changedComponents[0] as IPanel
             }
             this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
-            // if (this.contentStore.openScreenParameters.has(genericData.componentId)) {
-            //     const parameterReq = createSetScreenParameterRequest();
-            //     parameterReq.componentId = genericData.componentId;
-            //     parameterReq.parameter = this.contentStore.openScreenParameters.get(genericData.componentId);
-            //     //TODO: topbar
-            //     this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-            //     this.contentStore.openScreenParameters.delete(genericData.componentId);
-            // }
             if (this.contentStore.onOpenScreenFunc) {
                 this.contentStore.onOpenScreenFunc.apply(undefined, []);
             }
@@ -314,14 +306,6 @@ class Server {
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
         this.contentStore.closeScreen(closeScreenData.componentId);
-    //     if (this.contentStore.closeScreenParameters.has(closeScreenData.componentId)) {
-    //         const parameterReq = createSetScreenParameterRequest();
-    //         parameterReq.componentId = closeScreenData.name;
-    //         parameterReq.parameter = this.contentStore.closeScreenParameters.get(closeScreenData.componentId);
-    //         //TODO: topbar
-    //         this.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
-    //         this.contentStore.openScreenParameters.delete(closeScreenData.name);
-    //     }
     }
 
     /**

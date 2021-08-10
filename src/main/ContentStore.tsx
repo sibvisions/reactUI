@@ -96,18 +96,6 @@ export default class ContentStore{
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
-    /**
-     * A Map which stores the screen parameters, that are being sent to the server when a screen is opened.
-     * key is the screen name, value are the parameters to be sent.
-     */
-    openScreenParameters = new Map<string, any>();
-
-    /**
-     * A Map which stores the screen parameters, that are being sent to the server when a screen is closed.
-     * key is the screen name, value are the parameters to be sent.
-     */
-    closeScreenParameters = new Map<string, any>();
-
     editedMenuItems = new Array<EditableMenuItem>();
 
     customToolbarItems = new Array<CustomToolbarItem|EditableMenuItem>();
@@ -835,15 +823,4 @@ export default class ContentStore{
         else 
             this.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}});
     }
-
-    // addScreenParameter(screenParameters:CustomScreenParameter[]) {
-    //     screenParameters.forEach(sp => {
-    //         if (Array.isArray(sp.name)) {
-    //             sp.name.forEach(screenName => (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(screenName, sp.parameter));
-    //         }
-    //         else {
-    //             (sp.onClose ? this.closeScreenParameters : this.openScreenParameters).set(sp.name, sp.parameter);
-    //         }
-    //     });
-    // }
 }

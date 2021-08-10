@@ -3,7 +3,7 @@ import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
-import { BaseMenuButton, ServerMenuButtons } from "./response";
+import { ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
 import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { History } from "history";
@@ -78,10 +78,12 @@ class API {
             csRequest.parameter = parameter;
         }
         //TODO topbar
-        this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN);
-        this.#contentStore.closeScreen(id);
-        this.history?.push("/home")
-        
+        this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).then(res => {
+            if (res[0] === undefined || res[0].name !== "message.error") {
+                this.#contentStore.closeScreen(id)
+                this.history?.push("/home")
+            }
+        });
     }
 
     addCustomScreen(id:string, screen:ReactElement) {
@@ -203,13 +205,6 @@ class API {
 
     addStartupProperties(startupProps:CustomStartupProps[]) {
         this.#contentStore.setStartupProperties(startupProps);
-    }
-
-    sendCloseScreenParameters(id: string, parameter: { [key: string]: any }) {
-        const parameterReq = createSetScreenParameterRequest();
-        parameterReq.componentId = id;
-        parameterReq.parameter = parameter;
-        this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
     }
 
     addCustomComponent(name:string, customComp:ReactElement) {
