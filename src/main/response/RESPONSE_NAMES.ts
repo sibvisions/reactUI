@@ -15,10 +15,11 @@ enum RESPONSE_NAMES {
     SHOW_DOCUMENT="showDocument",
     SESSION_EXPIRED="message.sessionexpired",
     ERROR="message.error",
+    INFORMATION="message.information",
+    DIALOG="message.dialog",
     RESTART="restart",
     APPLICATION_PARAMETERS="applicationParameters",
     LANGUAGE="language",
-    INFORMATION="message.information",
     APPLICATION_SETTINGS="applicationSettings",
     DEVICE_STATUS="deviceStatus",
     WELCOME_DATA="welcomeData"

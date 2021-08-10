@@ -29,7 +29,8 @@ import { ApplicationMetaDataResponse,
          DeviceStatusResponse,
          WelcomeDataResponse,
          ServerMenuButtons,
-         BaseMenuButton} from "./response";
+         BaseMenuButton,
+         DialogResponse} from "./response";
 import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -100,7 +101,7 @@ class Server {
      * Function to show a toast
      * @param message - message to show
      */
-    showToast = (message: ToastMessageType, err: boolean) => {};
+    showToast = (message: ToastMessageType, err: boolean, dialogResponse?:DialogResponse) => {};
     /**
      * Function to show te timeout dialog
      */
@@ -216,7 +217,8 @@ class Server {
         .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
         .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
-        .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this));
+        .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
+        .set(RESPONSE_NAMES.DIALOG, this.showMessage.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -554,6 +556,10 @@ class Server {
 
     showInfo(infoData: MessageResponse) {
         this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
+    }
+
+    showMessage(messageData:DialogResponse) {
+        this.showToast({summary: messageData.message, sticky: true, closable: false}, false, messageData);
     }
  
     /**

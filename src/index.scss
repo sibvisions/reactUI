@@ -173,7 +173,7 @@ body {
 #toastInfo {
     z-index: 3000 !important;
     opacity: 1;
-    .p-toast-message.p-toast-message-info {
+    .p-toast-message.p-toast-message {
         border: none;
         background:white;
         color: unset
@@ -181,6 +181,62 @@ body {
 
     .p-toast-message-content {
         padding: 0;
+    }
+
+    .index-helper {
+        display: flex;
+        flex: 1;
+
+        .toast-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            color: white;
+
+            &.info {
+                background: #347fae;
+            }
+
+            &.warning {
+                background: #ffed49;
+            }
+
+            &.error {
+                background: #ff5061;
+            }
+
+            &.question {
+                background: #aafffb
+            }
+
+            .toast-header-text {
+                align-self: center;
+                font-size: 1rem;
+                font-weight: bold;
+            }
+
+            .toast-header-icon {
+                font-size: 2rem;
+            }
+        }
+
+        .toast-content {
+            padding: 1.5rem 1rem;
+            flex: 1;
+        }
+
+        .toast-footer {
+            display: flex;
+            padding: 0 0.5rem 0.5rem 0.5rem;
+
+            &.single-button {
+                justify-content: flex-end;
+            }
+
+            &.more-buttons {
+                justify-content: space-between;
+            }
+        }
     }
 }
 
