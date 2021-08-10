@@ -6,6 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
+import Quill from "quill";
 
 /** Hook imports */
 import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
@@ -41,6 +42,40 @@ enum FieldTypes {
     PASSWORD = 2,
     HTML = 3
 }
+
+/** custom divider blot to insert <hr> intro quill editor */
+let BlockEmbed = Quill.import('blots/block/embed');
+class DividerBlot extends BlockEmbed { }
+DividerBlot.blotName = 'divider';
+DividerBlot.tagName = 'hr';
+Quill.register(DividerBlot);
+
+const Module = Quill.import('core/module')
+class DividerToolbar extends Module {
+    constructor (quill: Quill, options: any) {
+        super(quill, options)
+        this.options = options
+        this.quill = quill
+        this.toolbar = quill.getModule('toolbar')
+        this.toolbar.addHandler('divider', this.dividerHandler.bind(this))
+    }
+
+    dividerHandler () {
+        const getSelection = this.quill.getSelection() || {}
+        let selection = getSelection.index || this.quill.getLength()
+        const [leaf] = this.quill.getLeaf(selection - 1)
+        if (leaf instanceof DividerBlot) {
+            this.quill.insertText(selection, '\n', "user")
+            selection++
+        }
+        this.quill.insertEmbed(selection, 'divider', this.options, "user")
+        if (getSelection.index === 0) {
+            selection++
+            this.quill.insertText(selection, '\n', "user")
+        }
+    }
+}
+Quill.register('modules/divider', DividerToolbar)
 
 /**
  * DOM transforms:
@@ -82,7 +117,8 @@ function transformHTMLFromQuill(html: string):string {
     const parser = new DOMParser();
     const d = parser.parseFromString(html, "text/html");
 
-    for (let span of d.querySelectorAll('span')) {
+    let span: HTMLElement | null;
+    while (span = d.querySelector('span:not([skip])')) {
         const font = span.className.match(/ql-font-([a-z\-]+)/);
         const size = span.className.match(/ql-size-([a-z\-]+)/);
         const color = span.style.color;
@@ -106,7 +142,7 @@ function transformHTMLFromQuill(html: string):string {
 
     html = d.body.innerHTML;
 
-    console.log('q ->', html);
+    //console.log('q ->', html);
 
     return html;
 }
@@ -119,7 +155,8 @@ function transformHTMLToQuill(html: string):string {
     const parser = new DOMParser();
     const d = parser.parseFromString(html, "text/html");
 
-    for (let font of d.querySelectorAll('font')) {
+    let font: HTMLElement | null;
+    while (font = d.querySelector('font')) {
         const face = font.getAttribute('face');
         const size = font.getAttribute('size');
         const color = font.getAttribute("color");
@@ -143,7 +180,7 @@ function transformHTMLToQuill(html: string):string {
 
     html = d.body.innerHTML;
 
-    console.log('-> q', html);
+    //console.log('-> q', html);
 
     return html;
 }
@@ -310,7 +347,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
         return fieldType === FieldTypes.HTML ? {
             onTextChange: showSource || disabled ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
             value: transformHTMLToQuill(text) || "",
-            formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script"],
+            formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script", "divider"],
+            modules: {
+                divider: true,
+                clipboard: true,
+                keyboard: true,
+                history: true,
+            },
             headerTemplate: (
                 <>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
@@ -353,6 +396,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 </span>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button className="ql-strike" aria-label="Strike"></button>
+                </span>
+                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                    <button className="ql-divider" aria-label="Divider">
+                        <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <rect className="ql-fill" x="0" y="45" width="100" height="10" />
+                        </svg>
+                    </button>
                 </span>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
                     <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
