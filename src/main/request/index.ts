@@ -35,3 +35,4 @@ export type { default as FocusGainedRequest } from './FocusGainedRequest';
 export type { default as FocusLostRequest } from './FocusLostRequest';
 export type { default as ParameterRequest } from './ParameterRequest';
 export type { default as RecordFormat } from './RecordFormat';
+export type { default as CloseFrameRequest } from './CloseFrameRequest';

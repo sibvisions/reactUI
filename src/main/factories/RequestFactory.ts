@@ -30,7 +30,8 @@ import { StartupRequest,
          RollbackRequest,
          ChangesRequest,
          FocusGainedRequest,
-         FocusLostRequest} from "../request";
+         FocusLostRequest,
+         CloseFrameRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -476,9 +477,9 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
 }
 
 /**
- * Returns a pressButtonRequest object with either properties which can be overwritten or properties as parameters
- * @param values - properties for the pressButtonRequest
- * @returns a pressButtonRequest object
+ * Returns a focus-gained-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the focus-gained-request
+ * @returns a focus-gained-request object
  */
  export const createFocusGainedRequest = (values?: FocusGainedRequest): FocusGainedRequest => {
     const req: FocusGainedRequest = {
@@ -489,12 +490,25 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
 }
 
 /**
- * Returns a pressButtonRequest object with either properties which can be overwritten or properties as parameters
- * @param values - properties for the pressButtonRequest
- * @returns a pressButtonRequest object
+ * Returns a focus-lost-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the focus-lost-request
+ * @returns a focus-lost-request object
  */
  export const createFocusLostRequest = (values?: FocusLostRequest): FocusLostRequest => {
     const req: FocusLostRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
+/**
+ * Returns a close-frame-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the close-frame-request
+ * @returns a close-frame-request object
+ */
+ export const createCloseFrameRequest = (values?: CloseFrameRequest): CloseFrameRequest => {
+    const req: CloseFrameRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
     }

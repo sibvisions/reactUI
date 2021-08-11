@@ -30,7 +30,8 @@ import { ApplicationMetaDataResponse,
          WelcomeDataResponse,
          ServerMenuButtons,
          BaseMenuButton,
-         DialogResponse} from "./response";
+         DialogResponse,
+         CloseFrameResponse} from "./response";
 import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -218,7 +219,8 @@ class Server {
         .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
         .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
         .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
-        .set(RESPONSE_NAMES.DIALOG, this.showMessage.bind(this));
+        .set(RESPONSE_NAMES.DIALOG, this.showMessage.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -549,17 +551,20 @@ class Server {
      */
     showError(errData: ErrorResponse) {
         if (!errData.silentAbort) {
-            this.showToast({severity: 'error', summary: errData.message}, true);
+            this.subManager.emitMessage(errData, true);
+            //this.showToast({severity: 'error', summary: errData.message}, true);
         }
         console.error(errData.details)
     }
 
     showInfo(infoData: MessageResponse) {
-        this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
+        this.subManager.emitMessage(infoData, false);
+        //this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
     }
 
     showMessage(messageData:DialogResponse) {
-        this.showToast({summary: messageData.message, sticky: true, closable: false}, false, messageData);
+        this.subManager.emitMessage(messageData, false)
+        //this.showToast({summary: messageData.message, sticky: true, closable: false}, false, messageData);
     }
  
     /**
@@ -610,6 +615,10 @@ class Server {
      */
     welcomeData(welcomeData:WelcomeDataResponse) {
         this.appSettings.setWelcomeScreen(welcomeData.homeScreen);
+    }
+
+    closeFrame(closeFrameData:CloseFrameResponse) {
+        this.subManager.emitCloseFrame(closeFrameData.componentId);
     }
 
     /** ----------ROUTING---------- */

@@ -1,7 +1,7 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
-import { ApplicationSettingsResponse, DeviceStatusResponse } from "./response";
+import { ApplicationSettingsResponse, DeviceStatusResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
@@ -117,6 +117,12 @@ export class SubscriptionManager {
 
     /** An array of functions to update the toolbar items */
     toolbarSubscriber = new Array<Function>();
+
+    /** A function to update the message-subscriber */
+    messageSubscriber:Function = () => {};
+
+    /** A function to update the close-frame-subscriber */
+    closeFrameSubscriber:Function = () => {};
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -356,8 +362,29 @@ export class SubscriptionManager {
         this.toolbarSubscriber.push(fn);
     }
 
+    /**
+     * Subscribes the app to session-expired to flip the flag and reinitiate
+     * @param fn - the function to flip the session-expired-state
+     */
     subscribeToSessionExpired(fn:Function) {
         this.sessionExpiredSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the UIToast to message-responses, to change the dialog-response state, to show the
+     * UIToast
+     * @param fn - the function to change the dialog-response state
+     */
+     subscribeToMessage(fn:Function) {
+        this.messageSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the UIToast to close-frame-responses, to change the close-frame state, to close toasts
+     * @param fn - the function to change the clsoe-frame state
+     */
+     subscribeToCloseFrame(fn:Function) {
+        this.closeFrameSubscriber = fn;
     }
 
     /**
@@ -533,8 +560,19 @@ export class SubscriptionManager {
         this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    /** Unsubscribes app from session-expired */
     unsubscribeFromSessionExpired() {
         this.sessionExpiredSubscriber = () => {};
+    }
+
+    /** Unsubscribes UIToast from message-responses */
+    unsubscribeFromMessage() {
+        this.messageSubscriber = () => {};
+    }
+
+    /** Unsubscribes UIToast from close-frame-responses */
+    unsubscribeFromCloseFrame() {
+        this.messageSubscriber = () => {};
     }
 
     /**
@@ -659,11 +697,22 @@ export class SubscriptionManager {
         this.deviceModeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [deviceMode]));
     }
 
+    /** Tell the toolbar-subscribers that their items changed */
     emitToolBarUpdate() {
         this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.toolbarItems]));
     }
 
+    /** Tell app that session has expired */
     emitSessionExpired() {
         this.sessionExpiredSubscriber.apply(undefined, []);
+    }
+
+    /** Tell UIToast that there is a new message */
+    emitMessage(dialogResponse:DialogResponse|MessageResponse|ErrorResponse, err:boolean) {
+        this.messageSubscriber.apply(undefined, [dialogResponse, err]);
+    }
+
+    emitCloseFrame(compId:string) {
+        this.closeFrameSubscriber.apply(undefined, [compId]);
     }
 }

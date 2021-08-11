@@ -2,13 +2,11 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 
 /** 3rd Party imports */
-import { Toast, ToastMessage, ToastMessageType } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
 import PrimeReact from 'primereact/api';
 import * as queryString from "querystring";
 import { Helmet } from "react-helmet";
-import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 
 /** UI imports */
 import Home from "./frontmask/home/home";
@@ -19,12 +17,11 @@ import LoadingScreen from './frontmask/loading/loadingscreen';
 /** Other imports */
 import { REQUEST_ENDPOINTS, StartupRequest } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { createChangesRequest, createFocusLostRequest, createPressButtonRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
+import { createChangesRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./main/factories/RequestFactory";
 import { ICustomContent } from "./MiddleMan";
-import TopBar, { showTopBar, TopBarContext } from './main/components/topbar/TopBar';
-import { useEventHandler, useTranslation } from './main/components/zhooks';
-import { DialogResponse } from './main/response';
-import { concatClassnames } from './main/components/util';
+import TopBar from './main/components/topbar/TopBar';
+import { useEventHandler } from './main/components/zhooks';
+import UIToast from './main/components/toast/UIToast';
 
 //import CustomHelloScreen from "./frontmask/customScreen/CustomHelloScreen";
 //import CustomChartScreen from "./frontmask/customScreen/CustomChartScreen";
@@ -51,14 +48,6 @@ const App: FC<ICustomContent> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Toast reference for error messages */
-    const toastErrRef = useRef<Toast>(null);
-    
-    /** Toast reference for information messages */
-    const toastInfoRef = useRef<Toast>(null);
-
-    const toastIndex = useRef<number>(0);
-
     /** History of react-router-dom */
     const history = useHistory();
 
@@ -83,14 +72,7 @@ const App: FC<ICustomContent> = (props) => {
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true
 
-    /** the currently requested componentId */
-    let routeMatch = useRouteMatch<{ componentId: string }>("/home/:componentId");
-
     const ws = useRef<WebSocket|null>(null);
-
-    const translation = useTranslation();
-
-    const topbar = useContext(TopBarContext)
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -242,9 +224,6 @@ const App: FC<ICustomContent> = (props) => {
                     initWS(context.server.BASE_URL);
                 });
             }
-
-            context.server.showToast = msg;
-            context.showToast = msg;
             context.server.showDialog = showDialog;
         }
 
@@ -293,196 +272,6 @@ const App: FC<ICustomContent> = (props) => {
     }, [context.contentStore, registerCustom]);
 
     /**
-     * Method to show a toast
-     * @param {ToastMessage} messageObj - PrimeReact ToastMessage object which contains display information for toast
-     */
-    const msg = (messageObj: ToastMessageType, err: boolean, dialogResponse?:DialogResponse) => {
-        if (toastErrRef.current && toastInfoRef.current && toastIndex.current !== null) {
-            if (err) {
-                toastErrRef.current.show(messageObj);
-                toastIndex.current++;
-            }
-            else {
-                //TODO: Maybe in the future PrimeReact will release a "proper" way to close a single toast message.
-                //Currently they only allow us to use the clear function which clears every toast message.
-                const handleClose = (target:HTMLElement) => {
-                    const idHelper = target.closest(".index-helper");
-                    let id = -1;
-                    idHelper?.classList.forEach(className => {
-                        if (className.includes("toast-")) {
-                            id = parseInt(className.substring(6));
-                        }
-                    });
-                    if (id !== -1) {
-                        const newMessages = [...toastInfoRef.current?.state.messages].filter(message => message.id !== id);
-                        toastInfoRef.current?.setState({ messages: newMessages });
-                    }
-                }
-
-                const headerContent = (iconType:0|1|2|3|9):{icon:string, text:string} => {
-                    if (iconType === 0) {
-                        return { text: translation.get("Information") as string, icon: "pi pi-info-circle" };
-                    }
-                    else if (iconType === 1) {
-                        return { text: translation.get("Error") as string, icon: "pi pi-times-circle" };
-                    }
-                    else if (iconType === 2) {
-                        return { text: translation.get("Warning") as string, icon: "pi pi-exclamation-circle" };
-                    }
-                    else if (iconType === 3) {
-                        return { text: translation.get("Question") as string, icon: "pi pi-question-circle" };
-                    }
-                    else {
-                        return { text: "", icon: "" };
-                    }
-                }
-
-                const footerContent = (buttonType:4|5|6|7|8, okCompId?:string, cancelCompId?:string, notOkCompId?:string) => {
-                    const sendPressOk = () => {
-                        if (okCompId) {
-                            const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = okCompId;
-                            showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
-                        }
-                    }
-                    
-                    const sendPressCancel = () => {
-                        if (cancelCompId) {
-                            const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = cancelCompId;
-                            showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
-                        }
-                    }
-
-                    const sendPressNo = () => {
-                        if (notOkCompId) {
-                            const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = notOkCompId;
-                            showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
-                        }
-                    }
-
-                    if (buttonType === 4 || buttonType === 5) {
-                        return (
-                            <>
-                                <Button type="button" label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")} onClick={event => {
-                                    sendPressCancel();
-                                    handleClose(event.target as HTMLElement);
-                                }} />
-                                <Button type="button" label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")} onClick={event => {
-                                    sendPressOk();
-                                    handleClose(event.target as HTMLElement);
-                                }} />    
-                            </>                            
-                        )
-                    }
-                    else if (buttonType === 6) {
-                        return (
-                            <Button type="button" label={translation.get("OK")} onClick={event => {
-                                sendPressOk();
-                                handleClose(event.target as HTMLElement);
-                            }} />
-                        )
-                    }
-                    else if (buttonType === 7) {
-                        return (
-                            <>
-                                <div>
-                                    <Button type="button" label={translation.get("Cancel")} onClick={event => {
-                                        sendPressCancel();
-                                        handleClose(event.target as HTMLElement);
-                                    }} />
-                                    <Button type="button" label={translation.get("No")} onClick={event => {
-                                        sendPressNo();
-                                        handleClose(event.target as HTMLElement);
-                                    }} />
-                                </div>
-                                <Button type="button" label={translation.get("Yes")} onClick={event => {
-                                    sendPressOk();
-                                    handleClose(event.target as HTMLElement);
-                                }} />
-                            </>
-                        )
-                    }
-                    else {
-                        return
-                    }
-                }
-
-                const getHeaderType = (iconType:0|1|2|3|9) => {
-                    if (iconType === 0) {
-                        return "info";
-                    }
-                    else if (iconType === 1) {
-                        return "warning";
-                    }
-                    else if (iconType === 2) {
-                        return "error";
-                    }
-                    else if (iconType === 3) {
-                        return "question";
-                    }
-                }
-
-                (messageObj as ToastMessage).content = 
-                    (dialogResponse) ? (
-                        <div className={concatClassnames("p-flex", "p-flex-column", "index-helper", "toast-" + toastIndex.current)}>
-                            <div className={concatClassnames("toast-header", getHeaderType(dialogResponse.iconType))}>
-                                <span className="toast-header-text">{headerContent(dialogResponse.iconType).text}</span>
-                                <i className={concatClassnames("toast-header-icon", headerContent(dialogResponse.iconType).icon)} />
-                            <button
-                                className="tabview-button pi pi-times"
-                                onClick={() => {
-                                    const req = createFocusLostRequest();
-                                    req.componentId = dialogResponse.componentId;
-                                    showTopBar(context.server.sendRequest(req, "/api/closeFrame"), topbar)
-                                }} />
-                            </div>
-                            <div className="toast-content">
-                                {(messageObj as ToastMessage).summary}
-                            </div>
-                            <div className={concatClassnames("toast-footer", dialogResponse.buttonType === 6 ? "single-button" : "more-buttons")}>
-                                {footerContent(dialogResponse.buttonType, dialogResponse.okComponentId, dialogResponse.cancelComponentId, dialogResponse.notOkComponentId)}
-                            </div>
-                            
-                        </div>
-                    )
-                : (
-                    <div className={concatClassnames("p-flex", "p-flex-column", "index-helper", "toast-" + toastIndex.current)}>
-                         <div className={concatClassnames("toast-header", "info")}>
-                            <span className="toast-header-text">{translation.get("Information")}</span>
-                            <i className="toast-header-icon pi pi-info-circle" />
-                        </div>
-                        <div className="toast-content">
-                            {(messageObj as ToastMessage).summary}
-                        </div>
-                        <div className={concatClassnames("toast-footer", "single-button")}>
-                            <Button type="button" label="OK" onClick={(event) => {
-                                handleClose(event.target as HTMLElement);
-                            }} />
-                        </div>
-                    </div>
-                )
-
-                toastInfoRef.current.show(messageObj);
-                if (dialogResponse && dialogResponse.resizable !== false) {
-                    //@ts-ignore
-                    const toastElem = toastInfoRef.current.container.querySelector('.toast-' + toastIndex.current).closest(".p-toast-message") as HTMLElement;
-                    toastElem.style.setProperty('overflow', 'auto');
-                    toastElem.style.setProperty('resize', 'both');
-                    (toastElem.children[0] as HTMLElement).style.setProperty('height', 'inherit');
-                    (toastElem.children[0] as HTMLElement).style.setProperty('width', 'inherit');
-                    (toastElem.children[0].children[0] as HTMLElement).style.setProperty('height', 'inherit');
-                    (toastElem.children[0].children[0] as HTMLElement).style.setProperty('width', 'inherit');
-                }
-                toastIndex.current++;
-            }
-        }
-    }
-
-    
-
-    /**
      * Sets the showTimeOut state to show the dialog
      */
     const showDialog = (head:string, body:string) => {
@@ -501,8 +290,7 @@ const App: FC<ICustomContent> = (props) => {
             <Helmet>
                 <title>{appName ? appName : "VisionX Web"}</title>
             </Helmet>
-            <Toast id="toastErr" ref={toastErrRef} position="top-right" />
-            <Toast id="toastInfo" ref={toastInfoRef} position="center" />
+            <UIToast />
             <Dialog header="Server Error!" visible={showTimeOut} onHide={() => setShowTimeOut(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
