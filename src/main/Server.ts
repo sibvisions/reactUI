@@ -380,14 +380,15 @@ class Server {
         if (fetchData.recordFormat) {
             for (const componentId in fetchData.recordFormat) {
                 const entry = fetchData.recordFormat[componentId];
-                const format = entry.format.map(f => f ? f.split(';') : f);
+                const styleKeys = ['background', 'foreground', 'font', 'image'];
+                const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
                 entry.records.forEach((r, index) => {
-                    if(fetchData.columnNames.length !== r.length || r.length === 1 && r[0] === -1) {
+                    if(r.length === 1 && r[0] === -1) {
                         return;
                     }
                     formattedRecords[index] = formattedRecords[index] || {};
                     formattedRecords[index][componentId] = r.reduce<Record<string, any>>((agg, c, index) => {
-                        agg[fetchData.columnNames[index]] = format[c];
+                        agg[fetchData.columnNames[index]] = format[Math.max(0, Math.min(c, format.length - 1))];
                         return agg;
                     }, {})
                 });
@@ -417,9 +418,7 @@ class Server {
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
-        
-        console.log('data', builtData);
-        
+                
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
             compId, 

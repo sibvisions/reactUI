@@ -14,6 +14,7 @@ import { getBooleanValue,
 import { createEditor } from "../../factories/UIFactory";
 import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
+import { CellFormatting } from "./UITable";
 
 /** 
  * Returns an in-cell editor for the column 
@@ -48,7 +49,14 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
  * @param locale - the current locale
  * @returns properly rendered values for cells based on their CellEditors
  */
-export function cellRenderer(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, cellData:any, resource:string, locale:string, stateFunc?:Function) {
+export function cellRenderer(
+    metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, 
+    cellData:any, 
+    resource:string, 
+    locale:string, 
+    stateFunc?:Function,
+    cellFormatting?: CellFormatting
+) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
             /** If the cell is a ChoiceCellEditor get the index of the value in metaData and return the corresponding image */

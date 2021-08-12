@@ -31,6 +31,13 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 
+export interface CellFormatting {
+    foreground?: string;
+    background?: string;
+    font?: string;
+    image?: string;
+}
+
 /** Interface for Table */
 export interface TableProps extends BaseComponent{
     classNameComponentRef: string,
@@ -77,6 +84,7 @@ type CellEditor = {
     className?: string,
     readonly?: boolean,
     tableEnabled?: boolean
+    cellFormatting?: CellFormatting;
 }
 
 /** Interface for selected cells */
@@ -204,6 +212,16 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
+    const cellStyle:any = { };
+
+    if (props.cellFormatting) {
+        if(props.cellFormatting.background) {
+            cellStyle.backgroundColor = props.cellFormatting.background;
+        }
+        if(props.cellFormatting.foreground) {
+            cellStyle.color = props.cellFormatting.foreground;
+        }
+    }
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
@@ -215,6 +233,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     </div>
                     :
                     <div
+                        style={cellStyle}
                         className="cell-data"
                         onClick={() => {
                             if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
@@ -227,6 +246,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     </div>
                 ) : (!edit ?
                     <div
+                        style={cellStyle}
                         className="cell-data"
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
                         {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
@@ -246,6 +266,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>)
             : <div
+                style={cellStyle}
                 className="cell-data">
                 {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
                 {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
@@ -989,6 +1010,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
+                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName]}
                             metaData={metaData}
                             resource={context.server.RESOURCE_URL}
                             cellId={() => { return { selectedCellId: props.id + "-" + (tableInfo.rowIndex + firstRowIndex.current).toString() + "-" + colIndex.toString() } }}
