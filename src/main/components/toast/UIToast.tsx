@@ -38,7 +38,7 @@ const UIToast: FC = () => {
     /** State of the toast properties (content, if it is an error or a message) */
     const [toastProps, setToastProps] = useState<IToast>();
 
-    const [closingFrame, setClosingFrame] = useState<string>("");
+    const [closingFrame, setClosingFrame] = useState<{name:string, flag:boolean}>({name: "", flag:false});
 
     /** The topbar component */
     const topbar = useContext(TopBarContext);
@@ -66,7 +66,7 @@ const UIToast: FC = () => {
     /** Subscribes the toast components to messages */
     useEffect(() => {
         context.subscriptions.subscribeToMessage((dialog:DialogResponse|MessageResponse|ErrorResponse, err:boolean) => setToastProps({dialog: dialog, error: err}));
-        context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(compId));
+        context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(prevState => { return { name: compId, flag:!prevState.flag } }));
         return () => {
             context.subscriptions.unsubscribeFromMessage();
             context.subscriptions.unsubscribeFromCloseFrame();
@@ -75,7 +75,7 @@ const UIToast: FC = () => {
 
     useEffect(() => {
         if (closingFrame) {
-            handleClose(document.getElementsByClassName(closingFrame)[0] as HTMLElement)
+            handleClose(document.getElementsByClassName(closingFrame.name)[0] as HTMLElement)
         }
     },[closingFrame, handleClose])
 
@@ -85,6 +85,7 @@ const UIToast: FC = () => {
             if (toastProps.error) {
                 const toast: ToastMessage = { severity: 'error', summary: toastProps.dialog.message }
                 toastErrRef.current.show(toast);
+                toastIndex.current++;
             }
             else {
                 const castedDialog = toastProps.dialog as DialogResponse;
@@ -138,11 +139,9 @@ const UIToast: FC = () => {
                             <>
                                 <Button type="button" label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")} onClick={event => {
                                     sendPressCancel();
-                                    handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                 }} />
                                 <Button type="button" label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")} onClick={event => {
                                     sendPressOk();
-                                    handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                 }} />
                             </>
                         )
@@ -151,7 +150,6 @@ const UIToast: FC = () => {
                         return (
                             <Button type="button" label={translation.get("OK")} onClick={event => {
                                 sendPressOk();
-                                handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                             }} />
                         )
                     }
@@ -161,16 +159,13 @@ const UIToast: FC = () => {
                                 <div>
                                     <Button type="button" label={translation.get("Cancel")} onClick={event => {
                                         sendPressCancel();
-                                        handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                     }} />
                                     <Button type="button" label={translation.get("No")} style={{ marginLeft: '0.5rem' }} onClick={event => {
                                         sendPressNo();
-                                        handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                     }} />
                                 </div>
                                 <Button type="button" label={translation.get("Yes")} onClick={event => {
                                     sendPressOk();
-                                    handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                 }} />
                             </>
                         )
@@ -212,7 +207,6 @@ const UIToast: FC = () => {
                                         const closeFrameReq = createCloseFrameRequest();
                                         closeFrameReq.componentId = castedDialog.componentId;
                                         showTopBar(context.server.sendRequest(closeFrameReq, "/api/closeFrame"), topbar);
-                                        handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                     }} />}
                             </div>}
                             <div className="toast-content">

@@ -1,3 +1,4 @@
+import BaseComponent from "./components/BaseComponent";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
@@ -96,6 +97,8 @@ export default class AppSettings {
 
     welcomeScreen:string = "";
 
+    desktopPanel:BaseComponent|undefined;
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
@@ -165,5 +168,17 @@ export default class AppSettings {
 
     setWelcomeScreen(welcomeScreen:string) {
         this.welcomeScreen = welcomeScreen;
+    }
+
+    setDesktopPanel(desktopPanel:BaseComponent) {
+        if (this.desktopPanel !== undefined) {
+            for (let newProp in desktopPanel) {
+                //@ts-ignore
+                this.desktopPanel[newProp] = desktopPanel[newProp];
+            }
+        }
+        else {
+            this.desktopPanel = desktopPanel;
+        }
     }
 }

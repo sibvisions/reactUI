@@ -88,6 +88,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 const childWithProps = (child as ChildWithProps);
                 sizeMap.set(childWithProps.props.id, {width: width, height: height});
             });
+            if (context.appSettings.desktopPanel) {
+                sizeMap.set(context.appSettings.desktopPanel.id, {width: width, height: height})
+            }
 
             //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);

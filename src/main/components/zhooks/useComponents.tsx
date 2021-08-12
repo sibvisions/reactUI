@@ -37,7 +37,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         if (preferredSizes) {
             tempSizes.current = preferredSizes
             tempSizes.current.forEach((val, key) => {
-                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
+                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
                     tempSizes.current.delete(key)
                 }
             });
@@ -82,7 +82,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         }
 
         /** If there are no children set an empty map */
-        if(children.size === 0 && !preferredSizes){
+        if(children.size === 0 && !preferredSizes) {
             setPreferredSizes(new Map<string, ComponentSizes>());
         }
 

@@ -50,7 +50,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     const {verticalAlignment, horizontalAlignment} = props
 
     /**CSS properties for ImageViewer */
-    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
