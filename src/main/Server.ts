@@ -374,8 +374,29 @@ class Server {
      * @returns the data as array with objects of the columnnames and data merged together
      */
     buildDatasets(fetchData: FetchResponse) {
-        return fetchData.records.map(record => {
-            const data : any = {}
+        //if there are recordformats parse & transform them so that we can map them on a row basis
+        const formattedRecords: Record<string, any>[] = [];
+        if (fetchData.recordFormat) {
+            for (const componentId in fetchData.recordFormat) {
+                const entry = fetchData.recordFormat[componentId];
+                const format = entry.format.map(f => f ? f.split(';') : f);
+                entry.records.forEach((r, index) => {
+                    if(fetchData.columnNames.length !== r.length || r.length === 1 && r[0] === -1) {
+                        return;
+                    }
+                    formattedRecords[index] = formattedRecords[index] || {};
+                    formattedRecords[index][componentId] = r.reduce<Record<string, any>>((agg, c, index) => {
+                        agg[fetchData.columnNames[index]] = format[c];
+                        return agg;
+                    }, {})
+                });
+            }
+        }
+        
+        return fetchData.records.map((record, index) => {
+            const data : any = {
+                __recordFormats: formattedRecords[index],
+            }
             fetchData.columnNames.forEach((columnName, index) => {
                 data[columnName] = record[index];
             });
@@ -395,13 +416,20 @@ class Server {
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
+        
+        console.log('data', builtData);
+        
         // If there is a detailMapKey, call updateDataProviderData with it
-        if (detailMapKey !== undefined) {
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath, detailMapKey);
-        }   
-        else {
-            this.contentStore.updateDataProviderData(compId, fetchData.dataProvider, builtData, fetchData.to, fetchData.from, fetchData.treePath);
-        }   
+        this.contentStore.updateDataProviderData(
+            compId, 
+            fetchData.dataProvider, 
+            builtData, 
+            fetchData.to, 
+            fetchData.from, 
+            fetchData.treePath,
+            detailMapKey,
+            fetchData.recordFormat,
+        );
         
         this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 

@@ -11,7 +11,7 @@ import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
 import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData } from "./components/util";
-import { SortDefinition } from "./request"
+import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 
 /** The ContentStore stores active content like user, components and data*/
@@ -77,6 +77,11 @@ export default class ContentStore{
      * value is another map which key is the dataprovider and the value the metadata of the dataprovider
      */
     dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
+
+    /**
+     * A Map which stores the record formats per screen component id
+     */
+    dataProviderRecordFormat = new Map<string, RecordFormat>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
@@ -352,6 +357,7 @@ export default class ContentStore{
                 this.dataProviderData.delete(name);
                 this.dataProviderMetaData.delete(name);
                 this.dataProviderFetched.delete(name);
+                this.dataProviderRecordFormat.delete(name);
                 this.dataProviderSelectedRow.delete(name);
                 this.subManager.rowSelectionSubscriber.delete(name);
             }
@@ -382,6 +388,7 @@ export default class ContentStore{
         this.subManager.popupSubscriber = new Array<Function>();
         this.dataProviderData.clear();
         this.dataProviderMetaData.clear();
+        this.dataProviderRecordFormat.clear();
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
         this.activeScreens = [];
@@ -494,18 +501,28 @@ export default class ContentStore{
      * @param referenceKey - the primary key value of the master-reference
      * @param selectedRow - the currently selected row of the master-reference
      */
-    updateDataProviderData(compId:string, dataProvider:string, newDataSet: Array<any>, to:number, from:number, treePath?:number[], referenceKey?:string) {
+    updateDataProviderData(
+        compId:string, 
+        dataProvider:string, 
+        newDataSet: Array<any>, 
+        to:number, 
+        from:number, 
+        treePath?:number[], 
+        referenceKey?:string,
+        recordFormat?: RecordFormat,
+    ) {
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
-            if (referenceKey !== undefined)
+            if (referenceKey !== undefined) {
                 mapProv.set(referenceKey, newDataSet)
-            else {
+            } else {
                 mapProv.set("current", newDataSet);
             }
                 
             if (mapScreen) {
                 mapScreen.set(dataProvider, mapProv);
-                if (addDPD)
+                if (addDPD) {
                     this.dataProviderData.set(compId, mapScreen);
+                }
             }
         }
 
@@ -515,26 +532,23 @@ export default class ContentStore{
             if (existingProvider) {
                 const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
                 if (existingData) {
-                    if (existingData.length <= from)
+                    if (existingData.length <= from) {
                         existingData.push(...newDataSet);
-                    else {
+                    } else {
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
                             existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
                         }
                     }
-                }
-                else {
+                } else {
                     fillDataMap(existingProvider);
                 }
-            }
-            else {
+            } else {
                 const providerMap = new Map<string, Array<any>>();
                 fillDataMap(providerMap, existingMap);
             }
-        }
-        else {
+        } else {
             const dataMap = new Map<string, any>();
             const providerMap = new Map<string, Array<any>>();
             fillDataMap(providerMap, dataMap, true);
