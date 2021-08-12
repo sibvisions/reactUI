@@ -33,6 +33,7 @@ import UIGauge from "../components/gauge/UIGauge";
 import { UIMapGoogle, UIMapOSM } from "../components/map"
 import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/customComp/index'
 import UITree from "../components/tree/UITree";
+import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 
 
 /**
@@ -103,6 +104,7 @@ const maybePopup = (element: JSX.Element) =>
  */
 const componentsMap = new Map<string, React.ComponentType<any>>()
     .set("Panel", props => maybePopup(<UIPanel {...props} />))
+    .set("DesktopPanel", props => maybePopup(<UIDesktopPanel {...props} />))
     .set("GroupPanel", props => maybePopup(<UIGroupPanel {...props} />))
     .set("ScrollPanel", props => maybePopup(<UIScrollPanel {...props} />))
     .set("SplitPanel", props => <UISplitPanel {...props} />)

@@ -42,6 +42,7 @@ import { ToastMessageType } from "primereact/toast";
 import AppSettings from "./AppSettings";
 import { CustomToolbarItem, EditableMenuItem } from "./customTypes";
 import API from "./API";
+import { componentHandler } from "./factories/UIFactory";
 
 /** Type for query */
 type queryType = {
@@ -300,7 +301,7 @@ class Server {
             }
         }
         if (genericData.changedComponents && genericData.changedComponents.length) {
-            this.contentStore.updateContent(genericData.changedComponents);
+            this.contentStore.updateContent(genericData.changedComponents, false);
         }
     }
 
@@ -597,6 +598,12 @@ class Server {
         this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
         this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
+        if (appSettings.desktop && appSettings.desktop.length) {
+            if (appSettings.desktop[0].className === "DesktopPanel") {
+                this.appSettings.setDesktopPanel(appSettings.desktop[0]);
+            }
+            this.contentStore.updateContent(appSettings.desktop, true);
+        }
         this.subManager.emitAppSettings(appSettings);
     }
 

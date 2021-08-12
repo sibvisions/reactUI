@@ -1,4 +1,5 @@
 import { BaseResponse } from ".";
+import BaseComponent from "../components/BaseComponent";
 
 /** Interface for ApplicationSettingsResponse */
 interface ApplicationSettingsResponse extends BaseResponse {
@@ -7,6 +8,7 @@ interface ApplicationSettingsResponse extends BaseResponse {
     save:boolean,
     changePassword:boolean,
     menuBar:boolean,
-    toolBar:boolean
+    toolBar:boolean,
+    desktop?: Array<BaseComponent>
 }
 export default ApplicationSettingsResponse;

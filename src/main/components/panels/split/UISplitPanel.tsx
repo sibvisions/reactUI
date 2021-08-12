@@ -66,10 +66,23 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (splitRef.current) {
-            if(onLoadCallback)
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+            if(onLoadCallback) {
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+            }
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize])
+
+    const sendLoadCallback = () => {
+        const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
+        if (onLoadCallback) {
+            if (props.preferredSize) {
+                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+            }
+            else {
+                sendOnLoadCallback(id, size, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+            }
+        }
+    }
 
     /**
      * When the sSplitPanel gets resized, rebuild the sizeMap for the layout sizes
@@ -102,6 +115,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
                 rightComponent={secondChild}
                 dividerPosition={props.dividerPosition}
                 orientation={props.orientation}
+                onInitial={sendLoadCallback}
             />
         </LayoutContext.Provider>
     )

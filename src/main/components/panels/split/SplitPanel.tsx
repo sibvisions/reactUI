@@ -29,6 +29,7 @@ interface ISplitPanel extends IForwardRef {
     trigger?: any
     onTrigger?: onResizeEvent
     style?: CSSProperties
+    onInitial: Function
 }
 
 /**
@@ -45,8 +46,10 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** The absolute position */
     let absolutePosition = 0;
 
+    const [initial, setInitial] = useState<boolean>(true);
+
     /** Measures the sizes of the first and seconds components and then calls the onResize function given by props*/
-    const callOnResize = () => {
+    const callOnResize = (isInitial?:boolean) => {
         if (props.onResize && secondRef.current && firstRef.current) {
             const firstDom = firstRef.current.getBoundingClientRect();
             const secondDom = secondRef.current.getBoundingClientRect();
@@ -54,6 +57,9 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                 {width: firstDom.width, height: firstDom.height},
                 {width: secondDom.width, height: secondDom.height}
             );
+            if (isInitial) {
+                props.onInitial();
+            }
         }
     }
 
@@ -121,7 +127,14 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** At the start and when layoutContext value for SplitPanel changes resize */
     useLayoutEffect(() => {
-        callOnResize();
+        if (props.trigger.width !== undefined && props.trigger.height !== undefined) {
+            callOnResize();
+            if (initial) {
+                callOnResize(true);
+                setInitial(false);
+            }
+        }
+        
     }, [props.trigger.width, props.trigger.height])
 
 

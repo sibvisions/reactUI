@@ -12,7 +12,7 @@ import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
  * @param cva -cellEditor vertical alignment
  * @returns css style properties for images
  */
-const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number | undefined, cva: number | undefined) => {
+const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number | undefined, cva: number | undefined, aspectRatio?:boolean) => {
     const imageAlignments = useMemo(() => {
         const spanCSS: CSSProperties = {};
         const imgCSS: CSSProperties = {};
@@ -43,6 +43,9 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         if (verticalAlignment === VERTICAL_ALIGNMENT.STRETCH && horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
             imgCSS.width = "100%";
             imgCSS.height = "100%";
+            
+        }
+        if (aspectRatio) {
             imgCSS.objectFit = "contain"
         }
         else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {

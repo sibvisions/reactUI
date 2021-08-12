@@ -50,8 +50,9 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             prefSize.height = event.currentTarget.height;
             prefSize.width = event.currentTarget.width;
         }
-        if (onLoadCallback)
+        if (onLoadCallback) {
             sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+        }
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
@@ -76,7 +77,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                 id={props.name}
                 alt="icon"
                 src={context.server.RESOURCE_URL + iconProps.icon}
-                style={{...imageStyle.img, height: preferredSize?.height, width: preferredSize?.width}}
+                style={{height: preferredSize?.height, width: preferredSize?.width, ...imageStyle.img }}
                 onLoad={iconLoaded}
                 onError={iconLoaded}/>
             }

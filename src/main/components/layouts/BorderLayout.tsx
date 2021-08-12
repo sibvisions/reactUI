@@ -273,8 +273,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     reportSize(preferredHeight, preferredWidth)
                 }
             }
-
-            if (baseProps.popupSize) {
+            
+            if (baseProps.panelType === "DesktopPanel") {
+                setCalculatedStyle({ height: style.height, width: style.width, position: 'relative' });
+            }
+            else if (baseProps.popupSize) {
                 setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
             }
             else {
