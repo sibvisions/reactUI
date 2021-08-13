@@ -36,6 +36,12 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
+    /**
+     * Sends an open-screen-request to the server to open a workscreen
+     * @param id - the id of the screen opened
+     * @param parameter - optional parameters that are being sent to the server
+     * @param useClassName - true, if the screen is opened with the classname instead of the component id
+     */
     sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }, useClassName?:boolean) {
         const openReq = createOpenScreenRequest();
         if (useClassName) {
@@ -86,18 +92,38 @@ class API {
         });
     }
 
+    /**
+     * Adds a custom-screen to the application.
+     * @param id - the id/name of the custom-screen
+     * @param screen - the custom-screen to be added
+     */
     addCustomScreen(id:string, screen:ReactElement) {
         this.#contentStore.customScreens.set(id, () => screen);
     }
 
+    /**
+     * Replaces a current screen sent by the server, based on the given id, with a custom-screen.
+     * @param id - the id of the screen which will be replaced
+     * @param screen - the custom-screen which will replace the screen
+     */
     addReplaceScreen(id:string, screen:ReactElement) {
         this.#contentStore.replaceScreens.set(id, (x:any) => React.cloneElement(screen, x));
     }
 
-    addScreenWrapper(screenName:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
-        this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
+    /**
+     * Adds a screen-wrapper to a workscreen.
+     * @param id - the id of the screen which will receive a screen-wrapper
+     * @param wrapper - the screen-wrapper which will be added
+     * @param pOptions - options of the screen-wrapper currently global:boolean
+     */
+    addScreenWrapper(id:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+        this.#contentStore.screenWrappers.set(id, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
     }
 
+    /**
+     * Adds a menu-item to your application.
+     * @param menuItem - the menu-item to be added
+     */
     addMenuItem(menuItem: CustomMenuItem) {
         const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
         const itemAction = () => {
@@ -120,6 +146,10 @@ class API {
         }
     }
 
+    /**
+     * Edits an existing menu-item the server sends.
+     * @param editItem - the EditableMenuItem object which holds the new menu-item info
+     */
     editMenuItem(editItem: EditableMenuItem) {
         let itemToEdit: ServerMenuButtons | undefined;
         let itemFound: boolean = false
@@ -141,6 +171,10 @@ class API {
         }
     }
 
+    /**
+     * Removes a menu-item, which the server sends, from your application
+     * @param id - the id of the menu-item which should be removed
+     */
     removeMenuItem(id:string) {
         let itemToRemoveIndex:number = -1;
         let itemFound: boolean = false
@@ -157,6 +191,10 @@ class API {
         }
     }
 
+    /**
+     * Adds an item to the toolbar
+     * @param toolbarItem - the toolbar-item to be added
+     */
     addToolbarItem(toolbarItem: CustomToolbarItem) {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
@@ -176,6 +214,10 @@ class API {
         });
     }
 
+    /**
+     * Edits an existing toolbar-item the server sends.
+     * @param editItem - the EditableMenuItem object which holds the new toolbar-item info
+     */
     editToolbarItem(editItem:EditableMenuItem) {
         let itemToEdit = this.#contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === editItem.id);
         if (itemToEdit) {
@@ -192,6 +234,10 @@ class API {
         }
     }
 
+    /**
+     * Removes a toolbar-item, which the server sends, from the toolbar
+     * @param id 
+     */
     removeToolbarItem(id:string) {
         let itemToRemoveIndex:number = this.#contentStore.toolbarItems.findIndex(item => item.componentId.split(':')[0] === id);
         if (itemToRemoveIndex !== -1) {
@@ -203,10 +249,19 @@ class API {
         }
     }
 
+    /**
+     * Adds properties which will be sent on startup
+     * @param startupProps - the startup-properties to be sent
+     */
     addStartupProperties(startupProps:CustomStartupProps[]) {
         this.#contentStore.setStartupProperties(startupProps);
     }
 
+    /**
+     * Replaces an existing component of a screen with a custom-component
+     * @param name - the name of the component, which should be replaced
+     * @param customComp - the custom-component
+     */
     addCustomComponent(name:string, customComp:ReactElement) {
         if (this.#contentStore.getComponentByName(name)) {
             this.#contentStore.customComponents.set(name, () => customComp);
@@ -223,6 +278,10 @@ class API {
         }
     }
 
+    /**
+     * Removes a component from a screen based on the given name
+     * @param name - the name of the component which should be removed
+     */
     removeComponent(name:string) {
         if (this.#contentStore.getComponentByName(name)) {
             this.#contentStore.removedCustomComponents.push(name);
@@ -239,6 +298,9 @@ class API {
         }
     }
 
+    /**
+     * Returns the data of the current user.
+     */
     getUser() {
         return this.#contentStore.currentUser;
     }
