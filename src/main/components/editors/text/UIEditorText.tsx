@@ -9,7 +9,7 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -457,7 +457,17 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 ].filter(Boolean).join(' ')}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
                 onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+                onBlur={() => {
+                    if (!escapePressed.current) {
+                        onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                    }
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, context.server), topbar)
+                    }
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, context.server), topbar)
+                    }
+                }}
             >
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
