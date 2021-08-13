@@ -23,7 +23,7 @@ import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
-import { MetaDataResponse } from "../../response";
+import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, focusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
@@ -336,7 +336,25 @@ const UITable: FC<TableProps> = (baseProps) => {
     const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined)
 
     /** The primary keys of a table */
-    const primaryKeys = metaData?.primaryKeyColumns || ["ID"];
+    const primaryKeys:string[] = useMemo(() => {
+        let pks:(LengthBasedColumnDescription | NumericColumnDescription)[] | undefined;
+        if (metaData) {
+            if (metaData.primaryKeyColumns) {
+                return metaData.primaryKeyColumns
+            }
+            else if (metaData.columns.find(column => column.name === "ID")) {
+                return ["ID"];
+            }
+            else {
+                pks = metaData.columns.filter(column => column.cellEditor.className === "TextCellEditor" || column.cellEditor.className === "NumberCellEditor");
+                let pkNames:string[] = pks.map(pk => pk.name);
+                return pkNames
+            }
+        }
+        else {
+            return []
+        }
+    }, [metaData]);
 
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
@@ -1250,10 +1268,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
-            tableSelect(true, "th", ".p-datatable-scrollable-header-table th")
+            tableSelect(true, "th .p-column-resizer", ".p-datatable-scrollable-header-table th .p-column-resizer")
             : undefined,
         'mousedown',
-        (elem:any) => elem instanceof Element ? (elem as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,
+        (elem:any) => elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,
         true
     )
 
