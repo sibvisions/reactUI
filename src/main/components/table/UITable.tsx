@@ -213,10 +213,12 @@ const CellEditor: FC<CellEditor> = (props) => {
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
     const cellStyle:any = { };
+    const cellClassNames:string[] = ['cell-data'];
 
     if (props.cellFormatting) {
         if(props.cellFormatting.background) {
             cellStyle.backgroundColor = props.cellFormatting.background;
+            cellClassNames.push('cancel-padding');
         }
         if(props.cellFormatting.foreground) {
             cellStyle.color = props.cellFormatting.foreground;
@@ -234,7 +236,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     :
                     <div
                         style={cellStyle}
-                        className="cell-data"
+                        className={cellClassNames.join(' ')}
                         onClick={() => {
                             if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
                                 setWaiting(true);
@@ -247,7 +249,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 ) : (!edit ?
                     <div
                         style={cellStyle}
-                        className="cell-data"
+                        className={cellClassNames.join(' ')}
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
                         {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                         {showDropDownArrow() &&
@@ -267,7 +269,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                     </div>)
             : <div
                 style={cellStyle}
-                className="cell-data">
+                className={cellClassNames.join(' ')}>
                 {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
                 {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
             </div>

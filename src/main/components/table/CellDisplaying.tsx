@@ -55,7 +55,6 @@ export function cellRenderer(
     resource:string, 
     locale:string, 
     stateFunc?:Function,
-    cellFormatting?: CellFormatting
 ) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {

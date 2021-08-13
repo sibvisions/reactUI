@@ -7,6 +7,7 @@ tr.p-highlight{
     height: 100%;
     border: 1px solid #d4d4d4;
     border-collapse: collapse;
+
     &.no-auto-resize {
         .p-datatable-scrollable-body {
             max-width: 100%;
@@ -60,6 +61,10 @@ tr.p-highlight{
             }
             &.p-highlight {
                 color: white;
+
+                .cancel-padding {
+                    box-shadow: inset 0 0 0 1000px rgba(#1b87e3 , .4);
+                }
             }
             ::-moz-focus-inner {
                 border: 0;
@@ -74,6 +79,11 @@ tr.p-highlight{
                 text-overflow: ellipsis;
                 border-width: 0px 0px 1px 0px !important;
                 user-select: none;
+
+                .cancel-padding {
+                    margin: -0.2rem -0.4rem;
+                }
+
                 &.ChoiceCellEditor, &.CheckBoxCellEditor {
                     text-align: center;
                     >.cell-data {
@@ -102,13 +112,21 @@ tr.p-highlight{
                     }
                 }
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor)>.cell-data {
-                    padding: 6.5px 8.688px;
+                    padding: 6.5px 8.688px;                    
                     overflow: hidden;
                     text-overflow: ellipsis;
+
+                    &.cancel-padding {
+                        padding: calc(0.2rem + 6.5px) calc(0.4rem + 8.688px);
+                    }
                 }
                 &.p-highlight {
                     background: linear-gradient(180deg, rgba(227,242,253,1) 2%, rgba(170,220,255,1) 98%);
                     color: var(--standardTextColor);
+
+                    .cancel-padding {
+                        box-shadow: inset 0 0 0 1000px rgba(#e3f2fd, .4);
+                    }
                 }
             }
         }
