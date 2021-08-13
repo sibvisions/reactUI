@@ -29,6 +29,7 @@ import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { getFont } from "../compprops";
 
 
 export interface CellFormatting {
@@ -212,7 +213,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
-    const cellStyle:any = { };
+    let cellStyle:any = { };
     const cellClassNames:string[] = ['cell-data'];
 
     if (props.cellFormatting) {
@@ -222,6 +223,16 @@ const CellEditor: FC<CellEditor> = (props) => {
         }
         if(props.cellFormatting.foreground) {
             cellStyle.color = props.cellFormatting.foreground;
+        }
+        if(props.cellFormatting.font) {
+            const font = getFont(props.cellFormatting.font);
+            cellStyle = {
+                ...cellStyle,
+                fontFamily: font ? font.fontFamily : undefined,
+                fontWeight: font ? font.fontWeight : undefined,
+                fontStyle: font ? font.fontStyle : undefined,
+                fontSize: font ? font.fontSize : undefined
+            }
         }
     }
 
