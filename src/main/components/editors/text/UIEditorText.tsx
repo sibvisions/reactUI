@@ -109,7 +109,8 @@ function fontForFace(face: String) {
     return (Object.entries(fontFaces).find(e => e[1] === face) ?? [''])[0];
 }
 
-function transformHTMLFromQuill(html: string):string {
+function transformHTMLFromQuill(html: string = ''):string {
+    if(!html) { return html }
     html = html.replace(/<(\/ *)?strong>/g, (m, a = '') => `<${a}b>`);
     html = html.replace(/<(\/ *)?em>/g, (m, a = '') => `<${a}i>`);
     html = html.replace(/<p class="ql-align-([a-z]+)">/g, (m, a) => `<p align="${a}">`);
@@ -147,7 +148,8 @@ function transformHTMLFromQuill(html: string):string {
     return html;
 }
 
-function transformHTMLToQuill(html: string):string {
+function transformHTMLToQuill(html: string = ''):string {
+    if(!html) { return html }
     html = html.replace(/<(\/ *)?b>/g, (m, a = '') => `<${a}strong>`);
     html = html.replace(/<(\/ *)?i>/g, (m, a = '') => `<${a}em>`);
     html = html.replace(/<p align="([a-z]+)">/g, (m, a) => `<p class="ql-align-${a}">`);
