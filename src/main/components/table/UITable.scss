@@ -82,6 +82,10 @@ tr.p-highlight{
 
                 .cancel-padding {
                     margin: -0.2rem -0.4rem;
+
+                    &:empty {
+                        min-height: calc(100% + .4rem);
+                    }
                 }
 
                 &.ChoiceCellEditor, &.CheckBoxCellEditor {

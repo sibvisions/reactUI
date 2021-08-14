@@ -29,7 +29,7 @@ import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
-import { getFont } from "../compprops";
+import { getFont, IconProps, parseIconData } from "../compprops";
 
 
 export interface CellFormatting {
@@ -215,6 +215,7 @@ const CellEditor: FC<CellEditor> = (props) => {
 
     let cellStyle:any = { };
     const cellClassNames:string[] = ['cell-data'];
+    let cellIcon: IconProps | null = null;
 
     if (props.cellFormatting) {
         if(props.cellFormatting.background) {
@@ -234,7 +235,27 @@ const CellEditor: FC<CellEditor> = (props) => {
                 fontSize: font ? font.fontSize : undefined
             }
         }
+        if(props.cellFormatting.image) {
+            cellIcon = parseIconData(props.cellFormatting.foreground, props.cellFormatting.image);
+        }
     }
+
+    const icon = useMemo(() => {
+        if (cellIcon?.icon) {
+            if(cellIcon.icon.includes('fa fa-'))
+                return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
+            else {
+                return <img
+                    id={props.name}
+                    alt="icon"
+                    src={context.server.RESOURCE_URL + cellIcon.icon}
+                    style={{width: `${cellIcon.size?.width}px`, height: `${cellIcon.size?.height}px` }}
+                />
+            }    
+        } else {
+            return null
+        }
+    }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
@@ -254,7 +275,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                                 setEdit(true);
                             }
                         }}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
+                        {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
                         {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
                     </div>
                 ) : (!edit ?
@@ -262,7 +283,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                        {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
+                        {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                         {showDropDownArrow() &&
                             <div style={{ float: "right" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
                                 <i
@@ -281,7 +302,7 @@ const CellEditor: FC<CellEditor> = (props) => {
             : <div
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
-                {cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
+                {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
                 {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
             </div>
     )

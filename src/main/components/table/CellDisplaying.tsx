@@ -105,20 +105,16 @@ export function cellRenderer(
                         minimumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).minScale,
                         maximumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).maxScale
                     }).format(cellData);
-            }
-            else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
+            } else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
                 return <span onClick={stateFunc ? () => stateFunc() : undefined}>
                     <Checkbox checked={getBooleanValue(cellData)} />
                 </span>
                 
-            }
-            else {
+            } else {
                 return cellData;
-            }
-                
+            }       
         }
-    }
-    /** If there is no cellData (null) leave cell empty */
-    else
+    } else {
         return null
+    }
 }
