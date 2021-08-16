@@ -4,7 +4,6 @@ import { ReactElement, useCallback, useContext, useEffect, useRef, useState } fr
 /** Other imports */
 //import Settings from "../../../frontmask/settings/Settings";
 import { appContext } from "../../AppProvider";
-import { componentHandler } from "../../factories/UIFactory";
 import { getScreenIdFromNavigation } from "../util/GetScreenNameFromNavigation";
 
 /**
@@ -27,27 +26,12 @@ const useHomeComponents = (componentId:string) => {
         return tempArray
     }, [context.contentStore]);
 
-    /** Returns the built windows */
-    const buildDesktop = useCallback(():Array<ReactElement> => {
-        let tempArray: Array<ReactElement> = [];
-        if (context.appSettings.desktopPanel) {
-            tempArray.push(componentHandler(context.appSettings.desktopPanel));
-        }
-        return tempArray
-    }, [context.contentStore]);
-
     /** Current state of the built screens which will be displayed */
     const [homeChildren, setHomeChildren] = useState<Array<ReactElement>>(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
 
     /* if the screen in the store changed update the child components */
     useEffect(() => {
-        if (getScreenIdFromNavigation(componentId, context.contentStore)) {
-            setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
-        }
-        else if (context.appSettings.desktopPanel) {
-            setHomeChildren(buildDesktop())
-        }
-        
+        setHomeChildren(buildWindow(getScreenIdFromNavigation(componentId, context.contentStore)));
     }, [componentId, context.contentStore.getComponentByName(getScreenIdFromNavigation(componentId, context.contentStore))])
 
     /**

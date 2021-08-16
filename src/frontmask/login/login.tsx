@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, FormEvent, useContext, useState } from "react";
+import React, { FC, FormEvent, useContext, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -16,11 +16,18 @@ import { createLoginRequest, createResetPasswordRequest } from "../../main/facto
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
 import { concatClassnames } from "../../main/components/util";
+import { LayoutContext } from "../../main/LayoutContext";
+import useResizeHandler from "../../main/components/zhooks/useResizeHandler";
+import { componentHandler } from "../../main/factories/UIFactory";
 
+export const DesktopPanelHandler:FC = () => {
+    const context = useContext(appContext);
+    return (context.appSettings.desktopPanel ?
+         componentHandler(context.appSettings.desktopPanel) :
+         <div>Could not load DesktopPanel</div>)
+}
 
-
-/** Component which handles logging in */
-const Login: FC = () => {
+export const LoginForm:FC = () => {
     /** Current state of username */
     const [username, setUsername] = useState<string>("");
 
@@ -44,11 +51,10 @@ const Login: FC = () => {
 
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
-
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
      */
-    const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
+     const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const loginReq = createLoginRequest();
         loginReq.username = username;
@@ -71,78 +77,104 @@ const Login: FC = () => {
         }
     }
 
-    return(
-        <div className="login-container">
-            <ChangePasswordDialog 
-                username={username} 
-                password={password} 
+    return (
+        <>
+            <ChangePasswordDialog
+                username={username}
+                password={password}
                 loggedIn={false} />
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
                     <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
                 </div>
-                {!showResetMask ? 
-                <div className="p-fluid">
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-user" />
-                        <InputText
-                            value={username}
-                            id="username"
-                            type="text"
-                            autoComplete="username"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)}/>
-                        <label htmlFor="username">{translations.get("Username")} </label>
-                    </div>
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-key" />
-                        <InputText
-                            value={password}
-                            id="password"
-                            type="password"
-                            autoComplete="current-password"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}/>
-                        <label htmlFor="password">{translations.get("Password")} </label>
-                    </div>
-                    <div className={concatClassnames(
-                        "login-extra-options",
-                        context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
-                        <div className="login-cbx-container">
-                            <Checkbox inputId="rememberMe" className="remember-me-cbx" checked={rememberMe} onChange={(event) => setRememberMe(event.checked)} />
-                            <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
+                {!showResetMask ?
+                    <div className="p-fluid">
+                        <div className="p-field p-float-label p-input-icon-left">
+                            <i className="pi pi-user" />
+                            <InputText
+                                value={username}
+                                id="username"
+                                type="text"
+                                autoComplete="username"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
+                            <label htmlFor="username">{translations.get("Username")} </label>
                         </div>
-                        {context.appSettings.applicationMetaData.lostPasswordEnabled && 
-                            <Button 
-                                className="lost-password-button" 
-                                label={translations.get("Lost password")} 
-                                icon="pi pi-question-circle" 
-                                onClick={() => setShowResetMask(true)} />
-                        }
+                        <div className="p-field p-float-label p-input-icon-left">
+                            <i className="pi pi-key" />
+                            <InputText
+                                value={password}
+                                id="password"
+                                type="password"
+                                autoComplete="current-password"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
+                            <label htmlFor="password">{translations.get("Password")} </label>
+                        </div>
+                        <div className={concatClassnames(
+                            "login-extra-options",
+                            context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
+                            <div className="login-cbx-container">
+                                <Checkbox inputId="rememberMe" className="remember-me-cbx" checked={rememberMe} onChange={(event) => setRememberMe(event.checked)} />
+                                <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
+                            </div>
+                            {context.appSettings.applicationMetaData.lostPasswordEnabled &&
+                                <Button
+                                    className="lost-password-button"
+                                    label={translations.get("Lost password")}
+                                    icon="pi pi-question-circle"
+                                    onClick={() => setShowResetMask(true)} />
+                            }
+                        </div>
+                        <Button type="submit" className="p-primary login-button" label={translations.get("Login")} icon="pi pi-lock-open" />
                     </div>
-                    <Button type="submit" className="p-primary login-button" label={translations.get("Login")} icon="pi pi-lock-open"/>
-                </div> 
-                :
-                <div className="p-fluid">
-                    <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
-                        {translations.get("Please enter your e-mail address.")}
+                    :
+                    <div className="p-fluid">
+                        <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
+                            {translations.get("Please enter your e-mail address.")}
+                        </div>
+                        <div className="p-field p-float-label p-input-icon-left">
+                            <i className="pi pi-inbox" />
+                            <InputText
+                                value={email}
+                                id="email"
+                                type="text"
+                                autoComplete="email"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)} />
+                            <label htmlFor="email">{translations.get("Email")} </label>
+                        </div>
+                        <div className="change-password-button-wrapper">
+                            <Button type="button" className="lost-password-button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setShowResetMask(false)} />
+                            <Button type="button" className="lost-password-button" label={translations.get("Request")} icon="pi pi-send" onClick={sendResetPassword} />
+                        </div>
                     </div>
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-inbox" />
-                        <InputText
-                            value={email}
-                            id="email"
-                            type="text"
-                            autoComplete="email"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}/>
-                        <label htmlFor="email">{translations.get("Email")} </label>
-                    </div>
-                    <div className="change-password-button-wrapper">
-                        <Button type="button" className="lost-password-button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setShowResetMask(false)}/>
-                        <Button type="button" className="lost-password-button" label={translations.get("Request")} icon="pi pi-send" onClick={sendResetPassword}/>
-                    </div>
-                </div>
                 }
             </form>
-        </div>
+        </>
+    )
+}
+
+/** Component which handles logging in */
+const Login: FC = (props) => {
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
+
+    /** Reference for the screen-container */
+    const sizeRef = useRef<any>(null);
+
+    const componentSize = useResizeHandler(sizeRef, props.children)
+    
+    return (
+        (context.appSettings.desktopPanel) ?
+            <LayoutContext.Provider value={componentSize}>
+                <div className="login-container-with-desktop" ref={sizeRef}>
+                    <DesktopPanelHandler />
+                    <div className="login-form-position-wrapper">
+                        <LoginForm />
+                    </div>
+                </div>
+            </LayoutContext.Provider> :
+            <div className="login-container">
+                <LoginForm />
+            </div>
     )
 }
 export default Login;

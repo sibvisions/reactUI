@@ -9,6 +9,7 @@
 
 .login-form{
   width: var(--loginFormWidth);
+  height: var(--loginFormHeight);
   text-align: center;
   background: var(--loginContainerBgd);  
   border-radius: 6px;
@@ -79,4 +80,14 @@
 
 .login-cbx-container {
   align-self: center
+}
+
+.login-container-with-desktop {
+  height: 100vh;
+}
+
+.login-form-position-wrapper {
+  position: absolute;
+  top: calc(50% - var(--loginFormHeightHalf));
+  left: calc(50% - var(--loginFormWidthHalf));
 }

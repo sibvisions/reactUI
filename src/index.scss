@@ -106,6 +106,12 @@
     --loginContainerBgd: rgba(255, 255, 255, 0.75);
     /// Login form width
     --loginFormWidth: 450px;
+    /// Login form height
+    --loginFormHeight: 360px;
+    /// Half of the login form width used for positioning
+    --loginFormWidthHalf: calc(var(--loginFormWidth) / 2);
+    /// Half of the login form height used for positioning
+    --loginFormHeightHalf: calc(var(--loginFormHeight) / 2);
     /// Login form top bottom padding
     --loginFormTBPadding: 30px;
     /// Login form left right padding
