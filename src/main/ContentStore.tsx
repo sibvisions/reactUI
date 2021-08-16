@@ -28,6 +28,9 @@ export default class ContentStore{
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
     removedContent = new Map<string, BaseComponent>();
 
+    /** A Map which stores removed, but not deleted components of the desktop-panel, the key is the components id and the value the component */
+    removedDesktopContent = new Map<string, BaseComponent>();
+
     /** A Map which stores custom components made by the user, the key is the components title and the value a function to build the component*/
     //customContent = new Map<string, Function>();
 
@@ -188,18 +191,18 @@ export default class ContentStore{
                                 this.replacedContent.get(newComponent.id) ||
                                 this.desktopContent.get(newComponent.id) || 
                                 this.removedContent.get(newComponent.id) || 
-                                this.removedCustomContent.get(newComponent.id);
+                                this.removedCustomContent.get(newComponent.id) ||
+                                this.removedDesktopContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id))) {
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id) || this.removedDesktopContent.has(newComponent.id))) {
                 if (!isCustom) {
-                    
-                    this.removedContent.delete(newComponent.id);
                     if (desktop) {
-                        
+                        this.removedDesktopContent.delete(newComponent.id);
                         this.desktopContent.set(newComponent.id, existingComponent);
                     }
                     else {
+                        this.removedContent.delete(newComponent.id);
                         this.flatContent.set(newComponent.id, existingComponent);
                     }
                     
@@ -233,13 +236,16 @@ export default class ContentStore{
                 }
             } 
             else if (!isCustom) {
-                if (this.removedContent.has(newComponent.id)) {
-                    this.removedContent.delete(newComponent.id)
-                }
                 if (desktop) {
+                    if (this.removedDesktopContent.has(newComponent.id)) {
+                        this.removedDesktopContent.delete(newComponent.id);
+                    }
                     this.desktopContent.set(newComponent.id, newComponent);
                 }
                 else {
+                    if (this.removedContent.has(newComponent.id)) {
+                        this.removedContent.delete(newComponent.id)
+                    }
                     this.flatContent.set(newComponent.id, newComponent);
                 }
                 
@@ -265,11 +271,12 @@ export default class ContentStore{
                 if (!isCustom) {
                     if (desktop) {
                         this.desktopContent.delete(newComponent.id);
+                        this.removedDesktopContent.set(newComponent.id, existingComponent);
                     }
                     else {
                         this.flatContent.delete(newComponent.id);
+                        this.removedContent.set(newComponent.id, existingComponent);
                     }
-                    this.removedContent.set(newComponent.id, existingComponent);
                 }
                 else {
                     this.replacedContent.delete(newComponent.id);
@@ -289,6 +296,7 @@ export default class ContentStore{
                 
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
+                    this.removedDesktopContent.delete(newComponent.id)
                 }
                 else {
                     this.removedCustomContent.delete(newComponent.id);
@@ -328,9 +336,13 @@ export default class ContentStore{
 
         /** If the component already exists and it is subscribed to properties update the state */
         componentsToUpdate.forEach(value => {
-            const existingComp = this.flatContent.get(value.id) || this.replacedContent.get(value.id) || this.removedContent.get(value.id) || this.desktopContent.get(value.id);
+            const existingComp = this.flatContent.get(value.id)
+                || this.replacedContent.get(value.id)
+                || this.removedContent.get(value.id)
+                || this.desktopContent.get(value.id)
+                || this.removedDesktopContent.get(value.id);
             const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
-            if(existingComp && updateFunction) {
+            if (existingComp && updateFunction) {
                 updateFunction(existingComp);
             }
         });
@@ -398,15 +410,15 @@ export default class ContentStore{
     reset(){
         this.flatContent.clear();
         this.removedContent.clear();
-        this.customScreens.clear();
-        this.customComponents.clear();
+        //this.customScreens.clear();
+        //this.customComponents.clear();
         this.removedCustomContent.clear();
         this.replacedContent.clear();
         this.menuItems.clear();
         this.currentUser = new UserData();
         this.navigationNames.clear();
-        this.customProperties.clear();
-        this.screenWrappers.clear();
+        //this.customProperties.clear();
+        //this.screenWrappers.clear();
         this.subManager.propertiesSubscriber.clear();
         this.subManager.parentSubscriber.clear();
         this.subManager.rowSelectionSubscriber.clear();

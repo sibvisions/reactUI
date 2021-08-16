@@ -2,7 +2,7 @@
 import React, { FC, ReactElement, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useProperties } from "../zhooks";
+import { useLayoutValue, useProperties } from "../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../LayoutContext";
@@ -22,8 +22,8 @@ export interface ICustomComponentWrapper extends BaseComponent {
 const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Reference for the custom-component-wrapper element*/
     const wrapperRef = useRef(null);
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
+    /** get the layout style value */
+    const layoutStyle = useLayoutValue(baseProps.id);
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<ICustomComponentWrapper>(baseProps.id, baseProps)
     /** Extracting onLoadCallback and id from baseProps */
@@ -37,8 +37,8 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={wrapperRef} style={layoutValue.has(props.id) ? layoutValue.get(props.id) : {position: "absolute"}}>
-            {props.component}
+        <span ref={wrapperRef} style={layoutStyle}>
+            {baseProps.component}
         </span>
     )
 }

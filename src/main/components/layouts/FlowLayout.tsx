@@ -268,7 +268,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
         }
         return sizeMap;
-    }, [layout, compSizes, reportSize, id, style.width, style.height, context.contentStore]);
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore]);
 
     return(
         /** Provide the allowed sizes of the children as a context */
