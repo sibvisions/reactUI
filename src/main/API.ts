@@ -42,17 +42,18 @@ class API {
      * @param parameter - optional parameters that are being sent to the server
      * @param useClassName - true, if the screen is opened with the classname instead of the component id
      */
-    sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }, useClassName?:boolean) {
+    sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }) {
         const openReq = createOpenScreenRequest();
-        if (useClassName) {
-            openReq.className = id;
-        }
-        else {
-            openReq.componentId = id;
-        }
+        openReq.className = id;
         if (parameter) {
             openReq.parameter = parameter;
         }
+        return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+    }
+
+    sendOpenScreenIntern(id:string) {
+        const openReq = createOpenScreenRequest();
+        openReq.componentId = id;
         return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
     }
 
@@ -72,14 +73,9 @@ class API {
      * Sends a closeScreenRequest to the server for the given screen.
      * @param screenName - the screen to be closed
      */
-    sendCloseScreen(id: string, parameter?: { [key: string]: any }, useClassName?:boolean) {
+    sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }) {
         const csRequest = createCloseScreenRequest();
-        if (useClassName) {
-            csRequest.className = id;
-        }
-        else {
-            csRequest.componentId = id;
-        }
+        csRequest.componentId = id;
         if (parameter) {
             csRequest.parameter = parameter;
         }
@@ -209,7 +205,7 @@ class API {
                 return Promise.resolve(true);
             }
             else {
-                return this.sendOpenScreenRequest(toolbarItem.id, undefined, true);
+                return this.sendOpenScreenRequest(toolbarItem.id);
             }
         }
         this.#contentStore.addToolbarItem({ 

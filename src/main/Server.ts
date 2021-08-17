@@ -334,7 +334,7 @@ class Server {
         if (menuData.entries && menuData.entries.length) {
             menuData.entries.forEach(entry => {
                 entry.action = () => {
-                    return this.api.sendOpenScreenRequest(entry.componentId)
+                    return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 this.contentStore.addMenuItem(entry);
             })
@@ -342,7 +342,7 @@ class Server {
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
             menuData.toolBarEntries.forEach(entry => {
                 entry.action = () => {
-                    return this.api.sendOpenScreenRequest(entry.componentId)
+                    return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 this.contentStore.addToolbarItem(entry);
             })

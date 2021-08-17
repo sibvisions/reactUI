@@ -92,7 +92,7 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                 onClick={() => {
                     const openWelcomeOrHome = () => {
                         if (context.appSettings.welcomeScreen) {
-                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen, undefined, true);
+                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen);
                         }
                         else {
                             history.push('/home');

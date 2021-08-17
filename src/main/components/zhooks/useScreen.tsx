@@ -5,7 +5,7 @@ import { appContext } from "../../AppProvider";
 
 type ScreenAPIType = {
     sendScreenParameter: (parameter: {[key:string]: any}) => void,
-    sendCloseScreen: (parameter?: {[key:string]: any}, useClassName?:boolean) => void,
+    sendCloseScreenRequest: (parameter?: {[key:string]: any}) => void,
     addCustomComponent: (name: string, customComp: ReactElement) => void,
     removeComponent: (name:string) => void
 }
@@ -18,8 +18,8 @@ const useScreen = (screenName: string): ScreenAPIType => {
         context.api.sendScreenParameter(screenName, parameter);
     }
 
-    const sendCloseScreen = (parameter?: {[key:string]: any}, useClassName?:boolean) => {
-        context.api.sendCloseScreen(screenName, parameter, useClassName);
+    const sendCloseScreenRequest = (parameter?: {[key:string]: any}) => {
+        context.api.sendCloseScreenRequest(screenName, parameter);
     }
 
     const addCustomComponent = (name: string, customComp: ReactElement) => {
@@ -32,7 +32,7 @@ const useScreen = (screenName: string): ScreenAPIType => {
 
     return {
         sendScreenParameter: sendScreenParameter,
-        sendCloseScreen: sendCloseScreen,
+        sendCloseScreenRequest: sendCloseScreenRequest,
         addCustomComponent: addCustomComponent,
         removeComponent: removeComponent
     }
