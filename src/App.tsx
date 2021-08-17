@@ -54,8 +54,6 @@ const App: FC<ICustomContent> = (props) => {
     /** State of the current app-name to display it in the header */
     const [appName, setAppName] = useState<string>();
 
-    /** Register custom content flip value, changes value when custom content needs to be re-registered */
-    const [registerCustom, setRegisterCustom] = useState<boolean>(false);
     /** State if the app is ready */
     const [appReady, setAppReady] = useState<boolean>(false);
 
@@ -80,12 +78,10 @@ const App: FC<ICustomContent> = (props) => {
      */
     useEffect(() => {
         context.subscriptions.subscribeToAppReady(() => setAppReady(true));
-        context.subscriptions.subscribeToRegisterCustom(() => setRegisterCustom(registerCustom => !registerCustom));
         context.subscriptions.subscribeToSessionExpired(() => setSessionExpired(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppReady();
-            context.subscriptions.unsubscribeFromRegisterCustom();
             context.subscriptions.unsubscribeFromSessionExpired();
         }
     },[context.subscriptions]);
@@ -262,14 +258,17 @@ const App: FC<ICustomContent> = (props) => {
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {
         if (props.onMenu) {
-            context.contentStore.setOnMenuFunc(props.onMenu);
+            context.server.setOnMenuFunction(props.onMenu);
         }
 
         if (props.onOpenScreen) {
-            context.contentStore.setOnOpenScreenFunc(props.onOpenScreen);
+            context.server.setOnOpenScreenFunction(props.onOpenScreen);
         }
 
-    }, [context.contentStore, registerCustom]);
+        if (props.onLogin) {
+            context.server.setOnLoginFunction(props.onLogin);
+        }
+    }, [context.contentStore]);
 
     /**
      * Sets the showTimeOut state to show the dialog

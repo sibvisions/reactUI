@@ -84,7 +84,6 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
                 showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
-                context.subscriptions.emitRegisterCustom();
                 context.subscriptions.emitMenuUpdate();
             }
         }

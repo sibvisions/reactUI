@@ -125,24 +125,30 @@ class API {
      * @param menuItem - the menu-item to be added
      */
     addMenuItem(menuItem: CustomMenuItem) {
-        const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
-        const itemAction = () => {
-            this.#contentStore.setActiveScreen(menuItem.id);
-            this.history?.push("/home/" + menuItem.id);
-            return Promise.resolve(true);
-        };
-        const newItem: ServerMenuButtons = {
-            componentId: menuItem.id,
-            text: menuItem.text,
-            group: menuItem.menuGroup,
-            image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
-            action: itemAction
-        };
-        if (menuGroup) {
-            menuGroup.push(newItem);
+        if (this.#contentStore.customScreens.has(menuItem.id)) {
+            const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
+            const itemAction = () => {
+                this.#contentStore.setActiveScreen(menuItem.id);
+                this.history?.push("/home/" + menuItem.id);
+                return Promise.resolve(true);
+            };
+            const newItem: ServerMenuButtons = {
+                componentId: menuItem.id,
+                text: menuItem.text,
+                group: menuItem.menuGroup,
+                image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
+                action: itemAction
+            };
+            if (menuGroup) {
+                menuGroup.push(newItem);
+            }
+            else {
+                this.#contentStore.menuItems.set(menuItem.menuGroup, [newItem]);
+            }
         }
         else {
-            this.#contentStore.menuItems.set(menuItem.menuGroup, [newItem]);
+            this.#server.showToast({ severity: "error", summary: "Error while adding the menu-item. Could not find id: " + menuItem.id + "! Maybe the Custom-Screen isn't registered yet." }, true);
+            console.error("Error while adding the menu-item. Could not find id: " + menuItem.id + "! Maybe the Custom-Screen isn't registered yet.");
         }
     }
 

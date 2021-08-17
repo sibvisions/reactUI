@@ -62,7 +62,6 @@ export const LoginForm:FC = () => {
         loginReq.mode = "manual";
         loginReq.createAuthKey = rememberMe;
         showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
-        context.subscriptions.emitRegisterCustom();
         context.subscriptions.emitMenuUpdate();
     }
 

@@ -17,6 +17,7 @@ export interface ICustomContent {
     onStartup?: Function
     onMenu?: Function
     onOpenScreen?: Function
+    onLogin?: Function
 }
 
 /**

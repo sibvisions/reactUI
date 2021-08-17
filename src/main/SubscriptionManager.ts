@@ -87,9 +87,6 @@ export class SubscriptionManager {
     /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
     translationLoadedSubscriber = new Array<Function>();
 
-    /** A function to change the register custom content state of a component*/
-    registerCustomSubscriber:Function = () => {};
-
     /** A function to change the appReady state to true */
     appReadySubscriber:Function = () => {};
 
@@ -295,14 +292,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes the app to register-custom, to change the register-custom flip value
-     * @param fn - the function to update the register-custom flip value
-     */
-    subscribeToRegisterCustom(fn:Function) {
-        this.registerCustomSubscriber = fn;
-    }
-
-    /**
      * Subscribes the app to app-ready, to change the app-ready state
      * @param fn  - the function to change the app-ready state
      */
@@ -501,13 +490,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes app from register-custom
-     */
-    unsubscribeFromRegisterCustom() {
-        this.registerCustomSubscriber = () => {}
-    }
-
-    /**
      * Unsubscribes app from app-ready
      */
     unsubscribeFromAppReady() {
@@ -665,11 +647,6 @@ export class SubscriptionManager {
     /** When the translation is loaded, notify the subscribers */
     emitTranslation() {
         this.translationLoadedSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.translation]));
-    }
-
-    /** When the app needs to reregister the custom content*/
-    emitRegisterCustom() {
-        this.registerCustomSubscriber()
     }
 
     /** When the app is ready call the app-ready function */

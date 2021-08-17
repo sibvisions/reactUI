@@ -28,11 +28,9 @@ import { ApplicationMetaDataResponse,
          ApplicationSettingsResponse,
          DeviceStatusResponse,
          WelcomeDataResponse,
-         ServerMenuButtons,
-         BaseMenuButton,
          DialogResponse,
          CloseFrameResponse} from "./response";
-import { createFetchRequest, createOpenScreenRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createFetchRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -40,9 +38,7 @@ import { History } from "history";
 import TreePath from "./model/TreePath";
 import { ToastMessageType } from "primereact/toast";
 import AppSettings from "./AppSettings";
-import { CustomToolbarItem, EditableMenuItem } from "./customTypes";
 import API from "./API";
-import { componentHandler } from "./factories/UIFactory";
 
 /** Type for query */
 type queryType = {
@@ -93,8 +89,26 @@ class Server {
 
     api:API;
 
+    onMenuFunction:Function = () => {};
+
+    onOpenScreenFunction:Function = () => {};
+
+    onLoginFunction:Function = () => {};
+
     setAPI(api:API) {
         this.api = api;
+    }
+
+    setOnMenuFunction(fn:Function) {
+        this.onMenuFunction = fn;
+    }
+
+    setOnOpenScreenFunction(fn:Function) {
+        this.onOpenScreenFunction = fn;
+    }
+
+    setOnLoginFunction(fn:Function) {
+        this.onLoginFunction = fn;
     }
 
     /** ----------APP-FUNCTIONS---------- */
@@ -265,6 +279,7 @@ class Server {
      */
     userData(userData: UserDataResponse) {
         this.contentStore.currentUser = userData;
+        this.onLoginFunction();
     }
 
     /**
@@ -296,9 +311,7 @@ class Server {
                 workScreen = genericData.changedComponents[0] as IPanel
             }
             this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
-            if (this.contentStore.onOpenScreenFunc) {
-                this.contentStore.onOpenScreenFunc.apply(undefined, []);
-            }
+            this.onOpenScreenFunction();
         }
         if (genericData.changedComponents && genericData.changedComponents.length) {
             this.contentStore.updateContent(genericData.changedComponents, false);
@@ -334,7 +347,7 @@ class Server {
                 this.contentStore.addToolbarItem(entry);
             })
         }
-        this.contentStore.onMenuFunc();
+        this.onMenuFunction();
         this.subManager.emitMenuUpdate();
         this.subManager.emitToolBarUpdate();
     }
@@ -569,7 +582,6 @@ class Server {
         this.subManager.emitSessionExpired();
         this.routingDecider([expData]);
         this.showToast({severity: 'error', summary: expData.title}, true)
-        this.subManager.emitRegisterCustom()
         console.error(expData.title)
     }
 

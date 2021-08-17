@@ -113,10 +113,6 @@ export default class ContentStore{
 
     customStartUpProperties = new Array<CustomStartupProps>();
 
-    onMenuFunc:Function = () => {};
-
-    onOpenScreenFunc:Function = () => {};
-
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:string[] = [];
 
@@ -155,14 +151,6 @@ export default class ContentStore{
         else {
             this.activeScreens = [];
         }
-    }
-
-    setOnMenuFunc(fn: Function) {
-        this.onMenuFunc = fn;
-    }
-
-    setOnOpenScreenFunc(fn: Function) {
-        this.onOpenScreenFunc = fn;
     }
 
     setStartupProperties(arr:CustomStartupProps[]) {
@@ -410,15 +398,15 @@ export default class ContentStore{
     reset(){
         this.flatContent.clear();
         this.removedContent.clear();
-        //this.customScreens.clear();
-        //this.customComponents.clear();
+        this.customScreens.clear();
+        this.customComponents.clear();
         this.removedCustomContent.clear();
         this.replacedContent.clear();
         this.menuItems.clear();
         this.currentUser = new UserData();
         this.navigationNames.clear();
         //this.customProperties.clear();
-        //this.screenWrappers.clear();
+        this.screenWrappers.clear();
         this.subManager.propertiesSubscriber.clear();
         this.subManager.parentSubscriber.clear();
         this.subManager.rowSelectionSubscriber.clear();
