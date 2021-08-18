@@ -112,12 +112,6 @@ class Server {
     }
 
     /** ----------APP-FUNCTIONS---------- */
-
-    /**
-     * Function to show a toast
-     * @param message - message to show
-     */
-    showToast = (message: ToastMessageType, err: boolean, dialogResponse?:DialogResponse) => {};
     /**
      * Function to show te timeout dialog
      */
@@ -581,7 +575,7 @@ class Server {
         //this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.subManager.emitSessionExpired();
         this.routingDecider([expData]);
-        this.showToast({severity: 'error', summary: expData.title}, true)
+        this.subManager.emitMessage({message: expData.title, name: ""}, true);
         console.error(expData.title)
     }
 
@@ -592,19 +586,16 @@ class Server {
     showError(errData: ErrorResponse) {
         if (!errData.silentAbort) {
             this.subManager.emitMessage(errData, true);
-            //this.showToast({severity: 'error', summary: errData.message}, true);
         }
         console.error(errData.details)
     }
 
     showInfo(infoData: MessageResponse) {
         this.subManager.emitMessage(infoData, false);
-        //this.showToast({severity: 'info', summary: infoData.message, sticky: true, closable: false }, false);
     }
 
     showMessage(messageData:DialogResponse) {
         this.subManager.emitMessage(messageData, false)
-        //this.showToast({summary: messageData.message, sticky: true, closable: false}, false, messageData);
     }
  
     /**
@@ -612,7 +603,7 @@ class Server {
      * @param reData - the restartResponse
      */
     showRestart(reData:RestartResponse) {
-        this.showToast({severity: 'info', summary: 'Reload Page: ' + reData.info}, true);
+        this.subManager.emitMessage({ message: 'Reload Page: ' + reData.info, name: "" }, true)
         console.warn(reData.info);
     }
 

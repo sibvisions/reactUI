@@ -61,13 +61,13 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!newPassword) {
-            context.showToast({ severity: 'info', summary: translations.get("The new password is empty"), sticky: true, closable: false }, false)
+            context.subscriptions.emitMessage({ message: translations.get("The new password is empty"), name: "" }, false);
         }
         else if (newPassword !== confirmPassword) {
-            context.showToast({ severity: 'info', summary: translations.get("The passwords are different!"), sticky: true, closable: false }, false)
+            context.subscriptions.emitMessage({ message: translations.get("The passwords are different!"), name: "" }, false);
         }
         else if (newPassword === props.password) {
-            context.showToast({ severity: 'info', summary: translations.get("The old and new password are the same"), sticky: true, closable: false }, false)
+            context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" }, false);
         }
         else {
             if (props.loggedIn) {

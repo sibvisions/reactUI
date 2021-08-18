@@ -143,7 +143,7 @@ class API {
             }
         }
         else {
-            this.#server.showToast({ severity: "error", summary: "Error while adding the menu-item. Could not find id: " + menuItem.id + "! Maybe the Custom-Screen isn't registered yet." }, true);
+            this.#subManager.emitMessage({ message: "Error while adding the menu-item. Could not find id: " + menuItem.id + "! Maybe the Custom-Screen isn't registered yet.", name: "" }, true);
             console.error("Error while adding the menu-item. Could not find id: " + menuItem.id + "! Maybe the Custom-Screen isn't registered yet.");
         }
     }
@@ -168,7 +168,7 @@ class API {
             }
         });
         if (!itemFound) {
-            this.#server.showToast({ severity: "error", summary: "Error while editing the menu-item. Could not find id: " + editItem.id + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error while editing the menu-item. Could not find id: " + editItem.id + "!", name: "" }, true);
             console.error("Error while editing the menu-item. Could not find id: " + editItem.id + "!");
         }
     }
@@ -188,7 +188,7 @@ class API {
             }
         });
         if (!itemFound) {
-            this.#server.showToast({ severity: "error", summary: "Error removing the menu-item. Could not find id: " + id + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error removing the menu-item. Could not find id: " + id + "!", name: "" }, true);
             console.error("Error removing the menu-item. Could not find id: " + id + "!");
         }
     }
@@ -231,7 +231,7 @@ class API {
             }
         }
         else {
-            this.#server.showToast({ severity: "error", summary: "Error while editing the toolbar-item. Could not find id: " + editItem.id + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error while editing the toolbar-item. Could not find id: " + editItem.id + "!", name: "" }, true);
             console.error("Error while editing the toolbar-item. Could not find id: " + editItem.id + "!");
         }
     }
@@ -246,7 +246,7 @@ class API {
             this.#contentStore.toolbarItems.splice(itemToRemoveIndex, 1);
         }
         else {
-            this.#server.showToast({ severity: "error", summary: "Error while removing the toolbar-item. Could not find id: " + id + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error while removing the toolbar-item. Could not find id: " + id + "!", name: "" }, true);
             console.error("Error while removing the toolbar-item. Could not find id: " + id + "!");
         }
     }
@@ -275,7 +275,7 @@ class API {
             notifyList.filter(this.#contentStore.onlyUniqueFilter).forEach(parentId => this.#subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
         }
         else {
-            this.#server.showToast({ severity: "error", summary: "Error while adding custom-component. Could not find name: " + name + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error while adding custom-component. Could not find name: " + name + "!", name: "" }, true);
             console.error("Error while adding custom-component. Could not find name: " + name + "!");
         }
     }
@@ -295,7 +295,7 @@ class API {
             notifyList.filter(this.#contentStore.onlyUniqueFilter).forEach(parentId => this.#subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
         }
         else {
-            this.#server.showToast({ severity: "error", summary: "Error while removing component. Could not find name: " + name + "!" }, true);
+            this.#subManager.emitMessage({ message: "Error while removing component. Could not find name: " + name + "!", name: "" }, true);
             console.error("Error while removing component. Could not find name: " + name + "!");
         }
     }
