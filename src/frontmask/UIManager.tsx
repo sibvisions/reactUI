@@ -11,7 +11,7 @@ import Menu from "./menu/menu";
 import { useEventHandler, useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
 
 /** Other imports */
-import { ChildWithProps, concatClassnames } from "../main/components/util";
+import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
 import { REQUEST_ENDPOINTS } from "../main/request";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { appContext } from "../main/AppProvider";
@@ -22,6 +22,7 @@ import CorporateMenu from "./menu/corporateMenu";
 import { MenuVisibility } from "../main/AppSettings";
 import { ApplicationSettingsResponse } from "../main/response";
 import useResizeHandler from "../main/components/zhooks/useResizeHandler";
+import { useParams } from "react-router";
 
 export interface IUIManagerProps {
     screenId: string
@@ -50,7 +51,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const menuMini = false;
 
-    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout, [context.appSettings.applicationMetaData])
+    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout, [context.appSettings.applicationMetaData]);
+
+    /** ComponentId of Screen extracted by useParams hook */
+    const { componentId } = useParams<any>();
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -125,7 +129,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
                         ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
                         menuMini ? "" : "screen-no-mini",
-                        menuVisibility.toolBar ? "toolbar-visible" : ""
+                        menuVisibility.toolBar ? "toolbar-visible" : "",
+                        !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
                     )}>
                         <ScreenManager forwardedRef={sizeRef} />
                     </div>

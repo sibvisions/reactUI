@@ -15,7 +15,10 @@
 }
 
 .main {
-  @extend %screen-transition;
+  &:not(.main--with-c-menu) {
+    @extend %screen-transition;
+  }
+  
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -28,7 +31,7 @@
     margin-right: 10px;
   }
 
-  &--with-c-menu {
+  &--with-c-menu:not(.desktop-panel-enabled) {
     margin: 10px;
     // &.toolbar-visible {
     //   margin: 10px 10px 10px calc(var(--cMenuToolBarWidth) + 10px);
