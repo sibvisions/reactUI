@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks"
+import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useDataProviders } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -96,6 +96,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    useDataProviders(compId);
+
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */ // @ts-ignore
@@ -105,7 +107,10 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const scaleDigits:ScaleType = useMemo(() => cellEditorMetaData ? getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale) : {minScale: 0, maxScale: 0}, [cellEditorMetaData, props.cellEditor.numberFormat]);
+    const scaleDigits:ScaleType = useMemo(() => cellEditorMetaData 
+        ? getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale) 
+        : {minScale: 0, maxScale: 0}, 
+    [cellEditorMetaData, props.cellEditor.numberFormat]);
 
     /** Wether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
