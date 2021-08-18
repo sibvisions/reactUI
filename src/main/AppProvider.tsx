@@ -20,7 +20,6 @@ type AppContextType={
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    showToast:Function
     //theme: string,
     //setTheme: Function
 }
@@ -47,7 +46,6 @@ const initValue: AppContextType = {
     appSettings: appSettings,
     subscriptions: subscriptions,
     ctrlPressed: false,
-    showToast: (message: ToastMessageType, err: boolean) => {}
     //theme: "",
     //setTheme: () => {},
 }
