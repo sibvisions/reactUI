@@ -13,7 +13,7 @@ import { appContext } from "../../../AppProvider";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey} from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -283,13 +283,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         <span aria-label={props.ariaLabel} style={layoutStyle}>
             <AutoComplete
                 ref={linkedRef}
-                id={props.id !== "" ? props.name : undefined}
+                id={!isCellEditor ? props.name : undefined}
                 style={{ width: 'inherit' }}
                 inputRef={linkedInput}
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
-                className="rc-editor-linked"
-                panelClassName={"dropdown-"+props.name}
+                className={"rc-editor-linked"}
+                panelClassName={concatClassnames("dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "") }
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 disabled={!props.cellEditor_editable_}
