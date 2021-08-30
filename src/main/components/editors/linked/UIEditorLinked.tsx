@@ -86,6 +86,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     const focused = useRef<boolean>(false);
 
+    const [initialFilter, setInitialFilter] = useState<boolean>(false);
+
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
@@ -130,7 +132,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         if (isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
-        await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER);
+        await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER).then(() => {
+            if (!initialFilter) {
+                setInitialFilter(true);
+            }
+        });
     }, [context.contentStore, context.server, props.cellEditor, props.name])
 
     useEffect(() => {
@@ -141,7 +147,14 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             }
         }, 33)
 
-    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, isCellEditor, sendFilter])
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, isCellEditor, sendFilter]);
+
+    useEffect(() => {
+        if (focused.current && initialFilter && props.eventFocusGained) {
+            //setTimeout 0ms so the transition is playing
+            setTimeout(() => showTopBar(onFocusGained(props.name, context.server), topbar), 0);
+        }
+    }, [initialFilter])
 
     /**
      * When enter is pressed "submit" the value
@@ -287,9 +300,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 onChange={event => setText(event.target.value)}
                 onFocus={() => {
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            setTimeout(() => showTopBar(onFocusGained(props.name, context.server), topbar), 50);
-                        }
                         focused.current = true
                     }
                 }}
