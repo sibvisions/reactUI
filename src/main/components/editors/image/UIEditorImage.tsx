@@ -8,7 +8,6 @@ import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMis
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of ImageViewer */
@@ -55,9 +54,6 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
@@ -101,8 +97,8 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             className="rc-editor-image" 
             style={{...layoutStyle, ...imageStyle.span}} 
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
         >
             <img

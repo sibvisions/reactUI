@@ -71,8 +71,8 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     `gap-${gapPos}`,
                     getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
                     )}
-                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 style={{
                     ...btnData.style,
                     '--checkJustify': cbHAlign, 

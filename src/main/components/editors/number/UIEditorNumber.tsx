@@ -227,10 +227,10 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     style={{ width: '100%' }}
                     inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
                     onChange={event => setValue(event.value) }
-                    onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                    onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                     onBlur={() => {
                         if (props.eventFocusLost) {
-                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                            onFocusLost(props.name, context.server);
                         }
                         onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar));
                     }}

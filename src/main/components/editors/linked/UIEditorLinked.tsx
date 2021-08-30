@@ -152,7 +152,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
             //setTimeout 0ms so the transition is playing
-            setTimeout(() => showTopBar(onFocusGained(props.name, context.server), topbar), 0);
+            setTimeout(() => onFocusGained(props.name, context.server), 0);
         }
     }, [initialFilter])
 
@@ -309,14 +309,14 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     if (dropDownElem) {
                         if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
                             if (props.eventFocusLost) {
-                                showTopBar(onFocusLost(props.name, context.server), topbar);
+                                onFocusLost(props.name, context.server);
                             }
                             focused.current = false
                         }
                     }
                     else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
-                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                            onFocusLost(props.name, context.server);
                         }
                         focused.current = false
                     }

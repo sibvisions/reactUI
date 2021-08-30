@@ -189,8 +189,8 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                     setNextValue()
                 }
             }}
-            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={props.tabIndex ? props.tabIndex : 0}>
             <img
                 ref={imgRef}

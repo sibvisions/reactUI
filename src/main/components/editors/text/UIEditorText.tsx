@@ -430,7 +430,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             value: text || "",
             ariaLabel: props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onFocus: props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined,
+            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined,
             onBlur: () => {
                 if (!escapePressed.current) {
                     onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
@@ -458,16 +458,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
                     disabled ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
-                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={() => {
                     if (!escapePressed.current) {
                         onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
                     }
                     if (props.eventFocusLost) {
-                        showTopBar(onFocusLost(props.name, context.server), topbar)
-                    }
-                    if (props.eventFocusLost) {
-                        showTopBar(onFocusLost(props.name, context.server), topbar)
+                        onFocusLost(props.name, context.server)
                     }
                 }}
             >

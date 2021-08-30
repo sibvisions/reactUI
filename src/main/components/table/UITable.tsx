@@ -1329,7 +1329,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onFocus={() => {
                     if (!focused.current) {
                         if (props.eventFocusGained) {
-                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                            onFocusGained(props.name, context.server);
                         }
                         focused.current = true;
                         if (columnOrder) {
@@ -1341,7 +1341,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onBlur={event => {
                     if (wrapRef.current && !wrapRef.current.contains(event.relatedTarget as Node)) {
                         if (props.eventFocusLost) {
-                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                            onFocusLost(props.name, context.server);
                         }
                         focused.current = false;
                     }

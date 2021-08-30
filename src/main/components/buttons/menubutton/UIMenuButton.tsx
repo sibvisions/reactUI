@@ -107,8 +107,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             ref={buttonWrapperRef} 
             style={{position: 'absolute', ...layoutStyle}}
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={btnData.tabIndex}
         >
             <SplitButton

@@ -271,7 +271,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 setVisible(false);
                 if ((event.target as HTMLElement).tagName === "BUTTON") {
                     if (props.eventFocusLost) {
-                        showTopBar(onFocusLost(props.name, context.server), topbar);
+                        onFocusLost(props.name, context.server);
                     }
                 }
             }
@@ -286,7 +286,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 setVisible(false);
                 if ((event.target as HTMLElement).tagName === "BUTTON") {
                     if (props.eventFocusLost) {
-                        showTopBar(onFocusLost(props.name, context.server), topbar);
+                        onFocusLost(props.name, context.server);
                     }
                 }
             }
@@ -326,7 +326,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 onFocus={() => {
                     if (!focused.current) {
                         if (props.eventFocusGained) {
-                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                            onFocusGained(props.name, context.server);
                         }
                         focused.current = true;
                     }
@@ -335,7 +335,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     //@ts-ignore
                     if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
-                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                            onFocusLost(props.name, context.server);
                         }
                         focused.current = false;
                     }
@@ -346,13 +346,13 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     setVisible(event.type === 'dateselect' || !visible);
                     if (!focused.current) {
                         if (props.eventFocusGained) {
-                            showTopBar(onFocusGained(props.name, context.server), topbar);
+                            onFocusGained(props.name, context.server);
                         }
                         focused.current = true;
                     }
                     if (event.type === 'outside') {
                         if (props.eventFocusLost) {
-                            showTopBar(onFocusLost(props.name, context.server), topbar);
+                            onFocusLost(props.name, context.server);
                         }
                         focused.current = false;
                     }

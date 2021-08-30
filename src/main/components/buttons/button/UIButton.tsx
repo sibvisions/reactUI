@@ -112,8 +112,8 @@ const UIButton: FC<IButton> = (baseProps) => {
                 iconPos={btnData.iconPos}
                 tabIndex={btnData.tabIndex}
                 onClick={onButtonPress}
-                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 disabled={props.enabled === false}
             />
         </span>

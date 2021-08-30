@@ -11,7 +11,6 @@ import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 import { appContext } from "../../AppProvider";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 /**
@@ -31,8 +30,6 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id);
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
     /** Hook for MouseListener */
     useMouseListener(props.name, passwordRef.current ? passwordRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -52,8 +49,8 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
             feedback={false} 
             style={layoutStyle} 
             onChange={event => setPwValue(event.currentTarget.value)} 
-            onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-            onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined} />
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined} />
     )
 }
 export default UIPassword

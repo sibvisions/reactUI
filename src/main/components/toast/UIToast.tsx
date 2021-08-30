@@ -110,26 +110,10 @@ const UIToast: FC = () => {
                 }
 
                 const footerContent = (buttonType: 4 | 5 | 6 | 7 | 8 | -1, okCompId?: string, cancelCompId?: string, notOkCompId?: string) => {
-                    const sendPressOk = () => {
-                        if (okCompId) {
+                    const sendPressButton = (compId?:string) => {
+                        if (compId) {
                             const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = okCompId;
-                            showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
-                        }
-                    }
-
-                    const sendPressCancel = () => {
-                        if (cancelCompId) {
-                            const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = cancelCompId;
-                            showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
-                        }
-                    }
-
-                    const sendPressNo = () => {
-                        if (notOkCompId) {
-                            const pressBtnReq = createPressButtonRequest();
-                            pressBtnReq.componentId = notOkCompId;
+                            pressBtnReq.componentId = compId;
                             showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar)
                         }
                     }
@@ -138,10 +122,10 @@ const UIToast: FC = () => {
                         return (
                             <>
                                 <Button type="button" label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")} onClick={event => {
-                                    sendPressCancel();
+                                    sendPressButton(cancelCompId);
                                 }} />
                                 <Button type="button" label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")} onClick={event => {
-                                    sendPressOk();
+                                    sendPressButton(okCompId);
                                 }} />
                             </>
                         )
@@ -149,7 +133,7 @@ const UIToast: FC = () => {
                     else if (buttonType === 6) {
                         return (
                             <Button type="button" label={translation.get("OK")} onClick={event => {
-                                sendPressOk();
+                                sendPressButton(okCompId);
                             }} />
                         )
                     }
@@ -158,14 +142,14 @@ const UIToast: FC = () => {
                             <>
                                 <div>
                                     <Button type="button" label={translation.get("Cancel")} onClick={event => {
-                                        sendPressCancel();
+                                        sendPressButton(cancelCompId);
                                     }} />
                                     <Button type="button" label={translation.get("No")} style={{ marginLeft: '0.5rem' }} onClick={event => {
-                                        sendPressNo();
+                                        sendPressButton(notOkCompId);
                                     }} />
                                 </div>
                                 <Button type="button" label={translation.get("Yes")} onClick={event => {
-                                    sendPressOk();
+                                    sendPressButton(okCompId);
                                 }} />
                             </>
                         )
@@ -206,7 +190,7 @@ const UIToast: FC = () => {
                                     onClick={event => {
                                         const closeFrameReq = createCloseFrameRequest();
                                         closeFrameReq.componentId = castedDialog.componentId;
-                                        showTopBar(context.server.sendRequest(closeFrameReq, "/api/closeFrame"), topbar);
+                                        showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
                                     }} />}
                             </div>}
                             <div className="toast-content">

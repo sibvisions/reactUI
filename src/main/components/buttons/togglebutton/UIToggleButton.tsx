@@ -118,8 +118,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 tabIndex={btnData.tabIndex}
                 checked={props.selected}
                 onChange={handleOnChange}
-                onFocus={props.eventFocusGained ? () => showTopBar(onFocusGained(props.name, context.server), topbar) : undefined}
-                onBlur={props.eventFocusLost ? () => showTopBar(onFocusLost(props.name, context.server), topbar) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             />
         </span>
     )
