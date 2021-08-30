@@ -1339,7 +1339,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     }
                 }}
                 onBlur={event => {
-                    if (wrapRef.current && !wrapRef.current.contains(event.relatedTarget as Node)) {
+                    if (wrapRef.current
+                        && !wrapRef.current.contains(event.relatedTarget as Node) 
+                        &&  (event.relatedTarget && !(event.relatedTarget as HTMLElement).classList.contains("celleditor-dropdown-virtual-scroller"))) {
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, context.server);
                         }

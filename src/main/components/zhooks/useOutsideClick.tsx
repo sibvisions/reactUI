@@ -16,7 +16,11 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
 const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDescription|LengthBasedColumnDescription|undefined) => {
     useEffect(() => {
         const handleClickOutside = (event: any) => {
-            if (ref.current && !ref.current.contains(event.target) && !event.target.classList.contains('p-autocomplete-item') && !event.target.closest(".p-datepicker")) {
+            if (ref.current 
+                && !ref.current.contains(event.target) 
+                && !event.target.classList.contains('p-autocomplete-item') 
+                && !event.target.classList.contains('celleditor-dropdown-virtual-scroller') 
+                && !event.target.closest(".p-datepicker")) {
                 if (metaData?.cellEditor.contentType?.includes("multiline") || metaData?.cellEditor.contentType?.includes("singleline")) {
                     ref.current.children[0].blur();
                 }

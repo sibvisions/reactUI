@@ -321,7 +321,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                         focused.current = false
                     }
                 }}
-                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad }}
+                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad, className: isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
                 onSelect={(event) => handleInput(event.value)}
             />
         </span>
