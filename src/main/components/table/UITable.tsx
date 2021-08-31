@@ -276,16 +276,18 @@ const CellEditor: FC<CellEditor> = (props) => {
                             }
                         }}>
                         {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
-                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
+                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
                     </div>
                 ) : (!edit ?
                     <div
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
                         onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                        {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
+                        <div className="cell-data-content">
+                            {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
+                        </div>
                         {showDropDownArrow() &&
-                            <div style={{ float: "right" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
+                            <div style={{ marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
                                 <i
                                     style={{
                                         visibility: (props.selectedRow && props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1])) ?
@@ -303,7 +305,7 @@ const CellEditor: FC<CellEditor> = (props) => {
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
                 {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ float: "right" }} />}
+                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
             </div>
     )
 }
@@ -587,6 +589,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
                     const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length*35 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+4}
+                    console.log(id, props.preferredSize, prefSize, props.minimumSize, props.maximumSize)
                     sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    

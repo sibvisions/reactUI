@@ -116,9 +116,13 @@ tr.p-highlight{
                     }
                 }
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor)>.cell-data {
-                    padding: 6.5px 8.688px;                    
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                    display: flex;
+                    align-items: center;
+                    .cell-data-content {
+                        padding: 6.5px 8.688px;                    
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
 
                     &.cancel-padding {
                         padding: calc(0.2rem + 6.5px) calc(0.4rem + 8.688px);
