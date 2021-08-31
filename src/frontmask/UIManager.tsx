@@ -1,5 +1,5 @@
 /** React imports */
-import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Children, createContext, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import * as _ from 'underscore'
@@ -28,6 +28,15 @@ export interface IUIManagerProps {
     screenId: string
     customAppWrapper?: React.ComponentType
 }
+
+export interface IResizeContext {
+    menuSize?:number,
+    menuRef?: any,
+    login?:boolean,
+    style?: CSSProperties
+}
+
+export const ResizeContext = createContext<IResizeContext>({});
 
 /**
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
@@ -115,7 +124,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <CustomWrapper>
                     <LayoutContext.Provider value={componentSize}>
                         <div id="reactUI-main" className="main">
-                            <ScreenManager forwardedRef={sizeRef} />
+                            <ScreenManager />
                         </div>
                     </LayoutContext.Provider>
                 </CustomWrapper>
@@ -123,7 +132,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             : <div className={concatClassnames("reactUI", appLayout === "corporation" ? "corporation" : "")}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
                 {appLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini} />}
-                <LayoutContext.Provider value={componentSize}>
+                {/* <LayoutContext.Provider value={componentSize}> */}
                     <div id="reactUI-main" className={concatClassnames(
                         "main",
                         appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
@@ -132,9 +141,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         menuVisibility.toolBar ? "toolbar-visible" : "",
                         !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
                     )}>
-                        <ScreenManager forwardedRef={sizeRef} />
+                        <ResizeContext.Provider value={{login: false, menuRef: menuRef, menuSize: menuSize}}>
+                            <ScreenManager />
+                        </ResizeContext.Provider>
+                        
                     </div>
-                </LayoutContext.Provider>
+                {/* </LayoutContext.Provider> */}
             </div>
     )
 }

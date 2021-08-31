@@ -10,13 +10,10 @@ import { useHomeComponents } from "../../main/components/zhooks";
 /**Other imports */
 import { IForwardRef } from "../../main/IForwardRef";
 import { DesktopPanelHandler } from "../login/login";
-
-interface IWorkScreen extends IForwardRef {
-    style?: CSSProperties
-}
+import ResizeHandler from "../ResizeHandler";
 
 /** This component defines where the workscreen should be displayed */
-const WorkScreen: FC<IWorkScreen> = ({forwardedRef, style}) => {
+const WorkScreen: FC = (props) => {
     /** ComponentId of Screen extracted by useParams hook */
     const { componentId } = useParams<any>();
     /** Use context to gain access for contentstore and server methods */
@@ -25,10 +22,11 @@ const WorkScreen: FC<IWorkScreen> = ({forwardedRef, style}) => {
     const homeChildren = useHomeComponents(componentId);
 
     return (
-        <div id="workscreen" ref={forwardedRef} style={{flex: '1', ...style}}>
+        <ResizeHandler>
             {getScreenIdFromNavigation(componentId, context.contentStore) ? 
             homeChildren : <DesktopPanelHandler />}
-        </div>
+        </ResizeHandler>
+
     )
 }
 export default WorkScreen

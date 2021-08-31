@@ -25,17 +25,31 @@
   overflow: hidden;
 
   &--with-s-menu {
-    margin-top: calc(var(--menuHeight) + 10px);
-    margin-left: calc(var(--menuWidth) + 10px);
-    margin-bottom: 10px;
-    margin-right: 10px;
+    &:not(.desktop-panel-enabled) {
+      margin-top: calc(var(--menuHeight) + 10px);
+      margin-left: calc(var(--menuWidth) + 10px);
+      margin-bottom: 10px;
+      margin-right: 10px;
+      &.screen-expanded {
+        margin-left: calc(var(--menuCollapsedWidth) + 10px);
+      }
+    }
+    &.desktop-panel-enabled {
+      margin-top: var(--menuHeight);
+      &:not(.screen-expanded) {
+        margin-left: var(--menuWidth);
+      }
+      &.screen-expanded {
+        margin-left: var(--menuCollapsedWidth);
+      }
+    }
+    &.screen-expanded {
+      @extend %screen-transition;
+    }
   }
 
   &--with-c-menu:not(.desktop-panel-enabled) {
     margin: 10px;
-    // &.toolbar-visible {
-    //   margin: 10px 10px 10px calc(var(--cMenuToolBarWidth) + 10px);
-    // }
   }
 }
 
@@ -54,8 +68,11 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 600px) { 
-  .screen-expanded.screen-no-mini {
+@media screen and (max-width: 600px) {
+  .main--with-s-menu.desktop-panel-enabled.screen-expanded.screen-no-mini {
     margin-left: 0;
+  }
+  .main--with-s-menu.screen-expanded.screen-no-mini {
+    margin-left: 10px;
   }
 }

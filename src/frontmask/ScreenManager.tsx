@@ -17,7 +17,7 @@ export interface IScreenContext {
 export const ScreenContext = createContext<IScreenContext>({});
 
 /** Displays either ScreenWrappers set by the user or the workscreen */
-const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
+const ScreenManager:FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     const { contentStore, contentStore: { screenWrappers } } = context;
@@ -26,7 +26,7 @@ const ScreenManager:FC<IForwardRef> = ({forwardedRef}) => {
     /** The ID of the screen based on the navigation-name */
     const screenId = getScreenIdFromNavigation(componentId, contentStore)
 
-    const screen = <WorkScreen forwardedRef={forwardedRef} />;
+    const screen = <WorkScreen />;
 
     /** If there is a screen-wrapper for this screen, check if there is a global and global should be shown, if true show global if false don't */
     if (screenWrappers.has(screenId)) {
