@@ -14,7 +14,7 @@ const useDataProviders = (compId:string) => {
     const context = useContext(appContext);
 
     /** Current state of all dataprovider of a screen */
-    const [dataProviders, setDataProviders] = useState<Array<string>>(Array.from(context.contentStore.dataProviderMetaData.get(compId)?.keys() as IterableIterator<string>));
+    const [dataProviders, setDataProviders] = useState<Array<string>>(Array.from(context.contentStore.dataProviderData.has(compId) ? context.contentStore.dataProviderMetaData.get(compId)!.keys() as IterableIterator<string> : []));
 
     useEffect(() => {
         const onDataProviderChange = () => {
