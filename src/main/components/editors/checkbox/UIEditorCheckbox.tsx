@@ -158,12 +158,16 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
             id={!isCellEditor ? props.name : undefined}
             aria-label={props.ariaLabel}
             className="rc-editor-checkbox"
-            style={{
-                ...layoutStyle,
-                backgroundColor: props.cellEditor_background_,
-                justifyContent: alignments?.ha,
-                alignItems: alignments?.va
-            }}
+            style={
+                isCellEditor ?
+                    { justifyContent: alignments.ha, alignItems: alignments.va }
+                    :
+                    {
+                        ...layoutStyle,
+                        backgroundColor: props.cellEditor_background_,
+                        justifyContent: alignments?.ha,
+                        alignItems: alignments?.va
+                    }}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             onKeyDown={(event) => {
@@ -191,7 +195,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 checked={checked}
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
-                tabIndex={props.tabIndex ? props.tabIndex : 0} 
+                tabIndex={props.tabIndex ? props.tabIndex : 0}
             />
             {!isCellEditor &&
                 <label
@@ -203,7 +207,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                     {props.cellEditor?.text}
                 </label>
             }
-            
+
         </span>
     )
 }

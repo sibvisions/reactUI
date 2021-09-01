@@ -589,7 +589,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
                     const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length*35 + (props.tableHeaderVisible !== false ? 42 : 2) : 410, width: estTableWidth+4}
-                    console.log(id, props.preferredSize, prefSize, props.minimumSize, props.maximumSize)
                     sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
@@ -608,12 +607,15 @@ const UITable: FC<TableProps> = (baseProps) => {
                         let tempWidth: number;
                         if (cellDatas[j] !== undefined) {
                             /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
-                            if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor'))
+                            if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
-                            /** Add 32 pixel to its measured width to display editor properly */
-                            else
+                            }
+                            else if (cellDatas[j].parentElement?.classList.contains('ChoiceCellEditor')) {
+                                tempWidth = 24;
+                            }
+                            else {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width;
-    
+                            }
                             /** If the measured width is greater than the current widest width for the column, replace it */
                             if (tempWidth > cellDataWidthList[j].width) {
                                 cellDataWidthList[j].width = tempWidth;

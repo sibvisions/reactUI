@@ -179,7 +179,11 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             className="rc-editor-choice"
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
-            style={{ ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }}
+            style={isCellEditor ?
+                { justifyContent: alignments.ha, alignItems: alignments.va }
+                :
+                { ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }
+            }
             onKeyDown={(event) => {
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
@@ -195,7 +199,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             <img
                 ref={imgRef}
                 id={!isCellEditor ? props.name : undefined}
-                className={concatClassnames("rc-editor-choice-img", isReadOnly ? "choice-read-only" : "")} 
+                className={concatClassnames("rc-editor-choice-img", isReadOnly ? "choice-read-only" : "")}
                 alt=""
                 onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?
