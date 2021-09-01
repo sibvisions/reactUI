@@ -26,7 +26,7 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     
-    const test = useRef<Array<string>>(new Array<string>());
+    const compLoadedCache = useRef<Array<string>>(new Array<string>());
 
     //const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>());
 
@@ -105,11 +105,14 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
         /** Create the reactchildren */
         children.forEach(child => {
             let reactChild;
-            if (!test.current.includes(child.name)) {
+            if (!compLoadedCache.current.includes(child.name)) {
                 child.onLoadCallback = componentHasLoaded;
-                test.current.push(child.name)
+                compLoadedCache.current.push(child.name)
             }
             if (!context.contentStore.customComponents.has(child.name)) {
+                //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
+                //gets a componentHasLoaded. When not using this it could be that some components aren't shown...
+                child.onLoadCallback = componentHasLoaded;
                 reactChild = componentHandler(child);
             }
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
