@@ -151,6 +151,7 @@ export default class ContentStore{
         else {
             this.activeScreens = [];
         }
+        this.subManager.emitActiveScreens();
     }
 
     setStartupProperties(arr:CustomStartupProps[]) {
@@ -309,13 +310,6 @@ export default class ContentStore{
                 this.setNavigationName(newCompAsPanel.name, newCompAsPanel.screen_navigationName_ + increment.toString())
             }
 
-            /** If newComponent has property screen_modal tell the popUpSubscribers to show the component as a popup*/
-            if (newCompAsPanel.screen_modal_) {
-                this.subManager.popupSubscriber.forEach(ps => {
-                    ps.apply(undefined, [newCompAsPanel.screen_navigationName_, false])
-                })
-            }
-
             if (newCompAsPanel.screen_className_) {
                 this.selectedMenuItem = newCompAsPanel.screen_className_
                 this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
@@ -349,6 +343,7 @@ export default class ContentStore{
      */
     closeScreen(windowName: string) {
         this.activeScreens = this.activeScreens.filter(screen => screen !== windowName);
+        this.subManager.emitActiveScreens();
         const window = this.getComponentByName(windowName);
         if(window){
             this.cleanUp(window.id, window.name);
@@ -374,11 +369,6 @@ export default class ContentStore{
      */
     cleanUp(id:string, name:string|undefined) {
         if (name) {
-            if ((this.flatContent.get(id) as IPanel).screen_modal_) {
-                this.subManager.popupSubscriber.forEach(ps => {
-                    ps.apply(undefined, [(this.flatContent.get(id) as IPanel).screen_navigationName_, true])
-                })
-            }
             this.deleteChildren(id);
             this.flatContent.delete(id);
 
@@ -415,7 +405,6 @@ export default class ContentStore{
         this.subManager.screenNameSubscriber.clear();
         this.subManager.menuCollapseSubscriber.clear();
         this.subManager.menuSubscriber = new Array<Function>();
-        this.subManager.popupSubscriber = new Array<Function>();
         this.dataProviderData.clear();
         this.dataProviderMetaData.clear();
         this.dataProviderRecordFormat.clear();

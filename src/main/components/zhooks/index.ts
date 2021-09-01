@@ -8,7 +8,6 @@ export { default as useDataProviders } from './useDataProviders';
 export { default as useEventHandler } from './useEventHandler';
 export { default as useMultipleEventHandler } from './useMultipleEventHandler';
 export { default as useGetCustomProperty } from './useGetCustomProperty';
-export { default as useHomeComponents } from './useHomeComponents';
 export { default as useImageStyle } from './useImageStyle';
 export { default as useAppContext } from './useAppContext';
 export { default as useMenuCollapser } from './useMenuCollapser';

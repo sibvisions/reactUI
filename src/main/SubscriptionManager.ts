@@ -81,9 +81,6 @@ export class SubscriptionManager {
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
 
-    /** An array of functions to update the homechildren state of components which use the useHomeComponents hook */
-    popupSubscriber = new Array<Function>();
-
     /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
     translationLoadedSubscriber = new Array<Function>();
 
@@ -120,6 +117,9 @@ export class SubscriptionManager {
 
     /** A function to update the close-frame-subscriber */
     closeFrameSubscriber:Function = () => {};
+
+    /** An array of functions to update the active-screen subscriber */
+    activeScreenSubscriber = new Array<Function>();
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -254,14 +254,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes components to popUpChanges, to change their homeComponents state
-     * @param fn - the function to add or remove popups to the state
-     */
-    subscribeToPopupChange(fn: Function) {
-        this.popupSubscriber.push(fn);
-    }
-
-    /**
      * Subscribes components to menuChanges (menu-collapsed), to change their menu-collapsed state
      * @param id - the component id
      * @param fn - the function to update the menu-collapsed state
@@ -377,11 +369,11 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes a component from popUpChanges
-     * @param fn - the function to add or remove popups to the state
+     * Subscribes to the active-screens, to have the active-screens
+     * @param fn - the function to update the toolbar-items
      */
-    unsubscribeFromPopupChange(fn: Function) {
-        this.popupSubscriber.splice(this.popupSubscriber.findIndex(subFunction => subFunction === fn), 1);
+     subscribeToActiveScreens(fn: Function) {
+        this.activeScreenSubscriber.push(fn);
     }
 
     /**
@@ -558,6 +550,13 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from active-screens
+     */
+     unsubscribeFromActiveScreens(fn:Function) {
+        this.activeScreenSubscriber.splice(this.activeScreenSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
      */
@@ -691,5 +690,9 @@ export class SubscriptionManager {
 
     emitCloseFrame(compId:string) {
         this.closeFrameSubscriber.apply(undefined, [compId]);
+    }
+
+    emitActiveScreens() {
+        this.activeScreenSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.activeScreens]))
     }
 }

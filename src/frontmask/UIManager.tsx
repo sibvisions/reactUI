@@ -8,12 +8,10 @@ import * as _ from 'underscore'
 import Menu from "./menu/menu";
 
 /** Hook imports */
-import { useEventHandler, useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
+import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
 
 /** Other imports */
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
-import { REQUEST_ENDPOINTS } from "../main/request";
-import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { appContext } from "../main/AppProvider";
 import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
@@ -25,7 +23,6 @@ import useResizeHandler from "../main/components/zhooks/useResizeHandler";
 import { useParams } from "react-router";
 
 export interface IUIManagerProps {
-    screenId: string
     customAppWrapper?: React.ComponentType
 }
 

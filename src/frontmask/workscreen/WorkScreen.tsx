@@ -1,11 +1,6 @@
 /** React imports */
-import React, {CSSProperties, FC, useContext} from "react";
-import { useParams } from "react-router";
+import React, {FC, ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import { appContext } from "../../main/AppProvider";
-import { getScreenIdFromNavigation } from "../../main/components/util";
-
-/** Hook imports */
-import { useHomeComponents } from "../../main/components/zhooks";
 
 /**Other imports */
 import { IForwardRef } from "../../main/IForwardRef";
@@ -14,17 +9,43 @@ import ResizeHandler from "../ResizeHandler";
 
 /** This component defines where the workscreen should be displayed */
 const WorkScreen: FC = (props) => {
-    /** ComponentId of Screen extracted by useParams hook */
-    const { componentId } = useParams<any>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Screens which are currently displayed by the workscreen can be multiple screens if there are popups */
-    const homeChildren = useHomeComponents(componentId);
+
+    const [activeScreens, setActiveScreens] = useState<string[]>(context.contentStore.activeScreens);
+
+    /** Returns the built windows */
+    const buildWindow = useCallback((screens:string[]):Array<ReactElement> => {
+        let tempArray: Array<ReactElement> = [];
+        // if (compId === "settings") {
+        //     tempArray.push(<Settings/>)
+        // }
+        screens.forEach(screen => {
+            if (context.contentStore.getWindow(screen)) {
+                tempArray.push(context.contentStore.getWindow(screen));
+            }
+        });
+        return tempArray
+    }, [context.contentStore]);
+
+    const [renderedScreens, setRenderedScreens] = useState<Array<ReactElement>>(buildWindow(activeScreens))
+
+    useEffect(() => {
+        context.subscriptions.subscribeToActiveScreens((activeScreens:string[]) => setActiveScreens([...activeScreens]));
+
+        return () => {
+            context.subscriptions.unsubscribeFromActiveScreens((activeScreens:string[]) => setActiveScreens(activeScreens));
+        }
+    },[context.subscriptions])
+
+    useEffect(() => {
+        setRenderedScreens([...buildWindow(activeScreens)]);
+    }, [activeScreens]);
 
     return (
         <ResizeHandler>
-            {getScreenIdFromNavigation(componentId, context.contentStore) ? 
-            homeChildren : <DesktopPanelHandler />}
+            {renderedScreens.length ? 
+            renderedScreens : <DesktopPanelHandler />}
         </ResizeHandler>
 
     )

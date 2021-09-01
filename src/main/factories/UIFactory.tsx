@@ -94,10 +94,11 @@ export function createEditor(props: any) {
  * @param element - The JSX Element to wrap
  * @returns The original or wrapped JSX Element
  */
-const maybePopup = (element: JSX.Element) =>
+const maybePopup = (element: JSX.Element) => 
     element.props.screen_modal_ 
         ? <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
         : element
+
 
 /**
  * Map to get the correct function to build a component for className

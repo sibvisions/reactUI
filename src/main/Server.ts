@@ -299,6 +299,9 @@ class Server {
      * @param genericData - the genericResponse
      */
     generic(genericData: GenericResponse) {
+        if (genericData.changedComponents && genericData.changedComponents.length) {
+            this.contentStore.updateContent(genericData.changedComponents, false);
+        }
         if (!genericData.update) {
             let workScreen:IPanel|undefined
             if(genericData.changedComponents && genericData.changedComponents.length) {
@@ -306,9 +309,6 @@ class Server {
             }
             this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
             this.onOpenScreenFunction();
-        }
-        if (genericData.changedComponents && genericData.changedComponents.length) {
-            this.contentStore.updateContent(genericData.changedComponents, false);
         }
     }
 
