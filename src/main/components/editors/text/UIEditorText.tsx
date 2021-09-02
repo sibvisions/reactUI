@@ -9,7 +9,7 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -221,10 +221,10 @@ const UIEditorText: FC<IEditorText> = (props) => {
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** The metaData of the dataRow */
-    const metaData = getMetaData(compId, props.dataRow, context.contentStore)
+    const metaData = useMetaData(compId, props.dataRow)
 
-    /** The metadata for the TextCellEditor */
-    const cellEditorMetaData:LengthBasedColumnDescription = getColMetaData(props.columnName, metaData) as LengthBasedColumnDescription;
+    /** The cell-editor of the TextCellEditor */
+    const cellEditorMetaData:LengthBasedColumnDescription = useMemo(() => getColMetaData(props.columnName, metaData) as LengthBasedColumnDescription, [metaData]);
 
     /** Returns the maximum length for the TextCellEditor */
     const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);

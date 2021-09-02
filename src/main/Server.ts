@@ -480,14 +480,14 @@ class Server {
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
         if (existingMap) {
             existingMap.set(metaData.dataProvider, metaData);
-            this.subManager.notifyDataProviderChange(compId);
+            this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
         }
 
         else {
             const tempMap:Map<string, MetaDataResponse> = new Map<string, MetaDataResponse>();
             tempMap.set(metaData.dataProvider, metaData)
             this.contentStore.dataProviderMetaData.set(compId, tempMap);
-            this.subManager.notifyDataProviderChange(compId);
+            this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
         }
     }
 

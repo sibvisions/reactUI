@@ -16,7 +16,8 @@ import { useProperties,
          useEventHandler,
          useLayoutValue,
          useFetchMissingData,
-         useMouseListener} from "../zhooks";
+         useMouseListener,
+         useMetaData} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -337,7 +338,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
-    const metaData = getMetaData(compId, props.dataBook, context.contentStore);
+    const metaData = useMetaData(compId, props.dataBook);
 
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
@@ -729,12 +730,15 @@ const UITable: FC<TableProps> = (baseProps) => {
             //@ts-ignore
             const colResizers = tableRef.current.container.getElementsByClassName("p-column-resizer");
             for (const colResizer of colResizers) {
+                if (!colResizer.parentElement.classList.contains("not-resizable") && colResizer.style.display === "none") {
+                    colResizer.style.setProperty("display", "block");
+                }
                 if (colResizer.parentElement.classList.contains("not-resizable")) {
                     colResizer.style.setProperty("display", "none");
                 }
             }
         }
-    },[])
+    },[metaData])
 
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);

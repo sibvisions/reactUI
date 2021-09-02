@@ -55,6 +55,14 @@ export class SubscriptionManager {
     dataChangeSubscriber = new Map<string, Map<string, Array<Function>>>();
 
     /**
+     * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
+     * useMetadata hook, subscribe to the changes of a screens dataproviders metadata, the key is the screens component id and the
+     * value is another Map which key is the dataprovider and the value is an array of functions to update the
+     * subscribers metadata state
+     */
+    metaDataSubscriber = new Map<string, Map<string, Array<Function>>>();
+
+    /**
      * A Map which stores a function to update a components state of all dataproviders data, key is the screens component id
      * value is the function to update the state
      */
@@ -214,8 +222,18 @@ export class SubscriptionManager {
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    subscribeToDataChange(compId:string, dataProvider: string, fn: Function){
+    subscribeToDataChange(compId:string, dataProvider: string, fn: Function) {
         this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.dataChangeSubscriber);
+    }
+
+    /**
+     * Subscribes components which use the useMetadata hook, to change their metadata state
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the data state
+     */
+    subscribeToMetaData(compId:string, dataProvider:string, fn: Function) {
+        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.metaDataSubscriber);
     }
 
     /**
@@ -414,6 +432,16 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscibes components from dataChange
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the data state
+     */
+     unsubscribeFromMetaData(compId:string, dataProvider: string, fn: Function) {
+        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.metaDataSubscriber);
+    }
+
+    /**
      * Unsubscribes a component from its screen-data (every dataprovider data)
      * @param compId - the component id of the screen
      */
@@ -571,6 +599,15 @@ export class SubscriptionManager {
      */
     notifyDataChange(compId:string, dataProvider: string) {
         this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Notifies the components which use the useMetadata hook that their metadata changed
+     * @param compId - the component id of the screen
+     * @param dataProvider - the dataprovider
+     */
+     notifyMetaDataChange(compId:string, dataProvider: string) {
+        this.metaDataSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**

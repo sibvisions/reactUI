@@ -5,13 +5,12 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useDataProviders } from "../../zhooks"
+import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useMetaData } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
 import { getEditorCompId, 
-         getMetaData, 
          getDecimalLength, 
          getGrouping,
          getPrimePrefix, 
@@ -88,15 +87,13 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The metaData of the dataRow */
-    const metaData = getMetaData(compId, props.dataRow, context.contentStore)
+    const metaData = useMetaData(compId, props.dataRow)
 
     /** The cell-editor metadata for the NumberCellEditor */
-    const cellEditorMetaData:NumericColumnDescription = getColMetaData(props.columnName, metaData) as NumericColumnDescription;
+    const cellEditorMetaData:NumericColumnDescription = useMemo(() => getColMetaData(props.columnName, metaData) as NumericColumnDescription, [metaData]);
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
-
-    useDataProviders(compId);
 
     useFetchMissingData(compId, props.dataRow);
 
