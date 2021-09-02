@@ -65,24 +65,10 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
     return undefined;
 }
 
-function isPanel (className: string | undefined) {
-    if (className !== undefined) {
-        if (className === "Panel"
-            || className === "SplitPanel"
-            || className === "ScrollPanel"
-            || className === "GroupPanel"
-            || className === "TabsetPanel") {
-            return true;
-        }
-    }
-    return false;
-}
-
-
 export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
     if (componentSizes.has(component.id)) {
-        if (component.minimumSize || isPanel(component.className)) {
+        if (component.minimumSize) {
             minimumSize = componentSizes.get(component.id)!.minimumSize;
         }
         else if (component.className === "Table"
