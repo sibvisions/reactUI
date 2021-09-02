@@ -493,6 +493,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 const minSize = getMinimumSize(minimumWidth, minimumHeight);
 
+                console.log()
+
                 if(calcSize.width < minSize.width)
                     calcSize.width = minSize.width;
                 if(calcSize.height < minSize.height)
@@ -515,7 +517,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             lba.position = 0;
                             rba.position = minLayoutSize.width;
                         }
-                        else if(maxLayoutSize.width < preferredWidth) {
+                        else if(maxLayoutSize.width < calcSize.width) {
                             switch (horizontalAlignment) {
                                 case HORIZONTAL_ALIGNMENT.LEFT:
                                     lba.position = 0;

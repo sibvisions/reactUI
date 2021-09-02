@@ -64,7 +64,10 @@
 .p-button.p-button-icon-only {
     width: unset;
     //height: inherit;
-    padding: 0px 0.5rem;
+    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+        padding: 0px 0.5rem;
+    }
+    padding: var(--btnPadding, 0.5rem 1rem);
     .rc-button-icon {
         align-self: center;
     }
