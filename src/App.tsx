@@ -138,7 +138,7 @@ const App: FC<ICustomContent> = (props) => {
      * Sets Appname for header, and sends StartupRequest.
      */
     useEffect(() => {
-        const queryParams: queryType = queryString.parse(window.location.search);
+        const queryParams: queryType = queryString.parse(window.location.search.includes("?") ? window.location.search.split("?")[1] : window.location.search);
         const authKey = localStorage.getItem("authKey");
 
         if (props.onStartup) {
@@ -158,11 +158,15 @@ const App: FC<ICustomContent> = (props) => {
         }
 
         const startUpByURL = (startupReq:StartupRequest) => {
-            if(queryParams.appName && queryParams.baseUrl){
+            if(queryParams.appName && queryParams.baseUrl) {
                 startupReq.applicationName = queryParams.appName;
                 context.server.APP_NAME = queryParams.appName;
-                context.server.BASE_URL = queryParams.baseUrl;
-                context.server.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
+                let baseUrl = queryParams.baseUrl;
+                if (queryParams.baseUrl.charAt(queryParams.baseUrl.length - 1) === "/") {
+                    baseUrl = queryParams.baseUrl.substring(0, queryParams.baseUrl.length - 1);
+                }
+                context.server.BASE_URL = baseUrl;
+                context.server.RESOURCE_URL = baseUrl + "/resource/" + queryParams.appName
             }
             if(queryParams.userName && queryParams.password){
                 startupReq.password = queryParams.password;
