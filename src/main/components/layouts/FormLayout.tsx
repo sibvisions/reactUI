@@ -8,6 +8,7 @@ import { Anchor, Constraints, Gaps, Margins, HORIZONTAL_ALIGNMENT, VERTICAL_ALIG
 import { ComponentSizes } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import { Dimension, parseMinSize } from "../util";
+import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -292,32 +293,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 let topHeight = 0;
                 let bottomHeight = 0;
 
-                const isPanel = (className: string | undefined) => {
-                    if (className !== undefined) {
-                        if (className === "Panel"
-                            || className === "SplitPanel"
-                            || className === "ScrollPanel"
-                            || className === "GroupPanel"
-                            || className === "TabsetPanel") {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-
                 /** Calculate preferredSize */
                 children.forEach(component => {
                     if(component.visible !== false){
                         const constraint = componentConstraints.get(component.id);
 
-                        const preferredComponentSize = compSizes.get(component.id)?.preferredSize;
-                        const minimumComponentSize = component.minimumSize && parseMinSize(component.minimumSize) || (isPanel(component.className) ? 
-                                                     compSizes.get(component.id)?.minimumSize
-                                                     :
-                                                     compSizes.get(component.id)?.preferredSize)
-                                                     || { width: 0, height: 0 };
+                        const preferredComponentSize = getPreferredSize(component, compSizes);
+                        const minimumComponentSize = getMinimumSize(component, compSizes);
 
-                        if(constraint && preferredComponentSize && minimumComponentSize){
+                        if(constraint && preferredComponentSize && minimumComponentSize) {
                             if(constraint.rightAnchor.getBorderAnchor().name === "l"){
                                 let w = constraint.rightAnchor.getAbsolutePosition();
                                 if(w > leftWidth){
