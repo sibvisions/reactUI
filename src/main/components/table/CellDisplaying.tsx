@@ -105,12 +105,17 @@ export function cellRenderer(
                         minimumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).minScale,
                         maximumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).maxScale
                     }).format(cellData);
-            } else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
+            } 
+            else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
                 return <span onClick={stateFunc ? () => stateFunc() : undefined}>
                     <Checkbox checked={getBooleanValue(cellData)} />
                 </span>
                 
-            } else {
+            }
+            else if (typeof cellData === "string" && cellData.includes("<html>")) {
+                return <span dangerouslySetInnerHTML={{ __html: cellData as string }}/>
+            }
+            else {
                 return cellData;
             }       
         }

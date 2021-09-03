@@ -215,7 +215,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
     let cellStyle:any = { };
-    const cellClassNames:string[] = ['cell-data'];
+    const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
     let cellIcon: IconProps | null = null;
 
     if (props.cellFormatting) {

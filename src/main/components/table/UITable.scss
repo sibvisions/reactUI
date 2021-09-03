@@ -115,17 +115,20 @@ tr.p-highlight{
                         padding: 0;
                     }
                 }
-                &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor)>.cell-data {
-                    display: flex;
-                    align-items: center;
-                    .cell-data-content {
-                        padding: 6.5px 8.688px;                    
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    &.cancel-padding {
-                        padding: calc(0.2rem + 6.5px) calc(0.4rem + 8.688px);
+                &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
+                    &>.cell-data {
+                        display: flex;
+                        align-items: center;
+                        .cell-data-content {
+                            padding: 6.5px 8.688px;
+                        }
+                        &:not(.html-cell) .cell-data-content {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        &.cancel-padding {
+                            padding: calc(0.2rem + 6.5px) calc(0.4rem + 8.688px);
+                        }
                     }
                 }
                 &.p-highlight {

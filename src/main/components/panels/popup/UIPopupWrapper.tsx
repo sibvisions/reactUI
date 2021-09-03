@@ -8,6 +8,8 @@ import { Dialog } from 'primereact/dialog';
 import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
 import { useScreen } from "../../zhooks";
+import { createCloseScreenRequest } from "../../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS } from "../../../request";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -21,10 +23,18 @@ export interface IPopup extends IPanel {
 const UIPopupWrapper: FC<IPopup> = (baseProps) => {
     /** access to api functions */
     const screen = useScreen(baseProps.name)
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
 
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
-        screen.sendCloseScreenRequest()
+        const csRequest = createCloseScreenRequest();
+        csRequest.componentId = baseProps.name;
+        context.server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).then(res => {
+            if (res[0] === undefined || res[0].name !== "message.error") {
+                context.contentStore.closeScreen(baseProps.name);
+            }
+        });
     }
 
     return (
