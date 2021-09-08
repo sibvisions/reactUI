@@ -12,15 +12,14 @@ import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
-import { ProfileMenu } from "./menu";
-import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
-import { ApplicationSettingsResponse, BaseMenuButton } from "../../main/response";
+import { IMenu, ProfileMenu } from "./menu";
+import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 
 
 
-const CorporateMenu:FC = () => {
+const CorporateMenu:FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -29,9 +28,6 @@ const CorporateMenu:FC = () => {
 
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
-
-    /** State of menu-visibility */
-    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** get menu items */
     const menuItems = useMenuItems();
@@ -63,22 +59,10 @@ const CorporateMenu:FC = () => {
      */
     useEffect(() => {
         context.subscriptions.subscribeToScreenName('c-menu', (appName: string) => setScreenTitle(appName));
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setMenuVisibility({
-                menuBar: appSettings.menuBar,
-                toolBar: appSettings.toolBar
-            })
-        });
         context.subscriptions.subscribeToToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('c-menu');
-            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setMenuVisibility({
-                    menuBar: appSettings.menuBar,
-                    toolBar: appSettings.toolBar
-                })
-            });
             context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
         }
     }, [context.subscriptions]);
@@ -95,12 +79,12 @@ const CorporateMenu:FC = () => {
                     </div>
                     <span className="menu-screen-title">{screenTitle}</span>
                     <div className="c-menu-profile">
-                        <ProfileMenu showButtons />
+                        <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
                     </div>
                 </div>
-                {menuVisibility.menuBar &&
+                {props.menuVisibility.menuBar &&
                     <div className="c-menu-menubar">
-                        {menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
+                        {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
                             <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                 <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
                                 <SpeedDial model={toolbarItems} direction="down" />

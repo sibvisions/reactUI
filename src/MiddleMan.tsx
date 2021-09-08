@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 
 /** scss */
 import './index.scss';
@@ -18,6 +18,8 @@ export interface ICustomContent {
     onMenu?: Function
     onOpenScreen?: Function
     onLogin?: Function
+    style?: CSSProperties
+    embedded?: boolean
 }
 
 /**

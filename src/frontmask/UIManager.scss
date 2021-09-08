@@ -7,7 +7,7 @@
 }
 
 .reactUI{
-  height: 100vh;
+  height: var(--mainHeight);
   display: flex;
   &.corporation {
     flex-direction: column;
@@ -25,7 +25,7 @@
   overflow: hidden;
 
   &--with-s-menu {
-    &:not(.desktop-panel-enabled) {
+    &:not(.desktop-panel-enabled):not(.menu-not-visible) {
       margin-top: calc(var(--menuHeight) + 10px);
       margin-left: calc(var(--menuWidth) + 10px);
       margin-bottom: 10px;
@@ -34,7 +34,7 @@
         margin-left: calc(var(--menuCollapsedWidth) + 10px);
       }
     }
-    &.desktop-panel-enabled {
+    &.desktop-panel-enabled:not(.menu-not-visible) {
       margin-top: var(--menuHeight);
       &:not(.screen-expanded) {
         margin-left: var(--menuWidth);
@@ -45,6 +45,10 @@
     }
     &.screen-expanded {
       @extend %screen-transition;
+    }
+
+    &.menu-not-visible:not(.desktop-panel-enabled) {
+      margin: 10px;
     }
   }
 

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { Children, createContext, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Children, createContext, CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import * as _ from 'underscore'
@@ -17,13 +17,12 @@ import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
 import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
 import CorporateMenu from "./menu/corporateMenu";
-import { MenuVisibility } from "../main/AppSettings";
+import { MenuVisibility, VisibleButtons } from "../main/AppSettings";
 import { ApplicationSettingsResponse } from "../main/response";
-import useResizeHandler from "../main/components/zhooks/useResizeHandler";
 import { useParams } from "react-router";
 
 export interface IUIManagerProps {
-    customAppWrapper?: React.ComponentType
+    customAppWrapper?: React.ComponentType,
 }
 
 export interface IResizeContext {
@@ -40,9 +39,6 @@ export const ResizeContext = createContext<IResizeContext>({});
  * @param props - the children components
  */
 const UIManager: FC<IUIManagerProps> = (props) => {
-    /** Reference for the screen-container */
-    const sizeRef = useRef<any>(null);
-
     /** Reference for the menu component */
     const menuRef = useRef<any>(null);
 
@@ -54,6 +50,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
+
+    /** State of button-visibility */
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     const menuMini = false;
 
@@ -82,19 +81,33 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth')) : 0), menuCollapsed);
 
-    const componentSize = useResizeHandler(sizeRef, props.children, menuSize, menuRef)
-
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) =>
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
             setMenuVisibility({
                 menuBar: appSettings.menuBar,
                 toolBar: appSettings.toolBar
-            }));
+            });
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => setMenuVisibility({
-            menuBar: appSettings.menuBar,
-            toolBar: appSettings.toolBar
-        }));
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+        });
+
+
+        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setMenuVisibility({
+                menuBar: appSettings.menuBar,
+                toolBar: appSettings.toolBar
+            });
+
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+        });
     }, [context.subscriptions])
 
     /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
@@ -119,31 +132,38 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 )}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
                 <CustomWrapper>
-                    <LayoutContext.Provider value={componentSize}>
                         <div id="reactUI-main" className="main">
-                            <ScreenManager />
+                            <ResizeContext.Provider value={{login: false, menuRef: menuRef, menuSize: menuSize}}>
+                                <ScreenManager />
+                            </ResizeContext.Provider> 
                         </div>
-                    </LayoutContext.Provider>
                 </CustomWrapper>
             </div>
             : <div className={concatClassnames("reactUI", appLayout === "corporation" ? "corporation" : "")}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-                {appLayout === "corporation" ? <CorporateMenu /> : <Menu forwardedRef={menuRef} showMenuMini={menuMini} />}
-                {/* <LayoutContext.Provider value={componentSize}> */}
+                {appLayout === "corporation" ? 
+                    <CorporateMenu 
+                        menuVisibility={menuVisibility} 
+                        visibleButtons={visibleButtons} /> 
+                        : 
+                    <Menu 
+                        forwardedRef={menuRef} 
+                        showMenuMini={menuMini} 
+                        menuVisibility={menuVisibility} 
+                        visibleButtons={visibleButtons} />}
                     <div id="reactUI-main" className={concatClassnames(
                         "main",
                         appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
                         ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
                         menuMini ? "" : "screen-no-mini",
                         menuVisibility.toolBar ? "toolbar-visible" : "",
+                        !menuVisibility.menuBar ? "menu-not-visible" : "",
                         !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
                     )}>
                         <ResizeContext.Provider value={{login: false, menuRef: menuRef, menuSize: menuSize}}>
                             <ScreenManager />
-                        </ResizeContext.Provider>
-                        
+                        </ResizeContext.Provider> 
                     </div>
-                {/* </LayoutContext.Provider> */}
             </div>
     )
 }

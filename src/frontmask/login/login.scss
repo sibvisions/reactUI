@@ -1,5 +1,5 @@
 .login-container{
-  height: 100vh;
+  height: var(--mainHeight);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,7 +83,7 @@
 }
 
 .login-container-with-desktop {
-  height: 100vh;
+  height: var(--mainHeight);
 }
 
 .login-form-position-wrapper {

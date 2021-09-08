@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 /** 3rd Party imports */
 import { Dialog } from 'primereact/dialog';
@@ -85,6 +85,12 @@ const App: FC<ICustomContent> = (props) => {
             context.subscriptions.unsubscribeFromSessionExpired();
         }
     },[context.subscriptions]);
+
+    useLayoutEffect(() => {
+        if (props.style && props.style.height) {
+            document.documentElement.style.setProperty("--mainHeight", props.style.height as string)
+        }
+    },[])
 
     /** Only necessary for testing purposes. It either sets a new CustomScreen or replaces screens/components */
     // useEffect(() => {
@@ -286,6 +292,35 @@ const App: FC<ICustomContent> = (props) => {
     useEventHandler(document.body, "keydown", (event) => (event as any).key === "Control" ? context.ctrlPressed = true : undefined);
 
     useEventHandler(document.body, "keyup", (event) => (event as any).key === "Control" ? context.ctrlPressed = false : undefined);
+
+    const AppContent = () => {
+        const inner =
+            <Switch>
+                <Route exact path={"/login"} render={() => <Login />} />
+                <Route exact path={"/home/:componentId"} render={() => <Home mainStyle={props.style} customAppWrapper={props.customAppWrapper} />} />
+                {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
+                <Route path={"/home"} render={() => <Home mainStyle={props.style} customAppWrapper={props.customAppWrapper} />} />
+            </Switch>
+        return (
+            <>
+                {
+                    props.embedded ?
+                        <>
+                            <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
+                                ReactUI Embedded WorkScreen
+                            </span>
+                            <div style={{ border: "12px solid #2196F3", borderRadius: "5%" }}>
+                                {inner}
+                            </div>
+                        </>
+                        :
+                        <>
+                            {inner}
+                        </>
+                }
+            </>
+        )
+    }
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (
@@ -298,17 +333,15 @@ const App: FC<ICustomContent> = (props) => {
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
             <TopBar>
-            {appReady && startupDone
-                ? <Switch>
-                    <Route exact path={"/login"} render={() => <Login />} />
-                    <Route exact path={"/home/:componentId"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />
-                    {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
-                    <Route path={"/home"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />
-                </Switch>
-                : <LoadingScreen />
-            }
+                {appReady && startupDone ?
+                    <>
+                        {AppContent()}
+                    </>
+                    :
+                    <LoadingScreen />
+                }
             </TopBar>
         </>
-  );
+    );
 }
 export default App;

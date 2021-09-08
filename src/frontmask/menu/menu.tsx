@@ -20,7 +20,6 @@ import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, c
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
-import { ApplicationSettingsResponse } from "../../main/response";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -29,11 +28,13 @@ export interface MenuItemCustom extends MenuItem {
     screenClassName:string
 }
 
-interface IMenu extends IForwardRef {
-    showMenuMini:boolean
+export interface IMenu extends IForwardRef {
+    showMenuMini?:boolean,
+    menuVisibility:MenuVisibility,
+    visibleButtons:VisibleButtons
 }
 
-export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
+export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     // const { 
     //     contentStore: { 
@@ -58,31 +59,6 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
 
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
-
-    /** State of button-visibility */
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
-
-    const deviceStatus = useDeviceStatus();
-
-    useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
-            })
-        });
-
-        return () => {
-            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
-                })
-            });
-        }
-    }, [context.subscriptions])
     
     return (
         <>
@@ -123,25 +99,25 @@ export const ProfileMenu:FC<{showButtons?:boolean}> = (props) => {
                 tooltip="Home"
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
             }
-            {props.showButtons && visibleButtons.save && <Button
+            {props.showButtons && props.visibleButtons.save && <Button
                 icon="fa fa-save"
                 className="menu-upper-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
-            {((visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
+            {((props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
                 <Button
-                    icon={visibleButtons.reload && !visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                    icon={props.visibleButtons.reload && !props.visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
                     className="menu-upper-buttons"
                     onClick={() => {
-                        if (visibleButtons.reload && !visibleButtons.rollback) {
+                        if (props.visibleButtons.reload && !props.visibleButtons.rollback) {
                             showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
                         }
                         else {
                             showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
                         }
                     }}
-                    tooltip={translations.get(visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltip={translations.get(props.visibleButtons.reload && !props.visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} /> }
             <div className="profile-menu">
                 <Menubar
@@ -187,9 +163,6 @@ const Menu: FC<IMenu> = (props) => {
     /** A flag which changes when the active item changes */
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
-    /** State of menu-visibility */
-    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
-
     /** get menu items */
     const menuItems = useMenuItems()
 
@@ -214,22 +187,10 @@ const Menu: FC<IMenu> = (props) => {
             setScreenTitle(appName)
         });
         context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setMenuVisibility({
-                menuBar: appSettings.menuBar,
-                toolBar: appSettings.toolBar
-            })
-        });
 
         return () => {
             context.subscriptions.unsubscribeFromScreenName('s-menu');
             context.subscriptions.unsubscribeFromSelectedMenuItem();
-            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setMenuVisibility({
-                    menuBar: appSettings.menuBar,
-                    toolBar: appSettings.toolBar
-                })
-            });
         }
     }, [context.subscriptions]);
 
@@ -345,40 +306,44 @@ const Menu: FC<IMenu> = (props) => {
         context.subscriptions.emitMenuCollapse(2);
     }
 
-    return(
-        <div className={concatClassnames(
-            "menu",
-            menuCollapsed ? " menu-collapsed" : "",
-            props.showMenuMini ? "" : "no-mini"
-        )}>
-            <div className={"menu-topbar"}>
-                <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                    <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
-                </div>
-                <div className="menu-upper">
-                    <div className="menu-upper-left">
-                        <Button
-                            icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
-                            className="menu-upper-buttons menu-toggler"
-                            onClick={() => handleToggleClick()}
-                            style={{ marginRight: "4px", marginLeft: "10px" }} />
-                        <span className="menu-screen-title">{screenTitle}</span>
+    return (
+        <>
+            {props.menuVisibility.menuBar &&
+                <div className={concatClassnames(
+                    "menu",
+                    menuCollapsed ? " menu-collapsed" : "",
+                    props.showMenuMini ? "" : "no-mini"
+                )}>
+                    <div className={"menu-topbar"}>
+                        <div className="menu-logo-wrapper" ref={menuLogoRef}>
+                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                        </div>
+                        <div className="menu-upper">
+                            <div className="menu-upper-left">
+                                <Button
+                                    icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
+                                    className="menu-upper-buttons menu-toggler"
+                                    onClick={() => handleToggleClick()}
+                                    style={{ marginRight: "4px", marginLeft: "10px" }} />
+                                <span className="menu-screen-title">{screenTitle}</span>
+                            </div>
+                            <div className="menu-upper-right">
+                                <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
+                            </div>
+                        </div>
                     </div>
-                    <div className="menu-upper-right">
-                        <ProfileMenu showButtons />
-                    </div>
-                </div>
-            </div>
-            {menuVisibility.menuBar &&
-                <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
-                    <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
-                        <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
-                    </div>
-                    <PanelMenu model={menuItems} ref={panelMenu} />
-                    {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
+                    {props.menuVisibility.menuBar &&
+                        <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
+                            <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
+                                <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                            </div>
+                            <PanelMenu model={menuItems} ref={panelMenu} />
+                            {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
+                        </div>
+                    }
                 </div>
             }
-        </div>
+        </>
     )
 }
 export default Menu;

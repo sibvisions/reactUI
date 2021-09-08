@@ -1,6 +1,5 @@
 .loading-screen {
-    height: 100vh;
-    width: 100vw;
+    height: var(--mainHeight);
     background: -webkit-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
     background: -o-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
     background: -moz-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
