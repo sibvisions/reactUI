@@ -27,21 +27,26 @@ const ResizeHandler:FC = (props) => {
      * setting this size will recalculate the layouts
      */
      const doResize = useCallback(() => {
-        if (sizeRef.current || document.querySelector('#workscreen')) {
-            const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
-            const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
-            const sizeMap = new Map<string, CSSProperties>();
-            Children.forEach(props.children,child => {
-                const childWithProps = (child as ChildWithProps);
-                sizeMap.set(childWithProps.props.id, {width: width, height: height});
-            });
-            if (context.appSettings.desktopPanel) {
-                sizeMap.set(context.appSettings.desktopPanel.id, {width: width, height: height})
+         //Timeout 0 because desktoppanel changes from margin 0 to 10px and when doResize is called when opening a screen from desktoppanel,
+         //the margin is not taken into account without the timeout.
+         setTimeout(() => {
+            if (sizeRef.current || document.querySelector('#workscreen')) {
+                const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
+                const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
+                console.log(width, height)
+                const sizeMap = new Map<string, CSSProperties>();
+                Children.forEach(props.children,child => {
+                    const childWithProps = (child as ChildWithProps);
+                    sizeMap.set(childWithProps.props.id, {width: width, height: height});
+                });
+                if (context.appSettings.desktopPanel) {
+                    sizeMap.set(context.appSettings.desktopPanel.id, {width: width, height: height})
+                }
+    
+                //TODO: maybe fetch ids via screenId instead of relying on the children 
+                setComponentSize(sizeMap);
             }
-
-            //TODO: maybe fetch ids via screenId instead of relying on the children 
-            setComponentSize(sizeMap);
-        }
+         }, 0)
     },[props.children]);
 
     /** Using underscore throttle for throttling resize event */
@@ -105,11 +110,11 @@ const ResizeHandler:FC = (props) => {
         }
     });
 
-    useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
-        if (event.propertyName === "margin-left") {
-            handleResize()
-        }
-    });
+    // useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
+    //     if (event.propertyName === "margin-left") {
+    //         handleResize()
+    //     }
+    // });
 
     return (
         <LayoutContext.Provider value={componentSize}>
