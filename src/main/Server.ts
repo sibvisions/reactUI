@@ -112,10 +112,6 @@ class Server {
     }
 
     /** ----------APP-FUNCTIONS---------- */
-    /**
-     * Function to show te timeout dialog
-     */
-    showDialog = (head:string, body:string) => {};
 
     /**
      * Builds a request to send to the server
@@ -186,7 +182,7 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.showDialog("Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                this.subManager.emitShowDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
                 reject(new Error("timeOut"))
             }, ms);
             promise
@@ -195,7 +191,7 @@ class Server {
                     resolve(res);
                 },
                 err => {
-                    this.showDialog("Server Error!", err);
+                    this.subManager.emitShowDialog("server", "Server Error!", err);
                     clearTimeout(timeoutId);
                     reject(err);
                 });

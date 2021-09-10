@@ -20,6 +20,7 @@ import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, c
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
+import { EmbeddedContext } from "../../MiddleMan";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -135,6 +136,8 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons
 const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    const embeddedContext = useContext(EmbeddedContext);
 
     /** Flag if the manu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
@@ -308,7 +311,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {props.menuVisibility.menuBar &&
+            {(props.menuVisibility.menuBar || !embeddedContext) &&
                 <div className={concatClassnames(
                     "menu",
                     menuCollapsed ? " menu-collapsed" : "",

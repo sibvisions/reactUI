@@ -493,8 +493,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 const minSize = getMinimumSize(minimumWidth, minimumHeight);
 
-                console.log()
-
                 if(calcSize.width < minSize.width)
                     calcSize.width = minSize.width;
                 if(calcSize.height < minSize.height)

@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useEventHandler, useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
+import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";

@@ -133,21 +133,24 @@ function someNaN(values:any[]) {
  * @returns A list of axis labels for a chart
  */
 function getLabels(values:any[], translation?: Map<string,string>) {
-    if(someNaN(values)) {
-        //if one of the labels is not a number return a list of the unique label values
-        const labels = [...(new Set(values))];
-        if(translation) {
-            return labels.map(l => translation.get(l) || l)
+    if (values.length) {
+        if(someNaN(values)) {
+            //if one of the labels is not a number return a list of the unique label values
+            const labels = [...(new Set(values))];
+            if(translation) {
+                return labels.map(l => translation.get(l) || l)
+            } else {
+                return labels;
+            }
         } else {
-            return labels;
+            //if all labels are numbers generate list from min to max
+            const from = Math.min(...values) - 1;
+            const to = Math.max(...values) + 1;
+            const diff = to - from + 1;
+            return [...Array(diff).keys()].map(k => from + k)
         }
-    } else {
-        //if all labels are numbers generate list from min to max
-        const from = Math.min(...values) - 1;
-        const to = Math.max(...values) + 1;
-        const diff = to - from + 1;
-        return [...Array(diff).keys()].map(k => from + k)
     }
+    return [];
 }
 
 /**

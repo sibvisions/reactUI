@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC } from 'react';
+import React, { createContext, CSSProperties, FC } from 'react';
 
 /** scss */
 import './index.scss';
@@ -8,9 +8,10 @@ import './index.scss';
 import { HashRouter } from 'react-router-dom';
 
 /** Other imports */
-import App from './App';
+import ReactUI from './ReactUI';
 import AppProvider from "./main/AppProvider";
 import { IUIManagerProps } from './frontmask/UIManager';
+import ReactUIEmbedded from './ReactUIEmbedded';
 
 export interface ICustomContent {
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
@@ -20,7 +21,10 @@ export interface ICustomContent {
     onLogin?: Function
     style?: CSSProperties
     embedded?: boolean
+    embeddedOptions?:{ [key:string]:any }
 }
+
+export const EmbeddedContext = createContext<boolean>(false)
 
 /**
  * This component is used as a middleman between index.tsx and App.tsx before index.tsx looked like this, but because this needed to
@@ -33,7 +37,9 @@ const MiddleMan: FC<ICustomContent> = (props) => {
     return (
         <HashRouter>
             <AppProvider>
-                <App {...props}/>
+                <EmbeddedContext.Provider value={props.embedded ? true : false}>
+                    {props.embedded ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
+                </EmbeddedContext.Provider>
             </AppProvider>
         </HashRouter>
     )

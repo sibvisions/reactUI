@@ -26,3 +26,4 @@ export { default as useAPI } from './useAPI';
 export { default as useDeviceStatus } from './useDeviceStatus';
 export { default as useScreen } from './useScreen';
 export { default as useMetaData } from './useMetaData';
+export { default as useStartup } from './useStartup';

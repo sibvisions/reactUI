@@ -47,14 +47,10 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
     useEffect(() => {
-        context.subscriptions.subscribeToChangeDialog(() => setDialogVisible(true))
+        context.subscriptions.subscribeToChangeDialog("change-password", () => setDialogVisible(true))
     
-        return () => context.subscriptions.unsubscribeFromChangeDialog();
-    }, [context.subscriptions])
-
-    const onDialogHide = () => {
-        setDialogVisible(false)
-    };
+        return () => context.subscriptions.unsubscribeFromChangeDialog("change-password");
+    }, [context.subscriptions]);
 
     const isReset = context.appSettings.loginMode === "changeOneTimePassword";
 
@@ -96,7 +92,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         <Dialog
             className="rc-popup change-dialog"
             header={isReset ? translations.get("Reset password") : translations.get("Change password")}
-            visible={dialogVisible} onHide={onDialogHide}
+            visible={dialogVisible} onHide={() => setDialogVisible(false)}
             draggable={false} >
             <div className="change-dialog-container">
                 <form onSubmit={sendChangedPassword} className="change-password-form">
@@ -148,7 +144,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                         <label className="change-password-label" htmlFor="change-password-confirm">{translations.get("Confirm Password")} </label>
                     </div>
                     <div className="change-password-button-wrapper">
-                        <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={onDialogHide} />
+                        <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setDialogVisible(false)} />
                         <Button type="submit" label={translations.get("Login")} icon="pi pi-lock-open" />
                     </div>
                 </form>

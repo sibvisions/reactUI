@@ -33,7 +33,6 @@ const ResizeHandler:FC = (props) => {
             if (sizeRef.current || document.querySelector('#workscreen')) {
                 const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
                 const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
-                console.log(width, height)
                 const sizeMap = new Map<string, CSSProperties>();
                 Children.forEach(props.children,child => {
                     const childWithProps = (child as ChildWithProps);

@@ -16,12 +16,15 @@ import { IMenu, ProfileMenu } from "./menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { EmbeddedContext } from "../../MiddleMan";
 
 
 
 const CorporateMenu:FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    const embeddedContext = useContext(EmbeddedContext);
 
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
@@ -68,33 +71,37 @@ const CorporateMenu:FC<IMenu> = (props) => {
     }, [context.subscriptions]);
 
     return (
-        <div className="c-menu">
-            <div className="c-menu-topbar">
-                <div className="c-menu-header">
-                    <div className="c-menu-logo-wrapper">
-                        <img
-                            className="menu-logo"
-                            draggable="false"
-                            src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
-                    </div>
-                    <span className="menu-screen-title">{screenTitle}</span>
-                    <div className="c-menu-profile">
-                        <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
-                    </div>
-                </div>
-                {props.menuVisibility.menuBar &&
-                    <div className="c-menu-menubar">
-                        {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
-                            <div style={{ maxHeight: "32px", minWidth: "32px" }}>
-                                <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right"/>
-                                <SpeedDial model={toolbarItems} direction="down" />
+        <>
+            {(!embeddedContext) &&
+                <div className="c-menu">
+                    <div className="c-menu-topbar">
+                        <div className="c-menu-header">
+                            <div className="c-menu-logo-wrapper">
+                                <img
+                                    className="menu-logo"
+                                    draggable="false"
+                                    src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
+                            </div>
+                            <span className="menu-screen-title">{screenTitle}</span>
+                            <div className="c-menu-profile">
+                                <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
+                            </div>
+                        </div>
+                        {props.menuVisibility.menuBar &&
+                            <div className="c-menu-menubar">
+                                {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
+                                    <div style={{ maxHeight: "32px", minWidth: "32px" }}>
+                                        <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right" />
+                                        <SpeedDial model={toolbarItems} direction="down" />
+                                    </div>
+                                }
+                                <Menubar model={menuItems} />
                             </div>
                         }
-                        <Menubar model={menuItems} />
                     </div>
-                }
-            </div>
-        </div>
+                </div>
+            }
+        </>
     )
 }
 export default CorporateMenu

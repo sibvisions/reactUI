@@ -95,8 +95,8 @@ export class SubscriptionManager {
     /** A function to change the appReady state to true */
     appReadySubscriber:Function = () => {};
 
-    /** A function to set the changeDialog flag of login */
-    changeDialogSubscriber:Function = () => {};
+    /** A Map which stores functions to set the dialog-visibility of certain dialogs */
+    changeDialogSubscriber = new Map<string, Function>();
 
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
@@ -324,8 +324,8 @@ export class SubscriptionManager {
      * change-password-dialog
      * @param fn - the function to change the change-dialog state
      */
-    subscribeToChangeDialog(fn:Function) {
-        this.changeDialogSubscriber = fn;
+    subscribeToChangeDialog(id:string, fn:Function) {
+        this.changeDialogSubscriber.set(id, fn);
     }
 
     /**
@@ -519,8 +519,8 @@ export class SubscriptionManager {
     /**
      * Unsubscribes login from change-dialog
      */
-    unsubscribeFromChangeDialog() {
-        this.changeDialogSubscriber = () => {}
+    unsubscribeFromChangeDialog(id:string) {
+        this.changeDialogSubscriber.delete(id);
     }
 
     /**
@@ -691,8 +691,11 @@ export class SubscriptionManager {
     }
 
     /** Tell the subscribers to show the change-password-dialog */
-    emitShowDialog() {
-        this.changeDialogSubscriber.apply(undefined, [])
+    emitShowDialog(id:string, header?:string, body?:string) {
+        const func = this.changeDialogSubscriber.get(id);
+        if (func) {
+            func.apply(undefined, [header, body]);
+        }
     }
 
     /** Tell the subscribers to change their selectedmenuitem */
