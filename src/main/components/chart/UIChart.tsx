@@ -288,7 +288,6 @@ const UIChart: FC<IChart> = (baseProps) => {
             //if the chart is horizontal and has no string labels reverese the order
             data.forEach(d => {
                 d.reverse();
-                d.unshift(0);
             });
         }
 
@@ -383,13 +382,14 @@ const UIChart: FC<IChart> = (baseProps) => {
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx, opacity, colors);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
+
                 return {
                     ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
                     label: yColumnLabels[idx],
                     data: data[idx],
-                    ...(pie ? {parsing: {
-                        xAxisKey: 'x',
-                        yAxisKey: 'y'
+                    ...(!pie ? {parsing: {
+                        xAxisKey: horizontal ? 'y' : 'x',
+                        yAxisKey: horizontal ? 'x' : 'y'
                     }} : {}),
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
                         [...Array(providerData.length).keys()].map((k, idx) => getColor(idx, opacity, colors)) : singleColor,
@@ -491,7 +491,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 id: `axis-${idx}`,
                 axis: horizontal ? 'y' : 'x',
                 display: !idx,
-                type: "linear",
+                type: hasStringLabels ? "category" : "linear",
                 title: {
                     display: true,
                     text: xAxisTitle,
@@ -508,15 +508,9 @@ const UIChart: FC<IChart> = (baseProps) => {
                 grid: {
                     offset: hasStringLabels
                 },
-                ...(hasStringLabels ? {} : {
-                    min: (() => {
-                        const m = Math.pow(10, Math.floor(Math.log10(xmin)));
-                        return m === 1 ? 0 : m * Math.floor(xmin / m);
-                    })(),
-                    max: (() => {
-                        const m = Math.pow(10, Math.floor(Math.log10(xmax)));
-                        return m * Math.ceil(xmax / m);
-                    })(),
+                ...(hasStringLabels ? { labels } : {
+                    suggestedMin: xmin,
+                    suggestedMax: xmax,
                 }),
             }));
 
@@ -530,18 +524,10 @@ const UIChart: FC<IChart> = (baseProps) => {
                 },
                 stacked,
                 min,
-                max,
+                ...(percentage ? { max } : { suggestedMax: max }),
                 ticks: {
                     ...(percentage ? {callback: (value:any) => `${value}%`} : {})
                 }
-            })
-
-            axes.push({
-                id: 'x',
-                display: false,
-            },{
-                id: 'y',
-                display: false,
             })
 
             return {
