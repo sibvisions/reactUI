@@ -132,7 +132,7 @@ function someNaN(values:any[]) {
  * @param translation - A list of possible translations for non numeric values
  * @returns A list of axis labels for a chart
  */
-function getLabels(values:any[], translation?: Map<string,string>) {
+function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: boolean = false) {
     if (values.length) {
         if(someNaN(values)) {
             //if one of the labels is not a number return a list of the unique label values
@@ -143,6 +143,9 @@ function getLabels(values:any[], translation?: Map<string,string>) {
                 return labels;
             }
         } else {
+            if (onlyIfNaN) {
+                return null;
+            }
             //if all labels are numbers generate list from min to max
             const from = Math.min(...values) - 1;
             const to = Math.max(...values) + 1;
@@ -180,12 +183,12 @@ const UIChart: FC<IChart> = (baseProps) => {
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** process the providerData to geta usable data list as well as the min & max values */
-    const [data, min, max] = useMemo(() => {
+    const [data, min, max, xmin, xmax] = useMemo(() => {
         let { yColumnNames, xColumnName, chartStyle } = props;
         yColumnNames = yColumnNames || [];
         xColumnName = xColumnName || 'X';
         const row = providerData.map(dataRow => dataRow[xColumnName]);
-        const labels = getLabels(row);
+        const labels = getLabels(row, undefined, true);
         const hasStringLabels = someNaN(row);
 
         const percentage = [
@@ -215,6 +218,9 @@ const UIChart: FC<IChart> = (baseProps) => {
             CHART_STYLES.RING,
         ].includes(chartStyle);
 
+        let xmin = Number.MAX_SAFE_INTEGER;
+        let xmax = Number.MIN_SAFE_INTEGER;
+
         let data:number[][] = yColumnNames.map(name => {
             //if this is a pie chart and there are multiple y-values 
             //only use the selected row as data or the first one 
@@ -222,10 +228,12 @@ const UIChart: FC<IChart> = (baseProps) => {
             return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData)
             .reduce<number[]>((agg, dataRow) => {
                 //get the index of the x-value in the labels
-                const lidx = labels.indexOf(dataRow[xColumnName]);
+                const lidx = labels ? labels.indexOf(dataRow[xColumnName]) : dataRow[xColumnName];
                 //use that label index to assign the summed value over all rows at the correct index
                 //so that label & value match up in the rendered chart
-                agg[lidx] = (agg[lidx] || 0) + dataRow[name]; 
+                agg[lidx] = (agg[lidx] || 0) + dataRow[name];
+                xmin = Math.min(xmin, lidx); 
+                xmax = Math.max(xmax, lidx); 
                 return agg; 
             }, [])
         })
@@ -269,6 +277,13 @@ const UIChart: FC<IChart> = (baseProps) => {
             }, []).filter(Boolean)) + 1;    
         }
 
+        if (!pie) {
+            data = data.map(d => d.reduce<any[]>((agg, v, idx) => {
+                agg.push({ x: idx, y: v });
+                return agg;
+            }, []));
+        }
+
         if (horizontal && !hasStringLabels) {
             //if the chart is horizontal and has no string labels reverese the order
             data.forEach(d => {
@@ -277,7 +292,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             });
         }
 
-        return [data, min, max];
+        return [data, min, max, xmin, xmax];
     }, [providerData, props.yColumnNames, props.xColumnName, props.chartStyle])
 
     /**
@@ -364,7 +379,6 @@ const UIChart: FC<IChart> = (baseProps) => {
         ].includes(chartStyle) ? overlapOpacity : 1;
 
         const primeChart = {
-            labels,
             //a dataset per y-Axis unless for a pie chart where we only need a single data set
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx, opacity, colors);
@@ -373,6 +387,10 @@ const UIChart: FC<IChart> = (baseProps) => {
                     ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
                     label: yColumnLabels[idx],
                     data: data[idx],
+                    ...(pie ? {parsing: {
+                        xAxisKey: 'x',
+                        yAxisKey: 'y'
+                    }} : {}),
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
                         [...Array(providerData.length).keys()].map((k, idx) => getColor(idx, opacity, colors)) : singleColor,
                     borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
@@ -473,6 +491,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 id: `axis-${idx}`,
                 axis: horizontal ? 'y' : 'x',
                 display: !idx,
+                type: "linear",
                 title: {
                     display: true,
                     text: xAxisTitle,
@@ -481,7 +500,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 ticks: {
                     callback: (value:any) => {
                         //truncate
-                        value = hasStringLabels ? labels[value] : value.toString();
+                        value = (hasStringLabels ? labels![value] : value.toString()) || '';
                         return value.length > 12 ? `${value.substr(0, 10)}...` : value
                     } 
                 },
@@ -489,14 +508,21 @@ const UIChart: FC<IChart> = (baseProps) => {
                 grid: {
                     offset: hasStringLabels
                 },
-                //apparently bar chart defaults are only set correctly for the first axis
-                ...(idx ? {
-                    type: 'category',
-                } : {}),
+                ...(hasStringLabels ? {} : {
+                    min: (() => {
+                        const m = Math.pow(10, Math.floor(Math.log10(xmin)));
+                        return m === 1 ? 0 : m * Math.floor(xmin / m);
+                    })(),
+                    max: (() => {
+                        const m = Math.pow(10, Math.floor(Math.log10(xmax)));
+                        return m * Math.ceil(xmax / m);
+                    })(),
+                }),
             }));
 
             axes.push({
                 id: 'caxis-0',
+                type: 'linear',
                 axis: horizontal ? 'x' : 'y',
                 title: {
                     display: true,
