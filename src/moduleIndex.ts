@@ -16,3 +16,4 @@ export * from './main/factories/RequestFactory';
 export { default as ReactUI } from './MiddleMan';
 export { appContext } from './main/AppProvider';
 export { ProfileMenu } from './frontmask/menu/menu';
+export { default as REQUEST_ENDPOINTS } from './main/request/REQUEST_ENDPOINTS'

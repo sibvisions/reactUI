@@ -36,6 +36,10 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
+    sendRequest(req: any, endpoint: string) {
+        this.#server.sendRequest(req, endpoint);
+    }
+
     /**
      * Sends an open-screen-request to the server to open a workscreen
      * @param id - the id of the screen opened
