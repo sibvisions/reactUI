@@ -113,7 +113,6 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
             if (options) {
                 if (options instanceof URLSearchParams) {
-                    console.log(options.entries(), options.has("baseUrl"))
                     if (options.has("appName") && options.has("baseUrl")) {
                         startupReq.applicationName = options.get("appName") as string;
                         context.server.APP_NAME = options.get("appName") as string;
