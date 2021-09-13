@@ -174,9 +174,11 @@ const Menu: FC<IMenu> = (props) => {
      * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
      */
     const closeOpenedMenuPanel = useCallback(() => {
-        if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
-            props.forwardedRef.current.scrollTop = 0;
-            props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+        if (props.menuVisibility.menuBar) {
+            if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
+                props.forwardedRef.current.scrollTop = 0;
+                props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+            }
         }
     },[props.forwardedRef])
 
@@ -199,6 +201,7 @@ const Menu: FC<IMenu> = (props) => {
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
+        if (props.menuVisibility.menuBar) {
             if (!context.appSettings.menuModeAuto) {
                 context.appSettings.setMenuModeAuto(true)
             }
@@ -210,34 +213,41 @@ const Menu: FC<IMenu> = (props) => {
                 else
                     context.subscriptions.emitMenuCollapse(1);
             }
-    },[context.contentStore, context.subscriptions, deviceStatus])
+        }
+    }, [context.contentStore, context.subscriptions, deviceStatus])
 
     useEffect(() => {
-        if (menuItems) {
-            let foundMenuItem:MenuItem = {}
-            menuItems.forEach(m => {
-                if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
-                    foundMenuItem = m
+        if (props.menuVisibility.menuBar) {
+            if (menuItems) {
+                let foundMenuItem:MenuItem = {}
+                menuItems.forEach(m => {
+                    if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+                        foundMenuItem = m
+                    }
+                });
+    
+                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                    setActiveItemChanged(prev => !prev)
                 }
-            });
-
-            if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-                panelMenu.current?.setState({ activeItem: foundMenuItem });
-                setActiveItemChanged(prev => !prev)
-            }
-            else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem) {
-                panelMenu.current?.setState({ activeItem: foundMenuItem });
-                setActiveItemChanged(prev => !prev)
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                    setActiveItemChanged(prev => !prev)
+                }
             }
         }
+
     }, [selectedMenuItem, menuItems])
 
     useEffect(() => {
-        Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-        const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-        if (menuElem) {
-            menuElem.classList.add("p-menuitem--active");
-        } 
+        if (props.menuVisibility.menuBar) {
+            Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+            if (menuElem) {
+                menuElem.classList.add("p-menuitem--active");
+            } 
+        }
+
     },[activeItemChanged])
 
     /**
@@ -247,55 +257,60 @@ const Menu: FC<IMenu> = (props) => {
      * @returns removing eventlisteners on unmount
      */
     useEffect(() => {
-        const testRef = document.getElementsByClassName("menu")[0] as HTMLElement;
-        if (props.forwardedRef.current) {
-            const menuRef = props.forwardedRef.current;
-            const hoverExpand = () => {
-                if (testRef.classList.contains("menu-collapsed")) {
-                    testRef.classList.remove("menu-collapsed");
-                    if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
-                        fadeRef.current.style.setProperty('display', 'none');
+        if (props.menuVisibility.menuBar) {
+            const menuOuter = document.getElementsByClassName("menu")[0] as HTMLElement;
+            if (props.forwardedRef.current) {
+                const menuRef = props.forwardedRef.current;
+                const hoverExpand = () => {
+                    if (menuOuter.classList.contains("menu-collapsed")) {
+                        menuOuter.classList.remove("menu-collapsed");
+                        if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
+                            (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
+                            (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
+                            fadeRef.current.style.setProperty('display', 'none');
+                        }
                     }
                 }
-            }
-            const hoverCollapse = () => {
-                if (!testRef.classList.contains("menu-collapsed")) {
-                    testRef.classList.add("menu-collapsed");
-                    if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                        (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
-                        (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
-                        fadeRef.current.style.removeProperty('display');
+                const hoverCollapse = () => {
+                    if (!menuOuter.classList.contains("menu-collapsed")) {
+                        menuOuter.classList.add("menu-collapsed");
+                        if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
+                            (menuLogoRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
+                            (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
+                            fadeRef.current.style.removeProperty('display');
+                        }
+                        closeOpenedMenuPanel();
                     }
-                    closeOpenedMenuPanel();
                 }
-            }
-    
-            if (menuCollapsed) {
-                menuRef.addEventListener('mouseover', hoverExpand);
-                menuRef.addEventListener('mouseleave', hoverCollapse);
-            }
-            else {
-                menuRef.removeEventListener('mouseover', hoverExpand);
-                menuRef.removeEventListener('mouseleave', hoverCollapse);
-            }
-            return () => {
-                menuRef.removeEventListener('mouseover', hoverExpand);
-                menuRef.removeEventListener('mouseleave', hoverCollapse);
+        
+                if (menuCollapsed) {
+                    menuRef.addEventListener('mouseover', hoverExpand);
+                    menuRef.addEventListener('mouseleave', hoverCollapse);
+                }
+                else {
+                    menuRef.removeEventListener('mouseover', hoverExpand);
+                    menuRef.removeEventListener('mouseleave', hoverCollapse);
+                }
+                return () => {
+                    menuRef.removeEventListener('mouseover', hoverExpand);
+                    menuRef.removeEventListener('mouseleave', hoverCollapse);
+                }
             }
         }
+
     },[menuCollapsed, props.forwardedRef, context.appSettings.LOGO_BIG, context.appSettings.LOGO_SMALL, closeOpenedMenuPanel]);
 
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
-        if ((event as any).propertyName === "max-height") {
-            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-            if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
-                menuElem.classList.add("p-menuitem--active")
+        if (props.menuVisibility.menuBar) {
+            if ((event as any).propertyName === "max-height") {
+                const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+                if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
+                    menuElem.classList.add("p-menuitem--active")
+                }
             }
         }
-    })
+    });
 
     /** 
      * Handles the click on the menu-toggler. It closes a currently opened panel and switches
@@ -304,9 +319,11 @@ const Menu: FC<IMenu> = (props) => {
      * It also notifies the contentstore that the menu has been collapsed
      */
     const handleToggleClick = () => {
-        closeOpenedMenuPanel();
-        context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
-        context.subscriptions.emitMenuCollapse(2);
+        if (props.menuVisibility.menuBar) {
+            closeOpenedMenuPanel();
+            context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
+            context.subscriptions.emitMenuCollapse(2);
+        }
     }
 
     return (
