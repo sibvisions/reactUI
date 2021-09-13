@@ -657,18 +657,17 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
                 if(borderConstraint && marginConstraint){
-                    if(onLayoutCallback){
+                    if(onLayoutCallback) {
                         /** If the layout has a preferredSize set, report it */
                         if (baseProps.preferredSize) {
                             onLayoutCallback(baseProps.preferredSize.height, baseProps.preferredSize.width);
                         }
                         /** Report the preferredSize to the parent layout */
                         else {
-                            onLayoutCallback(preferredHeight, preferredWidth);
+                            onLayoutCallback(borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position, borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position);
                         }
                             
                     }
-
                     /** Set the state of the calculated Style */
                     setCalculatedStyle( {
                         style: {

@@ -269,7 +269,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 if (baseProps.preferredSize) {
                     reportSize(baseProps.preferredSize.height, baseProps.preferredSize.width)
                 }
-                else if ((!style.width && !style.height) || (preferredHeight !== style.height || preferredWidth !== style.width)) {
+                else {
                     reportSize(preferredHeight, preferredWidth)
                 }
             }
@@ -291,7 +291,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div style={calculatedStyle}>
+            <div data-layout="border" style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>
