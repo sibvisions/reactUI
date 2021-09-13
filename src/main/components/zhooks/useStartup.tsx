@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { useHistory } from "react-router";
-import * as queryString from "querystring";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -11,16 +10,6 @@ import { createChangesRequest, createStartupRequest, createUIRefreshRequest, get
 import { REQUEST_ENDPOINTS, StartupRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
-
-/** Types for querystring parsing */
-type queryType = {
-    mobileOnly?: string,
-    language?: string,
-    appName?: string,
-    userName?: string,
-    password?: string,
-    baseUrl?: string
-}
 
 const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] => {
     /** Use context to gain access for contentstore and server methods */
@@ -98,11 +87,11 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
 
     /**
      * On reload navigate to home, fetch config.json if some fields are not configured, warns user with toast.
-     * Sets StartupRequest-, Server- and Contentstore properties based on config file or queryString (URL)
+     * Sets StartupRequest-, Server- and Contentstore properties based on config file or URLSearchParams
      * Sets Appname for header, and sends StartupRequest.
      */
     useEffect(() => {
-        const queryParams: queryType = queryString.parse(window.location.search.includes("?") ? window.location.search.split("?")[1] : window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
         const authKey = localStorage.getItem("authKey");
 
         if (props.onStartup) {
@@ -121,23 +110,43 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             }
         }
 
-        const setStartupProperties = (startupReq:StartupRequest, options?:queryType|{ [key:string]:any }) => {
+        const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
             if (options) {
-                if (options.appName && options.baseUrl) {
-                    startupReq.applicationName = options.appName;
-                    context.server.APP_NAME = options.appName;
-                    let baseUrl = options.baseUrl;
-                    if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                if (options instanceof URLSearchParams) {
+                    console.log(options.entries(), options.has("baseUrl"))
+                    if (options.has("appName") && options.has("baseUrl")) {
+                        startupReq.applicationName = options.get("appName") as string;
+                        context.server.APP_NAME = options.get("appName") as string;
+                        let baseUrl:string = options.get("baseUrl") as string;
+                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                        }
+                        context.server.BASE_URL = baseUrl;
+                        context.server.RESOURCE_URL = baseUrl + "/resource/" + options.get("appName");
                     }
-                    context.server.BASE_URL = baseUrl;
-                    context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
+                    if (options.has("userName") && options.has("password")) {
+                        startupReq.userName = options.get("userName") as string;
+                        startupReq.password = options.get("password") as string;
+                    }
                 }
-                if (options.userName && options.password) {
-                    startupReq.userName = options.userName;
-                    startupReq.password = options.password;
+                else {
+                    if (options.appName && options.baseUrl) {
+                        startupReq.applicationName = options.appName;
+                        context.server.APP_NAME = options.appName;
+                        let baseUrl = options.baseUrl;
+                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                        }
+                        context.server.BASE_URL = baseUrl;
+                        context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
+                    }
+                    if (options.userName && options.password) {
+                        startupReq.userName = options.userName;
+                        startupReq.password = options.password;
+                    }
+                    context.server.embeddedOptions = options;
                 }
-                if(authKey){
+                if(authKey) {
                     startupReq.authKey = authKey;
                 }
                 setAppName(context.server.APP_NAME);
@@ -215,7 +224,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             startUpRequest.language = data.language ? data.language : 'de';
 
             if (!props.embedded) {
-                setStartupProperties(startUpRequest, queryParams)
+                setStartupProperties(startUpRequest, urlParams)
             }
             else {
                 setStartupProperties(startUpRequest, props.embeddedOptions);
@@ -223,7 +232,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             
         }).catch(() => {
             if (!props.embedded) {
-                setStartupProperties(startUpRequest, queryParams)
+                setStartupProperties(startUpRequest, urlParams)
             }
             else {
                 setStartupProperties(startUpRequest, props.embeddedOptions);

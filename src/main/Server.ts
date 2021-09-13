@@ -1,5 +1,4 @@
 /** 3rd Party imports */
-import * as queryString from "querystring";
 import {parseString} from "xml2js"
 
 /** Other imports */
@@ -36,17 +35,8 @@ import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
-import { ToastMessageType } from "primereact/toast";
 import AppSettings from "./AppSettings";
 import API from "./API";
-
-/** Type for query */
-type queryType = {
-    appName?: string,
-    userName?: string,
-    password?: string,
-    baseUrl?: string
-}
 
 /** Server class sends requests and handles responses */
 class Server {
@@ -86,6 +76,8 @@ class Server {
     history?:History<any>;
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
+    /** embedded options, null if not defined */
+    embeddedOptions:{ [key:string]:any }|null = null;
 
     api:API;
 
@@ -547,18 +539,36 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        const queryParams: queryType = queryString.parse(window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
         const startUpRequest = createStartupRequest();
         const authKey = localStorage.getItem("authKey");
-        if(queryParams.appName && queryParams.baseUrl){
-            startUpRequest.applicationName = queryParams.appName;
-            // this.APP_NAME = queryParams.appName;
-            // this.BASE_URL = queryParams.baseUrl;
-            // this.RESOURCE_URL = queryParams.baseUrl + "/resource/" + queryParams.appName
+        if (!this.embeddedOptions) {
+            if(urlParams.has("appName") && urlParams.has("baseUrl")){
+                startUpRequest.applicationName = urlParams.get("appName") as string;
+                // this.APP_NAME = urlParams.get("appName");
+                //let baseUrl = urlParams.get("baseUrl") as string;
+                // if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                //     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                // }
+                // this.BASE_URL = baseUrl;
+                // this.RESOURCE_URL = baseUrl + "/resource/" + urlParams.get("appName");
+            }
+            if (urlParams.has("userName") && urlParams.has("password")) {
+                startUpRequest.password = urlParams.get("password") as string;
+                startUpRequest.userName = urlParams.get("userName") as string;
+            }
         }
-        if(queryParams.userName && queryParams.password){
-            startUpRequest.password = queryParams.password;
-            startUpRequest.userName = queryParams.userName;
+        else {
+            if (this.embeddedOptions.appName && this.embeddedOptions.baseUrl) {
+                startUpRequest.applicationName = this.embeddedOptions.appName;
+                // this.APP_NAME = this.embeddedOptions.appName;
+                // let baseUrl = this.embeddedOptions.baseUrl;
+                // if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                //     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                // }
+                // this.BASE_URL = baseUrl;
+                // this.RESOURCE_URL = baseUrl + "/resource/" + this.embeddedOptions.appName
+            }
         }
         if(authKey){
             startUpRequest.authKey = authKey;
