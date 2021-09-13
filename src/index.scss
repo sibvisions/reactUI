@@ -73,7 +73,8 @@
     /// Fadeout positioning
     --menuFadeoutLeft: calc(var(--menuCollapsedWidth) - var(--menuFadeoutWidth));
     /// Background of topbar
-    --menuTopBar: #4f5965;
+    //--menuTopBar: #4f5965
+    --menuTopBar: #7a7f85;
     /// Foreground of topbar
     --menuFgdColor: white;
     /// Topbar foreground color when hovering 
@@ -86,9 +87,9 @@
     /// Backgroud color of profile image when there is no image set
     --menuProfileBgdColor: white;
     /// Menu background
-    --menuPanelWrapperBgd: white;
+    --menuPanelWrapperBgd: #fafafa;
     /// Background for each panel of panelmenu
-    --menuPanelHeaderBgd: white;
+    --menuPanelHeaderBgd: #fafafa;
     /// Foreground color for each panel of panelmenu
     --menuPanelHeaderColor: #495057;
     /// Foreground color when a panel is hovered or active

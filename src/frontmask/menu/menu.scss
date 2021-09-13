@@ -170,7 +170,7 @@
 /// Margin-left, so the profile is on the far right
 .profile-menu {
     margin-right: 10px;
-    border-left: 2px solid rgb(60, 66, 73);
+    border-left: 2px solid #5b6067;
 
     
     .p-menubar  {
@@ -337,6 +337,7 @@
     }
     .p-panelmenu-content {
         border: none;
+        background: var(--menuPanelHeaderBgd);
         .p-menuitem {
             /// Menu sub points little more to the right
             .p-menuitem-link:not(.p-disabled) {
