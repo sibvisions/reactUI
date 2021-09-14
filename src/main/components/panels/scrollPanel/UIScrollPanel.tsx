@@ -98,7 +98,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
      */
     const reportSize = (height:number, width:number) => {
         if (onLoadCallback) {
-            const prefSize:Dimension = {height: height + (minusHeight.current ? 20 : 0), width: width + (minusWidth.current ? 20 : 0)};
+            const prefSize:Dimension = {height: height + (minusHeight.current ? 17 : 0), width: width + (minusWidth.current ? 17 : 0)};
             if (layoutSize?.height !== prefSize.height || layoutSize.width !== prefSize.width) {
                 setLayoutSize({height: prefSize.height, width: prefSize.width})
             }
