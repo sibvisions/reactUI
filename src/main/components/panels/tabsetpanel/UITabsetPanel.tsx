@@ -75,7 +75,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
      */
     useLayoutEffect(() => {
         if (onLoadCallback) {
-            if (compSizes && compSizes.size > 0 && props.selectedIndex && props.selectedIndex !== -1) {
+            if (compSizes && compSizes.size > 0 && props.selectedIndex !== -1) {
                 const selectedPanel = compSizes.get(components[(props.selectedIndex as number)].props.id)?.preferredSize;
                 if (selectedPanel) {
                     const prefSize:Dimension = {height: selectedPanel.height + 48, width: selectedPanel.width};
