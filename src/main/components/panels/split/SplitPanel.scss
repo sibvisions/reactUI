@@ -3,7 +3,6 @@
   height: 100%;
   display: flex;
   justify-content: space-between;
-  overflow: hidden;
 }
 
 .h-split {
@@ -14,18 +13,17 @@
   flex-direction: column;
 }
 
-.first-h{
+.first-split-h {
   width: 25%;
   overflow: hidden;
 }
 
-.first-v {
+.first-split-v {
   height: 25%;
   overflow: hidden;
 }
 
-.second{
-  overflow: hidden;
+.second-split{
   flex: 1;
 }
 

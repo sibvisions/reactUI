@@ -140,12 +140,12 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     return(
         <div id={props.id} className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
-            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-h" : "first-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
+            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-split-h" : "first-split-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
                 {props.leftComponent}
             </div>
             <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-seperator" : "v-seperator")} onMouseDown={dragStart} onTouchStart={dragTouchStart}>
             </div>
-            <div ref={secondRef} className={"second"}>
+            <div ref={secondRef} className={"second-split"}>
                 {props.rightComponent}
             </div>
         </div>
