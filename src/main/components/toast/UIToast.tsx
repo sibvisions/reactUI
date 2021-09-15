@@ -191,6 +191,7 @@ const UIToast: FC = () => {
                                         const closeFrameReq = createCloseFrameRequest();
                                         closeFrameReq.componentId = castedDialog.componentId;
                                         showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+                                        handleClose((event.target as HTMLElement).closest('.index-helper') as HTMLElement);
                                     }} />}
                             </div>}
                             <div className="toast-content">
