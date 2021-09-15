@@ -1,7 +1,7 @@
 /** Other imports */
 import Server from "./Server";
 import ContentStore from "./ContentStore";
-import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest } from "./factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
@@ -90,6 +90,32 @@ class API {
                 this.history?.push("/home")
             }
         });
+    }
+
+    /**
+     * Inserts a record into the given dataprovider
+     * @param id - the id of the screen
+     * @param dataProvider - the dataprovider which should be used
+     */
+    insertRecord(id:string, dataProvider:string) {
+        this.#contentStore.insertDataProviderData(id, dataProvider);
+        const insertReq = createInsertRecordRequest();
+        insertReq.dataProvider = dataProvider;
+        this.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD);
+    }
+
+    /**
+     * Deletes a record from the given dataprovider
+     * @param id - the id of the screen
+     * @param name - the name of the component
+     * @param dataProvider - the dataprovider which should be used
+     */
+    deleteRecord(id:string, name:string, dataProvider:string) {
+        this.#contentStore.deleteDataProviderData(id, dataProvider);
+        const deleteReq = createSelectRowRequest();
+        deleteReq.dataProvider = dataProvider;
+        deleteReq.componentId = name;
+        this.sendRequest(deleteReq, REQUEST_ENDPOINTS.DELETE_RECORD);
     }
 
     /**
