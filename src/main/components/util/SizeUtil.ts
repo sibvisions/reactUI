@@ -68,7 +68,7 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
 export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
     if (componentSizes.has(component.id)) {
-        if (component.minimumSize) {
+        if (component.minimumSize || componentSizes.get(component.id)!.minimumSize !== undefined) {
             minimumSize = componentSizes.get(component.id)!.minimumSize;
         }
         else if (component.className === "Table"

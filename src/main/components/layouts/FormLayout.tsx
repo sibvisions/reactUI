@@ -660,11 +660,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if(onLayoutCallback) {
                         /** If the layout has a preferredSize set, report it */
                         if (baseProps.preferredSize) {
-                            onLayoutCallback(baseProps.preferredSize.height, baseProps.preferredSize.width);
+                            onLayoutCallback({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth });
                         }
                         /** Report the preferredSize to the parent layout */
                         else {
-                            onLayoutCallback(preferredHeight, preferredWidth);
+                            onLayoutCallback({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                         }
                             
                     }

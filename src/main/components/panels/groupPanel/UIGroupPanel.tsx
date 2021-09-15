@@ -69,10 +69,16 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-    const reportSize = (height:number, width:number) => {
+    const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
         if (onLoadCallback) {
-            const prefSize:Dimension = {height: height+28, width: width};
-            sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            const adjustedSize:Dimension = {height: prefSize.height+28, width: prefSize.width};
+            sendOnLoadCallback(id, 
+                props.preferredSize ? parsePrefSize(props.preferredSize) : adjustedSize, 
+                parseMaxSize(props.maximumSize), 
+                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)), 
+                undefined, 
+                onLoadCallback
+            );
         }
     }
 

@@ -8,9 +8,10 @@ import { ILayout } from "./Layout";
 import { Margins } from ".";
 import { Dimension } from "../util";
 import Gaps from "./models/Gaps";
+import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
 
 /** Type for borderLayoutComponents */
-type borderLayoutComponents = {
+type BorderLayoutComponents = {
     north: Dimension,
     center: Dimension,
     west: Dimension,
@@ -67,8 +68,17 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size) {
-            /** Sizes for BorderLayout areas */
-            const constraintSizes: borderLayoutComponents = {
+            /** Preferred Sizes for BorderLayout areas */
+            const prefConstraintSizes: BorderLayoutComponents = {
+                center: {height: 0, width: 0},
+                east: {height: 0, width: 0},
+                west: {height: 0, width: 0},
+                north: {height: 0, width: 0},
+                south: {height: 0, width: 0}
+            }
+
+            /** Minimum Sizes for BorderLayout areas */
+            const minConstraintSizes: BorderLayoutComponents = {
                 center: {height: 0, width: 0},
                 east: {height: 0, width: 0},
                 west: {height: 0, width: 0},
@@ -80,29 +90,35 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             const children = context.contentStore.getChildren(id);
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
-                const preferredSize = compSizes.get(component.id)?.preferredSize || {height: 0, width: 0};
+                const preferredSize = getPreferredSize(component, compSizes) || {height: 0, width: 0};
+                const minimumSize = getMinimumSize(component, compSizes);
                 if(component.constraints === "North") {
-                    constraintSizes.north = preferredSize;
+                    prefConstraintSizes.north = preferredSize;
+                    minConstraintSizes.north = minimumSize;
                     northUsed = true;
                     vCompCount++;
                 }
                 else if(component.constraints === "South") {
-                    constraintSizes.south = preferredSize;
+                    prefConstraintSizes.south = preferredSize;
+                    minConstraintSizes.south = minimumSize;
                     southUsed = true;
                     vCompCount++
                 }
                 else if(component.constraints === "East") {
-                    constraintSizes.east = preferredSize;
+                    prefConstraintSizes.east = preferredSize;
+                    minConstraintSizes.east = minimumSize;
                     eastUsed = true;
                     hCompCount++;
                 }
                 else if(component.constraints === "West") {
-                    constraintSizes.west = preferredSize;
+                    prefConstraintSizes.west = preferredSize;
+                    minConstraintSizes.west = minimumSize;
                     westUsed = true;
                     hCompCount++;
                 }   
                 else if(component.constraints === "Center") {
-                    constraintSizes.center = preferredSize;
+                    prefConstraintSizes.center = preferredSize;
+                    minConstraintSizes.center = minimumSize;
                     centerUsed = true
                     vCompCount++;
                     hCompCount++;
@@ -118,10 +134,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
              */
             const getCenterHeight = () => {
                 /** The biggest preferredSize height of west, center and east */
-                let centerHeight = Math.max(...[constraintSizes.center.height, constraintSizes.east.height, constraintSizes.west.height]);
+                let centerHeight = Math.max(...[prefConstraintSizes.center.height, prefConstraintSizes.east.height, prefConstraintSizes.west.height]);
                 /** If this layout has a set height by another layout, calculate the centerHeight */
                 if (style.height) {
-                    centerHeight = style.height as number - constraintSizes.south.height - constraintSizes.north.height - margins.marginTop - margins.marginBottom;
+                    centerHeight = style.height as number - prefConstraintSizes.south.height - prefConstraintSizes.north.height - margins.marginTop - margins.marginBottom;
                 }
 
                 if (northUsed) {
@@ -140,10 +156,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
              * @returns - the width of the center component
              */
             const getCenterWidth = () => {
-                let centerWidth = constraintSizes.center.width;
+                let centerWidth = prefConstraintSizes.center.width;
                 /** If this layout has a set width by another layout, calculate the width of center */
                 if (style.width) {
-                    centerWidth = style.width as number - constraintSizes.west.width - constraintSizes.east.width - margins.marginLeft - margins.marginRight - 2 * gaps.horizontalGap;
+                    centerWidth = style.width as number - prefConstraintSizes.west.width - prefConstraintSizes.east.width - margins.marginLeft - margins.marginRight - 2 * gaps.horizontalGap;
                 }
 
                 if (westUsed) {
@@ -163,10 +179,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
              */
             const getEastLeft = () => {
                 /** Left of east is the sum of the widths of west and center */
-                let eastLeft = constraintSizes.west.width + constraintSizes.center.width;
+                let eastLeft = prefConstraintSizes.west.width + prefConstraintSizes.center.width;
                 /** If this layout has a set width by another layout, left of east is the width of the layout substracted by margin right and east width */
                 if (style.width) {
-                    eastLeft = style.width as number - constraintSizes.east.width - margins.marginRight
+                    eastLeft = style.width as number - prefConstraintSizes.east.width - margins.marginRight
                 }
 
                 return eastLeft;
@@ -178,10 +194,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
              */
             const getSouthTop = () => {
                 /** Top of south is the sum of the heights of north and center */
-                let southTop = constraintSizes.north.height + constraintSizes.center.height;
+                let southTop = prefConstraintSizes.north.height + prefConstraintSizes.center.height;
                 /** If this layout has a set width by another layout, top of south is the height of the layout substracted by south height */
                 if (style.height) {
-                    southTop = style.height as number - constraintSizes.south.height - margins.marginBottom;
+                    southTop = style.height as number - prefConstraintSizes.south.height - margins.marginBottom;
                 }
 
                 return southTop;
@@ -195,27 +211,27 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 /** If this layout has a set width by another layout, use the width */
                 width: style.width as number - margins.marginLeft - margins.marginRight
                     || Math.max(...[
-                        constraintSizes.north.width,
-                        constraintSizes.center.width + constraintSizes.east.width + constraintSizes.west.width,
-                        constraintSizes.south.width
+                        prefConstraintSizes.north.width,
+                        prefConstraintSizes.center.width + prefConstraintSizes.east.width + prefConstraintSizes.west.width,
+                        prefConstraintSizes.south.width
                     ]),
-                height: constraintSizes.north.height
+                height: prefConstraintSizes.north.height
             }
 
             /** Sets the style for the west component */
             const westCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
+                top: prefConstraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
                 left: margins.marginLeft,
-                width: constraintSizes.west.width,
+                width: prefConstraintSizes.west.width,
                 height: getCenterHeight()
             }
 
             /** Sets the style for the center component */
             const centerCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
-                left: constraintSizes.west.width + margins.marginLeft + (westUsed ? gaps.horizontalGap : 0),
+                top: prefConstraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
+                left: prefConstraintSizes.west.width + margins.marginLeft + (westUsed ? gaps.horizontalGap : 0),
                 width: getCenterWidth(),
                 height: getCenterHeight()
             }
@@ -223,9 +239,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             /** Sets the style for the east component */
             const eastCSS: CSSProperties = {
                 position: "absolute",
-                top: constraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
+                top: prefConstraintSizes.north.height + margins.marginTop + (northUsed ? gaps.verticalGap : 0),
                 left: getEastLeft(),
-                width: constraintSizes.east.width,
+                width: prefConstraintSizes.east.width,
                 height: getCenterHeight()
             }
 
@@ -236,11 +252,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 left: margins.marginLeft,
                 width: style.width as number - margins.marginLeft - margins.marginRight 
                 || Math.max(...[
-                    constraintSizes.north.width,
-                    constraintSizes.center.width + constraintSizes.east.width + constraintSizes.west.width,
-                    constraintSizes.south.width
+                    prefConstraintSizes.north.width,
+                    prefConstraintSizes.center.width + prefConstraintSizes.east.width + prefConstraintSizes.west.width,
+                    prefConstraintSizes.south.width
                 ]),
-                height: constraintSizes.south.height,
+                height: prefConstraintSizes.south.height,
             }
 
             let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0;
@@ -263,14 +279,29 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     sizeMap.set(component.id, eastCSS);
                 }
             });
-            const preferredWidth = Math.max(...[constraintSizes.north.width, constraintSizes.center.width+constraintSizes.east.width+constraintSizes.west.width, constraintSizes.south.width]) + margins.marginLeft + margins.marginRight + addHGap;
-            const preferredHeight = Math.max(...[constraintSizes.west.height + constraintSizes.center.height + constraintSizes.east.height]) + constraintSizes.north.height + constraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
+            const preferredWidth = Math.max(...[
+                Math.max(...[northCSS.width as number, southCSS.width as number]),
+                ((centerCSS.width as number) + (eastCSS.width as number) + (westCSS.width as number))])
+                + margins.marginLeft + margins.marginRight + addHGap;
+            const preferredHeight = Math.max(...[
+                Math.max(...[(westCSS.height as number), (eastCSS.height as number)]), (centerCSS.height as number)
+            ]) + (northCSS.height as number) + (southCSS.height as number) + margins.marginTop + margins.marginBottom + addVGap;
+
+            const minimumWidth = Math.max(...[
+                Math.max(...[minConstraintSizes.north.width, minConstraintSizes.south.width]),
+                minConstraintSizes.center.width + minConstraintSizes.east.width, minConstraintSizes.west.width
+            ]) + margins.marginLeft + margins.marginRight + addHGap;
+            const minimumHeight = Math.max(...[
+                Math.max(...[minConstraintSizes.west.height, minConstraintSizes.east.height]), minConstraintSizes.center.height
+            ]) + minConstraintSizes.north.height + minConstraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
+
+
             if (reportSize) {
                 if (baseProps.preferredSize) {
-                    reportSize(baseProps.preferredSize.height, baseProps.preferredSize.width)
+                    reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
                 }
                 else {
-                    reportSize(preferredHeight, preferredWidth)
+                    reportSize({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                 }
             }
             

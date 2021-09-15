@@ -96,13 +96,20 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-    const reportSize = (height:number, width:number) => {
+    const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
         if (onLoadCallback) {
-            const prefSize:Dimension = {height: height + (minusHeight.current ? 17 : 0), width: width + (minusWidth.current ? 17 : 0)};
-            if (layoutSize?.height !== prefSize.height || layoutSize.width !== prefSize.width) {
-                setLayoutSize({height: prefSize.height, width: prefSize.width})
+            const adjustedSize:Dimension = {height: prefSize.height + (minusHeight.current ? 17 : 0), width: prefSize.width + (minusWidth.current ? 17 : 0)};
+            if (layoutSize?.height !== adjustedSize.height || layoutSize.width !== adjustedSize.width) {
+                setLayoutSize({height: adjustedSize.height, width: adjustedSize.width})
             }
-            sendOnLoadCallback(id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(
+                id, 
+                props.preferredSize ? parsePrefSize(props.preferredSize) : adjustedSize, 
+                parseMaxSize(props.maximumSize), 
+                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)),
+                undefined, 
+                onLoadCallback
+            );
         }
     }
 
