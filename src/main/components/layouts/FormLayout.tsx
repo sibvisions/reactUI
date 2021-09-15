@@ -664,7 +664,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                         /** Report the preferredSize to the parent layout */
                         else {
-                            onLayoutCallback(borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position, borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position);
+                            onLayoutCallback(preferredHeight, preferredWidth);
                         }
                             
                     }
