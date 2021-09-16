@@ -20,8 +20,7 @@ export interface ICustomContent {
     onOpenScreen?: Function
     onLogin?: Function
     style?: CSSProperties
-    embedded?: boolean
-    embeddedOptions?:{ [key:string]:any }
+    embedOptions?:{ [key:string]:any }
 }
 
 export const EmbeddedContext = createContext<boolean>(false)
@@ -37,8 +36,8 @@ const MiddleMan: FC<ICustomContent> = (props) => {
     return (
         <HashRouter>
             <AppProvider>
-                <EmbeddedContext.Provider value={props.embedded ? true : false}>
-                    {props.embedded ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
+                <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>
+                    {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
                 </EmbeddedContext.Provider>
             </AppProvider>
         </HashRouter>

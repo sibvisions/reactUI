@@ -222,19 +222,19 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             startUpRequest.password = data.password;
             startUpRequest.language = data.language ? data.language : 'de';
 
-            if (!props.embedded) {
+            if (!props.embedOptions) {
                 setStartupProperties(startUpRequest, urlParams)
             }
             else {
-                setStartupProperties(startUpRequest, props.embeddedOptions);
+                setStartupProperties(startUpRequest, props.embedOptions);
             }
             
         }).catch(() => {
-            if (!props.embedded) {
+            if (!props.embedOptions) {
                 setStartupProperties(startUpRequest, urlParams)
             }
             else {
-                setStartupProperties(startUpRequest, props.embeddedOptions);
+                setStartupProperties(startUpRequest, props.embedOptions);
             }
         });
 

@@ -184,3 +184,9 @@ body {
     -webkit-user-select: none; 
     user-select: none; 
 }
+
+.embed-frame {
+    border: 6px solid #2196F3; 
+    border-radius: 18px;
+    overflow: hidden;
+}

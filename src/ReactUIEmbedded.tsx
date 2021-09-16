@@ -37,7 +37,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                     <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
                         ReactUI Embedded WorkScreen
                     </span>
-                    <div style={{ border: "6px solid #2196F3", borderRadius: "18px" }}>
+                    <div className="embed-frame">
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <Home customAppWrapper={props.customAppWrapper} />} />
@@ -47,7 +47,14 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                     </div>
                 </>
                 :
-                <LoadingScreen />}
+                <>
+                    <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
+                        ReactUI Embedded WorkScreen
+                    </span>
+                    <div className="embed-frame">
+                        <LoadingScreen />
+                    </div>
+                </>}
         </AppWrapper>
     )
 }
