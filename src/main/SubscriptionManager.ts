@@ -96,7 +96,7 @@ export class SubscriptionManager {
     appReadySubscriber:Function = () => {};
 
     /** A Map which stores functions to set the dialog-visibility of certain dialogs */
-    changeDialogSubscriber = new Map<string, Function>();
+    dialogSubscriber = new Map<string, Function>();
 
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
@@ -324,8 +324,8 @@ export class SubscriptionManager {
      * change-password-dialog
      * @param fn - the function to change the change-dialog state
      */
-    subscribeToChangeDialog(id:string, fn:Function) {
-        this.changeDialogSubscriber.set(id, fn);
+    subscribeToDialog(id:string, fn:Function) {
+        this.dialogSubscriber.set(id, fn);
     }
 
     /**
@@ -519,8 +519,8 @@ export class SubscriptionManager {
     /**
      * Unsubscribes login from change-dialog
      */
-    unsubscribeFromChangeDialog(id:string) {
-        this.changeDialogSubscriber.delete(id);
+    unsubscribeFromDialog(id:string) {
+        this.dialogSubscriber.delete(id);
     }
 
     /**
@@ -691,8 +691,8 @@ export class SubscriptionManager {
     }
 
     /** Tell the subscribers to show the change-password-dialog */
-    emitShowDialog(id:string, header?:string, body?:string) {
-        const func = this.changeDialogSubscriber.get(id);
+    emitErrorDialog(id:string, header?:string, body?:string) {
+        const func = this.dialogSubscriber.get(id);
         if (func) {
             func.apply(undefined, [header, body]);
         }
@@ -733,6 +733,13 @@ export class SubscriptionManager {
     }
 
     emitActiveScreens() {
-        this.activeScreenSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.activeScreens]))
+        this.activeScreenSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.activeScreens]));
+    }
+
+    emitMessageDialog(id:string, dialog:DialogResponse) {
+        const func = this.dialogSubscriber.get(id);
+        if (func) {
+            func.apply(undefined, [dialog]);
+        }
     }
 }

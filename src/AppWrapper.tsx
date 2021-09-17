@@ -8,7 +8,8 @@ import { Helmet } from "react-helmet";
 /** Other imports */
 import TopBar from "./main/components/topbar/TopBar";
 import UIToast from './main/components/toast/UIToast';
-import { appContext } from "./moduleIndex";
+import { appContext, useConfirmDialogProps } from "./moduleIndex";
+import { ConfirmDialog } from "primereact/confirmdialog";
 
 type ServerFailMessage = {
     headerMessage:string,
@@ -26,6 +27,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** State if timeout error should be shown */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
+    const [messageVisible, messageProps] = useConfirmDialogProps();
+
     /** Reference for the dialog which shows the timeout error message */
     const dialogRef = useRef<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server." });
 
@@ -34,14 +37,14 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from session and app-ready
      */
      useEffect(() => {
-        context.subscriptions.subscribeToChangeDialog("server", (header:string, body:string) => {
+        context.subscriptions.subscribeToDialog("server", (header:string, body:string) => {
             dialogRef.current.headerMessage = header;
             dialogRef.current.bodyMessage = body;
             setDialogVisible(true);
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromChangeDialog("server");
+            context.subscriptions.unsubscribeFromDialog("server");
         }
     },[context.subscriptions]);
 
@@ -51,6 +54,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                 <title>{props.appName ? props.appName : "VisionX Web"}</title>
             </Helmet>
             <UIToast />
+            <ConfirmDialog visible={messageVisible} {...messageProps} />
             <Dialog header="Server Error!" visible={dialogVisible} onHide={() => setDialogVisible(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>

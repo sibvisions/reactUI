@@ -66,10 +66,10 @@ const UIToast: FC = () => {
     /** Subscribes the toast components to messages */
     useEffect(() => {
         context.subscriptions.subscribeToMessage((dialog:DialogResponse|MessageResponse|ErrorResponse, err:boolean) => setToastProps({dialog: dialog, error: err}));
-        context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(prevState => { return { name: compId, flag:!prevState.flag } }));
+        //context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(prevState => { return { name: compId, flag:!prevState.flag } }));
         return () => {
             context.subscriptions.unsubscribeFromMessage();
-            context.subscriptions.unsubscribeFromCloseFrame();
+            //context.subscriptions.unsubscribeFromCloseFrame();
         }
     },[context.subscriptions]);
 

@@ -27,3 +27,4 @@ export { default as useDeviceStatus } from './useDeviceStatus';
 export { default as useScreen } from './useScreen';
 export { default as useMetaData } from './useMetaData';
 export { default as useStartup } from './useStartup';
+export { default as useConfirmDialogProps } from './useConfirmDialogProps';

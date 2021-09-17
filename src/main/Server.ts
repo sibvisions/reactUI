@@ -174,19 +174,18 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitShowDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                this.subManager.emitErrorDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
                 reject(new Error("timeOut"))
             }, ms);
-            promise
-            .then(res => {
+            promise.then(res => {
                     clearTimeout(timeoutId);
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitShowDialog("server", "Server Error!", err);
+                    this.subManager.emitErrorDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
                     clearTimeout(timeoutId);
                     reject(err);
-                });
+            });
         });
     }
 
@@ -216,7 +215,7 @@ class Server {
         .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
         .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
         .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
-        .set(RESPONSE_NAMES.DIALOG, this.showMessage.bind(this))
+        .set(RESPONSE_NAMES.DIALOG, this.showMessageDialog.bind(this))
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this));
 
     /**
@@ -600,8 +599,8 @@ class Server {
         this.subManager.emitMessage(infoData, false);
     }
 
-    showMessage(messageData:DialogResponse) {
-        this.subManager.emitMessage(messageData, false)
+    showMessageDialog(dialogData:DialogResponse) {
+        this.subManager.emitMessageDialog("message-dialog", dialogData)
     }
  
     /**

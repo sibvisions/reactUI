@@ -113,15 +113,24 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
             if (options) {
                 if (options instanceof URLSearchParams) {
-                    if (options.has("appName") && options.has("baseUrl")) {
+                    if (options.has("appName")) {
                         startupReq.applicationName = options.get("appName") as string;
                         context.server.APP_NAME = options.get("appName") as string;
-                        let baseUrl:string = options.get("baseUrl") as string;
-                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                        if (options.has("baseUrl")) {
+                            let baseUrl:string = options.get("baseUrl") as string;
+                            if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                                baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                            }
+                            context.server.BASE_URL = baseUrl;
+                            context.server.RESOURCE_URL = baseUrl + "/resource/" + options.get("appName");
                         }
-                        context.server.BASE_URL = baseUrl;
-                        context.server.RESOURCE_URL = baseUrl + "/resource/" + options.get("appName");
+                        else {
+                            context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'baseUrl' seems to be missing. Either check typing/casing or add the parameter!");
+                        }
+
+                    }
+                    else {
+                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
                     }
                     if (options.has("userName") && options.has("password")) {
                         startupReq.userName = options.get("userName") as string;
@@ -129,19 +138,30 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     }
                 }
                 else {
-                    if (options.appName && options.baseUrl) {
+                    if (options.appName) {
                         startupReq.applicationName = options.appName;
                         context.server.APP_NAME = options.appName;
-                        let baseUrl = options.baseUrl;
-                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                        if (options.baseUrl) {
+                            let baseUrl = options.baseUrl;
+                            if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                                baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                            }
+                            context.server.BASE_URL = baseUrl;
+                            context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
                         }
-                        context.server.BASE_URL = baseUrl;
-                        context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
+                        else {
+                            context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'baseUrl' seems to be missing. Either check typing/casing or add the property!");
+                        }
+                    }
+                    else {
+                        context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'appName' seems to be missing. Either check typing/casing or add the property!");
                     }
                     if (options.userName && options.password) {
                         startupReq.userName = options.userName;
                         startupReq.password = options.password;
+                    }
+                    else {
+                        context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed properties 'userName' or 'password' seem/s to be missing. Either check typing/casing or add the property/properties!");
                     }
                     context.server.embeddedOptions = options;
                 }

@@ -47,9 +47,9 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
     useEffect(() => {
-        context.subscriptions.subscribeToChangeDialog("change-password", () => setDialogVisible(true))
+        context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true))
     
-        return () => context.subscriptions.unsubscribeFromChangeDialog("change-password");
+        return () => context.subscriptions.unsubscribeFromDialog("change-password");
     }, [context.subscriptions]);
 
     const isReset = context.appSettings.loginMode === "changeOneTimePassword";
