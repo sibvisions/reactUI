@@ -56,6 +56,7 @@
     "tinycolor2": "^1.4.2",
     "ts-loader": "^8.0.5",
     "typescript": "^3.7.5",
+    "ui-gauges": "git+https://github.com/sibvisions/gauges.git",
     "underscore": "^1.13.1",
     "xml2js": "^0.4.23"
   },

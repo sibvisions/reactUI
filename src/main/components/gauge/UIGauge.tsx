@@ -8,6 +8,7 @@ import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties } 
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
+import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 
 /** Interface for Gauge properties sent by server */
 export interface IGauge extends BaseComponent {
@@ -71,6 +72,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
+    const gauge = useRef<any>(null);
+
     useFetchMissingData(compId, props.dataBook);
 
     /** Hook for MouseListener */
@@ -90,384 +93,71 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
-    let Gauge:React.ComponentType<GaugeProps> = SpeedometerGauge;
+    useLayoutEffect(() => {
+        if(wrapperRef.current && !gauge.current) {
+            switch(gaugeStyle) {
+                case GAUGE_STYLES.STYLE_METER:
+                    gauge.current = new MeterGauge(wrapperRef.current, {
+                        id: name,
+                        value: data, 
+                        title,
+                        label: columnLabel, 
+                        max: maxValue,
+                        size: 300,
+                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                    });
+                    break;
+                case GAUGE_STYLES.STYLE_FLAT:
+                    gauge.current = new ArcGauge(wrapperRef.current, {
+                        id: name,
+                        value: data, 
+                        title,
+                        label: columnLabel, 
+                        max: maxValue,
+                        size: 300,
+                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                    });
+                    break;
+                case GAUGE_STYLES.STYLE_RING:
+                    gauge.current = new RingGauge(wrapperRef.current, {
+                        id: name,
+                        value: data, 
+                        title,
+                        label: columnLabel, 
+                        max: maxValue,
+                        size: 300,
+                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                    });
+                    break;
+                default:
+                    gauge.current = new SpeedometerGauge(wrapperRef.current, {
+                        id: name,
+                        value: data, 
+                        title,
+                        label: columnLabel, 
+                        max: maxValue,
+                        size: 300,
+                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                    });
+                    break;
+            }
+        } else if(gauge.current) {
+            gauge.current.update({
+                id: name,
+                value: data, 
+                title,
+                label: columnLabel, 
+                max: maxValue,
+                steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+            })
+        }
+    });
 
-    switch(gaugeStyle) {
-        case GAUGE_STYLES.STYLE_METER:
-            Gauge = MeterGauge;
-            break;
-        case GAUGE_STYLES.STYLE_FLAT:
-            Gauge = ArcGauge;
-            break;
-        case GAUGE_STYLES.STYLE_RING:
-            Gauge = RingGauge;
-            break;
-    }
+
 
     return (
-        <span ref={wrapperRef} className="ui-gauge" style={layoutStyle}>
-            <div className="ui-gauge__title">{title}</div>
-            <Gauge 
-                id={name}
-                value={data} 
-                label={columnLabel} 
-                max={maxValue}
-                steps={[minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]}
-            />
-        </span>
+        <span ref={wrapperRef} className="ui-gauge" style={layoutStyle}></span>
     )
-}
-
-interface GaugeProps {
-    id: string
-    value: number 
-    size?: number
-    thickness?: number
-    color?: string
-    label?: string
-    min?: number
-    max?: number
-    steps?: [number, number, number, number]
-    ticks?: number
-    subTicks?: number
-    circle?: number
-    classPrefix?: string
-    tickLabelsInside?: boolean
-}
-
-const RingGauge: React.FC<GaugeProps> = ({
-    value = 0, 
-    max = 10,
-    size = 100, 
-    thickness = 20, 
-    label = "",
-    color,
-    steps,
-    id
-}) => {
-    const r = (size - thickness - 1) * .5;
-    const circumference = 2 * Math.PI * r;
-    const hs = size * .5;
-
-    const maskID = `mask-${id}`;
-    const gradientID = `gradient-${id}`;
-
-    color = color || getColor(value, steps);
-
-    return <div className="ui-gauge-ring">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <defs>
-                <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
-                </linearGradient>
-                <mask id={maskID}>
-                    <circle 
-                        cx={hs} 
-                        cy={hs}
-                        r={r}
-                        strokeWidth={thickness}
-                        stroke="#fff"
-                        fill="none"
-                    />
-                </mask>
-            </defs>
-            <circle 
-                className="ui-gauge-ring__border"
-                cx={hs} 
-                cy={hs}
-                r={r}
-                strokeWidth={thickness + 1}
-                stroke="var(--gauge-color__border)"
-                fill="none"
-            />
-            <g mask={`url(#${maskID})`}>
-                <rect x="0" y="0" width={size} height={size} fill="transparent" />
-                <circle 
-                    className="ui-gauge-ring__bg"
-                    cx={hs} 
-                    cy={hs}
-                    r={r}
-                    strokeWidth={thickness + 2}
-                    stroke={`url(#${gradientID})`}
-                    fill="none"
-                />
-                <circle 
-                    cx={hs} 
-                    cy={hs}
-                    r={r}
-                    transform={`rotate(-90 ${hs} ${hs})`}
-                    strokeWidth={thickness + 2}
-                    stroke={color}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
-                    fill="none"
-                />
-            </g>
-        </svg>
-        <div className="ui-gauge-ring__label">
-            {`${value} ${label}`}
-        </div>
-    </div>
-}
-
-const ArcGauge: React.FC<GaugeProps> = ({
-    value = 0, 
-    max = 10,
-    size = 100, 
-    thickness = 20, 
-    label = "",
-    color,
-    steps,
-    id
-}) => {
-    const r = (size - thickness - 1) * .5;
-    const circumference = Math.PI * r;
-    const ht = thickness * .5;
-    const hs = size * .5;
-
-    const maskID = `mask-${id}`;
-    const gradientID = `gradient-${id}`;
-
-    color = color || getColor(value, steps);
-
-    return <div className="ui-gauge-arc">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${size} ${size}`} >
-            <defs>
-                <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
-                </linearGradient>
-                <mask id={maskID}>
-                    <path 
-                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                        strokeWidth={thickness}
-                        stroke="#fff"
-                        fill="none"
-                    />
-                </mask>
-            </defs>
-            <g transform={`translate(0 ${size * .25})`}>
-                <path 
-                    className="ui-gauge-arc__border"
-                    d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                    strokeWidth={thickness + 1}
-                    stroke="var(--gauge-color__border)"
-                    fill="none"
-                />
-                <rect x="-0.5" y={hs} width={thickness + 1} height={.5} fill="var(--gauge-color__border)" />
-                <rect x={size - thickness - .5} y={hs} width={thickness + 1} height={.5} fill="var(--gauge-color__border)" />
-                <g mask={`url(#${maskID})`}>
-                    <rect x="0" y="0" width={size} height={size} fill="transparent" />
-                    <path 
-                        className="ui-gauge-arc__bg"
-                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                        strokeWidth={thickness + 2}
-                        stroke={`url(#${gradientID})`}
-                        fill="none"
-                    />
-                    <path 
-                        d={`M ${ht} ${hs} A ${r} ${r} 0 0 1 ${size - ht} ${hs}`}
-                        strokeWidth={thickness + 2}
-                        stroke={color}
-                        strokeDasharray={circumference}
-                        strokeDashoffset={Math.max(0, Math.min(circumference, (1 - value / max) * circumference))}
-                        fill="none"
-                    />
-                </g>
-                <text x={ht} y={hs + 4} textAnchor="middle" dominantBaseline="hanging">0</text>
-                <text x={size - ht} y={hs + 4} textAnchor="middle" dominantBaseline="hanging">{max}</text>
-            </g>
-        </svg>
-        <div className="ui-gauge-arc__label">
-            {`${value} ${label}`}
-        </div>
-    </div>
-}
-
-const SpeedometerGauge: React.FC<GaugeProps> = (props) => {
-    return <MeterGauge {...props} ticks={11} subTicks={3} circle={.75} classPrefix="ui-gauge-speedometer" tickLabelsInside={true} />
-}
-
-const MeterGauge: React.FC<GaugeProps> = ({
-    value = 0, 
-    size = 100, 
-    thickness = 4, 
-    label = "",
-    max = 10,
-    ticks = 5,
-    subTicks = 4,
-    steps,
-    id,
-    circle = .25,
-    classPrefix = "ui-gauge-meter",
-    tickLabelsInside = false
-}) => {
-    const r = (size - thickness) * .5;
-    const tr = r + thickness * .25;
-    const ir = r - thickness - 2;
-    const tlr = r + (tickLabelsInside ? -13 : 6);
-    const circumference = 2 * Math.PI * r * circle;
-    const tickCircumference = 2 * Math.PI * tr * circle;
-    const innerCircumference =  2 * Math.PI * ir * circle;
-    const ht = thickness * .5;
-    const hs = size * .5;
-    const sin = (1 - Math.sin(Math.PI * circle));
-    const inset = sin * r;
-    const iinset = sin * ir;
-    const tinset = sin * tr;
-
-    const tickSize = 1;
-    const subTickSize = .5;
-    const needleLength = hs + thickness;
-    const needleRotation = 360 * circle * value / max - 180 * circle;
-
-    let dasharray = [tickSize, circumference / (ticks - 1) - tickSize];
-    let subDasharray: number[] = [];
-
-    if (subTicks > 0) {
-        const tickSegment = ((tickCircumference / (ticks - 1) - tickSize) - subTicks * subTickSize) / (subTicks + 1);
-        subDasharray = [0, tickSize + tickSegment];
-        for (let i = 0; i < subTicks; i++) {
-            subDasharray.push(subTickSize, tickSegment)
-        }
-    }
-
-    const maskID = `mask-${id}`;
-    const markerID = `end-${id}`;
-    const gradientID = `gradient-${id}`;
-
-    const height = Math.sqrt(r * r - Math.pow(r - inset, 2));
-    const bottom = (circle >= .5 ? r + height : r - height) + thickness * .5;
-    const leftScale = ht + thickness + 2 + iinset;
-    const rightScale = size - ht - thickness - 2 - iinset;
-    const scaleHeight = Math.sqrt(ir * ir - Math.pow(ir - iinset, 2));
-    const bottomScale = (circle >= .5 ? ir + scaleHeight : ir - scaleHeight) + thickness + 4;
-
-    const ticksHeight = Math.sqrt(tr * tr - Math.pow(tr - tinset, 2));
-    const bottomTicks = (circle >= .5 ? tr + ticksHeight : tr - ticksHeight) + thickness * .25;
-
-    const arcFlag = circle >= .5 ? 1 : 0;
-
-    return <div className={classPrefix}>
-        <svg 
-            version="1.1" 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox={`0 0 ${size} ${circle < .5 ? size * Math.min(1, circle * 1.2) + (tickLabelsInside ? 0 : 10) : size}`} //XXX: the 1.2 factor is a magic number
-        >
-            <defs>
-                <marker id={markerID} viewBox={`0 0 ${tickSize} ${thickness}`}
-                    refX={tickSize * .5} refY={thickness * .5}
-                    markerUnits="userSpaceOnUse"
-                    markerWidth={tickSize} 
-                    markerHeight={thickness}
-                    orient="auto">
-                    <rect x="0" y="0" width={tickSize} height={thickness} />
-                </marker>
-                <mask id={maskID}>
-                    <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
-                        strokeWidth={thickness - 1}
-                        stroke="#fff"
-                        fill="none"
-                    />
-                </mask>
-                <linearGradient id={gradientID} gradientTransform="rotate(90)">
-                    <stop offset="0%" stopColor="var(--gauge-gradient__top)" />
-                    <stop offset="100%" stopColor="var(--gauge-gradient__bottom)" />
-                </linearGradient>
-            </defs>
-
-            <g transform={`translate(0 ${tickLabelsInside ? 0 : 10})`}>
-                {circle > .5 ? <circle 
-                    className="ui-gauge-ring__bg"
-                    cx={hs} 
-                    cy={hs}
-                    r={size * .5 - .25}
-                    strokeWidth={.5}
-                    stroke="var(--gauge-color__border)"
-                    fill={`url(#${gradientID})`}
-                /> : null}
-                
-                {steps ? <g mask={`url(#${maskID})`}>
-                    <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
-                        strokeWidth={thickness}
-                        stroke={colorOK}
-                        fill="none"
-                    />
-                    <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
-                        strokeWidth={thickness}
-                        strokeDasharray={`${innerCircumference * steps[1] / max} ${innerCircumference * (steps[2] - steps[1]) / max} ${innerCircumference}`}
-                        stroke={colorWarning}
-                        fill="none"
-                    />
-                    <path 
-                        d={`M ${leftScale} ${bottomScale} A ${ir} ${ir} 0 ${arcFlag} 1 ${rightScale} ${bottomScale}`}
-                        strokeWidth={thickness}
-                        strokeDasharray={`${innerCircumference * steps[0] / max} ${innerCircumference * (steps[3] - steps[0]) / max} ${innerCircumference}`}
-                        stroke={colorError}
-                        fill="none"
-                    />
-                </g> : null}
-
-                <path 
-                    d={`M ${ht + inset} ${bottom} A ${r} ${r} 0 ${arcFlag} 1 ${size - ht - inset} ${bottom}`}
-                    strokeWidth={thickness}
-                    strokeDasharray={dasharray.join(' ')}
-                    strokeDashoffset={tickSize * .5}
-                    stroke="var(--gauge-color__ticks)"
-                    markerStart={`url(#${markerID})`}
-                    markerEnd={`url(#${markerID})`}
-                    fill="none"
-                />
-
-                {subDasharray.length ? <path 
-                    d={`M ${ht + tinset - thickness * .25} ${bottomTicks} A ${tr} ${tr} 0 ${arcFlag} 1 ${size - ht - tinset + thickness * .25} ${bottomTicks}`}
-                    strokeWidth={thickness * .5}
-                    strokeDasharray={subDasharray.join(' ')}
-                    strokeDashoffset={tickSize * .5}
-                    stroke="var(--gauge-color__subticks)"
-                    fill="none"
-                /> : null}
-            
-                {[...Array(ticks).keys()].map((i, idx) => {
-                    const a = idx * Math.PI * 2 * circle / (ticks - 1) + Math.PI * .5 + (1 - circle) * Math.PI;
-                    const x = parseFloat((hs + Math.cos(a) * tlr).toFixed(4));
-                    const y = parseFloat((hs + Math.sin(a) * tlr).toFixed(4));
-                    return <text 
-                        fill="var(--gauge-color__ticklabels)"
-                        key={idx} 
-                        x={x} 
-                        y={y} 
-                        dominantBaseline="middle" 
-                        textAnchor="middle"
-                    >{(idx * max / (ticks - 1)).toFixed(1).replace(/[,.]0$/, '')}</text>
-                })}
-
-                <text 
-                    x={hs} 
-                    y={hs - 25}
-                    textAnchor="middle" 
-                    className={`${classPrefix}__label`}
-                >{label}</text>
-
-                <g 
-                    className="gauge-needle" 
-                    fill="var(--gauge-color__needle)"
-                    transform={`rotate(${needleRotation} ${hs} ${hs})`}
-                >
-                    <path d={`m ${hs - 1.5} ${hs + 6}, 1.5 -${needleLength}, 1.5 ${needleLength}z`} />
-                    <circle cx={hs} cy={hs} r="4" />
-                </g>    
-
-            </g>
-        </svg>
-        <div className={`${classPrefix}__value`}>
-            {value}
-        </div>
-    </div>
 }
 
 export default UIGauge

@@ -129,6 +129,10 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
+    useEffect(() => {
+        console.log('editor');
+    }, [])
+
     const showDropDownArrow = useCallback(() => {
         if (columnMetaData?.cellEditor.className === "LinkedCellEditor"
             || columnMetaData?.cellEditor.className === "DateCellEditor") {
@@ -597,7 +601,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
 
     /** Determine the estimated width of the table */
-    useLayoutEffect(() => {
+    useLayoutEffect(() => {        
         if (tableRef.current) {
             let cellDataWidthList:Array<{widthPreSet:boolean, width:number}> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
@@ -1010,7 +1014,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow])
 
     /** Building the columns */
-    const columns = useMemo(() => {
+    const columns = useMemo(() => {        
         const createColumnHeader = (colName: string, colIndex: number) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
@@ -1360,6 +1364,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 onKeyDown={(event) => handleTableKeys(event)}
             >
                 <DataTable
+                    key="table"
                     id={props.name}
                     ref={tableRef}
                     className={concatClassnames(
