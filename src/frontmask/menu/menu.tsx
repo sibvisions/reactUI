@@ -37,19 +37,6 @@ export interface IMenu extends IForwardRef {
 
 export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
-    // const { 
-    //     contentStore: { 
-    //         currentUser: { profileImage }, 
-    //         setActiveScreen,
-    //         activeScreens
-    //     },
-    //     server: {
-    //         sendRequest
-    //     },
-    //     subscriptions: { 
-    //         emitSelectedMenuItem
-    //      } 
-    // } = useContext(appContext);
     const context = useContext(appContext);
     const slideOptions = useProfileMenuItems();
     /** History of react-router-dom */
@@ -79,13 +66,14 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons
 
                     if (context.contentStore.activeScreens.length) {
                         context.subscriptions.emitSelectedMenuItem("");
-                        if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0])) {
-                            const compId = context.contentStore.activeScreens[0];
+                        if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
+                            const compId = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = compId;
                             context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
+                                    context.server.lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(compId);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }

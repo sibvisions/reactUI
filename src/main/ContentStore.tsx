@@ -14,6 +14,11 @@ import { getMetaData } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 
+export type ActiveScreen = {
+    name: string,
+    className?: string
+}
+
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
     /** subscriptionManager instance */
@@ -114,7 +119,7 @@ export default class ContentStore{
     customStartUpProperties = new Array<CustomStartupProps>();
 
     /** The currently active screens usually only one screen but with popups multiple possible */
-    activeScreens:string[] = [];
+    activeScreens:ActiveScreen[] = [];
 
     /** The currently selected menu item */
     selectedMenuItem:string = "";
@@ -139,13 +144,13 @@ export default class ContentStore{
      * @param screenName - the screenName of the newly opened screen or nothing to clear active screens
      * @param popup - true, if the newly opened screen is a popup
      */
-    setActiveScreen(screenName?:string, popup?:boolean) {
-        if (screenName) {
+    setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean) {
+        if (screenInfo) {
             if (popup) {
-                this.activeScreens.push(screenName);
+                this.activeScreens.push(screenInfo);
             }
             else {
-                this.activeScreens = [screenName];
+                this.activeScreens = [screenInfo];
             }
         }
         else {
@@ -342,8 +347,14 @@ export default class ContentStore{
      * @param windowName - the name of the window to close
      */
     closeScreen(windowName: string) {
-        this.activeScreens = this.activeScreens.filter(screen => screen !== windowName);
+        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
         this.subManager.emitActiveScreens();
+        if (this.activeScreens.length) {
+            this.subManager.emitSelectedMenuItem(this.activeScreens.slice(-1).pop()!.className as string);
+        }
+        else {
+            this.subManager.emitSelectedMenuItem("");
+        }
         const window = this.getComponentByName(windowName);
         if(window){
             this.cleanUp(window.id, window.name);

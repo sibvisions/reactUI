@@ -9,5 +9,5 @@ import ContentStore from "src/main/ContentStore";
  * @returns componentId of the screen
  */
 export function getEditorCompId(id:string, contentStore:ContentStore) {
-    return id && contentStore.getComponentId(id) ? contentStore.getComponentId(id) as string : contentStore.activeScreens.slice(-1).pop() as string;
+    return id && contentStore.getComponentId(id) ? contentStore.getComponentId(id) as string : contentStore.activeScreens.slice(-1).pop()?.name as string;
 }

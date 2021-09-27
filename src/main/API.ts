@@ -77,7 +77,7 @@ class API {
      * Sends a closeScreenRequest to the server for the given screen.
      * @param screenName - the screen to be closed
      */
-    sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }) {
+    sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }, popup?:boolean) {
         const csRequest = createCloseScreenRequest();
         csRequest.componentId = id;
         if (parameter) {
@@ -86,6 +86,12 @@ class API {
         //TODO topbar
         this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).then(res => {
             if (res[0] === undefined || res[0].name !== "message.error") {
+                if (popup) {
+                    this.#server.lastClosedWasPopUp = true;
+                }
+                else {
+                    this.#server.lastClosedWasPopUp = false;
+                }
                 this.#contentStore.closeScreen(id)
                 this.history?.push("/home")
             }
@@ -154,7 +160,7 @@ class API {
         if (this.#contentStore.customScreens.has(menuItem.id)) {
             const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
             const itemAction = () => {
-                this.#contentStore.setActiveScreen(menuItem.id);
+                this.#contentStore.setActiveScreen({ name: menuItem.id, className: undefined });
                 this.history?.push("/home/" + menuItem.id);
                 return Promise.resolve(true);
             };
@@ -230,7 +236,7 @@ class API {
     addToolbarItem(toolbarItem: CustomToolbarItem) {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
-                this.#contentStore.setActiveScreen(toolbarItem.id);
+                this.#contentStore.setActiveScreen({name: toolbarItem.id, className: undefined });
                 this.history?.push("/home/" + toolbarItem.id);
                 return Promise.resolve(true);
             }

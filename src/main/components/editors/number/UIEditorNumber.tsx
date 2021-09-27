@@ -159,7 +159,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         }
 
         return () => {
-            if (context.contentStore.activeScreens.indexOf(compId) !== -1 && isCellEditor && numberInput.current) {
+            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && isCellEditor && numberInput.current) {
                 numberInput.current.blur();
                 //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))
             }

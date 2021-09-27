@@ -4,7 +4,6 @@ import { MenuItemCustom } from "../../../frontmask/menu/menu";
 import { ServerMenuButtons } from "../../../main/response";
 import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../compprops";
-import { useParams } from "react-router";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 const useMenuItems = () => {
@@ -14,8 +13,6 @@ const useMenuItems = () => {
     const topbar = useContext(TopBarContext);
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItem>>();
-    /** The react router params */
-    const params = useParams<{componentId: string}>();
 
     /** 
      * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems

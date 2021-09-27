@@ -87,6 +87,8 @@ class Server {
 
     onLoginFunction:Function = () => {};
 
+    lastClosedWasPopUp = false;
+
     setAPI(api:API) {
         this.api = api;
     }
@@ -117,10 +119,6 @@ class Server {
             credentials:"include",
         };
         return reqOpt;
-    }
-
-    test() {
-        this.contentStore.customScreens.set('hallo', () => {});
     }
 
     /** ----------SENDING-REQUESTS---------- */
@@ -293,8 +291,9 @@ class Server {
             let workScreen:IPanel|undefined
             if(genericData.changedComponents && genericData.changedComponents.length) {
                 workScreen = genericData.changedComponents[0] as IPanel
+                this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
             }
-            this.contentStore.setActiveScreen(genericData.componentId, workScreen ? workScreen.screen_modal_ : false);
+            
             this.onOpenScreenFunction();
         }
     }
@@ -304,6 +303,17 @@ class Server {
      * @param closeScreenData - the close screen response 
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
+        for (let entry of this.contentStore.flatContent.entries()) {
+            if (entry[1].name === closeScreenData.componentId) {
+                if ((entry[1] as IPanel).screen_modal_) {
+                    this.lastClosedWasPopUp = true;
+                }
+                else {
+                    this.lastClosedWasPopUp = false;
+                }
+                break;
+            }
+        }
         this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
@@ -340,7 +350,7 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string){
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
@@ -408,7 +418,7 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         this.contentStore.dataProviderFetched.set(compId, tempMap);
@@ -438,7 +448,7 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
@@ -463,7 +473,7 @@ class Server {
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1];
+        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         const existingMap = this.contentStore.dataProviderMetaData.get(compId);
         if (existingMap) {
             existingMap.set(metaData.dataProvider, metaData);
@@ -717,17 +727,7 @@ class Server {
                     }
                 }
                 
-                let wasPopup: boolean = false;
-                for (let entry of this.contentStore.flatContent.entries()) {
-                    if (entry[1].name === CSResponse.componentId) {
-                        //this.contentStore.closeScreen(entry[1].name);
-                        if ((entry[1] as IPanel).screen_modal_) {
-                            wasPopup = true;
-                        }
-                        break; //quit loop because there might be a new screen of the same type
-                    }
-                }
-                if (highestPriority < 1 && !wasPopup) {
+                if (highestPriority < 1 && !this.lastClosedWasPopUp) {
                     highestPriority = 1;
                     routeTo = "home";
                 }

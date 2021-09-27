@@ -175,7 +175,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         },0);
 
         return () => {
-            if (context.contentStore.activeScreens.indexOf(compId) !== -1 && isCellEditor) {
+            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && isCellEditor) {
                 handleDateInput();
             }
         }
