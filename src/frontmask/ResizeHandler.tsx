@@ -102,18 +102,18 @@ const ResizeHandler:FC = (props) => {
     })
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionend', (event:any) => {
-        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
-            const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
-            setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
-            handleResize()
+        if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement)) {
+            if (event.propertyName === "width") {
+                
+                const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
+                setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
+                handleResize();
+            }
+            else if (event.propertyName === "max-height") {
+                handleResize();
+            }
         }
     });
-
-    // useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
-    //     if (event.propertyName === "margin-left") {
-    //         handleResize()
-    //     }
-    // });
 
     return (
         <LayoutContext.Provider value={componentSize}>
