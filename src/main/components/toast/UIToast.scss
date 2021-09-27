@@ -35,53 +35,6 @@
                 }
             }
 
-            &.warning {
-                background: #ffcf40;
-
-                .toast-header-text {
-                    color: #926d00;
-                }
-
-                .toast-header-left .toast-header-icon {
-                    color: #926d00;
-                }
-
-                .toast-header-close {
-                    color: #926d00;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #ebbd35;                        
-                    }
-                }
-            }
-
-            &.error {
-                background: #ff364a;
-
-                .toast-header-close {
-                    color: white;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #db2739;
-                    }
-                }
-            }
-
-            &.question {
-                background: #17c0eb;
-
-                .toast-header-close {
-                    color: white;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #13aacf;
-                    }
-                }
-            }
-
             .toast-header-text {
                 align-self: center;
                 font-size: 1rem;
@@ -116,10 +69,6 @@
 
             &.single-button {
                 justify-content: flex-end;
-            }
-
-            &.more-buttons {
-                justify-content: space-between;
             }
         }
     }

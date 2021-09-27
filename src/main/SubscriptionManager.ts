@@ -1,7 +1,7 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
-import { ApplicationSettingsResponse, DeviceStatusResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
+import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
@@ -574,7 +574,7 @@ export class SubscriptionManager {
 
     /** Unsubscribes UIToast from close-frame-responses */
     unsubscribeFromCloseFrame() {
-        this.messageSubscriber = () => {};
+        this.closeFrameSubscriber = () => {};
     }
 
     /**
@@ -724,8 +724,8 @@ export class SubscriptionManager {
     }
 
     /** Tell UIToast that there is a new message */
-    emitMessage(dialogResponse:DialogResponse|MessageResponse|ErrorResponse, err:boolean) {
-        this.messageSubscriber.apply(undefined, [dialogResponse, err]);
+    emitMessage(messageResponse:MessageResponse|ErrorResponse, err:boolean) {
+        this.messageSubscriber.apply(undefined, [messageResponse, err]);
     }
 
     emitCloseFrame(compId:string) {
