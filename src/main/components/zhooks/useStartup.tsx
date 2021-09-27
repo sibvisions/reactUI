@@ -110,7 +110,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             }
         }
 
-        const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
+        const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }, config?:boolean) => {
             if (options) {
                 if (options instanceof URLSearchParams) {
                     if (options.has("appName")) {
@@ -124,12 +124,12 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                             context.server.BASE_URL = baseUrl;
                             context.server.RESOURCE_URL = baseUrl + "/resource/" + options.get("appName");
                         }
-                        else {
+                        else if (!config) {
                             context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'baseUrl' seems to be missing. Either check typing/casing or add the parameter!");
                         }
 
                     }
-                    else {
+                    else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
                     }
                     if (options.has("userName") && options.has("password")) {
@@ -149,18 +149,18 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                             context.server.BASE_URL = baseUrl;
                             context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
                         }
-                        else {
+                        else if (!config) {
                             context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'baseUrl' seems to be missing. Either check typing/casing or add the property!");
                         }
                     }
-                    else {
+                    else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'appName' seems to be missing. Either check typing/casing or add the property!");
                     }
                     if (options.userName && options.password) {
                         startupReq.userName = options.userName;
                         startupReq.password = options.password;
                     }
-                    else {
+                    else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed properties 'userName' or 'password' seem/s to be missing. Either check typing/casing or add the property/properties!");
                     }
                     context.server.embeddedOptions = options;
@@ -243,10 +243,10 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             startUpRequest.language = data.language ? data.language : 'de';
 
             if (!props.embedOptions) {
-                setStartupProperties(startUpRequest, urlParams)
+                setStartupProperties(startUpRequest, urlParams, true)
             }
             else {
-                setStartupProperties(startUpRequest, props.embedOptions);
+                setStartupProperties(startUpRequest, props.embedOptions, true);
             }
             
         }).catch(() => {
