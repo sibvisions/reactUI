@@ -3,19 +3,14 @@ import React from "react"
 
 /** 3rd Party imports */
 import { format, formatISO, isValid } from 'date-fns'
-import { Checkbox } from "primereact/checkbox";
 
 /** Other imports */
-import { getBooleanValue, 
-         ICellEditorChoice, 
-         ICellEditorDate, 
+import { ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
 import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
-import { CellFormatting } from "./UITable";
-
 /** 
  * Returns an in-cell editor for the column 
  * @param metaData - the metaData of the CellEditor
@@ -58,22 +53,8 @@ export function cellRenderer(
 ) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
-            /** If the cell is a ChoiceCellEditor get the index of the value in metaData and return the corresponding image */
-            if (metaData.cellEditor.className === "ChoiceCellEditor") {
-                const castedCellEditor = metaData.cellEditor as ICellEditorChoice;
-                const cellIndex = castedCellEditor.allowedValues.indexOf(cellData);
-                if (castedCellEditor.imageNames && cellIndex !== undefined)
-                    return <img
-                        className="rc-editor-choice-img"
-                        alt="choice" src={resource + castedCellEditor.imageNames[cellIndex]}
-                        onClick={stateFunc ? () => stateFunc() : undefined}
-                        onLoad={(e) => {
-                            e.currentTarget.style.setProperty('--choiceMinW', `${e.currentTarget.naturalWidth}px`);
-                            e.currentTarget.style.setProperty('--choiceMinH', `${e.currentTarget.naturalHeight}px`);
-                        }} />
-            }
             /** If the cell is a DateCellEditor use date-fns format to return the correct value with the correct format*/
-            else if (metaData.cellEditor.className === "DateCellEditor") {
+            if (metaData.cellEditor.className === "DateCellEditor") {
                 const castedCellEditor = metaData.cellEditor as ICellEditorDate;
                 if (isValid(cellData))
                     return castedCellEditor.dateFormat ? format(cellData, castedCellEditor.dateFormat, { locale: getDateLocale(locale) }) : formatISO(cellData);
@@ -105,12 +86,6 @@ export function cellRenderer(
                         minimumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).minScale,
                         maximumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).maxScale
                     }).format(cellData);
-            } 
-            else if (metaData.cellEditor.className === "CheckBoxCellEditor") {
-                return <span onClick={stateFunc ? () => stateFunc() : undefined}>
-                    <Checkbox checked={getBooleanValue(cellData)} />
-                </span>
-                
             }
             else if (typeof cellData === "string" && cellData.includes("<html>")) {
                 return <span dangerouslySetInnerHTML={{ __html: cellData as string }}/>

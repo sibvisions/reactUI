@@ -15,7 +15,7 @@ import { concatClassnames } from '../util';
 
 type IToast = {
     dialog:MessageResponse|ErrorResponse,
-    error:boolean
+    severity:"error"|"info"
 }
 
 /** This component displays a toast which either is a error toast or a message sent by the server */
@@ -57,7 +57,7 @@ const UIToast: FC = () => {
 
     /** Subscribes the toast components to messages */
     useEffect(() => {
-        context.subscriptions.subscribeToMessage((dialog:MessageResponse|ErrorResponse, err:boolean) => setToastProps({dialog: dialog, error: err}));
+        context.subscriptions.subscribeToMessage((dialog:MessageResponse|ErrorResponse, err:"error"|"info") => setToastProps({dialog: dialog, severity: err}));
         return () => {
             context.subscriptions.unsubscribeFromMessage();
         }
@@ -66,8 +66,8 @@ const UIToast: FC = () => {
     /** Toast showing, styling and hiding handling */
     useEffect(() => {
         if (toastInfoRef.current && toastErrRef.current && toastIndex.current !== null && toastProps) {
-            if (toastProps.error) {
-                const toast: ToastMessage = { severity: 'error', summary: toastProps.dialog.message }
+            if (toastProps.severity) {
+                const toast: ToastMessage = { severity: toastProps.severity, summary: toastProps.dialog.message }
                 toastErrRef.current.show(toast);
                 toastIndex.current++;
             }

@@ -1,5 +1,4 @@
 export { default as UIEditorCheckBox } from "./checkbox/UIEditorCheckbox";
-export { getBooleanValue } from "./checkbox/UIEditorCheckbox";
 export type { IEditorCheckBox, ICellEditorCheckBox } from "./checkbox/UIEditorCheckbox";
 export { default as UIEditorChoice } from "./choice/UIEditorChoice";
 export type { IEditorChoice, ICellEditorChoice } from "./choice/UIEditorChoice";

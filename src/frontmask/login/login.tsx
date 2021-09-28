@@ -67,7 +67,7 @@ export const LoginForm:FC = () => {
 
     const sendResetPassword = () => {
         if (!email) {
-            context.subscriptions.emitMessage({ message: translations.get("The email is required"), name: "" }, false);
+            context.subscriptions.emitMessage({ message: translations.get("The email is required"), name: "" });
         }
         else {
             const resetReq = createResetPasswordRequest();

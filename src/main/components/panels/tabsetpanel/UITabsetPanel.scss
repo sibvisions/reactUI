@@ -53,8 +53,7 @@
     cursor: pointer;
     color: var(--tabsetXColor);
     position: absolute;
-    right: 10px;
-    top: 18.5px;
+    top: 2px;
     z-index: 1;
     &:hover {
         font-weight: bold;
@@ -65,4 +64,8 @@
 
 .black .p-ink {
     background: rgba(0,0,0,.2);
+}
+
+.p-tabview-title {
+    position: relative;
 }

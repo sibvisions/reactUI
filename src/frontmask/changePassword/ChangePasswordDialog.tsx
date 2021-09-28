@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, FormEvent, MouseEventHandler, useContext, useEffect, useState } from "react";
+import React, { FC, FormEvent, useContext, useEffect, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -57,13 +57,13 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!newPassword) {
-            context.subscriptions.emitMessage({ message: translations.get("The new password is empty"), name: "" }, false);
+            context.subscriptions.emitMessage({ message: translations.get("The new password is empty"), name: "" });
         }
         else if (newPassword !== confirmPassword) {
-            context.subscriptions.emitMessage({ message: translations.get("The passwords are different!"), name: "" }, false);
+            context.subscriptions.emitMessage({ message: translations.get("The passwords are different!"), name: "" });
         }
         else if (newPassword === props.password) {
-            context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" }, false);
+            context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" });
         }
         else {
             if (props.loggedIn) {
@@ -92,7 +92,8 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         <Dialog
             className="rc-popup change-dialog"
             header={isReset ? translations.get("Reset password") : translations.get("Change password")}
-            visible={dialogVisible} onHide={() => setDialogVisible(false)}
+            visible={dialogVisible} 
+            onHide={() => setDialogVisible(false)}
             draggable={false} >
             <div className="change-dialog-container">
                 <form onSubmit={sendChangedPassword} className="change-password-form">

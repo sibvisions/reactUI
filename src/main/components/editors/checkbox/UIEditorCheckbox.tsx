@@ -18,26 +18,13 @@ import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
     text?: string,
-    selectedValue?:string|boolean|number|undefined, 
+    selectedValue?:string|boolean|number,
+    deselectedValue?:string|boolean|number
 }
 
 /** Interface for CheckBoxCellEditor */
 export interface IEditorCheckBox extends IEditor {
     cellEditor: ICellEditorCheckBox
-}
-
-/**
- * Returns the boolean value depending on the CheckBox input
- * @param input - value of CheckBoxCellEditor
- * @returns boolean value of CheckBox input
- */
-export function getBooleanValue(input: string | boolean | number | undefined) {
-    if (input === 'Y' || input === true || input === 1) {
-        return true;
-    }
-    else {
-        return false;
-    }
 }
 
 /**
@@ -77,52 +64,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    /**
-     * Returns the CheckBox Type based on the selectedValue. The value of a checkbox can be:
-     * string, number and boolean
-     * @param selectedValue - the selected value
-     * @returns the CheckBox Type, string, number or boolean 
-     */
-    const getCbxType = (selectedValue:string|boolean|number|undefined) => {
-        if (selectedValue === 'Y') {
-            return 'STRING';
-        }
-        else if (selectedValue === 1) {
-            return 'NUMBER';
-        }
-        else {
-            return 'BOOLEAN';
-        }
-    }
-
-    /**
-     * Returns the correct value which needs to be sent to the server based on the CheckBoxCellEditor type.
-     * @param value - current CheckBox value 
-     * @param type - CheckBoxCellEditor type
-     * @returns the correct value for CheckBox type to send to server
-     */
-    const getColumnValue = (value:boolean, type:string) => {
-        if (value) {
-            switch (type) {
-                case 'STRING': return 'N';
-                case 'NUMBER': return 0;
-                default: return false;
-            }
-        }
-        else {
-            switch (type) {
-                case 'STRING': return 'Y';
-                case 'NUMBER': return 1;
-                default: return true;
-            }
-        }
-    }
-
-    /** The CheckBox type */
-    const cbxType = getCbxType(props.cellEditor.selectedValue)
-
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(getBooleanValue(selectedRow ? selectedRow.data : undefined));
+    const [checked, setChecked] = useState(selectedRow ? selectedRow.data : undefined);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
@@ -135,16 +78,18 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
-        setChecked(getBooleanValue(selectedRow ? selectedRow.data : undefined))
+        setChecked(selectedRow ? selectedRow.data : undefined)
     }, [selectedRow]);
 
     const handleOnChange = () => {
-        setChecked(prevState => !prevState);
         showTopBar(sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
-            getColumnValue(checked, cbxType),
+            checked !== props.cellEditor.selectedValue ? 
+            props.cellEditor.selectedValue ? props.cellEditor.selectedValue : true
+            : 
+            props.cellEditor.deselectedValue ? props.cellEditor.deselectedValue : false,
             context.server,
             props.rowIndex ? props.rowIndex() : undefined,
             selectedRow.index,
@@ -192,6 +137,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
             }}>
             <Checkbox
                 inputId={id}
+                trueValue={props.cellEditor.selectedValue}
+                falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}

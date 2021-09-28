@@ -6,7 +6,7 @@ import { REQUEST_ENDPOINTS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
-
+import { version } from "../../../../package.json";
 
 const useProfileMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
@@ -57,6 +57,13 @@ const useProfileMenuItems = () => {
                     icon: "pi pi-power-off",
                     command(e: MenuItemCommandParams) {
                         sendLogout()
+                    }
+                },
+                {
+                    label: "Info",
+                    icon: "pi pi-info-circle",
+                    command(e: MenuItemCommandParams) {
+                        context.subscriptions.emitMessage({ name: "", message: "ReactUI Version: " + version }, "info");
                     }
                 }
             ] :

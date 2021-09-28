@@ -590,7 +590,7 @@ class Server {
         //this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
         this.subManager.emitSessionExpired();
         this.routingDecider([expData]);
-        this.subManager.emitMessage({message: expData.title, name: ""}, true);
+        this.subManager.emitMessage({message: expData.title, name: ""}, "error");
         console.error(expData.title)
     }
 
@@ -600,13 +600,13 @@ class Server {
      */
     showError(errData: ErrorResponse) {
         if (!errData.silentAbort) {
-            this.subManager.emitMessage(errData, true);
+            this.subManager.emitMessage(errData, "error");
         }
         console.error(errData.details)
     }
 
     showInfo(infoData: MessageResponse) {
-        this.subManager.emitMessage(infoData, false);
+        this.subManager.emitMessage(infoData, "error");
     }
 
     showMessageDialog(dialogData:DialogResponse) {
@@ -618,7 +618,7 @@ class Server {
      * @param reData - the restartResponse
      */
     showRestart(reData:RestartResponse) {
-        this.subManager.emitMessage({ message: 'Reload Page: ' + reData.info, name: "" }, true)
+        this.subManager.emitMessage({ message: 'Reload Page: ' + reData.info, name: "" }, "error")
         console.warn(reData.info);
     }
 
