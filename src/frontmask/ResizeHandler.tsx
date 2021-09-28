@@ -27,25 +27,21 @@ const ResizeHandler:FC = (props) => {
      * setting this size will recalculate the layouts
      */
      const doResize = useCallback(() => {
-         //Timeout 0 because desktoppanel changes from margin 0 to 10px and when doResize is called when opening a screen from desktoppanel,
-         //the margin is not taken into account without the timeout.
-         setTimeout(() => {
-            if (sizeRef.current || document.querySelector('#workscreen')) {
-                const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
-                const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
-                const sizeMap = new Map<string, CSSProperties>();
-                Children.forEach(props.children,child => {
-                    const childWithProps = (child as ChildWithProps);
-                    sizeMap.set(childWithProps.props.id, {width: width, height: height});
-                });
-                if (context.appSettings.desktopPanel) {
-                    sizeMap.set(context.appSettings.desktopPanel.id, {width: width, height: height})
-                }
-    
-                //TODO: maybe fetch ids via screenId instead of relying on the children 
-                setComponentSize(sizeMap);
-            }
-         }, 0)
+         if (sizeRef.current || document.querySelector('#workscreen')) {
+             const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
+             const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
+             const sizeMap = new Map<string, CSSProperties>();
+             Children.forEach(props.children, child => {
+                 const childWithProps = (child as ChildWithProps);
+                 sizeMap.set(childWithProps.props.id, { width: width, height: height });
+             });
+             if (context.appSettings.desktopPanel) {
+                 sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: height })
+             }
+
+             //TODO: maybe fetch ids via screenId instead of relying on the children 
+             setComponentSize(sizeMap);
+         }
     },[props.children]);
 
     /** Using underscore throttle for throttling resize event */
@@ -95,6 +91,7 @@ const ResizeHandler:FC = (props) => {
     },[doResize]);
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionstart', (event:any) => {
+        console.log(event.propertyName, 'start')
         if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
             const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
             currSizeRef.classList.add('transition-disable-overflow');
@@ -102,9 +99,9 @@ const ResizeHandler:FC = (props) => {
     })
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionend', (event:any) => {
+        console.log(event.propertyName, 'end')
         if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement)) {
             if (event.propertyName === "width") {
-                
                 const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
                 setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
                 handleResize();
@@ -114,6 +111,14 @@ const ResizeHandler:FC = (props) => {
             }
         }
     });
+
+    useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
+        if (event.propertyName === "margin-left") {
+            handleResize()
+        }
+    });
+
+    console.log(componentSize)
 
     return (
         <LayoutContext.Provider value={componentSize}>

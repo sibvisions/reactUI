@@ -37,41 +37,31 @@ const useMenuItems = () => {
                 })
             }
 
-            console.log(menuGroup)
-
             menuGroup.forEach((value, key) => {
                 const nameSplit = key.split("/");
-                let foundSuper: MenuItem | undefined = primeMenu.find(item => item.label === nameSplit[0]);
+                let menuIterator = primeMenu;
                 let i = 0
                 while (i < nameSplit.length) {
-                    let primeMenuItem: MenuItem = {
-                        label: nameSplit[i],
-                        icon: undefined
-                    }
-                    //console.log(nameSplit)
-                    if (!foundSuper) {
-                        primeMenuItem.items = i === nameSplit.length - 1 ?
-                            getSubItems(value) : [];
-                        primeMenu.push(primeMenuItem);
+                    const foundEntry = menuIterator.find(item => item.label === nameSplit[i]);
+                    if (!foundEntry) {
+                        const newMainMenuGroup = {
+                            label: nameSplit[i],
+                            icon: undefined,
+                            items: i === nameSplit.length - 1 ?
+                            getSubItems(value) : []
+                        };
+                        menuIterator.push(newMainMenuGroup)
+                        menuIterator = newMainMenuGroup.items;
                     }
                     else {
                         if (i === nameSplit.length - 1) {
-                            const subItems = getSubItems(value);
-                            primeMenuItem.items = subItems
-                            //console.log(subItems, foundSuper, nameSplit[i], primeMenuItem)
-                            foundSuper.items = [...foundSuper.items as MenuItem[], primeMenuItem]
-                            //console.log(foundSuper.items)
+                            foundEntry.items = [...(foundEntry.items as MenuItem[]), ...getSubItems(value)];
                         }
-                        else {
-                            primeMenuItem.items = []
-                            foundSuper.items = [...foundSuper.items as MenuItem[], primeMenuItem];
-                        }
+                        menuIterator = foundEntry.items as MenuItem[];
                     }
-                    foundSuper = primeMenuItem;
                     i++;
                 }
             });
-            console.log(primeMenu)
             setMenuItems(primeMenu);
         }
         receiveNewMenuItems(context.contentStore.menuItems);
