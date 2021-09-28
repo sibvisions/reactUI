@@ -91,7 +91,6 @@ const ResizeHandler:FC = (props) => {
     },[doResize]);
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionstart', (event:any) => {
-        console.log(event.propertyName, 'start')
         if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
             const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
             currSizeRef.classList.add('transition-disable-overflow');
@@ -99,7 +98,6 @@ const ResizeHandler:FC = (props) => {
     })
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionend', (event:any) => {
-        console.log(event.propertyName, 'end')
         if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement)) {
             if (event.propertyName === "width") {
                 const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
@@ -117,8 +115,6 @@ const ResizeHandler:FC = (props) => {
             handleResize()
         }
     });
-
-    console.log(componentSize)
 
     return (
         <LayoutContext.Provider value={componentSize}>
