@@ -34,6 +34,7 @@ import { UIMapGoogle, UIMapOSM } from "../components/map"
 import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/customComp/index'
 import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
+import UIBrowser from "../components/browser/UIBrowser";
 
 
 /**
@@ -129,6 +130,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     )
     .set("Tree", props => <UITree {...props} />)
     .set("Gauge", props => <UIGauge {...props} />)
+    .set("MobileBrowser", props => <UIBrowser {...props} />);
 
 /**
  * Returns the JSXElement for the given base component

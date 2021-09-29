@@ -3,7 +3,8 @@
   "homepage": ".",
   "version": "1.0.0",
   "private": true,
-  "main": "dist/JVxReactUI.js",
+  "main": "dist/moduleIndex.js",
+  "types": "dist/src/moduleIndex.d.ts",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
