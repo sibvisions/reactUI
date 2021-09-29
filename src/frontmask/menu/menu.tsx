@@ -35,7 +35,7 @@ export interface IMenu extends IForwardRef {
     visibleButtons:VisibleButtons
 }
 
-export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons}> = (props) => {
+export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons?:VisibleButtons}> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     const slideOptions = useProfileMenuItems();
@@ -88,25 +88,25 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons:VisibleButtons
                 tooltip="Home"
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
             }
-            {props.showButtons && props.visibleButtons.save && <Button
+            {props.showButtons && (!props.visibleButtons || props.visibleButtons.save) && <Button
                 icon="fa fa-save"
                 className="menu-upper-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
-            {((props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
+            {(!props.visibleButtons || (props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
                 <Button
-                    icon={props.visibleButtons.reload && !props.visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                    icon={!props.visibleButtons ? "fa fa-refresh" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
                     className="menu-upper-buttons"
                     onClick={() => {
-                        if (props.visibleButtons.reload && !props.visibleButtons.rollback) {
+                        if (!props.visibleButtons || (props.visibleButtons.reload && !props.visibleButtons.rollback)) {
                             showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
                         }
                         else {
                             showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
                         }
                     }}
-                    tooltip={translations.get(props.visibleButtons.reload && !props.visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltip={translations.get(!props.visibleButtons ? "Reload" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} /> }
             <div className="profile-menu">
                 <Menubar
