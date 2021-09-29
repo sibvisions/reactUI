@@ -27,7 +27,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<ICustomComponentWrapper>(baseProps.id, baseProps)
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = props;
+    const {onLoadCallback, id} = baseProps;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

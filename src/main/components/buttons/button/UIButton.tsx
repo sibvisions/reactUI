@@ -9,7 +9,7 @@ import tinycolor from 'tinycolor2';
 import { useProperties, useButtonMouseImages, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
-import { createFocusGainedRequest, createFocusLostRequest, createPressButtonRequest } from "../../../factories/RequestFactory";
+import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { appContext } from "../../../AppProvider";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos, getIconCenterDirection } from "..";

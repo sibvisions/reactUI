@@ -41,7 +41,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-    const panelRef = useRef<any>(null)
+
+    const panelRef = useRef<any>(null);
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
