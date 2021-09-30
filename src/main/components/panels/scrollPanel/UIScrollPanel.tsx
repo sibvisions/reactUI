@@ -18,20 +18,37 @@ import { appContext } from "../../../AppProvider";
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+
+    /** Children of this panel */
+    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id);
+    const [components, componentSizes] = useComponents(baseProps.id, children);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
+
+    /** Refernce for the panel element */
     const panelRef = useRef<any>(null);
+
+    /** Reference if a fixed amount of px (width) should be substracted if scrollbar appears */
     const minusWidth = useRef<boolean>(false);
+
+    /** Reference if a fixed amount of px (height) should be substracted if scrollbar appears */
     const minusHeight = useRef<boolean>(false);
+
+    /** State of layoutsize */
     const [layoutSize, setLayoutSize] = useState<Dimension>()
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -144,7 +161,8 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 compSizes={componentSizes}
                 components={components}
                 alignChildrenIfOverflow={false}
-                style={scrollStyle}/>
+                style={scrollStyle}
+                children={children} />
         </div>
     )
 }

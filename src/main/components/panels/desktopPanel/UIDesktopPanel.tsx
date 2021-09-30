@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useRef } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useMouseListener, useLayoutValue } from "../../zhooks";
@@ -20,12 +20,19 @@ export interface IDesktopPanel extends BaseComponent {
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+
+    /** Children of this panel */
+    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id);
+    const [components, componentSizes] = useComponents(baseProps.id, children);
+
     const panelRef = useRef<any>(null);
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -47,7 +54,8 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 components={components}
                 style={{...layoutStyle}} 
                 reportSize={() => {}}
-                panelType="DesktopPanel"/>
+                panelType="DesktopPanel"
+                children={children} />
         </div>
     )
 }

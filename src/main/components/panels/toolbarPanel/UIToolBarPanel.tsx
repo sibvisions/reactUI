@@ -1,44 +1,35 @@
 /** React imports */
-import React, { FC, useContext, useMemo, useRef } from "react";
+import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from "react";
+
+/** 3rd party imports */
+import { Toolbar } from 'primereact/toolbar';
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, ComponentSizes } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
-import BaseComponent from "../../BaseComponent";
 import { appContext } from "../../../AppProvider";
+import { IPanel } from "..";
 
-/** Interface for Panels */
-export interface IPanel extends BaseComponent {
-    layout: string,
-    layoutData: string,
-    backgroundImage?: string,
-    "mobile.autoclose"?: boolean,
-    screen_modal_?: boolean
-    screen_navigationName_?:string
-    screen_title_?: string,
-    screen_className_?: string,
-    screen_size_?: string
+/** Interface for ToolbarPanels */
+export interface IToolBarPanel extends IPanel {
+    toolBarArea:0|1|2|3;
 }
 
-/**
- * This component displays a panel which holds a layout where components are lay out
- * @param baseProps - Initial properties sent by the server for this component
- */
-const UIPanel: FC<IPanel> = (baseProps) => {
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
+const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Current state of the properties for the component sent by the server */
+    const [props] = useProperties(baseProps.id, baseProps);
 
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+    const children = useMemo(() => new Map([...context.contentStore.getChildren(props.id)].filter(entry => entry[0].includes("-tb"))), [props.id]);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);
@@ -49,16 +40,22 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
 
-    /** Reference for the panel element */
     const panelRef = useRef<any>(null);
+
+    const toolBarRef = useRef<any>(null);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    const toolBar = <Toolbar left={<>{components.filter(comp => comp.props["~additional"]).map(comp => <div>{comp}</div>)}</>} />
+
+    const tbSize = useRef<Dimension|undefined>();
 
     /**
      * Returns the style of the panel/layout
      * @returns style of panel/layout
      */
-    const getStyle = () => {
+     const getStyle = () => {
         let s:React.CSSProperties = {};
         /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
         if (props.screen_modal_) {
@@ -85,35 +82,39 @@ const UIPanel: FC<IPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-    const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
+     const reportSize = (prefSize:Dimension, minSize?:Dimension, inner?:boolean) => {
         if (onLoadCallback) {
             sendOnLoadCallback(
-                id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, 
+                inner ? "inner-" + id : id,
+                props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, 
                 parseMaxSize(props.maximumSize), 
                 props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)), 
                 undefined, 
                 onLoadCallback
             );
         }
+        if (toolBarRef.current) {
+            tbSize.current = { height: toolBarRef.current.offsetHeight, width: toolBarRef.current.offsetWidth }
+        }
     }
 
     return (
         <div
-            className="rc-panel"
+            //className="rc-panel"
             ref={panelRef}
-            id={props.name} 
-            style={props.screen_modal_ ? { 
-                height: prefSize?.height, 
+            id={props.name}
+            style={props.screen_modal_ ? {
+                height: prefSize?.height,
                 width: prefSize?.width,
                 ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
             } : {
-                ...layoutStyle, 
+                ...layoutStyle,
                 backgroundColor: props.background,
                 ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
             }}>
             <Layout
                 id={id}
-                layoutData={props.layoutData}
+                layoutData={""}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
                 minimumSize={parseMinSize(props.minimumSize)}
@@ -121,10 +122,11 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 popupSize={parsePrefSize(props.screen_size_)}
                 reportSize={reportSize}
                 compSizes={componentSizes}
-                components={components}
-                style={getStyle()} 
-                children={children} />
+                components={components.filter(comp => comp.props.id.includes(id + '-'))}
+                style={getStyle()}
+                children={children}
+            />
         </div>
     )
 }
-export default UIPanel
+export default UIToolBarPanel;

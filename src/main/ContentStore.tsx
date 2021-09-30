@@ -13,6 +13,7 @@ import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperO
 import { getMetaData } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
+import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 
 export type ActiveScreen = {
     name: string,
@@ -169,7 +170,7 @@ export default class ContentStore{
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
      */
-    updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean) {
+    updateContent(componentsToUpdate: Array<BaseComponent>, desktop: boolean) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
         /** 
@@ -177,6 +178,25 @@ export default class ContentStore{
          * removedContent. Undefined if it is a new component
          */
         let existingComponent: BaseComponent | undefined;
+
+        /**
+         * Returns the constraint of the toolbar-main sub-panel.
+         * @param tba - the toolbararea property
+         */
+        const getToolBarMainConstraint = (tba: 0 | 1 | 2 | 3) => {
+            switch (tba) {
+                case 0:
+                    return "North";
+                case 1:
+                    return "West";
+                case 2:
+                    return "South";
+                case 3:
+                    return "East";
+                default:
+                    return "North";
+            }
+        }
 
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
@@ -198,6 +218,17 @@ export default class ContentStore{
                     else {
                         this.removedContent.delete(newComponent.id);
                         this.flatContent.set(newComponent.id, existingComponent);
+                        // If the new component is a toolbarpanel, also add the sub-tb-panels to flatcontent
+                        if (existingComponent.className === "ToolBarPanel") {
+                            const tbMain = this.removedContent.get(newComponent.id + "-tbMain");
+                            const tbCenter = this.removedContent.get(newComponent.id + "-tbCenter");
+                            if (tbMain && tbCenter) {
+                                this.removedContent.delete(newComponent.id + "-tbMain");
+                                this.removedContent.delete(newComponent.id + "-tbCenter");
+                                this.flatContent.set(newComponent.id + "-tbMain", tbMain);
+                                this.flatContent.set(newComponent.id + "tbCenter", tbCenter);
+                            }
+                        }
                     }
                     
                 }
@@ -214,35 +245,92 @@ export default class ContentStore{
                 newComponent["~destroy"] || 
                 newComponent.visible !== undefined || 
                 newComponent.constraints
-            ){
-                notifyList.push(existingComponent?.parent || "");
-                if(newComponent.parent)
+            ) {
+                if(newComponent.parent) {
                     notifyList.push(newComponent.parent);
+                    // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
+                    if (newComponent.parent.includes("TBP")) {
+                        if (newComponent["~additional"]) {
+                            notifyList.push(newComponent.parent + "-tbMain");
+                        }
+                        else {
+                            notifyList.push(newComponent.parent + "-tbCenter");
+                        }
+                    }
+                    else {
+                        notifyList.push(newComponent.parent);
+                    }
+                }
             }
 
-            
-
-            /** Add new Component or updated Properties */
+            /** Add new component or updated properties */
             if(existingComponent) {
                 for (let newPropName in newComponent) {
                     // @ts-ignore
-                    existingComponent[newPropName] = newComponent[newPropName]
+                    existingComponent[newPropName] = newComponent[newPropName];
+                    if (existingComponent.className === "ToolBarPanel") {
+                        //When the layout for the toolbar-panel changes, don't overwrite the borderlayout of the outer, instead update the layout of the inner sub-panel.
+                        if (newPropName === "layout") {                   
+                            const tbCenter = this.flatContent.get(existingComponent.id + "-tbCenter");
+                            // @ts-ignore
+                            existingComponent[newPropName] = "BorderLayout,0,0,0,0,0,0";
+                            if (tbCenter) {
+                                //@ts-ignore
+                                tbMain[newPropName] = newComponent[newPropName];
+                            }
+                        }
+                        //When the toolbar-panel's toolBarArea changes, update the toolbar sub-panels constraints
+                        else if (newPropName === "toolBarArea") {
+                            const tbMain = this.flatContent.get(existingComponent.id + "-tbMain");
+                            if (tbMain) {
+                                tbMain.constraints = getToolBarMainConstraint((existingComponent as IToolBarPanel).toolBarArea);
+                            }
+                        }
+                    }
                 }
             } 
             else if (!isCustom) {
                 if (desktop) {
-                    if (this.removedDesktopContent.has(newComponent.id)) {
-                        this.removedDesktopContent.delete(newComponent.id);
-                    }
                     this.desktopContent.set(newComponent.id, newComponent);
                 }
                 else {
-                    if (this.removedContent.has(newComponent.id)) {
-                        this.removedContent.delete(newComponent.id)
+                    //if the new component is a toolbar-panel add 2 sub-panels, one for the toolbar and one for the toolbar-panel's content.
+                    if (newComponent.className === "ToolBarPanel") {
+                        const castedNewComp = newComponent as IToolBarPanel;
+                        const innerLayout = castedNewComp.layout;
+                        castedNewComp.layout = "BorderLayout,0,0,0,0,0,0";
+
+                        const tbMain:IPanel = {
+                            id: newComponent.id + "-tbMain",
+                            parent: newComponent.id,
+                            constraints: getToolBarMainConstraint(castedNewComp.toolBarArea),
+                            name: newComponent.name + "-tbMain",
+                            className: "ToolBarHelper",
+                            layout: "FlowLayout,5,5,5,5,0,0,0,0,0,3,true",
+                            layoutData: "",
+                            preferredSize: newComponent.preferredSize, 
+                            minimumSize: newComponent.minimumSize, 
+                            maximumSize: newComponent.maximumSize
+                        }
+
+                        const tbCenter:IPanel = {
+                            id: newComponent.id + "-tbCenter",
+                            parent: newComponent.id,
+                            constraints: "Center",
+                            name: newComponent.name + "-tbCenter",
+                            className: "ToolBarHelper",
+                            layout: innerLayout,
+                            layoutData: castedNewComp.layoutData,
+                            preferredSize: newComponent.preferredSize, 
+                            minimumSize: newComponent.minimumSize, 
+                            maximumSize: newComponent.maximumSize
+                        }
+
+                        this.flatContent.set(tbMain.id, tbMain);
+                        this.flatContent.set(tbCenter.id, tbCenter);
                     }
                     this.flatContent.set(newComponent.id, newComponent);
                 }
-                
             }
             else {
                 const newComp:BaseComponent = {
@@ -268,8 +356,20 @@ export default class ContentStore{
                         this.removedDesktopContent.set(newComponent.id, existingComponent);
                     }
                     else {
+                        const compToRemove = this.flatContent.get(newComponent.id)
                         this.flatContent.delete(newComponent.id);
                         this.removedContent.set(newComponent.id, existingComponent);
+                        // When the toolbar-panel gets removed, also add the sub-panels to removedContent
+                        if (compToRemove && compToRemove.className === "ToolBarPanel") {
+                            const tbMain = this.flatContent.get(compToRemove.id + "-tbMain");
+                            const tbCenter = this.flatContent.get(compToRemove.id + "-tbCenter");
+                            if (tbMain && tbCenter) {
+                                this.flatContent.delete(compToRemove.id + "-tbMain");
+                                this.flatContent.delete(compToRemove.id + "-tbCenter");
+                                this.removedContent.set(compToRemove.id + "-tbMain", tbMain);
+                                this.removedContent.set(compToRemove.id + "-tbCenter", tbCenter);
+                            }
+                        }
                     }
                 }
                 else {
@@ -278,19 +378,26 @@ export default class ContentStore{
                 }
             }
 
-
-
             if (newComponent["~destroy"]) {
+                const compToDestroy = this.flatContent.get(newComponent.id);
                 if (desktop) {
                     this.desktopContent.delete(newComponent.id)
                 }
                 else {
                     this.flatContent.delete(newComponent.id);
+                    if (compToDestroy && compToDestroy.className === "ToolBarPanel") {
+                        this.flatContent.delete(compToDestroy.id + "-tbMain");
+                        this.flatContent.delete(compToDestroy.id + "-tbCenter");
+                    }
                 }
-                
+
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
-                    this.removedDesktopContent.delete(newComponent.id)
+                    if (compToDestroy && compToDestroy.className === "ToolBarPanel") {
+                        this.removedContent.delete(compToDestroy.id + "-tbMain");
+                        this.removedContent.delete(compToDestroy.id + "-tbCenter");
+                    }
+                    this.removedDesktopContent.delete(newComponent.id);
                 }
                 else {
                     this.removedCustomContent.delete(newComponent.id);
@@ -328,9 +435,25 @@ export default class ContentStore{
                 || this.removedContent.get(value.id)
                 || this.desktopContent.get(value.id)
                 || this.removedDesktopContent.get(value.id);
+
             const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
-            if (existingComp && updateFunction) {
-                updateFunction(existingComp);
+
+            if (existingComp) {
+                if (existingComp.className === "ToolBarPanel") {
+                    const existingTbMain = this.flatContent.get(existingComp.id + "-tbMain") || this.removedContent.get(existingComp.id + "-tbMain");
+                    const existingTbCenter = this.flatContent.get(existingComp.id + "-tbCenter") || this.removedContent.get(existingComp.id + "-tbCenter");
+                    if (existingTbMain && existingTbCenter) {
+                        const updateMain = this.subManager.propertiesSubscriber.get(existingTbMain.id);
+                        const updateCenter = this.subManager.propertiesSubscriber.get(existingTbCenter.id);
+                        if (updateMain && updateCenter) {
+                            updateMain(existingTbMain);
+                            updateCenter(existingTbCenter);
+                        }
+                    }
+                }
+                if (updateFunction) {
+                    updateFunction(existingComp);
+                }
             }
         });
         /** Call the update function of the parentSubscribers */

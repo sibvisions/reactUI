@@ -17,7 +17,8 @@ const NullLayout: FC<ILayout> = (baseProps) => {
         compSizes,
         style,
         id,
-        reportSize
+        reportSize,
+        children
     } = baseProps
 
     /** Current state of the calculatedStyle by the FormLayout */
@@ -32,8 +33,6 @@ const NullLayout: FC<ILayout> = (baseProps) => {
     const componentSizes = useMemo(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
-        /** Gets the Childcomponents of the layout */
-        const children = context.contentStore.getChildren(id);
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if (compSizes && children.size === compSizes.size) {

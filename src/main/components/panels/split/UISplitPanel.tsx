@@ -25,10 +25,13 @@ export interface ISplit extends BaseComponent{
 const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+
     /** The Childcomponents of this SplitPanel */
     const children = useMemo(() => {
         return context.contentStore.getChildren(props.id);
@@ -48,18 +51,25 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
             return false;
         });
     }
+
     /** Current state of all Childcomponents as react children */
-    const [components] = useComponents(props.id);
+    const [components] = useComponents(props.id, children);
+
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
+
     /** The "first" Childcomponent in the SplitPanel */
     const firstChild = getChildByConstraint("FIRST_COMPONENT");
+
     /** The "second" Childcomponent in the SplitPanel */
     const secondChild = getChildByConstraint("SECOND_COMPONENT");
+
     /** Reference for the SplitPanel which gets forwarded to inner component */
     const splitRef = useRef<any>(null);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
+
     /** Hook for MouseListener */
     useMouseListener(props.name, splitRef.current ? splitRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 

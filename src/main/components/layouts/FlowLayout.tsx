@@ -22,6 +22,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         id,
         reportSize,
         alignChildrenIfOverflow = true,
+        children
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -49,9 +50,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const autoWrap = (layout.split(",")[11] === 'true')
         /** If the orientation is horizontal */
         const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL
-
-        /** Gets the Childcomponents of the layout */
-        const children = context.contentStore.getChildren(id)
 
         /** Sorts the Childcomponent based on indexOf property */
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}))
@@ -154,11 +152,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let width:number;
 
             if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
-                left = 0;
+                left = margins.marginLeft;
                 width = (style.width as number);
             }
             else {
-                left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa);
+                left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
                 width = prefSize.width;
             }
 
@@ -166,11 +164,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             let height:number;
 
             if (outerVa === VERTICAL_ALIGNMENT.STRETCH) {
-                top = 0;
+                top = margins.marginTop;
                 height = (style.height as number);
             }
             else {
-                top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa);
+                top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa) + margins.marginTop;
                 height = prefSize.height;
             }
 
@@ -260,7 +258,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         y += size.height + gaps.verticalGap
                     }
                 }
-            })
+            });
 
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {

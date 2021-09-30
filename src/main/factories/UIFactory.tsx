@@ -35,6 +35,8 @@ import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components
 import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIBrowser from "../components/browser/UIBrowser";
+import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
+import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
 
 
 /**
@@ -109,6 +111,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set("DesktopPanel", props => maybePopup(<UIDesktopPanel {...props} />))
     .set("GroupPanel", props => maybePopup(<UIGroupPanel {...props} />))
     .set("ScrollPanel", props => maybePopup(<UIScrollPanel {...props} />))
+    .set("ToolBarPanel", props => maybePopup(<UIToolBarPanel {...props} />))
     .set("SplitPanel", props => <UISplitPanel {...props} />)
     .set("Button", props => <UIButton {...props} />)
     .set("ToggleButton", props => <UIToggleButton {...props} />)
@@ -130,7 +133,9 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     )
     .set("Tree", props => <UITree {...props} />)
     .set("Gauge", props => <UIGauge {...props} />)
-    .set("MobileBrowser", props => <UIBrowser {...props} />);
+    .set("MobileBrowser", props => <UIBrowser {...props} />)
+    .set("ToolBar", props => <UIPanel {...props} />)
+    .set("ToolBarHelper", props => <UIToolBarHelper {...props} />);
 
 /**
  * Returns the JSXElement for the given base component

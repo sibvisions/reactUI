@@ -6,6 +6,7 @@ import { BorderLayout,
          NullLayout } from './index';
 import { ComponentSizes } from "../zhooks";
 import { Dimension } from "../util";
+import BaseComponent from "../BaseComponent";
 
 /**
  * General information for layouts:
@@ -28,7 +29,8 @@ export interface ILayout{
     style: CSSProperties,
     reportSize: Function,
     alignChildrenIfOverflow?: boolean,
-    panelType?:string
+    panelType?: string,
+    children: Map<string, BaseComponent>
 }
 
 /**

@@ -12,6 +12,7 @@ interface BaseComponent {
     className?: string,
     "~remove"?: boolean,
     "~destroy"?: boolean,
+    "~additional"?: boolean,
     visible?: boolean,
     constraints: string,
     bounds?: string,

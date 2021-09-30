@@ -7,6 +7,7 @@ import _ from "underscore";
 /** Other imports */
 import { appContext } from "../../AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
+import BaseComponent from "../BaseComponent";
 import { Dimension } from "../util";
 
 export type ComponentSizes = {
@@ -20,7 +21,7 @@ export type ComponentSizes = {
  * @param id - the id of the component
  * @returns a layouts rendered Childcomponents and their preferred size
  */
-const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
+const useComponents = (id: string, children: Map<string, BaseComponent>): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
     /** Use context to gain access for contentstore and server methods */
@@ -42,8 +43,6 @@ const useComponents = (id: string): [Array<ReactElement>, Map<string,ComponentSi
                 }
             });
         }
-        /** Gets the Childcomponents of the parent */
-        const children = context.contentStore.getChildren(id);
 
         const reactChildrenArray: Array<ReactElement> = [];
         /**

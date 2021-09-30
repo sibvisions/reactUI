@@ -31,7 +31,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         style,
         reportSize,
         id,
-        layout
+        layout,
+        children
     } = baseProps
 
 
@@ -47,9 +48,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     /** Horizontal- and vertical Gap */
     const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
 
-    const children = context.contentStore.getChildren(id);
-
-
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
      * @returns a Map key: component ids, value style properties for components
@@ -64,7 +62,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         let southUsed = false;
         let centerUsed = false;
         let hCompCount = 0;
-        let vCompCount = 0;
+        let vCompCount = 0;        
 
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size) {
@@ -86,8 +84,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 south: {height: 0, width: 0}
             }
 
-            /** Gets the Childcomponents of the layout */
-            const children = context.contentStore.getChildren(id);
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
                 const preferredSize = getPreferredSize(component, compSizes) || {height: 0, width: 0};
@@ -294,7 +290,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             const minimumHeight = Math.max(...[
                 Math.max(...[minConstraintSizes.west.height, minConstraintSizes.east.height]), minConstraintSizes.center.height
             ]) + minConstraintSizes.north.height + minConstraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
-
 
             if (reportSize) {
                 if (baseProps.preferredSize) {
