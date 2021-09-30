@@ -143,8 +143,6 @@ function transformHTMLFromQuill(html: string = ''):string {
 
     html = d.body.innerHTML;
 
-    //console.log('q ->', html);
-
     return html;
 }
 
@@ -182,7 +180,6 @@ function transformHTMLToQuill(html: string = ''):string {
 
     html = d.body.innerHTML;
 
-    //console.log('-> q', html);
 
     return html;
 }
