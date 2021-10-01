@@ -8,7 +8,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, panelReportSize } from "../../util";
 import { appContext } from "../../../AppProvider";
 
 /**
@@ -114,20 +114,20 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
      * In panels, this method will be passed to the layouts
      */
     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
-        if (onLoadCallback) {
-            const adjustedSize:Dimension = {height: prefSize.height + (minusHeight.current ? 17 : 0), width: prefSize.width + (minusWidth.current ? 17 : 0)};
-            if (layoutSize?.height !== adjustedSize.height || layoutSize.width !== adjustedSize.width) {
-                setLayoutSize({height: adjustedSize.height, width: adjustedSize.width})
-            }
-            sendOnLoadCallback(
-                id, 
-                props.preferredSize ? parsePrefSize(props.preferredSize) : adjustedSize, 
-                parseMaxSize(props.maximumSize), 
-                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)),
-                undefined, 
-                onLoadCallback
-            );
-        }
+        panelReportSize(
+            id, 
+            "P", 
+            prefSize, 
+            minSize, 
+            props.preferredSize, 
+            props.minimumSize, 
+            props.maximumSize, 
+            onLoadCallback,
+            minusHeight.current,
+            minusWidth.current,
+            layoutSize,
+            setLayoutSize
+        )
     }
 
     return(

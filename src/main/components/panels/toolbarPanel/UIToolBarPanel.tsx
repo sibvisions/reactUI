@@ -9,7 +9,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener, Compone
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 
@@ -47,10 +47,6 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    const toolBar = <Toolbar left={<>{components.filter(comp => comp.props["~additional"]).map(comp => <div>{comp}</div>)}</>} />
-
-    const tbSize = useRef<Dimension|undefined>();
-
     /**
      * Returns the style of the panel/layout
      * @returns style of panel/layout
@@ -82,20 +78,17 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-     const reportSize = (prefSize:Dimension, minSize?:Dimension, inner?:boolean) => {
-        if (onLoadCallback) {
-            sendOnLoadCallback(
-                inner ? "inner-" + id : id,
-                props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, 
-                parseMaxSize(props.maximumSize), 
-                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)), 
-                undefined, 
-                onLoadCallback
-            );
-        }
-        if (toolBarRef.current) {
-            tbSize.current = { height: toolBarRef.current.offsetHeight, width: toolBarRef.current.offsetWidth }
-        }
+     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
+        panelReportSize(
+            id, 
+            "P", 
+            prefSize, 
+            minSize, 
+            props.preferredSize, 
+            props.minimumSize, 
+            props.maximumSize, 
+            onLoadCallback
+        )
     }
 
     return (

@@ -7,7 +7,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 /** Other imports */
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize } from "../../util";
 import { appContext } from "../../../AppProvider";
 
 /**
@@ -81,16 +81,16 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
      * In panels, this method will be passed to the layouts
      */
     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
-        if (onLoadCallback) {
-            const adjustedSize:Dimension = {height: prefSize.height+28, width: prefSize.width};
-            sendOnLoadCallback(id, 
-                props.preferredSize ? parsePrefSize(props.preferredSize) : adjustedSize, 
-                parseMaxSize(props.maximumSize), 
-                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)), 
-                undefined, 
-                onLoadCallback
-            );
-        }
+        panelReportSize(
+            id, 
+            "G", 
+            prefSize, 
+            minSize, 
+            props.preferredSize, 
+            props.minimumSize, 
+            props.maximumSize, 
+            onLoadCallback
+        )
     }
 
     return (

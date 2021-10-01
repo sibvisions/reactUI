@@ -6,7 +6,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { appContext } from "../../../AppProvider";
 
@@ -86,15 +86,16 @@ const UIPanel: FC<IPanel> = (baseProps) => {
      * In panels, this method will be passed to the layouts
      */
     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
-        if (onLoadCallback) {
-            sendOnLoadCallback(
-                id, props.preferredSize ? parsePrefSize(props.preferredSize) : prefSize, 
-                parseMaxSize(props.maximumSize), 
-                props.minimumSize ? parseMinSize(props.minimumSize) : (minSize ? minSize : parseMinSize(props.minimumSize)), 
-                undefined, 
-                onLoadCallback
-            );
-        }
+        panelReportSize(
+            id, 
+            "P", 
+            prefSize, 
+            minSize, 
+            props.preferredSize, 
+            props.minimumSize, 
+            props.maximumSize, 
+            onLoadCallback
+        )
     }
 
     return (
