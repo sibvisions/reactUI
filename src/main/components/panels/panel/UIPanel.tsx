@@ -123,7 +123,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 compSizes={componentSizes}
                 components={components}
                 style={getStyle()} 
-                children={children} />
+                children={children} 
+                isToolBar={props.className === "ToolBar"}
+                parent={props.parent} />
         </div>
     )
 }

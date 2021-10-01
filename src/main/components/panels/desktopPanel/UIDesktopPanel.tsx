@@ -55,7 +55,8 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 style={{...layoutStyle}} 
                 reportSize={() => {}}
                 panelType="DesktopPanel"
-                children={children} />
+                children={children}
+                parent={props.parent} />
         </div>
     )
 }

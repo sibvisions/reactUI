@@ -30,7 +30,9 @@ export interface ILayout{
     reportSize: Function,
     alignChildrenIfOverflow?: boolean,
     panelType?: string,
-    children: Map<string, BaseComponent>
+    children: Map<string, BaseComponent>,
+    isToolBar?: boolean,
+    parent?:string
 }
 
 /**

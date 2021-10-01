@@ -122,7 +122,8 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                     compSizes={componentSizes}
                     components={components}
                     style={getStyle()}
-                    children={children} />
+                    children={children}
+                    parent={props.parent} />
             </div>
         </div>
     )

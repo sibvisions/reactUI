@@ -7,6 +7,7 @@ import { LayoutContext } from "../../LayoutContext";
 import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from ".";
 import { Dimension } from "../util";
 import Margins from "./models/Margins";
+import BaseComponent from "../BaseComponent";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.
@@ -22,7 +23,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         id,
         reportSize,
         alignChildrenIfOverflow = true,
-        children
+        children,
+        isToolBar,
+        parent
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -52,7 +55,17 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL
 
         /** Sorts the Childcomponent based on indexOf property */
-        const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}))
+        const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
+
+        const toolBarsFiltered:[string, BaseComponent][]|undefined = parent && (isToolBar || id.includes("-tbMain")) ? [...context.contentStore.getChildren(parent)].filter(entry => entry[1]["~additional"]) : undefined;
+
+        const isNotLastToolBar = (id:string) => {
+            if (toolBarsFiltered) {
+                console.log(toolBarsFiltered)
+                return toolBarsFiltered.findIndex(entry => entry[1].id === id) !== toolBarsFiltered.length - 1 ? true : false;
+            }
+            return true;
+        }
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if(compSizes && childrenSorted.size === compSizes.size) {
@@ -97,9 +110,12 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
+                let tbExtraSpace = toolBarsFiltered ? isNotLastToolBar(id) ? 5 : 0 : 0
+
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
                         const prefSize = compSizes.get(component.id)?.preferredSize || { width: 0, height: 0 };
+
                         if (isRowOrientation) {
                             /** If this isn't the first component add the gap between components*/
                             if (!bFirst) {
@@ -122,8 +138,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                         else {
                             /** If this isn't the first component add the gap between components*/
-                            if (!bFirst)
+                            if (!bFirst) {
                                 calcHeight += gaps.verticalGap;
+                            }
                             calcHeight += prefSize.height;
                             /** Check for the widest component in row orientation */
                             width = Math.max(width, prefSize.width);
@@ -140,6 +157,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
                 });
+                if (tbExtraSpace !== 0) {
+                    isRowOrientation ? width += tbExtraSpace : height += tbExtraSpace;
+                }
                 const grid:FlowGrid = {columns: anzCols, rows: anzRows, gridWidth: width, gridHeight: height}
                 return grid;
             }
@@ -208,13 +228,15 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             bFirst = false;
 
                         if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
+                            console.log(id.includes("-tbMain"))
                             sizeMap.set(component.id, {
-                                left: left + x * fW / fPW, 
-                                top: top + y, 
-                                width: size.width * fW / fPW, 
+                                left: left + x * fW / fPW,
+                                top: top + y,
+                                width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
-                                position: "absolute"}
-                            );
+                                position: "absolute",
+                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                            });
                         }
                         else {
                             sizeMap.set(component.id, {
@@ -222,8 +244,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH,
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
-                                position: "absolute"}
-                            );
+                                position: "absolute",
+                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                            });
                         }
 
                         x += size.width + gaps.horizontalGap;
@@ -242,8 +265,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: top + y * fH / fPH,
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
-                                position: "absolute"}
-                            );
+                                position: "absolute",
+                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                            });
                         }
                         else {
                             sizeMap.set(component.id, {
@@ -251,8 +275,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: top + y * fH / fPH,
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
-                                position: "absolute"}
-                            );
+                                position: "absolute",
+                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                            });
                         }
 
                         y += size.height + gaps.verticalGap

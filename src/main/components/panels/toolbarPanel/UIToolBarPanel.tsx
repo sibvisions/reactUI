@@ -125,6 +125,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                 components={components.filter(comp => comp.props.id.includes(id + '-'))}
                 style={getStyle()}
                 children={children}
+                parent={props.parent}
             />
         </div>
     )
