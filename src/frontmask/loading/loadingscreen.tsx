@@ -30,8 +30,7 @@ const LoadingScreen: FC = () => {
                     </g>
                 </svg>
             </span>
-
-            <ProgressSpinner style={{position: "absolute", height: "60px", width: "60px", top: "calc(50% - 30px)", left: "calc(50% - 30px)"}} strokeWidth="10px"/>
+            <ProgressSpinner className="loading-screen-spinner" strokeWidth="10px"/>
         </div>
         
     )
