@@ -8,7 +8,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, panelReportSize } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 
 /**
@@ -26,7 +26,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+    const children = context.contentStore.getChildren(props.id)
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);
@@ -53,24 +53,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = {};
-        /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_) {
-            const screenSize = parsePrefSize(props.screen_size_);
-            if (screenSize) {
-                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-            }
-            else if (prefSize) {
-                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-            }
-        }
-        else {
-            s = {...layoutStyle}
-        }
-        if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
-            s.top = undefined;
-            s.left = undefined;
-        }
+        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_, props.screen_size_);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {

@@ -6,7 +6,7 @@ import { useProperties, useComponents, useMouseListener, useLayoutValue } from "
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { appContext } from "../../../AppProvider";
 
@@ -28,7 +28,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+    const children = context.contentStore.getChildren(props.id);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);
@@ -52,7 +52,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 maximumSize={parseMaxSize(props.maximumSize)}
                 compSizes={componentSizes}
                 components={components}
-                style={{...layoutStyle}} 
+                style={panelGetStyle(false, layoutStyle)}
                 reportSize={() => {}}
                 panelType="DesktopPanel"
                 children={children}

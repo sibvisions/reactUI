@@ -61,7 +61,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
         const isNotLastToolBar = (id:string) => {
             if (toolBarsFiltered) {
-                console.log(toolBarsFiltered)
                 return toolBarsFiltered.findIndex(entry => entry[1].id === id) !== toolBarsFiltered.length - 1 ? true : false;
             }
             return true;
@@ -228,7 +227,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             bFirst = false;
 
                         if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
-                            console.log(id.includes("-tbMain"))
                             sizeMap.set(component.id, {
                                 left: left + x * fW / fPW,
                                 top: top + y,

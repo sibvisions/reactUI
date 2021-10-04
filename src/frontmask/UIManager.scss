@@ -72,11 +72,11 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 530px) {
   .main--with-s-menu.desktop-panel-enabled.screen-expanded.screen-no-mini {
     margin-left: 0;
   }
-  .main--with-s-menu.screen-expanded.screen-no-mini {
+  .main--with-s-menu:not(.desktop-panel-enabled):not(.menu-not-visible).screen-expanded.screen-no-mini {
     margin-left: 10px;
   }
 }

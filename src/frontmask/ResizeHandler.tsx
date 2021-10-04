@@ -50,12 +50,9 @@ const ResizeHandler:FC = (props) => {
     /** Using underscore debounce to debounce sending the current devicestatus (screen-container height and width) to the server */
     const handleDeviceStatus = _.debounce(() => {
         const deviceStatusReq = createDeviceStatusRequest();
-        if(sizeRef.current || document.querySelector('#workscreen')){
-            const mainSize = sizeRef.current ? sizeRef.current.getBoundingClientRect() : document.querySelector('#workscreen')!.getBoundingClientRect();
-            deviceStatusReq.screenHeight = mainSize.height;
-            deviceStatusReq.screenWidth = mainSize.width;
-            context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
-        }
+        deviceStatusReq.screenHeight = window.innerHeight;
+        deviceStatusReq.screenWidth = window.innerWidth;
+        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
     },150);
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */

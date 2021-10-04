@@ -7,7 +7,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 /** Other imports */
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 
 /**
@@ -25,7 +25,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+    const children = context.contentStore.getChildren(props.id)
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);
@@ -41,40 +41,6 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    /**
-     * Returns the style of the panel/layout
-     * @returns style of panel/layout
-     */
-    const getStyle = () => {
-        let s:React.CSSProperties = {};
-        /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_) {
-            const screenSize = parsePrefSize(props.screen_size_);
-            if (screenSize) {
-                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-            }
-            else if (prefSize) {
-                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-            }
-
-        }
-        else {
-            s = {...layoutStyle}
-        }
-        s.top = undefined;
-        s.left = undefined;
-
-        if(s.width !== undefined) {
-            (s.width as number) -= 0;
-        }
-        /** Tell layout that because of the header it is ~28px smaller */
-        if(s.height !== undefined) {
-            (s.height as number) -= 28;
-        }
-
-        return s
-    }
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -121,7 +87,13 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                     reportSize={reportSize}
                     compSizes={componentSizes}
                     components={components}
-                    style={getStyle()}
+                    style={panelGetStyle(
+                        true,
+                        layoutStyle,
+                        prefSize,
+                        props.screen_modal_,
+                        props.screen_size_
+                    )} 
                     children={children}
                     parent={props.parent} />
             </div>

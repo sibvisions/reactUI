@@ -26,3 +26,4 @@ export { sortGroupDataGoogle, sortGroupDataOSM } from './SortGroupData';
 export { getDateLocale, setDateLocale } from './GetDateLocale';
 export { focusComponent } from './FocusComponent';
 export { panelReportSize } from './PanelReportSize';
+export { panelGetStyle } from './PanelGetStyle';

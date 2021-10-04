@@ -1,33 +1,41 @@
 .loading-screen {
     height: var(--mainHeight);
     position: relative;
-    background: -webkit-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
-    background: -o-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
-    background: -moz-radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
-    background: radial-gradient(119% 190% at -6% -20%, #ffffff 70%, #f1f1f1 70%);
+    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
+    background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
+    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
+    background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
 }
 
 .loading-logo-container {
     position: absolute;
-    height: 300px;
-    width: 300px;
-    top: calc(50% - 166px);
-    left: calc(50% - 150px);
+    height: var(--loading-screen-logo-height);
+    width: var(--loading-screen-logo-width);
+    top: calc(50% - calc(var(--loading-screen-logo-height) / 2));
+    left: calc(50% - calc(var(--loading-screen-logo-width) / 2));
+}
+
+.loading-screen-spinner {
+    position: absolute;
+    height: calc(var(--loading-screen-logo-height) / 5);
+    width: calc(var(--loading-screen-logo-width) / 5);
+    top: calc(50% - calc(var(--loading-screen-logo-height) / 20));
+    left: calc(50% - calc(var(--loading-screen-logo-width) / 10));
 }
 
 @keyframes p-progress-spinner-color {
     100%,
     0% {
-        stroke: #93C01F;
+        stroke: var(--loading-screen-spinner-color-1);
     }
     40% {
-        stroke: #93C01F;
+        stroke: var(--loading-screen-spinner-color-2);
     }
     66% {
-        stroke: #93C01F;
+        stroke: var(--loading-screen-spinner-color-3);
     }
     80%,
     90% {
-        stroke: #93C01F;
+        stroke: var(--loading-screen-spinner-color-4);
     }
 }

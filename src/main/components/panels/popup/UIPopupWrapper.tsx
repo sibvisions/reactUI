@@ -21,8 +21,6 @@ export interface IPopup extends IPanel {
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIPopupWrapper: FC<IPopup> = (baseProps) => {
-    /** access to api functions */
-    const screen = useScreen(baseProps.name)
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
