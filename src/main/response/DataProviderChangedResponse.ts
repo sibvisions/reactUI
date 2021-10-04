@@ -10,6 +10,7 @@ interface DataProviderChangedResponse extends BaseResponse{
     reload?: -1 | 0 | 1,
     selectedRow?: number,
     treePath?: number[],
-    selectedColumn?: string
+    selectedColumn?: string,
+    deletedRow?: number
 }
 export default DataProviderChangedResponse

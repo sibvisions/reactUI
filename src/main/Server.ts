@@ -449,6 +449,14 @@ class Server {
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+
+        if (changedProvider.deletedRow === -1) {
+            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
+        }
+        else if (changedProvider.deletedRow !== undefined) {
+            this.contentStore.deleteDataProviderData(compId, changedProvider.dataProvider, changedProvider.deletedRow);
+        }
+
         if(changedProvider.reload === -1) {
             this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();

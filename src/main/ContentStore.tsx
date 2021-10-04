@@ -742,17 +742,23 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider 
      * @param referenceKey - the primary key value of the master-reference
      */
-    deleteDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
+    deleteDataProviderData(compId:string, dataProvider:string, index?:number, referenceKey?:string) {
         const existingMap = this.dataProviderData.get(compId);
         if (existingMap) {
             const existingProvider = existingMap.get(dataProvider);
             if (existingProvider) {
                 const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
                 if (existingData) {
-                    const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
-                    if (selectedRow) {
-                        existingData.splice(selectedRow.index, 1);
+                    if (index) {
+                        existingData.splice(index, 1);
                     }
+                    else {
+                        const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+                        if (selectedRow) {
+                            existingData.splice(selectedRow.index, 1);
+                        }
+                    }
+
                 }
             }
         }

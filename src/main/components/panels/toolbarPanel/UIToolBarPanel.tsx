@@ -26,7 +26,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => new Map([...context.contentStore.getChildren(props.id)].filter(entry => entry[0].includes("-tb"))), [props.id]);
+    const children = new Map([...context.contentStore.getChildren(props.id)].filter(entry => entry[0].includes("-tb")));
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);

@@ -28,7 +28,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Children of this panel */
-    const children = useMemo(() => context.contentStore.getChildren(props.id), [props.id]);
+    const children = context.contentStore.getChildren(props.id);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, children);
