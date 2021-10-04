@@ -19,6 +19,7 @@ enum REQUEST_ENDPOINTS  {
     SET_VALUES = "/api/dal/setValues",
     SELECT_TAB = "/api/comp/selectTab",
     CLOSE_TAB = "/api/comp/closeTab",
+    CLOSE_POPUP_MENU = "/api/comp/closePopupMenu ",
     SAVE = "/api/save",
     DAL_SAVE = "/api/dal/save",
     SORT = "/api/dal/sort",

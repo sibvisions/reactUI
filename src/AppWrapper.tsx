@@ -10,6 +10,7 @@ import TopBar from "./main/components/topbar/TopBar";
 import UIToast from './main/components/toast/UIToast';
 import { appContext, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
+import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
 
 type ServerFailMessage = {
     headerMessage:string,
@@ -58,9 +59,11 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             <Dialog header="Server Error!" visible={dialogVisible} onHide={() => setDialogVisible(false)} resizable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
-            <TopBar>
-                {props.children}
-            </TopBar>
+            <PopupContextProvider>
+                <TopBar>
+                    {props.children}
+                </TopBar>
+            </PopupContextProvider>
         </>
     )
 }

@@ -37,6 +37,7 @@ interface BaseComponent {
     eventFocusGained?: boolean,
     eventFocusLost?: boolean,
     ariaLabel?:string,
-    ariaPressed?:boolean
+    ariaPressed?:boolean,
+    popupMenu?: any,
 }
 export default BaseComponent

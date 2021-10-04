@@ -7,6 +7,7 @@ import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {getFont, getAlignments, translateTextAlign} from "../compprops";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
+import usePopupMenu from "../zhooks/usePopupMenu";
 
 /**
  * Displays a simple label
@@ -47,6 +48,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <span
+            {...usePopupMenu(props)}
             id={props.name}
             className={concatClassnames(
                 "rc-label",
