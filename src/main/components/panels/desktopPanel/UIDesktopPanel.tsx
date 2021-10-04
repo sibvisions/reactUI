@@ -6,7 +6,7 @@ import { useProperties, useComponents, useMouseListener, useLayoutValue } from "
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { appContext } from "../../../AppProvider";
 
@@ -52,7 +52,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 maximumSize={parseMaxSize(props.maximumSize)}
                 compSizes={componentSizes}
                 components={components}
-                style={{...layoutStyle}} 
+                style={panelGetStyle(false, layoutStyle)}
                 reportSize={() => {}}
                 panelType="DesktopPanel"
                 children={children}

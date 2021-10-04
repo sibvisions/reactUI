@@ -1,15 +1,12 @@
 /** React imports */
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from "react";
-
-/** 3rd party imports */
-import { Toolbar } from 'primereact/toolbar';
+import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener, ComponentSizes } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 
@@ -42,37 +39,8 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
 
     const panelRef = useRef<any>(null);
 
-    const toolBarRef = useRef<any>(null);
-
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    /**
-     * Returns the style of the panel/layout
-     * @returns style of panel/layout
-     */
-     const getStyle = () => {
-        let s:React.CSSProperties = {};
-        /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-        if (props.screen_modal_) {
-            const screenSize = parsePrefSize(props.screen_size_);
-            if (screenSize) {
-                s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-            }
-            else if (prefSize) {
-                s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-            }
-        }
-        else {
-            s = {...layoutStyle}
-        }
-            
-        if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
-            s.top = undefined;
-            s.left = undefined;
-        }
-        return s
-    }
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -116,7 +84,13 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                 reportSize={reportSize}
                 compSizes={componentSizes}
                 components={components.filter(comp => comp.props.id.includes(id + '-'))}
-                style={getStyle()}
+                style={panelGetStyle(
+                    false,
+                    layoutStyle,
+                    prefSize,
+                    props.screen_modal_,
+                    props.screen_size_
+                )}
                 children={children}
                 parent={props.parent}
             />
