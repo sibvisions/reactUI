@@ -1,6 +1,8 @@
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
 import { appContext, createComponentRequest, getClientId, REQUEST_ENDPOINTS } from "src/moduleIndex";
+import BaseComponent from "../BaseComponent";
+import { MenuItem } from "primereact/menuitem";
 
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;
@@ -15,6 +17,26 @@ const PopupContext = createContext<{
     onContextMenu: () => {},
 });
 
+function makeMenu(flatItems: Map<string, BaseComponent>, parent: string): MenuItem[] {
+    return Array.from(flatItems.values())
+        .filter(item => item.parent === parent)
+        .map(item => {
+            switch(item.className) {
+                case "Separator":
+                    return {
+                        separator: true
+                    }
+                default:
+                    const items = makeMenu(flatItems, item.id);
+                    return {
+                        label: item.text,
+                        ...(items.length ? { items } : {})
+                    }
+            }
+        })
+    
+}
+
 export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
     const context = useContext(appContext);
     const lastEvent = useRef<SyntheticEvent>();
@@ -26,7 +48,7 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
     const popup = useRef<string>();
     const showPopup = useCallback<ShowPopupFn>((id) => {
         if (id !== popup.current && lastEvent.current) {
-            //TODO make model from id
+            setModel(makeMenu(context.contentStore.flatContent, id));
             contextMenu.current?.show(lastEvent.current);
             popup.current = id;
             lastEvent.current = undefined;
