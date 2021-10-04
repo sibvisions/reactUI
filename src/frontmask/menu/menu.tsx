@@ -198,8 +198,9 @@ const Menu: FC<IMenu> = (props) => {
                     closeOpenedMenuPanel();
                     context.subscriptions.emitMenuCollapse(0);
                 }
-                else
+                else {
                     context.subscriptions.emitMenuCollapse(1);
+                }
             }
         }
     }, [context.contentStore, context.subscriptions, deviceStatus])

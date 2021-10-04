@@ -125,7 +125,7 @@ const useComponents = (id: string, children: Map<string, BaseComponent>): [Array
             }
         });
         return reactChildrenArray;
-    },[context.contentStore, id, preferredSizes]);
+    },[context.contentStore, id, preferredSizes, children]);
     
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
