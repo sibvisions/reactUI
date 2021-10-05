@@ -1,8 +1,9 @@
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
-import { appContext, createComponentRequest, getClientId, REQUEST_ENDPOINTS } from "src/moduleIndex";
+import { appContext, createComponentRequest, createPressButtonRequest, getClientId, REQUEST_ENDPOINTS } from "src/moduleIndex";
 import BaseComponent from "../BaseComponent";
 import { MenuItem } from "primereact/menuitem";
+import { parseIconData } from "../compprops";
 
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;
@@ -17,7 +18,7 @@ const PopupContext = createContext<{
     onContextMenu: () => {},
 });
 
-function makeMenu(flatItems: Map<string, BaseComponent>, parent: string): MenuItem[] {
+function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context: any): MenuItem[] {
     return Array.from(flatItems.values())
         .filter(item => item.parent === parent)
         .map(item => {
@@ -27,9 +28,20 @@ function makeMenu(flatItems: Map<string, BaseComponent>, parent: string): MenuIt
                         separator: true
                     }
                 default:
-                    const items = makeMenu(flatItems, item.id);
+                    const items = makeMenu(flatItems, item.id, context);
+                    let iconProps = parseIconData("inherit", item.image);
                     return {
                         label: item.text,
+                        icon: iconProps ? iconProps.icon : undefined,
+                        style: {
+                            color: iconProps.color
+                        },
+                        color: iconProps.color,
+                        command: () => {
+                            const req = createPressButtonRequest();
+                            req.componentId = item.name;
+                            context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+                        },
                         ...(items.length ? { items } : {})
                     }
             }
@@ -48,7 +60,7 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
     const popup = useRef<string>();
     const showPopup = useCallback<ShowPopupFn>((id) => {
         if (id !== popup.current && lastEvent.current) {
-            setModel(makeMenu(context.contentStore.flatContent, id));
+            setModel(makeMenu(context.contentStore.flatContent, id, context));
             contextMenu.current?.show(lastEvent.current);
             popup.current = id;
             lastEvent.current = undefined;
