@@ -1,62 +1,129 @@
 @import '../scssmixin/scrollbar.scss';
-// @import '../themes/theme-dark';
-// @import '../themes/theme-light';
-// @import '../themes/theme-blue';
 
-// @mixin themable($theme-name, $theme-map) {
-//     .#{$theme-name} {
-//         .menu-topbar {
-//             .p-menubar:not(.p-menubar-mobile-active) {
-//                 > .p-menubar-root-list {
-//                     .p-menuitem-text, .p-submenu-icon {
-//                         color: map-get($theme-map, "fgdColor");
-//                     }
-//                     > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover,
-//                     > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover,
-//                     > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-//                         background: map-get($theme-map, "topBar");
-//                         color: map-get($theme-map, "fgdColor");
-//                     }
-//                     > .p-menuitem, >.p-menubar-root-list > .p-menuitem-active {
-//                         >.p-menuitem-link {
-//                             &:hover {
-//                                 .p-menuitem-text, .p-submenu-icon {
-//                                     color: map-get($theme-map, "hover");
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//             .menu-toggler {
-//                 color: map-get($theme-map, "fgdColor");
-//                 &:hover {
-//                     color:map-get($theme-map, "hover");
-//                     cursor: pointer;
-//                 }
-//             }
+:root {
+    /// Menu-width when extended
+    --s-menu-width: 240px;
 
-//         }
-//     }
-// }
+    /// Menu-width when collapsed
+    --s-menu-collapsed-width: 80px;
+    
+    /// Left padding for logo when menu is collpased
+    --s-menu-collapsed-logo-padding-left: 10px;
+    
+    /// Header height
+    --s-menu-header-height: 70px;
 
-// @include themable('dark', $theme-dark);
-// @include themable('light', $theme-light);
-// @include themable('blue', $theme-blue);
+    ///--s-menu-header-background: #7a7f85
+    --s-menu-header-background: #7a7f85;
 
-/// Css-Class Variables
-/// Position and display for topbar elements.
-%topbar-pos-dis {
-    position: fixed;
-    display: flex;
-    height: var(--menuHeight);
-}
+    /// Header item alignment
+    --s-menu-header-alignment: center;
 
-/// Styling for profile image in menubar
-%profile-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 25%;
+    /// Topbar item horizontal alignment
+    --s-menu-topbar-h-alignment: space-between;
+
+    /// Topbar item vertical alignment
+    --s-menu-topbar-v-alignment: center;
+
+    /// Topbar left items vertical alignment
+    --s-menu-topbar-l-v-alignment: center;
+
+    /// Topbar right items vertical alignment
+    --s-menu-topbar-r-v-alignment: center;
+
+    /// Logo width when expanded
+    --s-menu-logo-width: 190px;
+    
+    /// Logo width when collapsed
+    --s-menu-logo-collapsed-width: 60px;
+        
+    /// Logo height
+    --s-menu-logo-max-height: 60px;
+
+    /// Logo horizontal alignment
+    --s-menu-logo-h-alignment: center;
+
+    /// Logo vertical alignment
+    --s-menu-logo-v-alignment: center;
+    
+    /// Logo background
+    --s-menu-logo-background: rgb(232,232,232);
+    --s-menu-logo-background-gradient: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+
+    /// Border Thickness for Logo Wrapper
+    --s-menu-logo-border-thickness: 1px;
+
+    /// Screen Title font-size
+    --s-menu-title-font-size: 22px;
+
+    /// Screen Title font-weight
+    --s-menu-title-font-weight: bold;
+
+    /// Screen Title margin
+    --s-menu-title-margin: 10px;
+
+    /// profilemenu height
+    --s-menu-profile-height: 60px;
+
+    /// Backgroud color of profile image when there is no image set
+    --s-menu-profile-background: white;
+
+    /// Margin of profile-menu
+    --s-menu-profile-margin: 10px;
+
+    /// Profile-menu Border to sepperate from buttons
+    --s-menu-profile-seperator: 2px solid #5b6067;
+
+    /// Menu buttons big height
+    --s-menu-buttons-full: 60px;
+
+    /// Menu buttons small height
+    --s-menu-buttons-small: 2.5rem;
+
+    /// Menu buttons background 
+    --s-menu-buttons-background: transparent;
+
+    /// Menu buttons hover background
+    --s-menu-buttons-hover-background: #454b52;
+
+    /// Menu buttons font-size
+    --s-menu-buttons-font-size: 1.5rem;
+
+    /// Menu buttons border-radius
+    --s-menu-buttons-border-radius: 4px;
+
+    /// Menu buttons gap
+    --s-menu-buttons-gap: 0.5rem;
+    
+    /// Foreground of topbar
+    --s-menu-color: white;
+
+    /// Color for menu borders
+    --s-menu-border-color: rgba(120,130,140,.13);
+    
+    /// Menu background
+    --s-menu-panelmenu-background: #fafafa;
+    
+    /// Background for each panel of panelmenu
+    --s-menu-panelmenu-header-background: #fafafa;
+    
+    /// Foreground color for each panel of panelmenu
+    --s-menu-panelmenu-header-color: #495057;
+    
+    /// Foreground color when a panel is hovered or active
+    --s-menu-panelmenu-header-color-hover: black;
+    
+    /// the text color of an active menu item
+    --s-menu-panelmenu-active-item-color: #2196F3;
+
+    /// Border Thickness for PanelMenu
+    --s-menu-panelmenu-border-thickness: 1px;
+
+    /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
+    --s-menu-fadeout-width: 20px;
+    
+    /// Fadeout positioning
+    --s-menu-fadeout-left: calc(var(--s-menu-collapsed-width) - var(--s-menu-fadeout-width));
 }
 
 /// Mixin for menu-transitions
@@ -76,109 +143,115 @@
 }
 
 /// Topbar styling
-.menu-topbar {
-    @extend %topbar-pos-dis;
+.menu-header {
+    position: fixed;
+    display: flex;
+    height: var(--s-menu-header-height);
     z-index: 20;
-    align-items: center;
+    align-items: var(--s-menu-header-alignment);
     width: 100%;
-    background: var(--menuTopBar);
+    background: var(--s-menu-header-background);
 }
 
 /// When menu is collapsed
 .menu-collapsed {
     /// Set new widths and hide overflow because menu overflows on y axis
     .menu-logo-wrapper, .menu-panelmenu-wrapper {
-        width: var(--menuCollapsedWidth);
+        width: var(--s-menu-collapsed-width);
         overflow: hidden;
         .menu-logo {
-            width: var(--menuLogoCollapsedWidth);
+            width: var(--s-menu-logo-collapsed-width);
         }
     }
     /// Set margin to adapt to new widths
-    .menu-upper {
-        margin-left: var(--menuCollapsedWidth);
+    .menu-topbar {
+        margin-left: var(--s-menu-collapsed-width);
     }
     .menu-logo-mini {
-        width: var(--menuLogoCollapsedWidth);
+        width: var(--s-menu-logo-collapsed-width);
     }
 }
 
 /// Styling topbar-logo-wrapper
 .menu-logo-wrapper {
-    @extend %topbar-pos-dis;
     @include menuTransitions();
-    width: var(--menuWidth);
-    justify-content: center;
-    background: var(--menuLogoBgdColor);
-    background: var(--menuLogoBgdColorGrad);
-    border-bottom: 1px solid var(--menuBorderColor);
+    position: fixed;
+    display: flex;
+    height: var(--s-menu-header-height);
+    width: var(--s-menu-width);
+    justify-content: var(--s-menu-logo-h-alignment);
+    align-items: var(--s-menu-logo-v-alignment);
+    background: var(--s-menu-logo-background);
+    background: var(--s-menu-logo-background-gradient);
+    border-bottom: var(--s-menu-logo-border-thickness) solid var(--s-menu-border-color);
 }
 
 /// Align to center, so logo is properly positioned and other styling
 .menu-logo {
     @include menuTransitions();
     align-self: center;
-    width: var(--menuLogoWidth);
-    border-radius: 5%;
-    max-height: var(--menuLogoHeight);
+    width: var(--s-menu-logo-width);
+    max-height: var(--s-menu-logo-max-height);
     object-fit: contain;
 }
 
 /// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
-.menu-upper {
+.menu-topbar {
     @include menuTransitions();
-    margin-left: var(--menuWidth);
+    margin-left: var(--s-menu-width);
     display: flex;
     flex-grow: 1;
-    align-items: center;
-    justify-content: space-between;
+    align-items: var(--s-menu-topbar-v-alignment);
+    justify-content: var(--s-menu-topbar-h-alignment);
 }
 
-.menu-upper-left, .menu-upper-right {
+.menu-topbar-left, .menu-topbar-right {
     display: flex;
-    align-items: center;
 }
 
-.p-button.p-button-icon-only.menu-upper-buttons {
-    width: var(--menuButtonsBig);
-    height: var(--menuButtonsBig);
+.menu-topbar-left {
+    align-items: var(--s-menu-topbar-l-v-alignment);
+}
+
+.menu-topbar-right {
+    align-items: var(--s-menu-topbar-r-v-alignment);
+}
+
+.p-button.p-button-icon-only.menu-topbar-buttons {
+    width: var(--s-menu-buttons-full);
+    height: var(--s-menu-buttons-full);
     flex: 1;
-    background-color: initial;
-    color: var(--menuFgdColor);
+    background-color: var(--s-menu-buttons-background);
+    color: var(--s-menu-color);
     border: 0;
-    border-radius: 4px;
-    margin-right: 0.5rem;
+    border-radius: var(--s-menu-buttons-border-radius);
+    margin-right: var(--s-menu-buttons-gap);
     &:hover {
-        background-color: #454b52;
+        background-color: var(--s-menu-buttons-hover-background);
     }
     .pi, .fa {
-        font-size: 1.5rem;
+        font-size: var(--s-menu-buttons-font-size);
     }
 }
 
 /// Menu-screen-title styling
 .menu-screen-title {
-    color: var(--menuFgdColor);
-    font-size: 22px;
-    font-weight: bold;
+    color: var(--s-menu-color);
+    font-size: var(--s-menu-title-font-size);
+    font-weight: var(--s-menu-title-font-weight);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-left: 10px;
+    margin-left: var(--s-menu-title-margin);
 }
 
-/// Margin-left, so the profile is on the far right
 .profile-menu {
-    margin-right: 10px;
-    border-left: 2px solid #5b6067;
+    margin-right: var(--s-menu-profile-margin);
+    border-left: var(--s-menu-profile-seperator);
 
-    
     .p-menubar  {
         .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-            display: flex;
-            padding: 0.5rem 1rem;
-            justify-content: flex-end;
-            height: var(--profileMenuHeight);
+            height: var(--s-menu-profile-height);
         }
 
         .p-submenu-list {
@@ -207,23 +280,23 @@
     /// Removes default primereact menubar style
     padding: 0;
     border: none;
-    background: var(--menuTopBar);
+    background: var(--s-menu-header-background);
 
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
             /// Sets menubar style on hover and active for text, subicon color and background
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--menuTopBar);
-                color: var(--menuFgdColor);
+                background: var(--s-menu-header-background);
+                color: var(--s-menu-color);
                 margin-left: 4px;
                 .p-menuitem-text, .p-submenu-icon {
-                    color: var(--menuFgdColor);
+                    color: var(--s-menu-color);
                 }
                 &:hover {
                     background: #454b52;
-                    color: var(--menuFgdColor);
+                    color: var(--s-menu-color);
                     .p-menuitem-text, .p-submenu-icon {
-                        color: var(--menuFgdColor);
+                        color: var(--s-menu-color);
                     }
                 }
             }
@@ -236,14 +309,18 @@
 }
 
 /// Profile-image styling
+.profile-image, .profile-image-null {
+    width: 40px;
+    height: 40px;
+    border-radius: 25%;
+}
+
 .profile-image {
-    @extend %profile-image;
     background-size: 40px 40px;
     background-image: var(--profileImage);
 }
 .profile-image-null {
-    @extend %profile-image;
-    background: var(--menuProfileBgdColor);
+    background: var(--s-menu-profile-background);
     text-align: center;
     &::before {
         font-size: 38px;
@@ -255,13 +332,13 @@
     @include menuTransitions();
     @include styledScrollbarPanel();
     position: fixed;
-    padding-top: var(--menuHeight);
+    padding-top: var(--s-menu-header-height);
     z-index: 10;
     height: 100%;
-    width: var(--menuWidth);
-    border-right: 1px solid var(--menuBorderColor);
+    width: var(--s-menu-width);
+    border-right: var(--s-menu-panelmenu-border-thickness) solid var(--s-menu-border-color);
     overflow-x: hidden;
-    background: var(--menuPanelWrapperBgd)
+    background: var(--s-menu-panelmenu-background)
 }
 
 /// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
@@ -273,12 +350,12 @@
     display: flex;
     align-items: center;
     height: 0;
-    padding-left: var(--menuCollapsePaddingLeft);
+    padding-left: var(--s-menu-collapsed-logo-padding-left);
 }
 
 .menu-logo-mini {
     max-height: 0px;
-    width: var(--menuLogoWidth);
+    width: var(--s-menu-logo-width);
 }
 
 /// Fadeout div for not readable text if collapsed
@@ -286,9 +363,9 @@
     @include menuTransitions();
     position: absolute;
     top: 0;
-    left: var(--menuFadeoutLeft);
-    width: var(--menuFadeoutWidth);
-    margin-top: var(--menuHeight);
+    left: var(--s-menu-fadeout-left);
+    width: var(--s-menu-fadeout-width);
+    margin-top: var(--s-menu-header-height);
     height: 100%;
     background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%); 
     background-image: linear-gradient(90deg,  rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
@@ -308,19 +385,19 @@
             //Positioning of menu-arrow
             .p-panelmenu-icon {
                 position: absolute;
-                left: calc(var(--menuWidth) - 30px);
+                left: calc(var(--s-menu-width) - 30px);
                 margin-right: 0;
             }
         }
         &:not(.p-highlight):not(.p-disabled) > a:hover {
-            color: var(--menuPanelHeaderColorHover);
+            color: var(--s-menu-panelmenu-header-color-hover);
         }
         .p-panelmenu-header-link {
-            background: var(--menuPanelHeaderBgd);
+            background: var(--s-menu-panelmenu-header-background);
             border: none;
-            color: var(--menuPanelHeaderColor);
+            color: var(--s-menu-panelmenu-header-color);
             &:hover {
-                color: var(--menuPanelHeaderColorHover);
+                color: var(--s-menu-panelmenu-header-color-hover);
             }
             /// When text is longer don't break
             .p-menuitem-text {
@@ -330,21 +407,21 @@
         /// Selected menupoint styling
         &.p-highlight {
             > a, &:not(.p-disabled) > a:hover {
-                background: var(--menuPanelHeaderBgd);
-                color: var(--menuPanelHeaderColorHover);
+                background: var(--s-menu-panelmenu-header-background);
+                color: var(--s-menu-panelmenu-header-color-hover);
             }
         }
     }
     .p-panelmenu-content {
         border: none;
-        background: var(--menuPanelHeaderBgd);
+        background: var(--s-menu-panelmenu-header-background);
         .p-menuitem {
             /// Menu sub points little more to the right
             .p-menuitem-link:not(.p-disabled) {
                 padding: 0.75rem 0.75rem 0.75rem 1.5rem;
                 &:hover {
                     .p-menuitem-icon, .p-menuitem-text {
-                        color: var(--menuPanelHeaderColorHover);
+                        color: var(--s-menu-panelmenu-header-color-hover);
                     }
                 }
             }
@@ -354,7 +431,7 @@
     .p-panelmenu-content .p-menuitem.p-menuitem--active {
         .p-menuitem-link {
             .p-menuitem-text, .p-menuitem-icon {
-                color: var(--menuPanelActiveItemColor);
+                color: var(--s-menu-panelmenu-active-item-color);
             }
         }
     }
@@ -373,10 +450,10 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
-            background: var(--menuTopBar);
+            background: var(--s-menu-header-background);
 
             >.p-menuitem {
-                background-color: var(--menuTopBar);
+                background-color: var(--s-menu-header-background);
                 width: initial;
             }
 
@@ -392,7 +469,7 @@
                 box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 border: 1px solid #c8c8c8;
                 width: 12.5rem;
-                top: calc(var(--profileMenuHeight) + var(--cMenuHeight));
+                top: calc(var(--s-menu-profile-height) + var(--cMenuHeight));
                 li {
                     a {
                         padding: 0.75rem;
@@ -449,7 +526,7 @@
     }
 
     /// Colored part of menu always on the left side
-    .menu-upper {
+    .menu-topbar {
         &, .menu-collapsed & {
             margin-left: 0px;
         }
@@ -457,19 +534,19 @@
 
     /// Show logo-mini-wrapper
     .menu-logo-mini-wrapper {
-        height: var(--menuLogoHeight);
+        height: var(--s-menu-logo-max-height);
     }
 
     /// Mini logo displaying and styling
     .menu-logo-mini {
         @include menuTransitions();
-        width: var(--menuLogoWidth);
-        max-height: var(--menuLogoHeight);
+        width: var(--s-menu-logo-width);
+        max-height: var(--s-menu-logo-max-height);
     }
 
     /// Fadeout position needs to be adjusted.
     .fadeout {
-        margin-top: calc(var(--menuHeight) + var(--menuLogoHeight));
+        margin-top: calc(var(--s-menu-header-height) + var(--s-menu-logo-max-height));
     }
 
     .menu-collapsed.no-mini {
@@ -482,7 +559,7 @@
         }
     }
 
-    .p-button.p-button-icon-only.menu-upper-buttons {
+    .p-button.p-button-icon-only.menu-topbar-buttons {
         width: 40px;
         height: 40px;
     }

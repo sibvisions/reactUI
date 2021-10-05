@@ -7,7 +7,7 @@
 }
 
 .reactUI{
-  height: var(--mainHeight);
+  height: var(--main-height);
   display: flex;
   &.corporation {
     flex-direction: column;
@@ -26,21 +26,21 @@
 
   &--with-s-menu {
     &:not(.desktop-panel-enabled):not(.menu-not-visible) {
-      margin-top: calc(var(--menuHeight) + 10px);
-      margin-left: calc(var(--menuWidth) + 10px);
+      margin-top: calc(var(--s-menu-header-height) + 10px);
+      margin-left: calc(var(--s-menu-width) + 10px);
       margin-bottom: 10px;
       margin-right: 10px;
       &.screen-expanded {
-        margin-left: calc(var(--menuCollapsedWidth) + 10px);
+        margin-left: calc(var(--s-menu-collapsed-width) + 10px);
       }
     }
     &.desktop-panel-enabled:not(.menu-not-visible) {
-      margin-top: var(--menuHeight);
+      margin-top: var(--s-menu-header-height);
       &:not(.screen-expanded) {
-        margin-left: var(--menuWidth);
+        margin-left: var(--s-menu-width);
       }
       &.screen-expanded {
-        margin-left: var(--menuCollapsedWidth);
+        margin-left: var(--s-menu-collapsed-width);
       }
     }
     &.screen-expanded {
@@ -65,7 +65,7 @@
 
 .screen-expanded {
   @extend %screen-transition;
-  margin-left: calc(var(--menuCollapsedWidth) + 10px);
+  margin-left: calc(var(--s-menu-collapsed-width) + 10px);
 }
 
 .transition-disable-overflow {

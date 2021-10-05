@@ -52,7 +52,7 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons?:VisibleButton
         <>
             {props.showButtons && <Button
                 icon="fa fa-home"
-                className="menu-upper-buttons"
+                className="menu-topbar-buttons"
                 onClick={() => {
                     const openWelcomeOrHome = () => {
                         if (context.appSettings.welcomeScreen) {
@@ -90,14 +90,14 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons?:VisibleButton
             }
             {props.showButtons && (!props.visibleButtons || props.visibleButtons.save) && <Button
                 icon="fa fa-save"
-                className="menu-upper-buttons"
+                className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
             {(!props.visibleButtons || (props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
                 <Button
                     icon={!props.visibleButtons ? "fa fa-refresh" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
-                    className="menu-upper-buttons"
+                    className="menu-topbar-buttons"
                     onClick={() => {
                         if (!props.visibleButtons || (props.visibleButtons.reload && !props.visibleButtons.rollback)) {
                             showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
@@ -323,20 +323,20 @@ const Menu: FC<IMenu> = (props) => {
                     menuCollapsed ? " menu-collapsed" : "",
                     props.showMenuMini ? "" : "no-mini"
                 )}>
-                    <div className={"menu-topbar"}>
+                    <div className={"menu-header"}>
                         <div className="menu-logo-wrapper" ref={menuLogoRef}>
                             <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                         </div>
-                        <div className="menu-upper">
-                            <div className="menu-upper-left">
+                        <div className="menu-topbar">
+                            <div className="menu-topbar-left">
                                 <Button
                                     icon={!menuCollapsed ? "pi pi-chevron-left" : "pi pi-chevron-right"}
-                                    className="menu-upper-buttons menu-toggler"
+                                    className="menu-topbar-buttons menu-toggler"
                                     onClick={() => handleToggleClick()}
                                     style={{ marginRight: "4px", marginLeft: "10px" }} />
                                 <span className="menu-screen-title">{screenTitle}</span>
                             </div>
-                            <div className="menu-upper-right">
+                            <div className="menu-topbar-right">
                                 <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
                             </div>
                         </div>

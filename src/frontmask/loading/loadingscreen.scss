@@ -1,5 +1,33 @@
+:root {
+    /// -----Loading-Screen Variables-----
+
+    /// The loading-screen-logo height
+    --loading-screen-logo-height: 300px;
+
+    /// The loading-screen-logo width
+    --loading-screen-logo-width: 300px;
+
+    /// The left color of the loading-screen.
+    --loading-screen-background-left: #ffffff;
+
+    /// The right color of the loading-screen.
+    --loading-screen-background-right: #f1f1f1;
+
+    /// The first of four progress-spinner colors.
+    --loading-screen-spinner-color-1: #b3ec23;
+
+    /// The second of four progress-spinner colors.
+    --loading-screen-spinner-color-2: #95c41f;
+
+    /// The third of four progress-spinner colors.
+    --loading-screen-spinner-color-3: #8bb61d;
+
+    /// The fourth of four progress-spinner colors.
+    --loading-screen-spinner-color-4: #80a818;
+}
+
 .loading-screen {
-    height: var(--mainHeight);
+    height: var(--main-height);
     position: relative;
     background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
     background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);

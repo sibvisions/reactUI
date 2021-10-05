@@ -26,7 +26,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
 
     useLayoutEffect(() => {
         if (props.style && props.style.height) {
-            document.documentElement.style.setProperty("--mainHeight", props.style.height as string)
+            document.documentElement.style.setProperty("--main-height", props.style.height as string)
         }
     },[]);
 

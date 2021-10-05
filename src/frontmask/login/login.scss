@@ -1,5 +1,48 @@
-.login-container{
-  height: var(--mainHeight);
+:root {
+  /// -----Login Variables-----
+
+  /// Login container background
+  --login-container-background: rgba(255, 255, 255, 0.75);
+
+  /// Login form width
+  --login-form-width: 450px;
+
+  /// Login form height
+  --login-form-height: 360px;
+  
+  /// Half of the login form width used for positioning
+  --login-form-left-position: calc(var(--login-form-width) / 2);
+  
+  /// Half of the login form height used for positioning
+  --login-form-top-position: calc(var(--login-form-height) / 2);
+  
+  /// Login form top bottom padding
+  --login-form-top-bottom-padding: 30px;
+  
+  /// Login form left right padding
+  --login-form-left-right-padding: 40px;
+
+  /// Login form border-radius
+  --login-form-border-radius: 6px;
+
+  /// Login form field margin
+  --login-form-field-margin: 1.5rem;
+  
+  /// Login form gap between logo and inputfields
+  --login-form-logo-gap: 1rem;
+
+  /// Login form logo size.
+  --login-logo-width: 100%;
+  
+  /// Login form logo background
+  --login-logo-background: rgba(255, 255, 255, 0.65);
+  
+  /// Login inputfields placeholder color
+  --login-placeholder-color: #bcc0c4;
+}
+
+.login-container {
+  height: var(--main-height);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,14 +51,13 @@
 }
 
 .login-form{
-  width: var(--loginFormWidth);
-  height: var(--loginFormHeight);
-  text-align: center;
-  background: var(--loginContainerBgd);  
-  border-radius: 6px;
+  width: var(--login-form-width);
+  height: var(--login-form-height);
+  background: var(--login-container-background);  
+  border-radius: var(--login-form-border-radius);
 
   .p-fluid {
-    padding: var(--loginFormLogoGap) var(--loginFormLRPadding) var(--loginFormTBPadding);
+    padding: var(--login-form-logo-gap) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
     .lost-password-button {
       width: unset;
       padding: 0.5rem;
@@ -24,23 +66,23 @@
 }
 
 .login-logo-wrapper {
-  padding: var(--loginFormTBPadding) var(--loginFormLRPadding) var(--loginFormLogoGap);
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
-  background: var(--loginLogoBgd);
+  padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) var(--login-form-logo-gap);
+  border-top-right-radius: var(--login-form-border-radius);
+  border-top-left-radius: var(--login-form-border-radius);
+  background: var(--login-logo-background);
 }
 
 .login-logo {
-  width: 100%;
+  width: var(--login-logo-width);
 }
 
 .p-field {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--login-form-field-margin);
 }
 
 .p-float-label {
   label {
-    color: var(--loginPlaceholderColor);
+    color: var(--login-placeholder-color);
   }
   /// Position and Size of floatlabel placeholder
   input:focus ~label, input.p-filled ~label, 
@@ -83,12 +125,12 @@
 }
 
 .login-container-with-desktop {
-  height: var(--mainHeight);
+  height: var(--main-height);
   position: relative;
 }
 
 .login-form-position-wrapper {
   position: absolute;
-  top: calc(50% - var(--loginFormHeightHalf));
-  left: calc(50% - var(--loginFormWidthHalf));
+  top: calc(50% - var(--login-form-top-position));
+  left: calc(50% - var(--login-form-left-position));
 }

@@ -42,153 +42,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
-
-    /// -----Loading-Screen Variables-----
-
-    /// The loading-screen-logo height
-    --loading-screen-logo-height: 300px;
-
-    /// The loading-screen-logo width
-    --loading-screen-logo-width: 300px;
-
-    /// The left color of the loading-screen.
-    --loading-screen-background-left: #ffffff;
-
-    /// The right color of the loading-screen.
-    --loading-screen-background-right: #f1f1f1;
-
-    /// The first of four progress-spinner colors.
-    --loading-screen-spinner-color-1: #b3ec23;
-
-    /// The second of four progress-spinner colors.
-    --loading-screen-spinner-color-2: #95c41f;
-
-    /// The third of four progress-spinner colors.
-    --loading-screen-spinner-color-3: #8bb61d;
-
-    /// The fourth of four progress-spinner colors.
-    --loading-screen-spinner-color-4: #80a818;
-
     /// Standard background of the application
-    --standardBgdColor: white;
+    --standardBgdColorColor: white;
 
     /// Standard text-color
-    --standardTextColor: #495057;
+    --sTextColor: #495057;
 
     /// Standard font
-    --standardFont: 'Roboto', sans-serif;
+    --sFont: 'Roboto', sans-serif;
 
     /// Standard font-size
-    --standardFontSize: 14px;
-
-    /// Menu-width when extended
-    --menuWidth: 240px;
-
-    /// Menu-width when collapsed
-    --menuCollapsedWidth: 80px;
-
-    /// Left padding when menu is collpased
-    --menuCollapsePaddingLeft: 10px;
-
-    /// Topbar height
-    --menuHeight: 70px;
-
-    /// Logo width when expanded
-    --menuLogoWidth: 190px;
-
-    /// Logo width when collapsed
-    --menuLogoCollapsedWidth: 60px;
-
-    /// Logo height
-    --menuLogoHeight: 60px;
-
-    /// Logo width corp
-    --cMenuLogoWidth: 210px;
-
-    /// menubar corporation menu height
-    --cMenuHeight: 40px;
-
-    /// corp menu quicknav width
-    --cMenuToolBarWidth: 100px;
-
-    /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
-    --menuFadeoutWidth: 20px;
-
-    /// Fadeout positioning
-    --menuFadeoutLeft: calc(var(--menuCollapsedWidth) - var(--menuFadeoutWidth));
-
-    //--menuTopBar: #4f5965
-    --menuTopBar: #7a7f85;
-
-    /// Foreground of topbar
-    --menuFgdColor: white;
-
-    /// Topbar foreground color when hovering 
-    --menuHoverColor: hsl(0deg 0% 100% / 70%);
-
-    /// Color for menu borders
-    --menuBorderColor: rgba(120,130,140,.13);
-
-    /// Logo background
-    --menuLogoBgdColor: rgb(232,232,232);
-    --menuLogoBgdColorGrad: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
-
-    /// Backgroud color of profile image when there is no image set
-    --menuProfileBgdColor: white;
-
-    /// Menu background
-    --menuPanelWrapperBgd: #fafafa;
-
-    /// Background for each panel of panelmenu
-    --menuPanelHeaderBgd: #fafafa;
-
-    /// Foreground color for each panel of panelmenu
-    --menuPanelHeaderColor: #495057;
-
-    /// Foreground color when a panel is hovered or active
-    --menuPanelHeaderColorHover: black;
-
-    /// the text color of an active menu item
-    --menuPanelActiveItemColor: #2196F3;
-
-    /// profilemenu height
-    --profileMenuHeight: 60px;
-
-    /// menubuttons-big height
-    --menuButtonsBig: 60px;
-
-    /// menubuttons-small height
-    --menuButtonsSmall: 2.5rem;
-
-    /// Login container background
-    --loginContainerBgd: rgba(255, 255, 255, 0.75);
-
-    /// Login form width
-    --loginFormWidth: 450px;
-
-    /// Login form height
-    --loginFormHeight: 360px;
-
-    /// Half of the login form width used for positioning
-    --loginFormWidthHalf: calc(var(--loginFormWidth) / 2);
-
-    /// Half of the login form height used for positioning
-    --loginFormHeightHalf: calc(var(--loginFormHeight) / 2);
-
-    /// Login form top bottom padding
-    --loginFormTBPadding: 30px;
-
-    /// Login form left right padding
-    --loginFormLRPadding: 40px;
-
-    /// Login form gap between logo and inputfields
-    --loginFormLogoGap: 1rem;
-
-    /// Login form logo background
-    --loginLogoBgd: rgba(255, 255, 255, 0.65);
-
-    /// Login inputfields placeholder color
-    --loginPlaceholderColor: #bcc0c4;
+    --sFontSize: 14px;
 
     /// Button default background
     --btnDefaultBgd: #2196F3;
@@ -216,7 +80,7 @@
     ///Toolbar border
     --toolBarBorder: 1px solid #dee2e6;
 
-    --mainHeight: 100vh;
+    --main-height: 100vh;
 }
 
 * {
@@ -231,10 +95,10 @@
 
 /// setting standard values for body
 body {
-    background: var(--standardBgdColor);
-    color: var(--standardTextColor);
-    font-family: var(--standardFont);
-    font-size: var(--standardFontSize);
+    background: var(--standardBgdColorColor);
+    color: var(--sTextColor);
+    font-family: var(--sFont);
+    font-size: var(--sFontSize);
     font-weight: 400;
     font-style: normal;
     margin: 0;
@@ -242,8 +106,8 @@ body {
 
 /// Overriding PrimeReact font-family and font-size
 .p-component {
-    font-family: var(--standardFont);
-    font-size: var(--standardFontSize);
+    font-family: var(--sFont);
+    font-size: var(--sFontSize);
 }
 
 /// Image in this file because image won't be displayed

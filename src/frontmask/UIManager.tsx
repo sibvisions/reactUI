@@ -78,8 +78,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
-    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuWidth')),
-    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--menuCollapsedWidth')) : 0), menuCollapsed);
+    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-width')),
+    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-collapsed-width')) : 0), menuCollapsed);
 
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
