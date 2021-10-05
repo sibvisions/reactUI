@@ -32,7 +32,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         id,
         reportSize,
         maximumSize,
-        children
+        className
     } = baseProps;
 
     /** 
@@ -692,6 +692,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     );
 
     useEffect(() => {
+        const children = context.contentStore.getChildren(id, className);
         /** 
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 

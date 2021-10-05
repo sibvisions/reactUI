@@ -42,11 +42,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = context.contentStore.getChildren(props.id);
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, compSizes] = useComponents(baseProps.id, children);
+    const [components, compSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

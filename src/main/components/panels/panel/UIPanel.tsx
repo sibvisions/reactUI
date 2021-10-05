@@ -37,11 +37,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = context.contentStore.getChildren(props.id)
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, children);
+    const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -88,6 +85,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             }}>
             <Layout
                 id={id}
+                className={props.className}
                 layoutData={props.layoutData}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
@@ -104,7 +102,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                     props.screen_modal_,
                     props.screen_size_
                 )}
-                children={children} 
                 isToolBar={props.className === "ToolBar"}
                 parent={props.parent} />
         </div>

@@ -21,7 +21,7 @@ export type ComponentSizes = {
  * @param id - the id of the component
  * @returns a layouts rendered Childcomponents and their preferred size
  */
-const useComponents = (id: string, children: Map<string, BaseComponent>): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
+const useComponents = (id: string, className:string): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
     /** Use context to gain access for contentstore and server methods */
@@ -43,7 +43,7 @@ const useComponents = (id: string, children: Map<string, BaseComponent>): [Array
                 }
             });
         }
-
+        const children = context.contentStore.getChildren(id, className);
         const reactChildrenArray: Array<ReactElement> = [];
         /**
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
@@ -125,7 +125,7 @@ const useComponents = (id: string, children: Map<string, BaseComponent>): [Array
             }
         });
         return reactChildrenArray;
-    },[context.contentStore, id, preferredSizes, children]);
+    },[context.contentStore, id, preferredSizes]);
     
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());

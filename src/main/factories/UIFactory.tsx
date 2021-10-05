@@ -135,7 +135,8 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set("Gauge", props => <UIGauge {...props} />)
     .set("MobileBrowser", props => <UIBrowser {...props} />)
     .set("ToolBar", props => <UIPanel {...props} />)
-    .set("ToolBarHelper", props => <UIToolBarHelper {...props} />);
+    .set("ToolBarHelperMain", props => <UIToolBarHelper {...props} />)
+    .set("ToolBarHelperCenter", props => <UIToolBarHelper {...props} />);
 
 /**
  * Returns the JSXElement for the given base component

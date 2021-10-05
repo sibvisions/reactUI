@@ -25,11 +25,8 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = new Map([...context.contentStore.getChildren(props.id)].filter(entry => entry[0].includes("-tb")));
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, children);
+    const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -75,6 +72,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             }}>
             <Layout
                 id={id}
+                className={props.className}
                 layoutData={""}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
@@ -91,7 +89,6 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                     props.screen_modal_,
                     props.screen_size_
                 )}
-                children={children}
                 parent={props.parent}
             />
         </div>

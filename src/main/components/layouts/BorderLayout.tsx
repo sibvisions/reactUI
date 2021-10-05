@@ -32,7 +32,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         id,
         layout,
-        children
+        className
     } = baseProps
 
 
@@ -56,13 +56,15 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
 
+        const children = context.contentStore.getChildren(id, className);
+
         let northUsed = false;
         let westUsed = false;
         let eastUsed = false;
         let southUsed = false;
         let centerUsed = false;
         let hCompCount = 0;
-        let vCompCount = 0;        
+        let vCompCount = 0;
 
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size) {
@@ -296,7 +298,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
                 }
                 else {
-                    reportSize({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                    reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
                 }
             }
             

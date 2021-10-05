@@ -34,7 +34,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
 
     /** The Childcomponents of this SplitPanel */
     const children = useMemo(() => {
-        return context.contentStore.getChildren(props.id);
+        return context.contentStore.getChildren(props.id, props.className);
     }, [context.contentStore, props.id])
 
     /**
@@ -53,7 +53,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     }
 
     /** Current state of all Childcomponents as react children */
-    const [components] = useComponents(props.id, children);
+    const [components] = useComponents(props.id, props.className);
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());

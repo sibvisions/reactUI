@@ -23,9 +23,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         id,
         reportSize,
         alignChildrenIfOverflow = true,
-        children,
         isToolBar,
-        parent
+        parent,
+        className
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -52,12 +52,14 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** Wether the layout should be wrapped if there is not enough space for all components */
         const autoWrap = (layout.split(",")[11] === 'true')
         /** If the orientation is horizontal */
-        const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL
+        const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL;
+
+        const children = context.contentStore.getChildren(id, className)
 
         /** Sorts the Childcomponent based on indexOf property */
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
 
-        const toolBarsFiltered:[string, BaseComponent][]|undefined = parent && (isToolBar || id.includes("-tbMain")) ? [...context.contentStore.getChildren(parent)].filter(entry => entry[1]["~additional"]) : undefined;
+        const toolBarsFiltered:[string, BaseComponent][]|undefined = parent && (isToolBar || id.includes("-tbMain")) ? [...context.contentStore.getChildren(id, className)] : undefined;
 
         const isNotLastToolBar = (id:string) => {
             if (toolBarsFiltered) {

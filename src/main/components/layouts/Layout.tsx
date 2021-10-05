@@ -6,7 +6,6 @@ import { BorderLayout,
          NullLayout } from './index';
 import { ComponentSizes } from "../zhooks";
 import { Dimension } from "../util";
-import BaseComponent from "../BaseComponent";
 
 /**
  * General information for layouts:
@@ -17,7 +16,8 @@ import BaseComponent from "../BaseComponent";
 
  /** Interface for layouts */
 export interface ILayout{
-    id: string
+    id: string,
+    className: string
     layout: string,
     layoutData: string,
     preferredSize?: Dimension,
@@ -30,7 +30,6 @@ export interface ILayout{
     reportSize: Function,
     alignChildrenIfOverflow?: boolean,
     panelType?: string,
-    children: Map<string, BaseComponent>,
     isToolBar?: boolean,
     parent?:string
 }

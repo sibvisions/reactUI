@@ -25,11 +25,8 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = context.contentStore.getChildren(props.id)
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, children);
+    const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -134,6 +131,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         >
             <Layout
                 id={id}
+                className={props.className}
                 layoutData={props.layoutData}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
@@ -145,7 +143,6 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 components={components}
                 alignChildrenIfOverflow={false}
                 style={scrollStyle}
-                children={children}
                 parent={props.parent} />
         </div>
     )

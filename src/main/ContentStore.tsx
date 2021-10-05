@@ -246,20 +246,28 @@ export default class ContentStore{
                 newComponent.visible !== undefined || 
                 newComponent.constraints
             ) {
-                if(newComponent.parent) {
-                    notifyList.push(newComponent.parent);
-                    // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
-                    if (newComponent.parent.includes("TBP")) {
-                        if (newComponent["~additional"]) {
-                            notifyList.push(newComponent.parent + "-tbMain");
+                const addToNotifyList = (comp:BaseComponent) => {
+                    if (comp.parent) {
+                        // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
+                        if (comp.parent.includes("TBP")) {
+                            if (comp["~additional"]) {
+                                notifyList.push(comp.parent + "-tbMain");
+                            }
+                            else {
+                                notifyList.push(comp.parent + "-tbCenter");
+                            }
                         }
                         else {
-                            notifyList.push(newComponent.parent + "-tbCenter");
+                            notifyList.push(comp.parent);
                         }
                     }
-                    else {
-                        notifyList.push(newComponent.parent);
-                    }
+                }
+
+                if (existingComponent) {
+                    addToNotifyList(existingComponent);
+                }
+                else if(newComponent.parent) {
+                    addToNotifyList(newComponent);
                 }
             }
 
@@ -305,7 +313,7 @@ export default class ContentStore{
                             parent: newComponent.id,
                             constraints: getToolBarMainConstraint(castedNewComp.toolBarArea),
                             name: newComponent.name + "-tbMain",
-                            className: "ToolBarHelper",
+                            className: "ToolBarHelperMain",
                             layout: "FlowLayout,5,5,5,5,0,0,0,0,0,3,true",
                             layoutData: "",
                             preferredSize: newComponent.preferredSize, 
@@ -318,7 +326,7 @@ export default class ContentStore{
                             parent: newComponent.id,
                             constraints: "Center",
                             name: newComponent.name + "-tbCenter",
-                            className: "ToolBarHelper",
+                            className: "ToolBarHelperCenter",
                             layout: innerLayout,
                             layoutData: castedNewComp.layoutData,
                             preferredSize: newComponent.preferredSize, 
@@ -340,7 +348,8 @@ export default class ContentStore{
                     name: newComponent.name,
                     preferredSize: newComponent.preferredSize, 
                     minimumSize: newComponent.minimumSize, 
-                    maximumSize: newComponent.maximumSize
+                    maximumSize: newComponent.maximumSize,
+                    className: ""
                 };
                 this.replacedContent.set(newComponent.id, newComp)
             }
@@ -356,7 +365,7 @@ export default class ContentStore{
                         this.removedDesktopContent.set(newComponent.id, existingComponent);
                     }
                     else {
-                        const compToRemove = this.flatContent.get(newComponent.id)
+                        const compToRemove = this.flatContent.get(newComponent.id);
                         this.flatContent.delete(newComponent.id);
                         this.removedContent.set(newComponent.id, existingComponent);
                         // When the toolbar-panel gets removed, also add the sub-panels to removedContent
@@ -480,7 +489,7 @@ export default class ContentStore{
         }
         const window = this.getComponentByName(windowName);
         if(window){
-            this.cleanUp(window.id, window.name);
+            this.cleanUp(window.id, window.name, window.className);
         }
     }
 
@@ -488,10 +497,10 @@ export default class ContentStore{
      * Deletes all children of a parent from flatContent, a child with children also deletes their children from flatContent
      * @param parentId - the id of the parent
      */
-    deleteChildren(parentId:string) {
-        const children = this.getChildren(parentId);
+    deleteChildren(parentId:string, className: string) {
+        const children = this.getChildren(parentId, className);
         children.forEach(child => {
-            this.deleteChildren(child.id);
+            this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
         });
     }
@@ -501,9 +510,9 @@ export default class ContentStore{
      * @param id - the component id
      * @param name - the component name
      */
-    cleanUp(id:string, name:string|undefined) {
+    cleanUp(id:string, name:string|undefined, className: string) {
         if (name) {
-            this.deleteChildren(id);
+            this.deleteChildren(id, className);
             this.flatContent.delete(id);
 
             //only do a total cleanup if there are no more components of that name
@@ -604,11 +613,16 @@ export default class ContentStore{
      * @param parentId - the id of the parent
      * @returns all visible children of a parent, if tabsetpanel also return invisible
      */
-    getChildren(parentId: string): Map<string, BaseComponent> {
+    getChildren(parentId: string, className: string): Map<string, BaseComponent> {
         const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         const componentEntries = mergedContent.entries();
-        const children = new Map<string, BaseComponent>();
+        let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
+
+        if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+            parentId = mergedContent.get(parentId)!.parent as string
+        }
+
         while (!entry.done) {
             if (parentId.includes("TP")) {
                 if (entry.value[1].parent === parentId && !this.removedCustomComponents.includes(entry.value[1].name)) {
@@ -620,6 +634,17 @@ export default class ContentStore{
             }
             entry = componentEntries.next();
         }
+
+        if (className === "ToolBarPanel") {
+            children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+        }
+        else if (className === "ToolBarHelperMain") {
+            children = new Map([...children].filter(entry => entry[1]["~additional"]));
+        }
+        else if (className === "ToolBarHelperCenter") {
+            children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+        }
+
         return children;
     }
 

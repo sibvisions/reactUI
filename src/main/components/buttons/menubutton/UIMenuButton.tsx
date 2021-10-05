@@ -95,7 +95,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             setItems(tempItems);
         }
         if(props.popupMenu) {
-            buildMenu(context.contentStore.getChildren(props.popupMenu));
+            buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
         }
     },[context.contentStore, context.server, props])
     

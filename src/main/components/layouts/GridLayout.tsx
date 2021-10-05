@@ -21,7 +21,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         style,
         id,
         reportSize,
-        children
+        className
     } = baseProps
 
     /** Current state of the calculatedStyle by the FormLayout */
@@ -42,6 +42,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
         /** GridSize of the layout */
         const gridSize = new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8));
+
+        const children = context.contentStore.getChildren(id, className)
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if (compSizes && children.size === compSizes.size) {

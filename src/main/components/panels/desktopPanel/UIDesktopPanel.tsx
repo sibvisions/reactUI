@@ -27,11 +27,8 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = context.contentStore.getChildren(props.id);
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, children);
+    const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
     const panelRef = useRef<any>(null);
     /** Hook for MouseListener */
@@ -45,6 +42,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
             style={{...layoutStyle, backgroundColor: props.background}} >
             <Layout
                 id={props.id}
+                className={props.className}
                 layoutData={props.layoutData}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
@@ -55,7 +53,6 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 style={panelGetStyle(false, layoutStyle)}
                 reportSize={() => {}}
                 panelType="DesktopPanel"
-                children={children}
                 parent={props.parent} />
         </div>
     )

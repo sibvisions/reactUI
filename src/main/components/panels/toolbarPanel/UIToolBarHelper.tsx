@@ -20,11 +20,8 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
-    /** Children of this panel */
-    const children = new Map([...context.contentStore.getChildren(props.parent as string)].filter(entry => props.id.includes("-tbMain") ? entry[1]["~additional"] : !entry[1]["~additional"] && !entry[0].includes("-tb")));
-
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, children);
+    const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -57,7 +54,7 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
 
     return (
         <div
-            className={id.includes("-tbMain") ? "rc-toolbar" : "rc-panel"}
+            className={props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel"}
             ref={panelRef}
             id={props.name} 
             style={props.screen_modal_ ? { 
@@ -71,6 +68,7 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
             }}>
             <Layout
                 id={id}
+                className={props.className}
                 layoutData={props.layoutData}
                 layout={props.layout}
                 preferredSize={parsePrefSize(props.preferredSize)}
@@ -79,7 +77,7 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
                 popupSize={parsePrefSize(props.screen_size_)}
                 reportSize={reportSize}
                 compSizes={componentSizes ? new Map([...componentSizes].filter((v, k) => !v[0].includes("-tb"))) : undefined}
-                components={id.includes("-tbMain") ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))}
+                components={props.className === "ToolBarHelperMain" ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))}
                 style={panelGetStyle(
                     false,
                     layoutStyle,
@@ -87,7 +85,6 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
                     props.screen_modal_,
                     props.screen_size_
                 )}
-                children={children}
                 parent={props.parent} />
         </div>
     )   
