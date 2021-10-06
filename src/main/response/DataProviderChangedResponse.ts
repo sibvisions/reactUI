@@ -11,6 +11,7 @@ interface DataProviderChangedResponse extends BaseResponse{
     selectedRow?: number,
     treePath?: number[],
     selectedColumn?: string,
-    deletedRow?: number
+    changedValues?: any[],
+    changedColumnNames?: string[]
 }
 export default DataProviderChangedResponse

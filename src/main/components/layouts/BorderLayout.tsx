@@ -309,7 +309,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
             }
             else {
-                setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative'});
+                setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative' });
             }
             
         }

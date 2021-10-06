@@ -1,5 +1,6 @@
 /** 3rd Party imports */
 import {parseString} from "xml2js"
+import * as _ from 'underscore'
 
 /** Other imports */
 import ContentStore from "./ContentStore"
@@ -135,9 +136,17 @@ class Server {
             .then((response: any) => response.json())
             .then(this.responseHandler.bind(this))
             .then(results => {
+                results.forEach(result => {
+                    if (result.name === RESPONSE_NAMES.SCREEN_GENERIC && !(result as GenericResponse).update) {
+                        this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
+                    }
+                })
+
                 if (fn) {
                     fn.forEach(func => func.apply(undefined, []))
                 }
+
+
                 if (!job) {
                     for (let [, value] of this.subManager.jobQueue.entries()) {
                         value();
@@ -220,12 +229,12 @@ class Server {
      * Calls the correct functions based on the responses received and then calls the routing decider
      * @param responses - the responses received
      */
-    async responseHandler(responses: Array<BaseResponse>){
+    async responseHandler(responses: Array<BaseResponse>) {
         for (const [, response] of responses.entries()) {
             const mapper = this.responseMap.get(response.name);
             if (mapper) {
                 await mapper(response);
-            }   
+            }
         }
         this.routingDecider(responses);
         return responses;
@@ -450,29 +459,30 @@ class Server {
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
 
-        if (changedProvider.deletedRow === -1) {
-            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
-        }
-        else if (changedProvider.deletedRow !== undefined) {
-            this.contentStore.deleteDataProviderData(compId, changedProvider.dataProvider, changedProvider.deletedRow);
-        }
-
-        if(changedProvider.reload === -1) {
-            this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = changedProvider.dataProvider;
-            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
-        } 
-        else if(changedProvider.reload !== undefined) {
-            const fetchReq = createFetchRequest();
-            fetchReq.rowCount = 1;
-            fetchReq.fromRow = changedProvider.reload;
-            fetchReq.dataProvider = changedProvider.dataProvider;
-            await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
-        }
-        else {
+        if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
+            const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
+            this.contentStore.updateDataProviderData(compId, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
             const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
+        }
+        else {
+            if(changedProvider.reload === -1) {
+                this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = changedProvider.dataProvider;
+                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
+            } 
+            else if(changedProvider.reload !== undefined) {
+                const fetchReq = createFetchRequest();
+                fetchReq.rowCount = 1;
+                fetchReq.fromRow = changedProvider.reload;
+                fetchReq.dataProvider = changedProvider.dataProvider;
+                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+            }
+            else {
+                const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
+                this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
+            }
         }
     }
 

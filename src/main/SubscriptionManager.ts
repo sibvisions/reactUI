@@ -129,6 +129,8 @@ export class SubscriptionManager {
     /** An array of functions to update the active-screen subscriber */
     activeScreenSubscriber = new Array<Function>();
 
+    missingDataSubscriber = new Map<string, Array<Function>>();
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -394,6 +396,14 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.push(fn);
     }
 
+    subscribeToMissingData(compId:string, fn:Function) {
+        const subscriber = this.missingDataSubscriber.get(compId);
+        if (subscriber)
+            subscriber.push(fn)
+        else
+            this.treeSubscriber.set(compId, new Array<Function>(fn));
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -584,6 +594,12 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.splice(this.activeScreenSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    unsubscribeFromMissingData(compId:string, fn: Function) {
+        const subscriber = this.missingDataSubscriber.get(compId)
+        if (subscriber)
+            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -641,6 +657,10 @@ export class SubscriptionManager {
      */
     notifySortDefinitionChange(compId:string, dataProvider:string) {
         this.sortDefinitionSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    notifyMissingDataChanged(compId:string) {
+        this.missingDataSubscriber.get(compId)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**

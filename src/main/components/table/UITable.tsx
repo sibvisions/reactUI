@@ -742,6 +742,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
         }
+
+        if (metaData?.columnView_table_) {
+            setColumnOrder(metaData.columnView_table_);
+        }
     },[metaData])
 
     /** When providerData changes set state of virtual rows*/
@@ -1334,8 +1338,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 ref={wrapRef}
                 style={{
                     ...layoutStyle,
-                    height: layoutStyle?.height as number - 2,
-                    width: layoutStyle?.width as number - 2,
                     outline: "none",
                 } as any}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}

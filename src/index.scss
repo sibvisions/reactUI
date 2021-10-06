@@ -46,13 +46,13 @@
     --standardBgdColorColor: white;
 
     /// Standard text-color
-    --sTextColor: #495057;
+    --standardTextColor: #495057;
 
     /// Standard font
-    --sFont: 'Roboto', sans-serif;
+    --standardFont: 'Roboto', sans-serif;
 
     /// Standard font-size
-    --sFontSize: 14px;
+    --standardFontSize: 14px;
 
     /// Button default background
     --btnDefaultBgd: #2196F3;
@@ -96,9 +96,9 @@
 /// setting standard values for body
 body {
     background: var(--standardBgdColorColor);
-    color: var(--sTextColor);
-    font-family: var(--sFont);
-    font-size: var(--sFontSize);
+    color: var(--standardTextColor);
+    font-family: var(--standardFont);
+    font-size: var(--standardFontSize);
     font-weight: 400;
     font-style: normal;
     margin: 0;
@@ -106,8 +106,8 @@ body {
 
 /// Overriding PrimeReact font-family and font-size
 .p-component {
-    font-family: var(--sFont);
-    font-size: var(--sFontSize);
+    font-family: var(--standardFont);
+    font-size: var(--standardFontSize);
 }
 
 /// Image in this file because image won't be displayed

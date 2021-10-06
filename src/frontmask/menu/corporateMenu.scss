@@ -1,18 +1,4 @@
-@import '../scssmixin/scrollbar.scss';
-
-:root {
-    /// Logo width
-    --c-logo-width: 190px;
-
-    /// Logo height
-    --c-logo-max-height: 60px;
-
-    /// menubar corporation menu height
-    --c-menu-height: 40px;
-
-    ///
-    --c-menu-topbar-background: #7a7f85;
-}
+@import '../scssutil/scrollbar.scss';
 
 /// No blue borders on focus
 .c-menu {
@@ -25,7 +11,7 @@
 .c-menu-header {
     display: flex;
     justify-content: space-between;
-    background: var(--c-menu-topbar-background);
+    background: var(--s-menu-header-background);
     align-items: center;
     height: var(--s-menu-profile-height);
 }
@@ -36,11 +22,11 @@
 }
 
 .c-menu-menubar {
-    background: var(--c-menu-topbar-background);
+    background: var(--s-menu-header-background);
     padding-left: 10px;
     .p-menubar {
         border-radius: 0;
-        height: var(--c-menu-height);
+        height: 40px;
         .p-submenu-list {
             max-height: 600px;
             overflow: auto;

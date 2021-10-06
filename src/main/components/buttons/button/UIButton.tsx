@@ -81,12 +81,13 @@ const UIButton: FC<IButton> = (baseProps) => {
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",
-                    !btnData.btnBorderPainted ? "border-notpainted" : '',
-                    props.style?.includes("hyperlink") ? "p-button-link" : '',
+                    !btnData.btnBorderPainted ? "border-notpainted" : "",
+                    props.style?.includes("hyperlink") ? "p-button-link" : "",
                     btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
-                    props.borderOnMouseEntered ? "mouse-border" : '',
+                    props.borderOnMouseEntered ? "mouse-border" : "",
                     `gap-${gapPos}`,
-                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment)
+                    getIconCenterDirection(props.horizontalTextPosition, props.horizontalAlignment),
+                    props.parent?.includes("TB") ? "rc-toolbar-button" : ""
                 )}
                 style={{
                     ...btnData.style,

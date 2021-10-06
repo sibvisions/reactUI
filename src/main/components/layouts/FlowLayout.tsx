@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useMemo } from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 
 /** Other imports */
 import {appContext} from "../../AppProvider";
@@ -33,6 +33,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     /** Margins of the BorderLayout */
     const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
+
+    /** Current state of the calculatedStyle by the FormLayout */
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
@@ -235,7 +238,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "1px solid #bbb" : ""
                             });
                         }
                         else {
@@ -245,7 +248,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                                borderRight: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "1px solid #bbb" : ""
                             });
                         }
 
@@ -266,7 +269,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "1px solid #bbb" : ""
                             });
                         }
                         else {
@@ -276,7 +279,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "3px solid #bbb" : ""
+                                borderBottom: id.includes("-tbMain") && isNotLastToolBar(component.id) ? "1px solid #bbb" : ""
                             });
                         }
 
@@ -289,6 +292,13 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
                 reportSize({ height: prefSize.height, width: prefSize.width });
             }
+
+            if (baseProps.popupSize) {
+                setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
+            }
+            else {
+                setCalculatedStyle({ height: prefSize.height, width: prefSize.width, position: 'relative' })
+            }
         }
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore]);
@@ -296,7 +306,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="flow" style={{...style, position:"absolute"}}>
+            <div data-layout="flow" style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

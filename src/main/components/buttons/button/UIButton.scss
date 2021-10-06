@@ -1,4 +1,4 @@
-@import '../../../../frontmask/scssmixin/buttonColors.scss';
+@import '../../../../frontmask/scssutil/buttonColors.scss';
 
 /// Inherit height and width from parent who has set it by the layout
 .rc-button {
@@ -17,6 +17,12 @@
     }
     .p-button-icon-right {
         margin-left: 0;
+    }
+
+    &.mouse-border {
+        background: transparent;
+        border-color: transparent;
+        color: var(--standardTextColor);
     }
 
     @include btnHover
@@ -45,18 +51,6 @@
     color: var(--standardTextColor);
 }
 
-.mouse-border:enabled {
-    background: transparent;
-    border-color: transparent;
-    color: var(--standardTextColor);
-}
-
-/// Show that a button without border is hovered
-.mouse-border:enabled:hover {
-    background: var(--background);
-    border-color: var(--background);
-}
-
 .p-button-label {
     flex: unset;
 }
@@ -70,6 +64,9 @@
     padding: var(--btnPadding, 0.5rem 0.5rem);
     .rc-button-icon {
         align-self: center;
+    }
+    &.rc-toolbar-button {
+        padding: 0;
     }
 }
 

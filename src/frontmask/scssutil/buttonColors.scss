@@ -12,7 +12,7 @@
         }
     }
 
-    &:not(.border-notpainted) {
+    &:not(.border-notpainted):not(.mouse-border) {
         background: var(--background);
         border-color: var(--background);
     }

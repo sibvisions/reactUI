@@ -1,4 +1,4 @@
-import { useContext, useLayoutEffect } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
@@ -7,18 +7,28 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 const useFetchMissingData = (compId:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
+    const [mdReady, setMdReady] = useState<boolean>(false);
+
     useLayoutEffect(() => {
-        if (dataProvider && !context.contentStore.dataProviderData.get(compId)?.has(dataProvider)) {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = dataProvider;
-            if (!context.contentStore.dataProviderMetaData.get(compId)?.has(dataProvider)) {
-                fetchReq.includeMetaData = true;
+        context.subscriptions.subscribeToMissingData(compId, () => setMdReady(true));
+        return () => context.subscriptions.unsubscribeFromMissingData(compId, () => setMdReady(true));
+    }, [dataProvider])
+
+    useLayoutEffect(() => {
+        if (mdReady) {
+            if (dataProvider && !context.contentStore.dataProviderData.get(compId)?.has(dataProvider)) {
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = dataProvider;
+                if (!context.contentStore.dataProviderMetaData.get(compId)?.has(dataProvider)) {
+                    fetchReq.includeMetaData = true;
+                }
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
             }
-            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
         }
-    },[dataProvider])
+    },[mdReady]);
 }
 export default useFetchMissingData

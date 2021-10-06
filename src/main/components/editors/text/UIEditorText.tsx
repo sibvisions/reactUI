@@ -15,8 +15,7 @@ import { useEventHandler, useFetchMissingData, useLayoutValue, useMetaData, useM
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, 
-         getMetaData, 
+import { getEditorCompId,
          sendSetValues, 
          handleEnterKey, 
          onBlurCallback, 

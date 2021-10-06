@@ -306,6 +306,8 @@ export default class ContentStore{
                     if (newComponent.className === "ToolBarPanel") {
                         const castedNewComp = newComponent as IToolBarPanel;
                         const innerLayout = castedNewComp.layout;
+                        const constraint = getToolBarMainConstraint(castedNewComp.toolBarArea);
+                        const flowOrientation = ["North", "South"].indexOf(constraint) !== -1 ? "0" : "1";
                         castedNewComp.layout = "BorderLayout,0,0,0,0,0,0";
 
                         const tbMain:IPanel = {
@@ -314,11 +316,8 @@ export default class ContentStore{
                             constraints: getToolBarMainConstraint(castedNewComp.toolBarArea),
                             name: newComponent.name + "-tbMain",
                             className: "ToolBarHelperMain",
-                            layout: "FlowLayout,5,5,5,5,0,0,0,0,0,3,true",
+                            layout: "FlowLayout,5,5,5,5,0,0," + flowOrientation + ",0,0,3,true",
                             layoutData: "",
-                            preferredSize: newComponent.preferredSize, 
-                            minimumSize: newComponent.minimumSize, 
-                            maximumSize: newComponent.maximumSize
                         }
 
                         const tbCenter:IPanel = {
@@ -689,6 +688,7 @@ export default class ContentStore{
         referenceKey?:string,
         recordFormat?: RecordFormat,
     ) {
+
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
                 mapProv.set(referenceKey, newDataSet)
@@ -712,7 +712,8 @@ export default class ContentStore{
                 if (existingData) {
                     if (existingData.length <= from) {
                         existingData.push(...newDataSet);
-                    } else {
+                    } 
+                    else {
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
                             existingData[i] = newDataSet[newDataSetIndex];
@@ -722,17 +723,20 @@ export default class ContentStore{
                 } else {
                     fillDataMap(existingProvider);
                 }
-            } else {
+            } 
+            else {
                 const providerMap = new Map<string, Array<any>>();
                 fillDataMap(providerMap, existingMap);
             }
-        } else {
+        } 
+        else {
             const dataMap = new Map<string, any>();
             const providerMap = new Map<string, Array<any>>();
             fillDataMap(providerMap, dataMap, true);
         }
         this.subManager.notifyDataChange(compId, dataProvider);
         this.subManager.notifyScreenDataChange(compId);
+        
     }
 
     /**
