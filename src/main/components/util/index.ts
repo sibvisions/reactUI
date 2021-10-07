@@ -24,6 +24,6 @@ export { sendSetValues } from './SendSetValues';
 export type { default as Dimension } from './Dimension';
 export { sortGroupDataGoogle, sortGroupDataOSM } from './SortGroupData';
 export { getDateLocale, setDateLocale } from './GetDateLocale';
-export { focusComponent } from './FocusComponent';
+export { getFocusComponent } from './GetFocusComponent';
 export { panelReportSize } from './PanelReportSize';
 export { panelGetStyle } from './PanelGetStyle';

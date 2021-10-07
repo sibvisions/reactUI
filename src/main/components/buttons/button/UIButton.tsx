@@ -25,36 +25,52 @@ import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 const UIButton: FC<IButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
+
     /** Reference for the span that is wrapping the button containing layout information */
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
+    
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IButton>(baseProps.id, baseProps);
+
     /** Information on how to display the button, refreshes everytime the props change */
     const btnData = useMemo(() => buttonProps(props), [props]);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** Button Background either server set or default */
     const btnBgd = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+
     /** Server set or default horizontal alignment */
     const btnHAlign = btnData.style.justifyContent || "center";
+
     /** Server set or default vertical alignment */
     const btnVAlign = btnData.style.alignItems || "center";
+
     /** On which side of the side of the label, the gap between icon and label should be */
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
+
     /** The amount of pixels to center the icon or radiobutton/checkbox respective to the label is hTextPos = 1 */
     const iconCenterGap = buttonRef.current ? buttonRef.current.children[1].offsetWidth/2 - buttonRef.current.children[0].offsetWidth/2 : 0;
+
     /** Data of the icon which is displayed while holding the mousebutton */
     const pressedIconData = parseIconData(props.foreground, props.mousePressedImage);
+
     /** Data of the icon which is displayed while moving the mouse over the button */
     const mouseOverIconData = parseIconData(props.foreground, props.mouseOverImage);
+
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnData.iconProps, pressedIconData, mouseOverIconData, buttonRef.current ? buttonRef.current : undefined);
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -111,9 +127,18 @@ const UIButton: FC<IButton> = (baseProps) => {
                 aria-label={props.ariaLabel}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
-                tabIndex={btnData.tabIndex}
+                tabIndex={!props.focusable ? -1 : btnData.tabIndex}
                 onClick={onButtonPress}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onFocus={(event) => {
+                    if (props.eventFocusGained) {
+                        onFocusGained(props.name, context.server);
+                    }
+                    else {
+                        if (!props.focusable) {
+                            event.preventDefault();
+                        }
+                    }
+                }}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 disabled={props.enabled === false}
             />

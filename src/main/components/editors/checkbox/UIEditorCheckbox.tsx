@@ -10,7 +10,7 @@ import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, u
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
-import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, focusComponent } from "../../util";
+import { getEditorCompId, sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent } from "../../util";
 import { getAlignments } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -113,7 +113,16 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onFocus={(event) => {
+                if (props.eventFocusGained) {
+                    onFocusGained(props.name, context.server);
+                }
+                else {
+                    if (isCellEditor) {
+                        event.preventDefault();
+                    }
+                }
+            }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             onKeyDown={(event) => {
                 event.preventDefault();
@@ -127,10 +136,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                     }
                     else {
                         if (event.shiftKey) {
-                            focusComponent(id, false);
+                            getFocusComponent(props.name, false)?.focus();
                         }
                         else {
-                            focusComponent(id, true);
+                            getFocusComponent(props.name, true)?.focus();
                         }
                     }
                 }
@@ -142,7 +151,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 checked={checked}
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
-                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
             />
             {!isCellEditor &&
                 <label

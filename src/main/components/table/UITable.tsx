@@ -25,7 +25,7 @@ import { appContext } from "../../AppProvider";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { getMetaData, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, focusComponent } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
@@ -50,7 +50,8 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
-    enabled?: boolean
+    enabled?: boolean,
+    startEditing?:boolean
 }
 
 enum Navigation {
@@ -86,7 +87,9 @@ type CellEditor = {
     className?: string,
     readonly?: boolean,
     tableEnabled?: boolean
-    cellFormatting?: CellFormatting;
+    cellFormatting?: CellFormatting,
+    startEditing?:boolean,
+    stopEditing:Function
 }
 
 /** Interface for selected cells */
@@ -159,9 +162,16 @@ const CellEditor: FC<CellEditor> = (props) => {
         if (cellContext.selectedCellId !== props.cellId().selectedCellId) {
             if (edit) {
                 setEdit(false);
+                props.stopEditing()
             }
         }
     }, [cellContext.selectedCellId]);
+
+    useEffect(() => {
+        if (cellContext.selectedCellId === props.cellId().selectedCellId && props.startEditing) {
+            setEdit(true);
+        }
+    },[props.startEditing])
 
     /**
      * Callback for stopping the cell editing process, closes editor and based on keyboard input, selects the next or previous cell/row
@@ -169,6 +179,7 @@ const CellEditor: FC<CellEditor> = (props) => {
      */
     const stopCellEditing = useCallback((event?:KeyboardEvent) => {
         setEdit(false);
+        props.stopEditing()
         if (event) {
             if (event.key === "Enter") {
                 if (event.shiftKey) {
@@ -195,7 +206,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
-    useOutsideClick(wrapperRef, setEdit, columnMetaData);
+    useOutsideClick(wrapperRef, () => { setEdit(false); props.stopEditing() }, columnMetaData);
 
     /**
      * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
@@ -374,7 +385,9 @@ const UITable: FC<TableProps> = (baseProps) => {
     const pageKeyPressed = useRef<boolean>(false);
 
     /** Reference of the last selected row used for scrolling */
-    const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined)
+    const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined);
+
+    const focusIsClicked = useRef<boolean>(false);
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {
@@ -803,11 +816,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(newSelectedColumn);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, true);
+                getFocusComponent(props.name + "-wrapper", true)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, true);
+            getFocusComponent(props.name + "-wrapper", true)?.focus();
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
@@ -823,11 +836,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(newSelectedColumn);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, false);
+                getFocusComponent(props.name + "-wrapper", false)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, false);
+            getFocusComponent(props.name + "-wrapper", false)?.focus();
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
@@ -846,11 +859,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, true);
+                getFocusComponent(props.name + "-wrapper", true)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, true);
+            getFocusComponent(props.name + "-wrapper", true)?.focus();
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
@@ -869,11 +882,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, false);
+                getFocusComponent(props.name + "-wrapper", false)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, false);
+            getFocusComponent(props.name + "-wrapper", false)?.focus();
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
@@ -897,11 +910,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(columnOrder[0], filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, true);
+                getFocusComponent(props.name + "-wrapper", true)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, true);
+            getFocusComponent(props.name + "-wrapper", true)?.focus();
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
@@ -925,11 +938,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, false);
+                getFocusComponent(props.name + "-wrapper", false)?.focus();
             }
         }
         else if (delegateFocus) {
-            focusComponent(props.name, false);
+            getFocusComponent(props.name + "-wrapper", false)?.focus();
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
@@ -952,7 +965,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, true);
+                getFocusComponent(props.name + "-wrapper", true)?.focus();
             }
         }
     }
@@ -976,7 +989,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 await sendSelectRequest(undefined, filter);
             }
             else if (delegateFocus) {
-                focusComponent(props.name, false);
+                getFocusComponent(props.name + "-wrapper", false)?.focus();
             }
         }
     }
@@ -1091,7 +1104,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                             selectedRow={selectedRow}
                             className={className}
                             readonly={columnMetaData?.readonly}
-                            tableEnabled={props.enabled} />
+                            tableEnabled={props.enabled}
+                            startEditing={props.startEditing}
+                            stopEditing={() => {
+                                const test = context.contentStore.flatContent.get(id);
+                                (test as TableProps).startEditing = false;
+                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                            }} />
                     }
                 }
                 }
@@ -1108,7 +1127,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     }, [props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
     context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData])
+        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, props.startEditing])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
@@ -1336,22 +1355,37 @@ const UITable: FC<TableProps> = (baseProps) => {
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
                 ref={wrapRef}
+                id={props.name + "-wrapper"}
                 style={{
                     ...layoutStyle,
                     outline: "none",
                 } as any}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
-                onFocus={() => {
+                onClick={() => { 
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            onFocusGained(props.name, context.server);
+                        focusIsClicked.current = true 
+                    }  
+                }}
+                onFocus={(event) => {
+                    //Need to safe it as extra variable because in setTimeout relatedTarget is null
+                    const relatedTarget = event.relatedTarget;
+                    setTimeout(() => {
+                        if (!focused.current) {
+                            if (props.eventFocusGained) {
+                                onFocusGained(props.name, context.server);
+                            }
+                            focused.current = true;
+                            if (columnOrder && !focusIsClicked.current) {
+                                if (relatedTarget === getFocusComponent(props.name + "-wrapper", false)) {
+                                    sendSelectRequest(columnOrder[0]);
+                                }
+                                else if (relatedTarget === getFocusComponent(props.name + "-wrapper", true)) {
+                                    sendSelectRequest(columnOrder[columnOrder.length - 1])
+                                }
+                            }
+                            focusIsClicked.current = false;
                         }
-                        focused.current = true;
-                        if (columnOrder) {
-                            sendSelectRequest(columnOrder[0]);
-                        }
-                        
-                    }
+                    },50)
                 }}
                 onBlur={event => {
                     if (wrapRef.current

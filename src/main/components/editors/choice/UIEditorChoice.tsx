@@ -193,9 +193,18 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                     setNextValue()
                 }
             }}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onFocus={(event) => {
+                if (props.eventFocusGained) {
+                    onFocusGained(props.name, context.server);
+                }
+                else {
+                    if (isCellEditor) {
+                        event.preventDefault();
+                    }
+                }
+            }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tabIndex={props.tabIndex ? props.tabIndex : 0}>
+            tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}>
             <img
                 ref={imgRef}
                 id={!isCellEditor ? props.name : undefined}

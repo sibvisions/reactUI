@@ -1,4 +1,4 @@
-import { focusComponent } from "./FocusComponent";
+import { getFocusComponent } from "./GetFocusComponent";
 
 /**
  * When enter is pressed call the given setValues function to send new values to the server
@@ -13,10 +13,10 @@ export function handleEnterKey(event:any, elem:any, id:string, stopEditing?:Func
         }
         else {
             if (event.shiftKey) {
-                focusComponent(id, false);
+                getFocusComponent(id, false);
             }
             else {
-                focusComponent(id, true)
+                getFocusComponent(id, true)
             }
         }
     }

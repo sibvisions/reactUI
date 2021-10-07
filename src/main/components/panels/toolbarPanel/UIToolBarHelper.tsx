@@ -35,6 +35,10 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    const filteredComponents = useMemo(() => {
+        return props.className === "ToolBarHelperMain" ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
+    }, [props.className, components])
+
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
@@ -60,11 +64,13 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
             style={props.screen_modal_ ? { 
                 height: prefSize?.height, 
                 width: prefSize?.width,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                display: filteredComponents.length === 0 ? "none" : ""
             } : {
                 ...layoutStyle, 
                 backgroundColor: props.background,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                display: filteredComponents.length === 0 ? "none" : ""
             }}>
             <Layout
                 id={id}
@@ -77,7 +83,7 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
                 popupSize={parsePrefSize(props.screen_size_)}
                 reportSize={reportSize}
                 compSizes={componentSizes ? new Map([...componentSizes].filter((v, k) => !v[0].includes("-tb"))) : undefined}
-                components={props.className === "ToolBarHelperMain" ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))}
+                components={filteredComponents}
                 style={panelGetStyle(
                     false,
                     layoutStyle,

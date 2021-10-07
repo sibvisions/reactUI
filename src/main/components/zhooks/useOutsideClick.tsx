@@ -27,7 +27,7 @@ const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDes
                 else {
                     ref.current.children[0].children[0].blur();
                 }
-                setEdit(false);
+                setEdit();
             }
         }
 

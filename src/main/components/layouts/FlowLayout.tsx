@@ -114,7 +114,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
-                let tbExtraSpace = toolBarsFiltered ? isNotLastToolBar(id) ? 5 : 0 : 0
+                let tbExtraSpace = toolBarsFiltered ? isNotLastToolBar(id) ? 5 : 0 : 0;
 
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
