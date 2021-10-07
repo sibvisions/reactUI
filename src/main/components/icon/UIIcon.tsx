@@ -73,22 +73,26 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             if(icon.includes('fa fa-'))
                 return <i id={props.name} className={icon}/>
             else {
-                return <img
-                id={props.name}
-                alt="icon"
-                src={context.server.RESOURCE_URL + iconProps.icon}
-                style={{height: preferredSize?.height, width: preferredSize?.width, ...imageStyle.img }}
-                onLoad={iconLoaded}
-                onError={iconLoaded}/>
+                return (
+                <img
+                    id={props.name}
+                    alt="icon"
+                    src={context.server.RESOURCE_URL + iconProps.icon}
+                    className={imageStyle}
+                    style={{height: preferredSize?.height, width: preferredSize?.width }}
+                    onLoad={iconLoaded}
+                    onError={iconLoaded} />
+                )
             }
                 
         }
     }
 
-    
-
     return (
-        <span ref={iconRef} className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} style={{...layoutStyle, ...imageStyle.span}}>
+        <span 
+            ref={iconRef} 
+            className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} 
+            style={{...layoutStyle, overflow: "hidden"}}>
             {iconOrImage(iconProps.icon)}
         </span>
     )

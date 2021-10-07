@@ -1,5 +1,5 @@
 /** React imports */
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
 
 /** Other imports */
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
@@ -14,46 +14,47 @@ import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
  */
 const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number | undefined, cva: number | undefined, aspectRatio?:boolean) => {
     const imageAlignments = useMemo(() => {
-        const spanCSS: CSSProperties = {};
-        const imgCSS: CSSProperties = {};
         const cellHA = cha
         const cellVA = cva
 
         let horizontalAlignment = ha || cellHA;
         let verticalAlignment = va || cellVA;
 
-        if (horizontalAlignment === HORIZONTAL_ALIGNMENT.LEFT)
-            spanCSS.justifyContent = "flex-start";
-        else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.CENTER)
-            spanCSS.justifyContent = "center";
-        else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.RIGHT)
-            spanCSS.justifyContent = "flex-end";
-        else
-            spanCSS.justifyContent = "center"
-
-        if (verticalAlignment === VERTICAL_ALIGNMENT.TOP)
-            spanCSS.alignItems = "flex-start";
-        else if (verticalAlignment === VERTICAL_ALIGNMENT.CENTER)
-            spanCSS.alignItems = "center";
-        else if (verticalAlignment === VERTICAL_ALIGNMENT.BOTTOM)
-            spanCSS.alignItems = "flex-end";
-        else
-            spanCSS.alignItems = "center"
-
-        if (verticalAlignment === VERTICAL_ALIGNMENT.STRETCH && horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
-            imgCSS.width = "100%";
-            imgCSS.height = "100%";
-            
+        let hClassName = "";
+        let vClassName = "";
+        switch(horizontalAlignment) {
+            case HORIZONTAL_ALIGNMENT.LEFT:
+                hClassName = "image-h-left";
+                break;
+            case HORIZONTAL_ALIGNMENT.CENTER:
+                hClassName = "image-h-center";
+                break;
+            case HORIZONTAL_ALIGNMENT.RIGHT:
+                hClassName = "image-h-right";
+                break;
+            case HORIZONTAL_ALIGNMENT.STRETCH:
+                hClassName = "image-h-stretch";
+                break;
+            default:
+                hClassName = "image-h-center";
         }
-        if (aspectRatio) {
-            imgCSS.objectFit = "contain"
+        switch(verticalAlignment) {
+            case VERTICAL_ALIGNMENT.TOP:
+                vClassName = "image-v-top";
+                break;
+            case VERTICAL_ALIGNMENT.CENTER:
+                vClassName = "image-v-center";
+                break;
+            case VERTICAL_ALIGNMENT.BOTTOM:
+                vClassName = "image-v-bottom";
+                break;
+            case VERTICAL_ALIGNMENT.STRETCH:
+                vClassName = "image-v-stretch";
+                break;
+            default:
+                vClassName = "image-v-center";
         }
-        else if (horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
-            spanCSS.flexFlow = "column";
-            spanCSS.justifyContent = spanCSS.alignItems;
-            spanCSS.alignItems = "unset";
-        }
-        return { span: spanCSS, img: imgCSS };
+        return hClassName + " " + vClassName;
     }, [ha, va, cha, cva]);
 
     return imageAlignments

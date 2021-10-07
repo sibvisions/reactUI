@@ -1,12 +1,57 @@
 /// default values
-.rc-editor-image {
-    display: flex;
-    position: absolute;
-    justify-content: flex-start;
-    align-items: flex-start;
-
+.rc-editor-image, .rc-icon, .rc-validator {
     &:focus img {
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
+    }
+
+    >img {
+        position: absolute;
+        &.image-h-stretch {
+            width: 100%;
+        }
+        &:not(.image-h-stretch) {
+            width: auto
+        }
+        &.image-v-stretch {
+            height: 100%;
+        }
+        &:not(.image-v-stretch) {
+            height: auto;
+        }
+
+        &.image-h-left {
+            left: 0;
+        }
+
+        &.image-h-center {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &.image-h-right {
+            right: 0;
+        }
+
+        &.image-v-top {
+            top: 0;
+        }
+
+        &.image-v-center {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        &.image-v-bottom {
+            bottom: 0;
+        }
+
+        &.image-h-center.image-v-center {
+            transform: translate(-50%, -50%);
+        }
+
+        &.image-h-stretch.image-v-stretch {
+            object-fit: contain;
+        }
     }
 }

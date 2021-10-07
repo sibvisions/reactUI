@@ -1,14 +1,15 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useRef } from "react";
+import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks";
+import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { appContext } from "../../../AppProvider";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../../layouts";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor{
@@ -87,15 +88,16 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             prefSize.width = event.currentTarget.width;
         }
 
-        if(onLoadCallback)
-            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
+        if(onLoadCallback) {
+            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+        }   
     }
 
     return(
         <span 
             ref={wrapRef} 
             className="rc-editor-image" 
-            style={{...layoutStyle, ...imageStyle.span}} 
+            style={{...layoutStyle, overflow: "hidden"}} 
             aria-label={props.ariaLabel}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
@@ -103,7 +105,8 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
         >
             <img
                 id={!isCellEditor ? props.name : undefined}
-                style={imageStyle.img}
+                className={imageStyle}
+                //style={imageStyle.img}
                 src={selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                 alt="could not be loaded"
                 onLoad={imageLoaded}
