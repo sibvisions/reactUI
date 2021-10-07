@@ -230,6 +230,13 @@ class Server {
      * @param responses - the responses received
      */
     async responseHandler(responses: Array<BaseResponse>) {
+        // If there is a DataProviderChanged response move it to the start of the responses array
+        // to prevent flickering of components.
+        responses.forEach((response, idx) => {
+            if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+                responses.splice(0, 0, responses.splice(idx, 1)[0]);
+            }
+        });
         for (const [, response] of responses.entries()) {
             const mapper = this.responseMap.get(response.name);
             if (mapper) {
