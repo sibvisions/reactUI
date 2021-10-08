@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
 import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks";
@@ -79,11 +79,13 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
      */
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Dimension = {width: 0, height: 0}
-        if(props.preferredSize){
+        console.log(event.currentTarget.height, imageStyle)
+        if(props.preferredSize) {
             const parsedSize = parsePrefSize(props.preferredSize) as Dimension
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
-        } else {
+        } 
+        else {
             prefSize.height = event.currentTarget.height;
             prefSize.width = event.currentTarget.width;
         }

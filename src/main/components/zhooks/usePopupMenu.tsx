@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
-import { appContext, createComponentRequest, createPressButtonRequest, getClientId, REQUEST_ENDPOINTS } from "src/moduleIndex";
+import { appContext, createComponentRequest, createPressButtonRequest, getClientId, REQUEST_ENDPOINTS } from "../../../moduleIndex";
 import BaseComponent from "../BaseComponent";
 import { MenuItem } from "primereact/menuitem";
 import { parseIconData } from "../compprops";

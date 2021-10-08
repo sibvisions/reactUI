@@ -23,7 +23,7 @@ import { componentHandler } from "../../main/factories/UIFactory";
 export const DesktopPanelHandler:FC = () => {
     const context = useContext(appContext);
     return (context.appSettings.desktopPanel ?
-         componentHandler(context.appSettings.desktopPanel) :
+         componentHandler(context.appSettings.desktopPanel, context.contentStore) :
          <div>Could not load DesktopPanel</div>)
 }
 

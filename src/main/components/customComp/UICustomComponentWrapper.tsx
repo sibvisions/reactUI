@@ -8,10 +8,12 @@ import { useLayoutValue, useProperties } from "../zhooks";
 import { LayoutContext } from "../../LayoutContext";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util";
+import { appContext } from "../../AppProvider";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {
-    component?: ReactElement
+    component: ReactElement,
+    isGlobal:boolean
 }
 
 /**
@@ -29,6 +31,9 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (wrapperRef.current) {
@@ -38,7 +43,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
 
     return (
         <span ref={wrapperRef} style={layoutStyle}>
-            {baseProps.component}
+            {baseProps.isGlobal ? context.contentStore.globalComponents.get(props.className)!.apply(undefined, [{...props}]) : baseProps.component}
         </span>
     )
 }

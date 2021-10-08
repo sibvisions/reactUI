@@ -32,6 +32,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const layoutStyle = useLayoutValue(props.id);
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false)
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -53,6 +55,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
         if (onLoadCallback) {
             sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
+
+        setIconIsLoaded(true);
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
@@ -78,8 +82,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     id={props.name}
                     alt="icon"
                     src={context.server.RESOURCE_URL + iconProps.icon}
-                    className={imageStyle}
-                    style={{height: preferredSize?.height, width: preferredSize?.width }}
+                    className={imageStyle && iconIsLoaded ? imageStyle : ""}
+                    //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}
                     onError={iconLoaded} />
                 )
@@ -92,7 +96,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
         <span 
             ref={iconRef} 
             className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} 
-            style={{...layoutStyle, overflow: "hidden"}}>
+            style={{...layoutStyle, overflow: "hidden"}}
+        >
             {iconOrImage(iconProps.icon)}
         </span>
     )

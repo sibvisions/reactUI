@@ -342,5 +342,9 @@ class API {
     getUser() {
         return this.#contentStore.currentUser;
     }
+
+    addGlobalComponent(name:string, comp:ReactElement) {
+        this.#contentStore.globalComponents.set(name, (props:any) => React.cloneElement(comp, props));
+    }
 }
 export default API

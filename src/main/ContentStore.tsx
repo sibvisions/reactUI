@@ -128,6 +128,8 @@ export default class ContentStore{
     /** the react routers history object */
     history?:History<any>;
 
+    globalComponents:Map<string, Function> = new Map<string, Function>();
+
     constructor(history?:History<any>) {
         this.history = history;
     }
@@ -581,7 +583,7 @@ export default class ContentStore{
             return this.replaceScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
         }
         else if (windowData) {
-            return componentHandler(windowData);
+            return componentHandler(windowData, this);
         }
         else if (this.customScreens.has(windowName)) {
             return this.customScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);

@@ -37,6 +37,7 @@ import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIBrowser from "../components/browser/UIBrowser";
 import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
+import ContentStore from "../ContentStore";
 
 
 /**
@@ -45,8 +46,8 @@ import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
  * @param customComp - the custom component to render
  * @returns a CustomComponent wrapped in a Wrapper as component
  */
-export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, customComp) => {
-    return <UICustomComponentWrapper {...props} component={customComp} key={props.id}/>
+export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, globalComp) => {
+    return <UICustomComponentWrapper {...props} component={props.component} key={props.id}/>
 }
 
 /**
@@ -133,7 +134,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     )
     .set("Tree", props => <UITree {...props} />)
     .set("Gauge", props => <UIGauge {...props} />)
-    .set("MobileBrowser", props => <UIBrowser {...props} />)
+    //.set("MobileBrowser", props => <UIBrowser {...props} />)
     .set("ToolBar", props => <UIPanel {...props} />)
     .set("ToolBarHelperMain", props => <UIToolBarHelper {...props} />)
     .set("ToolBarHelperCenter", props => <UIToolBarHelper {...props} />);
@@ -143,11 +144,18 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
  * @param baseComponent - the basecomponent to build
  * @returns the resulting JSXElement
  */
-export const componentHandler = (baseComponent: BaseComponent) => {
-    const Comp = componentsMap.get(baseComponent.className as string);
+export const componentHandler = (baseComponent: BaseComponent, contentStore:ContentStore) => {
+    const Comp = contentStore.globalComponents.has(baseComponent.className) ?
+    contentStore.globalComponents.get(baseComponent.className) : componentsMap.get(baseComponent.className);
     if(Comp) {
-        return <Comp {...baseComponent} key={baseComponent.id} />;
-    } else {
+        if (contentStore.globalComponents.has(baseComponent.className)) {
+            return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
+        }
+        else {
+            return <Comp {...baseComponent} key={baseComponent.id} />;
+        }
+    } 
+    else {
         return <div />
     }
 }

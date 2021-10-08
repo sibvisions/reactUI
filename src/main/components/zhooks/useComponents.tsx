@@ -112,12 +112,12 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
                 //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
                 //gets a componentHasLoaded. When not using this it could be that some components aren't shown...
                 child.onLoadCallback = componentHasLoaded;
-                reactChild = componentHandler(child);
+                reactChild = componentHandler(child, context.contentStore);
             }
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
             else {
                 let customComp = context.contentStore.customComponents.get(child.name)?.apply(undefined, []);
-                reactChild = createCustomComponentWrapper(child, customComp);
+                reactChild = createCustomComponentWrapper({...child, component: customComp, isGlobal: false});
             }
                 
             if(reactChild){

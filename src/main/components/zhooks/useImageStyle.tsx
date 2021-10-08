@@ -20,41 +20,45 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         let horizontalAlignment = ha || cellHA;
         let verticalAlignment = va || cellVA;
 
-        let hClassName = "";
-        let vClassName = "";
+        const imgClassNames:string[] = []
         switch(horizontalAlignment) {
             case HORIZONTAL_ALIGNMENT.LEFT:
-                hClassName = "image-h-left";
+                imgClassNames.push("image-h-left");
                 break;
             case HORIZONTAL_ALIGNMENT.CENTER:
-                hClassName = "image-h-center";
+                imgClassNames.push("image-h-center");
                 break;
             case HORIZONTAL_ALIGNMENT.RIGHT:
-                hClassName = "image-h-right";
+                imgClassNames.push("image-h-right");
                 break;
             case HORIZONTAL_ALIGNMENT.STRETCH:
-                hClassName = "image-h-stretch";
+                imgClassNames.push("image-h-stretch");
                 break;
             default:
-                hClassName = "image-h-center";
+                imgClassNames.push("image-h-center");
         }
         switch(verticalAlignment) {
             case VERTICAL_ALIGNMENT.TOP:
-                vClassName = "image-v-top";
+                imgClassNames.push("image-v-top");
                 break;
             case VERTICAL_ALIGNMENT.CENTER:
-                vClassName = "image-v-center";
+                imgClassNames.push("image-v-center");
                 break;
             case VERTICAL_ALIGNMENT.BOTTOM:
-                vClassName = "image-v-bottom";
+                imgClassNames.push("image-v-bottom");
                 break;
             case VERTICAL_ALIGNMENT.STRETCH:
-                vClassName = "image-v-stretch";
+                imgClassNames.push("image-v-stretch");
                 break;
             default:
-                vClassName = "image-v-center";
+                imgClassNames.push("image-v-center");
         }
-        return hClassName + " " + vClassName;
+
+        if (horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH && verticalAlignment === VERTICAL_ALIGNMENT.STRETCH && aspectRatio) {
+            imgClassNames.push("image-aspect-ratio")
+        }
+
+        return imgClassNames.filter(Boolean).join(' ')
     }, [ha, va, cha, cva]);
 
     return imageAlignments

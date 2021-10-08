@@ -50,7 +50,7 @@
             transform: translate(-50%, -50%);
         }
 
-        &.image-h-stretch.image-v-stretch {
+        &.image-h-stretch.image-v-stretch.image-aspect-ratio {
             object-fit: contain;
         }
     }

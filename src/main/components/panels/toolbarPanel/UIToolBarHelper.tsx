@@ -6,7 +6,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 
