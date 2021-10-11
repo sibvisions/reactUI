@@ -14,6 +14,7 @@ import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
 
 interface IChangePasswordDialog  {
     loggedIn: boolean,
@@ -47,7 +48,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
     useEffect(() => {
-        context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true))
+        context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true));
     
         return () => context.subscriptions.unsubscribeFromDialog("change-password");
     }, [context.subscriptions]);
@@ -70,7 +71,13 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 const changeReq = createChangePasswordRequest();
                 changeReq.password = password;
                 changeReq.newPassword = newPassword;
-                showTopBar(context.server.sendRequest(changeReq, REQUEST_ENDPOINTS.CHANGE_PASSWORD), topbar)
+                showTopBar(context.server.sendRequest(changeReq, REQUEST_ENDPOINTS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
+                    results.forEach(result => {
+                        if (result.name === RESPONSE_NAMES.DIALOG) {
+                            setDialogVisible(false);
+                        }
+                    })
+                });
             }
             else {
                 const loginReq = createLoginRequest();
@@ -146,7 +153,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                     </div>
                     <div className="change-password-button-wrapper">
                         <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setDialogVisible(false)} />
-                        <Button type="submit" label={translations.get("Login")} icon="pi pi-lock-open" />
+                        <Button type="submit" label={translations.get(props.loggedIn ? "Change" : "Login")} icon="pi pi-lock-open" />
                     </div>
                 </form>
             </div>

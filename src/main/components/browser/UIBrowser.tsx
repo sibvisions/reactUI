@@ -1,6 +1,9 @@
 /** React imports */
 import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
+/** 3rd Party imports */
+import { Tooltip } from 'primereact/tooltip';
+
 /** Hook imports */
 import { useProperties, useLayoutValue, useMouseListener } from "../zhooks";
 
@@ -47,12 +50,14 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
 
     return (
         <span ref={browserRef} style={layoutStyle}>
+            <Tooltip target={"#" + props.name} />
             <iframe
                 id={props.name} 
                 className="rc-mobile-browser"
                 src={props.url}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                data-pr-tooltip={props.toolTipText}
             />
         </span>
     )

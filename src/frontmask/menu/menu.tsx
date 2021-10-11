@@ -317,7 +317,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuVisibility.menuBar || !embeddedContext) &&
+            {(props.menuVisibility.menuBar && !embeddedContext) &&
                 <div className={concatClassnames(
                     "menu",
                     menuCollapsed ? " menu-collapsed" : "",

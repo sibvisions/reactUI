@@ -79,7 +79,6 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
      */
     const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const prefSize:Dimension = {width: 0, height: 0}
-        console.log(event.currentTarget.height, imageStyle)
         if(props.preferredSize) {
             const parsedSize = parsePrefSize(props.preferredSize) as Dimension
             prefSize.height = parsedSize.height;

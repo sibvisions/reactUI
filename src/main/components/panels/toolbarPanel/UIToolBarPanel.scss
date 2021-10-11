@@ -1,4 +1,20 @@
 .rc-toolbar {
     background-color: var(--toolBarBgd);
     border: var(--toolBarBorder);
+
+    &.navbar-north {
+        border-bottom: none;
+    }
+
+    &.navbar-west {
+        border-right: none;
+    }
+
+    &.navbar-east {
+        border-left: none;
+    }
+
+    &.navbar-south {
+        border-top: none;
+    }
 }

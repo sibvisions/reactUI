@@ -60,11 +60,11 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     return (
         <>
             <Helmet>
-                <title>{props.appName ? props.appName : "VisionX Web"}</title>
+                <title>{props.appName ? props.appName : "<App-Name>"}</title>
             </Helmet>
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />
-            <Dialog header="Server Error!" visible={dialogVisible} onHide={() => setDialogVisible(false)} resizable={false}>
+            <Dialog header="Server Error!" visible={dialogVisible} closable={false} onHide={() => setDialogVisible(false)} resizable={false} draggable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
             <PopupContextProvider>

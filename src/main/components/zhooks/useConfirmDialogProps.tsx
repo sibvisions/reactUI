@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
@@ -6,7 +6,7 @@ import { ConfirmDialogProps } from 'primereact/confirmdialog'
 import { appContext } from "../../AppProvider";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { useTranslation } from ".";
-import { DialogResponse, ErrorResponse, MessageResponse } from "../../response";
+import { DialogResponse } from "../../response";
 import { createCloseFrameRequest, createPressButtonRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { concatClassnames } from "../util";

@@ -39,5 +39,7 @@ interface BaseComponent {
     ariaLabel?:string,
     ariaPressed?:boolean,
     popupMenu?: any,
+    toolTipText?:string,
+    classNameEventSourceRef?:string
 }
 export default BaseComponent

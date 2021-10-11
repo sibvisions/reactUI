@@ -82,7 +82,8 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         .set("OK", "OK")
         .set("Cancel", "Cancel")
         .set("Yes", "Yes")
-        .set("No", "No");
+        .set("No", "No")
+        .set("Change", "Change");
     },[context.contentStore]);
 
     /**

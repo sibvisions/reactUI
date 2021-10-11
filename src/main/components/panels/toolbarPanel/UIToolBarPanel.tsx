@@ -2,11 +2,11 @@
 import React, { FC, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, ComponentSizes } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 

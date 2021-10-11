@@ -138,7 +138,9 @@ class Server {
             .then(results => {
                 results.forEach(result => {
                     if (result.name === RESPONSE_NAMES.SCREEN_GENERIC && !(result as GenericResponse).update) {
-                        this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
+                        if ((result as GenericResponse).changedComponents.length) {
+                            this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
+                        }
                     }
                 })
 

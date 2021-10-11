@@ -14,6 +14,7 @@ import { getMetaData } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
+import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 
 export type ActiveScreen = {
     name: string,
@@ -312,7 +313,7 @@ export default class ContentStore{
                         const flowOrientation = ["North", "South"].indexOf(constraint) !== -1 ? "0" : "1";
                         castedNewComp.layout = "BorderLayout,0,0,0,0,0,0";
 
-                        const tbMain:IPanel = {
+                        const tbMain:IToolBarHelper = {
                             id: newComponent.id + "-tbMain",
                             parent: newComponent.id,
                             constraints: getToolBarMainConstraint(castedNewComp.toolBarArea),
@@ -320,9 +321,10 @@ export default class ContentStore{
                             className: "ToolBarHelperMain",
                             layout: "FlowLayout,5,5,5,5,0,0," + flowOrientation + ",0,0,3,true",
                             layoutData: "",
+                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable"
                         }
 
-                        const tbCenter:IPanel = {
+                        const tbCenter:IToolBarHelper = {
                             id: newComponent.id + "-tbCenter",
                             parent: newComponent.id,
                             constraints: "Center",
@@ -332,7 +334,8 @@ export default class ContentStore{
                             layoutData: castedNewComp.layoutData,
                             preferredSize: newComponent.preferredSize, 
                             minimumSize: newComponent.minimumSize, 
-                            maximumSize: newComponent.maximumSize
+                            maximumSize: newComponent.maximumSize,
+                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable"
                         }
 
                         this.flatContent.set(tbMain.id, tbMain);

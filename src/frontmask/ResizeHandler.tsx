@@ -38,7 +38,6 @@ const ResizeHandler:FC = (props) => {
              if (context.appSettings.desktopPanel) {
                  sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: height })
              }
-
              //TODO: maybe fetch ids via screenId instead of relying on the children 
              setComponentSize(sizeMap);
          }
@@ -57,7 +56,7 @@ const ResizeHandler:FC = (props) => {
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
     useLayoutEffect(() => {
-        handleResize();
+        setTimeout(() => handleResize(), 0);
     }, [props.children, handleResize, resizeContext.menuSize]);
 
     /** 
@@ -104,12 +103,6 @@ const ResizeHandler:FC = (props) => {
             else if (event.propertyName === "max-height") {
                 handleResize();
             }
-        }
-    });
-
-    useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
-        if (event.propertyName === "margin-left") {
-            handleResize()
         }
     });
 

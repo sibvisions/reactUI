@@ -6,11 +6,16 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener } from "
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 
-const UIToolBarHelper: FC<IPanel> = (baseProps) => {
+/** Interface for ToolbarHelper */
+export interface IToolBarHelper extends IPanel {
+    isNavTable:boolean;
+}
+
+const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties(baseProps.id, baseProps);
 
@@ -37,7 +42,22 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
 
     const filteredComponents = useMemo(() => {
         return props.className === "ToolBarHelperMain" ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
-    }, [props.className, components])
+    }, [props.className, components]);
+
+    const getTBPosClassName = (constraint:string) => {
+        switch(constraint) {
+            case "North":
+                return "navbar-north";
+            case "West":
+                return "navbar-west";
+            case "East":
+                return "navbar-east";
+            case "South":
+                return "navbar-south";
+            default:
+                return "navbar-north";
+        }
+    }
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -58,7 +78,10 @@ const UIToolBarHelper: FC<IPanel> = (baseProps) => {
 
     return (
         <div
-            className={props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel"}
+            className={concatClassnames(
+                props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel",
+                props.className === "ToolBarHelperMain" && props.isNavTable ? getTBPosClassName(props.constraints) : ""
+            )}
             ref={panelRef}
             id={props.name} 
             style={props.screen_modal_ ? { 
