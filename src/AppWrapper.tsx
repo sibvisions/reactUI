@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import { Dialog } from 'primereact/dialog';
@@ -32,6 +32,14 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
     /** Reference for the dialog which shows the timeout error message */
     const dialogRef = useRef<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server." });
+
+    useLayoutEffect(() => {
+        const link:HTMLLinkElement = document.createElement('link'); 
+        link.rel = 'stylesheet'; 
+        link.type = 'text/css';
+        link.href = 'application.css';
+        document.getElementsByTagName('HEAD')[0].appendChild(link);
+    }, [])
 
     /**
      * Subscribes to session-expired notification and app-ready
