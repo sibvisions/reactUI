@@ -16,8 +16,6 @@ import { createLoginRequest, createResetPasswordRequest } from "../../main/facto
 import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
 import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
 import { concatClassnames } from "../../main/components/util";
-import { LayoutContext } from "../../main/LayoutContext";
-import useResizeHandler from "../../main/components/zhooks/useResizeHandler";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";
 
