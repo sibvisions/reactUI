@@ -54,6 +54,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false)
+
     const menuMini = false;
 
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout, [context.appSettings.applicationMetaData]);
@@ -95,19 +97,24 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             });
         });
 
+        context.subscriptions.subscribeToSessionExpired((show:boolean) => setSessionExpired(show));
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-            setMenuVisibility({
-                menuBar: appSettings.menuBar,
-                toolBar: appSettings.toolBar
-            });
 
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
+        return () => {
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setMenuVisibility({
+                    menuBar: appSettings.menuBar,
+                    toolBar: appSettings.toolBar
+                });
+
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                });
             });
-        });
+            context.subscriptions.unsubscribeFromSessionExpired((show:boolean) => setSessionExpired(show));
+        }
     }, [context.subscriptions])
 
     /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
@@ -128,42 +135,46 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             <div
                 className={concatClassnames(
                     "reactUI",
-                    appLayout === "corporation" ? "corporation" : ""
+                    appLayout === "corporation" ? "corporation" : "",
+                    sessionExpired ? "reactUI-expired" : ""
                 )}>
                 <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
                 <CustomWrapper>
-                        <div id="reactUI-main" className="main">
-                            <ResizeContext.Provider value={{login: false, menuRef: menuRef, menuSize: menuSize}}>
-                                <ScreenManager />
-                            </ResizeContext.Provider> 
-                        </div>
+                    <div id="reactUI-main" className="main">
+                        <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
+                            <ScreenManager />
+                        </ResizeContext.Provider>
+                    </div>
                 </CustomWrapper>
             </div>
-            : <div className={concatClassnames("reactUI", appLayout === "corporation" ? "corporation" : "")}>
+            : <div className={concatClassnames(
+                "reactUI",
+                appLayout === "corporation" ? "corporation" : "",
+                sessionExpired ? "reactUI-expired" : "")} >
                 <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-                {appLayout === "corporation" ? 
-                    <CorporateMenu 
-                        menuVisibility={menuVisibility} 
-                        visibleButtons={visibleButtons} /> 
-                        : 
-                    <Menu 
-                        forwardedRef={menuRef} 
-                        showMenuMini={menuMini} 
-                        menuVisibility={menuVisibility} 
+                {appLayout === "corporation" ?
+                    <CorporateMenu
+                        menuVisibility={menuVisibility}
+                        visibleButtons={visibleButtons} />
+                    :
+                    <Menu
+                        forwardedRef={menuRef}
+                        showMenuMini={menuMini}
+                        menuVisibility={menuVisibility}
                         visibleButtons={visibleButtons} />}
-                    <div id="reactUI-main" className={concatClassnames(
-                        "main",
-                        appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                        ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
-                        menuMini ? "" : "screen-no-mini",
-                        menuVisibility.toolBar ? "toolbar-visible" : "",
-                        !menuVisibility.menuBar ? "menu-not-visible" : "",
-                        !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
-                    )}>
-                        <ResizeContext.Provider value={{login: false, menuRef: menuRef, menuSize: menuSize}}>
-                            <ScreenManager />
-                        </ResizeContext.Provider> 
-                    </div>
+                <div id="reactUI-main" className={concatClassnames(
+                    "main",
+                    appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
+                    ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
+                    menuMini ? "" : "screen-no-mini",
+                    menuVisibility.toolBar ? "toolbar-visible" : "",
+                    !menuVisibility.menuBar ? "menu-not-visible" : "",
+                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
+                )}>
+                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
+                        <ScreenManager />
+                    </ResizeContext.Provider>
+                </div>
             </div>
     )
 }

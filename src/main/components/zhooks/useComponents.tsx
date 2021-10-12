@@ -149,7 +149,7 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
                         cl.push(oc);
                     }
                 });
-                if(!alreadyAdded && !context.contentStore.removedCustomComponents.includes(nc.props.name)) {
+                if(!alreadyAdded && !context.contentStore.removedCustomComponents.has(nc.props.name)) {
                     cl.push(nc);
                 }
             });

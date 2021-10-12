@@ -101,7 +101,7 @@ export class SubscriptionManager {
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
 
-    sessionExpiredSubscriber:Function = () => {};
+    sessionExpiredSubscriber:Array<Function> = new Array<Function>();
 
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
@@ -130,6 +130,8 @@ export class SubscriptionManager {
     activeScreenSubscriber = new Array<Function>();
 
     missingDataSubscriber = new Map<string, Array<Function>>();
+
+    restartSubscriber:Function = () => {};
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -368,7 +370,7 @@ export class SubscriptionManager {
      * @param fn - the function to flip the session-expired-state
      */
     subscribeToSessionExpired(fn:Function) {
-        this.sessionExpiredSubscriber = fn;
+        this.sessionExpiredSubscriber.push(fn);
     }
 
     /**
@@ -400,8 +402,13 @@ export class SubscriptionManager {
         const subscriber = this.missingDataSubscriber.get(compId);
         if (subscriber)
             subscriber.push(fn)
-        else
-            this.treeSubscriber.set(compId, new Array<Function>(fn));
+        else {
+            this.missingDataSubscriber.set(compId, new Array<Function>(fn));
+        }
+    }
+
+    subscribeToRestart(fn:Function) {
+        this.restartSubscriber = fn;
     }
 
     /**
@@ -573,8 +580,8 @@ export class SubscriptionManager {
     }
 
     /** Unsubscribes app from session-expired */
-    unsubscribeFromSessionExpired() {
-        this.sessionExpiredSubscriber = () => {};
+    unsubscribeFromSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /** Unsubscribes UIToast from message-responses */
@@ -598,6 +605,10 @@ export class SubscriptionManager {
         const subscriber = this.missingDataSubscriber.get(compId)
         if (subscriber)
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    }
+
+    unsubscribeFromRestart() {
+        this.restartSubscriber = () => {};
     }
 
     /**
@@ -739,8 +750,12 @@ export class SubscriptionManager {
     }
 
     /** Tell app that session has expired */
-    emitSessionExpired() {
-        this.sessionExpiredSubscriber.apply(undefined, []);
+    emitSessionExpired(show:boolean) {
+        this.sessionExpiredSubscriber.forEach((subFunc) => subFunc.apply(undefined, [show]));
+    }
+
+    emitRestart() {
+        this.restartSubscriber.apply(undefined, [])
     }
 
     /** Tell UIToast that there is a new message */

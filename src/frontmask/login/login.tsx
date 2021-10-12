@@ -19,6 +19,7 @@ import { concatClassnames } from "../../main/components/util";
 import { LayoutContext } from "../../main/LayoutContext";
 import useResizeHandler from "../../main/components/zhooks/useResizeHandler";
 import { componentHandler } from "../../main/factories/UIFactory";
+import ResizeHandler from "../ResizeHandler";
 
 export const DesktopPanelHandler:FC = () => {
     const context = useContext(appContext);
@@ -152,25 +153,24 @@ export const LoginForm:FC = () => {
 }
 
 /** Component which handles logging in */
-const Login: FC = (props) => {
+const Login: FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
-
-    const componentSize = useResizeHandler(sizeRef, props.children)
     
     return (
         (context.appSettings.desktopPanel) ?
-            <LayoutContext.Provider value={componentSize}>
+            <ResizeHandler>
                 <div className="login-container-with-desktop" ref={sizeRef}>
                     <DesktopPanelHandler />
                     <div className="login-form-position-wrapper">
                         <LoginForm />
                     </div>
                 </div>
-            </LayoutContext.Provider> :
+            </ResizeHandler>
+            :
             <div className="login-container">
                 <LoginForm />
             </div>

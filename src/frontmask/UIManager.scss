@@ -12,6 +12,9 @@
   &.corporation {
     flex-direction: column;
   }
+  &.reactUI-expired {
+    filter: blur(5px);
+  }
 }
 
 .main {

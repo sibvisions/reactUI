@@ -11,6 +11,7 @@ import UIToast from './main/components/toast/UIToast';
 import { appContext, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
+import SessionExpired from "./frontmask/sessionExpired/SessionExpired";
 
 type ServerFailMessage = {
     headerMessage:string,
@@ -27,6 +28,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
     /** State if timeout error should be shown */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false)
 
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
@@ -52,8 +55,11 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             setDialogVisible(true);
         });
 
+        context.subscriptions.subscribeToSessionExpired((show:boolean) => setSessionExpired(show));
+
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
+            context.subscriptions.unsubscribeFromSessionExpired((show:boolean) => setSessionExpired(show));
         }
     },[context.subscriptions]);
 
@@ -67,6 +73,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             <Dialog header="Server Error!" visible={dialogVisible} closable={false} onHide={() => setDialogVisible(false)} resizable={false} draggable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
+            {sessionExpired && <SessionExpired />}
             <PopupContextProvider>
                 <TopBar>
                     {props.children}

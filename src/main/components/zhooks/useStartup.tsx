@@ -25,7 +25,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
     const [appReady, setAppReady] = useState<boolean>(false);
 
     /** Flag to retrigger Startup if session expires */
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
+    const [restart, setRestart] = useState<boolean>(false);
 
     /** State of the current app-name to display it in the header */
     const [appName, setAppName] = useState<string>();
@@ -38,11 +38,11 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
      */
      useEffect(() => {
         context.subscriptions.subscribeToAppReady(() => setAppReady(true));
-        context.subscriptions.subscribeToSessionExpired(() => setSessionExpired(prevState => !prevState));
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppReady();
-            context.subscriptions.unsubscribeFromSessionExpired();
+            context.subscriptions.unsubscribeFromRestart();
         }
     },[context.subscriptions]);
 
@@ -83,7 +83,9 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         .set("Cancel", "Cancel")
         .set("Yes", "Yes")
         .set("No", "No")
-        .set("Change", "Change");
+        .set("Change", "Change")
+        .set("Session expired!", "Session expired!")
+        .set("Take note of any unsaved data, and <u>click here</u> or press ESC to continue.", "Take note of any unsaved data, and <u>click here</u> or press ESC to continue.");
     },[context.contentStore]);
 
     /**
@@ -201,6 +203,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                         context.server.subManager.jobQueue.clear();
                         context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(() => {
                             setStartupDone(true);
+                            context.subscriptions.emitSessionExpired(false);
                             initWS(context.server.BASE_URL);
                         });
                     }
@@ -208,6 +211,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                         context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                             sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                             setStartupDone(true);
+                            context.subscriptions.emitSessionExpired(false);
                             initWS(context.server.BASE_URL);
                         });
                     }
@@ -215,6 +219,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                         sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                         setStartupDone(true);
+                        context.subscriptions.emitSessionExpired(false);
                         initWS(context.server.BASE_URL);
                     });
                 }
@@ -262,7 +267,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         return () => {
             ws.current?.close();
         }
-    }, [context.server, context.contentStore, context.subscriptions, history, sessionExpired]);
+    }, [context.server, context.contentStore, context.subscriptions, history, restart]);
 
     /** Sets custom- or replace screens/components when reactUI is used as library based on props */
     useEffect(() => {

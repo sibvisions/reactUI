@@ -51,9 +51,9 @@ export default class ContentStore{
     replaceScreens = new Map<string, Function>();
 
     /** A Map which stores removed, but not deleted custom components, the key is the components id and the value the component */
-    removedCustomContent = new Map<string, BaseComponent>();
+    //removedCustomContent = new Map<string, BaseComponent>();
 
-    removedCustomComponents = new Array<string>();
+    removedCustomComponents = new Map<string, BaseComponent>();
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
@@ -113,10 +113,6 @@ export default class ContentStore{
      * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
      */
     dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
-
-    editedMenuItems = new Array<EditableMenuItem>();
-
-    customToolbarItems = new Array<CustomToolbarItem|EditableMenuItem>();
 
     customStartUpProperties = new Array<CustomStartupProps>();
 
@@ -208,11 +204,11 @@ export default class ContentStore{
                                 this.replacedContent.get(newComponent.id) ||
                                 this.desktopContent.get(newComponent.id) || 
                                 this.removedContent.get(newComponent.id) || 
-                                this.removedCustomContent.get(newComponent.id) ||
+                                this.removedCustomComponents.get(newComponent.id) ||
                                 this.removedDesktopContent.get(newComponent.id);
 
             /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomContent.has(newComponent.id) || this.removedDesktopContent.has(newComponent.id))) {
+            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomComponents.has(newComponent.id) || this.removedDesktopContent.has(newComponent.id))) {
                 if (!isCustom) {
                     if (desktop) {
                         this.removedDesktopContent.delete(newComponent.id);
@@ -236,7 +232,7 @@ export default class ContentStore{
                     
                 }
                 else {
-                    this.removedCustomContent.delete(newComponent.id);
+                    this.removedCustomComponents.delete(newComponent.id);
                     this.replacedContent.set(newComponent.id, existingComponent);
                 }
             }
@@ -387,7 +383,7 @@ export default class ContentStore{
                 }
                 else {
                     this.replacedContent.delete(newComponent.id);
-                    this.removedCustomContent.set(newComponent.id, existingComponent);
+                    this.removedCustomComponents.set(newComponent.id, existingComponent);
                 }
             }
 
@@ -413,7 +409,7 @@ export default class ContentStore{
                     this.removedDesktopContent.delete(newComponent.id);
                 }
                 else {
-                    this.removedCustomContent.delete(newComponent.id);
+                    this.removedCustomComponents.delete(newComponent.id);
                 }
             }
             
@@ -537,26 +533,20 @@ export default class ContentStore{
         this.removedContent.clear();
         this.customScreens.clear();
         this.customComponents.clear();
-        this.removedCustomContent.clear();
+        this.replaceScreens.clear();
+        this.removedCustomComponents.clear();
         this.replacedContent.clear();
         this.menuItems.clear();
+        this.toolbarItems = new Array<BaseMenuButton>();
         this.currentUser = new UserData();
         this.navigationNames.clear();
-        //this.customProperties.clear();
         this.screenWrappers.clear();
-        this.subManager.propertiesSubscriber.clear();
-        this.subManager.parentSubscriber.clear();
-        this.subManager.rowSelectionSubscriber.clear();
-        this.subManager.dataChangeSubscriber.clear();
-        this.subManager.screenDataChangeSubscriber.clear();
-        this.subManager.screenNameSubscriber.clear();
-        this.subManager.menuCollapseSubscriber.clear();
-        this.subManager.menuSubscriber = new Array<Function>();
         this.dataProviderData.clear();
         this.dataProviderMetaData.clear();
         this.dataProviderRecordFormat.clear();
         this.dataProviderFetched.clear();
         this.dataProviderSelectedRow.clear();
+        this.dataProviderSortedColumns.clear();
         this.activeScreens = [];
         this.selectedMenuItem = "";
         this.toolbarItems = [];
@@ -629,11 +619,11 @@ export default class ContentStore{
 
         while (!entry.done) {
             if (parentId.includes("TP")) {
-                if (entry.value[1].parent === parentId && !this.removedCustomComponents.includes(entry.value[1].name)) {
+                if (entry.value[1].parent === parentId && !this.removedCustomComponents.has(entry.value[1].name)) {
                     children.set(entry.value[1].id, entry.value[1]);
                 }
             }
-            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false && !this.removedCustomComponents.includes(entry.value[1].name)) {
+            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false && !this.removedCustomComponents.has(entry.value[1].name)) {
                 children.set(entry.value[1].id, entry.value[1]);
             }
             entry = componentEntries.next();

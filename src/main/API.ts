@@ -322,8 +322,8 @@ class API {
      */
     removeComponent(name:string) {
         if (this.#contentStore.getComponentByName(name)) {
-            this.#contentStore.removedCustomComponents.push(name);
             const comp = this.#contentStore.getComponentByName(name) as BaseComponent;
+            this.#contentStore.removedCustomComponents.set(name, comp);
             const notifyList = new Array<string>();
             if (comp.parent) {
                 notifyList.push(comp.parent);

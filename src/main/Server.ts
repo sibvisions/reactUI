@@ -575,50 +575,10 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const startUpRequest = createStartupRequest();
-        const authKey = localStorage.getItem("authKey");
-        if (!this.embeddedOptions) {
-            if(urlParams.has("appName") && urlParams.has("baseUrl")){
-                startUpRequest.applicationName = urlParams.get("appName") as string;
-                // this.APP_NAME = urlParams.get("appName");
-                //let baseUrl = urlParams.get("baseUrl") as string;
-                // if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                //     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-                // }
-                // this.BASE_URL = baseUrl;
-                // this.RESOURCE_URL = baseUrl + "/resource/" + urlParams.get("appName");
-            }
-            if (urlParams.has("userName") && urlParams.has("password")) {
-                startUpRequest.password = urlParams.get("password") as string;
-                startUpRequest.userName = urlParams.get("userName") as string;
-            }
-        }
-        else {
-            if (this.embeddedOptions.appName && this.embeddedOptions.baseUrl) {
-                startUpRequest.applicationName = this.embeddedOptions.appName;
-                // this.APP_NAME = this.embeddedOptions.appName;
-                // let baseUrl = this.embeddedOptions.baseUrl;
-                // if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                //     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-                // }
-                // this.BASE_URL = baseUrl;
-                // this.RESOURCE_URL = baseUrl + "/resource/" + this.embeddedOptions.appName
-            }
-        }
-        if(authKey){
-            startUpRequest.authKey = authKey;
-        }
-        startUpRequest.screenHeight = window.innerHeight;
-        startUpRequest.screenWidth = window.innerWidth;
-        startUpRequest.deviceMode = "desktop";
+        this.subManager.emitSessionExpired(true);
         this.contentStore.reset();
         sessionStorage.clear();
-        //this.sendRequest(startUpRequest, REQUEST_ENDPOINTS.STARTUP);
-        this.subManager.emitSessionExpired();
-        this.routingDecider([expData]);
-        this.subManager.emitMessage({message: expData.title, name: ""}, "error");
-        console.error(expData.title)
+        console.error(expData.title);
     }
 
     /**
@@ -759,7 +719,7 @@ class Server {
                     routeTo = "home";
                 }
             }
-            else if (response.name === RESPONSE_NAMES.LOGIN || response.name === RESPONSE_NAMES.SESSION_EXPIRED) {
+            else if (response.name === RESPONSE_NAMES.LOGIN) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
