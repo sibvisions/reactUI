@@ -10,6 +10,7 @@ import { appContext } from "../../../AppProvider";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../../layouts";
+import { Tooltip } from "primereact/tooltip";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor{
@@ -104,6 +105,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
         >
+            <Tooltip target={!isCellEditor ? "#" + props.name : undefined} />
             <img
                 id={!isCellEditor ? props.name : undefined}
                 className={imageStyle}
@@ -112,6 +114,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
                 alt="could not be loaded"
                 onLoad={imageLoaded}
                 onError={e => (e.target as HTMLImageElement).style.display = 'none'}
+                data-pr-tooltip={props.toolTipText}
             />
         </span>
 

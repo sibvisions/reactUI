@@ -9,6 +9,7 @@ import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
+import { Tooltip } from "primereact/tooltip";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {
@@ -77,45 +78,49 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     }
 
     return (
-        <div
-            className={concatClassnames(
-                props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel",
-                props.className === "ToolBarHelperMain" && props.isNavTable ? getTBPosClassName(props.constraints) : ""
-            )}
-            ref={panelRef}
-            id={props.name} 
-            style={props.screen_modal_ ? { 
-                height: prefSize?.height, 
-                width: prefSize?.width,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
-                display: filteredComponents.length === 0 ? "none" : ""
-            } : {
-                ...layoutStyle, 
-                backgroundColor: props.background,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
-                display: filteredComponents.length === 0 ? "none" : ""
-            }}>
-            <Layout
-                id={id}
-                className={props.className}
-                layoutData={props.layoutData}
-                layout={props.layout}
-                preferredSize={parsePrefSize(props.preferredSize)}
-                minimumSize={parseMinSize(props.minimumSize)}
-                maximumSize={parseMaxSize(props.maximumSize)}
-                popupSize={parsePrefSize(props.screen_size_)}
-                reportSize={reportSize}
-                compSizes={componentSizes ? new Map([...componentSizes].filter((v, k) => !v[0].includes("-tb"))) : undefined}
-                components={filteredComponents}
-                style={panelGetStyle(
-                    false,
-                    layoutStyle,
-                    prefSize,
-                    props.screen_modal_,
-                    props.screen_size_
+        <>
+            <Tooltip target={"#" + props.name} />
+            <div
+                className={concatClassnames(
+                    props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel",
+                    props.className === "ToolBarHelperMain" && props.isNavTable ? getTBPosClassName(props.constraints) : ""
                 )}
-                parent={props.parent} />
-        </div>
-    )   
+                ref={panelRef}
+                id={props.name}
+                style={props.screen_modal_ ? {
+                    height: prefSize?.height,
+                    width: prefSize?.width,
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                    display: filteredComponents.length === 0 ? "none" : ""
+                } : {
+                    ...layoutStyle,
+                    backgroundColor: props.background,
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                    display: filteredComponents.length === 0 ? "none" : ""
+                }}
+                data-pr-tooltip={props.toolTipText}>
+                <Layout
+                    id={id}
+                    className={props.className}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    popupSize={parsePrefSize(props.screen_size_)}
+                    reportSize={reportSize}
+                    compSizes={componentSizes ? new Map([...componentSizes].filter((v, k) => !v[0].includes("-tb"))) : undefined}
+                    components={filteredComponents}
+                    style={panelGetStyle(
+                        false,
+                        layoutStyle,
+                        prefSize,
+                        props.screen_modal_,
+                        props.screen_size_
+                    )}
+                    parent={props.parent} />
+            </div>
+        </>
+    )
 }
 export default UIToolBarHelper

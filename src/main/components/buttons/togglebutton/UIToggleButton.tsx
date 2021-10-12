@@ -120,6 +120,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 onChange={handleOnChange}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                tooltip={props.toolTipText}
             />
         </span>
     )

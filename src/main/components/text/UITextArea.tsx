@@ -49,7 +49,8 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
             style={{...layoutStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined} />
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            tooltip={props.toolTipText} />
     )
 }
 export default UITextArea

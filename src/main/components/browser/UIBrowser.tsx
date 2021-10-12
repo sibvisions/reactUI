@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';

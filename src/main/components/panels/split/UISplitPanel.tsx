@@ -126,6 +126,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
                 dividerPosition={props.dividerPosition}
                 orientation={props.orientation}
                 onInitial={sendLoadCallback}
+                toolTipText={props.toolTipText}
             />
         </LayoutContext.Provider>
     )

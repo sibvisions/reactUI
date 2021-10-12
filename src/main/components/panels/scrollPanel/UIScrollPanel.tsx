@@ -1,5 +1,8 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useRef, useState } from "react";
+
+/** 3rd Party imports */
+import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -110,41 +113,44 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         )
     }
 
-    return(
-        <div 
-            ref={panelRef}
-            id={props.name}
-            className="rc-scrollpanel" 
-            style={props.screen_modal_ 
-                ? { 
-                    height: (prefSize?.height as number), 
-                    width: prefSize?.width, 
-                    overflow: 'auto',
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
-                } 
-                : {
-                    ...layoutStyle, 
-                    overflow: 'auto',
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
+    return (
+        <>
+            <Tooltip target={"#" + props.name} />
+            <div
+                ref={panelRef}
+                id={props.name}
+                className="rc-scrollpanel"
+                style={props.screen_modal_
+                    ? {
+                        height: (prefSize?.height as number),
+                        width: prefSize?.width,
+                        overflow: 'auto',
+                        ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
+                    }
+                    : {
+                        ...layoutStyle,
+                        overflow: 'auto',
+                        ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
+                    }
                 }
-            }
-        >
-            <Layout
-                id={id}
-                className={props.className}
-                layoutData={props.layoutData}
-                layout={props.layout}
-                preferredSize={parsePrefSize(props.preferredSize)}
-                minimumSize={parseMinSize(props.minimumSize)}
-                maximumSize={parseMaxSize(props.maximumSize)}
-                popupSize={parsePrefSize(props.screen_size_)}
-                reportSize={reportSize}
-                compSizes={componentSizes}
-                components={components}
-                alignChildrenIfOverflow={false}
-                style={scrollStyle}
-                parent={props.parent} />
-        </div>
+            >
+                <Layout
+                    id={id}
+                    className={props.className}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    popupSize={parsePrefSize(props.screen_size_)}
+                    reportSize={reportSize}
+                    compSizes={componentSizes}
+                    components={components}
+                    alignChildrenIfOverflow={false}
+                    style={scrollStyle}
+                    parent={props.parent} />
+            </div>
+        </>
     )
 }
 

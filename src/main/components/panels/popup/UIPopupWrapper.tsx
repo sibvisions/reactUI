@@ -37,7 +37,13 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
     }
 
     return (
-        <Dialog className="rc-popup" header={baseProps.screen_title_} visible={baseProps.screen_modal_} onHide={handleOnHide} resizable={false}>
+        <Dialog
+            className="rc-popup"
+            header={baseProps.screen_title_}
+            visible={baseProps.screen_modal_}
+            onHide={handleOnHide} 
+            resizable={false}
+            >
             {baseProps.render}
         </Dialog>
     )

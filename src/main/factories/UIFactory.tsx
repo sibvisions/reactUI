@@ -134,7 +134,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     )
     .set("Tree", props => <UITree {...props} />)
     .set("Gauge", props => <UIGauge {...props} />)
-    //.set("MobileBrowser", props => <UIBrowser {...props} />)
+    .set("MobileBrowser", props => <UIBrowser {...props} />)
     .set("ToolBar", props => <UIPanel {...props} />)
     .set("ToolBarHelperMain", props => <UIToolBarHelper {...props} />)
     .set("ToolBarHelperCenter", props => <UIToolBarHelper {...props} />);

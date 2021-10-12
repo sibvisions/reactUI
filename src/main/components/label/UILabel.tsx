@@ -1,8 +1,12 @@
 /** React imports */
-import React, { FC, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useLayoutEffect, useRef } from "react";
+
+/** 3rd Party imports */
+import { Tooltip } from 'primereact/tooltip';
 
 /** Hook imports */
 import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import {getFont, getAlignments, translateTextAlign} from "../compprops";
@@ -47,6 +51,8 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
+        <>
+        <Tooltip target={"#" + props.name + "-text"} />
         <span
             {...usePopupMenu(props)}
             id={props.name}
@@ -65,8 +71,9 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 ...lblFont,
                 ...layoutStyle
             }}>
-            <span ref={labelRef} dangerouslySetInnerHTML={{ __html: props.text as string }} />
+            <span id={props.name + "-text"} ref={labelRef} dangerouslySetInnerHTML={{ __html: props.text as string }} data-pr-tooltip={props.toolTipText} />
         </span>
+        </>
     )
 }
 export default UILabel

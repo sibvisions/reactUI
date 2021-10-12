@@ -9,6 +9,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from ".
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
+import { Tooltip } from "primereact/tooltip";
 
 /** Interface for Gauge properties sent by server */
 export interface IGauge extends BaseComponent {
@@ -156,7 +157,10 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
 
     return (
-        <span ref={wrapperRef} className="ui-gauge" style={layoutStyle}></span>
+        <>
+            <Tooltip target={"#" + props.name} />
+            <span id={props.name} ref={wrapperRef} className="ui-gauge" style={layoutStyle} data-pr-tooltip={props.toolTipText}></span>
+        </>
     )
 }
 

@@ -152,6 +152,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 onChange={() => handleOnChange()}
                 disabled={isReadOnly}
                 tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+                tooltip={props.toolTipText}
             />
             {!isCellEditor &&
                 <label

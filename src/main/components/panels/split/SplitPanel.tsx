@@ -5,6 +5,7 @@ import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState 
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
 import { Dimension } from "../../util";
+import { Tooltip } from "primereact/tooltip";
 
 /** Type for ResizeEvent */
 type onResizeEvent = (firstSize: Dimension, secondSize: Dimension) => void;
@@ -30,6 +31,7 @@ interface ISplitPanel extends IForwardRef {
     onTrigger?: onResizeEvent
     style?: CSSProperties
     onInitial: Function
+    toolTipText?:string
 }
 
 /**
@@ -138,17 +140,34 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     }, [props.trigger.width, props.trigger.height])
 
 
-    return(
-        <div id={props.id} className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")} ref={props.forwardedRef} style={props.style}>
-            <div ref={firstRef} className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-split-h" : "first-split-v"} style={{width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined}}>
-                {props.leftComponent}
+    return (
+        <>
+            <Tooltip target={"#" + props.id}  />
+            <div
+                id={props.id}
+                className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")}
+                ref={props.forwardedRef}
+                style={props.style}
+                data-pr-tooltip={props.toolTipText}>
+                <div
+                    ref={firstRef}
+                    className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-split-h" : "first-split-v"}
+                    style={{
+                        width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ?
+                            firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined
+                    }}>
+                    {props.leftComponent}
+                </div>
+                <div
+                    className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-seperator" : "v-seperator")}
+                    onMouseDown={dragStart}
+                    onTouchStart={dragTouchStart}>
+                </div>
+                <div ref={secondRef} className={"second-split"}>
+                    {props.rightComponent}
+                </div>
             </div>
-            <div className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-seperator" : "v-seperator")} onMouseDown={dragStart} onTouchStart={dragTouchStart}>
-            </div>
-            <div ref={secondRef} className={"second-split"}>
-                {props.rightComponent}
-            </div>
-        </div>
+        </>
     )
 }
 export default SplitPanel

@@ -50,7 +50,8 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
             style={layoutStyle} 
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined} />
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            tooltip={props.toolTipText} />
     )
 }
 export default UIPassword

@@ -13,6 +13,7 @@ import { REQUEST_ENDPOINTS } from "../../../request";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { Tooltip } from "primereact/tooltip";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor{
@@ -205,6 +206,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}>
+            <Tooltip target={!isCellEditor ? "#" + props.name : undefined} />
             <img
                 ref={imgRef}
                 id={!isCellEditor ? props.name : undefined}
@@ -220,6 +222,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 }
                 onLoad={onChoiceLoaded}
                 onError={onChoiceLoaded}
+                data-pr-tooltip={props.toolTipText}
             />
         </span>
     )

@@ -142,8 +142,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 tabIndex={-1}
                 model={items}
-                //@ts-ignore
-                onClick={() => buttonRef.current.show()} />
+                onClick={() => buttonRef.current.show()}
+                tooltip={props.toolTipText} />
         </span>
     )
 }

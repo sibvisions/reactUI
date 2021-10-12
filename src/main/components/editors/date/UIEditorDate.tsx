@@ -357,6 +357,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                         focused.current = false;
                     }
                 }}
+                tooltip={props.toolTipText}
             />
         </span>
 

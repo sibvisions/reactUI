@@ -9,6 +9,7 @@ import { appContext } from "../../AppProvider";
 import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../util";
+import { Tooltip } from "primereact/tooltip";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
@@ -75,7 +76,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(icon.includes('fa fa-'))
-                return <i id={props.name} className={icon}/>
+                return <i id={props.name} className={icon} data-pr-tooltip={props.toolTipText} />
             else {
                 return (
                 <img
@@ -85,7 +86,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
                     //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}
-                    onError={iconLoaded} />
+                    onError={iconLoaded}
+                    data-pr-tooltip={props.toolTipText} />
                 )
             }
                 
@@ -98,6 +100,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} 
             style={{...layoutStyle, overflow: "hidden"}}
         >
+            <Tooltip target={"#" + props.name} />
             {iconOrImage(iconProps.icon)}
         </span>
     )

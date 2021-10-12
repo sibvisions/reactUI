@@ -252,6 +252,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
+                tooltip={props.toolTipText}
             />
     )
 }

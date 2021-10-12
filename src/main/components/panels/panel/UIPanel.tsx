@@ -1,5 +1,8 @@
 /** React imports */
-import React, { FC, useContext, useMemo, useRef } from "react";
+import React, { FC, useContext, useRef } from "react";
+
+/** 3rd Party imports */
+import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -70,41 +73,45 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     }
 
     return (
-        <div
-            className="rc-panel"
-            ref={panelRef}
-            id={props.name} 
-            style={props.screen_modal_ ? { 
-                height: prefSize?.height, 
-                width: prefSize?.width,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
-            } : {
-                ...layoutStyle, 
-                backgroundColor: props.background,
-                ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
-            }}>
-            <Layout
-                id={id}
-                className={props.className}
-                layoutData={props.layoutData}
-                layout={props.layout}
-                preferredSize={parsePrefSize(props.preferredSize)}
-                minimumSize={parseMinSize(props.minimumSize)}
-                maximumSize={parseMaxSize(props.maximumSize)}
-                popupSize={parsePrefSize(props.screen_size_)}
-                reportSize={reportSize}
-                compSizes={componentSizes}
-                components={components}
-                style={panelGetStyle(
-                    false,
-                    layoutStyle,
-                    prefSize,
-                    props.screen_modal_,
-                    props.screen_size_
-                )}
-                isToolBar={props.className === "ToolBar"}
-                parent={props.parent} />
-        </div>
+        <>
+            <Tooltip target={"#" + props.name} />
+            <div
+                className="rc-panel"
+                ref={panelRef}
+                id={props.name}
+                style={props.screen_modal_ ? {
+                    height: prefSize?.height,
+                    width: prefSize?.width,
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                } : {
+                    ...layoutStyle,
+                    backgroundColor: props.background,
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                }}
+                data-pr-tooltip={props.toolTipText} >
+                <Layout
+                    id={id}
+                    className={props.className}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    popupSize={parsePrefSize(props.screen_size_)}
+                    reportSize={reportSize}
+                    compSizes={componentSizes}
+                    components={components}
+                    style={panelGetStyle(
+                        false,
+                        layoutStyle,
+                        prefSize,
+                        props.screen_modal_,
+                        props.screen_size_
+                    )}
+                    isToolBar={props.className === "ToolBar"}
+                    parent={props.parent} />
+            </div>
+        </>
     )
 }
 export default UIPanel

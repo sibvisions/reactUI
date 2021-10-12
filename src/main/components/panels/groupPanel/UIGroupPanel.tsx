@@ -1,5 +1,8 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useMemo, useRef } from "react";
+import React, { CSSProperties, FC, useContext, useRef } from "react";
+
+/** 3rd Party imports */
+import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
 import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
@@ -9,6 +12,7 @@ import { Layout } from "../../layouts";
 import { IPanel } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
+
 
 /**
  * This component is a panel with a header, useful to group components
@@ -57,44 +61,48 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     }
 
     return (
-        <div
-            ref={panelRef}
-            className="rc-panel-group"
-            id={props.name}
-            style={props.screen_modal_ ?
-                { height: (prefSize?.height as number), width: prefSize?.width }
-                : { ...layoutStyle, backgroundColor: props.background }} >
+        <>
+            <Tooltip target={"#" + props.name} />
             <div
-                className="rc-panel-group-caption">
-                <span>
-                    {props.text}
-                </span>
+                ref={panelRef}
+                className="rc-panel-group"
+                id={props.name}
+                style={props.screen_modal_ ?
+                    { height: (prefSize?.height as number), width: prefSize?.width }
+                    : { ...layoutStyle, backgroundColor: props.background }}
+                data-pr-tooltip={props.toolTipText} >
+                <div
+                    className="rc-panel-group-caption">
+                    <span>
+                        {props.text}
+                    </span>
+                </div>
+                <div
+                    className="rc-panel-group-content"
+                    style={{ ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
+                    <Layout
+                        id={id}
+                        className={props.className}
+                        layoutData={props.layoutData}
+                        layout={props.layout}
+                        preferredSize={parsePrefSize(props.preferredSize)}
+                        minimumSize={parseMinSize(props.minimumSize)}
+                        maximumSize={parseMaxSize(props.maximumSize)}
+                        popupSize={parsePrefSize(props.screen_size_)}
+                        reportSize={reportSize}
+                        compSizes={componentSizes}
+                        components={components}
+                        style={panelGetStyle(
+                            true,
+                            layoutStyle,
+                            prefSize,
+                            props.screen_modal_,
+                            props.screen_size_
+                        )}
+                        parent={props.parent} />
+                </div>
             </div>
-            <div 
-                className="rc-panel-group-content"
-                style={{...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
-                <Layout
-                    id={id}
-                    className={props.className}
-                    layoutData={props.layoutData}
-                    layout={props.layout}
-                    preferredSize={parsePrefSize(props.preferredSize)}
-                    minimumSize={parseMinSize(props.minimumSize)}
-                    maximumSize={parseMaxSize(props.maximumSize)}
-                    popupSize={parsePrefSize(props.screen_size_)}
-                    reportSize={reportSize}
-                    compSizes={componentSizes}
-                    components={components}
-                    style={panelGetStyle(
-                        true,
-                        layoutStyle,
-                        prefSize,
-                        props.screen_modal_,
-                        props.screen_size_
-                    )} 
-                    parent={props.parent} />
-            </div>
-        </div>
+        </>
     )
 }
 
