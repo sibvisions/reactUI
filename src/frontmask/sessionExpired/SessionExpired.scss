@@ -21,7 +21,13 @@
     z-index: 10001;
     background: rgba(255, 255, 255, .8);
     text-align: center;
-    
+    -webkit-user-select: none;    
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    u {
+        cursor: pointer;
+    }
 }
 
 .rc-session-expired-header-text, .rc-session-expired-header-icon {
