@@ -142,7 +142,11 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     }
 
                     if (options.has("layout") && ["standard", "corporation", "modern"].indexOf(options.get("layout") as string) !== -1) {
-                        context.appSettings.setApplicationLayoutByURL(options.get("layout") as "standard"|"corporation"|"modern")
+                        context.appSettings.setApplicationLayoutByURL(options.get("layout") as "standard"|"corporation"|"modern");
+                    }
+
+                    if (options.has("language")) {
+                        startupReq.language = options.get("language") as string;
                     }
                 }
                 else {
@@ -164,6 +168,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'appName' seems to be missing. Either check typing/casing or add the property!");
                     }
+
                     if (options.userName && options.password) {
                         startupReq.userName = options.userName;
                         startupReq.password = options.password;
@@ -171,7 +176,15 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed properties 'userName' or 'password' seem/s to be missing. Either check typing/casing or add the property/properties!");
                     }
-                    context.server.embeddedOptions = options;
+
+                    if (options.layout && ["standard", "corporation", "modern"].indexOf(options.layout as string) !== -1) {
+                        context.appSettings.setApplicationLayoutByURL(options.layout as "standard"|"corporation"|"modern");
+                    }
+
+                    if (options.language) {
+                        startupReq.language = options.language;
+                    }
+                    context.server.embedOptions = options;
                 }
                 if(authKey) {
                     startupReq.authKey = authKey;

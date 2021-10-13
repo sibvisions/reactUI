@@ -78,7 +78,7 @@ class Server {
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
     /** embedded options, null if not defined */
-    embeddedOptions:{ [key:string]:any }|null = null;
+    embedOptions:{ [key:string]:any }|null = null;
 
     api:API;
 
