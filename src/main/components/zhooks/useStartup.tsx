@@ -135,9 +135,14 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                     else if (!config) {
                         context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
                     }
+
                     if (options.has("userName") && options.has("password")) {
                         startupReq.userName = options.get("userName") as string;
                         startupReq.password = options.get("password") as string;
+                    }
+
+                    if (options.has("layout") && ["standard", "corporation", "modern"].indexOf(options.get("layout") as string) !== -1) {
+                        context.appSettings.setApplicationLayoutByURL(options.get("layout") as "standard"|"corporation"|"modern")
                     }
                 }
                 else {

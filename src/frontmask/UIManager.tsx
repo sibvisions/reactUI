@@ -13,7 +13,6 @@ import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/z
 /** Other imports */
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
 import { appContext } from "../main/AppProvider";
-import { LayoutContext } from "../main/LayoutContext";
 import ScreenManager from "./ScreenManager";
 import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
 import CorporateMenu from "./menu/corporateMenu";
@@ -58,7 +57,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const menuMini = false;
 
-    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout, [context.appSettings.applicationMetaData]);
+    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** ComponentId of Screen extracted by useParams hook */
     const { componentId } = useParams<any>();
