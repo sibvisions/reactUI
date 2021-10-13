@@ -5,7 +5,7 @@ import React, { CSSProperties, FC, useContext, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -67,6 +67,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 ref={panelRef}
                 className="rc-panel-group"
                 id={props.name}
+                {...usePopupMenu(props)}
                 style={props.screen_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
                     : { ...layoutStyle, backgroundColor: props.background }}

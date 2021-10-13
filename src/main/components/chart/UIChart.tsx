@@ -9,7 +9,7 @@ import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData, useMouseListener } from "../zhooks";
+import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -575,7 +575,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                 id={props.name}
                 type={chartType}
                 data={chartData}
-                options={options}/>
+                options={options}
+                {...usePopupMenu(props)} />
         </span>
     )
 }

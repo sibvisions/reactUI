@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useButtonMouseImages, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useButtonMouseImages, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -142,6 +142,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 disabled={props.enabled === false}
                 tooltip={props.toolTipText}
+                {...usePopupMenu(props)}
             />
         </span>
     )

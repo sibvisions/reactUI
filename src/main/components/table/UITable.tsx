@@ -17,7 +17,8 @@ import { useProperties,
          useLayoutValue,
          useFetchMissingData,
          useMouseListener,
-         useMetaData} from "../zhooks";
+         useMetaData,
+         usePopupMenu} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -1394,6 +1395,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     }
                 }}
                 onKeyDown={(event) => handleTableKeys(event)}
+                {...usePopupMenu(props)}
             >
                 <DataTable
                     key="table"
@@ -1429,7 +1431,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                         return cn
                     }}
-                    tabIndex={props.tabIndex}>
+                    tabIndex={props.tabIndex} >
                     {columns}
                 </DataTable>
             </div>

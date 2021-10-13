@@ -9,7 +9,7 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, useProperties, useRowSelect } from "../../zhooks"
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -238,6 +238,8 @@ const UIEditorText: FC<IEditorText> = (props) => {
 
     useFetchMissingData(compId, props.dataRow);
 
+    const popupMenu = usePopupMenu(props);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -452,6 +454,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         fieldType === FieldTypes.HTML ?
             <div 
                 ref={textRef} 
+                {...popupMenu}
                 style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
                 id={isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}
@@ -469,6 +472,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                         onFocusLost(props.name, context.server)
                     }
                 }}
+                {...popupMenu}
             >
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
@@ -481,15 +485,18 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 ?
                 <InputTextarea
                     {...primeProps}
+                    {...popupMenu}
                     autoResize={false} />
                 :
                 fieldType === FieldTypes.PASSWORD ?
                     <Password
                         {...primeProps}
+                        {...popupMenu}
                         feedback={false} />
                     :
                     <InputText
-                        {...primeProps} />
+                        {...primeProps}
+                        {...popupMenu} />
     )
 }
 export default UIEditorText

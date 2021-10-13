@@ -2,7 +2,7 @@
 import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
@@ -127,6 +127,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
                 orientation={props.orientation}
                 onInitial={sendLoadCallback}
                 toolTipText={props.toolTipText}
+                popupMenu={{...usePopupMenu(props)}}
             />
         </LayoutContext.Provider>
     )

@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener } from "../../zhooks";
+import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -115,6 +115,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
                 onLoad={imageLoaded}
                 onError={e => (e.target as HTMLImageElement).style.display = 'none'}
                 data-pr-tooltip={props.toolTipText}
+                {...usePopupMenu(props)}
             />
         </span>
 

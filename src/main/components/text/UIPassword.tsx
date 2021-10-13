@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { Password } from "primereact/password";
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+import { useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -20,16 +20,22 @@ import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 const UIPassword: FC<BaseComponent> = (baseProps) => {
     /** Reference for the password field */
     const passwordRef = useRef<any>(null);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+    
     /** Hook for MouseListener */
     useMouseListener(props.name, passwordRef.current ? passwordRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -51,7 +57,8 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tooltip={props.toolTipText} />
+            tooltip={props.toolTipText}
+            {...usePopupMenu(props)} />
     )
 }
 export default UIPassword

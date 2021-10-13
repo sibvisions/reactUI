@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 
 /** Hook imports */
-import { useProperties, useLayoutValue, useMouseListener } from "../zhooks";
+import { useProperties, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -58,6 +58,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 data-pr-tooltip={props.toolTipText}
+                {...usePopupMenu(props)}
             />
         </span>
     )

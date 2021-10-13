@@ -5,7 +5,7 @@ import React, { CSSProperties, FC, useContext, useMemo, useRef, useState } from 
 import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 
@@ -133,6 +133,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                         ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }
                 }
+                {...usePopupMenu(props)}
             >
                 <Layout
                     id={id}

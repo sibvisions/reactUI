@@ -5,7 +5,7 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayout
 import { TabView, TabPanel } from 'primereact/tabview';
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../../LayoutContext";
@@ -175,7 +175,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 onTabChange={event => {
                     if (event.index !== props.selectedIndex)
                         handleSelect(event.index)
-                }}>
+                }}
+                {...usePopupMenu(props)} >
                 {buildTabs}
             </TabView>
         </LayoutContext.Provider>

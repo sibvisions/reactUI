@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, useRowSelect } from "../../zhooks";
+import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -297,7 +297,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     });
 
     return (
-        <span aria-label={props.ariaLabel} aria-expanded={visible} style={layoutStyle}>
+        <span aria-label={props.ariaLabel} {...usePopupMenu(props)} aria-expanded={visible} style={layoutStyle}>
             <CustomCalendar
                 ref={calendar}
                 id={!isCellEditor ? props.name : undefined}

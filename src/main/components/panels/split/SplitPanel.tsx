@@ -31,7 +31,8 @@ interface ISplitPanel extends IForwardRef {
     onTrigger?: onResizeEvent
     style?: CSSProperties
     onInitial: Function
-    toolTipText?:string
+    toolTipText?:string,
+    popupMenu?:any
 }
 
 /**
@@ -148,7 +149,8 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                 className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")}
                 ref={props.forwardedRef}
                 style={props.style}
-                data-pr-tooltip={props.toolTipText}>
+                data-pr-tooltip={props.toolTipText}
+                {...props.popupMenu} >
                 <div
                     ref={firstRef}
                     className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-split-h" : "first-split-v"}

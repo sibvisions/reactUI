@@ -2,7 +2,7 @@
 import React, { FC, useCallback, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -205,7 +205,8 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 }
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}>
+            tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+             >
             <Tooltip target={!isCellEditor ? "#" + props.name : undefined} />
             <img
                 ref={imgRef}
@@ -223,6 +224,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 onLoad={onChoiceLoaded}
                 onError={onChoiceLoaded}
                 data-pr-tooltip={props.toolTipText}
+                {...usePopupMenu(props)}
             />
         </span>
     )

@@ -5,7 +5,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 import { AutoComplete } from 'primereact/autocomplete';
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -280,7 +280,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }
 
     return (
-        <span aria-label={props.ariaLabel} style={layoutStyle}>
+        <span aria-label={props.ariaLabel} {...usePopupMenu(props)} style={layoutStyle}>
             <AutoComplete
                 ref={linkedRef}
                 id={!isCellEditor ? props.name : undefined}

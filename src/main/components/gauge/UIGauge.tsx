@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
@@ -159,7 +159,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     return (
         <>
             <Tooltip target={"#" + props.name} />
-            <span id={props.name} ref={wrapperRef} className="ui-gauge" style={layoutStyle} data-pr-tooltip={props.toolTipText}></span>
+            <span id={props.name} {...usePopupMenu(props)} ref={wrapperRef} className="ui-gauge" style={layoutStyle} data-pr-tooltip={props.toolTipText}></span>
         </>
     )
 }

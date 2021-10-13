@@ -8,7 +8,7 @@ import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useMouseListener } from "../zhooks";
+import { useProperties, useDataProviderData, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -54,18 +54,26 @@ export interface IMap extends BaseComponent {
 const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
+
     /** Use context for the positioning, size informations of the layout */
     const layoutValue = useContext(LayoutContext);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
+
     /** The center position of the map */
     const centerPosition = parseMapLocation(props.center);
+
     /** Start zoom value is switched in Google and OSM */
     const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 10);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -81,7 +89,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
      */
     if (layoutValue.has(id)) {
         return (
-            <div ref={mapRef} style={layoutValue.get(id)}>
+            <div ref={mapRef} {...popupMenu} style={layoutValue.get(id)}>
                 <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom}/>
                 </MapContainer>
@@ -104,20 +112,28 @@ export default UIMapOSM
 const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** Leaflet hook to get map instance */
     const map = useMap();
+
     /** Reference for markers */
     const markerRefs = useRef<any>([]);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+
     /** The provided data for points/markers */
     const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<any>();
+
     /** Colors for polygon filling and polygon lines */
     const options:PolylineOptions = {
         color: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),

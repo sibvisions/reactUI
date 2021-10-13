@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useImageStyle, useLayoutValue, useMouseListener } from "../zhooks";
+import { useProperties, useImageStyle, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -34,7 +34,9 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false)
+    const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
+
+    const popupMenu = usePopupMenu(props);
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -76,11 +78,12 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(icon.includes('fa fa-'))
-                return <i id={props.name} className={icon} data-pr-tooltip={props.toolTipText} />
+                return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} />
             else {
                 return (
                 <img
                     id={props.name}
+                    {...popupMenu}
                     alt="icon"
                     src={context.server.RESOURCE_URL + iconProps.icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}

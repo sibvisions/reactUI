@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useMetaData } from "../../zhooks"
+import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useMetaData, usePopupMenu } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -99,6 +99,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    const popupMenu = usePopupMenu(props);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
@@ -209,7 +211,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     return (
         (!isCellEditor) ?
-            <span aria-label={props.ariaLabel} style={layoutStyle}>
+            <span aria-label={props.ariaLabel} {...popupMenu} style={layoutStyle}>
                 <InputNumber
                     ref={numberRef}
                     id={props.name}

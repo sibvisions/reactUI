@@ -7,7 +7,7 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener } from "../zhooks";
+import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -491,6 +491,7 @@ const UITree: FC<ITree> = (baseProps) => {
                     focused.current = false;
                 }
             }}
+            {...usePopupMenu(props)}
         >
             <Tree
                 id={props.name}

@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -143,7 +143,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                         }
                     }
                 }
-            }}>
+            }}
+            {...usePopupMenu(props)} >
             <Checkbox
                 inputId={id}
                 trueValue={props.cellEditor.selectedValue}

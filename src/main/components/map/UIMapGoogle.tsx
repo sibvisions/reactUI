@@ -7,7 +7,7 @@ import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useLayoutValue, useMouseListener } from "../zhooks";
+import { useProperties, useDataProviderData, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -75,6 +75,8 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         strokeColor: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
     }
+
+    const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -204,7 +206,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     if (mapReady === false)
         return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} id={props.name} style={layoutStyle}>
+        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle}>
             <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

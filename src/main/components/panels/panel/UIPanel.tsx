@@ -5,7 +5,7 @@ import React, { FC, useContext, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -88,7 +88,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                     backgroundColor: props.background,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 }}
-                data-pr-tooltip={props.toolTipText} >
+                data-pr-tooltip={props.toolTipText}
+                {...usePopupMenu(props)} >
                 <Layout
                     id={id}
                     className={props.className}

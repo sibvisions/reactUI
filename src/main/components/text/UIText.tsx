@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { InputText } from "primereact/inputtext";
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+import { useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -20,16 +20,22 @@ import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 const UIText: FC<BaseComponent> = (baseProps) => {
     /** Reference for the input field */
     const inputRef = useRef<any>(null);
+
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -51,6 +57,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
+            {...usePopupMenu(props)}
         />
     )
 }

@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { InputTextarea } from "primereact/inputtextarea";
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+import { useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -50,7 +50,8 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tooltip={props.toolTipText} />
+            tooltip={props.toolTipText}
+            {...usePopupMenu(props)} />
     )
 }
 export default UITextArea
