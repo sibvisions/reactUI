@@ -29,7 +29,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** State if timeout error should be shown */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false)
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
     const [messageVisible, messageProps] = useConfirmDialogProps();
 

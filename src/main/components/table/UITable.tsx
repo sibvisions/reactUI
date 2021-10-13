@@ -132,10 +132,6 @@ const CellEditor: FC<CellEditor> = (props) => {
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
 
-    useEffect(() => {
-        console.log('editor');
-    }, [])
-
     const showDropDownArrow = useCallback(() => {
         if (columnMetaData?.cellEditor.className === "LinkedCellEditor"
             || columnMetaData?.cellEditor.className === "DateCellEditor") {

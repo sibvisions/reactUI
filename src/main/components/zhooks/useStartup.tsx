@@ -10,6 +10,7 @@ import { createChangesRequest, createStartupRequest, createUIRefreshRequest, get
 import { REQUEST_ENDPOINTS, StartupRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
+import { BaseResponse, RESPONSE_NAMES } from "../../response";
 
 const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] => {
     /** Use context to gain access for contentstore and server methods */
@@ -113,79 +114,54 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
             }
         }
 
+        const afterStartup = (results:BaseResponse[]) => {
+            setStartupDone(true);
+            if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
+                context.subscriptions.emitSessionExpired(false);
+            }
+            initWS(context.server.BASE_URL);
+        }
+
         const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }, config?:boolean) => {
             if (options) {
+                let convertedOptions:Map<string, any>
                 if (options instanceof URLSearchParams) {
-                    if (options.has("appName")) {
-                        startupReq.applicationName = options.get("appName") as string;
-                        context.server.APP_NAME = options.get("appName") as string;
-                        if (options.has("baseUrl")) {
-                            let baseUrl:string = options.get("baseUrl") as string;
-                            if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                                baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-                            }
-                            context.server.BASE_URL = baseUrl;
-                            context.server.RESOURCE_URL = baseUrl + "/resource/" + options.get("appName");
-                        }
-                        else if (!config) {
-                            context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'baseUrl' seems to be missing. Either check typing/casing or add the parameter!");
-                        }
-
-                    }
-                    else if (!config) {
-                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
-                    }
-
-                    if (options.has("userName") && options.has("password")) {
-                        startupReq.userName = options.get("userName") as string;
-                        startupReq.password = options.get("password") as string;
-                    }
-
-                    if (options.has("layout") && ["standard", "corporation", "modern"].indexOf(options.get("layout") as string) !== -1) {
-                        context.appSettings.setApplicationLayoutByURL(options.get("layout") as "standard"|"corporation"|"modern");
-                    }
-
-                    if (options.has("language")) {
-                        startupReq.language = options.get("language") as string;
-                    }
+                    convertedOptions = new Map(options);
                 }
                 else {
-                    if (options.appName) {
-                        startupReq.applicationName = options.appName;
-                        context.server.APP_NAME = options.appName;
-                        if (options.baseUrl) {
-                            let baseUrl = options.baseUrl;
-                            if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                                baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-                            }
-                            context.server.BASE_URL = baseUrl;
-                            context.server.RESOURCE_URL = baseUrl + "/resource/" + options.appName;
-                        }
-                        else if (!config) {
-                            context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'baseUrl' seems to be missing. Either check typing/casing or add the property!");
-                        }
-                    }
-                    else if (!config) {
-                        context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed property 'appName' seems to be missing. Either check typing/casing or add the property!");
-                    }
-
-                    if (options.userName && options.password) {
-                        startupReq.userName = options.userName;
-                        startupReq.password = options.password;
-                    }
-                    else if (!config) {
-                        context.subscriptions.emitErrorDialog("server", "Embed Property Error", "Embed properties 'userName' or 'password' seem/s to be missing. Either check typing/casing or add the property/properties!");
-                    }
-
-                    if (options.layout && ["standard", "corporation", "modern"].indexOf(options.layout as string) !== -1) {
-                        context.appSettings.setApplicationLayoutByURL(options.layout as "standard"|"corporation"|"modern");
-                    }
-
-                    if (options.language) {
-                        startupReq.language = options.language;
-                    }
                     context.server.embedOptions = options;
+                    convertedOptions = new Map(Object.entries(options));
                 }
+                if (convertedOptions.has("appName")) {
+                    startupReq.applicationName = convertedOptions.get("appName") as string;
+                    context.server.APP_NAME = convertedOptions.get("appName") as string;
+                    if (convertedOptions.has("baseUrl")) {
+                        let baseUrl: string = convertedOptions.get("baseUrl") as string;
+                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                        }
+                        context.server.BASE_URL = baseUrl;
+                        context.server.RESOURCE_URL = baseUrl + "/resource/" + convertedOptions.get("appName");
+                        convertedOptions.delete("appName");
+                        convertedOptions.delete("baseUrl");
+                    }
+                    else if (!config) {
+                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'baseUrl' seems to be missing. Either check typing/casing or add the parameter!");
+                    }
+
+                }
+                else if (!config) {
+                    context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
+                }
+
+                if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {
+                    context.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
+                }
+
+                convertedOptions.forEach((v, k) => {
+                    startUpRequest[k] = v;
+                });
+
                 if(authKey) {
                     startupReq.authKey = authKey;
                 }
@@ -219,26 +195,20 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
                             value();
                         }
                         context.server.subManager.jobQueue.clear();
-                        context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(() => {
-                            setStartupDone(true);
-                            context.subscriptions.emitSessionExpired(false);
-                            initWS(context.server.BASE_URL);
+                        context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(result => {
+                            afterStartup(result)
                         });
                     }
                     else {
                         context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                             sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
-                            setStartupDone(true);
-                            context.subscriptions.emitSessionExpired(false);
-                            initWS(context.server.BASE_URL);
+                            afterStartup(result)
                         });
                     }
                 } else {
                     context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
                         sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
-                        setStartupDone(true);
-                        context.subscriptions.emitSessionExpired(false);
-                        initWS(context.server.BASE_URL);
+                        afterStartup(result)
                     });
                 }
             }

@@ -23,7 +23,7 @@ import AppWrapper from './AppWrapper';
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
  */
 const ReactUI: FC<ICustomContent> = (props) => {
-    const [startupDone, appReady, appName] = useStartup(props)
+    const [startupDone, appReady, appName] = useStartup(props);
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
