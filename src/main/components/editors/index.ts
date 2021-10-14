@@ -13,4 +13,5 @@ export type { IEditorNumber, ScaleType, ICellEditorNumber } from "./number/UIEdi
 export { default as UIEditorText } from "./text/UIEditorText";
 export type { IEditorText } from "./text/UIEditorText";
 export type { IEditor, ICellEditor } from "./IEditor";
-export { default as CellEditorWrapper } from './CellEditorWrapper'
+export { default as CellEditorWrapper } from './CellEditorWrapper';
+export { default as CELLEDITOR_CLASSNAMES } from './CELLEDITOR_CLASSNAMES';

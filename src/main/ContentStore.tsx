@@ -15,6 +15,7 @@ import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
+import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 
 export type ActiveScreen = {
     name: string,
@@ -218,7 +219,7 @@ export default class ContentStore{
                         this.removedContent.delete(newComponent.id);
                         this.flatContent.set(newComponent.id, existingComponent);
                         // If the new component is a toolbarpanel, also add the sub-tb-panels to flatcontent
-                        if (existingComponent.className === "ToolBarPanel") {
+                        if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                             const tbMain = this.removedContent.get(newComponent.id + "-tbMain");
                             const tbCenter = this.removedContent.get(newComponent.id + "-tbCenter");
                             if (tbMain && tbCenter) {
@@ -275,7 +276,7 @@ export default class ContentStore{
                 for (let newPropName in newComponent) {
                     // @ts-ignore
                     existingComponent[newPropName] = newComponent[newPropName];
-                    if (existingComponent.className === "ToolBarPanel") {
+                    if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                         //When the layout for the toolbar-panel changes, don't overwrite the borderlayout of the outer, instead update the layout of the inner sub-panel.
                         if (newPropName === "layout") {                   
                             const tbCenter = this.flatContent.get(existingComponent.id + "-tbCenter");
@@ -302,7 +303,7 @@ export default class ContentStore{
                 }
                 else {
                     //if the new component is a toolbar-panel add 2 sub-panels, one for the toolbar and one for the toolbar-panel's content.
-                    if (newComponent.className === "ToolBarPanel") {
+                    if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                         const castedNewComp = newComponent as IToolBarPanel;
                         const innerLayout = castedNewComp.layout;
                         const constraint = getToolBarMainConstraint(castedNewComp.toolBarArea);
@@ -369,7 +370,7 @@ export default class ContentStore{
                         this.flatContent.delete(newComponent.id);
                         this.removedContent.set(newComponent.id, existingComponent);
                         // When the toolbar-panel gets removed, also add the sub-panels to removedContent
-                        if (compToRemove && compToRemove.className === "ToolBarPanel") {
+                        if (compToRemove && compToRemove.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                             const tbMain = this.flatContent.get(compToRemove.id + "-tbMain");
                             const tbCenter = this.flatContent.get(compToRemove.id + "-tbCenter");
                             if (tbMain && tbCenter) {
@@ -394,7 +395,7 @@ export default class ContentStore{
                 }
                 else {
                     this.flatContent.delete(newComponent.id);
-                    if (compToDestroy && compToDestroy.className === "ToolBarPanel") {
+                    if (compToDestroy && compToDestroy.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                         this.flatContent.delete(compToDestroy.id + "-tbMain");
                         this.flatContent.delete(compToDestroy.id + "-tbCenter");
                     }
@@ -402,7 +403,7 @@ export default class ContentStore{
 
                 if (!isCustom) {
                     this.removedContent.delete(newComponent.id);
-                    if (compToDestroy && compToDestroy.className === "ToolBarPanel") {
+                    if (compToDestroy && compToDestroy.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                         this.removedContent.delete(compToDestroy.id + "-tbMain");
                         this.removedContent.delete(compToDestroy.id + "-tbCenter");
                     }
@@ -448,7 +449,7 @@ export default class ContentStore{
             const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
 
             if (existingComp) {
-                if (existingComp.className === "ToolBarPanel") {
+                if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     const existingTbMain = this.flatContent.get(existingComp.id + "-tbMain") || this.removedContent.get(existingComp.id + "-tbMain");
                     const existingTbCenter = this.flatContent.get(existingComp.id + "-tbCenter") || this.removedContent.get(existingComp.id + "-tbCenter");
                     if (existingTbMain && existingTbCenter) {
@@ -629,13 +630,13 @@ export default class ContentStore{
             entry = componentEntries.next();
         }
 
-        if (className === "ToolBarPanel") {
+        if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
             children = new Map([...children].filter(entry => entry[0].includes("-tb")));
         }
-        else if (className === "ToolBarHelperMain") {
+        else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
             children = new Map([...children].filter(entry => entry[1]["~additional"]));
         }
-        else if (className === "ToolBarHelperCenter") {
+        else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
             children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
         }
 

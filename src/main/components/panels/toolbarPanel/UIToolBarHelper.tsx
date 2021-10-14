@@ -10,6 +10,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, 
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 import { Tooltip } from "primereact/tooltip";
+import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {
@@ -42,7 +43,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const filteredComponents = useMemo(() => {
-        return props.className === "ToolBarHelperMain" ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
+        return props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
     }, [props.className, components]);
 
     const getTBPosClassName = (constraint:string) => {
@@ -82,8 +83,8 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 className={concatClassnames(
-                    props.className === "ToolBarHelperMain" ? "rc-toolbar" : "rc-panel",
-                    props.className === "ToolBarHelperMain" && props.isNavTable ? getTBPosClassName(props.constraints) : ""
+                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",
+                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN && props.isNavTable ? getTBPosClassName(props.constraints) : ""
                 )}
                 ref={panelRef}
                 id={props.name}

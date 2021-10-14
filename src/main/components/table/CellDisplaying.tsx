@@ -5,7 +5,7 @@ import React from "react"
 import { format, formatISO, isValid } from 'date-fns'
 
 /** Other imports */
-import { ICellEditorDate, 
+import { CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
@@ -54,7 +54,7 @@ export function cellRenderer(
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {
             /** If the cell is a DateCellEditor use date-fns format to return the correct value with the correct format*/
-            if (metaData.cellEditor.className === "DateCellEditor") {
+            if (metaData.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
                 const castedCellEditor = metaData.cellEditor as ICellEditorDate;
                 if (isValid(cellData))
                     return castedCellEditor.dateFormat ? format(cellData, castedCellEditor.dateFormat, { locale: getDateLocale(locale) }) : formatISO(cellData);
@@ -62,19 +62,19 @@ export function cellRenderer(
                     return null;
             }
             /** If the cell is a Password cell, return the text replaced with password dots */
-            else if (metaData.cellEditor.className === "TextCellEditor" && metaData.cellEditor.contentType === "text/plain;password") {
+            else if (metaData.cellEditor.className === CELLEDITOR_CLASSNAMES.TEXT && metaData.cellEditor.contentType === "text/plain;password") {
                 if (cellData !== null)
                     return '\u25CF'.repeat(cellData.length);
                 else
                     return null
             }
             /** If the cell is an image, get the image from the server decode it and return it */
-            else if (metaData.cellEditor.className === "ImageViewer") {
+            else if (metaData.cellEditor.className === CELLEDITOR_CLASSNAMES.IMAGE) {
                 const castedCellEditor = metaData.cellEditor as ICellEditorImage
                 return <img className="rc-table-image" src={cellData ? "data:image/jpeg;base64," + cellData : resource + castedCellEditor.defaultImageName} alt="could not be loaded"/>
             }
             /** If the cell is a NumberCellEditor format it accordingly */
-            else if (metaData.cellEditor.className === "NumberCellEditor") {
+            else if (metaData.cellEditor.className === CELLEDITOR_CLASSNAMES.NUMBER) {
                 const castedMetaData = metaData as NumericColumnDescription
                 const castedCellEditor = metaData.cellEditor as ICellEditorNumber
                 if (cellData === null)

@@ -1,0 +1,31 @@
+/** Enum for component classnames */
+enum COMPONENT_CLASSNAMES {
+    PANEL = "Panel",
+    DESKTOPPANEL = "DesktopPanel",
+    GROUPPANEL = "GroupPanel",
+    SCROLLPANEL = "ScrollPanel",
+    TOOLBARPANEL = "ToolBarPanel",
+    SPLITPANEL = "SplitPanel",
+    TABSETPANEL = "TabsetPanel",
+    BUTTON = "Button",
+    TOGGLEBUTTON = "ToggleButton",
+    POPUPMENUBUTTON = "PopupMenuButton",
+    RADIOBUTTON = "RadioButton",
+    CHECKBOX = "CheckBox",
+    LABEL = "Label",
+    EDITOR = "Editor",
+    TABLE = "Table",
+    ICON = "Icon",
+    TEXTFIELD = "TextField",
+    TEXTAREA = "TextArea",
+    PASSWORD = "PasswordField",
+    CHART = "Chart",
+    GAUGE = "Gauge",
+    MAP = "Map",
+    TREE = "Tree",
+    BROWSER = "MobileBrowser",
+    TOOLBAR = "ToolBar",
+    TOOLBARHELPERMAIN = "ToolBarHelperMain",
+    TOOLBARHELPERCENTER = "ToolBarHelperCenter"
+}
+export default COMPONENT_CLASSNAMES;

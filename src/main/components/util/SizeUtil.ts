@@ -1,6 +1,7 @@
 /** Other imports */
 import { MapLocation, Dimension } from ".";
 import BaseComponent from "../BaseComponent";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { ComponentSizes } from "../zhooks";
 
 /**
@@ -71,9 +72,9 @@ export function getMinimumSize(component:BaseComponent, componentSizes:Map<strin
         if (component.minimumSize || componentSizes.get(component.id)!.minimumSize !== undefined) {
             minimumSize = componentSizes.get(component.id)!.minimumSize;
         }
-        else if (component.className === "Table"
-                || component.className === "Tree"
-                || component.className === "Chart") {
+        else if (component.className === COMPONENT_CLASSNAMES.TABLE
+                || component.className === COMPONENT_CLASSNAMES.TREE
+                || component.className === COMPONENT_CLASSNAMES.CHART) {
             minimumSize = { height: 0, width: 0 };
         }
         else {

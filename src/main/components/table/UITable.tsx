@@ -32,6 +32,7 @@ import { createEditor } from "../../factories/UIFactory";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { getFont, IconProps, parseIconData } from "../compprops";
+import { CELLEDITOR_CLASSNAMES } from "../editors";
 
 
 export interface CellFormatting {
@@ -134,8 +135,8 @@ const CellEditor: FC<CellEditor> = (props) => {
     const [waiting, setWaiting] = useState<boolean>(false);
 
     const showDropDownArrow = useCallback(() => {
-        if (columnMetaData?.cellEditor.className === "LinkedCellEditor"
-            || columnMetaData?.cellEditor.className === "DateCellEditor") {
+        if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+            || columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
             return true;
         }
         return false;
@@ -397,7 +398,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 return ["ID"];
             }
             else {
-                pks = metaData.columns.filter(column => column.cellEditor.className === "TextCellEditor" || column.cellEditor.className === "NumberCellEditor");
+                pks = metaData.columns.filter(column => column.cellEditor.className === CELLEDITOR_CLASSNAMES.TEXT || column.cellEditor.className === CELLEDITOR_CLASSNAMES.NUMBER);
                 let pkNames:string[] = pks.map(pk => pk.name);
                 return pkNames
             }

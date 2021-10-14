@@ -38,6 +38,7 @@ import { History } from "history";
 import TreePath from "./model/TreePath";
 import AppSettings from "./AppSettings";
 import API from "./API";
+import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 
 /** Server class sends requests and handles responses */
 class Server {
@@ -631,7 +632,7 @@ class Server {
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
         this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
         if (appSettings.desktop && appSettings.desktop.length) {
-            if (appSettings.desktop[0].className === "DesktopPanel") {
+            if (appSettings.desktop[0].className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
                 this.appSettings.setDesktopPanel(appSettings.desktop[0]);
             }
             this.contentStore.updateContent(appSettings.desktop, true);
