@@ -149,6 +149,11 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
 export const componentHandler = (baseComponent: BaseComponent, contentStore:ContentStore) => {
     const Comp = contentStore.globalComponents.has(baseComponent.className) ?
     contentStore.globalComponents.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+
+    if (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#")) {
+        baseComponent.name = baseComponent.name.substring(1);
+    }
+
     if(Comp) {
         if (contentStore.globalComponents.has(baseComponent.className)) {
             return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})

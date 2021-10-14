@@ -119,7 +119,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
                         const prefSize = compSizes.get(component.id)?.preferredSize || { width: 0, height: 0 };
-
                         if (isRowOrientation) {
                             /** If this isn't the first component add the gap between components*/
                             if (!bFirst) {
@@ -154,8 +153,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 calcHeight = prefSize.height;
                                 anzCols++;
                             }
-                            else if (bFirst)
+                            else if (bFirst) {
                                 bFirst = false;
+                            }
                             /** Check if the current column is taller than the current height of the FlowLayout */
                             height = Math.max(height, calcHeight);
                         }
@@ -171,7 +171,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             const flowLayoutInfo = calculateGrid();
             const prefSize:Dimension = { width: (flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1)) + margins.marginLeft + margins.marginRight,
                                          height: (flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)) + margins.marginTop + margins.marginBottom };
-            
             let left:number;
             let width:number;
 
@@ -228,8 +227,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             x = 0;
                             y += (flowLayoutInfo.gridHeight + gaps.verticalGap) * fH / fPH;
                         }
-                        else if (bFirst)
+                        else if (bFirst) {
                             bFirst = false;
+                        }
 
                         if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
                             sizeMap.set(component.id, {
@@ -259,9 +259,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             y = 0;
                             x += (flowLayoutInfo.gridWidth + gaps.horizontalGap) * fW / fPW;
                         }
-                        else if (bFirst)
+                        else if (bFirst) {
                             bFirst = false;
-                        
+                        }
+                            
                         if (innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
                             sizeMap.set(component.id, {
                                 left: left + x,
