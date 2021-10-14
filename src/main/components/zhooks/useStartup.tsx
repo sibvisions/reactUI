@@ -220,8 +220,8 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         .then((data) => {
             startUpRequest.applicationName = data.appName;
             context.server.APP_NAME = data.appName;
-            context.server.BASE_URL = data.baseURL;
-            context.server.RESOURCE_URL = data.baseURL + "/resource/" + data.appName;
+            context.server.BASE_URL = data.baseUrl;
+            context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
             if (data.logoBig)
                 context.appSettings.LOGO_BIG = data.logoBig;
             if (data.logoSmall)

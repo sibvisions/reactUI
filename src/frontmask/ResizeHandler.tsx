@@ -106,6 +106,12 @@ const ResizeHandler:FC = (props) => {
         }
     });
 
+    useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
+        if (event.propertyName === "margin-left") {
+            handleResize()
+        }
+    });
+
     return (
         <LayoutContext.Provider value={componentSize}>
             {resizeContext.login ?
