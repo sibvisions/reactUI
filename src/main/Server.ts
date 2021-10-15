@@ -677,7 +677,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    this.subManager.emitAppReady();
+                    this.subManager.emitAppReady(true);
                 }
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
@@ -724,7 +724,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
-                    this.subManager.emitAppReady();
+                    this.subManager.emitAppReady(true);
                 }
             }
             //    else if (response.name === "settings") {

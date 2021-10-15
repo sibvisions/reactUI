@@ -717,8 +717,8 @@ export class SubscriptionManager {
     }
 
     /** When the app is ready call the app-ready function */
-    emitAppReady() {
-        this.appReadySubscriber.apply(undefined, []);
+    emitAppReady(ready:boolean) {
+        this.appReadySubscriber.apply(undefined, [ready]);
     }
 
     /** Tell the subscribers to show the change-password-dialog */

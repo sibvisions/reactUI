@@ -19,7 +19,7 @@ import { ICustomContent } from "./MiddleMan";
 import AppWrapper from "./AppWrapper";
 
 const ReactUIEmbedded:FC<ICustomContent> = (props) => {
-    const [startupDone, appReady, appName] = useStartup(props);
+    const [appReady, appName] = useStartup(props);
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
@@ -32,7 +32,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
 
     return (
         <AppWrapper appName={appName}>
-            {appReady && startupDone ?
+            {appReady ?
                 <>
                     <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
                         ReactUI Embedded WorkScreen

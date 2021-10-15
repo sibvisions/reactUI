@@ -23,7 +23,7 @@ import AppWrapper from './AppWrapper';
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
  */
 const ReactUI: FC<ICustomContent> = (props) => {
-    const [startupDone, appReady, appName] = useStartup(props);
+    const [appReady, appName] = useStartup(props);
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
@@ -31,7 +31,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (
         <AppWrapper appName={appName}>
-            {appReady && startupDone ?
+            {appReady ?
                 <>
                     <Switch>
                         <Route exact path={"/login"} render={() => <Login />} />

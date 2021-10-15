@@ -12,15 +12,12 @@ import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 
-const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] => {
+const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** History of react-router-dom */
     const history = useHistory();
-
-    /** True, if the startup is done */
-    const [startupDone, setStartupDone] = useState<boolean>(false);
 
     /** True, if the app is ready */
     const [appReady, setAppReady] = useState<boolean>(false);
@@ -38,7 +35,7 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
      * @returns unsubscribes from session and app-ready
      */
      useEffect(() => {
-        context.subscriptions.subscribeToAppReady(() => setAppReady(true));
+        context.subscriptions.subscribeToAppReady((ready:boolean) => setAppReady(ready));
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
 
         return () => {
@@ -115,7 +112,6 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
         }
 
         const afterStartup = (results:BaseResponse[]) => {
-            setStartupDone(true);
             if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
                 context.subscriptions.emitSessionExpired(false);
             }
@@ -276,6 +272,6 @@ const useStartup = (props:ICustomContent):[boolean, boolean, string|undefined] =
 
     useEventHandler(document.body, "keyup", (event) => (event as any).key === "Control" ? context.ctrlPressed = false : undefined);
 
-    return [startupDone, appReady, appName]
+    return [appReady, appName]
 }
 export default useStartup
