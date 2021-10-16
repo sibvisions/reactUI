@@ -37,7 +37,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
 
-    const isHTML = (props.text as string).includes("<html>");
+    const isHTML = props.text ? props.text.includes("<html>") : false;
 
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
