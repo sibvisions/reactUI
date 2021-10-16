@@ -8,6 +8,7 @@ import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIE
 import { Dimension } from "../util";
 import Margins from "./models/Margins";
 import BaseComponent from "../BaseComponent";
+import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.
@@ -36,6 +37,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     /** Current state of the calculatedStyle by the FormLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
+
+    const runAfterLayout = useRunAfterLayout();
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
@@ -291,7 +294,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
-                reportSize({ height: prefSize.height, width: prefSize.width });
+                runAfterLayout(() => {
+                    reportSize({ height: prefSize.height, width: prefSize.width });
+                });
             }
 
             if (baseProps.popupSize) {

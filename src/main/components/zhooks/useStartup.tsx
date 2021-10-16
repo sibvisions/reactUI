@@ -214,6 +214,7 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
         fetch('config.json')
         .then((r) => r.json())
         .then((data) => {
+            console.log('gogo', data);
             startUpRequest.applicationName = data.appName;
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseUrl;

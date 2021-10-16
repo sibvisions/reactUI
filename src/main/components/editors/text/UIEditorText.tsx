@@ -454,7 +454,6 @@ const UIEditorText: FC<IEditorText> = (props) => {
         fieldType === FieldTypes.HTML ?
             <div 
                 ref={textRef} 
-                {...popupMenu}
                 style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
                 id={isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}

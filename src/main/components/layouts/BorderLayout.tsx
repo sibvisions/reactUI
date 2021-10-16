@@ -9,6 +9,7 @@ import { Margins } from ".";
 import { Dimension } from "../util";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
+import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -47,6 +48,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
     /** Horizontal- and vertical Gap */
     const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
+
+    const runAfterLayout = useRunAfterLayout();
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
@@ -294,12 +297,14 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             ]) + minConstraintSizes.north.height + minConstraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
 
             if (reportSize) {
-                if (baseProps.preferredSize) {
-                    reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
-                }
-                else {
-                    reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
-                }
+                runAfterLayout(() => {
+                    if (baseProps.preferredSize) {
+                        reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
+                    }
+                    else {
+                        reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                    }
+                })
             }
             
             if (baseProps.panelType === "DesktopPanel") {
