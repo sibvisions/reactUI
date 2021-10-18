@@ -16,29 +16,17 @@
         }
     }
     /// When either of the children is focused, display a blue shadow to show the button is focused
-    &:focus {
+    &:focus-within {
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     @include btnHover;
 }
 
-.rc-popupmenubutton-wrapper:focus {
-    .rc-popupmenubutton {
-        box-shadow: 0 0 0 0.2rem #8dcdff;
-        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
-    }
-}
-
 .p-splitbutton-defaultbutton, .p-splitbutton-menubutton {
     background: inherit;
     border-color: inherit;
     color: inherit;
-    /// Unset focus shadow because not the whole button is focused but only the one button of splitbutton
-    &:focus {
-        box-shadow: unset;
-        -webkit-box-shadow: unset;
-    }
 
     @include btnHover;
 }
@@ -60,5 +48,5 @@
 /// Fixed width for menubutton part of splitbutton
 .p-button.p-splitbutton-menubutton {
     width: var(--menuBtnIconWidth);
-    padding: 0.5rem 1rem 0.5rem 0px;
+    padding: 0.5rem 0.5rem 0.5rem 0px;
 }
