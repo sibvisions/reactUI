@@ -163,6 +163,6 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
         }
     } 
     else {
-        return <div />
+        return <Dummy {...baseComponent} />
     }
 }

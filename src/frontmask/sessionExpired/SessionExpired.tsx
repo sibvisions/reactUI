@@ -19,7 +19,6 @@ const SessionExpired:FC = () => {
     }
 
     useEventHandler(document.body, "keydown", (event) => {
-        console.log((event as KeyboardEvent).key)
         if ( [" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
             handleRestart()
         }
