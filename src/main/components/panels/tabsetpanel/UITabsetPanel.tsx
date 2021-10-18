@@ -167,18 +167,20 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     return (
         <LayoutContext.Provider value={componentSizes}>
-            <TabView
-                ref={panelRef}
-                id={props.name}
-                style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : {...layoutStyle, backgroundColor: props.background}}
-                activeIndex={props.selectedIndex}
-                onTabChange={event => {
-                    if (event.index !== props.selectedIndex)
-                        handleSelect(event.index)
-                }}
-                {...usePopupMenu(props)} >
-                {buildTabs}
-            </TabView>
+            <div className="rc-tabset" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, backgroundColor: props.background }}>
+                <TabView
+                    ref={panelRef}
+                    id={props.name}
+                    
+                    activeIndex={props.selectedIndex}
+                    onTabChange={event => {
+                        if (event.index !== props.selectedIndex)
+                            handleSelect(event.index)
+                    }}
+                    {...usePopupMenu(props)} >
+                    {buildTabs}
+                </TabView>
+            </div>
         </LayoutContext.Provider>
     )
 }
