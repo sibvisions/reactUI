@@ -6,6 +6,7 @@
     &:focus-within {
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
+        border-radius: 3px;
     }
     /// Unset focus shadow because not the whole editor is focused but only either inputfield or button
     .p-inputtext, .p-button {
