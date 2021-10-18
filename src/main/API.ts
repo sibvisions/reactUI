@@ -92,7 +92,7 @@ class API {
                 else {
                     this.#server.lastClosedWasPopUp = false;
                 }
-                this.#contentStore.closeScreen(id)
+                this.#contentStore.closeScreen(id, false);
                 this.history?.push("/home")
             }
         });

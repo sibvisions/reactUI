@@ -233,17 +233,27 @@ class Server {
      * @param responses - the responses received
      */
     async responseHandler(responses: Array<BaseResponse>) {
+        let isOpen = false;
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         responses.forEach((response, idx) => {
             if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
                 responses.splice(0, 0, responses.splice(idx, 1)[0]);
             }
+            else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
+                isOpen = true;
+            }
         });
         for (const [, response] of responses.entries()) {
             const mapper = this.responseMap.get(response.name);
             if (mapper) {
-                await mapper(response);
+                if (response.name === RESPONSE_NAMES.CLOSE_SCREEN && isOpen) {
+                    await mapper(response, isOpen);
+                }
+                else {
+                    await mapper(response);
+                }
+                
             }
         }
         this.routingDecider(responses);
@@ -321,7 +331,7 @@ class Server {
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
-    closeScreen(closeScreenData: CloseScreenResponse) {
+    closeScreen(closeScreenData: CloseScreenResponse, opensAnother:boolean) {
         for (let entry of this.contentStore.flatContent.entries()) {
             if (entry[1].name === closeScreenData.componentId) {
                 if ((entry[1] as IPanel).screen_modal_) {
@@ -333,7 +343,7 @@ class Server {
                 break;
             }
         }
-        this.contentStore.closeScreen(closeScreenData.componentId);
+        this.contentStore.closeScreen(closeScreenData.componentId, opensAnother);
     }
 
     /**

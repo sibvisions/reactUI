@@ -74,7 +74,7 @@ export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons?:VisibleButton
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     context.server.lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(compId);
+                                    context.contentStore.closeScreen(compId, context.appSettings.welcomeScreen ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
                             });
@@ -217,12 +217,11 @@ const Menu: FC<IMenu> = (props) => {
     
                 if (foundMenuItem && !panelMenu.current?.state.activeItem) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
-                    setActiveItemChanged(prev => !prev)
                 }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem) {
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
-                    setActiveItemChanged(prev => !prev)
                 }
+                setActiveItemChanged(prev => !prev)
             }
         }
 
