@@ -1,5 +1,5 @@
 /** React imports */
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 
 /** Hook imports */
 import { useEventHandler } from ".";
@@ -28,6 +28,8 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
+    const pressedElement = useRef<boolean>(false);
+
     const handleMouseClicked = (event:MouseEvent) => {
         const clickReq = createMouseClickedRequest();
         clickReq.componentId = compName;
@@ -44,7 +46,18 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
         pressReq.button = getMouseButton(event.button);
         pressReq.x = event.x;
         pressReq.y = event.y;
-        showTopBar(context.server.sendRequest(pressReq, released ? REQUEST_ENDPOINTS.MOUSE_RELEASED : REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+        if (released && pressedElement.current) {
+            showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+        }
+        else if (!released) {
+            showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+        }
+        if (!released) {
+            pressedElement.current = true;
+        }
+        else {
+            pressedElement.current = false;
+        }
     }
 
     useEventHandler(element, "mouseup", eventMouseClicked ? (event) =>  handleMouseClicked(event as MouseEvent) : undefined);
