@@ -72,7 +72,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
                 prefSize.width = parsedSize.width;
             }
             if (onLoadCallback)
-                sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
+                sendOnLoadCallback(id, props.cellEditor.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
         }
     },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize]);
 
@@ -96,7 +96,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
         }
 
         if (onLoadCallback) {
-            sendOnLoadCallback(id, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
+            sendOnLoadCallback(id, props.cellEditor.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }   
     }
 

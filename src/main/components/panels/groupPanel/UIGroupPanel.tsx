@@ -51,7 +51,8 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
         panelReportSize(
             id, 
             "G", 
-            prefSize, 
+            prefSize,
+            props.className,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 

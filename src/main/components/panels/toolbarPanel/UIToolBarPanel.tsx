@@ -50,7 +50,8 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
         panelReportSize(
             id, 
             "P", 
-            prefSize, 
+            prefSize,
+            props.className,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 

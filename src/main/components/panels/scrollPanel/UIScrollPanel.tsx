@@ -11,7 +11,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopu
 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import { appContext } from "../../../AppProvider";
 
 /**
@@ -100,8 +100,9 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         panelReportSize(
             id, 
             "P", 
-            prefSize, 
-            minSize, 
+            prefSize,
+            props.className,
+            minSize,
             props.preferredSize, 
             props.minimumSize, 
             props.maximumSize, 

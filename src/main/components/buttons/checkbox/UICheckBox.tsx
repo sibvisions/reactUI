@@ -57,7 +57,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
         if (btnRef) {
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 

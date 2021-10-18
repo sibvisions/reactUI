@@ -12,16 +12,21 @@ import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { ITextField } from "./UIText";
+
+interface ITextArea extends ITextField {
+    rows?:number
+}
 
 /**
  * This component displays a textarea not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITextArea: FC<BaseComponent> = (baseProps) => {
+const UITextArea: FC<ITextArea> = (baseProps) => {
     /** Reference for the textarea */
     const inputRef = useRef<any>(null);
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+    const [props] = useProperties<ITextArea>(baseProps.id, baseProps);
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text);
     /** Extracting onLoadCallback and id from baseProps */
@@ -36,8 +41,7 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
@@ -51,7 +55,9 @@ const UITextArea: FC<BaseComponent> = (baseProps) => {
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
-            {...usePopupMenu(props)} />
+            {...usePopupMenu(props)}
+            cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
+            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5} />
     )
 }
 export default UITextArea

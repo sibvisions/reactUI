@@ -151,7 +151,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     useLayoutEffect(() => {
         if (onLoadCallback && calendar.current) {
             sendOnLoadCallback(
-                id, 
+                id,
+                props.cellEditor.className,
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 

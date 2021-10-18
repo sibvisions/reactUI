@@ -278,8 +278,8 @@ const UIEditorText: FC<IEditorText> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
-        if(onLoadCallback && textRef.current && fieldType !==  FieldTypes.HTML) {
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
+        if(onLoadCallback && textRef.current && fieldType !== FieldTypes.HTML) {
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
@@ -347,7 +347,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
                 if (textRef.current && onLoadCallback) {
-                    sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
+                    sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
                 }
             },
             onTextChange: showSource || disabled ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
@@ -485,17 +485,21 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 <InputTextarea
                     {...primeProps}
                     {...popupMenu}
-                    autoResize={false} />
+                    autoResize={false}
+                    cols={18}
+                    rows={4} />
                 :
                 fieldType === FieldTypes.PASSWORD ?
                     <Password
                         {...primeProps}
                         {...popupMenu}
-                        feedback={false} />
+                        feedback={false}
+                        size={15} />
                     :
                     <InputText
                         {...primeProps}
-                        {...popupMenu} />
+                        {...popupMenu}
+                        size={15} />
     )
 }
 export default UIEditorText

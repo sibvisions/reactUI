@@ -9,7 +9,7 @@ import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopu
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { appContext } from "../../../AppProvider";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
@@ -63,8 +63,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
         panelReportSize(
             id, 
-            "P", 
-            prefSize, 
+            "P",
+            prefSize,
+            props.className, 
             minSize, 
             props.preferredSize, 
             props.minimumSize, 

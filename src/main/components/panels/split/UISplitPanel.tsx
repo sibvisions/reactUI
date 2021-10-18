@@ -77,7 +77,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     useLayoutEffect(() => {
         if (splitRef.current) {
             if(onLoadCallback) {
-                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes])
@@ -86,10 +86,10 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
         const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
         if (onLoadCallback) {
             if (props.preferredSize) {
-                sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
             else {
-                sendOnLoadCallback(id, size, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, size, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
     }

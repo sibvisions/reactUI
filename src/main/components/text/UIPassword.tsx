@@ -12,17 +12,18 @@ import BaseComponent from "../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { ITextField } from "./UIText";
 
 /**
  * This component displays an input field of password type not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIPassword: FC<BaseComponent> = (baseProps) => {
+const UIPassword: FC<ITextField> = (baseProps) => {
     /** Reference for the password field */
     const passwordRef = useRef<any>(null);
 
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+    const [props] = useProperties<ITextField>(baseProps.id, baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text);
@@ -42,15 +43,15 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && passwordRef.current){
-            //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current, onLoadCallback)
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
     return (
-        <Password 
-            inputRef={passwordRef} 
-            id={props.name} 
+        <Password
+            inputRef={passwordRef}
+            id={props.name}
+            className="rc-password"
             value={pwValue||""} 
             feedback={false} 
             style={layoutStyle} 
@@ -58,7 +59,8 @@ const UIPassword: FC<BaseComponent> = (baseProps) => {
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
-            {...usePopupMenu(props)} />
+            {...usePopupMenu(props)}
+            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15} />
     )
 }
 export default UIPassword

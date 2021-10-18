@@ -2,7 +2,8 @@ import { Dimension, LoadCallBack, parseMaxSize, parseMinSize, parsePrefSize, sen
 
 export function panelReportSize(id:string, 
                                 type:"P"|"S"|"G" , 
-                                calcPref: Dimension, 
+                                calcPref: Dimension,
+                                className:string,
                                 calcMin?:Dimension, 
                                 propPref?:string, 
                                 propMin?:string, 
@@ -26,6 +27,7 @@ export function panelReportSize(id:string,
         }
         sendOnLoadCallback(
             id,
+            className,
             propPref ? parsePrefSize(propPref) : adjustedSize,
             parseMaxSize(propMax),
             calcMin ? calcMin : parseMinSize(propMin),

@@ -559,7 +559,8 @@ const UIChart: FC<IChart> = (baseProps) => {
     useLayoutEffect(() => {
         if (chartRef.current) {
             sendOnLoadCallback(
-                id, 
+                id,
+                props.className,
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 

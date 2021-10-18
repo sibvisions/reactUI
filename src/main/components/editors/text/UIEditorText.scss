@@ -49,3 +49,10 @@
         }
     }
 }
+
+.rc-editor-textwrapper {
+    input, textarea {
+        width: 100%;
+        height: 100%;
+    }
+}

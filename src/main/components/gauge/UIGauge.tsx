@@ -84,7 +84,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     useLayoutEffect(() => {
         if (wrapperRef.current) {
             sendOnLoadCallback(
-                id, 
+                id,
+                props.className, 
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 

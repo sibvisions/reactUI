@@ -13,6 +13,10 @@ import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
+export interface ITextField extends BaseComponent {
+    columns?:number
+}
+
 /**
  * This component displays an input field not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
@@ -22,7 +26,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+    const [props] = useProperties<ITextField>(baseProps.id, baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
@@ -42,8 +46,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
-            //@ts-ignore
-            sendOnLoadCallback(id, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
@@ -58,6 +61,7 @@ const UIText: FC<BaseComponent> = (baseProps) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
             {...usePopupMenu(props)}
+            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
         />
     )
 }
