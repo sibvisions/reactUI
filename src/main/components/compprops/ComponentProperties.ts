@@ -54,7 +54,7 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
         if (iconData.includes("FontAwesome")) {
             splittedIconData = iconData.slice(iconData.indexOf('.') + 1).split(',');
             iconName = "fa fa-" + splittedIconData[0];
-            iconSize = {width: parseInt(splittedIconData[1]), height: parseInt(splittedIconData[2])};
+            iconSize = {width: parseInt(splittedIconData[1] ?? 14), height: parseInt(splittedIconData[2] ?? 14)};
             iconColor = foreground ? tinycolor(foreground).toString() : undefined;
             /** If there is a semicolon the icondata string has to be split and sliced differently */
             if (iconData.includes(';')) {

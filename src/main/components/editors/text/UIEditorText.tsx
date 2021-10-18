@@ -422,8 +422,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 </>
             )
         } : {
-            ref: fieldType !== FieldTypes.PASSWORD ? textRef : undefined,
-            inputRef: fieldType === FieldTypes.PASSWORD ? textRef : undefined,
+            ...(fieldType === FieldTypes.PASSWORD ? { inputRef: textRef } : { ref: textRef }),
             id: isCellEditor ? undefined : props.name,
             className: getClassName(fieldType),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
@@ -431,7 +430,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             disabled,
             autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
             value: text || "",
-            ariaLabel: props.ariaLabel,
+            "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined,
             onBlur: () => {
