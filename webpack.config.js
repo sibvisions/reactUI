@@ -90,7 +90,7 @@ module.exports = () => {
             extensions: ['.tsx', '.ts', '.js', '.json'],
             alias: {
                 react: path.resolve('./node_modules/react'),
-                assets: path.resolve('./src/assests')
+                assets: path.resolve('./src/assets')
             }
         },
         externals: {
