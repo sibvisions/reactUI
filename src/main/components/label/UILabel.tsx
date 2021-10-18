@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
@@ -37,7 +37,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Get the layout style value */
     const layoutStyle = useLayoutValue(props.id);
 
-    const isHTML = props.text ? props.text.includes("<html>") : false;
+    const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
