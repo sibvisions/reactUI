@@ -31,7 +31,7 @@ const Dummy: FC<BaseComponent> = (props) => {
 
     return(
         <span ref={ref} style={layoutStyle}>
-           {`Unsupported UI Component "${props.className} ${props.id}"`}
+           {`Unsupported UI Component "${props.classNameEventSourceRef ? props.classNameEventSourceRef : props.className} ${props.id}"`}
         </span>
     )
 }
