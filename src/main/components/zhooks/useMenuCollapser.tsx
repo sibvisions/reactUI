@@ -21,12 +21,15 @@ const useMenuCollapser = (id:string) => {
     useEffect(() => {
         context.subscriptions.subscribeToMenuCollapse(id, (collapsedVal:number) => {
             /** 0 means always collapse, 1 means always expand and 2 means flipping */
-            if (collapsedVal === 0)
+            if (collapsedVal === 0) {
                 setMenuCollapsed(true);
-            else if (collapsedVal === 1)
+            }
+            else if (collapsedVal === 1) {
                 setMenuCollapsed(false);
-            else if (collapsedVal === 2)
-                setMenuCollapsed(!menuCollapsed);
+            }
+            else if (collapsedVal === 2) {
+                setMenuCollapsed(prevState => !prevState);
+            }
                 
         });
         return () => {

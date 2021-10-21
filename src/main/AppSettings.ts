@@ -51,9 +51,6 @@ export default class AppSettings {
     /** The current region */
     locale:string = "de-DE";
 
-    /** True, if the menu is collapsed, default value based on window width */
-    menuCollapsed:boolean = window.innerWidth <= 1030 ? true : false;
-
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
      * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
@@ -95,6 +92,9 @@ export default class AppSettings {
 
     deviceStatus:DeviceStatus = "Full";
 
+    /** True, if the menu is collapsed, default value based on window width */
+    menuCollapsed:boolean = ["Small", "Mini"].indexOf(this.deviceStatus) !== -1;
+
     welcomeScreen:string = "";
 
     desktopPanel:BaseComponent|undefined;
@@ -105,6 +105,10 @@ export default class AppSettings {
      */
      setMenuModeAuto(value: boolean) {
         this.menuModeAuto = value;
+    }
+
+    setMenuCollapsed(collapsedVal:boolean) {
+        this.menuCollapsed = collapsedVal;
     }
 
     /**

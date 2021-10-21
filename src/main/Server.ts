@@ -694,6 +694,7 @@ class Server {
      */
     deviceStatus(deviceStatus:DeviceStatusResponse) {
         this.appSettings.setDeviceStatus(deviceStatus.layoutMode);
+        this.appSettings.setMenuCollapsed(["Small", "Mini"].indexOf(deviceStatus.layoutMode) !== -1);
         this.subManager.emitDeviceMode(deviceStatus.layoutMode);
     }
 

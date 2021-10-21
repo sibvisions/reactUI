@@ -8,7 +8,7 @@ import * as _ from 'underscore'
 import Menu from "./menu/menu";
 
 /** Hook imports */
-import { useMenuCollapser, useResponsiveBreakpoints } from "../main/components/zhooks";
+import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../main/components/zhooks";
 
 /** Other imports */
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
@@ -62,6 +62,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** ComponentId of Screen extracted by useParams hook */
     const { componentId } = useParams<any>();
+
+    /** The current state of device-status */
+    const deviceStatus = useDeviceStatus();
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -165,7 +168,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
                     appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                    ((menuCollapsed || (window.innerWidth <= 600 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
+                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuVisibility.toolBar ? "toolbar-visible" : "",
                     !menuVisibility.menuBar ? "menu-not-visible" : "",
