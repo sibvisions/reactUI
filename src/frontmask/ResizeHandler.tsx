@@ -28,28 +28,34 @@ const ResizeHandler:FC = (props) => {
      * When the window resizes, the screen-container will measure itself and set its size, 
      * setting this size will recalculate the layouts
      */
-     const doResize = useCallback(() => {
-         if (sizeRef.current) {
-             const width = sizeRef.current.offsetWidth
-             const height = sizeRef.current.offsetHeight
-             const sizeMap = new Map<string, CSSProperties>();
-             Children.forEach(props.children, child => {
-                 const childWithProps = (child as ChildWithProps);
-                 sizeMap.set(childWithProps.props.id, { width: width, height: height });
-             });
-
-             if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled") && context.appSettings.desktopPanel) {
-                 const desktopHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight - 
-                 (appLayout === "corporation" ? 
-                 (document.querySelector("c-menu-topbar") as HTMLElement).offsetHeight : 
-                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
-
-                 sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
-             }
-             //TODO: maybe fetch ids via screenId instead of relying on the children 
-             setComponentSize(sizeMap);
-         }
-    },[props.children]);
+    const doResize = useCallback(() => {
+        if (sizeRef.current) {
+            const width = sizeRef.current.offsetWidth
+            const height = sizeRef.current.offsetHeight
+            const sizeMap = new Map<string, CSSProperties>();
+            Children.forEach(props.children, child => {
+                const childWithProps = (child as ChildWithProps);
+                sizeMap.set(childWithProps.props.id, { width: width, height: height });
+            });
+            console.log(context.appSettings.desktopPanel, resizeContext.login)
+            if (context.appSettings.desktopPanel) {
+                let desktopHeight = 0;
+                if (resizeContext.login) {
+                    desktopHeight = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
+                    console.log(desktopHeight)
+                }
+                else if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
+                    desktopHeight = ((document.querySelector(".reactUI") as HTMLElement).offsetHeight) -
+                        (appLayout === "corporation" ?
+                            (document.querySelector("c-menu-topbar") as HTMLElement).offsetHeight :
+                            parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
+                }
+                sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
+            }
+            //TODO: maybe fetch ids via screenId instead of relying on the children 
+            setComponentSize(sizeMap);
+        }
+    }, [props.children]);
 
     /** Using underscore throttle for throttling resize event */
     const handleResize = useCallback(_.throttle(doResize, 23),[doResize, sizeRef.current]);

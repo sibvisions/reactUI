@@ -18,6 +18,7 @@ import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
 import { concatClassnames } from "../../main/components/util";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";
+import { ResizeContext } from "../UIManager";
 
 export const DesktopPanelHandler:FC = () => {
     const context = useContext(appContext);
@@ -160,14 +161,16 @@ const Login: FC = () => {
     
     return (
         (context.appSettings.desktopPanel) ?
-            <ResizeHandler>
-                <div className="login-container-with-desktop" ref={sizeRef}>
-                    <DesktopPanelHandler />
-                    <div className="login-form-position-wrapper">
-                        <LoginForm />
+            <ResizeContext.Provider value={{ login: true }}>
+                <ResizeHandler>
+                    <div className="login-container-with-desktop" ref={sizeRef}>
+                        <DesktopPanelHandler />
+                        <div className="login-form-position-wrapper">
+                            <LoginForm />
+                        </div>
                     </div>
-                </div>
-            </ResizeHandler>
+                </ResizeHandler>
+            </ResizeContext.Provider>
             :
             <div className="login-container">
                 <LoginForm />
