@@ -211,52 +211,46 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
         }
 
         const startUpRequest = createStartupRequest();
-        fetch('config.json')
-        .then((r) => r.json())
-        .then((data) => {
-            console.log('gogo', data);
-            startUpRequest.applicationName = data.appName;
-            context.server.APP_NAME = data.appName;
-            context.server.BASE_URL = data.baseUrl;
-            context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
+        if (process.env.NODE_ENV === "development") {
+            fetch('config.json')
+            .then((r) => r.json())
+            .then((data) => {
+                console.log('gogo', data);
+                startUpRequest.applicationName = data.appName;
+                context.server.APP_NAME = data.appName;
+                context.server.BASE_URL = data.baseUrl;
+                context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
+    
+                if (data.logoBig) {
+                    context.appSettings.LOGO_BIG = data.logoBig;
+                }
+    
+                if (data.logoSmall) {
+                    context.appSettings.LOGO_SMALL = data.logoSmall;
+                } 
+                else if (data.logoBig) {
+                    context.appSettings.LOGO_SMALL = data.logoBig;
+                }
+                    
+                if (data.logoLogin) {
+                    context.appSettings.LOGO_LOGIN = data.logoLogin;
+                }
+                else if (data.logoBig) {
+                    context.appSettings.LOGO_LOGIN = data.logoBig;
+                }
+    
+                startUpRequest.userName = data.username;
+                startUpRequest.password = data.password;
+                startUpRequest.language = data.language ? data.language : 'de';
 
-            if (data.logoBig) {
-                context.appSettings.LOGO_BIG = data.logoBig;
-            }
-
-            if (data.logoSmall) {
-                context.appSettings.LOGO_SMALL = data.logoSmall;
-            } 
-            else if (data.logoBig) {
-                context.appSettings.LOGO_SMALL = data.logoBig;
-            }
-                
-            if (data.logoLogin) {
-                context.appSettings.LOGO_LOGIN = data.logoLogin;
-            }
-            else if (data.logoBig) {
-                context.appSettings.LOGO_LOGIN = data.logoBig;
-            }
-
-            startUpRequest.userName = data.username;
-            startUpRequest.password = data.password;
-            startUpRequest.language = data.language ? data.language : 'de';
-
-            if (!props.embedOptions) {
-                setStartupProperties(startUpRequest, urlParams, true)
-            }
-            else {
-                setStartupProperties(startUpRequest, props.embedOptions, true);
-            }
-            
-        }).catch(() => {
-            if (!props.embedOptions) {
-                setStartupProperties(startUpRequest, urlParams)
-            }
-            else {
-                setStartupProperties(startUpRequest, props.embedOptions);
-            }
-        });
+                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams, true);
+            }).catch(() => {
+                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+            });
+        }
+        else {
+            setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+        }
 
         return () => {
             ws.current?.close();
