@@ -219,16 +219,25 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
             context.server.APP_NAME = data.appName;
             context.server.BASE_URL = data.baseUrl;
             context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
-            if (data.logoBig)
+
+            if (data.logoBig) {
                 context.appSettings.LOGO_BIG = data.logoBig;
-            if (data.logoSmall)
+            }
+
+            if (data.logoSmall) {
                 context.appSettings.LOGO_SMALL = data.logoSmall;
-            else if (data.logoBig)
+            } 
+            else if (data.logoBig) {
                 context.appSettings.LOGO_SMALL = data.logoBig;
-            if (data.logoLogin)
+            }
+                
+            if (data.logoLogin) {
                 context.appSettings.LOGO_LOGIN = data.logoLogin;
-            else if (data.logoBig)
+            }
+            else if (data.logoBig) {
                 context.appSettings.LOGO_LOGIN = data.logoBig;
+            }
+
             startUpRequest.userName = data.username;
             startUpRequest.password = data.password;
             startUpRequest.language = data.language ? data.language : 'de';

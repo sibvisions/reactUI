@@ -163,6 +163,6 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
         }
     } 
     else {
-        return <Dummy {...baseComponent} />
+        return <Dummy {...baseComponent} key={baseComponent.id} />
     }
 }
