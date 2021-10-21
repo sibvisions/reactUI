@@ -37,12 +37,10 @@ const ResizeHandler:FC = (props) => {
                 const childWithProps = (child as ChildWithProps);
                 sizeMap.set(childWithProps.props.id, { width: width, height: height });
             });
-            console.log(context.appSettings.desktopPanel, resizeContext.login)
             if (context.appSettings.desktopPanel) {
                 let desktopHeight = 0;
                 if (resizeContext.login) {
                     desktopHeight = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
-                    console.log(desktopHeight)
                 }
                 else if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
                     desktopHeight = ((document.querySelector(".reactUI") as HTMLElement).offsetHeight) -

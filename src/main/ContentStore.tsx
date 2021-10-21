@@ -858,10 +858,12 @@ export default class ContentStore{
             detailReferences.forEach(reference => {
                 const referencedDataBook = reference.referencedDataBook;
                 const metaData = getMetaData(compId, referencedDataBook, this);
-                const dataBookData = this.dataProviderData.get(compId)?.get(referencedDataBook)
-                for (let [key] of dataBookData) {
-                    if (key !== "current") {
-                        dataBookData.delete(key);
+                const dataBookData = this.dataProviderData.get(compId)?.get(referencedDataBook);
+                if (dataBookData) {
+                    for (let [key] of dataBookData) {
+                        if (key !== "current") {
+                            dataBookData.delete(key);
+                        }
                     }
                 }
                 if (metaData && metaData.detailReferences) {
@@ -884,6 +886,8 @@ export default class ContentStore{
         if (data) {
             data.delete("current");
         }
+
+        console.log(metaData)
         
         if (metaData && metaData.masterReference === undefined) {
             this.clearDataFromSubPage(compId, metaData.detailReferences);
