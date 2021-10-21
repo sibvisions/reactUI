@@ -107,6 +107,26 @@ class Server {
         this.onLoginFunction = fn;
     }
 
+    componentExists(name:string) {
+        for (let [, value] of this.contentStore.flatContent.entries()) {
+            if (value.name === name) {
+                return true;
+            }
+        }
+
+        for (let [, value] of this.contentStore.replacedContent.entries()) {
+            if (value.name === name) {
+                return true;
+            }
+        }
+
+        if (this.contentStore.dialogButtons.includes(name)) {
+            return true;
+        }
+
+        return false;
+    }
+
     /** ----------APP-FUNCTIONS---------- */
 
     /**
@@ -131,39 +151,44 @@ class Server {
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
      */
-    sendRequest(request: any, endpoint: string, fn?:Function[], job?:boolean, waitForOpenRequests?:boolean){
-        let promise = new Promise<any>((resolve) => {
-            this.timeoutRequest(fetch(this.BASE_URL+endpoint, this.buildReqOpts(request)), 10000)
-            .then((response: any) => response.json())
-            .then(this.responseHandler.bind(this))
-            .then(results => {
-                results.forEach(result => {
-                    if (result.name === RESPONSE_NAMES.SCREEN_GENERIC && !(result as GenericResponse).update) {
-                        if ((result as GenericResponse).changedComponents.length) {
-                            this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
+    sendRequest(request: any, endpoint: string, fn?: Function[], job?: boolean, waitForOpenRequests?: boolean) {
+        let promise = new Promise<any>((resolve, reject) => {
+            if (request.componentId && endpoint !== REQUEST_ENDPOINTS.OPEN_SCREEN && endpoint !== REQUEST_ENDPOINTS.CLOSE_FRAME && !this.componentExists(request.componentId)) {
+                reject("Component doesn't exist");
+            }
+            else {
+                this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000)
+                    .then((response: any) => response.json())
+                    .then(this.responseHandler.bind(this))
+                    .then(results => {
+                        results.forEach(result => {
+                            if (result.name === RESPONSE_NAMES.SCREEN_GENERIC && !(result as GenericResponse).update) {
+                                if ((result as GenericResponse).changedComponents.length) {
+                                    this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
+                                }
+                            }
+                        })
+
+                        if (fn) {
+                            fn.forEach(func => func.apply(undefined, []))
                         }
-                    }
-                })
-
-                if (fn) {
-                    fn.forEach(func => func.apply(undefined, []))
-                }
 
 
-                if (!job) {
-                    for (let [, value] of this.subManager.jobQueue.entries()) {
-                        value();
-                    }
-                    this.subManager.jobQueue.clear()
-                }
-                return results;
-            }).then(results => {
-                resolve(results);
-            }).catch(error => {
-                console.error(error)
-            }).finally(() => {
-                this.openRequests.delete(request);
-            });
+                        if (!job) {
+                            for (let [, value] of this.subManager.jobQueue.entries()) {
+                                value();
+                            }
+                            this.subManager.jobQueue.clear()
+                        }
+                        return results;
+                    }).then(results => {
+                        resolve(results);
+                    }).catch(error => {
+                        console.error(error)
+                    }).finally(() => {
+                        this.openRequests.delete(request);
+                    });
+            }
         })
 
         if (waitForOpenRequests && this.openRequests.size) {
@@ -608,7 +633,20 @@ class Server {
     }
 
     showMessageDialog(dialogData:DialogResponse) {
-        this.subManager.emitMessageDialog("message-dialog", dialogData)
+        this.contentStore.dialogButtons = [];
+        if (dialogData.okComponentId) {
+            this.contentStore.dialogButtons.push(dialogData.okComponentId);
+        }
+        
+        if (dialogData.cancelComponentId) {
+            this.contentStore.dialogButtons.push(dialogData.cancelComponentId);
+        }
+
+        if (dialogData.notOkComponentId) {
+            this.contentStore.dialogButtons.push(dialogData.notOkComponentId);
+        }
+
+        this.subManager.emitMessageDialog("message-dialog", dialogData);
     }
  
     /**

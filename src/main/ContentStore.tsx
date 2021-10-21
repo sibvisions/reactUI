@@ -128,6 +128,8 @@ export default class ContentStore{
 
     globalComponents:Map<string, Function> = new Map<string, Function>();
 
+    dialogButtons:Array<string> = new Array<string>();
+
     constructor(history?:History<any>) {
         this.history = history;
     }
@@ -886,8 +888,6 @@ export default class ContentStore{
         if (data) {
             data.delete("current");
         }
-
-        console.log(metaData)
         
         if (metaData && metaData.masterReference === undefined) {
             this.clearDataFromSubPage(compId, metaData.detailReferences);
