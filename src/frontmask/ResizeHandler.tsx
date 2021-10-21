@@ -1,7 +1,7 @@
-import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
 import { appContext } from "../main/AppProvider";
-import { ChildWithProps } from "../main/components/util";
+import { ChildWithProps, Dimension } from "../main/components/util";
 import { useEventHandler } from "../main/components/zhooks";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { LayoutContext } from "../main/LayoutContext";
@@ -22,21 +22,29 @@ const ResizeHandler:FC = (props) => {
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
+
     /** 
      * When the window resizes, the screen-container will measure itself and set its size, 
      * setting this size will recalculate the layouts
      */
      const doResize = useCallback(() => {
-         if (sizeRef.current || document.querySelector('#workscreen')) {
-             const width = sizeRef.current ? sizeRef.current.offsetWidth : (document.querySelector('#workscreen') as HTMLElement)!.offsetWidth;
-             const height = sizeRef.current ? sizeRef.current.offsetHeight : (document.querySelector('#workscreen') as HTMLElement)!.offsetHeight;
+         if (sizeRef.current) {
+             const width = sizeRef.current.offsetWidth
+             const height = sizeRef.current.offsetHeight
              const sizeMap = new Map<string, CSSProperties>();
              Children.forEach(props.children, child => {
                  const childWithProps = (child as ChildWithProps);
                  sizeMap.set(childWithProps.props.id, { width: width, height: height });
              });
-             if (context.appSettings.desktopPanel) {
-                 sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: height })
+
+             if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled") && context.appSettings.desktopPanel) {
+                 const desktopHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight - 
+                 (appLayout === "corporation" ? 
+                 (document.querySelector("c-menu-topbar") as HTMLElement).offsetHeight : 
+                 parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
+
+                 sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
              }
              //TODO: maybe fetch ids via screenId instead of relying on the children 
              setComponentSize(sizeMap);
@@ -86,18 +94,26 @@ const ResizeHandler:FC = (props) => {
     // eslint-disable-next-line
     },[doResize]);
 
+    useLayoutEffect(() => {
+        if (sizeRef.current) {
+            sizeRef.current.parentElement.classList.add("menu-transition")
+        }
+    }, [resizeContext.menuCollapsed])
+
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionstart', (event:any) => {
-        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0]) {
-            const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
-            currSizeRef.classList.add('transition-disable-overflow');
+        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0] && sizeRef.current) {
+            sizeRef.current.classList.add('transition-disable-overflow');
+            //sizeRef.current.parentElement.classList.add("menu-transition")
         }
     })
 
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionend', (event:any) => {
-        if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement)) {
+        if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement) && sizeRef.current) {
             if (event.propertyName === "width") {
-                const currSizeRef = sizeRef.current ? sizeRef.current : document.querySelector('#workscreen');
-                setTimeout(() => currSizeRef.classList.remove('transition-disable-overflow'), 0)
+                setTimeout(() => {
+                    sizeRef.current.classList.remove('transition-disable-overflow');
+                    sizeRef.current.parentElement.classList.remove("menu-transition")
+                }, 0)
                 handleResize();
             }
             else if (event.propertyName === "max-height") {

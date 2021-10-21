@@ -29,6 +29,7 @@ export interface IResizeContext {
     menuRef?: any,
     login?:boolean,
     style?: CSSProperties
+    menuCollapsed?:boolean
 }
 
 export const ResizeContext = createContext<IResizeContext>({});
@@ -170,7 +171,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     !menuVisibility.menuBar ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
                 )}>
-                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
+                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed }}>
                         <ScreenManager />
                     </ResizeContext.Provider>
                 </div>
