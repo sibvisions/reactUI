@@ -45,7 +45,7 @@ const ResizeHandler:FC = (props) => {
                 else if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
                     desktopHeight = ((document.querySelector(".reactUI") as HTMLElement).offsetHeight) -
                         (appLayout === "corporation" ?
-                            (document.querySelector("c-menu-topbar") as HTMLElement).offsetHeight :
+                            (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight :
                             parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
                 }
                 sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
