@@ -184,6 +184,10 @@ tr.p-highlight{
     line-height: 14px;
 }
 
+.p-datatable-emptymessage {
+    display: none;
+}
+
 @keyframes pulse {
     0% {
         background: rgba(165, 165, 165, 0.1)
