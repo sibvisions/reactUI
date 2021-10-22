@@ -9,7 +9,6 @@ import { createSetValuesRequest } from "../../factories/RequestFactory";
  * @param name - the componentId
  * @param columnName - the column name
  * @param value - current value of component to send
- * @param lastValue previous value that was entered in the component
  * @param server - the server instance
  */
 export async function sendSetValues(dataProvider:string, name:string|undefined, columnName:string|string[], value:string|number|boolean|Array<any>|null, server:Server, rowIndex?:number, selectedIndex?:number, filter?:SelectFilter) {

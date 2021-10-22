@@ -5,7 +5,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 import { AutoComplete } from 'primereact/autocomplete';
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu} from "../../zhooks"
+import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu, useMetaData} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -16,6 +16,7 @@ import { getTextAlignment } from "../../compprops";
 import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { FetchResponse } from "../../../response";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -88,6 +89,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
+    const [linkRefData, setLinkRefData] = useState<Map<string, any[]>>(context.contentStore.dataProviderData.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook));
+
     useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
@@ -100,12 +103,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
-    useEffect(() => {
-        setText(selectedRow);
-        lastValue.current = selectedRow;
-    }, [selectedRow]);
-
     /** disable dropdownbutton tabIndex */
     useEffect(() => {
         const autoRef: any = linkedRef.current
@@ -113,10 +110,46 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             autoRef.dropdownButton.tabIndex = -1;
         }
 
+        if (props.cellEditor.displayReferencedColumnName) {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
+            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
+            .then((results:FetchResponse[]) => {
+                const tempMap = new Map<string, any[]>();
+                tempMap.set("current", results[0].records.map(record => {
+                    const data:any = {}
+                    results[0].columnNames.forEach((columnName, index) => {
+                        data[columnName] = record[index];
+                    });
+                    return data;
+                }))
+                setLinkRefData(tempMap);
+            });
+        }
+
         if (isCellEditor && props.passedKey) {
             setText("");
         }
     }, []);
+
+    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
+    useEffect(() => {
+        if (props.cellEditor.displayReferencedColumnName && linkRefData && linkRefData.has("current")) {
+            const foundObj = linkRefData.get("current")!.find(data => data[props.cellEditor.linkReference.referencedColumnNames[0]] === selectedRow);
+            if (foundObj) {
+                setText(foundObj[props.cellEditor.displayReferencedColumnName]);
+            }
+            else {
+                setText(selectedRow);
+            }
+        }
+        else {
+            setText(selectedRow);
+        }
+        lastValue.current = selectedRow;
+    }, [selectedRow, linkRefData]);
+
+
 
     /**
      * When the input changes, send a filter request to the server
@@ -232,7 +265,12 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
-                    onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, context.server), topbar));
+                    if (props.cellEditor.displayReferencedColumnName) {
+                        onBlurCallback(props, foundData[0][linkReference.referencedColumnNames[0]], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], context.server), topbar));
+                    }
+                    else {
+                        onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, context.server), topbar));
+                    }
                 }
                     
             }
