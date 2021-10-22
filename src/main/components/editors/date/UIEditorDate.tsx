@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -344,7 +344,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 }}
                 disabled={!props.cellEditor_editable_}
                 onVisibleChange={event => {
-                    setVisible(event.type === 'dateselect' || !visible);
+                    console.log(event)
+                    setVisible(prevState => !prevState);
                     if (!focused.current) {
                         if (props.eventFocusGained) {
                             onFocusGained(props.name, context.server);
