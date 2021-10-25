@@ -29,6 +29,11 @@
     /// Profile-menu seperator margin
     --s-menu-profile-seperator-margin: 4px;
 
+    /// Profile sub-menu width when mini
+    --s-menu-profile-mini-sub-width: 10rem;
+
+    --s-menu-profile-mini-size: 60px;
+
     /// Menu buttons big height
     --s-menu-buttons-full: 60px;
 
@@ -372,6 +377,10 @@
 }
 
 @media screen and (max-width: 960px) {
+    .menu-topbar-right {
+        margin-right: 4px;
+    }
+
     .p-menubar {
         /// Primereact wants to show a button instead of the menu we don't want that
         .p-menubar-button {
@@ -421,8 +430,8 @@
             .p-menubar-root-list {
                 .p-submenu-list {
                     position: absolute;
-                    width: 10rem;
-                    left: -96px;
+                    width: var(--s-menu-profile-mini-sub-width);
+                    left: calc(var(--s-menu-profile-mini-size) - var(--s-menu-profile-mini-sub-width));
                     top: unset;
                 }
                 >.p-menuitem {
@@ -439,7 +448,8 @@
                         }
                     }
                     >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                        padding: 0.5rem 0.625rem
+                        width: var(--s-menu-profile-mini-size);
+                        padding: 0.5rem 0.625rem;
                     }
                 }
             }
