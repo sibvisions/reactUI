@@ -436,8 +436,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 return !virtualEnabled ? tableRef.current.container.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
             }
+            console.log(virtualEnabled, tableRef.current)
             //@ts-ignore
-            return !virtualEnabled ? tableRef.current.table.querySelector(noVirtualSelector) : tableRef.current.container.querySelector(virtualSelector);
+            return !virtualEnabled ? (tableRef.current.table ? tableRef.current.table.querySelector(noVirtualSelector) : undefined) : tableRef.current.container.querySelector(virtualSelector);
         }
     },[virtualEnabled]);
 
@@ -642,103 +643,114 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
 
             /** If there is no lazy loading */
-            //@ts-ignore
-            if (tableRef.current.table) {
+            if (!virtualEnabled) {
                 //@ts-ignore
-                const theader = tableRef.current.table.querySelectorAll('th');
-                //@ts-ignore
-                const trows = tableRef.current.table.querySelectorAll('th, tbody > tr');
+                if (tableRef.current.table) {
+                    //@ts-ignore
+                    const theader = tableRef.current.table.querySelectorAll('th');
+                    //@ts-ignore
+                    const trows = tableRef.current.table.querySelectorAll('th, tbody > tr');
 
-                
-                /** First set width of headers for columns then rows */
-                for (let i = 0; i < theader.length; i++) {
-                    const newCellWidth = {widthPreSet: false, width: 0}
-                    const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                    const columnMetaData = getColMetaData(colName, metaData)
-                    if (columnMetaData?.width) {
-                        newCellWidth.width = columnMetaData.width;
-                        newCellWidth.widthPreSet = true
+                    /** First set width of headers for columns then rows */
+                    for (let i = 0; i < theader.length; i++) {
+                        const newCellWidth = { widthPreSet: false, width: 0 }
+                        const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
+                        const columnMetaData = getColMetaData(colName, metaData)
+                        if (columnMetaData?.width) {
+                            newCellWidth.width = columnMetaData.width;
+                            newCellWidth.widthPreSet = true
+                        }
+                        else {
+                            newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                        }
+                        cellDataWidthList.push(newCellWidth);
                     }
-                    else {
-                        newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
-                    }
-                    cellDataWidthList.push(newCellWidth);
-                }
-                    
-                (tableRef.current as any).container.classList.add("read-size");
-                for (let i = 0; i < Math.min(trows.length, 100); i++) {
-                    goThroughCellData(trows, i);
-                }
-                (tableRef.current as any).container.classList.remove("read-size");
 
-                let tempWidth: number = 0;
-                cellDataWidthList.forEach(cellDataWidth => {
-                    tempWidth += cellDataWidth.width
-                });
-                
-                /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                for (let i = 0; i < theader.length; i++) {
-                    let w = cellDataWidthList[i].width as any;
-                    if (props.autoResize === false) {
-                        w = `${w}px`;
-                    } else {
-                        w = `${100 * w / tempWidth}%`;
+                    (tableRef.current as any).container.classList.add("read-size");
+                    for (let i = 0; i < Math.min(trows.length, 100); i++) {
+                        goThroughCellData(trows, i);
                     }
-                    theader[i].style.setProperty('width', w);
+                    (tableRef.current as any).container.classList.remove("read-size");
+
+                    let tempWidth: number = 0;
+                    cellDataWidthList.forEach(cellDataWidth => {
+                        tempWidth += cellDataWidth.width
+                    });
+
+                    /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
+                    for (let i = 0; i < theader.length; i++) {
+                        let w = cellDataWidthList[i].width as any;
+                        if (props.autoResize === false) {
+                            w = `${w}px`;
+                        } else {
+                            w = `${100 * w / tempWidth}%`;
+                        }
+                        theader[i].style.setProperty('width', w);
+                    }
+
+                    /** set EstTableWidth for size reporting */
+                    setEstTableWidth(tempWidth);
                 }
-                    
-                /** set EstTableWidth for size reporting */
-                setEstTableWidth(tempWidth);
+                else {
+                    setEstTableWidth(0);
+                }
             }
             /** If there is lazyloading do the same thing as above but set width not only for header but for column groups and header */
             else {
                 //@ts-ignore
+                console.log(tableRef.current.container)
+                //@ts-ignore
                 const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
                 //@ts-ignore
                 const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
-                const tCols1 = tColGroup[0].querySelectorAll('col');
-                const tCols2 = tColGroup[1].querySelectorAll('col');
-                for (let i = 0; i < theader.length; i++) {
-                    const newCellWidth = {widthPreSet: false, width: 0}
-                    const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                    const columnMetaData = getColMetaData(colName, metaData)
-                    if (columnMetaData?.width) {
-                        newCellWidth.width = columnMetaData.width;
-                        newCellWidth.widthPreSet = true
+                if (tColGroup.length) {
+                    const tCols1 = tColGroup[0].querySelectorAll('col');
+                    const tCols2 = tColGroup[1].querySelectorAll('col');
+                    for (let i = 0; i < theader.length; i++) {
+                        const newCellWidth = { widthPreSet: false, width: 0 }
+                        const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
+                        const columnMetaData = getColMetaData(colName, metaData)
+                        if (columnMetaData?.width) {
+                            newCellWidth.width = columnMetaData.width;
+                            newCellWidth.widthPreSet = true
+                        }
+                        else {
+                            newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                        }
+                        cellDataWidthList.push(newCellWidth);
                     }
-                    else {
-                        newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                    //@ts-ignore
+                    const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
+                    (tableRef.current as any).container.classList.add("read-size");
+                    for (let i = 0; i < Math.min(trows.length, 100); i++) {
+                        goThroughCellData(trows, i)
                     }
-                    cellDataWidthList.push(newCellWidth);
-                }
-                //@ts-ignore
-                const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
-                (tableRef.current as any).container.classList.add("read-size");
-                for (let i = 0; i < Math.min(trows.length, 100); i++) {
-                    goThroughCellData(trows, i)
-                }
-                (tableRef.current as any).container.classList.remove("read-size");
+                    (tableRef.current as any).container.classList.remove("read-size");
 
-                let tempWidth:number = 0;
-                cellDataWidthList.forEach(cellDataWidth => {
-                    tempWidth += cellDataWidth.width
-                });
+                    let tempWidth: number = 0;
+                    cellDataWidthList.forEach(cellDataWidth => {
+                        tempWidth += cellDataWidth.width
+                    });
 
-                for (let i = 0; i < theader.length; i++) {
-                    let w = cellDataWidthList[i].width as any;
-                    if (props.autoResize === false) {
-                        w = `${w}px`;
-                    } else {
-                        w = `${100 * w / tempWidth}%`;
+                    for (let i = 0; i < theader.length; i++) {
+                        let w = cellDataWidthList[i].width as any;
+                        if (props.autoResize === false) {
+                            w = `${w}px`;
+                        } else {
+                            w = `${100 * w / tempWidth}%`;
+                        }
+                        theader[i].style.setProperty('width', w);
+                        tCols1[i].style.setProperty('width', w);
+                        tCols2[i].style.setProperty('width', w);
                     }
-                    theader[i].style.setProperty('width', w);
-                    tCols1[i].style.setProperty('width', w);
-                    tCols2[i].style.setProperty('width', w);
+                    setEstTableWidth(tempWidth)
                 }
-                setEstTableWidth(tempWidth)
+                else {
+                    setEstTableWidth(0);
+                }
             }
         }
-    },[]);
+    }, []);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
