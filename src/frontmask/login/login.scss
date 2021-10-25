@@ -83,6 +83,7 @@
 .p-float-label {
   label {
     color: var(--login-placeholder-color);
+    line-height: unset;
   }
   /// Position and Size of floatlabel placeholder
   input:focus ~label, input.p-filled ~label, 
