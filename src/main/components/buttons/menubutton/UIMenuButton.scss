@@ -17,6 +17,8 @@
     }
     /// When either of the children is focused, display a blue shadow to show the button is focused
     &:focus-within {
+        outline-width: 0;
+        outline-style: none;
         box-shadow: 0 0 0 0.2rem #8dcdff;
         -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
