@@ -48,6 +48,10 @@ tr.p-highlight{
                 .pi-sort-alt {
                     display: none;
                 }
+
+                &:focus {
+                    box-shadow: none;
+                }
             }
         }
     }
