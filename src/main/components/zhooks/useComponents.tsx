@@ -29,14 +29,12 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     
     const compLoadedCache = useRef<Array<string>>(new Array<string>());
 
-    //const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>());
-
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
         let tempSizes = new Map<string, ComponentSizes>();
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
-            tempSizes = preferredSizes
+            tempSizes = new Map([...preferredSizes])
             tempSizes.forEach((val, key) => {
                 if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
                     tempSizes.delete(key)
@@ -54,12 +52,12 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
          */
 
         const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
-            if (_.isEqual(compSizes?.preferredSize, newPref) && _.isEqual(compSizes?.minimumSize, newMin) && _.isEqual(compSizes?.maximumSize, newMax)) {
-                return false;
+            if (compSizes) {
+                if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
+                    return false;
+                }
             }
-            else {
-                return true;
-            }
+            return true;
         }
 
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
