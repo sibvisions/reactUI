@@ -436,7 +436,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //@ts-ignore
                 return !virtualEnabled ? tableRef.current.container.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
             }
-            console.log(virtualEnabled, tableRef.current)
             //@ts-ignore
             return !virtualEnabled ? (tableRef.current.table ? tableRef.current.table.querySelector(noVirtualSelector) : undefined) : tableRef.current.container.querySelector(virtualSelector);
         }
@@ -697,8 +696,6 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
             /** If there is lazyloading do the same thing as above but set width not only for header but for column groups and header */
             else {
-                //@ts-ignore
-                console.log(tableRef.current.container)
                 //@ts-ignore
                 const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
                 //@ts-ignore

@@ -344,7 +344,6 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 }}
                 disabled={!props.cellEditor_editable_}
                 onVisibleChange={event => {
-                    console.log(event)
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
                         if (props.eventFocusGained) {
