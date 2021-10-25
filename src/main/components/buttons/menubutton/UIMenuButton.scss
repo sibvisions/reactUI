@@ -49,4 +49,9 @@
 .p-button.p-splitbutton-menubutton {
     width: var(--menuBtnIconWidth);
     padding: 0.5rem 0.5rem 0.5rem 0px;
+    box-shadow: none;
 }
+
+.p-menu .p-menuitem-link .p-menuitem-text {
+    padding-top: 1.5px;
+} 
