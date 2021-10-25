@@ -117,6 +117,7 @@ export const LoginForm:FC = () => {
                             </div>
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
                                 <Button
+                                    type="button"
                                     className="lost-password-button"
                                     label={translations.get("Lost password")}
                                     icon="pi pi-question-circle"
