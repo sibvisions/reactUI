@@ -320,7 +320,8 @@ export default class ContentStore{
                             className: "ToolBarHelperMain",
                             layout: "FlowLayout,5,5,5,5,0,0," + flowOrientation + ",0,0,3,true",
                             layoutData: "",
-                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable"
+                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable",
+                            toolBarVisible: castedNewComp.toolBarVisible
                         }
 
                         const tbCenter:IToolBarHelper = {

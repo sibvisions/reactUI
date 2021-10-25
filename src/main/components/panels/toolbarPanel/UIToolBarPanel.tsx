@@ -16,6 +16,7 @@ import { IPanel } from "..";
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {
     toolBarArea:0|1|2|3;
+    toolBarVisible?:boolean
 }
 
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
