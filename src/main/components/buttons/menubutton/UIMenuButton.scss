@@ -52,6 +52,12 @@
     box-shadow: none;
 }
 
-.p-menu .p-menuitem-link .p-menuitem-text {
-    padding-top: 1.5px;
+.p-menu {
+    .p-menuitem-text {
+        line-height: unset;
+    }
+
+    .fa, .pi {
+        font-size: 14px;
+    }
 } 
