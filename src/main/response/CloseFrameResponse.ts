@@ -1,8 +1,8 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { ComponentResponse } from ".";
 
 /** Interface for CloseFrameResponse */
-interface CloseFrameResponse extends BaseResponse{
-    componentId: string
+interface CloseFrameResponse extends ComponentResponse {
+    
 }
 export default CloseFrameResponse;

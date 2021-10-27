@@ -24,4 +24,6 @@ export type { default as ApplicationSettingsResponse } from './ApplicationSettin
 export type { default as DeviceStatusResponse } from './DeviceStatusResponse';
 export type { default as WelcomeDataResponse } from './WelcomeDataResponse';
 export type { default as DialogResponse } from './DialogResponse';
-export type { default as CloseFrameResponse } from './CloseFrameResponse'
+export type { default as CloseFrameResponse } from './CloseFrameResponse';
+export type { default as ContentResponse } from './ContentResponse';
+export type { default as ComponentResponse } from './ComponentResponse';

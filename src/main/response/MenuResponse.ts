@@ -1,5 +1,5 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { ComponentResponse } from ".";
 
 export interface BaseMenuButton {
     componentId: string,
@@ -15,8 +15,7 @@ export interface ServerMenuButtons extends BaseMenuButton {
 }
 
 /** Interface for ManuResponse */
-interface MenuResponse extends BaseResponse {
-    componentId: string,
+interface MenuResponse extends ComponentResponse {
     entries: Array<ServerMenuButtons>
     toolBarEntries: Array<BaseMenuButton>
 }

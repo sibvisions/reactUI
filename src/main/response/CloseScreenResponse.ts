@@ -1,8 +1,8 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { ComponentResponse } from ".";
 
 /** Interface for CloseScreenResponse */
-interface CloseScreenResponse extends BaseResponse{
-    componentId: string
+interface CloseScreenResponse extends ComponentResponse {
+    
 }
 export default CloseScreenResponse;

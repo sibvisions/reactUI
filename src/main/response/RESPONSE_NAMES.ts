@@ -23,6 +23,7 @@ enum RESPONSE_NAMES {
     APPLICATION_SETTINGS="applicationSettings",
     DEVICE_STATUS="deviceStatus",
     WELCOME_DATA="welcomeData",
-    CLOSE_FRAME="closeFrame"
+    CLOSE_FRAME="closeFrame",
+    CONTENT="content"
 }
 export default RESPONSE_NAMES

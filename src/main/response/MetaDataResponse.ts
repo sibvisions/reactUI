@@ -43,7 +43,7 @@ export interface NumericColumnDescription extends LengthBasedColumnDescription {
 }
 
 /** Interface for MetaDataResponse */
-interface MetaDataResponse extends BaseResponse{
+interface MetaDataResponse extends BaseResponse {
     columnView_table_: Array<string>,
     columns: Array<LengthBasedColumnDescription|NumericColumnDescription>,
     primaryKeyColumns: Array<string>,

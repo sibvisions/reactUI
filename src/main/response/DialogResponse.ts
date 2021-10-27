@@ -1,8 +1,8 @@
 /** Other imports */
-import { MessageResponse } from ".";
+import { ComponentResponse, MessageResponse } from ".";
 
 /** Interface for DialogResponse */
-interface DialogResponse extends MessageResponse {
+interface DialogResponse extends MessageResponse, ComponentResponse {
     iconType: 0|1|2|3|9|-1,
     buttonType: 4|5|6|7|8|-1,
     resizable?: boolean,
@@ -10,6 +10,5 @@ interface DialogResponse extends MessageResponse {
     okComponentId?: string,
     notOkComponentId?: string,
     cancelComponentId?: string
-    componentId?:string
 }
 export default DialogResponse
