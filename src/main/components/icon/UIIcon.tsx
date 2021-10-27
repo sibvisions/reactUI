@@ -65,7 +65,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current){
-            if (iconProps.icon?.includes('fa fa-')) {
+            if (iconProps.icon?.includes('fa fa-') || !props.image) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
@@ -92,8 +92,12 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText} />
                 )
-            }
-                
+            } 
+        }
+        else {
+            return (
+                <div style={{background: props.background}} />
+            )
         }
     }
 

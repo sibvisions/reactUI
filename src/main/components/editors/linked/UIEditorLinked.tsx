@@ -115,15 +115,17 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
             .then((results:FetchResponse[]) => {
-                const tempMap = new Map<string, any[]>();
-                tempMap.set("current", results[0].records.map(record => {
-                    const data:any = {}
-                    results[0].columnNames.forEach((columnName, index) => {
-                        data[columnName] = record[index];
-                    });
-                    return data;
-                }))
-                setLinkRefData(tempMap);
+                if (results[0].records) {
+                    const tempMap = new Map<string, any[]>();
+                    tempMap.set("current", results[0].records.map(record => {
+                        const data:any = {}
+                        results[0].columnNames.forEach((columnName, index) => {
+                            data[columnName] = record[index];
+                        });
+                        return data;
+                    }))
+                    setLinkRefData(tempMap);
+                }
             });
         }
 
@@ -157,7 +159,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      */
     const sendFilter = useCallback(async (value:any) => {
         context.contentStore.clearDataFromProvider(compId, props.cellEditor.linkReference.referencedDataBook||"")
-        const filterReq = createFilterRequest()
+        const filterReq = createFilterRequest();
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
         filterReq.value = value;
