@@ -142,12 +142,12 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                         convertedOptions.delete("baseUrl");
                     }
                     else if (!config) {
-                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'baseUrl' seems to be missing. Either check typing/casing or add the parameter!");
+                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "Missing Configuration!");
                     }
 
                 }
                 else if (!config) {
-                    context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "URL parameter 'appName' seems to be missing. Either check typing/casing or add the parameter!");
+                    context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "Missing Configuration!");
                 }
 
                 if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {

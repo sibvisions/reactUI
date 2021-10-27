@@ -70,7 +70,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             </Helmet>
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />
-            <Dialog header="Server Error!" visible={dialogVisible} closable={false} onHide={() => setDialogVisible(false)} resizable={false} draggable={false}>
+            <Dialog header={dialogRef.current.headerMessage.toString()} visible={dialogVisible} closable={false} onHide={() => setDialogVisible(false)} resizable={false} draggable={false}>
                 <p>{dialogRef.current.bodyMessage.toString()}</p>
             </Dialog>
             {sessionExpired && <SessionExpired />}
