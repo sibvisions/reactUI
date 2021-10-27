@@ -617,7 +617,7 @@ export default class ContentStore{
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
 
-        if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+        if (mergedContent.has(parentId) && className && className.includes("ToolBarHelper")) {
             parentId = mergedContent.get(parentId)!.parent as string
         }
 
@@ -655,6 +655,9 @@ export default class ContentStore{
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
+                if ((comp as IPanel).content_modal_ || (comp as IPanel).screen_modal_) {
+                    break;
+                }
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }

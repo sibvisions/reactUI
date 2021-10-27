@@ -27,3 +27,4 @@ export type { default as DialogResponse } from './DialogResponse';
 export type { default as CloseFrameResponse } from './CloseFrameResponse';
 export type { default as ContentResponse } from './ContentResponse';
 export type { default as ComponentResponse } from './ComponentResponse';
+export type { default as CloseContentResponse } from './CloseContentResponse';

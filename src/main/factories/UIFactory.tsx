@@ -101,7 +101,7 @@ export function createEditor(props: any) {
  * @returns The original or wrapped JSX Element
  */
 const maybePopup = (element: JSX.Element) => 
-    element.props.screen_modal_ 
+    element.props.screen_modal_ || element.props.content_modal_
         ? <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
         : element
 
@@ -136,7 +136,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     )
     .set(COMPONENT_CLASSNAMES.TREE, props => <UITree {...props} />)
     .set(COMPONENT_CLASSNAMES.GAUGE, props => <UIGauge {...props} />)
-    .set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
+    //.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />);
@@ -150,7 +150,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
     const Comp = contentStore.globalComponents.has(baseComponent.className) ?
     contentStore.globalComponents.get(baseComponent.className) : componentsMap.get(baseComponent.className);
 
-    if (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#")) {
+    if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
         baseComponent.name = baseComponent.name.substring(1);
     }
 

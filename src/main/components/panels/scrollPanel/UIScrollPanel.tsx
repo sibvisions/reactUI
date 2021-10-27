@@ -53,7 +53,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_, props.screen_size_);
+        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {
@@ -90,7 +90,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
         return s;
 
-    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, layoutSize])
+    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, layoutSize, props.content_modal_])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -121,7 +121,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 ref={panelRef}
                 id={props.name}
                 className="rc-scrollpanel"
-                style={props.screen_modal_
+                style={props.screen_modal_ || props.content_modal_
                     ? {
                         height: (prefSize?.height as number),
                         width: prefSize?.width,

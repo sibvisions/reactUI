@@ -29,7 +29,9 @@ import { ApplicationMetaDataResponse,
          DeviceStatusResponse,
          WelcomeDataResponse,
          DialogResponse,
-         CloseFrameResponse} from "./response";
+         CloseFrameResponse,
+         ContentResponse,
+         CloseContentResponse} from "./response";
 import { createFetchRequest, createStartupRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
@@ -251,7 +253,9 @@ class Server {
         .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
         .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
         .set(RESPONSE_NAMES.DIALOG, this.showMessageDialog.bind(this))
-        .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this));
+        .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
+        .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -708,6 +712,25 @@ class Server {
 
     closeFrame(closeFrameData:CloseFrameResponse) {
         this.subManager.emitCloseFrame(closeFrameData.componentId);
+    }
+
+    content(contentData:ContentResponse) {
+        if (contentData.changedComponents && contentData.changedComponents.length) {
+            this.contentStore.updateContent(contentData.changedComponents, false);
+        }
+        if (!contentData.update) {
+            let workScreen:IPanel|undefined
+            if(contentData.changedComponents && contentData.changedComponents.length) {
+                workScreen = contentData.changedComponents[0] as IPanel
+                this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+            }
+        }
+    }
+
+    closeContent(closeContentData:CloseContentResponse) {
+        if (closeContentData.componentId) {
+            this.contentStore.closeScreen(closeContentData.componentId);
+        }
     }
 
     /** ----------ROUTING---------- */

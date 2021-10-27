@@ -31,7 +31,8 @@ import { StartupRequest,
          ChangesRequest,
          FocusGainedRequest,
          FocusLostRequest,
-         CloseFrameRequest} from "../request";
+         CloseFrameRequest,
+         CloseContentRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -509,6 +510,19 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
  */
  export const createCloseFrameRequest = (values?: CloseFrameRequest): CloseFrameRequest => {
     const req: CloseFrameRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
+/**
+ * Returns a close-content-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the close-content-request
+ * @returns a close-content-request object
+ */
+ export const createCloseContentRequest = (values?: CloseContentRequest): CloseContentRequest => {
+    const req: CloseContentRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
     }

@@ -69,7 +69,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 className="rc-panel-group"
                 id={props.name}
                 {...usePopupMenu(props)}
-                style={props.screen_modal_ ?
+                style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
                     : { ...layoutStyle, backgroundColor: props.background }}
                 data-pr-tooltip={props.toolTipText} >
@@ -98,7 +98,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                             true,
                             layoutStyle,
                             prefSize,
-                            props.screen_modal_,
+                            props.screen_modal_ || props.content_modal_,
                             props.screen_size_
                         )}
                         parent={props.parent} />

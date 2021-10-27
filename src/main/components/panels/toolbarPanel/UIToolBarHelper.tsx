@@ -87,7 +87,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                 )}
                 ref={panelRef}
                 id={props.name}
-                style={props.screen_modal_ ? {
+                style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
@@ -115,7 +115,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                         false,
                         layoutStyle,
                         prefSize,
-                        props.screen_modal_,
+                        props.screen_modal_ || props.content_modal_,
                         props.screen_size_
                     )}
                     parent={props.parent} />

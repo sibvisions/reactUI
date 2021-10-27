@@ -167,7 +167,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     return (
         <LayoutContext.Provider value={componentSizes}>
-            <div className="rc-tabset" style={props.screen_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, backgroundColor: props.background }}>
+            <div className="rc-tabset" style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, backgroundColor: props.background }}>
                 <TabView
                     ref={panelRef}
                     id={props.name}

@@ -24,6 +24,7 @@ enum RESPONSE_NAMES {
     DEVICE_STATUS="deviceStatus",
     WELCOME_DATA="welcomeData",
     CLOSE_FRAME="closeFrame",
-    CONTENT="content"
+    CONTENT="content",
+    CLOSE_CONTENT="closeContent"
 }
 export default RESPONSE_NAMES

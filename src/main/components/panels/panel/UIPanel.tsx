@@ -24,7 +24,10 @@ export interface IPanel extends BaseComponent {
     screen_navigationName_?:string
     screen_title_?: string,
     screen_className_?: string,
-    screen_size_?: string
+    screen_size_?: string,
+    content_className_?: string,
+    content_modal_?: boolean,
+    content_title_?: string
 }
 
 /**
@@ -81,7 +84,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 className="rc-panel"
                 ref={panelRef}
                 id={props.name}
-                style={props.screen_modal_ ? {
+                style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
@@ -108,7 +111,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         false,
                         layoutStyle,
                         prefSize,
-                        props.screen_modal_,
+                        props.screen_modal_ || props.content_modal_,
                         props.screen_size_
                     )}
                     isToolBar={props.className === COMPONENT_CLASSNAMES.TOOLBAR}
