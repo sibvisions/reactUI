@@ -129,8 +129,12 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                     convertedOptions = new Map(Object.entries(options));
                 }
                 if (convertedOptions.has("appName")) {
-                    startupReq.applicationName = convertedOptions.get("appName") as string;
-                    context.server.APP_NAME = convertedOptions.get("appName") as string;
+                    let appName = convertedOptions.get("appName") as string;
+                    if (appName.charAt(appName.length - 1) === "/") {
+                        appName = appName.substring(0, appName.length - 1);
+                    }
+                    startupReq.applicationName = appName;
+                    context.server.APP_NAME = appName;
                     if (convertedOptions.has("baseUrl")) {
                         let baseUrl: string = convertedOptions.get("baseUrl") as string;
                         if (baseUrl.charAt(baseUrl.length - 1) === "/") {
@@ -141,10 +145,11 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                         convertedOptions.delete("appName");
                         convertedOptions.delete("baseUrl");
                     }
-                    else if (!config) {
-                        context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "Missing Configuration!");
+                    else if (process.env.NODE_ENV === "production") {
+                        const altBaseUrl = window.location.protocol + "//" + window.location.host + "/services/mobile";
+                        context.server.BASE_URL = altBaseUrl;
+                        context.server.RESOURCE_URL = altBaseUrl + "/resource/" + convertedOptions.get("appName");
                     }
-
                 }
                 else if (!config) {
                     context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "Missing Configuration!");
