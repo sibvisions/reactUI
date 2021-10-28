@@ -7,6 +7,14 @@ The JVx ReactUI Client is a web application for JVx applications. It is used to 
 - A JVx application, running on a Java application (Jetty, Tomcat, ...) server, using JVx mobile UI
 - If you use ReactUI as lib you will need React 16.8.0 (for Hooks)
 
+# Bundling
+There are two options to use bundling with webpack.
+
+    1. Production Bundle
+        run ```npm run bundle``` to create a production bundle. URL configuration is then required in your app where reactUI is used as lib. Does not accept config.json!
+    2. Development Bundle
+        run ```npm run devbundle``` to create a development bundle. URL configuration is possible but config.json is also allowed.
+
 # Getting Started
 - Clone the git repository, open it in your development environment of choice and run ```npm install``` to download the dependencies.
 - Run the command ```npm start``` to start reactUI. A new tab will open in your browser.
