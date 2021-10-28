@@ -215,8 +215,10 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
             fetch('config.json')
             .then((r) => r.json())
             .then((data) => {
-                console.log('gogo', data);
-                startUpRequest.applicationName = data.appName;
+                const dataMap = new Map(Object.entries(data));
+                dataMap.forEach((v, k) => {
+                    startUpRequest[k] = v;
+                });
                 context.server.APP_NAME = data.appName;
                 context.server.BASE_URL = data.baseUrl;
                 context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
@@ -238,10 +240,6 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                 else if (data.logoBig) {
                     context.appSettings.LOGO_LOGIN = data.logoBig;
                 }
-    
-                startUpRequest.userName = data.username;
-                startUpRequest.password = data.password;
-                startUpRequest.language = data.language ? data.language : 'de';
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams, true);
             }).catch(() => {
