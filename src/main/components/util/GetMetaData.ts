@@ -9,5 +9,5 @@ import ContentStore from "../../ContentStore";
  * @returns the metadata of the given dataprovider
  */
 export function getMetaData(compId:string, dataprovider:string, contentStore:ContentStore) {
-    return contentStore.dataProviderMetaData.get(compId)?.get(dataprovider);
+    return contentStore.getDataBook(compId, dataprovider)?.metaData;
 }

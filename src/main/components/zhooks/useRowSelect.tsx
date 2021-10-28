@@ -20,7 +20,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
      * @returns either the value of the column of the currently selectedRow or the entire selectedRow
      */
     const currentlySelectedRow = useMemo(() => {
-        const sr = context.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider)
+        const sr = context.contentStore.getDataBook(compId, dataProvider)?.selectedRow;
         if (sr) {
             if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === sr.index)) {
                 if (column && sr.dataRow) {
@@ -31,7 +31,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 }
             }
             else {
-                const data = context.contentStore.dataProviderData.get(compId)?.get(dataProvider).get("current")[rowIndex]
+                const data = context.contentStore.getDataBook(compId, dataProvider)?.data?.get("current")[rowIndex]
                 if (data) {
                     if (column) {
                         const dataCol = data[column]
@@ -43,7 +43,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 }                
             }
         }
-    }, [context.contentStore.dataProviderSelectedRow, dataProvider, column, compId, rowIndex]);
+    }, [context.contentStore, dataProvider, column, compId, rowIndex]);
 
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
@@ -65,7 +65,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                     }
                 }
                 else {
-                    const data = context.contentStore.dataProviderData.get(compId)?.get(dataProvider).get("current")[rowIndex];
+                    const data = context.contentStore.getDataBook(compId, dataProvider)?.data?.get("current")[rowIndex]
                     if (data) {
                         if (column) {
                             const dataCol = data[column];

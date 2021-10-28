@@ -10,16 +10,16 @@ const useSortDefinitions = (compId:string, dataProvider:string) => {
     const context = useContext(appContext);
 
     /** The current state of the sortDefinitions for the dataprovider */
-    const [sortDefinitions, setSortDefinitions] = useState<SortDefinition[]|undefined>(context.contentStore.dataProviderSortedColumns.get(compId)?.get(dataProvider));
+    const [sortDefinitions, setSortDefinitions] = useState<SortDefinition[]|undefined>(context.contentStore.getDataBook(compId, dataProvider)?.sortedColumns);
 
     /**
      * Subscribes to sort-definitions which updates the value of sortDefinitions
      * @returns unsubscribes from sort-definitions
      */
     useEffect(() => {
-        context.subscriptions.subscribeToSortDefinitions(compId, dataProvider, () => setSortDefinitions(context.contentStore.dataProviderSortedColumns.get(compId)?.get(dataProvider)));
+        context.subscriptions.subscribeToSortDefinitions(compId, dataProvider, () => setSortDefinitions(context.contentStore.getDataBook(compId, dataProvider)?.sortedColumns));
 
-        return () => context.subscriptions.unsubscribeFromSortDefinitions(compId, dataProvider, () => setSortDefinitions(context.contentStore.dataProviderSortedColumns.get(compId)?.get(dataProvider)));
+        return () => context.subscriptions.unsubscribeFromSortDefinitions(compId, dataProvider, () => setSortDefinitions(context.contentStore.getDataBook(compId, dataProvider)?.sortedColumns));
     }, [context.subscriptions, compId, dataProvider]);
 
     return [sortDefinitions]

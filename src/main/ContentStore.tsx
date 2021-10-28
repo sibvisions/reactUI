@@ -22,6 +22,21 @@ export type ActiveScreen = {
     className?: string
 }
 
+interface ISelectedRow {
+    dataRow: any,
+    index: number,
+    treePath?: TreePath,
+    selectedColumn?: string
+}
+
+export interface IDataBook {
+    data?: Map<string, any>,
+    metaData?: MetaDataResponse,
+    allFetched?: boolean,
+    selectedRow?: ISelectedRow,
+    sortedColumns?: SortDefinition[]
+}
+
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore{
     /** subscriptionManager instance */
@@ -80,40 +95,36 @@ export default class ContentStore{
     screenWrappers = new Map<string, {wrapper: ReactElement, options: ScreenWrapperOptions}>();
 
     //DataProvider Maps
+    dataBooks = new Map<string, Map<string, IDataBook>>();
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value the data of the dataprovider
      */
-    dataProviderData = new Map<string, Map<string, any>>();
+    //dataProviderData = new Map<string, Map<string, any>>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value the metadata of the dataprovider
      */
-    dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
-
-    /**
-     * A Map which stores the record formats per screen component id
-     */
-    dataProviderRecordFormat = new Map<string, RecordFormat>();
+    //dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value if all data of the dataprovider has been fetched
      */
-    dataProviderFetched = new Map<string, Map<string, boolean>>();
+    //dataProviderFetched = new Map<string, Map<string, boolean>>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value is the selectedRow of a dataprovider
      */
-    dataProviderSelectedRow = new Map<string, Map<string, any>>();
+    //dataProviderSelectedRow = new Map<string, Map<string, any>>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
      * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
      */
-    dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
+    //dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
     customStartUpProperties = new Array<CustomStartupProps>();
 
@@ -521,11 +532,10 @@ export default class ContentStore{
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                this.dataProviderData.delete(name);
-                this.dataProviderMetaData.delete(name);
-                this.dataProviderFetched.delete(name);
-                this.dataProviderRecordFormat.delete(name);
-                this.dataProviderSelectedRow.delete(name);
+                //this.dataProviderData.delete(name);
+                //this.dataProviderMetaData.delete(name);
+                //this.dataProviderFetched.delete(name);
+                //this.dataProviderSelectedRow.delete(name);
                 this.subManager.rowSelectionSubscriber.delete(name);
             }
         }
@@ -545,12 +555,11 @@ export default class ContentStore{
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.screenWrappers.clear();
-        this.dataProviderData.clear();
-        this.dataProviderMetaData.clear();
-        this.dataProviderRecordFormat.clear();
-        this.dataProviderFetched.clear();
-        this.dataProviderSelectedRow.clear();
-        this.dataProviderSortedColumns.clear();
+        //this.dataProviderData.clear();
+        //this.dataProviderMetaData.clear();
+        //this.dataProviderFetched.clear();
+        //this.dataProviderSelectedRow.clear();
+        //this.dataProviderSortedColumns.clear();
         this.activeScreens = [];
         this.selectedMenuItem = "";
         this.toolbarItems = [];
@@ -664,8 +673,28 @@ export default class ContentStore{
         return comp?.name
     }
 
-    //Data Provider Management
+    isPopup(comp:IPanel) {
+        if (comp.screen_modal_ || comp.content_modal_) {
+            return true;
+        }
+        return false;
+    }
 
+    getScreenDataproviderMap(screenId:string): Map<string, IDataBook>|undefined {
+        if (this.dataBooks.has(screenId)) {
+            return this.dataBooks.get(screenId);
+        }
+        return undefined
+    }
+
+    getDataBook(screenId:string, dataProvider:string): IDataBook|undefined {
+        if (this.getScreenDataproviderMap(screenId)?.has(dataProvider)) {
+            return this.getScreenDataproviderMap(screenId)!.get(dataProvider);
+        }
+        return undefined;
+    }
+
+    //Data Provider Management
     /**
      * Sets or updates data of a dataprovider in a map and notifies components which use the useDataProviderData hook.
      * If the dataprovider has a master-reference, it saves its data in a Map, the key is the respective primary key
@@ -690,8 +719,8 @@ export default class ContentStore{
         referenceKey?:string,
         recordFormat?: RecordFormat,
     ) {
-
-        const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, any>, addDPD?:boolean) => {
+        const compPanel = this.getComponentByName(compId) as IPanel;
+        const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
                 mapProv.set(referenceKey, newDataSet)
             } else {
@@ -699,18 +728,24 @@ export default class ContentStore{
             }
                 
             if (mapScreen) {
-                mapScreen.set(dataProvider, mapProv);
+                if (mapScreen.has(dataProvider)) {
+                    (mapScreen.get(dataProvider) as IDataBook).data = mapProv;
+                }
+                else {
+                    mapScreen.set(dataProvider, {data: mapProv});
+                }
+                
                 if (addDPD) {
-                    this.dataProviderData.set(compId, mapScreen);
+                    this.dataBooks.set(compId, mapScreen);
                 }
             }
         }
 
-        const existingMap = this.dataProviderData.get(compId);
+        const existingMap = this.getScreenDataproviderMap(compId);
         if (existingMap) {
-            const existingProvider = existingMap.get(dataProvider);
-            if (existingProvider) {
-                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+            const existingProvider = this.getDataBook(compId, dataProvider);
+            if (existingProvider && existingProvider.data) {
+                const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
                     if (existingData.length <= from) {
                         existingData.push(...newDataSet);
@@ -722,23 +757,32 @@ export default class ContentStore{
                             newDataSetIndex++;
                         }
                     }
-                } else {
-                    fillDataMap(existingProvider);
+                } 
+                else {
+                    fillDataMap(existingProvider.data);
                 }
             } 
             else {
-                const providerMap = new Map<string, Array<any>>();
-                fillDataMap(providerMap, existingMap);
+                    const providerMap = new Map<string, Array<any>>();
+                    fillDataMap(providerMap, existingMap);
             }
-        } 
+        }
         else {
-            const dataMap = new Map<string, any>();
-            const providerMap = new Map<string, Array<any>>();
-            fillDataMap(providerMap, dataMap, true);
+            const dataMap = new Map<string, IDataBook>();
+            // if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
+            //     fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, dataMap, true);
+            // }
+            // else {
+                const providerMap = new Map<string, Array<any>>();
+                fillDataMap(providerMap, dataMap, true);
+            // }
         }
         this.subManager.notifyDataChange(compId, dataProvider);
         this.subManager.notifyScreenDataChange(compId);
-        
+        if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+            this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
+            this.subManager.notifyScreenDataChange(dataProvider.split('/')[1]);
+        }
     }
 
     /**
@@ -749,13 +793,13 @@ export default class ContentStore{
      * @param referenceKey - the primary key value of the master-reference
      */
     insertDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
-        const existingMap = this.dataProviderData.get(compId);
+        const existingMap = this.getScreenDataproviderMap(compId);
         if (existingMap) {
-            const existingProvider = existingMap.get(dataProvider);
-            if (existingProvider) {
-                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+            const existingProvider = this.getDataBook(compId, dataProvider);
+            if (existingProvider && existingProvider.data) {
+                const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
-                    const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+                    const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
                     if (selectedRow) {
                         existingData.splice(selectedRow.index + 1, 0, {});
                     }
@@ -774,22 +818,21 @@ export default class ContentStore{
      * @param referenceKey - the primary key value of the master-reference
      */
     deleteDataProviderData(compId:string, dataProvider:string, index?:number, referenceKey?:string) {
-        const existingMap = this.dataProviderData.get(compId);
+        const existingMap = this.getScreenDataproviderMap(compId);
         if (existingMap) {
-            const existingProvider = existingMap.get(dataProvider);
-            if (existingProvider) {
-                const existingData = referenceKey ? existingProvider.get(referenceKey) : existingProvider.get("current");
+            const existingProvider = this.getDataBook(compId, dataProvider);
+            if (existingProvider && existingProvider.data) {
+                const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
                     if (index) {
                         existingData.splice(index, 1);
                     }
                     else {
-                        const selectedRow = this.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+                        const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
                         if (selectedRow) {
                             existingData.splice(selectedRow.index, 1);
                         }
                     }
-
                 }
             }
         }
@@ -804,7 +847,7 @@ export default class ContentStore{
      * @returns either a part of the data of a dataprovider specified by "from" and "to" or all data
      */
     getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
-        let dataArray = this.dataProviderData.get(compId)?.get(dataProvider);
+        let dataArray:any = this.getDataBook(compId, dataProvider)?.data;
         if (dataArray) {
             dataArray = dataArray.get("current")
             if(from !== undefined && to !== undefined) {
@@ -837,16 +880,26 @@ export default class ContentStore{
      * @param dataRow - the selectedDataRow
      */
     setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
-        const existingMapRow = this.dataProviderSelectedRow.get(compId);
-        if (existingMapRow) {
-            existingMapRow.set(dataProvider, {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn});
+        const compPanel = this.getComponentByName(compId) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(compId);
+        if (existingMap) {
+            if (existingMap.has(dataProvider)) {
+                (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
+            }
+            else {
+                existingMap.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+            }
+            
         }
         else {
-            const tempMapRow:Map<string, any> = new Map<string, any>();
-            tempMapRow.set(dataProvider, {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn});
-            this.dataProviderSelectedRow.set(compId, tempMapRow);
+            const tempMapRow:Map<string, IDataBook> = new Map<string, IDataBook>();
+            tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+            this.dataBooks.set(compId, tempMapRow);
         }
         this.subManager.emitRowSelect(compId, dataProvider);
+        if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+            this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
+        }
     }
 
     /**
@@ -855,16 +908,23 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      */
     clearSelectedRow(compId:string, dataProvider: string) {
-        this.dataProviderSelectedRow.get(compId)?.delete(dataProvider);
-        this.subManager.emitRowSelect(compId, dataProvider);
+        const compPanel = this.getComponentByName(compId) as IPanel;
+        if (this.getDataBook(compId, dataProvider)) {
+            this.getDataBook(compId, dataProvider)!.selectedRow = undefined;
+            this.subManager.emitRowSelect(compId, dataProvider);
+            if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+                this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
+            }
+        }
     }
 
     clearDataFromSubPage(compId:string, detailReferences?:MetaDataReference[]) {
+        const compPanel = this.getComponentByName(compId) as IPanel;
         if (detailReferences !== undefined) {
             detailReferences.forEach(reference => {
                 const referencedDataBook = reference.referencedDataBook;
                 const metaData = getMetaData(compId, referencedDataBook, this);
-                const dataBookData = this.dataProviderData.get(compId)?.get(referencedDataBook);
+                const dataBookData = this.getDataBook(compId, referencedDataBook)?.data;
                 if (dataBookData) {
                     for (let [key] of dataBookData) {
                         if (key !== "current") {
@@ -877,6 +937,10 @@ export default class ContentStore{
                 }
                 this.subManager.notifyDataChange(compId, referencedDataBook);
                 this.subManager.notifyScreenDataChange(compId);
+                if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(referencedDataBook.split('/')[1])) {
+                    this.subManager.notifyDataChange(referencedDataBook.split('/')[1], referencedDataBook);
+                    this.subManager.notifyScreenDataChange(referencedDataBook.split('/')[1]);
+                }
             });
         }
     }
@@ -887,7 +951,7 @@ export default class ContentStore{
      * @param dataProvider - the dataprovider
      */
     clearDataFromProvider(compId:string, dataProvider: string) {
-        const data = this.dataProviderData.get(compId)?.get(dataProvider);
+        const data = this.getDataBook(compId, dataProvider)?.data;
         const metaData = getMetaData(compId, dataProvider, this);
         if (data) {
             data.delete("current");
@@ -895,18 +959,6 @@ export default class ContentStore{
         
         if (metaData && metaData.masterReference === undefined) {
             this.clearDataFromSubPage(compId, metaData.detailReferences);
-        }
-    }
-
-    fillColumnDataProviderMap(compId:string, dataProvider:string, map:Map<string, any>, value:any) {
-        const existingMap = map.get(compId);
-        if (existingMap) {
-            existingMap.set(dataProvider, value)
-        }
-        else {
-            const provMap = new Map<string, SortDefinition[]>();
-            provMap.set(dataProvider, value);
-            map.set(compId, provMap);
         }
     }
 
@@ -918,8 +970,20 @@ export default class ContentStore{
      * @param sortDefinitions - the sort-definitions
      */
     setSortDefinition(compId: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
-        this.fillColumnDataProviderMap(compId, dataProvider, this.dataProviderSortedColumns, sortDefinitions);
+        const compPanel = this.getComponentByName(compId) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(compId);
+        if (existingMap) {
+            if (existingMap.has(dataProvider)) {
+                (existingMap.get(dataProvider) as IDataBook).sortedColumns = sortDefinitions;
+            }
+            else {
+                existingMap.set(dataProvider, {sortedColumns: sortDefinitions})
+            }
+        }
         this.subManager.notifySortDefinitionChange(compId, dataProvider);
+        if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+            this.subManager.notifySortDefinitionChange(dataProvider.split('/')[1], dataProvider);
+        }
     }
 
     /**

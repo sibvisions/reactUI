@@ -3,7 +3,7 @@ import {parseString} from "xml2js"
 import * as _ from 'underscore'
 
 /** Other imports */
-import ContentStore from "./ContentStore"
+import ContentStore, { IDataBook } from "./ContentStore"
 import { ApplicationMetaDataResponse,
          BaseResponse,
          MenuResponse,
@@ -350,8 +350,10 @@ class Server {
             if(genericData.changedComponents && genericData.changedComponents.length) {
                 workScreen = genericData.changedComponents[0] as IPanel
                 this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+                if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
+                    this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                }
             }
-            
             this.onOpenScreenFunction();
         }
     }
@@ -425,9 +427,11 @@ class Server {
             }
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
-            const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).dataRow;
-            const idx = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider).index;
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
+            if(this.contentStore.getDataBook(compId, dataProvider)?.selectedRow) {
+                const selectedRow = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.dataRow;
+                const idx = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.index;
+                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
+            }
         }
     }
 
@@ -479,7 +483,6 @@ class Server {
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
-        this.contentStore.dataProviderFetched.set(compId, tempMap);
                 
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
@@ -492,10 +495,14 @@ class Server {
             detailMapKey,
             fetchData.recordFormat,
         );
+
+        if (this.contentStore.getDataBook(compId, fetchData.dataProvider)) {
+            this.contentStore.getDataBook(compId, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
+        }
         
         this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
-        const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(fetchData.dataProvider)?.selectedColumn;
+        const selectedColumn = this.contentStore.getDataBook(compId, fetchData.dataProvider)?.selectedRow?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
     }
 
@@ -511,7 +518,7 @@ class Server {
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
             this.contentStore.updateDataProviderData(compId, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
-            const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
+            const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
         else {
@@ -529,7 +536,7 @@ class Server {
                 await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
             }
             else {
-                const selectedColumn = this.contentStore.dataProviderSelectedRow.get(compId)?.get(changedProvider.dataProvider)?.selectedColumn
+                const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
                 this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
             }
         }
@@ -541,17 +548,24 @@ class Server {
      */
     processMetaData(metaData: MetaDataResponse) {
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
-        const existingMap = this.contentStore.dataProviderMetaData.get(compId);
+        const compPanel = this.contentStore.getComponentByName(compId) as IPanel;
+        const existingMap = this.contentStore.getScreenDataproviderMap(compId);
         if (existingMap) {
-            existingMap.set(metaData.dataProvider, metaData);
-            this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
+            if (existingMap.has(metaData.dataProvider)) {
+                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
+            }
+            else {
+                existingMap.set(metaData.dataProvider, {metaData: metaData});
+            }
         }
-
         else {
-            const tempMap:Map<string, MetaDataResponse> = new Map<string, MetaDataResponse>();
-            tempMap.set(metaData.dataProvider, metaData)
-            this.contentStore.dataProviderMetaData.set(compId, tempMap);
-            this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
+            const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
+            tempMap.set(metaData.dataProvider, {metaData: metaData})
+            this.contentStore.dataBooks.set(compId, tempMap);
+        }
+        this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
+        if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
+            this.subManager.notifyMetaDataChange(metaData.dataProvider.split('/')[1], metaData.dataProvider);
         }
     }
 

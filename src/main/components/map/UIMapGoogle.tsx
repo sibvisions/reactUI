@@ -7,7 +7,7 @@ import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useProperties, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";

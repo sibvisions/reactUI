@@ -20,10 +20,10 @@ const useFetchMissingData = (compId:string, dataProvider:string) => {
 
     useLayoutEffect(() => {
         if (mdReady) {
-            if (dataProvider && !context.contentStore.dataProviderData.get(compId)?.has(dataProvider)) {
+            if (dataProvider && !context.contentStore.getDataBook(compId, dataProvider)?.data) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = dataProvider;
-                if (!context.contentStore.dataProviderMetaData.get(compId)?.has(dataProvider)) {
+                if (!context.contentStore.getDataBook(compId, dataProvider)?.metaData) {
                     fetchReq.includeMetaData = true;
                 }
                 showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);

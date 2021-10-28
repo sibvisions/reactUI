@@ -89,7 +89,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
-    const [linkRefData, setLinkRefData] = useState<Map<string, any[]>>(context.contentStore.dataProviderData.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook));
+    const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -310,7 +310,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }
 
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !context.contentStore.dataProviderFetched.get(compId)?.get(props.cellEditor.linkReference.referencedDataBook || "")) {
+        if (event.last >= providedData.length && !context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;

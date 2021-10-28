@@ -679,10 +679,10 @@ export class SubscriptionManager {
      * @param compId - the component id of the screen
      * @param dataProvider - the dataprovider
      */
-     emitRowSelect(compId:string, dataProvider: string){
+     emitRowSelect(compId:string, dataProvider: string) {
         const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
-        const selectedRow = this.contentStore.dataProviderSelectedRow.get(compId)?.get(dataProvider);
+        const selectedRow = this.contentStore.getDataBook(compId, dataProvider)?.selectedRow;
         if(rowSubscriber) {
             this.jobQueue.set("rowSelect_" + dataProvider, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
         }

@@ -15,7 +15,7 @@ const useAllDataProviderData = (compId:string, dataBooks:string[]): Map<string, 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of dataMap */
-    const [dataMap, setDataMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.dataProviderData.get(compId), dataBooks));
+    const [dataMap, setDataMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks));
 
     /**
      * Subscribes to screenDataChange
@@ -24,7 +24,7 @@ const useAllDataProviderData = (compId:string, dataBooks:string[]): Map<string, 
     useEffect(() => {
         /** sets the state */
         const onScreenDataChange = () => {
-            const a = getDataProvidersOfComp(context.contentStore.dataProviderData.get(compId), dataBooks)
+            const a = getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks)
             setDataMap(new Map(a));
         }
 

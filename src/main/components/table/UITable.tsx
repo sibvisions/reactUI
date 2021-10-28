@@ -1158,9 +1158,8 @@ const UITable: FC<TableProps> = (baseProps) => {
      */
     const handleVirtualScroll = (e: {first: number, rows: number}) => {
         const slicedProviderData = providerData.slice(e.first, e.first+e.rows);
-        const isAllFetched = context.contentStore.dataProviderFetched.get(compId)?.get(props.dataBook);
         firstRowIndex.current = e.first;
-        if((providerData.length < e.first+(e.rows*2)) && !isAllFetched) {
+        if((providerData.length < e.first+(e.rows*2)) && !context.contentStore.getDataBook(compId, props.dataBook)?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
             fetchReq.fromRow = providerData.length;

@@ -17,11 +17,11 @@ const useAllRowSelect = (compId:string, dataBooks:string[], column?:string) => {
     const context = useContext(appContext);
 
     /** Current state of dataMap */
-    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks, column));
+    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks, column));
 
     useEffect(() => {
         const onScreenSelectedRowChange = () => {
-            const a = getDataProvidersOfComp(context.contentStore.dataProviderSelectedRow.get(compId), dataBooks, column);
+            const a = getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks, column);
             setSelectedRowMap(new Map(a));
         }
 
