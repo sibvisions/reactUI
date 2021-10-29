@@ -37,20 +37,29 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
         clickReq.x = event.x;
         clickReq.y = event.y;
         clickReq.clickCount = event.detail;
-        showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar);
+        if (eventMouseClicked) {
+            showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar);
+        }
     }
 
     const handleMouse = (event:MouseEvent, released:boolean) => {
+        event.stopPropagation();
         const pressReq = createMouseRequest();
         pressReq.componentId = compName;
         pressReq.button = getMouseButton(event.button);
         pressReq.x = event.x;
         pressReq.y = event.y;
         if (released && pressedElement.current) {
-            showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+            if (eventMouseReleased) {
+                showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+            }
         }
         else if (!released) {
-            showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+            console.log(compName, eventMousePressed)
+            if (eventMousePressed) {
+                showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+            }
+            
         }
         if (!released) {
             pressedElement.current = true;
@@ -60,8 +69,8 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
         }
     }
 
-    useEventHandler(element, "mouseup", eventMouseClicked ? (event) =>  handleMouseClicked(event as MouseEvent) : undefined);
-    useEventHandler(element, "mousedown", eventMousePressed ? (event) => handleMouse(event as MouseEvent, false) : undefined);
-    useEventHandler(document.body, "mouseup", eventMouseReleased ? (event) => handleMouse(event as MouseEvent, true) : undefined);
+    useEventHandler(element, "mouseup", (event) =>  handleMouseClicked(event as MouseEvent));
+    useEventHandler(element, "mousedown", (event) => handleMouse(event as MouseEvent, false));
+    useEventHandler(document.body, "mouseup", (event) => handleMouse(event as MouseEvent, true));
 }
 export default useMouseListener;

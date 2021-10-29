@@ -100,7 +100,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             });
         });
 
-        context.subscriptions.subscribeToSessionExpired((show:boolean) => setSessionExpired(show));
+        context.subscriptions.subscribeToErrorDialog((show:boolean) => setSessionExpired(show));
 
 
         return () => {
@@ -116,7 +116,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     save: appSettings.save
                 });
             });
-            context.subscriptions.unsubscribeFromSessionExpired((show:boolean) => setSessionExpired(show));
+            context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));
         }
     }, [context.subscriptions])
 

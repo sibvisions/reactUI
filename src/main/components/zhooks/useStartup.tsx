@@ -113,7 +113,7 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
 
         const afterStartup = (results:BaseResponse[]) => {
             if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
-                context.subscriptions.emitSessionExpired(false);
+                context.subscriptions.emitErrorDialogVisible(false);
             }
             initWS(context.server.BASE_URL);
         }
@@ -152,7 +152,8 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                     }
                 }
                 else if (!config) {
-                    context.subscriptions.emitErrorDialog("server", "URL Parameter Error", "Missing Configuration!");
+                    context.subscriptions.emitErrorDialog("server", false, "URL Parameter Error", "Missing Configuration!");
+                    context.subscriptions.emitErrorDialogVisible(true);
                 }
 
                 if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {

@@ -1,8 +1,7 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useLayoutEffect, useState } from "react"
 
 /** 3rd Party imports */
-import { Dialog } from 'primereact/dialog';
 import { Helmet } from "react-helmet";
 
 /** Other imports */
@@ -11,11 +10,12 @@ import UIToast from './main/components/toast/UIToast';
 import { appContext, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
-import SessionExpired from "./frontmask/sessionExpired/SessionExpired";
+import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
 
 type ServerFailMessage = {
     headerMessage:string,
-    bodyMessage:string
+    bodyMessage:string,
+    sessionExpired:boolean
 }
 
 type IAppWrapper = {
@@ -26,15 +26,12 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** State if timeout error should be shown */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
-
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
     /** Reference for the dialog which shows the timeout error message */
-    const dialogRef = useRef<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server." });
+    const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false });
 
     useLayoutEffect(() => {
         const link:HTMLLinkElement = document.createElement('link'); 
@@ -49,17 +46,13 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from session and app-ready
      */
      useEffect(() => {
-        context.subscriptions.subscribeToDialog("server", (header:string, body:string) => {
-            dialogRef.current.headerMessage = header;
-            dialogRef.current.bodyMessage = body;
-            setDialogVisible(true);
-        });
+        context.subscriptions.subscribeToDialog("server", (header:string, body:string, sessionExp:boolean) => setErrorProps({ headerMessage: header, bodyMessage: body, sessionExpired: sessionExp }));
 
-        context.subscriptions.subscribeToSessionExpired((show:boolean) => setSessionExpired(show));
+        context.subscriptions.subscribeToErrorDialog((show:boolean) => setDialogVisible(show));
 
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
-            context.subscriptions.unsubscribeFromSessionExpired((show:boolean) => setSessionExpired(show));
+            context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setDialogVisible(show));
         }
     },[context.subscriptions]);
 
@@ -70,10 +63,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             </Helmet>
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />
-            <Dialog header={dialogRef.current.headerMessage.toString()} visible={dialogVisible} closable={false} onHide={() => setDialogVisible(false)} resizable={false} draggable={false}>
-                <p>{dialogRef.current.bodyMessage.toString()}</p>
-            </Dialog>
-            {sessionExpired && <SessionExpired />}
+            {dialogVisible && <ErrorDialog headerMessage={errorProps.headerMessage} bodyMessage={errorProps.bodyMessage} sessionExpired={errorProps.sessionExpired} />}
             <PopupContextProvider>
                 <TopBar>
                     {props.children}

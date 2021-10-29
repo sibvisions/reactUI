@@ -101,7 +101,7 @@ export class SubscriptionManager {
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
 
-    sessionExpiredSubscriber:Array<Function> = new Array<Function>();
+    errorDialogSubscriber:Array<Function> = new Array<Function>();
 
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
@@ -369,8 +369,8 @@ export class SubscriptionManager {
      * Subscribes the app to session-expired to flip the flag and reinitiate
      * @param fn - the function to flip the session-expired-state
      */
-    subscribeToSessionExpired(fn:Function) {
-        this.sessionExpiredSubscriber.push(fn);
+    subscribeToErrorDialog(fn:Function) {
+        this.errorDialogSubscriber.push(fn);
     }
 
     /**
@@ -580,8 +580,8 @@ export class SubscriptionManager {
     }
 
     /** Unsubscribes app from session-expired */
-    unsubscribeFromSessionExpired(fn:Function) {
-        this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    unsubscribeFromErrorDialog(fn:Function) {
+        this.errorDialogSubscriber.splice(this.errorDialogSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /** Unsubscribes UIToast from message-responses */
@@ -722,10 +722,10 @@ export class SubscriptionManager {
     }
 
     /** Tell the subscribers to show the change-password-dialog */
-    emitErrorDialog(id:string, header?:string, body?:string) {
+    emitErrorDialog(id:string, sessionExpired:boolean, header?:string, body?:string) {
         const func = this.dialogSubscriber.get(id);
         if (func) {
-            func.apply(undefined, [header, body]);
+            func.apply(undefined, [header, body, sessionExpired]);
         }
     }
 
@@ -750,8 +750,8 @@ export class SubscriptionManager {
     }
 
     /** Tell app that session has expired */
-    emitSessionExpired(show:boolean) {
-        this.sessionExpiredSubscriber.forEach((subFunc) => subFunc.apply(undefined, [show]));
+    emitErrorDialogVisible(show:boolean) {
+        this.errorDialogSubscriber.forEach((subFunc) => subFunc.apply(undefined, [show]));
     }
 
     emitRestart() {

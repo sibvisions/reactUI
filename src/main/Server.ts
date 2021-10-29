@@ -211,7 +211,8 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitErrorDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                this.subManager.emitErrorDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                this.subManager.emitErrorDialogVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
             promise.then(res => {
@@ -219,7 +220,8 @@ class Server {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitErrorDialog("server", "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                    this.subManager.emitErrorDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                    this.subManager.emitErrorDialogVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
             });
@@ -630,7 +632,8 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        this.subManager.emitSessionExpired(true);
+        this.subManager.emitErrorDialog("server", true, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
+        this.subManager.emitErrorDialogVisible(true);
         this.contentStore.reset();
         sessionStorage.clear();
         console.error(expData.title);

@@ -9,7 +9,7 @@
     opacity: 0.2;
 }
 
-.rc-session-expired {
+.rc-error-dialog {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -30,12 +30,12 @@
     }
 }
 
-.rc-session-expired-header-text, .rc-session-expired-header-icon {
+.rc-error-dialog-header-text, .rc-error-dialog-header-icon {
     font-size: 2em;
     font-weight: bold;
     margin-bottom: 1rem;
 }
 
-.rc-session-expired-header-icon {
+.rc-error-dialog-header-icon {
     margin-right: 8px;
 }
