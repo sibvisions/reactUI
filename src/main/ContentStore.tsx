@@ -753,6 +753,9 @@ export default class ContentStore{
                     else {
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
+                            if (newDataSet[newDataSetIndex].recordStatus === "I") {
+                                this.insertDataProviderData(compId, dataProvider)
+                            }
                             existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
                         }
