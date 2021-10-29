@@ -1438,6 +1438,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                         if (selectedRow && selectedRow.data === data) {
                             cn["p-highlight"] = true;
                         }
+                        if (data.recordStatus === "D") {
+                            cn["row-deleted"] = true;
+                        }
                         return cn
                     }}
                     tabIndex={props.tabIndex}

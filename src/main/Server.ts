@@ -468,6 +468,7 @@ class Server {
             fetchData.columnNames.forEach((columnName, index) => {
                 data[columnName] = record[index];
             });
+            data.recordStatus = record[Object.keys(record).length-1]
             return data;
         });
     }

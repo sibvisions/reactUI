@@ -76,7 +76,18 @@ tr.p-highlight{
             &.table-row-selected {
                 background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
             }
+
+            &.row-deleted td:before {
+                content: " ";
+                position: absolute;
+                top: 50%;
+                left: 0;
+                border-bottom: 1px solid #111;
+                width: 100%;
+            }
+
             >td {
+                position: relative;
                 height: 35px;
                 padding: 0.2rem 0.4rem;
                 overflow: hidden;
