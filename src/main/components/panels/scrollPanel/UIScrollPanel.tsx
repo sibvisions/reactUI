@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
@@ -47,7 +47,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const minusHeight = useRef<boolean>(false);
 
     /** State of layoutsize */
-    const [layoutSize, setLayoutSize] = useState<Dimension>()
+    const [layoutSize, setLayoutSize] = useState<Dimension>();
 
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -113,6 +113,15 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             setLayoutSize
         )
     }
+
+    useEffect(() => {
+        if (layoutStyle?.visibility !== "hidden") {
+            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
+                call.apply(undefined, []);
+                context.contentStore.missingDataCalls.delete(key);
+            });
+        }
+    }, [layoutStyle?.visibility]);
 
     return (
         <>

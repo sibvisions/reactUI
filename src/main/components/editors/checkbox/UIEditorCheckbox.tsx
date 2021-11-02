@@ -59,7 +59,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.parent as string, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

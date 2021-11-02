@@ -11,24 +11,17 @@ const useFetchMissingData = (compId:string, dataProvider:string) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const [mdReady, setMdReady] = useState<boolean>(false);
-
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMissingData(compId, () => setMdReady(true));
-        return () => context.subscriptions.unsubscribeFromMissingData(compId, () => setMdReady(true));
-    }, [dataProvider])
-
-    useLayoutEffect(() => {
-        if (mdReady) {
-            if (dataProvider && !context.contentStore.getDataBook(compId, dataProvider)?.data) {
-                const fetchReq = createFetchRequest();
-                fetchReq.dataProvider = dataProvider;
-                if (!context.contentStore.getDataBook(compId, dataProvider)?.metaData) {
-                    fetchReq.includeMetaData = true;
-                }
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
+        if (dataProvider && !context.contentStore.getDataBook(compId, dataProvider)?.data) {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = dataProvider;
+            if (!context.contentStore.getDataBook(compId, dataProvider)?.metaData) {
+                fetchReq.includeMetaData = true;
+            }
+            if (context.contentStore.missingDataCalls.has(compId)) {
+                context.contentStore.missingDataCalls.get(compId)!.set(dataProvider, () => showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar));
             }
         }
-    },[mdReady]);
+    }, []);
 }
 export default useFetchMissingData

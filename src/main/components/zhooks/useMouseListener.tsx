@@ -55,7 +55,6 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             }
         }
         else if (!released) {
-            console.log(compName, eventMousePressed)
             if (eventMousePressed) {
                 showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
             }

@@ -93,6 +93,8 @@ class Server {
 
     lastClosedWasPopUp = false;
 
+    
+
     setAPI(api:API) {
         this.api = api;
     }
@@ -163,14 +165,6 @@ class Server {
                     .then((response: any) => response.json())
                     .then(this.responseHandler.bind(this))
                     .then(results => {
-                        results.forEach(result => {
-                            if (result.name === RESPONSE_NAMES.SCREEN_GENERIC && !(result as GenericResponse).update) {
-                                if ((result as GenericResponse).changedComponents.length) {
-                                    this.subManager.notifyMissingDataChanged((result as GenericResponse).changedComponents[0].name);
-                                }
-                            }
-                        })
-
                         if (fn) {
                             fn.forEach(func => func.apply(undefined, []))
                         }
@@ -214,7 +208,6 @@ class Server {
             let timeoutId= setTimeout(() => {
                 this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here to retry!</u> or press Escape to retry!", retry);
                 this.subManager.emitErrorDialogVisible(true);
-                console.log('before reject 2')
                 reject(new Error("timeOut"))
             }, ms);
             promise.then(res => {
@@ -225,7 +218,6 @@ class Server {
                     this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
                     this.subManager.emitErrorDialogVisible(true);
                     clearTimeout(timeoutId);
-                    console.log('before reject')
                     reject(err);
             });
         });
@@ -353,7 +345,7 @@ class Server {
         if (!genericData.update) {
             let workScreen:IPanel|undefined
             if(genericData.changedComponents && genericData.changedComponents.length) {
-                workScreen = genericData.changedComponents[0] as IPanel
+                workScreen = genericData.changedComponents[0] as IPanel;
                 this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
                 if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
                     this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);

@@ -129,8 +129,6 @@ export class SubscriptionManager {
     /** An array of functions to update the active-screen subscriber */
     activeScreenSubscriber = new Array<Function>();
 
-    missingDataSubscriber = new Map<string, Array<Function>>();
-
     restartSubscriber:Function = () => {};
 
     /** 
@@ -398,15 +396,6 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.push(fn);
     }
 
-    subscribeToMissingData(compId:string, fn:Function) {
-        const subscriber = this.missingDataSubscriber.get(compId);
-        if (subscriber)
-            subscriber.push(fn)
-        else {
-            this.missingDataSubscriber.set(compId, new Array<Function>(fn));
-        }
-    }
-
     subscribeToRestart(fn:Function) {
         this.restartSubscriber = fn;
     }
@@ -601,12 +590,6 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.splice(this.activeScreenSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
-    unsubscribeFromMissingData(compId:string, fn: Function) {
-        const subscriber = this.missingDataSubscriber.get(compId)
-        if (subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
-    }
-
     unsubscribeFromRestart() {
         this.restartSubscriber = () => {};
     }
@@ -668,10 +651,6 @@ export class SubscriptionManager {
      */
     notifySortDefinitionChange(compId:string, dataProvider:string) {
         this.sortDefinitionSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
-    }
-
-    notifyMissingDataChanged(compId:string) {
-        this.missingDataSubscriber.get(compId)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useContext, useRef } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
@@ -38,7 +38,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     const prefSize = parsePrefSize(props.preferredSize);
 
     /** Reference for the panel element */
-    const panelRef = useRef<any>(null)
+    const panelRef = useRef<any>(null);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -60,6 +60,15 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             onLoadCallback
         )
     }
+
+    useEffect(() => {
+        if (layoutStyle?.visibility !== "hidden") {
+            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
+                call.apply(undefined, []);
+                context.contentStore.missingDataCalls.delete(key);
+            });
+        }
+    }, [layoutStyle?.visibility]);
 
     return (
         <>

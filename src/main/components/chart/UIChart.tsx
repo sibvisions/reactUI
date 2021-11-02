@@ -553,7 +553,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }, [props.chartStyle, providerData]);
 
-    useFetchMissingData(compId, props.dataBook);
+    useFetchMissingData(props.parent as string, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

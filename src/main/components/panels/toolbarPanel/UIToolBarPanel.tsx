@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useRef } from "react";
+import React, { FC, useContext, useEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
@@ -60,6 +60,15 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             onLoadCallback
         )
     }
+
+    useEffect(() => {
+        if (layoutStyle?.visibility !== "hidden") {
+            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
+                call.apply(undefined, []);
+                context.contentStore.missingDataCalls.delete(key);
+            });
+        }
+    }, [layoutStyle?.visibility]);
 
     return (
         <>

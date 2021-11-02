@@ -95,7 +95,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.parent as string, props.dataRow);
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

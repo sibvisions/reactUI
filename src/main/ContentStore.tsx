@@ -34,7 +34,8 @@ export interface IDataBook {
     metaData?: MetaDataResponse,
     allFetched?: boolean,
     selectedRow?: ISelectedRow,
-    sortedColumns?: SortDefinition[]
+    sortedColumns?: SortDefinition[],
+    missingDataFetched?: boolean
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -140,6 +141,8 @@ export default class ContentStore{
     globalComponents:Map<string, Function> = new Map<string, Function>();
 
     dialogButtons:Array<string> = new Array<string>();
+
+    missingDataCalls: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -449,6 +452,13 @@ export default class ContentStore{
             if (newCompAsPanel.screen_className_) {
                 this.selectedMenuItem = newCompAsPanel.screen_className_
                 this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
+            }
+
+            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL 
+                || newCompAsPanel.className === COMPONENT_CLASSNAMES.GROUPPANEL 
+                || newCompAsPanel.className === COMPONENT_CLASSNAMES.SCROLLPANEL 
+                || newCompAsPanel.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                this.missingDataCalls.set(newCompAsPanel.id, new Map<string, Function>());
             }
         });
 

@@ -138,7 +138,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     setDateLocale(context.appSettings.locale);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.parent as string, props.dataRow);
 
     const isValidDate = (inputDate:any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());

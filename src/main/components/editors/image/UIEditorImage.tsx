@@ -56,7 +56,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.parent as string, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
