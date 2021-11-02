@@ -30,6 +30,12 @@
     }
 }
 
+.rc-error-dialog-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .rc-error-dialog-header-text, .rc-error-dialog-header-icon {
     font-size: 2em;
     font-weight: bold;
