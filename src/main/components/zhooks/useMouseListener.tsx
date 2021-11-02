@@ -43,7 +43,9 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
     }
 
     const handleMouse = (event:MouseEvent, released:boolean) => {
-        event.stopPropagation();
+        if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
+            event.stopPropagation();
+        }
         const pressReq = createMouseRequest();
         pressReq.componentId = compName;
         pressReq.button = getMouseButton(event.button);

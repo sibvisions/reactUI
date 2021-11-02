@@ -66,6 +66,14 @@ tr.p-highlight{
             &.p-highlight {
                 color: white;
 
+                > td.p-highlight:hover {
+                    color: white;
+                }
+
+                > td:hover {
+                    color: black;
+                }
+
                 .cancel-padding {
                     box-shadow: inset 0 0 0 1000px rgba(#1b87e3 , .4);
                 }
