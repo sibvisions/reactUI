@@ -722,10 +722,10 @@ export class SubscriptionManager {
     }
 
     /** Tell the subscribers to show the change-password-dialog */
-    emitErrorDialog(id:string, sessionExpired:boolean, header?:string, body?:string) {
+    emitDialog(id:string, sessionExpired:boolean, header?:string, body?:string, retryFunc?:Function) {
         const func = this.dialogSubscriber.get(id);
         if (func) {
-            func.apply(undefined, [header, body, sessionExpired]);
+            func.apply(undefined, [header, body, sessionExpired, retryFunc]);
         }
     }
 

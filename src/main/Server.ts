@@ -159,7 +159,7 @@ class Server {
                 reject("Component doesn't exist");
             }
             else {
-                this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000)
+                this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000, () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests))
                     .then((response: any) => response.json())
                     .then(this.responseHandler.bind(this))
                     .then(results => {
@@ -186,6 +186,7 @@ class Server {
                     }).then(results => {
                         resolve(results);
                     }).catch(error => {
+                        reject();
                         console.error(error)
                     }).finally(() => {
                         this.openRequests.delete(request);
@@ -208,11 +209,12 @@ class Server {
      * @param promise - the promise
      * @param ms - the ms to wait before a timeout
      */
-    timeoutRequest(promise: Promise<any>, ms: number) {
+    timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitErrorDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here to retry!</u> or press Escape to retry!", retry);
                 this.subManager.emitErrorDialogVisible(true);
+                console.log('before reject 2')
                 reject(new Error("timeOut"))
             }, ms);
             promise.then(res => {
@@ -220,9 +222,10 @@ class Server {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitErrorDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds.");
+                    this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
                     this.subManager.emitErrorDialogVisible(true);
                     clearTimeout(timeoutId);
+                    console.log('before reject')
                     reject(err);
             });
         });
@@ -632,7 +635,7 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        this.subManager.emitErrorDialog("server", true, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
+        this.subManager.emitDialog("server", true, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
         this.subManager.emitErrorDialogVisible(true);
         this.contentStore.reset();
         sessionStorage.clear();

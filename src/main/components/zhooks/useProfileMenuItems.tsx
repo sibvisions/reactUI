@@ -49,7 +49,7 @@ const useProfileMenuItems = () => {
                     label: translations.get("Change password"),
                     icon: "pi pi-lock-open",
                     command(e: MenuItemCommandParams) {
-                        context.subscriptions.emitErrorDialog("change-password", false)
+                        context.subscriptions.emitDialog("change-password", false)
                     }
                 },
                 {

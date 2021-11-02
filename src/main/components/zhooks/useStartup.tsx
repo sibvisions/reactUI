@@ -152,7 +152,7 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                     }
                 }
                 else if (!config) {
-                    context.subscriptions.emitErrorDialog("server", false, "URL Parameter Error", "Missing Configuration!");
+                    context.subscriptions.emitDialog("server", false, "URL Parameter Error", "Missing Configuration!");
                     context.subscriptions.emitErrorDialogVisible(true);
                 }
 

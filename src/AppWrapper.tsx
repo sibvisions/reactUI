@@ -15,7 +15,8 @@ import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
 type ServerFailMessage = {
     headerMessage:string,
     bodyMessage:string,
-    sessionExpired:boolean
+    sessionExpired:boolean,
+    retry:Function
 }
 
 type IAppWrapper = {
@@ -31,7 +32,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
     /** Reference for the dialog which shows the timeout error message */
-    const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false });
+    const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
 
     useLayoutEffect(() => {
         const link:HTMLLinkElement = document.createElement('link'); 
@@ -46,7 +47,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from session and app-ready
      */
      useEffect(() => {
-        context.subscriptions.subscribeToDialog("server", (header:string, body:string, sessionExp:boolean) => setErrorProps({ headerMessage: header, bodyMessage: body, sessionExpired: sessionExp }));
+        context.subscriptions.subscribeToDialog("server", (header:string, body:string, sessionExp:boolean, retry:Function) => setErrorProps({ headerMessage: header, bodyMessage: body, sessionExpired: sessionExp, retry: retry }));
 
         context.subscriptions.subscribeToErrorDialog((show:boolean) => setDialogVisible(show));
 
@@ -63,7 +64,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             </Helmet>
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />
-            {dialogVisible && <ErrorDialog headerMessage={errorProps.headerMessage} bodyMessage={errorProps.bodyMessage} sessionExpired={errorProps.sessionExpired} />}
+            {dialogVisible && <ErrorDialog headerMessage={errorProps.headerMessage} bodyMessage={errorProps.bodyMessage} sessionExpired={errorProps.sessionExpired} retry={errorProps.retry} />}
             <PopupContextProvider>
                 <TopBar>
                     {props.children}
