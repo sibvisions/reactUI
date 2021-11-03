@@ -12,7 +12,10 @@ const useEventHandler = (target?: HTMLElement, event?: keyof HTMLElementEventMap
     const eventRef = useRef<keyof HTMLElementEventMap>();
 
     useEffect(() => {
-        
+        if(!target?.addEventListener){
+            return
+        }
+
         if (targetRef.current && handlerRef.current && eventRef.current) {
             targetRef.current.removeEventListener(eventRef.current, handlerRef.current);
         }
