@@ -18,7 +18,7 @@ import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
 const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** Current state of the calculatedStyle by the FormLayout */
-    const [calculatedStyle, setCalculatedStyle] = useState<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
+    const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext)
 
@@ -670,7 +670,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             
                     }
                     /** Set the state of the calculated Style */
-                    setCalculatedStyle( {
+                    calculatedStyle.current = {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
@@ -679,7 +679,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             position: "relative",
                         },
                         componentSizes: sizeMap
-                    });
+                    };
                 }
             }
 
@@ -698,6 +698,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * and the compSize is the same as children size calculate the layout 
          */
         if(compSizes && compSizes.size === children.size){
+            console.log('calc layout', layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore)
+            
             calculateLayout(
                 compSizes,
                 children,
@@ -711,8 +713,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     return(
         /** Provide the allowed sizes of the children as a context */
-        <LayoutContext.Provider value={calculatedStyle?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div data-layout="form" style={{...calculatedStyle?.style}}>
+        <LayoutContext.Provider value={calculatedStyle.current?.componentSizes || new Map<string, React.CSSProperties>()}>
+            <div data-layout="form" style={{...calculatedStyle.current?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>
