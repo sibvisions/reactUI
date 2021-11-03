@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -510,7 +510,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const rba = anchors.get("r");
                 const bba = anchors.get("b");
                 const tba = anchors.get("t");
-                if(calculatedTargetDependentAnchors && lba && rba && bba && tba && calcSize){
+                if(calculatedTargetDependentAnchors && lba && rba && bba && tba && calcSize){                    
                     if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)){
                         if(minLayoutSize.width > calcSize.width){
                             lba.position = 0;
@@ -691,15 +691,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         }, [baseProps.preferredSize]
     );
 
-    useEffect(() => {
+    //XXX: maybe refactor so that this memo returns the actual style instead of setting a ref
+    //we use useMemo here so that the calculated values written into the ref can be used in the return statement
+    //otherwise this calculation would run separately and would need a re render
+    useMemo(() => {
         const children = context.contentStore.getChildren(id, className);
         /** 
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 
          */
         if(compSizes && compSizes.size === children.size){
-            console.log('calc layout', layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore)
-            
             calculateLayout(
                 compSizes,
                 children,
@@ -709,6 +710,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 style
             )
         }
+
+        return calculatedStyle.current;
     }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore])
 
     return(
