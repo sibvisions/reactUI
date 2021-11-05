@@ -12,7 +12,7 @@ import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 
-const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
+const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -24,9 +24,6 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
 
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
-
-    /** State of the current app-name to display it in the header */
-    const [appName, setAppName] = useState<string>();
 
     const ws = useRef<WebSocket|null>(null);
 
@@ -115,12 +112,16 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
             if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
                 context.subscriptions.emitErrorDialogVisible(false);
             }
+
             initWS(context.server.BASE_URL);
         }
 
-        const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }, config?:boolean) => {
+        const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
             if (options) {
-                let convertedOptions:Map<string, any>
+                let convertedOptions:Map<string, any>;
+                let appName;
+                let baseUrl;
+
                 if (options instanceof URLSearchParams) {
                     convertedOptions = new Map(options);
                 }
@@ -128,32 +129,32 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                     context.server.embedOptions = options;
                     convertedOptions = new Map(Object.entries(options));
                 }
+
                 if (convertedOptions.has("appName")) {
-                    let appName = convertedOptions.get("appName") as string;
+                    appName = convertedOptions.get("appName") as string;
                     if (appName.charAt(appName.length - 1) === "/") {
                         appName = appName.substring(0, appName.length - 1);
                     }
                     startupReq.applicationName = appName;
-                    context.server.APP_NAME = appName;
-                    if (convertedOptions.has("baseUrl")) {
-                        let baseUrl: string = convertedOptions.get("baseUrl") as string;
-                        if (baseUrl.charAt(baseUrl.length - 1) === "/") {
-                            baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-                        }
-                        context.server.BASE_URL = baseUrl;
-                        context.server.RESOURCE_URL = baseUrl + "/resource/" + convertedOptions.get("appName");
-                        convertedOptions.delete("appName");
-                        convertedOptions.delete("baseUrl");
-                    }
-                    else if (process.env.NODE_ENV === "production") {
-                        const altBaseUrl = window.location.protocol + "//" + window.location.host + "/services/mobile";
-                        context.server.BASE_URL = altBaseUrl;
-                        context.server.RESOURCE_URL = altBaseUrl + "/resource/" + convertedOptions.get("appName");
-                    }
+                    convertedOptions.delete("appName");
                 }
-                else if (!config) {
-                    context.subscriptions.emitDialog("server", false, "URL Parameter Error", "Missing Configuration!");
-                    context.subscriptions.emitErrorDialogVisible(true);
+
+                if (convertedOptions.has("baseUrl")) {
+                    baseUrl = convertedOptions.get("baseUrl") as string;
+                    if (baseUrl.charAt(baseUrl.length - 1) === "/") {
+                        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+                    }
+                    context.server.BASE_URL = baseUrl;
+                    convertedOptions.delete("baseUrl");
+                }
+                else if (process.env.NODE_ENV === "production") {
+                    const splitURLPath = window.location.pathname.split("/");
+                    if (splitURLPath[1]) {
+                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                    }
+                    else {
+                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                    }
                 }
 
                 if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {
@@ -167,8 +168,6 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                 if(authKey) {
                     startupReq.authKey = authKey;
                 }
-                setAppName(context.server.APP_NAME);
-                context.subscriptions.notifyScreenNameChanged(context.server.APP_NAME);
                 startupReq.deviceMode = "desktop";
                 startupReq.screenHeight = window.innerHeight;
                 startupReq.screenWidth = window.innerWidth;
@@ -223,11 +222,14 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
             .then((data) => {
                 const dataMap = new Map(Object.entries(data));
                 dataMap.forEach((v, k) => {
-                    startUpRequest[k] = v;
+                    if (k === "appName") {
+                        startUpRequest.applicationName = v;
+                    }
+                    else {
+                        startUpRequest[k] = v;
+                    }
                 });
-                context.server.APP_NAME = data.appName;
                 context.server.BASE_URL = data.baseUrl;
-                context.server.RESOURCE_URL = data.baseUrl + "/resource/" + data.appName;
     
                 if (data.logoBig) {
                     context.appSettings.LOGO_BIG = data.logoBig;
@@ -247,7 +249,7 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
                     context.appSettings.LOGO_LOGIN = data.logoBig;
                 }
 
-                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams, true);
+                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             }).catch(() => {
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             });
@@ -280,6 +282,6 @@ const useStartup = (props:ICustomContent):[boolean, string|undefined] => {
 
     useEventHandler(document.body, "keyup", (event) => (event as any).key === "Control" ? context.ctrlPressed = false : undefined);
 
-    return [appReady, appName]
+    return appReady
 }
 export default useStartup

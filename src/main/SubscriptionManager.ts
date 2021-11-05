@@ -131,6 +131,8 @@ export class SubscriptionManager {
 
     restartSubscriber:Function = () => {};
 
+    appNameSubscriber = new Array<Function>();
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -400,6 +402,10 @@ export class SubscriptionManager {
         this.restartSubscriber = fn;
     }
 
+    subscribeToAppName(fn: Function) {
+        this.appNameSubscriber.push(fn);
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -594,6 +600,10 @@ export class SubscriptionManager {
         this.restartSubscriber = () => {};
     }
 
+    unsubscribeFromAppName(fn:Function) {
+        this.appNameSubscriber.splice(this.appNameSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -634,6 +644,10 @@ export class SubscriptionManager {
      */
     notifyScreenNameChanged(screenName:string) {
         this.screenNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [screenName]))
+    }
+
+    notifyAppNameChanged(appName:string) {
+        this.appNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [appName]));
     }
 
     /**

@@ -736,7 +736,6 @@ export default class ContentStore{
             } else {
                 mapProv.set("current", newDataSet);
             }
-                
             if (mapScreen) {
                 if (mapScreen.has(dataProvider)) {
                     (mapScreen.get(dataProvider) as IDataBook).data = mapProv;

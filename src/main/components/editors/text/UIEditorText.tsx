@@ -236,7 +236,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
 
     const [showSource, setShowSource] = useState<boolean>(false);
 
-    useFetchMissingData(props.parent as string, props.dataRow);
+    useFetchMissingData(props.parent as string, compId, props.dataRow);
 
     const popupMenu = usePopupMenu(props);
 
