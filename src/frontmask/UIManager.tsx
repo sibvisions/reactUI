@@ -122,14 +122,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
     useEffect(() => {
-        let screenTitle = context.server.APP_NAME;
+        let screenTitle = context.appSettings.applicationMetaData.applicationName;
         Children.forEach(props.children,child => {
             const childWithProps = (child as ChildWithProps);
             if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
                 screenTitle = childWithProps.props.screen_title_;
         })      
         context.subscriptions.notifyScreenNameChanged(screenTitle)
-    }, [props.children, context.server.APP_NAME, context.subscriptions]);
+    }, [props.children, context.subscriptions]);
 
     const CustomWrapper = props.customAppWrapper;
 

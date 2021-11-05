@@ -61,9 +61,6 @@ class Server {
         this.api = new API(this, store, appSettings, subManager, history);
     }
 
-    /** Application name */
-    APP_NAME = "";
-
     /** Base url for requests */
     BASE_URL = "";
 
@@ -292,8 +289,8 @@ class Server {
      */
     applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
+        this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
         this.appSettings.setApplicationMetaData(metaData);
-
     }
 
     /**

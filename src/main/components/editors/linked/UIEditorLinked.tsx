@@ -95,7 +95,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
 
-    useFetchMissingData(props.parent as string, props.dataRow);
+    useFetchMissingData(props.parent as string, compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

@@ -11,7 +11,8 @@ type ApplicationMetaData = {
     languageResource: string
     lostPasswordEnabled: boolean
     preserveOnReload: boolean
-    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean }
+    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
+    applicationName: string
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -71,7 +72,8 @@ export default class AppSettings {
         languageResource: "", 
         lostPasswordEnabled: false, 
         preserveOnReload: false, 
-        applicationLayout: { layout: "standard", urlSet: false } 
+        applicationLayout: { layout: "standard", urlSet: false },
+        applicationName: ""
     };
 
     /** The visible-buttons object */
@@ -135,7 +137,13 @@ export default class AppSettings {
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
-        }   
+        }
+        if (appMetaData.applicationName) {
+            this.applicationMetaData.applicationName = appMetaData.applicationName;
+            this.#subManager.notifyAppNameChanged(appMetaData.applicationName);
+            this.#subManager.notifyScreenNameChanged(appMetaData.applicationName);
+        }
+        
     }
 
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {

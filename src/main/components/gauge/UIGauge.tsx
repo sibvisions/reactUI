@@ -75,7 +75,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
     const gauge = useRef<any>(null);
 
-    useFetchMissingData(props.parent as string, props.dataBook);
+    useFetchMissingData(props.parent as string, compId, props.dataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

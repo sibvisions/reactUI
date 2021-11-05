@@ -19,17 +19,15 @@ type ServerFailMessage = {
     retry:Function
 }
 
-type IAppWrapper = {
-    appName?:string
-}
-
-const AppWrapper:FC<IAppWrapper> = (props) => {
+const AppWrapper:FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
     const [messageVisible, messageProps] = useConfirmDialogProps();
+
+    const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** Reference for the dialog which shows the timeout error message */
     const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
@@ -51,16 +49,19 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
         context.subscriptions.subscribeToErrorDialog((show:boolean) => setDialogVisible(show));
 
+        context.subscriptions.subscribeToAppName((newAppName:string) => setAppName(newAppName));
+
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setDialogVisible(show));
+            context.subscriptions.unsubscribeFromAppName((newAppName:string) => setAppName(newAppName));
         }
     },[context.subscriptions]);
 
     return (
         <>
             <Helmet>
-                <title>{props.appName ? props.appName : "<App-Name>"}</title>
+                <title>{appName ? appName : "<App-Name>"}</title>
             </Helmet>
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />

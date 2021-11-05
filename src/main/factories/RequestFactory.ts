@@ -50,7 +50,7 @@ export const getClientId = (): string => {
 export const createStartupRequest = (values?: StartupRequest): StartupRequest => {
     const req: StartupRequest = {
         appMode: values?.appMode || "full",
-        applicationName: values?.applicationName || "demo",
+        applicationName: values?.applicationName,
 
         authKey: values?.authKey,
         userName: values?.userName,
