@@ -85,6 +85,10 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
+    const metaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"");
+
+    const tableOptions = props.cellEditor?.columnView.columnCount > 1;
+
     const focused = useRef<boolean>(false);
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
@@ -151,7 +155,15 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         lastValue.current = selectedRow;
     }, [selectedRow, linkRefData]);
 
-
+    const unpackValue = (value: string | string[]) => {
+        if (Array.isArray(value)) {
+            const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
+            const valIndex = props.cellEditor.columnView.columnNames.indexOf(props.cellEditor.linkReference.referencedColumnNames[colNameIndex]);
+            return value[valIndex];
+        } else {
+            return value;
+        }
+    }
 
     /**
      * When the input changes, send a filter request to the server
@@ -215,12 +227,12 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      * Handles the input, when the text is entered manually or via the dropdown menu and sends the value to the server
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
-    const handleInput = (value?: string) => {
+    const handleInput = (value?: string | string[]) => {
         const newVal:any = {}
         const linkReference = props.cellEditor.linkReference;
 
-        const inputVal = value ? value : text
-        
+        let inputVal = value ? unpackValue(value) : text
+
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
@@ -293,10 +305,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         let suggestions:any = []
         if (values.length > 0) {
             values.forEach((value:any) => {
-                let text = ""
+                let text : string | string[] = ""
                 if (props.cellEditor) {
                     if (props.cellEditor.displayReferencedColumnName) {
                         text = value[props.cellEditor.displayReferencedColumnName]
+                    }
+                    else if(props.cellEditor.columnView.columnCount > 1) {
+                        text = props.cellEditor.columnView.columnNames.map(c => value[c]);
                     }
                     else {
                         const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
@@ -306,7 +321,15 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 suggestions.push(text)
             });
         }
-        return suggestions
+
+        if(props.cellEditor?.columnView.columnCount > 1) {
+            return [{
+                label: props.cellEditor.columnView.columnNames,
+                items: suggestions
+            }]
+        } else {
+            return suggestions
+        }
     }
 
     const handleLazyLoad = (event:any) => {
@@ -319,6 +342,18 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     }
 
+    const itemTemplate = useCallback(d => {
+        if(Array.isArray(d)) {
+            return d.map((d, i) => <div key={i}>{d}</div>)
+        } else {
+            return d;
+        }
+    }, []);
+
+    const groupedItemTemplate = useCallback(d => {
+        return (d.label as string[]).map((d, i) => <div key={i}>{metaData?.columns.find(c => c.name === d)?.label ?? d}</div>)
+    }, [metaData]);
+
     return (
         <span aria-label={props.ariaLabel} {...usePopupMenu(props)} style={layoutStyle}>
             <AutoComplete
@@ -329,7 +364,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
                 className={"rc-editor-linked"}
-                panelClassName={concatClassnames("dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "") }
+                panelClassName={concatClassnames("dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", tableOptions ? "dropdown-table" : "") }
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 disabled={!props.cellEditor_editable_}
@@ -337,7 +372,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}
                 value={text}
-                onChange={event => setText(event.target.value)}
+                onChange={event => setText(unpackValue(event.target.value))}
                 onFocus={() => {
                     if (!focused.current) {
                         focused.current = true
@@ -364,6 +399,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad, className: isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
                 onSelect={(event) => handleInput(event.value)}
                 tooltip={props.toolTipText}
+                itemTemplate={itemTemplate}
+                {...(tableOptions ? {
+                    optionGroupLabel: "label",
+                    optionGroupChildren: "items",
+                    optionGroupTemplate: groupedItemTemplate
+                } : {})}
+                
             />
         </span>
 

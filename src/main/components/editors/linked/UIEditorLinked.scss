@@ -29,4 +29,39 @@
             background: white;
         }
     }
+
+    &.dropdown-table {
+        .p-autocomplete-items {
+            display: table;
+        }
+
+        .p-autocomplete-item-group {
+            display: table-row;
+            padding: 0;
+
+            & > * {
+                display: table-cell;
+                vertical-align: middle;
+                padding: 0.5rem 1rem;
+                border-bottom: 1px solid #ccc;
+            }
+        }
+
+        .p-autocomplete-item {
+            display: table-row;
+            padding: 0;
+
+            & > * {
+                display: table-cell;
+                vertical-align: middle;
+                padding: 0.5rem 1rem;
+                border-bottom: 1px solid #ccc;
+
+                &:not(:first-child) {
+                    border-left: 1px solid #eee;
+                }
+            }
+        }
+    }
 }
+
