@@ -7,7 +7,7 @@ import { useHistory } from "react-router";
 /** Other imports */
 import { appContext } from "../../AppProvider";
 import { createChangesRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, StartupRequest } from "../../request";
+import { REQUEST_ENDPOINTS, StartupRequest, UIRefreshRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
@@ -108,6 +108,16 @@ const useStartup = (props:ICustomContent):boolean => {
             }
         }
 
+        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash?:string|null) => {
+            context.server.sendRequest(req, (preserve && startupRequestHash) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+            .then(result => {
+                if (!preserve && startupRequestHash) {
+                    sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
+                }
+                afterStartup(result)
+            });
+        }
+
         const afterStartup = (results:BaseResponse[]) => {
             if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
                 context.subscriptions.emitErrorDialogVisible(false);
@@ -196,21 +206,11 @@ const useStartup = (props:ICustomContent):boolean => {
                             value();
                         }
                         context.server.subManager.jobQueue.clear();
-                        context.server.sendRequest(createUIRefreshRequest(), REQUEST_ENDPOINTS.UI_REFRESH).then(result => {
-                            afterStartup(result)
-                        });
                     }
-                    else {
-                        context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
-                            sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
-                            afterStartup(result)
-                        });
-                    }
-                } else {
-                    context.server.sendRequest(startupReq, REQUEST_ENDPOINTS.STARTUP).then(result => {
-                        sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
-                        afterStartup(result)
-                    });
+                    sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestCache);
+                } 
+                else {
+                    sendStartup(startupReq, false, startupRequestCache);
                 }
             }
         }

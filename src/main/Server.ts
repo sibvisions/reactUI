@@ -160,12 +160,19 @@ class Server {
             else {
                 this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000, () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests))
                     .then((response: any) => response.json())
-                    .then(this.responseHandler.bind(this))
+                    .then(result => {
+                        if (result.code) {
+                            if (400 >= result.code && result.code <= 599) {
+                                return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
+                            }
+                        }
+                        return result;
+                    })
+                    .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
                     .then(results => {
                         if (fn) {
                             fn.forEach(func => func.apply(undefined, []))
                         }
-
 
                         if (!job) {
                             for (let [, value] of this.subManager.jobQueue.entries()) {
@@ -174,10 +181,12 @@ class Server {
                             this.subManager.jobQueue.clear()
                         }
                         return results;
-                    }).then(results => {
-                        resolve(results);
-                    }).catch(error => {
-                        reject();
+                    }).then(results => resolve(results), (err) => Promise.reject(err))
+                    .catch(error => {
+                        const splitErr = error.split(".")
+                        this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                        this.subManager.emitErrorDialogVisible(true);
+                        reject(error);
                         console.error(error)
                     }).finally(() => {
                         this.openRequests.delete(request);
@@ -259,27 +268,31 @@ class Server {
         let isOpen = false;
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
-        responses.forEach((response, idx) => {
-            if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
-                responses.splice(0, 0, responses.splice(idx, 1)[0]);
-            }
-            else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
-                isOpen = true;
-            }
-        });
-        for (const [, response] of responses.entries()) {
-            const mapper = this.responseMap.get(response.name);
-            if (mapper) {
-                if (response.name === RESPONSE_NAMES.CLOSE_SCREEN && isOpen) {
-                    await mapper(response, isOpen);
+        if (Array.isArray(responses)) {
+            responses.forEach((response, idx) => {
+                if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+                    responses.splice(0, 0, responses.splice(idx, 1)[0]);
                 }
-                else {
-                    await mapper(response);
+                else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
+                    isOpen = true;
                 }
-                
+            });
+
+            for (const [, response] of responses.entries()) {
+                const mapper = this.responseMap.get(response.name);
+                if (mapper) {
+                    if (response.name === RESPONSE_NAMES.CLOSE_SCREEN && isOpen) {
+                        await mapper(response, isOpen);
+                    }
+                    else {
+                        await mapper(response);
+                    }
+                    
+                }
             }
+            this.routingDecider(responses);
         }
-        this.routingDecider(responses);
+
         return responses;
     }
 
@@ -680,9 +693,11 @@ class Server {
         this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
         .then((response:any) => response.text())
         .then(value => parseString(value, (err, result) => { 
-            result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-            this.subManager.emitTranslation();
-        }))
+            if (result) {
+                result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                this.subManager.emitTranslation();
+            }
+        }));
     }
 
     /** 
