@@ -87,7 +87,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     const metaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"");
 
-    const tableOptions = props.cellEditor?.columnView.columnCount > 1;
+    const tableOptions = props.cellEditor.columnView?.columnCount > 1;
 
     const focused = useRef<boolean>(false);
 
@@ -310,7 +310,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     if (props.cellEditor.displayReferencedColumnName) {
                         text = value[props.cellEditor.displayReferencedColumnName]
                     }
-                    else if(props.cellEditor.columnView.columnCount > 1) {
+                    else if(props.cellEditor.columnView?.columnCount > 1) {
                         text = props.cellEditor.columnView.columnNames.map(c => value[c]);
                     }
                     else {
@@ -322,7 +322,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             });
         }
 
-        if(props.cellEditor?.columnView.columnCount > 1) {
+        if(props.cellEditor.columnView?.columnCount > 1) {
             return [{
                 label: props.cellEditor.columnView.columnNames,
                 items: suggestions
@@ -364,7 +364,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
                 className={"rc-editor-linked"}
-                panelClassName={concatClassnames("dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", tableOptions ? "dropdown-table" : "") }
+                panelClassName={concatClassnames(
+                    "dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", 
+                    tableOptions ? "dropdown-table" : "",
+                    linkedInput.current?.offsetWidth < 120 ? "deez" : ""
+                )}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 disabled={!props.cellEditor_editable_}
@@ -405,7 +409,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
                 } : {})}
-                
             />
         </span>
 

@@ -19,8 +19,10 @@
 
 /// Lazyloading loading animation
 .p-autocomplete-panel {
-    --itemTop: 0px;
-    --itemsHeight: 200px;
+
+    &.deez {
+        min-width: 120px !important;
+    }
 
     .p-autocomplete-items {
         max-height: none !important;

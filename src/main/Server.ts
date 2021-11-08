@@ -416,7 +416,7 @@ class Server {
      * @param selectedRowIndex - the index of the selectedRow
      * @param dataProvider - the dataprovider
      */
-    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string){
+    processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string) {
         const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */

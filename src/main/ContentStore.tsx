@@ -300,7 +300,7 @@ export default class ContentStore{
                             existingComponent[newPropName] = "BorderLayout,0,0,0,0,0,0";
                             if (tbCenter) {
                                 //@ts-ignore
-                                tbMain[newPropName] = newComponent[newPropName];
+                                tbCenter[newPropName] = newComponent[newPropName];
                             }
                         }
                         //When the toolbar-panel's toolBarArea changes, update the toolbar sub-panels constraints
@@ -730,6 +730,7 @@ export default class ContentStore{
         recordFormat?: RecordFormat,
     ) {
         const compPanel = this.getComponentByName(compId) as IPanel;
+        
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
                 mapProv.set(referenceKey, newDataSet)
@@ -775,19 +776,24 @@ export default class ContentStore{
                 }
             } 
             else {
+                if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
+                    fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, existingMap);
+                }
+                else {
                     const providerMap = new Map<string, Array<any>>();
                     fillDataMap(providerMap, existingMap);
+                }
             }
         }
         else {
             const dataMap = new Map<string, IDataBook>();
-            // if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-            //     fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, dataMap, true);
-            // }
-            // else {
+            if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
+                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, dataMap, true);
+            }
+            else {
                 const providerMap = new Map<string, Array<any>>();
                 fillDataMap(providerMap, dataMap, true);
-            // }
+            }
         }
         this.subManager.notifyDataChange(compId, dataProvider);
         this.subManager.notifyScreenDataChange(compId);
@@ -894,22 +900,37 @@ export default class ContentStore{
     setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
         const compPanel = this.getComponentByName(compId) as IPanel;
         const existingMap = this.getScreenDataproviderMap(compId);
+
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
-                (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
+                (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
             }
             else {
-                existingMap.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+                if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.selectedRow) {
+                    let popupSR:IDataBook = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
+                    popupSR.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
+                    existingMap.set(dataProvider, popupSR);
+                }
+                else {
+                    existingMap.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+                }
             }
-            
         }
         else {
-            const tempMapRow:Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+            const tempMapRow = new Map<string, IDataBook>();
+            if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.selectedRow) {
+                let popupSR:IDataBook = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
+                popupSR.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
+                tempMapRow.set(dataProvider, popupSR);
+            }
+            else {
+                tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+            }
             this.dataBooks.set(compId, tempMapRow);
         }
         this.subManager.emitRowSelect(compId, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+            console.log(dataProvider.split('/')[1], dataProvider)
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }
     }
@@ -984,12 +1005,20 @@ export default class ContentStore{
     setSortDefinition(compId: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
         const compPanel = this.getComponentByName(compId) as IPanel;
         const existingMap = this.getScreenDataproviderMap(compId);
+
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
                 (existingMap.get(dataProvider) as IDataBook).sortedColumns = sortDefinitions;
             }
             else {
-                existingMap.set(dataProvider, {sortedColumns: sortDefinitions})
+                if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.sortedColumns) {
+                    let popupSD:IDataBook = {sortedColumns: this.getDataBook(dataProvider.split('/')[1], dataProvider)?.sortedColumns};
+                    popupSD.sortedColumns = sortDefinitions;
+                    existingMap.set(dataProvider, popupSD);
+                }
+                else {
+                    existingMap.set(dataProvider, {sortedColumns: sortDefinitions});
+                }
             }
         }
         this.subManager.notifySortDefinitionChange(compId, dataProvider);

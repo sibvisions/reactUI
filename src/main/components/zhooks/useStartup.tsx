@@ -108,10 +108,10 @@ const useStartup = (props:ICustomContent):boolean => {
             }
         }
 
-        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash?:string|null) => {
+        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string) => {
             context.server.sendRequest(req, (preserve && startupRequestHash) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
-                if (!preserve && startupRequestHash) {
+                if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                 }
                 afterStartup(result)
@@ -207,10 +207,10 @@ const useStartup = (props:ICustomContent):boolean => {
                         }
                         context.server.subManager.jobQueue.clear();
                     }
-                    sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestCache);
+                    sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestHash);
                 } 
                 else {
-                    sendStartup(startupReq, false, startupRequestCache);
+                    sendStartup(startupReq, false, startupRequestHash);
                 }
             }
         }

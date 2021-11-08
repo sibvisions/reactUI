@@ -1,4 +1,5 @@
 /** React imports */
+import { te } from "date-fns/locale";
 import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
@@ -32,16 +33,22 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
         let tempSizes = new Map<string, ComponentSizes>();
+        const children = context.contentStore.getChildren(id, className);
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
-            tempSizes = new Map([...preferredSizes])
-            tempSizes.forEach((val, key) => {
-                if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
-                    tempSizes.delete(key)
+            tempSizes = new Map([...preferredSizes]);
+            if (tempSizes.size > children.size) {
+                tempSizes.forEach((val, key) => {
+                    if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
+                        tempSizes.delete(key)
+                    }
+                });
+                if (tempSizes.size === children.size) {
+                    setPreferredSizes(new Map(tempSizes))
                 }
-            });
+            }
         }
-        const children = context.contentStore.getChildren(id, className);
+        
         const reactChildrenArray: Array<ReactElement> = [];
         /**
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
@@ -83,20 +90,6 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         /** If there are no children set an empty map */
         if(children.size === 0 && !preferredSizes) {
             setPreferredSizes(new Map<string, ComponentSizes>());
-        }
-
-        /** If there are components in tempSizes which are not longer in the current children (got removed, invisible), remove them and set preferredSize */
-        if (tempSizes.size > children.size) {
-            tempSizes.forEach((value, key) => {
-                if(!children.has(key)) {
-                    tempSizes.delete(key)
-                }
-                    
-            });
-            if (tempSizes.size === children.size) {
-                setPreferredSizes(new Map(tempSizes))
-            }
-                
         }
 
         /** Create the reactchildren */

@@ -414,7 +414,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     useFetchMissingData(props.parent as string, compId, props.dataBook);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    //@ts-ignore
+    useMouseListener(props.name, tableRef.current ? (virtualEnabled ? tableRef.current.container : tableRef.current.table) : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
