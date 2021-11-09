@@ -2,7 +2,7 @@
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useRowSelect, useImageStyle, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu, useMetaData } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -63,6 +63,8 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
 
     const popupMenu = usePopupMenu(props);
 
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined);
+
     useEffect(() => {
         if (!props.cellEditor.defaultImageName || !selectedRow) {
             const prefSize:Dimension = {width: 0, height: 0}
@@ -103,7 +105,10 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     return (
         <span
             ref={wrapRef}
-            className="rc-editor-image"
+            className={concatClassnames(
+                "rc-editor-image",
+                columnMetaData?.nullable === false ? "required-field" : ""
+            )}
             style={{ ...layoutStyle, overflow: "hidden" }}
             aria-label={props.ariaLabel}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}

@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -20,7 +20,8 @@ import { getEditorCompId,
          parseMaxSize, 
          getDateLocale,
          setDateLocale,
-         handleEnterKey} from "../../util";
+         handleEnterKey,
+         concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -135,6 +136,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     const alreadySaved = useRef<boolean>(false);
 
     const focused = useRef<boolean>(false);
+
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName);
 
     setDateLocale(context.appSettings.locale);
 
@@ -303,7 +306,11 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 ref={calendar}
                 id={!isCellEditor ? props.name : undefined}
                 inputRef={calendarInput}
-                className="rc-editor-text rc-editor-date"
+                className={concatClassnames(
+                    "rc-editor-text",
+                    "rc-editor-date",
+                    columnMetaData?.nullable === false ? "required-field" : ""
+                )}
                 monthNavigator={true}
                 yearNavigator={true}
                 yearRange="1900:2030"

@@ -5,7 +5,7 @@ import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo
 import { AutoComplete } from 'primereact/autocomplete';
 
 /** Hook imports */
-import { useProperties, useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu, useMetaData} from "../../zhooks"
+import { useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu, useMetaData} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -85,7 +85,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    const metaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"");
+    const columnMetaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"", props.columnName);
 
     const tableOptions = props.cellEditor.columnView?.columnCount > 1;
 
@@ -351,8 +351,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }, []);
 
     const groupedItemTemplate = useCallback(d => {
-        return (d.label as string[]).map((d, i) => <div key={i}>{metaData?.columns.find(c => c.name === d)?.label ?? d}</div>)
-    }, [metaData]);
+        return (d.label as string[]).map((d, i) => <div key={i}>{columnMetaData?.label ?? d}</div>)
+    }, [columnMetaData]);
 
     return (
         <span aria-label={props.ariaLabel} {...usePopupMenu(props)} style={layoutStyle}>
@@ -367,7 +367,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 panelClassName={concatClassnames(
                     "dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",
-                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
+                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : "",
+                    columnMetaData?.nullable === false ? "required-field" : ""
                 )}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}

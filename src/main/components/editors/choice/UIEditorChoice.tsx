@@ -2,7 +2,7 @@
 import React, { FC, useCallback, useContext, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -76,7 +76,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
 
-
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined);
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -177,7 +177,10 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
     return (
         <span
             ref={wrapRef}
-            className="rc-editor-choice"
+            className={concatClassnames(
+                "rc-editor-choice",
+                columnMetaData?.nullable === false ? "required-field" : ""
+            )}
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
             style={isCellEditor ?

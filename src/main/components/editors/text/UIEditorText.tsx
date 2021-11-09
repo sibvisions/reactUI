@@ -22,7 +22,8 @@ import { getEditorCompId,
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
-         parseMaxSize } from "../../util";
+         parseMaxSize, 
+         concatClassnames} from "../../util";
 import { LengthBasedColumnDescription } from "../../../response";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { getColMetaData } from "../../table/UITable";
@@ -217,13 +218,10 @@ const UIEditorText: FC<IEditorText> = (props) => {
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** The metaData of the dataRow */
-    const metaData = useMetaData(compId, props.dataRow)
-
-    /** The cell-editor of the TextCellEditor */
-    const cellEditorMetaData:LengthBasedColumnDescription = useMemo(() => getColMetaData(props.columnName, metaData) as LengthBasedColumnDescription, [metaData]);
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined)
 
     /** Returns the maximum length for the TextCellEditor */
-    const length = useMemo(() => cellEditorMetaData?.length, [cellEditorMetaData]);
+    const length = useMemo(() => columnMetaData?.length, [columnMetaData]);
 
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
@@ -424,7 +422,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         } : {
             ...(fieldType === FieldTypes.PASSWORD ? { inputRef: textRef } : { ref: textRef }),
             id: isCellEditor ? undefined : props.name,
-            className: getClassName(fieldType),
+            className: concatClassnames(getClassName(fieldType), columnMetaData?.nullable === false ? "required-field" : ""),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,
             disabled,

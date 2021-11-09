@@ -21,7 +21,8 @@ import { getEditorCompId,
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize,
-         handleEnterKey} from "../../util";
+         handleEnterKey,
+         concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { NumericColumnDescription } from "../../../response"
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
@@ -87,10 +88,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
     /** The metaData of the dataRow */
-    const metaData = useMetaData(compId, props.dataRow)
-
-    /** The cell-editor metadata for the NumberCellEditor */
-    const cellEditorMetaData:NumericColumnDescription = useMemo(() => getColMetaData(props.columnName, metaData) as NumericColumnDescription, [metaData]);
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, "numeric")
 
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
@@ -102,14 +100,16 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     const popupMenu = usePopupMenu(props);
 
+    const numberClassNames = useMemo(() => concatClassnames("rc-editor-number", columnMetaData?.nullable === false ? "required-field" : ""), [columnMetaData?.nullable])
+
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const scaleDigits:ScaleType = useMemo(() => cellEditorMetaData 
-        ? getScaleDigits(props.cellEditor.numberFormat, cellEditorMetaData.scale) 
+    const scaleDigits:ScaleType = useMemo(() => columnMetaData 
+        ? getScaleDigits(props.cellEditor.numberFormat, columnMetaData.scale) 
         : {minScale: 0, maxScale: 0}, 
-    [cellEditorMetaData, props.cellEditor.numberFormat]);
+    [columnMetaData, props.cellEditor.numberFormat]);
 
     /** Wether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
@@ -126,7 +126,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
      * Returns the maximal length before the deciaml seperator
      * @returns the maximal length before the deciaml seperator
      */
-    const decimalLength = useMemo(() => cellEditorMetaData ? getDecimalLength(cellEditorMetaData.precision, cellEditorMetaData.scale) : undefined, [cellEditorMetaData]);
+    const decimalLength = useMemo(() => columnMetaData ? getDecimalLength(columnMetaData.precision, columnMetaData.scale) : undefined, [columnMetaData]);
 
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
@@ -216,7 +216,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     ref={numberRef}
                     id={props.name}
                     inputRef={numberInput}
-                    className="rc-editor-number"
+                    className={numberClassNames}
                     useGrouping={useGrouping}
                     locale={context.appSettings.locale}
                     prefix={prefixLength}
@@ -241,7 +241,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             <InputNumber
                 ref={numberRef}
                 inputRef={numberInput}
-                className="rc-editor-number"
+                className={numberClassNames}
                 useGrouping={useGrouping}
                 locale={context.appSettings.locale}
                 prefix={prefixLength}

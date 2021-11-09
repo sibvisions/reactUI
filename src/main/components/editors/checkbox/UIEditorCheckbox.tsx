@@ -5,7 +5,7 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
+import { useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -67,6 +67,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     /** Current state of wether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(selectedRow ? selectedRow.data : undefined);
 
+    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 
@@ -102,7 +104,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
             ref={wrapRef}
             id={!isCellEditor ? props.name : undefined}
             aria-label={props.ariaLabel}
-            className="rc-editor-checkbox"
+            className={concatClassnames(
+                "rc-editor-checkbox",
+                columnMetaData?.nullable === false ? "required-field" : ""
+            )}
             style={
                 isCellEditor ?
                     { justifyContent: alignments.ha, alignItems: alignments.va }

@@ -77,7 +77,6 @@ type CellEditor = {
     cellData: any,
     dataProvider: string,
     colName: string,
-    metaData: MetaDataResponse | undefined,
     resource: string,
     cellId: Function,
     tableContainer?: any,
@@ -100,7 +99,7 @@ interface ISelectedCell {
 }
 
 /** A Context which contains the currently selected cell */
-export const SelectedCellContext = createContext<ISelectedCell>({})
+export const SelectedCellContext = createContext<ISelectedCell>({});
 
 export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
     return metaData?.columns.find(column => column.name === colName);
@@ -129,7 +128,7 @@ const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = getColMetaData(props.colName, props.metaData);
+    const columnMetaData = useMetaData(props.compId, props.dataProvider, props.colName)
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -351,7 +350,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
-    const metaData = useMetaData(compId, props.dataBook);
+    const metaData = useMetaData(compId, props.dataBook, undefined);
 
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(compId, props.dataBook);
@@ -1101,7 +1100,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
                             cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName]}
-                            metaData={metaData}
                             resource={context.server.RESOURCE_URL}
                             cellId={() => { return { selectedCellId: props.id + "-" + (tableInfo.rowIndex + firstRowIndex.current).toString() + "-" + colIndex.toString() } }}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}

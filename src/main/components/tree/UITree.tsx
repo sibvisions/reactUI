@@ -99,7 +99,7 @@ const UITree: FC<ITree> = (baseProps) => {
      * @returns true if the given databook is self-joined false if it isn't
      */
     const isSelfJoined = useCallback((dataBook:string) => {
-        const metaData = getMetaData(compId, dataBook, context.contentStore);
+        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined);
         if (metaData?.masterReference)
             return metaData.masterReference.referencedDataBook === dataBook;
         else
@@ -133,7 +133,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
         const dataBook = getDataBook(path.length() - 1);
-        const metaData = getMetaData(compId, dataBook, context.contentStore)
+        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined)
         const dataPage = providedData.get(dataBook);
         if (dataPage) {
             if (path.length() === 1) {
@@ -163,7 +163,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(nodeReference.key))
         const fetchDataPage = getDataBook(parentPath.length());
-        const metaData = getMetaData(compId, fetchDataPage, context.contentStore);
+        const metaData = getMetaData(compId, fetchDataPage, context.contentStore, undefined);
 
         /**
          * Adds the child nodes to the referenced Node, if they are't already added
@@ -262,7 +262,7 @@ const UITree: FC<ITree> = (baseProps) => {
             while (path.length() !== 0) {
                 const dataBook = getDataBook(path.length()-1)
                 const dataRow = getDataRow(path, treeData.get(path.getParentPath().toString()));
-                const primaryKeys = getMetaData(compId, dataBook, context.contentStore)?.primaryKeyColumns || ["ID"];
+                const primaryKeys = getMetaData(compId, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
                 selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => dataRow[pk])
@@ -352,7 +352,7 @@ const UITree: FC<ITree> = (baseProps) => {
         //If the last databook is self-joined, some additional fetches need to be performed
         if (isSelfJoined(lastDatabook)) {
             const responseValue = sortedSR.get(lastDatabook);
-            const metaData = getMetaData(compId, lastDatabook, context.contentStore);
+            const metaData = getMetaData(compId, lastDatabook, context.contentStore, undefined);
             const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.index);
             //init the previous row with the root reference
             let prevRow = getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames);
@@ -393,7 +393,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     useEffect(() => {
         const firstLvlDataBook = props.dataBooks[0];
-        const metaData = getMetaData(compId, firstLvlDataBook, context.contentStore);
+        const metaData = getMetaData(compId, firstLvlDataBook, context.contentStore, undefined);
 
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
