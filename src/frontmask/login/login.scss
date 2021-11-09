@@ -128,10 +128,17 @@
 .login-container-with-desktop {
   height: var(--main-height);
   position: relative;
+
+  >.rc-desktop-panel {
+    filter: blur(5px);
+  }
 }
 
 .login-form-position-wrapper {
+  z-index: 10001;
   position: absolute;
   top: calc(50% - var(--login-form-top-position));
   left: calc(50% - var(--login-form-left-position));
+  -webkit-box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.5); 
+  box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.5);
 }

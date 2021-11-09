@@ -1,7 +1,3 @@
-tr.p-highlight{
-    background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%) !important;
-}
-
 .rc-table {
     width: 100%;
     height: 100%;
@@ -64,14 +60,21 @@ tr.p-highlight{
                 outline: none;
             }
             &.p-highlight {
-                color: white;
+                background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%) !important;
+                //color: white;
 
-                > td.p-highlight:hover {
-                    color: white;
-                }
+                > td {
+                    &:hover {
+                        color: white;
+                    }
 
-                > td:hover {
-                    color: black;
+                    &.cell-required {
+                        background: rgba(255, 244, 210, 0.8);
+                    }
+
+                    &.cell-readonly {
+                        background: rgba(239, 239, 239, 0.8);
+                    }
                 }
 
                 .cancel-padding {
@@ -103,6 +106,14 @@ tr.p-highlight{
                 border-width: 0px 0px 1px 0px !important;
                 user-select: none;
                 outline: none;
+
+                &.cell-required {
+                    background: rgb(255, 244, 210)
+                }
+
+                &.cell-readonly {
+                    background: rgb(239, 239, 239);
+                }
 
                 .cancel-padding {
                     margin: -0.2rem -0.4rem;
@@ -156,9 +167,13 @@ tr.p-highlight{
                     }
                 }
                 &.p-highlight {
-                    background: linear-gradient(180deg, rgba(227,242,253,1) 2%, rgba(170,220,255,1) 98%);
+                    outline: 2px solid black;
+                    outline-offset: -2px;
                     color: var(--standardTextColor);
-
+                    &:not(.cell-readonly):not(.cell-required) {
+                        background: unset;
+                    }
+                    
                     .cancel-padding {
                         box-shadow: inset 0 0 0 1000px rgba(#e3f2fd, .4);
                     }

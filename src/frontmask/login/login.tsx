@@ -164,6 +164,7 @@ const Login: FC = () => {
         (context.appSettings.desktopPanel) ?
             <ResizeContext.Provider value={{ login: true }}>
                 <ResizeHandler>
+                    <div className="rc-glasspane" />
                     <div className="login-container-with-desktop" ref={sizeRef}>
                         <DesktopPanelHandler />
                         <div className="login-form-position-wrapper">

@@ -754,10 +754,10 @@ const UITable: FC<TableProps> = (baseProps) => {
             //@ts-ignore
             const colResizers = tableRef.current.container.getElementsByClassName("p-column-resizer");
             for (const colResizer of colResizers) {
-                if (!colResizer.parentElement.classList.contains("not-resizable") && colResizer.style.display === "none") {
+                if (!colResizer.parentElement.classList.contains("cell-not-resizable") && colResizer.style.display === "none") {
                     colResizer.style.setProperty("display", "block");
                 }
-                if (colResizer.parentElement.classList.contains("not-resizable")) {
+                if (colResizer.parentElement.classList.contains("cell-not-resizable")) {
                     colResizer.style.setProperty("display", "none");
                 }
             }
@@ -1123,8 +1123,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
                 className={concatClassnames(
                     className,
-                    !columnMetaData?.sortable ? "not-sortable" : "",
-                    !columnMetaData?.resizable ? "not-resizable" : ""
+                    !columnMetaData?.resizable ? "cell-not-resizable" : "",
+                    columnMetaData?.readonly ? "cell-readonly" : "",
+                    columnMetaData?.nullable === false ? "cell-required" : ""
                 )}
                 loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
                 reorderable={columnMetaData?.movable}
