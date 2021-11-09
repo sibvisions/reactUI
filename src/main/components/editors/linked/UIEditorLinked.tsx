@@ -367,7 +367,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 panelClassName={concatClassnames(
                     "dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",
-                    linkedInput.current?.offsetWidth < 120 ? "deez" : ""
+                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
