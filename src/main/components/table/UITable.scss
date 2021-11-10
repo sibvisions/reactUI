@@ -226,6 +226,43 @@
     display: none;
 }
 
+.p-datatable-scrollable {
+    .p-datatable-thead {
+       display: table-header-group;
+
+       >tr >th {
+           display: table-cell;
+           flex: unset;
+       }
+    }
+
+    .p-datatable-tbody {
+        display: table-row-group;
+
+        >tr >td {
+            display: table-cell;
+            flex: unset;
+        }
+    }
+
+    .p-datatable-thead, .p-datatable-tbody {
+        >tr {
+            display: table-row;
+            flex-wrap: unset;
+        }
+    }
+}
+
+.p-virtualscroller-content {
+    position: relative;
+    //top: unset;
+    //left: unset;
+    //contain: unset;
+    //min-height: unset;
+    //min-width: unset;
+    //will-change: unset;
+}
+
 @keyframes pulse {
     0% {
         background: rgba(165, 165, 165, 0.1)
