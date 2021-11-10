@@ -4,7 +4,7 @@ export { concatClassnames } from './ConcatClassnames';
 export { containsObject } from './ContainsObject';
 export { firstCharToLower } from './FirstCharToLower';
 export { firstCharToUpper } from './FirstCharToUpper';
-export { getDataProvidersOfComp } from './GetDataProvidersOfComp';
+export { getScreensData, getScreenSelectedRows } from './GetDataProvidersOfComp';
 export { getEditorCompId } from './GetEditorCompId';
 export { getMarkerIcon } from './GetMarkerIcon';
 export { getMetaData } from './GetMetaData';

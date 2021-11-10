@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { getDataProvidersOfComp } from "../util";
+import { getScreensData } from "../util";
 
 /**
  * This hook returns the current data of all dataproviders of a component as Map
@@ -15,7 +15,7 @@ const useAllDataProviderData = (compId:string, dataBooks:string[]): Map<string, 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of dataMap */
-    const [dataMap, setDataMap] = useState<Map<string, any>>(getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks));
+    const [dataMap, setDataMap] = useState<Map<string, any>>(getScreensData(context.contentStore.getScreenDataproviderMap(compId), dataBooks));
 
     /**
      * Subscribes to screenDataChange
@@ -24,7 +24,7 @@ const useAllDataProviderData = (compId:string, dataBooks:string[]): Map<string, 
     useEffect(() => {
         /** sets the state */
         const onScreenDataChange = () => {
-            const a = getDataProvidersOfComp(context.contentStore.getScreenDataproviderMap(compId), dataBooks)
+            const a = getScreensData(context.contentStore.getScreenDataproviderMap(compId), dataBooks)
             setDataMap(new Map(a));
         }
 
