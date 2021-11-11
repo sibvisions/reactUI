@@ -2,7 +2,7 @@
   /// -----Login Variables-----
 
   /// Login container background
-  --login-container-background: rgba(255, 255, 255, 0.9);
+  --login-container-background: rgb(245, 245, 245, 0.93);
 
   /// Login form width
   --login-form-width: 450px;
@@ -29,16 +29,20 @@
   --login-form-field-margin: 1.5rem;
   
   /// Login form gap between logo and inputfields
-  --login-form-logo-gap: 1rem;
+  --login-form-logo-gap: 15px;
 
   /// Login form logo size.
   --login-logo-width: 100%;
+
+  --login-logo-height: 140px;
   
   /// Login form logo background
-  --login-logo-background: rgba(255, 255, 255, 0.65);
+  --login-logo-background: white;
   
   /// Login inputfields placeholder color
   --login-placeholder-color: #bcc0c4;
+
+  --login-input-height: 240px;
 }
 
 .login-container {
@@ -51,13 +55,13 @@
 }
 
 .login-form{
-  width: var(--login-form-width);
-  height: var(--login-form-height);
+  min-width: var(--login-form-width);
   background: var(--login-container-background);  
   border-radius: var(--login-form-border-radius);
 
   .p-fluid {
     padding: var(--login-form-logo-gap) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
+
     .lost-password-button {
       width: unset;
       padding: 0.5rem;
@@ -73,7 +77,8 @@
 }
 
 .login-logo {
-  width: var(--login-logo-width);
+  min-width: var(--login-logo-width);
+  display: block;
 }
 
 .p-field {
@@ -94,13 +99,11 @@
   }
 }
 
-.login-button{
+.login-button {
   padding: 0.5rem;
+  justify-content: center;
   .p-button-icon-left {
-    margin-right: -1rem;
-  }
-  .p-button-label {
-    margin: auto;
+    margin-left: -1.5rem;
   }
 }
 
@@ -113,11 +116,11 @@
   justify-content: space-between;
   &.lost-password-enabled {
     margin-top: -1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.4rem;
   }
   &:not(.lost-password-enabled) {
     margin-top: -0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.9rem;
   }
 }
 
@@ -128,17 +131,15 @@
 .login-container-with-desktop {
   height: var(--main-height);
   position: relative;
-
-  >.rc-desktop-panel {
-    filter: blur(5px);
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .login-form-position-wrapper {
   z-index: 10001;
   position: absolute;
-  top: calc(50% - var(--login-form-top-position));
-  left: calc(50% - var(--login-form-left-position));
-  -webkit-box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.5); 
-  box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.5);
+  border-radius: var(--login-form-border-radius);
+  -webkit-box-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6); 
+  box-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
 }
