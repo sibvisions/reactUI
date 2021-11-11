@@ -542,10 +542,7 @@ export default class ContentStore{
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                //this.dataProviderData.delete(name);
-                //this.dataProviderMetaData.delete(name);
-                //this.dataProviderFetched.delete(name);
-                //this.dataProviderSelectedRow.delete(name);
+                this.dataBooks.delete(name);
                 this.subManager.rowSelectionSubscriber.delete(name);
             }
         }
@@ -565,11 +562,7 @@ export default class ContentStore{
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.screenWrappers.clear();
-        //this.dataProviderData.clear();
-        //this.dataProviderMetaData.clear();
-        //this.dataProviderFetched.clear();
-        //this.dataProviderSelectedRow.clear();
-        //this.dataProviderSortedColumns.clear();
+        this.dataBooks.clear();
         this.activeScreens = [];
         this.selectedMenuItem = "";
         this.toolbarItems = [];
