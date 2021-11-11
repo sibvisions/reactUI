@@ -55,6 +55,28 @@
         >tr {
             &:nth-child(even) {
                 background: #fafafa;
+
+                &.p-highlight {
+                    >td {
+                        &.cell-required {
+                            background: rgba(253, 238, 195, 0.8);
+                        }
+    
+                        &.cell-readonly {
+                            background: rgba(230, 230, 230, 0.8);
+                        }
+                    }
+                }
+
+                >td {
+                    &.cell-required {
+                        background: rgb(253, 238, 195);
+                    }
+    
+                    &.cell-readonly {
+                        background: rgb(230, 230, 230);
+                    }
+                }
             }
             &:focus {
                 outline: none;
@@ -65,7 +87,7 @@
 
                 > td {
                     &:hover {
-                        color: white;
+                        color: rgb(131, 131, 131);
                     }
 
                     &.cell-required {
