@@ -218,7 +218,7 @@ const Menu: FC<IMenu> = (props) => {
                 if (foundMenuItem && !panelMenu.current?.state.activeItem) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
                 }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
                 }
                 setActiveItemChanged(prev => !prev)
@@ -235,7 +235,6 @@ const Menu: FC<IMenu> = (props) => {
                 menuElem.classList.add("p-menuitem--active");
             } 
         }
-
     },[activeItemChanged])
 
     /**
