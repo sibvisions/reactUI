@@ -141,7 +141,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 label={props.text}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={props.enabled === false}
-                tabIndex={-1}
+                tabIndex={0}
                 model={items}
                 onClick={() => buttonRef.current.show()}
                 tooltip={props.toolTipText} />
