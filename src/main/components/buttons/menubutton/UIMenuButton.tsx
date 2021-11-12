@@ -6,7 +6,7 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
+import { useEventHandler, useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
@@ -101,6 +101,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
+    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".rc-popupmenubutton") as HTMLElement : undefined, "mouseup", (e) => e.preventDefault());
+
     return (
         <span
             className="rc-popupmenubutton-wrapper"
@@ -141,7 +143,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 label={props.text}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={props.enabled === false}
-                tabIndex={0}
+                tabIndex={-1}
                 model={items}
                 onClick={() => buttonRef.current.show()}
                 tooltip={props.toolTipText} />
