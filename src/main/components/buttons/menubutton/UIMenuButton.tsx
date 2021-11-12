@@ -101,7 +101,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
-    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".rc-popupmenubutton") as HTMLElement : undefined, "mouseup", (e) => e.preventDefault());
+    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-defaultbutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
+    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
 
     return (
         <span
