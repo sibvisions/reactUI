@@ -363,12 +363,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 inputRef={linkedInput}
                 autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
                 appendTo={document.body}
-                className={"rc-editor-linked"}
+                className={concatClassnames("rc-editor-linked", columnMetaData?.nullable === false ? "required-field" : "")}
                 panelClassName={concatClassnames(
                     "dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",
-                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : "",
-                    columnMetaData?.nullable === false ? "required-field" : ""
+                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
