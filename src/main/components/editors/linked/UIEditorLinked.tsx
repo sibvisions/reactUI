@@ -85,7 +85,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** If the editor is a cell-editor */
     const isCellEditor = props.id === "";
 
-    const columnMetaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"", props.columnName);
+    const columnMetaData = useMetaData(compId, props.dataRow||"", props.columnName);
 
     const tableOptions = props.cellEditor.columnView?.columnCount > 1;
 
