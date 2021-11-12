@@ -1,5 +1,10 @@
 @import '../../../../frontmask/scssutil/buttonColors.scss';
 
+.rc-popupmenubutton-wrapper {
+    outline-width: 0;
+    outline-style: none;
+}
+
 /// background and border-color set because children need to inherit
 /// Inherit height and width from parent who has set it by the layout
 .rc-popupmenubutton {

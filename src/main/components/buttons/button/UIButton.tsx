@@ -127,14 +127,14 @@ const UIButton: FC<IButton> = (baseProps) => {
                 aria-label={props.ariaLabel}
                 icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnData.iconPos}
-                tabIndex={!props.focusable ? -1 : btnData.tabIndex}
+                tabIndex={props.focusable === false ? -1 : btnData.tabIndex}
                 onClick={onButtonPress}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {
                         onFocusGained(props.name, context.server);
                     }
                     else {
-                        if (!props.focusable) {
+                        if (props.focusable === false) {
                             event.preventDefault();
                         }
                     }

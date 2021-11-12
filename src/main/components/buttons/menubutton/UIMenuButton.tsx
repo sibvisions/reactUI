@@ -14,7 +14,7 @@ import { appContext } from "../../../AppProvider";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton, buttonProps, getGapPos } from "..";
 import { parseIconData } from "../../compprops";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { showTopBar, TopBarContext } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -101,16 +101,31 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     
     const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
-    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-defaultbutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
+    useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
+    useEventHandler(buttonRef.current ? buttonRef.current.defaultButton : undefined, "blur", (e) => {
+        const castedEvent = e as FocusEvent;
+        if (castedEvent.relatedTarget === buttonWrapperRef.current) {
+            getFocusComponent(props.name + "-wrapper", false)?.focus();
+        }
+    })
 
     return (
         <span
             className="rc-popupmenubutton-wrapper"
+            id={props.name + "-wrapper"}
             ref={buttonWrapperRef} 
             style={{position: 'absolute', ...layoutStyle}}
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onFocus={(e) => {
+                if (props.eventFocusGained) {
+                    onFocusGained(props.name, context.server)
+                }
+                const defaultButton = (e.target.querySelector(".p-splitbutton-defaultbutton") as HTMLElement)
+                if (defaultButton) {
+                    (e.target.querySelector(".p-splitbutton-defaultbutton") as HTMLElement).focus();
+                }
+            }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={btnData.tabIndex}
         >
