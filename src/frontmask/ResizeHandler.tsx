@@ -35,7 +35,9 @@ const ResizeHandler:FC = (props) => {
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children, child => {
                 const childWithProps = (child as ChildWithProps);
-                sizeMap.set(childWithProps.props.id, { width: width, height: height });
+                if (childWithProps.props.id) {
+                    sizeMap.set(childWithProps.props.id, { width: width, height: height });
+                }
             });
             if (context.appSettings.desktopPanel) {
                 let desktopHeight = 0;
@@ -48,7 +50,10 @@ const ResizeHandler:FC = (props) => {
                             (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight :
                             parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
                 }
-                sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
+                if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
+                    sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
+                }
+                
             }
             //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);
@@ -118,9 +123,6 @@ const ResizeHandler:FC = (props) => {
                     sizeRef.current.classList.remove('transition-disable-overflow');
                     sizeRef.current.parentElement.classList.remove("menu-transition")
                 }, 0)
-                handleResize();
-            }
-            else if (event.propertyName === "max-height") {
                 handleResize();
             }
         }
