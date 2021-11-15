@@ -13,7 +13,7 @@ import API from "./API";
 import AppSettings from "./AppSettings";
 
 /** Type for AppContext */
-type AppContextType={
+export type AppContextType={
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
@@ -58,6 +58,7 @@ export const appContext = createContext<AppContextType>(initValue)
  * @param children - the children
  */
 const AppProvider: FC = ({children}) => {
+    /** History of react-router-dom */
     const history = useHistory()
 
     /** Sets the initial state */

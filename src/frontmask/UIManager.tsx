@@ -28,7 +28,6 @@ export interface IResizeContext {
     menuSize?:number,
     menuRef?: any,
     login?:boolean,
-    style?: CSSProperties
     menuCollapsed?:boolean
 }
 
@@ -54,10 +53,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
+    /** True, if the session is expired */
     const [sessionExpired, setSessionExpired] = useState<boolean>(false)
 
+    /** True, if the menu should be shown in mini mode */
     const menuMini = false;
 
+    /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** ComponentId of Screen extracted by useParams hook */
@@ -128,7 +130,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
                 screenTitle = childWithProps.props.screen_title_;
         })      
-        context.subscriptions.notifyScreenNameChanged(screenTitle)
+        context.subscriptions.notifyScreenTitleChanged(screenTitle)
     }, [props.children, context.subscriptions]);
 
     const CustomWrapper = props.customAppWrapper;
@@ -141,7 +143,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     appLayout === "corporation" ? "corporation" : "",
                     sessionExpired ? "reactUI-expired" : ""
                 )}>
-                <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
+                <ChangePasswordDialog username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
                     <div id="reactUI-main" className="main">
                         <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
@@ -154,7 +156,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 "reactUI",
                 appLayout === "corporation" ? "corporation" : "",
                 sessionExpired ? "reactUI-expired" : "")} >
-                <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
+                <ChangePasswordDialog username={context.contentStore.currentUser.userName} password="" />
                 {appLayout === "corporation" ?
                     <CorporateMenu
                         menuVisibility={menuVisibility}

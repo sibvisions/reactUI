@@ -5,7 +5,7 @@ import React, { FC, useContext, useLayoutEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 
 /** Hook imports */
-import { useProperties, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useProperties, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -25,17 +25,10 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
     /** Reference for the browser element */
     const browserRef = useRef<any>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IBrowser>(baseProps.id, baseProps);
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IBrowser>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, browserRef.current ? browserRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

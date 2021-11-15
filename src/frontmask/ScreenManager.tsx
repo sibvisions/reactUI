@@ -1,14 +1,13 @@
 /** React imports */
 import React, { createContext, FC, ReactElement, useContext } from "react";
-import { useParams } from "react-router";
 
-/** Other imports */
-import { getScreenIdFromNavigation } from "../main/components/util";
-import { IForwardRef } from "../main/IForwardRef";
+/** 3rd Party imports */
+import { useParams } from "react-router";
 
 /** Other imports */
 import { appContext } from "../main/AppProvider";
 import WorkScreen from "./workscreen/WorkScreen";
+import { getScreenIdFromNavigation } from "../main/components/util";
 
 export interface IScreenContext {
     screen?: ReactElement;
@@ -17,15 +16,20 @@ export interface IScreenContext {
 export const ScreenContext = createContext<IScreenContext>({});
 
 /** Displays either ScreenWrappers set by the user or the workscreen */
-const ScreenManager:FC = (props) => {
+const ScreenManager:FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Extracted contentstore */
     const { contentStore, contentStore: { screenWrappers } } = context;
+
     /** ComponentId of Screen extracted by useParams hook */
     const {componentId} = useParams<any>();
+
     /** The ID of the screen based on the navigation-name */
     const screenId = getScreenIdFromNavigation(componentId, contentStore)
 
+    /** Workscreen */
     const screen = <WorkScreen />;
 
     /** If there is a screen-wrapper for this screen, check if there is a global and global should be shown, if true show global if false don't */

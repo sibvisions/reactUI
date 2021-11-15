@@ -69,10 +69,9 @@ export class SubscriptionManager {
     screenDataChangeSubscriber = new Map<string, Function>();
 
     /**
-     * A Map which stores a function to update the screen-name state of the subscribers, the key is the name of the subscribers
-     * and the value is the function to update the screen-name state
+     * A function to update the screenTitle of the menu
      */
-    screenNameSubscriber = new Map<string, Function>();
+    screenTitleSubscriber:Function = () => {};
 
     /**
      * A Map which stores a function to update the menu-collapsed state of the subscribers, the key is the name of the subscribers
@@ -260,11 +259,10 @@ export class SubscriptionManager {
 
     /**
      * Subscribes components to the screen-name, to change their screen-name state
-     * @param id - the id of the component
      * @param fn - the function to update the screen-name state
      */
-    subscribeToScreenName(id:string, fn: Function) {
-        this.screenNameSubscriber.set(id, fn);
+    subscribeToScreenTitle(fn: Function) {
+        this.screenTitleSubscriber = fn;
     }
 
     /**
@@ -499,8 +497,8 @@ export class SubscriptionManager {
      * Unsubscribes a component from screen-name changes
      * @param id - the component id
      */
-    unsubscribeFromScreenName(id: string) {
-        this.screenNameSubscriber.delete(id)
+    unsubscribeFromScreenTitle() {
+        this.screenTitleSubscriber = () => {}
     }
 
     /**
@@ -639,11 +637,11 @@ export class SubscriptionManager {
     }
 
     /**
-     * Calls the function of the screen-name subscribers to change their state
-     * @param screenName - the current screen-name
+     * Calls the function of the screen-title subscriber to change their state
+     * @param screenTitle - the current screen-name
      */
-    notifyScreenNameChanged(screenName:string) {
-        this.screenNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [screenName]))
+    notifyScreenTitleChanged(screenTitle:string) {
+        this.screenTitleSubscriber.apply(undefined, [screenTitle])
     }
 
     notifyAppNameChanged(appName:string) {

@@ -7,18 +7,32 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 
 /** Hook imports */
-import { useTranslation } from "../../main/components/zhooks";
+import { useConstants } from "../../main/components/zhooks";
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { showTopBar } from "../../main/components/topbar/TopBar";
 import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
 import { concatClassnames } from "../../main/components/util";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";
 import { ResizeContext } from "../UIManager";
+
+/** 
+ * Properties which the dialog will receive when it's rendered
+ */
+export interface ILoginCredentials {
+    username: string,
+    password: string
+}
+
+interface ILoginMaskType extends ILoginCredentials {
+    rememberMe: boolean,
+    showResetMask: boolean,
+    email: string
+}
 
 export const DesktopPanelHandler:FC = () => {
     const context = useContext(appContext);
@@ -28,50 +42,33 @@ export const DesktopPanelHandler:FC = () => {
 }
 
 export const LoginForm:FC = () => {
-    /** Current state of username */
-    const [username, setUsername] = useState<string>("");
+    /** Returns utility variables */
+    const [context, topbar, translations] = useConstants();
+    
+    /** State for login-data */
+    const [loginData, setLoginData] = useState<ILoginMaskType>({ username: "", password: "", email: "", rememberMe: false, showResetMask: false });
 
-    /** Current state of password */
-    const [password, setPassword] = useState<string>("");
-
-    /** Current state of remember me checkbox value */
-    const [rememberMe, setRememberMe] = useState<boolean>(false);
-
-    /** Whether to show the reset-mask or not */
-    const [showResetMask, setShowResetMask] = useState<boolean>(false);
-
-    /** Current state of email when the reset mask is shown */
-    const [email, setEmail] = useState<string>("");
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Current state of translations */
-    const translations = useTranslation()
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
      */
      const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const loginReq = createLoginRequest();
-        loginReq.username = username;
-        loginReq.password = password;
+        loginReq.username = loginData.username;
+        loginReq.password = loginData.password;
         loginReq.mode = "manual";
-        loginReq.createAuthKey = rememberMe;
+        loginReq.createAuthKey = loginData.rememberMe;
         showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
         context.subscriptions.emitMenuUpdate();
     }
 
     const sendResetPassword = () => {
-        if (!email) {
+        if (!loginData.email) {
             context.subscriptions.emitMessage({ message: translations.get("The email is required"), name: "" });
         }
         else {
             const resetReq = createResetPasswordRequest();
-            resetReq.identifier = email;
+            resetReq.identifier = loginData.email;
             showTopBar(context.server.sendRequest(resetReq, REQUEST_ENDPOINTS.RESET_PASSWORD), topbar)
         }
     }
@@ -79,40 +76,43 @@ export const LoginForm:FC = () => {
     return (
         <>
             <ChangePasswordDialog
-                username={username}
-                password={password}
-                loggedIn={false} />
+                username={loginData.username}
+                password={loginData.password} />
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
                     <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
                 </div>
-                {!showResetMask ?
+                {!loginData.showResetMask ?
                     <div className="p-fluid">
                         <div className="p-field p-float-label p-input-icon-left">
                             <i className="pi pi-user" />
                             <InputText
-                                value={username}
+                                value={loginData.username}
                                 id="username"
                                 type="text"
                                 autoComplete="username"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLoginData(prevState => ({...prevState, username: event.target.value}))} />
                             <label htmlFor="username">{translations.get("Username")} </label>
                         </div>
                         <div className="p-field p-float-label p-input-icon-left">
                             <i className="pi pi-key" />
                             <InputText
-                                value={password}
+                                value={loginData.password}
                                 id="password"
                                 type="password"
                                 autoComplete="current-password"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLoginData(prevState => ({...prevState, password: event.target.value}))} />
                             <label htmlFor="password">{translations.get("Password")} </label>
                         </div>
                         <div className={concatClassnames(
                             "login-extra-options",
                             context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
                             <div className="login-cbx-container">
-                                <Checkbox inputId="rememberMe" className="remember-me-cbx" checked={rememberMe} onChange={(event) => setRememberMe(event.checked)} />
+                                <Checkbox 
+                                    inputId="rememberMe" 
+                                    className="remember-me-cbx" 
+                                    checked={loginData.rememberMe} 
+                                    onChange={(event) => setLoginData(prevState => ({...prevState, rememberMe: event.checked}))} />
                                 <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
                             </div>
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
@@ -121,7 +121,7 @@ export const LoginForm:FC = () => {
                                     className="lost-password-button"
                                     label={translations.get("Lost password")}
                                     icon="pi pi-question-circle"
-                                    onClick={() => setShowResetMask(true)} />
+                                    onClick={() => setLoginData(prevState => ({...prevState, showResetMask: true}))} />
                             }
                         </div>
                         <Button type="submit" className="p-primary login-button" label={translations.get("Login")} icon="pi pi-lock-open" />
@@ -134,15 +134,15 @@ export const LoginForm:FC = () => {
                         <div className="p-field p-float-label p-input-icon-left">
                             <i className="pi pi-inbox" />
                             <InputText
-                                value={email}
+                                value={loginData.email}
                                 id="email"
                                 type="text"
                                 autoComplete="email"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)} />
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLoginData(prevState => ({...prevState, email: event.target.value}))} />
                             <label htmlFor="email">{translations.get("Email")} </label>
                         </div>
                         <div className="change-password-button-wrapper">
-                            <Button type="button" className="lost-password-button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setShowResetMask(false)} />
+                            <Button type="button" className="lost-password-button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setLoginData(prevState => ({...prevState, showResetMask: false}))} />
                             <Button type="button" className="lost-password-button" label={translations.get("Request")} icon="pi pi-send" onClick={sendResetPassword} />
                         </div>
                     </div>

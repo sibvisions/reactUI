@@ -1,19 +1,27 @@
+/** React imports */
 import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
+/** 3rd Party imports */
 import _ from "underscore";
+
+/** Other imports */
 import { appContext } from "../main/AppProvider";
-import { ChildWithProps, Dimension } from "../main/components/util";
+import { ChildWithProps } from "../main/components/util";
 import { useEventHandler } from "../main/components/zhooks";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { LayoutContext } from "../main/LayoutContext";
 import { REQUEST_ENDPOINTS } from "../main/request";
 import { ResizeContext } from "./UIManager";
 
-
-
+/**
+ * This component handles the screen-size it measures the first container so the panels below can be calculated
+ * @param props - contains the children
+ */
 const ResizeHandler:FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Contains menu-size, if the menu is collapsed and the login page is active and a reference to the menu element */
     const resizeContext = useContext(ResizeContext);
 
     /** Reference for the screen-container */
@@ -22,6 +30,7 @@ const ResizeHandler:FC = (props) => {
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    /** The currently active app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** 
@@ -103,19 +112,15 @@ const ResizeHandler:FC = (props) => {
     // eslint-disable-next-line
     },[doResize]);
 
+    /** When the collapse value changes, add menu-transition */
     useLayoutEffect(() => {
         if (sizeRef.current) {
+            sizeRef.current.classList.add('transition-disable-overflow');
             sizeRef.current.parentElement.classList.add("menu-transition")
         }
     }, [resizeContext.menuCollapsed])
 
-    useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionstart', (event:any) => {
-        if (event.propertyName === "width" && event.srcElement === document.getElementsByClassName('menu-panelmenu-wrapper')[0] && sizeRef.current) {
-            sizeRef.current.classList.add('transition-disable-overflow');
-            //sizeRef.current.parentElement.classList.add("menu-transition")
-        }
-    })
-
+    //When the menu-tranisition ends, remove classnames and resize
     useEventHandler(resizeContext.menuRef?.current ? resizeContext.menuRef.current : undefined, 'transitionend', (event:any) => {
         if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement) && sizeRef.current) {
             if (event.propertyName === "width") {
@@ -128,12 +133,6 @@ const ResizeHandler:FC = (props) => {
         }
     });
 
-    useEventHandler(document.getElementById("reactUI-main") as HTMLElement, 'transitionend', (event:any) => {
-        if (event.propertyName === "margin-left") {
-            handleResize()
-        }
-    });
-
     return (
         <LayoutContext.Provider value={componentSize}>
             {resizeContext.login ?
@@ -141,7 +140,7 @@ const ResizeHandler:FC = (props) => {
                     {props.children}
                 </div>
                 :
-                <div id="workscreen" ref={sizeRef} style={{flex: '1', ...resizeContext.style}}>
+                <div id="workscreen" ref={sizeRef} style={{flex: '1'}}>
                     {props.children}
                 </div>
             }

@@ -12,7 +12,7 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
 import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
 
-type ServerFailMessage = {
+export type IServerFailMessage = {
     headerMessage:string,
     bodyMessage:string,
     sessionExpired:boolean,
@@ -30,7 +30,7 @@ const AppWrapper:FC = (props) => {
     const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** Reference for the dialog which shows the timeout error message */
-    const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
 
     useLayoutEffect(() => {
         const link:HTMLLinkElement = document.createElement('link'); 

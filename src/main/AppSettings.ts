@@ -141,7 +141,7 @@ export default class AppSettings {
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
             this.#subManager.notifyAppNameChanged(appMetaData.applicationName);
-            this.#subManager.notifyScreenNameChanged(appMetaData.applicationName);
+            this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
         }
         
     }

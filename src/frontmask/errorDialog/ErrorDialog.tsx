@@ -1,24 +1,38 @@
 /** React imports */
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
+
+/** 3rd Party imports */
 import { useHistory } from "react-router";
-import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+
+/** Other imports */
+import { IServerFailMessage } from "../../AppWrapper";
+import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/components/util";
-import { appContext, useEventHandler } from "../../moduleIndex";
+import { useConstants, useEventHandler } from "../../moduleIndex";
 
-const ErrorDialog:FC<{headerMessage:string, bodyMessage:string, sessionExpired:boolean, retry:Function}> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+/**
+ * This component displays an error-message
+ * @param props - contains the error message and if the session is expired or server error
+ */
+const ErrorDialog:FC<IServerFailMessage> = (props) => {
+    /** Returns utility variables */
+    const [context, topbar] = useConstants();
 
+    /** History of react-router-dom */
     const history = useHistory();
 
-    const topbar = useContext(TopBarContext)
-
+    /**
+     * Restarts the app when the session expires
+     */
     const handleRestart = () => {
         history.push("/login");
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();
     }
 
+    /**
+     * Either starts the session restart or retries the last failed request
+     */
     useEventHandler(document.body, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
             if (props.sessionExpired) {
