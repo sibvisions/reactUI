@@ -1,14 +1,13 @@
 /** React imports */
-import React, { FC, useContext, useMemo, useRef } from "react";
+import React, { FC, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useMouseListener, useLayoutValue } from "../../zhooks";
+import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle } from "../../util";
 import BaseComponent from "../../BaseComponent";
-import { appContext } from "../../../AppProvider";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -18,14 +17,8 @@ export interface IDesktopPanel extends BaseComponent {
 }
 
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);

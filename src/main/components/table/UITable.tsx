@@ -7,18 +7,17 @@ import { DataTable } from "primereact/datatable";
 import _ from "underscore";
 
 /** Hook imports */
-import { useProperties, 
-         useDataProviderData, 
+import { useDataProviderData, 
          useRowSelect, 
          useOutsideClick, 
          useMultipleEventHandler, 
          useSortDefinitions, 
          useEventHandler,
-         useLayoutValue,
          useFetchMissingData,
          useMouseListener,
          useMetaData,
-         usePopupMenu} from "../zhooks";
+         usePopupMenu,
+         useComponentConstants} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -29,7 +28,7 @@ import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescriptio
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
 import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
@@ -334,17 +333,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Reference for the Table */
     const tableRef = useRef(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<TableProps>(baseProps);
 
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);

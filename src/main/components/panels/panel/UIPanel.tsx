@@ -1,17 +1,16 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
 import BaseComponent from "../../BaseComponent";
-import { appContext } from "../../../AppProvider";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 
 /** Interface for Panels */
@@ -35,14 +34,8 @@ export interface IPanel extends BaseComponent {
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIPanel: FC<IPanel> = (baseProps) => {
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);

@@ -2,18 +2,17 @@
 // https://github.com/chartjs/Chart.js/issues/5224
 
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 
 /** 3rd Party imports */
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useRowSelect, useTranslation, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
+import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import { appContext } from "../../AppProvider";
 import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 
@@ -163,22 +162,22 @@ function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: bo
 const UIChart: FC<IChart> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const chartRef = useRef<HTMLSpanElement>(null);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IChart>(baseProps.id, baseProps);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
+
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** The data provided by the databook */
     const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);
+
     /** get the currently selected row */
     const [selectedRow] = useRowSelect(compId, props.dataBook);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-    /** Translations for labels */
-    const translation = useTranslation();
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -353,7 +352,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         //get the actual x-values from the provided data
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         //if pie chart & multiple y-Axes use the y column labels otherwise generate labels based on x-values
-        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
+        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
         const hasStringLabels = someNaN(rows);
         const {colors, points, overlapOpacity} = getSettingsFromCSSVar({
             colors: {
@@ -458,7 +457,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         const aspectRatio = preferredSize.width / preferredSize.height;
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
-        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
+        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const tooltip = {

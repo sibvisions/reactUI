@@ -1,13 +1,13 @@
 /* global google */
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -18,12 +18,11 @@ import { getMarkerIcon,
          parseMaxSize, 
          sendOnLoadCallback, 
          sendSetValues, 
-         sendMapFetchRequests, 
          sortGroupDataGoogle, 
          sendSaveRequest } from "../util";
 import { IMap } from ".";
 import { IconProps } from "../compprops";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { FetchResponse } from "../../response";
@@ -35,28 +34,28 @@ import { FetchResponse } from "../../response";
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Reference for the div that is wrapping the map containing layout information */
     const mapWrapperRef = useRef<any>(null);
+
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMap>(baseProps);
+
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
+
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<google.maps.Marker>();
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IMap>(baseProps.id, baseProps);
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
-    /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
+
     /** The center position of the map */
     const centerPosition = parseMapLocation(props.center);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, mapWrapperRef.current ? mapWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
     /** Options for map controls/display */
     const options = {
         center: centerPosition ? { lat: centerPosition.latitude, lng: centerPosition.longitude} : { lat: 0, lng: 0 },
@@ -70,6 +69,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         zoom: props.zoomLevel || 9,
         zoomControl: true
     };
+
     /** Colors for polygon filling and polygon lines */
     const polyColors = {
         strokeColor: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),

@@ -5,7 +5,7 @@ import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, useProperties } from "../zhooks";
+import { useComponentConstants, useMouseListener } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -21,21 +21,19 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Reference for label element */
     const labelRef = useRef<HTMLSpanElement>(null);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<BaseComponent>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
+
     const lblTextAlignment = translateTextAlign(props.horizontalAlignment);
 
     /** Font for label */
     const lblFont = getFont(props.font);
-
-    /** Get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
 
     const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
 

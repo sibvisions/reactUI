@@ -2,7 +2,7 @@
 import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
@@ -23,14 +23,8 @@ export interface ISplit extends BaseComponent{
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UISplitPanel: FC<ISplit> = (baseProps) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
 
     /** The Childcomponents of this SplitPanel */
     const children = useMemo(() => {

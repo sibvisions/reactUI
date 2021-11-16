@@ -2,7 +2,7 @@
 import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener } from "../../zhooks";
+import { useProperties, useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -18,12 +18,9 @@ export interface IToolBarHelper extends IPanel {
     toolBarVisible?:boolean
 }
 
-const ToolBarHelper:FC<IToolBarHelper> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+const ToolBarHelper:FC<IToolBarHelper> = (baseProps) => {
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(props.id, props.className);
