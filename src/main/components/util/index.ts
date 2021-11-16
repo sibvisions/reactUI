@@ -5,7 +5,6 @@ export { containsObject } from './ContainsObject';
 export { firstCharToLower } from './FirstCharToLower';
 export { firstCharToUpper } from './FirstCharToUpper';
 export { getScreensData, getScreenSelectedRows } from './GetDataProvidersOfComp';
-export { getEditorCompId } from './GetEditorCompId';
 export { getMarkerIcon } from './GetMarkerIcon';
 export { getMetaData } from './GetMetaData';
 export { getScreenIdFromNavigation } from './GetScreenNameFromNavigation';

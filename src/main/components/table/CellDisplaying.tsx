@@ -30,7 +30,9 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             editorStyle: {width: "100%", height: "100%"},
             autoFocus: true,
             stopCellEditing: stopCellEditing,
-            passedKey: passedValues
+            passedKey: passedValues,
+            isCellEditor: true,
+            cellCompId: props.dataProvider.split("/")[1]
         }) || editor;
     }
     return editor

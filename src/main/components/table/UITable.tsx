@@ -1088,7 +1088,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                                     values: primaryKeys.map(pk => currDataRow[pk])
                                 }
                             },
-                            readonly: columnMetaData?.readonly
+                            readonly: columnMetaData?.readonly,
+                            isCellEditor: true,
+                            cellCompId: props.dataBook.split("/")[1]
                         })
                     }
                     else {

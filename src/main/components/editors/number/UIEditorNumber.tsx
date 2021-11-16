@@ -5,13 +5,11 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, use
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useRowSelect, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, useMetaData, usePopupMenu } from "../../zhooks"
+import { useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { appContext } from "../../../AppProvider";
-import { getEditorCompId, 
-         getDecimalLength, 
+import { getDecimalLength, 
          getGrouping,
          getPrimePrefix, 
          getScaleDigits, 
@@ -24,10 +22,9 @@ import { getEditorCompId,
          handleEnterKey,
          concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
-import { NumericColumnDescription } from "../../../response"
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
-import { getColMetaData } from "../../table/UITable";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { NumericColumnDescription } from "../../../response";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -53,27 +50,14 @@ export interface ScaleType {
  * when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber> = (props) => {
+const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
 
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
-
-    /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore);
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorNumber>(baseProps);
 
     /** Current state value of input element */
     const [value, setValue] = useState<number|string>(selectedRow);
@@ -86,12 +70,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
-
-    /** The metaData of the dataRow */
-    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, "numeric")
-
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
 
     useFetchMissingData(props.parent as string, compId, props.dataRow);
 
@@ -107,7 +85,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
     const scaleDigits:ScaleType = useMemo(() => columnMetaData 
-        ? getScaleDigits(props.cellEditor.numberFormat, columnMetaData.scale) 
+        ? getScaleDigits(props.cellEditor.numberFormat, (columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
     [columnMetaData, props.cellEditor.numberFormat]);
 
@@ -126,7 +104,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
      * Returns the maximal length before the deciaml seperator
      * @returns the maximal length before the deciaml seperator
      */
-    const decimalLength = useMemo(() => columnMetaData ? getDecimalLength(columnMetaData.precision, columnMetaData.scale) : undefined, [columnMetaData]);
+    const decimalLength = useMemo(() => columnMetaData ? getDecimalLength((columnMetaData as NumericColumnDescription).precision, (columnMetaData as NumericColumnDescription).scale) : undefined, [columnMetaData]);
 
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
@@ -154,14 +132,14 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     },[selectedRow]);
 
     useEffect(() => {
-        if (isCellEditor && props.passedKey) {
+        if (props.isCellEditor && props.passedKey) {
             if (/^[0-9]$/i.test(props.passedKey)) {
                 setValue(null as any)
             }
         }
 
         return () => {
-            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && isCellEditor && numberInput.current) {
+            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && props.isCellEditor && numberInput.current) {
                 numberInput.current.blur();
                 //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))
             }
@@ -192,7 +170,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         }
         else if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-            if (isCellEditor && props.stopCellEditing) {
+            if (props.isCellEditor && props.stopCellEditing) {
                 if ((event as KeyboardEvent).key === "Tab") {
                     (event.target as HTMLElement).blur();
                     props.stopCellEditing(event);
@@ -210,7 +188,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     });
 
     return (
-        (!isCellEditor) ?
+        (!props.isCellEditor) ?
             <span aria-label={props.ariaLabel} {...popupMenu} style={layoutStyle}>
                 <InputNumber
                     ref={numberRef}

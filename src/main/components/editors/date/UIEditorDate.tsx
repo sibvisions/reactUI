@@ -1,18 +1,16 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, useMultipleEventHandler, usePopupMenu, useRowSelect } from "../../zhooks";
+import { useEditorConstants, useFetchMissingData, useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { appContext } from "../../../AppProvider";
-import { getEditorCompId, 
-         sendSetValues, 
+import { sendSetValues, 
          onBlurCallback, 
          sendOnLoadCallback, 
          parsePrefSize, 
@@ -23,7 +21,7 @@ import { getEditorCompId,
          handleEnterKey,
          concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of DateCellEditor */
@@ -80,7 +78,7 @@ const parseMultiple = (
  * which opens a datepicker to choose a date and change the value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate> = (props) => {
+const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
@@ -88,19 +86,9 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     const calendarInput = useRef<HTMLInputElement>(null);
 
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    //const context = useContext(appContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
-
-    /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore);
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorDate>(baseProps);
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
 
@@ -130,14 +118,9 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
 
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
-
     const alreadySaved = useRef<boolean>(false);
 
     const focused = useRef<boolean>(false);
-
-    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName);
 
     setDateLocale(context.appSettings.locale);
 
@@ -169,7 +152,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     useEffect(() => {
         setMounted(true)
         setTimeout(() => {
-            if (calendarInput.current && isCellEditor) {
+            if (calendarInput.current && props.isCellEditor) {
                 calendarInput.current?.focus()
                 if (props.passedKey) {
                     //TODO: Value changing isn't very good here but setting the state is not possible because the state needs to be a date...
@@ -179,7 +162,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         },0);
 
         return () => {
-            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && isCellEditor) {
+            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && props.isCellEditor) {
                 handleDateInput();
             }
         }
@@ -238,31 +221,6 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         );
     }
 
-    // useEventHandler(calendarInput.current || undefined, "keydown", (event) => {
-    //     event.stopPropagation();
-    //     if ((event as KeyboardEvent).key === "Enter") {
-    //         handleDateInput();
-    //         alreadySaved.current = true;
-    //         handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-    //         if (calendar.current) {
-    //             setVisible(false)
-    //         }
-    //     }
-    //     else if ((event as KeyboardEvent).key === "Tab") {
-    //         handleDateInput();
-    //         alreadySaved.current = true;
-    //         if (isCellEditor && props.stopCellEditing) {
-    //             props.stopCellEditing(event);
-    //         }
-    //         else if (calendar.current) {
-    //             setVisible(false)
-    //         }
-    //     }
-    //     else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
-    //         props.stopCellEditing(event);
-    //     }
-    // });
-
     useMultipleEventHandler(calendar.current && calendarInput.current ? 
         //@ts-ignore
         [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
@@ -283,7 +241,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         else if ((event as KeyboardEvent).key === "Tab") {
             handleDateInput();
             alreadySaved.current = true;
-            if (isCellEditor && props.stopCellEditing) {
+            if (props.isCellEditor && props.stopCellEditing) {
                 props.stopCellEditing(event);
             }
             else if (calendar.current) {
@@ -295,7 +253,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 }
             }
         }
-        else if ((event as KeyboardEvent).key === "Escape" && isCellEditor && props.stopCellEditing) {
+        else if ((event as KeyboardEvent).key === "Escape" && props.isCellEditor && props.stopCellEditing) {
             props.stopCellEditing(event);
         }
     });
@@ -304,7 +262,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         <span aria-label={props.ariaLabel} {...usePopupMenu(props)} aria-expanded={visible} style={layoutStyle}>
             <CustomCalendar
                 ref={calendar}
-                id={!isCellEditor ? props.name : undefined}
+                id={!props.isCellEditor ? props.name : undefined}
                 inputRef={calendarInput}
                 className={concatClassnames(
                     "rc-editor-text",
