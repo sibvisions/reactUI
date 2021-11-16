@@ -5,4 +5,3 @@ export { default as UIMenuButton } from "./menubutton/UIMenuButton";
 export type { IMenuButton } from "./menubutton/UIMenuButton";
 export { default as UIRadioButton } from "./radiobutton/UIRadioButton";
 export { default as UIToggleButton } from "./togglebutton/UIToggleButton";
-export { buttonProps, getGapPos, getIconCenterDirection } from './ButtonStyling';

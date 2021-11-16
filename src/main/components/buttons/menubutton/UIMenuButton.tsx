@@ -1,22 +1,21 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useEventHandler, useLayoutValue, useMouseListener, useProperties } from "../../zhooks";
+import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
 
 /** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
-import { appContext } from "../../../AppProvider";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { IButton, buttonProps, getGapPos } from "..";
+import { IButton } from "..";
 import { parseIconData } from "../../compprops";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent } from "../../util";
 import BaseComponent from "../../BaseComponent";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for MenuButton */
@@ -31,28 +30,22 @@ export interface IMenuButton extends IButton {
 const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
+
     /** Reference for the span that is wrapping the button containing layout information */
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IMenuButton>(baseProps.id, baseProps);
-    /** Information on how to display the button, refreshes everytime the props change */
-    const btnData = useMemo(() => buttonProps(props), [props]);
+
+    /** Component constants for contexts, properties and style */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMenuButton>(baseProps);
+
+    /** Style properties for the button */
+    const btnStyle = useButtonStyling(props, layoutStyle);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-    /** Button Background either server set or default */
-    const btnBgd = btnData.style.background as string || window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
-    /** Server set or default horizontal alignment */
-    const btnHAlign = btnData.style.justifyContent || "center";
-    /** Server set or default vertical alignment */
-    const btnVAlign = btnData.style.alignItems || "center";
+
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<any>>();
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -98,8 +91,6 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
         }
     },[context.contentStore, context.server, props])
-    
-    const gapPos = getGapPos(props.horizontalTextPosition, props.verticalTextPosition);
 
     useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
@@ -127,7 +118,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 }
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tabIndex={btnData.tabIndex}
+            tabIndex={btnStyle.tabIndex}
         >
             <SplitButton
                 ref={buttonRef}
@@ -135,29 +126,29 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',
-                    btnData.btnBorderPainted && tinycolor(btnBgd).isDark() ? "bright" : "dark",
-                    `gap-${gapPos}`
+                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright" : "dark",
+                    `gap-${btnStyle.iconGapPos}`
                 )}
                 style={{
-                    ...btnData.style, 
+                    ...btnStyle.style, 
                     padding: '0',
                     background: undefined,
                     borderColor: undefined,
-                    '--menuBtnJustify': btnHAlign,
-                    '--menuBtnAlign': btnVAlign,
-                    '--menuBtnPadding': btnData.style.padding,
-                    '--background': btnBgd,
-                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
-                    ...(btnData.iconProps?.icon ? {
-                        '--iconWidth': `${btnData.iconProps.size?.width}px`,
-                        '--iconHeight': `${btnData.iconProps.size?.height}px`,
-                        '--iconColor': btnData.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnData.iconProps.icon})`,
+                    '--menuBtnJustify': btnStyle.style.justifyContent,
+                    '--menuBtnAlign': btnStyle.style.alignItems,
+                    '--menuBtnPadding': btnStyle.style.padding,
+                    '--background': btnStyle.style.background,
+                    '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
+                    ...(btnStyle.iconProps?.icon ? {
+                        '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
+                        '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
+                        '--iconColor': btnStyle.iconProps.color,
+                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                     } : {})
                 }}
                 label={props.text}
-                icon={btnData.iconProps ? concatClassnames(btnData.iconProps.icon, 'rc-button-icon') : undefined}
+                icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={props.enabled === false}
                 tabIndex={-1}
                 model={items}
