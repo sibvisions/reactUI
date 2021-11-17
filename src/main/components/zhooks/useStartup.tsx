@@ -160,7 +160,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 else if (process.env.NODE_ENV === "production") {
                     const splitURLPath = window.location.pathname.split("/");
 
-                    if (splitURLPath.length - 2 > 3 || !splitURLPath[1]) {
+                    if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
                         context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/services/mobile"
                     }
                     else if (splitURLPath[1]) {
