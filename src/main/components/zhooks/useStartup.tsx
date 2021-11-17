@@ -165,7 +165,6 @@ const useStartup = (props:ICustomContent):boolean => {
                     }
                     else if (splitURLPath[1]) {
                         context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
-                        console.log(context.server.BASE_URL, splitURLPath)
                     }
                 }
 
@@ -176,6 +175,8 @@ const useStartup = (props:ICustomContent):boolean => {
                 convertedOptions.forEach((v, k) => {
                     startUpRequest[k] = v;
                 });
+
+                startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2)
 
                 if(authKey) {
                     startupReq.authKey = authKey;
