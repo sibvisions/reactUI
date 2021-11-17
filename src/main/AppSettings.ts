@@ -52,6 +52,18 @@ export default class AppSettings {
     /** The current region */
     locale:string = "de-DE";
 
+    /** The language of the app */
+    language:string = "de";
+
+    /** The timezone of the app */
+    timezone:string = "CET";
+
+    /** The devicemode of the client */
+    deviceMode:string = "desktop";
+
+    /** Theme of the client */
+    theme:string = "btr"
+
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
      * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
@@ -144,6 +156,9 @@ export default class AppSettings {
             this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
         }
         
+        if (appMetaData.theme) {
+            this.theme = appMetaData.theme;
+        }
     }
 
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {

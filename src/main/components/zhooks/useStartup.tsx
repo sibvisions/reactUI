@@ -172,16 +172,32 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
                 }
 
+                if (convertedOptions.has("language")) {
+                    context.appSettings.language = convertedOptions.get("language");
+                }
+
+                if (convertedOptions.has("timezone")) {
+                    context.appSettings.timezone = convertedOptions.get("timezone");
+                }
+
+                if (convertedOptions.has("deviceMode")) {
+                    context.appSettings.deviceMode = convertedOptions.get("deviceMode");
+                }
+
+                if (convertedOptions.has("theme")) {
+                    context.appSettings.theme = convertedOptions.get("theme");
+                }
+
                 convertedOptions.forEach((v, k) => {
-                    startUpRequest[k] = v;
+                    startupReq[k] = v;
                 });
 
-                startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2)
+                startupReq.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2)
 
                 if(authKey) {
                     startupReq.authKey = authKey;
                 }
-                startupReq.deviceMode = "desktop";
+                startupReq.deviceMode = context.appSettings.deviceMode;
                 startupReq.screenHeight = window.innerHeight;
                 startupReq.screenWidth = window.innerWidth;
                 if (context.contentStore.customStartUpProperties.length) {
@@ -250,6 +266,18 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
                 else if (data.logoBig) {
                     context.appSettings.LOGO_LOGIN = data.logoBig;
+                }
+
+                if (data.language) {
+                    context.appSettings.language = data.language;
+                }
+
+                if (data.timezone) {
+                    context.appSettings.timezone = data.timezone;
+                }
+
+                if (data.theme) {
+                    context.appSettings.theme = data.theme
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 
 /** 3rd Party imports */
 import { useHistory } from "react-router";
@@ -21,6 +21,8 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     /** History of react-router-dom */
     const history = useHistory();
 
+    const alreadySent = useRef<boolean>(false);
+
     /**
      * Restarts the app when the session expires
      */
@@ -36,24 +38,39 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     useEventHandler(document.body, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
             if (props.sessionExpired) {
-                handleRestart();
+                if (!alreadySent.current) {
+                    alreadySent.current = true;
+                    handleRestart();
+                }
             }
             else {
                 showTopBar(props.retry(), topbar);
             }
         }
-    })
+    });
+    
+    console.log(alreadySent.current)
 
     return (
         <>
             <div className="rc-glasspane" />
-            <div className="rc-error-dialog" tabIndex={0} onClick={ () => props.sessionExpired ? handleRestart() : showTopBar(props.retry(), topbar)}>
+            <div className="rc-error-dialog" tabIndex={0} onClick={() => {
+                if (props.sessionExpired) {
+                    if (!alreadySent.current) {
+                        alreadySent.current = true;
+                        handleRestart();
+                    }
+                }
+                else {
+                    showTopBar(props.retry(), topbar)
+                }
+            }}>
                 <div className="rc-error-dialog-header">
                     <i className={concatClassnames(
                         "rc-error-dialog-header-icon",
                         "pi",
                         props.sessionExpired ? "pi-clock" : "pi-times-circle"
-                    )}/>
+                    )} />
                     <span className="rc-error-dialog-header-text">{props.headerMessage}</span>
                 </div>
                 <div className="rc-error-dialog-content">

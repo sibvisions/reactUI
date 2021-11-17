@@ -759,7 +759,7 @@ class Server {
 
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
-            this.contentStore.closeScreen(closeContentData.componentId);
+            this.contentStore.closeScreen(closeContentData.componentId, undefined, true);
         }
     }
 

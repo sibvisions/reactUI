@@ -503,7 +503,7 @@ export default class ContentStore{
      * When a screen closes cleanUp the data for the window 
      * @param windowName - the name of the window to close
      */
-    closeScreen(windowName: string, opensAnother?:boolean) {
+    closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
         this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
         this.subManager.emitActiveScreens();
         if (this.activeScreens.length) {
@@ -513,7 +513,7 @@ export default class ContentStore{
             this.subManager.emitSelectedMenuItem("");
         }
         const window = this.getComponentByName(windowName);
-        if(window){
+        if(window && !closeContent){
             this.cleanUp(window.id, window.name, window.className);
         }
     }
