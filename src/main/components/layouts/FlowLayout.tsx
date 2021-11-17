@@ -321,7 +321,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative', left: toolBarsFiltered?.length ? (checkFirstOrLastToolBar(id, true) && isRowOrientation) ? 5 : 0 : 0 });
             }
             else {
-                console.log(toolBarsFiltered)
                 setCalculatedStyle({ height: prefSize.height, width: prefSize.width, position: 'relative', left: toolBarsFiltered?.length ? (checkFirstOrLastToolBar(id, true) && isRowOrientation) ? 5 : 0 : 0 })
             }
         }
