@@ -94,7 +94,8 @@ const ChangePasswordDialog:FC<ILoginCredentials> = (props) => {
             header={isReset ? translations.get("Reset password") : translations.get("Change password")}
             visible={dialogVisible} 
             onHide={() => setDialogVisible(false)}
-            draggable={false} >
+            draggable={false}
+            baseZIndex={10005} >
             <div className="change-dialog-container">
                 <form onSubmit={sendChangedPassword} className="change-password-form">
                     <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }}>
