@@ -143,7 +143,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     appLayout === "corporation" ? "corporation" : "",
                     sessionExpired ? "reactUI-expired" : ""
                 )}>
-                <ChangePasswordDialog username={context.contentStore.currentUser.name} password="" />
+                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
                     <div id="reactUI-main" className="main">
                         <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
@@ -156,7 +156,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 "reactUI",
                 appLayout === "corporation" ? "corporation" : "",
                 sessionExpired ? "reactUI-expired" : "")} >
-                <ChangePasswordDialog username={context.contentStore.currentUser.userName} password="" />
+                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
                 {appLayout === "corporation" ?
                     <CorporateMenu
                         menuVisibility={menuVisibility}

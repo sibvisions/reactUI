@@ -16,6 +16,12 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
 import { ILoginCredentials } from "../login/login";
 
+interface IChangePasswordDialog  {
+    loggedIn: boolean,
+    username: string,
+    password?: string
+}
+
 /** Interface for change-password-state */
 interface IChangePasswordType extends ILoginCredentials {
     newPassword: string,
@@ -26,12 +32,12 @@ interface IChangePasswordType extends ILoginCredentials {
  * This component displays a dialog to change the password of a user. There are two modes depending on password changing or resetting
  * @param props - the props to start the dialog with
  */
-const ChangePasswordDialog:FC<ILoginCredentials> = (props) => {
+const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
 
     /** Contains data of the change-password mask */
-    const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password, newPassword: "", confirmPassword: ""});
+    const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
 
     /** Whether to show the change password dialog */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
@@ -44,6 +50,15 @@ const ChangePasswordDialog:FC<ILoginCredentials> = (props) => {
     
         return () => context.subscriptions.unsubscribeFromDialog("change-password");
     }, [context.subscriptions]);
+
+    useEffect(() => {
+        setChangePWData(prevState => ({...prevState, username: props.username}));
+    }, [props.username])
+
+    useEffect(() => {
+        setChangePWData(prevState => ({...prevState, password: props.password || ""}));
+        console.log(changePWData)
+    }, [props.password])
 
     /**
      * Sends a login request to change the password of a user.
@@ -62,7 +77,7 @@ const ChangePasswordDialog:FC<ILoginCredentials> = (props) => {
             context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" });
         }
         else {
-            if (!isReset) {
+            if (props.loggedIn) {
                 const changeReq = createChangePasswordRequest();
                 changeReq.password = changePWData.password;
                 changeReq.newPassword = changePWData.newPassword;
@@ -73,19 +88,22 @@ const ChangePasswordDialog:FC<ILoginCredentials> = (props) => {
                         }
                     })
                 });
+                setChangePWData(prevState => ({...prevState, password: "", newPassword: "", confirmPassword: ""}));
             }
             else {
                 const loginReq = createLoginRequest();
                 loginReq.username = changePWData.username;
                 loginReq.password = changePWData.password;
                 loginReq.newPassword = changePWData.newPassword;
+                console.log(changePWData)
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
-                showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
+                showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar);
+                setChangePWData(prevState => ({...prevState, password: props.password || "", newPassword: "", confirmPassword: ""}));
                 context.subscriptions.emitMenuUpdate();
             }
         }
-        setChangePWData(prevState => ({...prevState, password: "", newPassword: "", confirmPassword: ""}));
+        
     }
 
     return (
