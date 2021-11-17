@@ -59,10 +59,9 @@ const ResizeHandler:FC = (props) => {
                             (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight :
                             parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
                 }
-                if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
+                if ((resizeContext.login && sizeRef.current.classList.contains("login-container-with-desktop")) || sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
                     sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
                 }
-                
             }
             //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);
