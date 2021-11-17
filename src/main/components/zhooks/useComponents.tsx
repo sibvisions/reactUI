@@ -1,5 +1,4 @@
 /** React imports */
-import { te } from "date-fns/locale";
 import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
@@ -8,7 +7,6 @@ import _ from "underscore";
 /** Other imports */
 import { appContext } from "../../AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
-import BaseComponent from "../BaseComponent";
 import { Dimension } from "../util";
 
 export type ComponentSizes = {
@@ -29,7 +27,7 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     const context = useContext(appContext);
     
     const compLoadedCache = useRef<Array<string>>(new Array<string>());
-
+    
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
         let tempSizes = new Map<string, ComponentSizes>();
@@ -37,16 +35,11 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
             tempSizes = new Map([...preferredSizes]);
-            if (tempSizes.size > children.size) {
-                tempSizes.forEach((val, key) => {
-                    if (!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key) || context.contentStore.flatContent.get(key)?.visible === false) {
-                        tempSizes.delete(key)
-                    }
-                });
-                if (tempSizes.size === children.size) {
-                    setPreferredSizes(new Map(tempSizes))
+            tempSizes.forEach((val, key) => {
+                if ((!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key)) || context.contentStore.flatContent.get(key)?.visible === false) {
+                    tempSizes.delete(key)
                 }
-            }
+            });
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
@@ -90,6 +83,17 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         /** If there are no children set an empty map */
         if(children.size === 0 && !preferredSizes) {
             setPreferredSizes(new Map<string, ComponentSizes>());
+        }
+
+        if (tempSizes.size > children.size) {
+            tempSizes.forEach((value, key) => {
+                if(!children.has(key)) {
+                    tempSizes.delete(key)
+                }       
+            });
+            if (tempSizes.size === children.size) {
+                setPreferredSizes(new Map(tempSizes))
+            }
         }
 
         /** Create the reactchildren */
