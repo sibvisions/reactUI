@@ -57,7 +57,6 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
 
     useEffect(() => {
         setChangePWData(prevState => ({...prevState, password: props.password || ""}));
-        console.log(changePWData)
     }, [props.password])
 
     /**
@@ -95,7 +94,6 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.username = changePWData.username;
                 loginReq.password = changePWData.password;
                 loginReq.newPassword = changePWData.newPassword;
-                console.log(changePWData)
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
                 showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar);
