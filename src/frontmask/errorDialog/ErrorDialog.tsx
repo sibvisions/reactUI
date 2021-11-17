@@ -48,8 +48,6 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
             }
         }
     });
-    
-    console.log(alreadySent.current)
 
     return (
         <>
