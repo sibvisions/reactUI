@@ -57,7 +57,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorNumber>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [value, setValue] = useState<number|string>(selectedRow);

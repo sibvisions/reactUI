@@ -34,7 +34,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorCheckBox>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_

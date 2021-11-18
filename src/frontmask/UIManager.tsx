@@ -141,7 +141,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 className={concatClassnames(
                     "reactUI",
                     appLayout === "corporation" ? "corporation" : "",
-                    sessionExpired ? "reactUI-expired" : ""
+                    sessionExpired ? "reactUI-expired" : "",
+                    context.appSettings.theme
                 )}>
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
@@ -155,7 +156,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             : <div className={concatClassnames(
                 "reactUI",
                 appLayout === "corporation" ? "corporation" : "",
-                sessionExpired ? "reactUI-expired" : "")} >
+                sessionExpired ? "reactUI-expired" : "",
+                context.appSettings.theme
+            )} >
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
                 {appLayout === "corporation" ?
                     <CorporateMenu

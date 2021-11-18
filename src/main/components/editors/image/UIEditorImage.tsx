@@ -33,7 +33,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorImage>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorImage>(baseProps, baseProps.editorStyle);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props

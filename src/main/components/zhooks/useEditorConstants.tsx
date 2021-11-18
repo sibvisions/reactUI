@@ -10,7 +10,7 @@ import { TopBarContextType } from "../topbar/TopBar";
  * @param baseProps - the properties of the editor
  * @returns 
  */
-const useEditorConstants = <T extends IEditor> (baseProps:T): [
+const useEditorConstants = <T extends IEditor> (baseProps:T, fb?:CSSProperties): [
     AppContextType, 
     TopBarContextType, 
     [T], 
@@ -21,7 +21,7 @@ const useEditorConstants = <T extends IEditor> (baseProps:T): [
     any
 ] => {
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<T>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<T>(baseProps, fb);
 
     /** The component id of the screen */
     const compId = useMemo(() => baseProps.isCellEditor ? baseProps.cellCompId as string : context.contentStore.getComponentId(props.id) as string, [props.id, baseProps.isCellEditor, baseProps.cellCompId])

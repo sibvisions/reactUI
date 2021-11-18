@@ -88,7 +88,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     //const context = useContext(appContext);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorDate>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
 

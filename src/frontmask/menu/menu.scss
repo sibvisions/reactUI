@@ -377,7 +377,7 @@
 }
 
 @media screen and (max-width: 960px) {
-    .menu-topbar-right {
+    .menu-topbar-right, .c-menu-profile {
         margin-right: 4px;
     }
 
@@ -412,7 +412,6 @@
                 box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
                 border: 1px solid #c8c8c8;
                 width: 12.5rem;
-                top: calc(var(--s-menu-profile-height) + var(--cMenuHeight));
                 li {
                     a {
                         padding: 0.75rem;
@@ -432,7 +431,6 @@
                     position: absolute;
                     width: var(--s-menu-profile-mini-sub-width);
                     left: calc(var(--s-menu-profile-mini-size) - var(--s-menu-profile-mini-sub-width));
-                    top: unset;
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {

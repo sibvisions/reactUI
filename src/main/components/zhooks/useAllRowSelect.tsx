@@ -21,7 +21,6 @@ const useAllRowSelect = (compId:string, dataBooks:string[]) => {
 
     useEffect(() => {
         const onScreenSelectedRowChange = () => {
-            console.log(context.contentStore.getScreenDataproviderMap(compId));
             const a = getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(compId), dataBooks);
             setSelectedRowMap(new Map(a));
         }

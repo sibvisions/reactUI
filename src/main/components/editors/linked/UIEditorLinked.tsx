@@ -51,7 +51,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorLinked>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
 
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");

@@ -42,7 +42,6 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
             if (!btnBackground) {
                 btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
             }
-            
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
             }
@@ -70,8 +69,8 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
             borderColor: btnBackground,
             color: props.foreground ? tinycolor(props.foreground).toString() : undefined,
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
-            justifyContent: props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va,
-            alignItems: props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha,
+            justifyContent: btnJustify,
+            alignItems: btnAlign,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,
             fontFamily: font ? font.fontFamily : undefined,
             fontWeight: font ? font.fontWeight : undefined,

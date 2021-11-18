@@ -189,7 +189,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorText>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);

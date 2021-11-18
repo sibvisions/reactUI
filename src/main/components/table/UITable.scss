@@ -121,7 +121,7 @@
 
             >td {
                 position: relative;
-                height: 35px;
+                height: var(--btr-table-row-height);
                 padding: 0.2rem 0.4rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -176,9 +176,7 @@
                     &>.cell-data {
                         display: flex;
                         align-items: center;
-                        .cell-data-content {
-                            padding: 6.5px 8.688px;
-                        }
+                        height: var(--btr-table-row-height);
                         &:not(.html-cell) .cell-data-content {
                             overflow: hidden;
                             text-overflow: ellipsis;
@@ -189,7 +187,7 @@
                     }
                 }
                 &.p-highlight {
-                    outline: 2px solid black;
+                    outline: 2px solid #7f7f7f;
                     outline-offset: -2px;
                     color: var(--standardTextColor);
                     &:not(.cell-readonly):not(.cell-required) {

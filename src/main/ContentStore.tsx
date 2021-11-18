@@ -923,7 +923,6 @@ export default class ContentStore{
         }
         this.subManager.emitRowSelect(compId, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
-            console.log(dataProvider.split('/')[1], dataProvider)
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }
     }

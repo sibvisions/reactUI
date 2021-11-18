@@ -37,7 +37,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     const wrapRef = useRef<HTMLSpanElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorChoice>(baseProps);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorChoice>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
