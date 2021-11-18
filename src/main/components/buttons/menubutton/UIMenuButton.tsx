@@ -60,7 +60,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     useLayoutEffect(() => {
         //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact
         if (buttonRef.current) {
-            (document.getElementsByClassName("p-splitbutton-menubutton")[0] as HTMLElement).setAttribute("tabindex", "-1");
+            buttonRef.current.defaultButton.setAttribute("aria-haspopup", true);
+            (buttonRef.current.container.querySelector(".p-splitbutton-menubutton") as HTMLElement).setAttribute("tabindex", "-1");
         }
     },[])
 
