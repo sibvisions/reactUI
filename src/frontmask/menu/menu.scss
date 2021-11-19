@@ -447,7 +447,10 @@
                     }
                     >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
                         width: var(--s-menu-profile-mini-size);
-                        padding: 0.5rem 0.625rem;
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
                 }
             }

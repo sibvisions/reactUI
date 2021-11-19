@@ -28,6 +28,12 @@
     @include btnHover
 }
 
+.btr {
+    .rc-button {
+        padding: var(--btnPadding, var(--btr-button-padding, 0.5rem 1rem));
+    }
+}
+
 /// If the button is dark set the foreground to white
 .bright {
     color: var(--btnColorBright);

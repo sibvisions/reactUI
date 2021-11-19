@@ -455,7 +455,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const containerLeft = container.scrollLeft;
             const containerRight = containerLeft + container.clientWidth;
     
-            const eleTop = cell.rowIndex * parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height"));
+            const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8);
             const eleBottom = eleTop + ele.clientHeight;
         
             const containerTop = container.scrollTop;
@@ -504,7 +504,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const moveDirections = isVisible(selectedElem, container, cell);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height")))
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8))
                     }
                     else if (selectedElem !== null) {
                         let sLeft:number = container.scrollLeft
@@ -515,16 +515,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
     
                         if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height"));
+                            sTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8);
                         }
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height")) : -parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height")));
+                            sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8));
                         }
     
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height")));
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8));
                     }
                 }
             }
@@ -594,7 +594,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height")) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
@@ -1416,7 +1416,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     virtualScroll={virtualEnabled}
                     rows={rows}
                     totalRecords={providerData.length}
-                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-row-height"))}
+                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--btr-table-data-height")) + 8}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns

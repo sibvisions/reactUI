@@ -30,7 +30,7 @@
     --btr-input-button-padding: 0rem 0.5rem;
 
     /// Padding for normal buttons
-    --btr-button-padding: 0.5rem, 1rem;
+    --btr-button-padding: 0.5rem 1rem;
 
     /// Padding for the left part of the menu-button
     --btr-menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
@@ -50,9 +50,6 @@
     /// Padding of table headers
     --btr-table-header-padding: 0.6rem 1rem;
 
-    /// Table row height
-    --btr-table-row-height: 35px;
-
     ///Height of cell data in a table
     --btr-table-data-height: 27px;
 }
@@ -65,6 +62,66 @@
 
     .profile-menu .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
         height: var(--btr-profile-height);
+        padding: var(--btr-profile-padding);
+    }
+
+    .profile-image, .profile-image-null {
+        width: var(--btr-profile-pic);
+        height: var(--btr-profile-pic);
+    }
+
+    .profile-image {
+        background-size: var(--btr-profile-pic) var(--btr-profile-pic);
+    }
+
+    .profile-image-null::before {
+        font-size: calc(var(--btr-profile-pic) - 2px);
+    }
+
+    .p-panelmenu {
+        .p-panelmenu-header > a {
+            padding: var(--btr-s-menu-header-padding);
+        }
+
+        .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
+            padding: var(--btr-s-menu-item-padding);
+        }
+    }
+
+    .p-inputtext {
+        padding: var(--btr-input-padding);
+    }
+
+    .p-button.p-button-icon-only {
+        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+            padding: var(--btr-input-button-padding);
+        }
+    }
+
+    .p-checkbox-box {
+        width: var(--btr-checkbox-size);
+        height: var(--btr-checkbox-size);
+
+        .p-checkbox-icon {
+            font-size: calc(var(--btr-checkbox-size) * 0.7);
+        }
+    }
+
+    .p-radiobutton .p-radiobutton-box {
+        width: var(--btr-radiobutton-size);
+        height: var(--btr-radiobutton-size);
+
+        .p-radiobutton-icon {
+            font-size: calc(var(--btr-radiobutton-size) * 0.6);
+        }
+    }
+
+    .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+        padding: var(--btr-tab-padding);
+    }
+
+    .rc-table .p-datatable-thead > tr > th {
+        padding: var(--btr-table-header-padding);
     }
 }
 

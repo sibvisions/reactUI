@@ -121,7 +121,7 @@
 
             >td {
                 position: relative;
-                height: var(--btr-table-row-height);
+                height: calc(8px + var(--btr-table-data-height));
                 padding: 0.2rem 0.4rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -176,7 +176,7 @@
                     &>.cell-data {
                         display: flex;
                         align-items: center;
-                        height: var(--btr-table-row-height);
+                        height: var(--btr-table-data-height);
                         &:not(.html-cell) .cell-data-content {
                             overflow: hidden;
                             text-overflow: ellipsis;
