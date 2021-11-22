@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
@@ -336,7 +336,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [columnMetaData]);
 
     return (
-        <span aria-label={props.ariaLabel} {...usePopupMenu(props)} style={layoutStyle}>
+        <span 
+            aria-label={props.ariaLabel} 
+            {...usePopupMenu(props)} 
+            style={{...layoutStyle, '--linkedBackground': props.cellEditor_background_} as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
                 id={!props.isCellEditor ? props.name : undefined}

@@ -1,3 +1,4 @@
+/// Basic Theme React
 :root {
     /// Full size of topbar buttons.
     --btr-topbar-buttons: 60px;
@@ -29,8 +30,14 @@
     /// Padding for buttons next to input fields. e.g. LinkedCellEditor, DateCellEditor
     --btr-input-button-padding: 0rem 0.5rem;
 
+    /// Icon size for LinkedCellEditor and DateCellEditor
+    --btrs-input-button-icon-size: 14px;
+
     /// Padding for normal buttons
     --btr-button-padding: 0.5rem 1rem;
+
+    /// Padding for icon-only buttons
+    --btr-button-icon-only-padding: 0.5rem 0.5rem;
 
     /// Padding for the left part of the menu-button
     --btr-menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
@@ -50,8 +57,11 @@
     /// Padding of table headers
     --btr-table-header-padding: 0.6rem 1rem;
 
-    ///Height of cell data in a table
+    /// Height of cell data in a table
     --btr-table-data-height: 27px;
+
+    /// Fixed Padding for Labels
+    --btr-label-padding: 9px;
 }
 
 .btr {
@@ -95,6 +105,9 @@
     .p-button.p-button-icon-only {
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
             padding: var(--btr-input-button-padding);
+            > .p-button-icon {
+                font-size: var(--btrs-input-button-icon-size);
+            }
         }
     }
 
@@ -112,7 +125,8 @@
         height: var(--btr-radiobutton-size);
 
         .p-radiobutton-icon {
-            font-size: calc(var(--btr-radiobutton-size) * 0.6);
+            height: calc(var(--btr-radiobutton-size) * 0.6);
+            width: calc(var(--btr-radiobutton-size) * 0.6);
         }
     }
 
@@ -120,8 +134,22 @@
         padding: var(--btr-tab-padding);
     }
 
-    .rc-table .p-datatable-thead > tr > th {
-        padding: var(--btr-table-header-padding);
+    .rc-table {
+        .p-datatable-thead > tr > th {
+            padding: var(--btr-table-header-padding);
+        }
+
+        .p-datatable-tbody > tr > td {
+            height: calc(8px + var(--btr-table-data-height));
+
+            &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
+                height: var(--btr-table-data-height);
+            }
+        }
+    }
+
+    .rc-label >span {
+        padding: var(--btr-label-padding) 0px;
     }
 }
 

@@ -28,9 +28,38 @@
     @include btnHover
 }
 
+.p-button.p-button-icon-only {
+    width: unset;
+    //height: inherit;
+    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+        padding: 0px 0.5rem;
+    }
+    padding: var(--btnPadding, 0.5rem 0.5rem);
+    .rc-button-icon {
+        align-self: center;
+    }
+    &.rc-toolbar-button {
+        padding: 0;
+    }
+}
+
 .btr {
     .rc-button {
         padding: var(--btnPadding, var(--btr-button-padding, 0.5rem 1rem));
+    }
+
+    .p-button.p-button-icon-only {
+        padding: var(--btnPadding, var(--btr-button-icon-only-padding, 0.5rem 0.5rem));
+    }
+}
+
+.btr-small {
+    .rc-button {
+        padding: var(--btnPadding, var(--btrs-button-padding, 0.125rem 0.25rem));
+    }
+
+    .p-button.p-button-icon-only {
+        padding: var(--btnPadding, var(--btrs-button-icon-only-padding, 0.25rem 0.25rem));
     }
 }
 
@@ -61,20 +90,7 @@
     flex: unset;
 }
 
-.p-button.p-button-icon-only {
-    width: unset;
-    //height: inherit;
-    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-        padding: 0px 0.5rem;
-    }
-    padding: var(--btnPadding, 0.5rem 0.5rem);
-    .rc-button-icon {
-        align-self: center;
-    }
-    &.rc-toolbar-button {
-        padding: 0;
-    }
-}
+
 
 .rc-button.p-button.p-button-icon-only {
     width: inherit;

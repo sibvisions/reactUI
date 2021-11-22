@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
@@ -259,7 +259,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     });
 
     return (
-        <span aria-label={props.ariaLabel} {...usePopupMenu(props)} aria-expanded={visible} style={layoutStyle}>
+        <span 
+            aria-label={props.ariaLabel} 
+            {...usePopupMenu(props)} 
+            aria-expanded={visible} 
+            style={{...layoutStyle, '--dateBackground': props.cellEditor_background_} as CSSProperties}>
             <CustomCalendar
                 ref={calendar}
                 id={!props.isCellEditor ? props.name : undefined}

@@ -19,7 +19,6 @@
 
 /// Lazyloading loading animation
 .p-autocomplete-panel {
-
     &.linked-min-width {
         min-width: 120px !important;
     }
@@ -65,5 +64,9 @@
             }
         }
     }
+}
+
+.btr-mobile .rc-editor-linked .p-autocomplete-dropdown {
+    background: var(--linkedBackground);
 }
 

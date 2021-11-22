@@ -121,7 +121,7 @@
 
             >td {
                 position: relative;
-                height: calc(8px + var(--btr-table-data-height));
+                height: 35px;
                 padding: 0.2rem 0.4rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -176,7 +176,7 @@
                     &>.cell-data {
                         display: flex;
                         align-items: center;
-                        height: var(--btr-table-data-height);
+                        height: 27px;
                         &:not(.html-cell) .cell-data-content {
                             overflow: hidden;
                             text-overflow: ellipsis;
@@ -203,6 +203,26 @@
     }
     .p-inputtext {
         padding: 3px 7px;
+    }
+}
+
+.btr {
+    .rc-table .p-datatable-tbody > tr > td  {
+        height: calc(8px + var(--btr-table-data-height));
+        
+        &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
+            height: var(--btr-table-data-height);
+        }
+    }
+}
+
+.btr-small {
+    .rc-table .p-datatable-tbody > tr > td  {
+        height: calc(8px + var(--btrs-table-data-height));
+        
+        &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
+            height: var(--btrs-table-data-height);
+        }
     }
 }
 

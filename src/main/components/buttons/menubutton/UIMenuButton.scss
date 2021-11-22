@@ -68,6 +68,16 @@
     }
 }
 
+.btr-small {
+    .p-splitbutton-defaultbutton {
+        padding: var(--menuBtnPadding, var(--btrs-menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
+    }
+
+    .p-button.p-splitbutton-menubutton {
+        padding: var(--btrs-menubtn-rightbtn-padding);
+    }
+}
+
 .p-menu {
     .p-menuitem-text {
         line-height: unset;
