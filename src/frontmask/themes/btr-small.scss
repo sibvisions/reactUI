@@ -24,6 +24,12 @@
     /// Padding of a menu-item for standard menu.
     --btrs-s-menu-item-padding: 0.375rem 0.75rem 0.375rem 1.5rem;
 
+    /// Padding of a menu-header for coporation-menu.
+    --btrs-c-menu-header-padding: 0.75rem 0.5rem;
+
+    /// Padding of a menu-item for corporation menu.
+    --btrs-c-menu-item-padding: 0.25rem 0.5rem;
+
     /// Padding of input fields
     --btrs-input-padding: 0.125rem 0.125rem;
 
@@ -98,6 +104,15 @@
         }
     }
 
+    .p-menubar {
+        .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
+            padding: var(--btrs-c-menu-header-padding);
+        }
+        .p-menuitem-link {
+            padding: var(--btrs-c-menu-item-padding);
+        }
+    }
+
     .p-inputtext {
         padding: var(--btrs-input-padding);
     }
@@ -154,7 +169,7 @@
 }
 
 @media screen and (max-width: 960px) {
-    .btr {
+    .btr-small {
         .profile-menu .p-menubar .p-menubar-root-list {
             .p-submenu-list {
                 left: calc(var(--btrs-profile-width-small) - var(--s-menu-profile-mini-sub-width))
@@ -168,8 +183,10 @@
 }
 
 @media screen and (max-width: 530px) {
-    .p-button.p-button-icon-only.menu-topbar-buttons {
-        width: var(--btrs-topbar-buttons-small);
-        height: var(--btrs-topbar-buttons-small);
+    .btr-small {
+        .p-button.p-button-icon-only.menu-topbar-buttons {
+            width: var(--btrs-topbar-buttons-small);
+            height: var(--btrs-topbar-buttons-small);
+        }
     }
 }

@@ -8,8 +8,9 @@
 /// background and border-color set because children need to inherit
 /// Inherit height and width from parent who has set it by the layout
 .rc-popupmenubutton {
-    background: var(--btnDefaultBgd);
-    border-color: var(--btnDefaultBgd);
+    --menuBtnSplitWidth: 38px;
+    background: var(--default-button-color);
+    border-color: var(--default-button-color);
     height: inherit;
     width: inherit;
     border-radius: 3px;
@@ -53,7 +54,7 @@
 
 /// Fixed width for menubutton part of splitbutton
 .p-button.p-splitbutton-menubutton {
-    width: var(--menuBtnIconWidth);
+    width: var(--menuBtnSplitWidth);
     padding: 0.5rem 0.5rem 0.5rem 0px;
     box-shadow: none;
 }

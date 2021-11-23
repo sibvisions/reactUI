@@ -1,0 +1,121 @@
+/// Default Style
+:root {
+    /// Default client background
+    --default-background: #ffffff;
+
+    /// Default background for topbar
+    --default-menu-header-background: #7a7f85;
+
+    /// Default text color
+    --default-text-color: #495057;
+
+    /// Default button color
+    --default-button-color: #2196F3;
+
+    /// Default tab close button color
+    --default-tab-close-color: #cdcfd1;
+
+    /// Default toolbar background
+    --default-toolbar-background: #f8f9fa;
+
+    /// Default toolbar border
+    --default-toolbar-border: 1px solid #dee2e6;
+}
+
+body.default {
+    background: var(--default-background);
+}
+
+.default {
+    .menu-header {
+        background: var(--default-menu-header-background);
+    }
+
+    .p-menubar {
+        background: var(--default-menu-header-background);
+        
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--default-menu-header-background);
+                }
+            }
+        }
+    }
+
+    .c-menu-header {
+        background: var(--default-menu-header-background);
+    }
+
+    .c-menu-menubar {
+        background: var(--default-menu-header-background);
+    }
+
+    &.btr-mobile {
+        .p-inputtext:enabled:focus {
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--default-button-color);
+                color: var(--default-button-color);
+            }
+        }
+
+        .rc-editor-linked, .rc-editor-date {
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--default-button-color);
+                        color: var(--default-button-color);
+                    }
+                }
+
+                .p-inputtext {
+                    border-color: var(--default-button-color);
+                }
+            }
+
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--default-text-color);
+            }
+        }
+    }
+
+    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
+            color: var(--default-text-color);
+        }
+
+    .rc-button.mouse-border {
+        color: var(--default-text-color);
+    }
+
+    .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
+        color: var(--default-text-color);
+    }
+
+    .rc-popupmenubutton {
+        background: var(--default-button-color);
+        border-color: var(--default-button-color);
+    }
+
+    .rc-table .p-datatable-tbody > tr > td.p-highlight {
+        color: var(--default-text-color);
+    }
+
+    .tabview-button {
+        color: var(--default-tab-close-color);
+    }
+
+    .rc-toolbar {
+        background: var(--default-toolbar-background);
+        border: var(--default-toolbar-border);
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .p-menubar .p-menubar-root-list {
+        background: var(--default-menu-header-background);
+
+        > .p-menuitem {
+            background: var(--default-menu-header-background);
+        }
+    }
+}

@@ -4,8 +4,8 @@
 }
 
 .rc-toolbar {
-    background-color: var(--toolBarBgd);
-    border: var(--toolBarBorder);
+    background: var(--default-toolbar-background);
+    border: var(--default-toolbar-border);
 
     &.navbar-north {
         border-bottom: none;

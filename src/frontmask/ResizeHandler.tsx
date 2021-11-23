@@ -11,7 +11,7 @@ import { useEventHandler } from "../main/components/zhooks";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { LayoutContext } from "../main/LayoutContext";
 import { REQUEST_ENDPOINTS } from "../main/request";
-import { ResizeContext } from "./UIManager";
+import { isCorporation, ResizeContext } from "./UIManager";
 
 /**
  * This component handles the screen-size it measures the first container so the panels below can be calculated
@@ -38,6 +38,37 @@ const ResizeHandler:FC = (props) => {
      * setting this size will recalculate the layouts
      */
     const doResize = useCallback(() => {
+        const getDesktopHeight = (login?:boolean) => {
+            let height = 0;
+            if (sizeRef.current) {
+                if (login) {
+                    height = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
+                }
+                else {
+                    const reactUIHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight
+                    let minusHeight = 0;
+                    if (isCorporation(appLayout, context.appSettings.theme) && document.querySelector(".c-menu-topbar")) {
+                        minusHeight = (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight
+                        height = reactUIHeight - minusHeight;
+                    }
+                    else {
+                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(context.appSettings.theme === "btr-mobile" ? "--btrm-topbar-height" : "--s-menu-header-height"))
+                        height = reactUIHeight - minusHeight;
+                    }
+                }
+            }
+            return height;
+        }
+
+        if (appLayout === "corporation" && resizeContext.setMobileStandard) {
+            if (resizeContext.mobileStandard === false && window.innerWidth <= 530) {
+                resizeContext.setMobileStandard(true);
+            }
+            else if (resizeContext.mobileStandard === true && window.innerWidth > 530) {
+                resizeContext.setMobileStandard(false)
+            }
+        }
+
         if (sizeRef.current) {
             const width = sizeRef.current.offsetWidth
             const height = sizeRef.current.offsetHeight
@@ -49,16 +80,7 @@ const ResizeHandler:FC = (props) => {
                 }
             });
             if (context.appSettings.desktopPanel) {
-                let desktopHeight = 0;
-                if (resizeContext.login) {
-                    desktopHeight = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
-                }
-                else if (sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
-                    desktopHeight = ((document.querySelector(".reactUI") as HTMLElement).offsetHeight) -
-                        (appLayout === "corporation" ?
-                            (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight :
-                            parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--s-menu-header-height")));
-                }
+                let desktopHeight = getDesktopHeight(resizeContext.login);
                 if ((resizeContext.login && sizeRef.current.classList.contains("login-container-with-desktop")) || sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
                     sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
                 }

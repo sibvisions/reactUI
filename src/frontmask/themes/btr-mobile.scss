@@ -1,0 +1,128 @@
+:root {
+    /// Font size
+    --btrm-font-size: 18px;
+
+    /// Menu topbar height
+    --btrm-topbar-height: 35px;
+
+    /// Topbar button size
+    --btrm-topbar-buttons-small: 30px;
+
+    /// Profile height
+    --btrm-profile-size-small: 35px;
+
+    /// Profile image size
+    --btrm-profile-image-size: 30px;
+}
+
+.btr-mobile {
+    .p-component, body {
+        font-size: var(--btrm-font-size);
+    }
+
+    .c-menu {
+        .c-menu-menubar .p-menubar {
+            height: unset;
+        }
+    }
+
+    .p-inputtext {
+        border-width: 0 0 2px 0;
+        border-color: #CCCCCC;
+        border-style: solid;
+        border-radius: 0;
+
+        &:enabled:focus {
+            box-shadow: none;
+            -webkit-box-shadow: none;
+
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--default-button-color);
+                color: var(--default-button-color);
+            }
+        }
+    }
+
+    .rc-editor-linked, .rc-editor-date {
+        &:focus-within {
+            box-shadow: none;
+            -webkit-box-shadow: none;        
+        }
+
+        &:hover {
+            .p-button.p-button-icon-only {
+                &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                    border-color: var(--default-button-color);
+                    color: var(--default-button-color);
+                }
+            }
+
+            .p-inputtext {
+                border-color: var(--default-button-color);
+            }
+        }
+
+        .p-autocomplete-dropdown, .p-datepicker-trigger {
+            color: var(--default-text-color);
+        }
+
+        .p-button:focus {
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+    }
+
+    .p-button.p-button-icon-only {
+        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+            border-width: 0 0 2px 0;
+            border-color: #CCCCCC;
+            border-style: solid;
+            border-radius: 0;
+        }
+    }
+}
+
+@media screen and (max-width: 530px) {
+    .btr-mobile {
+        .menu-header {
+            height: var(--btrm-topbar-height);
+        }
+
+        .profile-menu .p-menubar .p-menubar-root-list {
+            >.p-menuitem >.p-menuitem-link {
+                height: var(--btrm-profile-size-small);
+
+                &:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                    width: var(--btrm-profile-size-small)
+                }
+            }
+        } 
+
+        .profile-image, .profile-image-null {
+            width: var(--btrm-profile-image-size);
+            height: var(--btrm-profile-image-size);
+        }
+
+        .profile-image {
+            background-size: var(--btrm-profile-image-size) var(--btrm-profile-image-size);
+        }
+
+        .profile-image-null::before {
+            font-size: calc(var(--btrm-profile-image-size) - 2px);
+        }
+
+        .p-button.p-button-icon-only.menu-topbar-buttons {
+            width: var(--btrm-topbar-buttons-small);
+            height: var(--btrm-topbar-buttons-small);
+            padding: 0;
+        }
+
+        .menu-panelmenu-wrapper {
+            padding-top: var(--btrm-topbar-height);
+        }
+
+        .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
+            margin-top: var(--btrm-topbar-height);
+        }
+    }
+}

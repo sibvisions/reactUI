@@ -40,49 +40,19 @@
 @import './main/components/browser/UIBrowser.scss';
 @import './main/components/panels/toolbarPanel/UIToolBarPanel.scss';
 @import './frontmask/errorDialog/ErrorDialog.scss';
-@import './themes/btr.scss';
-@import './themes/btr-small.scss';
-@import './themes/btr-mobile.scss';
+@import './frontmask/themes/btr.scss';
+@import './frontmask/themes/btr-small.scss';
+@import './frontmask/themes/btr-mobile.scss';
+@import './frontmask/styles/default-style.scss';
+@import './frontmask/styles/dark-style.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
-    /// Standard background of the application
-    --standardBgdColor: white;
-
-    /// Standard text-color
-    --standardTextColor: #495057;
-
     /// Standard font
-    --standardFont: 'Roboto', sans-serif;
+    --standard-font-family: 'Roboto', sans-serif;
 
     /// Standard font-size
-    --standardFontSize: 14px;
-
-    /// Button default background
-    --btnDefaultBgd: #2196F3;
-
-    /// Button default top bottom padding
-    --btnPTB: 5px;
-
-    /// Button default left right padding
-    --btnPLR: 10px;
-    /// Button border when no border painted on hover
-    --btnNoBorderPaintedColor: black;
-
-    /// Button foreground when button background is dark
-    --btnColorBright: white;
-
-    /// Menubutton split width
-    --menuBtnIconWidth: 38px;
-
-    /// Tabset closable 'x' foreground
-    --tabsetXColor: #cdcfd1;
-
-    ///Toolbar background color
-    --toolBarBgd: #f8f9fa;
-
-    ///Toolbar border
-    --toolBarBorder: 1px solid #dee2e6;
+    --standard-font-size: 14px;
 
     --main-height: 100vh;
 }
@@ -99,10 +69,10 @@
 
 /// setting standard values for body
 body {
-    background: var(--standardBgdColorColor);
-    color: var(--standardTextColor);
-    font-family: var(--standardFont);
-    font-size: var(--standardFontSize);
+    background: var(--default-background);
+    color: var(--default-text-color);
+    font-family: var(--standard-font-family);
+    font-size: var(--standard-font-size);
     font-weight: 400;
     font-style: normal;
     margin: 0;
@@ -110,8 +80,8 @@ body {
 
 /// Overriding PrimeReact font-family and font-size
 .p-component {
-    font-family: var(--standardFont);
-    font-size: var(--standardFontSize);
+    font-family: var(--standard-font-family);
+    font-size: var(--standard-font-size);
 }
 
 /// Image in this file because image won't be displayed

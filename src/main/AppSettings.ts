@@ -62,7 +62,10 @@ export default class AppSettings {
     deviceMode:string = "desktop";
 
     /** Theme of the client */
-    theme:string = "btr-mobile";
+    theme:string = "btr";
+
+    /** Style of the client */
+    style:string = "dark"
 
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,

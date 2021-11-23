@@ -1,5 +1,6 @@
-import { CSSProperties, useMemo } from "react";
+import { CSSProperties, useContext, useMemo } from "react";
 import tinycolor from "tinycolor2";
+import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { getAlignments, getFont, getMargins, IconProps, parseIconData } from "../compprops";
@@ -26,11 +27,17 @@ interface IButtonStyle {
  * @returns style properties used by all button components
  */
 const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLElement, ref2?:HTMLElement): IButtonStyle => {
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
+
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 
     /** The font of a button */
     const font = useMemo(() => getFont(props.font), [props.font]);
+
+    /** client theme */
+    const style = context.appSettings.style;
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle:CSSProperties = useMemo(() => {
@@ -40,7 +47,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
 
         if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--standardBgdColor');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-background');
             }
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
@@ -52,7 +59,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
         }
         else {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--btnDefaultBgd');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
             }
 
             if (!btnJustify) {

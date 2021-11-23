@@ -38,6 +38,8 @@ const AppWrapper:FC = (props) => {
         link.type = 'text/css';
         link.href = 'application.css';
         document.getElementsByTagName('HEAD')[0].appendChild(link);
+
+        document.body.classList.add(context.appSettings.style)
     }, [])
 
     /**

@@ -24,6 +24,12 @@
     /// Padding of a menu-item for standard menu.
     --btr-s-menu-item-padding: 0.75rem 0.75rem 0.75rem 1.5rem;
 
+    /// Padding of a menu-header for coporation-menu.
+    --btr-c-menu-header-padding: 0.75rem 1rem;
+
+    /// Padding of a menu-item for corporation menu.
+    --btr-c-menu-item-padding: 0.75rem 1rem;
+
     /// Padding of input fields
     --btr-input-padding: 0.5rem 0.5rem;
 
@@ -43,7 +49,7 @@
     --btr-menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
 
     /// Padding for the right part of the menu-button
-    --btr-menubtn-rightbtn-padding: 0rem 0.5rem 0rem 0.5rem;
+    --btr-menubtn-rightbtn-padding: 0.5rem 0rem;
 
     /// Size of a checkbox
     --btr-checkbox-size: 20px;
@@ -95,6 +101,15 @@
 
         .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
             padding: var(--btr-s-menu-item-padding);
+        }
+    }
+
+    .p-menubar {
+        .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
+            padding: var(--btr-c-menu-header-padding);
+        }
+        .p-menuitem-link {
+            padding: var(--btr-c-menu-item-padding);
         }
     }
 

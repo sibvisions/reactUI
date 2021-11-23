@@ -22,7 +22,7 @@
     &.mouse-border {
         background: transparent;
         border-color: transparent;
-        color: var(--standardTextColor);
+        color: var(--default-text-color);
     }
 
     @include btnHover
@@ -65,17 +65,17 @@
 
 /// If the button is dark set the foreground to white
 .bright {
-    color: var(--btnColorBright);
+    color: var(--button-color-bright);
     &:enabled:hover {
-        color: var(--btnColorBright);
+        color: var(--button-color-bright);
     }
 }
 
 /// If the button is bright set the foreground to a darker color
 .dark {
-    color: var(--standardTextColor);
+    color: var(--button-color-dark);
     &:enabled:hover {
-        color: var(--standardTextColor);
+        color: var(--button-color-dark);
     }
 }
 
@@ -83,7 +83,7 @@
 .border-notpainted, .border-notpainted:enabled:hover {
     background: transparent !important;
     border-color: transparent !important;
-    color: var(--standardTextColor);
+    color: var(--default-text-color);
 }
 
 .p-button-label {

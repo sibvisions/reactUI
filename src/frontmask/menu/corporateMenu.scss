@@ -11,7 +11,7 @@
 .c-menu-header {
     display: flex;
     justify-content: space-between;
-    background: var(--s-menu-header-background);
+    background: var(--default-menu-header-background);
     align-items: center;
     height: var(--s-menu-profile-height);
 }
@@ -22,7 +22,7 @@
 }
 
 .c-menu-menubar {
-    background: var(--s-menu-header-background);
+    background: var(--default-menu-header-background);
     padding-left: 10px;
     .p-menubar {
         border-radius: 0;
@@ -70,9 +70,8 @@
         background: #ffffff;
         border-color: #ffffff;
         box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-        color: var(--standardTextColor);
         padding: 0;
-
+        color: var(--default-text-color);
         .p-button-icon {
             font-size: 1rem;
         } 

@@ -28,10 +28,22 @@ export interface IResizeContext {
     menuSize?:number,
     menuRef?: any,
     login?:boolean,
-    menuCollapsed?:boolean
+    menuCollapsed?:boolean,
+    mobileStandard?:boolean,
+    setMobileStandard?: Function
 }
 
 export const ResizeContext = createContext<IResizeContext>({});
+
+export function isCorporation(appLayout:string, theme:string) {
+    if (appLayout === "corporation") {
+        if (theme === "btr-mobile" && window.innerWidth <= 530) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
 
 /**
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
@@ -54,7 +66,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     /** True, if the session is expired */
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false)
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
+
+    /** True, if the standard menu for mobile is active IF corporation applayout is set */
+    const [mobileStandard, setMobileStandard] = useState<boolean>(false);
 
     /** True, if the menu should be shown in mini mode */
     const menuMini = false;
@@ -140,9 +155,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             <div
                 className={concatClassnames(
                     "reactUI",
-                    appLayout === "corporation" ? "corporation" : "",
+                    isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
                     sessionExpired ? "reactUI-expired" : "",
-                    context.appSettings.theme
+                    context.appSettings.theme,
+                    context.appSettings.style
                 )}>
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
@@ -155,12 +171,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             </div>
             : <div className={concatClassnames(
                 "reactUI",
-                appLayout === "corporation" ? "corporation" : "",
+                isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
                 sessionExpired ? "reactUI-expired" : "",
-                context.appSettings.theme
+                context.appSettings.theme,
+                context.appSettings.style
             )} >
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
-                {appLayout === "corporation" ?
+                {isCorporation(appLayout, context.appSettings.theme) ?
                     <CorporateMenu
                         menuVisibility={menuVisibility}
                         visibleButtons={visibleButtons} />
@@ -172,14 +189,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         visibleButtons={visibleButtons} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
+                    isCorporation(appLayout, context.appSettings.theme) ? "main--with-c-menu" : "main--with-s-menu",
+                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuVisibility.toolBar ? "toolbar-visible" : "",
                     !menuVisibility.menuBar ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
                 )}>
-                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed }}>
+                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>
                         <ScreenManager />
                     </ResizeContext.Provider>
                 </div>

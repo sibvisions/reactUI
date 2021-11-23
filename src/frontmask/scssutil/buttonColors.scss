@@ -1,14 +1,19 @@
+:root {
+    --button-color-bright: #ffffff;
+    --button-color-dark: #495057;
+}
+
 @mixin btnHover {
     &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover {
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
 
         &.bright {
-            color: var(--btnColorBright);
+            color: var(--button-color-bright);
         }
 
         &.dark {
-            color: var(--standardTextColor);
+            color: var(--button-color-dark);
         }
     }
 
@@ -28,7 +33,7 @@
         &.border-notpainted {
             background: transparent;
             border-color: transparent;
-            color: var(--standardTextColor);
+            color: var(--button-color-dark);
         }
 
         &:not(.p-disabled):not(.p-highlight):hover {
@@ -40,7 +45,7 @@
             &.border-notpainted {
                 background: transparent;
                 border-color: transparent;
-                color: var(--standardTextColor);
+                color: var(--button-color-dark);
 
                 &.mouse-border {
                     background: var(--hoverBackground);
@@ -50,18 +55,18 @@
         }
 
         &.bright, &:not(.p-disabled):not(.p-highlight).bright:hover, &.p-highlight.bright:hover {
-            color: var(--btnColorBright);
+            color: var(--button-color-bright);
 
             .p-button-icon-left, .p-button-icon-right {
-                    color: var(--iconColor, --btnColorBright);
+                    color: var(--iconColor, --button-color-bright);
             }
         }
 
         &.dark, &:not(.p-disabled):not(.p-highlight).dark:hover, &.p-highlight.dark:hover {
-            color: var(--standardTextColor);
+            color: var(--button-color-dark);
 
             .p-button-icon-left, .p-button-icon-right {
-                color: var(--iconColor, --standardTextColor);
+                color: var(--iconColor, --button-color-dark);
             }
         }
 

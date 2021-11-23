@@ -1,0 +1,112 @@
+/// Darkmode Style
+:root {
+    /// Darkmode client background
+    --dark-background: #2a323d;
+
+    /// Darkmode background for topbar
+    --dark-menu-header-background: #3f4b5b;
+
+    /// Default button color
+    --dark-button-color: #2196F3;
+
+    /// Darkmode text color
+    --dark-text-color: rgba(255, 255, 255, 0.87);
+}
+
+body.dark {
+    background: var(--dark-background);
+}
+
+.dark {
+    .menu-header {
+        background: var(--dark-menu-header-background);
+    }
+
+    .p-menubar {
+        background: var(--dark-menu-header-background);
+        
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--dark-menu-header-background);
+                }
+            }
+        }
+    }
+
+    .c-menu-header {
+        background: var(--dark-menu-header-background);
+    }
+
+    .c-menu-menubar {
+        background: var(--dark-menu-header-background);
+    }
+
+    &.btr-mobile {
+        .p-inputtext:enabled:focus {
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--default-button-color);
+                color: var(--default-button-color);
+            }
+        }
+
+        .rc-editor-linked, .rc-editor-date {
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--default-button-color);
+                        color: var(--default-button-color);
+                    }
+                }
+
+                .p-inputtext {
+                    border-color: var(--default-button-color);
+                }
+            }
+
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--dark-text-color);
+            }
+        }
+    }
+
+    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
+            color: var(--dark-text-color);
+        }
+
+    .rc-button.mouse-border {
+        color: var(--dark-text-color);
+    }
+
+    .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
+        color: var(--dark-text-color);
+    }
+
+    .rc-popupmenubutton {
+        background: var(--default-button-color);
+        border-color: var(--default-button-color);
+    }
+
+    .rc-table .p-datatable-tbody > tr > td.p-highlight {
+        color: var(--dark-text-color);
+    }
+
+    .tabview-button {
+        color: var(--default-tab-close-color);
+    }
+
+    .rc-toolbar {
+        background: var(--default-toolbar-background);
+        border: var(--default-toolbar-border);
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .p-menubar .p-menubar-root-list {
+        background: var(--dark-menu-header-background);
+
+        > .p-menuitem {
+            background: var(--dark-menu-header-background);
+        }
+    }
+}
