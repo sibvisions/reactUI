@@ -67,7 +67,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     "rc-button",
                     !btnStyle.borderPainted ? "border-notpainted" : "",
                     props.style?.includes("hyperlink") ? "p-button-link" : "",
-                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright" : "dark",
+                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     props.borderOnMouseEntered ? "mouse-border" : "",
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,

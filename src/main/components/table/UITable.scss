@@ -60,6 +60,7 @@
                     >td {
                         &.cell-required {
                             background: rgba(253, 238, 195, 0.8);
+                            color: var(--default-text-color);
                         }
     
                         &.cell-readonly {
@@ -71,6 +72,7 @@
                 >td {
                     &.cell-required {
                         background: rgb(253, 238, 195);
+                        color: var(--default-text-color);
                     }
     
                     &.cell-readonly {
@@ -92,6 +94,7 @@
 
                     &.cell-required {
                         background: rgba(255, 244, 210, 0.8);
+                        color: var(--default-text-color);
                     }
 
                     &.cell-readonly {
@@ -130,7 +133,8 @@
                 outline: none;
 
                 &.cell-required {
-                    background: rgb(255, 244, 210)
+                    background: rgb(255, 244, 210);
+                    color: var(--default-text-color);
                 }
 
                 &.cell-readonly {

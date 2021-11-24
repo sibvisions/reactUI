@@ -70,7 +70,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',
-                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright" : "dark",
+                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection

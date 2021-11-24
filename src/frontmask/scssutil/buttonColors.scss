@@ -8,11 +8,11 @@
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
 
-        &.bright {
+        &.bright-button {
             color: var(--button-color-bright);
         }
 
-        &.dark {
+        &.dark-button {
             color: var(--button-color-dark);
         }
     }
@@ -54,7 +54,7 @@
             }
         }
 
-        &.bright, &:not(.p-disabled):not(.p-highlight).bright:hover, &.p-highlight.bright:hover {
+        &.bright-button, &:not(.p-disabled):not(.p-highlight).bright-button:hover, &.p-highlight.bright-button:hover {
             color: var(--button-color-bright);
 
             .p-button-icon-left, .p-button-icon-right {
@@ -62,7 +62,7 @@
             }
         }
 
-        &.dark, &:not(.p-disabled):not(.p-highlight).dark:hover, &.p-highlight.dark:hover {
+        &.dark-button, &:not(.p-disabled):not(.p-highlight).dark-button:hover, &.p-highlight.dark-button:hover {
             color: var(--button-color-dark);
 
             .p-button-icon-left, .p-button-icon-right {

@@ -28,21 +28,6 @@
     @include btnHover
 }
 
-.p-button.p-button-icon-only {
-    width: unset;
-    //height: inherit;
-    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-        padding: 0px 0.5rem;
-    }
-    padding: var(--btnPadding, 0.5rem 0.5rem);
-    .rc-button-icon {
-        align-self: center;
-    }
-    &.rc-toolbar-button {
-        padding: 0;
-    }
-}
-
 .btr {
     .rc-button {
         padding: var(--btnPadding, var(--btr-button-padding, 0.5rem 1rem));
@@ -63,8 +48,23 @@
     }
 }
 
+.p-button.p-button-icon-only {
+    width: unset;
+    //height: inherit;
+    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+        padding: 0px 0.5rem;
+    }
+    padding: var(--btnPadding, 0.5rem 0.5rem);
+    .rc-button-icon {
+        align-self: center;
+    }
+    &.rc-toolbar-button {
+        padding: 0;
+    }
+}
+
 /// If the button is dark set the foreground to white
-.bright {
+.bright-button {
     color: var(--button-color-bright);
     &:enabled:hover {
         color: var(--button-color-bright);
@@ -72,7 +72,7 @@
 }
 
 /// If the button is bright set the foreground to a darker color
-.dark {
+.dark-button {
     color: var(--button-color-dark);
     &:enabled:hover {
         color: var(--button-color-dark);

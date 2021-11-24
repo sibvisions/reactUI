@@ -266,7 +266,7 @@
 /// Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
     @include menuTransitions();
-    @include styledScrollbarPanel();
+    @include styledScrollbarPanelDefault();
     position: fixed;
     padding-top: var(--s-menu-header-height);
     z-index: 10;

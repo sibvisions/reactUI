@@ -95,7 +95,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     className={concatClassnames(
                         "p-radiobutton-label",
                         btnStyle.style.color ? 'textcolor-set' : '',
-                        btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright" : "dark",
+                        btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                         )} 
                     htmlFor={props.id} 
