@@ -59,6 +59,10 @@
     box-shadow: none;
 }
 
+.rc-popupmenubutton-custom-icon {
+    margin-right: 4px;
+}
+
 .btr {
     .p-splitbutton-defaultbutton {
         padding: var(--menuBtnPadding, var(--btr-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));

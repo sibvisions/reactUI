@@ -25,6 +25,13 @@ import { sendSetValues,
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
+export function isReadOnlyStandardColor(isReadOnly:boolean, background?:string) {
+    if (isReadOnly && background === "#EFEFEF") {
+        return true;
+    }
+    return false;
+}
+
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
     cellEditor: ICellEditor
@@ -215,6 +222,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const popupMenu = usePopupMenu(props);
 
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
+
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -399,7 +409,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         } : {
             ...(fieldType === FieldTypes.PASSWORD ? { inputRef: textRef } : { ref: textRef }),
             id: props.isCellEditor ? undefined : props.name,
-            className: concatClassnames(getClassName(fieldType), columnMetaData?.nullable === false ? "required-field" : ""),
+            className: concatClassnames(
+                getClassName(fieldType), 
+                columnMetaData?.nullable === false ? "required-field" : "",
+                isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+            ),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,
             disabled,

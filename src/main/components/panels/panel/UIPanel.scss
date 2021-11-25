@@ -13,6 +13,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            line-height: 1;
         }
         .p-dialog-header-icon:focus {
             box-shadow: none;
@@ -21,9 +22,6 @@
         .p-dialog-header-icon {
             width: 1.5rem;
             height: 1.5rem;
-            &:last-child {
-                margin-right: 4px;
-            }
         }
     }
     .p-dialog-content {

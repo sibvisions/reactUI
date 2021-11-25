@@ -90,7 +90,11 @@
     flex: unset;
 }
 
-
+.p-button.p-button-icon-only {
+    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+        @include btnHover
+    }
+}
 
 .rc-button.p-button.p-button-icon-only {
     width: inherit;

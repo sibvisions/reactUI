@@ -4,6 +4,7 @@ import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, 
 /** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
+import tinycolor from "tinycolor2";
 
 /** Hook imports */
 import { useEditorConstants, useFetchMissingData, useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
@@ -23,6 +24,7 @@ import { sendSetValues,
 import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -121,6 +123,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const alreadySaved = useRef<boolean>(false);
 
     const focused = useRef<boolean>(false);
+
+    const style = context.appSettings.style;
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
 
     setDateLocale(context.appSettings.locale);
 
@@ -271,8 +280,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 className={concatClassnames(
                     "rc-editor-text",
                     "rc-editor-date",
-                    columnMetaData?.nullable === false ? "required-field" : ""
+                    columnMetaData?.nullable === false ? "required-field" : "",
+                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
                 )}
+                style={{
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                }}
                 monthNavigator={true}
                 yearNavigator={true}
                 yearRange="1900:2030"

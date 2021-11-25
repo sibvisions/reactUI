@@ -25,6 +25,7 @@ import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
+import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -78,7 +79,16 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     const popupMenu = usePopupMenu(props);
 
-    const numberClassNames = useMemo(() => concatClassnames("rc-editor-number", columnMetaData?.nullable === false ? "required-field" : ""), [columnMetaData?.nullable])
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
+
+    const numberClassNames = useMemo(() => {
+        return concatClassnames(
+            "rc-editor-number",
+            columnMetaData?.nullable === false ? "required-field" : "",
+            isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+        )
+    }, [columnMetaData?.nullable]);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor

@@ -1,6 +1,7 @@
 .p-calendar {
     width: inherit;
     .p-inputtext {
+        background: var(--dateBackground);
         &:focus + .p-button {
             outline: 0 none;
             outline-offset: 0;

@@ -3,6 +3,7 @@ import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useM
 
 /** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
+import tinycolor from "tinycolor2";
 
 /** Hook imports */
 import { useDataProviderData, useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants} from "../../zhooks"
@@ -16,6 +17,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetV
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { FetchResponse } from "../../../response";
+import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -75,6 +77,13 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
     const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
+
+    const style = context.appSettings.style;
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
 
     useFetchMissingData(props.parent as string, compId, props.dataRow);
 
@@ -343,11 +352,19 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             <AutoComplete
                 ref={linkedRef}
                 id={!props.isCellEditor ? props.name : undefined}
-                style={{ width: 'inherit' }}
+                style={{ 
+                    width: 'inherit', 
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                }}
                 inputRef={linkedInput}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
-                className={concatClassnames("rc-editor-linked", columnMetaData?.nullable === false ? "required-field" : "")}
+                className={concatClassnames(
+                    "rc-editor-linked", 
+                    columnMetaData?.nullable === false ? "required-field" : "",
+                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+                )}
                 panelClassName={concatClassnames(
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",

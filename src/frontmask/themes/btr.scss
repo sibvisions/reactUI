@@ -37,7 +37,7 @@
     --btr-input-button-padding: 0rem 0.5rem;
 
     /// Icon size for LinkedCellEditor and DateCellEditor
-    --btrs-input-button-icon-size: 14px;
+    --btr-input-button-icon-size: 14px;
 
     /// Padding for normal buttons
     --btr-button-padding: 0.5rem 1rem;
@@ -121,7 +121,7 @@
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
             padding: var(--btr-input-button-padding);
             > .p-button-icon {
-                font-size: var(--btrs-input-button-icon-size);
+                font-size: var(--btr-input-button-icon-size);
             }
         }
     }

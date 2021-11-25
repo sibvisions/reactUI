@@ -17,6 +17,7 @@ import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, pars
 import BaseComponent from "../../BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { MenuItem } from "primereact/menuitem";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -44,7 +45,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     /** Current state of the menuitems */
-    const [items, setItems] = useState<Array<any>>();
+    const [items, setItems] = useState<Array<MenuItem>>();
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -68,7 +69,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     /** Builds the menuitems and sets the state */
     useEffect(() => {
         const buildMenu = (foundItems:Map<string, BaseComponent>) => {
-            let tempItems:Array<any> = [];
+            let tempItems:Array<MenuItem> = [];
             foundItems.forEach(item => {
                 let iconProps = parseIconData(props.foreground, item.image);
                 tempItems.push({
@@ -76,6 +77,19 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     icon: iconProps ? iconProps.icon : undefined,
                     style: {
                         color: iconProps.color
+                    },
+                    template: (item, options) => {
+                        if (!iconProps.icon?.includes('fa')) {
+                            return (
+                                <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
+                                    <img className='rc-popupmenubutton-custom-icon' src={context.server.RESOURCE_URL + item.icon} />
+                                    <span className={options.labelClassName}>{item.label}</span>
+                                </a>
+                            )
+                        }
+                        else {
+                            return undefined
+                        }
                     },
                     color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
@@ -91,7 +105,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         if(props.popupMenu) {
             buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
         }
-    },[context.contentStore, context.server, props])
+    },[context.contentStore, context.server, props]);
 
     useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
