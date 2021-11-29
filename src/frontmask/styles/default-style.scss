@@ -6,29 +6,253 @@
     /// Default background for topbar
     --default-menu-header-background: #7a7f85;
 
-    /// Default text color
-    --default-text-color: #495057;
+    /// Default logo background
+    --default-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+
+    // Default topbar buttons hover background
+    --default-topbar-buttons-hover: #454b52;
+
+    /// Default panel-menu background
+    --default-panelmenu-background: #fafafa;
+
+    /// Default panel-menu hover background
+    --default-panelmenu-hover-background: #e9ecef;
+
+    /// Default panel-menu color
+    --default-panelmenu-text-color: #495057;
+
+    /// Default panel-menu color hover
+    --default-panelmenu-hover-text-color: #000000;
+
+    /// Default menubar submenu background
+    --default-menubar-submenu-background: #ffffff;
+
+    /// Default menubar items hover background
+    --default-menubar-items-hover-background: #e9ecef;
+
+    /// Default menubar item hover
+    --default-menubar-item-hover: #454b52;
 
     /// Default button color
     --default-button-color: #2196F3;
 
-    /// Default tab close button color
-    --default-tab-close-color: #cdcfd1;
+    /// Default component background
+    --default-component-background: #ffffff;
+
+    /// Default component border
+    --default-component-border: 1px solid #ced4da;
+
+    /// Default text color
+    --default-text-color: #495057;
+
+    /// Default checkbox, radiobutton selected color
+    --default-selected-rb-cb-color: #ffffff;
 
     /// Default toolbar background
     --default-toolbar-background: #f8f9fa;
 
     /// Default toolbar border
     --default-toolbar-border: 1px solid #dee2e6;
+
+    /// Default table-header background
+    --default-table-header-background: #ffffff;
+
+    /// Default table-header border
+    --default-table-header-border: 1px solid #e9ecef;
+
+    /// Default table-row background for odd rows
+    --default-table-row-odd-background: #fafafa;
+
+    /// Default table-row background for even rows
+    --default-table-row-even-background: #ffffff;
+
+    /// Default background when hovering a table/linked row
+    --default-table-hover-background: #454b52;
+
+    /// Default table-row border
+    --default-table-row-border: 1px solid #e9ecef;
+
+    /// Default cell hover color
+    --default-table-cell-hover-color: rgb(131, 131, 131);
+
+    /// Default LinkedCellEditor panel background
+    --default-linked-panel-background: #ffffff;
+
+    /// Default LinkedCellEditor item hover background
+    --default-linked-item-hover-background: #e9ecef;
+
+    /// Default overlay background for popupmenubuttons
+    --default-popupmenubutton-overlay-background: #ffffff;
+
+    /// Default popupmenu item hover background
+    --default-popupmenubutton-item-hover: #e9ecef;
+
+    /// Default DateCellEditor panel background
+    --default-date-panel-background: #ffffff;
+
+    /// Default DateCellEditor header border
+    --default-date-panel-header-border: 1px solid #dee2e6;
+
+    /// Default Dialog header background
+    --default-dialog-header-background: #ffffff;
+
+    /// Default Dialog background
+    --default-dialog-content-background: #ffffff;
+
+    /// Default TabSet navbar background
+    --default-tab-navbar-background: #ffffff;
+
+    /// Default TabSet navbar border
+    --default-tab-navbar-border: 1px solid #dee2e6;
+
+    /// Default TabSet hover background
+    --default-tab-hover-background: #ffffff;
+
+    --default-tab-border-color: #dee2e6;
+
+    /// Default Tree background
+    --default-tree-background: #ffffff;
+
+    /// Default Tree border
+    --default-tree-border: 1px solid #dee2e6;
+
+    /// Default Tree item hover background
+    --default-tree-item-hover-background: #e9ecef;
+
+    /// Default Tree selected item background
+    --default-tree-selected-item-background: #E3F2FD;
+
+    /// Default HTMLEditor toolbar background
+    --default-html-toolbar-background: #f8f9fa;
+
+    /// Default HTMLEditor toolbar border
+    --default-html-toolbar-border: 1px solid #dee2e6;
+
+    /// Default HTMLEditor button hover colors
+    --default-html-toolbar-button-hover-background: #000000;
+
+    /// Default HTMLEditor picker expanded background
+    --default-html-picker-expanded-background: #ffffff;
+
+    /// Default HTMLEditor picker item hover background
+    --default-html-picker-item-hover-background: #e9ecef;
+
+    /// Default Message info background
+    --default-message-info-header-background: var(--default-button-color);
+
+    /// Default Message info hover background of closing element
+    --default-message-info-header-close-hover: #276b96;
+
+    /// Default Message warning background
+    --default-message-warning-header-background: #ffcf40;
+
+    /// Default Message warning hover background of closing element
+    --default-message-warning-header-close-hover: #ebbd35;
+
+    /// Default Message error background
+    --default-message-error-header-background: #ff364a;
+
+    /// Default Message error hover background of closing element
+    --default-message-error-header-close-hover: #db2739;
+
+    /// Default Message question background
+    --default-message-question-header-background: #17c0eb;
+
+    /// Default Message question hover background of closing element
+    --default-message-question-header-close-hover: #13aacf;
+
+    /// Default error-dialog background
+    --default-error-dialog-background: rgba(255, 255, 255, 0.8);
+
+    /// Default loading-screen background left
+    --default-loading-screen-left-background: #ffffff;
+
+    /// Default loading-screen background right
+    --default-loading-screen-right-background: #f1f1f1;
+
+    /// Default tab close button color
+    --default-tab-close-color: #cdcfd1;
 }
 
 body.default {
     background: var(--default-background);
+    color: var(--default-text-color);
 }
 
 .default {
+/// *----------General-Header----------*
     .menu-header {
         background: var(--default-menu-header-background);
+    }
+
+    .p-button.p-button-icon-only.menu-topbar-buttons:hover {
+        background: var(--default-topbar-buttons-hover);
+    }
+
+    /// *----------Standard-Menu----------*
+    .menu-logo-wrapper {
+        background: var(--default-logo-background);
+    }
+
+    .menu-panelmenu-wrapper {
+        background: var(--default-panelmenu-background);
+        @include styledScrollbarPanelDefault();
+    }
+
+    .p-panelmenu {
+        .p-panelmenu-header {
+            .p-panelmenu-header-link {
+                background: var(--default-panelmenu-background);
+                border-color: var(--default-panelmenu-background);
+                color: var(--default-panelmenu-text-color);
+            }
+    
+            &:not(.p-highlight):not(.p-disabled) > a:hover {
+                background: var(--default-panelmenu-hover-background);
+                border-color: var(--default-panelmenu-hover-background);
+                color: var(--default-panelmenu-hover-text-color);
+            }
+    
+            &.p-highlight {
+                > a, &:not(.p-disabled) > a:hover {
+                    background: var(--default-panelmenu-background);
+                    color: var(--default-panelmenu-hover-text-color);
+                }
+            }
+        }
+
+        .p-panelmenu-content {
+            background: var(--default-panelmenu-background);
+
+            .p-menuitem {
+                &.p-menuitem--active {
+                    .p-menuitem-link {
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--default-button-color);
+                        }
+                    }
+                }
+
+                .p-menuitem-link {
+                    background: var(--default-panelmenu-background);
+                    .p-menuitem-icon, .p-menuitem-text {
+                        color: var(--default-panelmenu-text-color);
+                    }
+
+                    &:hover {
+                        background: var(--default-panelmenu-hover-background);
+                        .p-menuitem-icon, .p-menuitem-text {
+                            color: var(--default-panelmenu-hover-text-color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// *----------Corporate/Profile Menu----------*
+    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
+        color: var(--default-text-color);
     }
 
     .p-menubar {
@@ -38,6 +262,30 @@ body.default {
             >.p-menuitem, >.p-menuitem.p-menuitem-active  {
                 > .p-menuitem-link:not(.p-disabled) {
                     background: var(--default-menu-header-background);
+
+                    &:hover {
+                        background: var(--default-topbar-buttons-hover);
+                    }
+                }
+
+                > .p-submenu-list {
+                    background: var(--default-menubar-submenu-background);
+
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--default-menubar-submenu-background);
+
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--default-text-color);
+                        }
+
+                        &:hover {
+                            background: var(--default-menubar-items-hover-background);
+
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--default-panelmenu-hover-text-color);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -50,6 +298,8 @@ body.default {
     .c-menu-menubar {
         background: var(--default-menu-header-background);
     }
+
+    /// *----------Mobile-Theme Specific----------*
 
     &.btr-mobile {
         .p-inputtext:enabled:focus {
@@ -79,10 +329,9 @@ body.default {
         }
     }
 
-    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
-            color: var(--default-text-color);
-        }
+    /// *----------Components----------*
 
+    /// Button
     .rc-button.mouse-border {
         color: var(--default-text-color);
     }
@@ -91,22 +340,394 @@ body.default {
         color: var(--default-text-color);
     }
 
+    /// Checkbox
+    .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
+        background: var(--default-component-background);
+        border: var(--default-component-border);
+    }
+
+    .p-checkbox-box.p-highlight .p-checkbox-icon {
+        color: var(--default-selected-rb-cb-color);
+    }
+
+    /// Radiobutton
+    .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+        background: var(--default-selected-rb-cb-color);
+    }
+
+    /// PopupMenuButton
     .rc-popupmenubutton {
         background: var(--default-button-color);
         border-color: var(--default-button-color);
     }
 
-    .rc-table .p-datatable-tbody > tr > td.p-highlight {
+    .p-menu {
+        &.p-menu-overlay {
+            background: var(--default-popupmenubutton-overlay-background);
+        }
+
+        .p-menuitem-link:not(.p-disabled):hover {
+            background: var(--default-popupmenubutton-item-hover);
+            
+            .p-menuitem-text {
+                color: var(--default-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--default-text-color);
+        }
+    }
+
+    /// Inputfields
+    .p-inputtext {
+        background: var(--default-component-background);
+        border: var(--default-component-border);
+        &:not(.required-field) {
+            color: var(--default-text-color);
+        }
+    }
+
+    // .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
+    //     background-color: var(--default-component-background) !important;
+    // }
+
+    /// Table
+    .rc-table {
+        border: var(--default-component-border);
+
+        .p-datatable-thead > tr > th {
+            background: var(--default-table-header-background);
+            border: var(--default-table-header-border);
+        }
+
+        .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+            background: var(--default-table-hover-background);
+            color: var(--default-text-color);
+        }
+
+        .p-datatable-tbody > tr {
+            background: var(--default-table-row-odd-background);
+            color: var(--default-text-color);
+            > td {
+                border: var(--default-table-row-border);
+
+                &.p-highlight {
+                    color: var(--default-text-color);
+                }
+
+                &:hover {
+                    color: var(--default-table-cell-hover-color);
+                }
+            }
+
+            &.p-highlight {
+                color: var(--default-text-color);
+            }
+
+            &:nth-child(even) {
+                background: var(--default-table-row-even-background);
+            }
+
+            &:not(.p-highlight):hover {
+                background: var(--default-table-hover-background);
+                color: var(--default-text-color);
+            }
+        }
+    } 
+
+    /// Toolbar
+    .rc-toolbar {
+        background: var(--default-toolbar-background);
+        border: var(--default-toolbar-border);
+    }
+
+    /// LinkedCellEditor
+    .p-autocomplete-panel {
+        background: var(--default-linked-panel-background);
+        .p-autocomplete-items {
+            .p-autocomplete-item {
+                background: var(--default-linked-panel-background);
+                color: var(--default-text-color);
+    
+                &:hover {
+                    background: var(--default-linked-item-hover-background);
+                }
+            }
+        }
+
+        &.dropdown-table {
+            .p-autocomplete-items {
+                /// Swaping odd and even because "table header" is also a child
+                & li:nth-child(odd) {
+                    background: var(--default-table-row-even-background);
+                    &:hover {
+                        background: var(--default-table-hover-background);
+                    }
+                }
+
+                & li:nth-child(even) {
+                    background: var(--default-table-row-odd-background);
+                    &:hover {
+                        background: var(--default-table-hover-background);
+                    }
+                }
+            }
+            .p-autocomplete-item-group > * {
+                background: var(--default-table-header-background);
+                color: var(--default-text-color);
+                border-bottom: var(--default-table-header-border);
+            }
+
+            .p-autocomplete-item > * {
+                border-bottom: var(--default-table-row-border);
+
+                &:not(:first-child) {
+                    border-left: var(--default-table-row-border);
+                }
+            }
+        }
+    }
+
+    /// DateCellEditor
+    .p-datepicker {
+        &:not(.p-datepicker-inline) {
+            &, .p-datepicker-header {
+                background: var(--default-date-panel-background);
+                color: var(--default-text-color);
+            }
+        }
+
+        .p-datepicker-header {
+            border-bottom: var(--default-date-panel-header-border);
+            .p-datepicker-title {
+                .p-datepicker-month, .p-datepicker-year {
+                    background-color: var(--default-date-panel-background);
+                    color: var(--default-text-color);
+                }
+            }
+        } 
+
+        &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
+            color: var(--default-text-color);
+        }
+    }
+
+    /// Dialogs
+    .rc-popup {
+        .p-dialog-header {
+            background: var(--default-dialog-header-background);
+            color: var(--default-text-color);
+    
+            .p-dialog-header-icon {
+                color: var(--default-text-color);
+    
+                &:hover {
+                    color: var(--default-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content {
+            background: var(--default-dialog-content-background);
+            color: var(--default-text-color);
+        }
+    }
+
+    /// TabSetPanel
+    .p-tabview .p-tabview-nav {
+        background: var(--default-tab-navbar-background);
         color: var(--default-text-color);
+        border: var(--default-tab-navbar-border);
+
+        li {
+            &:not(.p-highlight) {
+                .p-tabview-nav-link {
+                    color: var(--default-text-color);
+                    border-color: transparent transparent var(--default-tab-border-color) transparent;
+                }
+
+                &:not(.p-disabled):hover .p-tabview-nav-link {
+                    color: var(--default-text-color);
+                    background: var(--default-tab-hover-background);
+                    border-color: var(--default-text-color);
+                }
+            }
+
+            .p-tabview-nav-link {
+                background: var(--default-tab-navbar-background);
+            }
+        }
     }
 
     .tabview-button {
         color: var(--default-tab-close-color);
     }
 
-    .rc-toolbar {
-        background: var(--default-toolbar-background);
-        border: var(--default-toolbar-border);
+    /// Tree
+    .p-tree {
+        background: var(--default-tree-background);
+        border: var(--default-tree-border);
+        color: var(--default-text-color);
+
+        .p-tree-container .p-treenode .p-treenode-content {
+            &.p-treenode-selectable:not(.p-highlight):hover {
+                background: var(--default-tree-item-hover-background);
+                color: var(--default-text-color);
+            }
+
+            &.p-highlight {
+                background: var(--default-tree-selected-item-background);
+                color: var(--default-text-color);
+            }
+        }
+    }
+    
+    /// HTMLEditor
+    .p-editor-container {
+        .p-editor-toolbar {
+            background: var(--default-html-toolbar-background);
+            border: var(--default-html-toolbar-border);
+
+            &.ql-snow {
+                .ql-formats {
+                    .ql-picker .ql-picker-label, button {
+                        color: var(--default-text-color);
+
+                        &:hover {
+                            color: var(--default-html-toolbar-button-hover-background);
+        
+                            svg {
+                                polygon, path, line, rect, polyline {
+                                    stroke: var(--default-html-toolbar-button-hover-background);
+                                }
+                            } 
+                        }
+        
+                        svg {
+                            polygon, path, line, rect, polyline {
+                                stroke: var(--default-text-color);
+                            }
+                        }
+
+                        &.ql-source {
+                            svg path {
+                                fill: var(--default-text-color);
+                            }
+
+                            &:hover {
+                                svg path {
+                                    fill: var(--default-html-toolbar-button-hover-background);
+                                }
+                            }
+                        } 
+                    }
+
+                    .ql-picker.ql-expanded .ql-picker-options {
+                        background: var(--default-html-picker-expanded-background);
+
+                        .ql-picker-item {
+                            color: var(--default-text-color);
+
+                            &:hover {
+                                background: var(--default-html-picker-item-hover-background);
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+
+        .p-editor-content {
+            border: var(--default-component-border);
+            .ql-editor {
+                background: var(--default-component-background);
+                color: var(--default-text-color);
+            }
+        }
+    }
+
+    .rc-editor-html {
+        textarea.p-inputtext {
+            border: var(--default-component-border) !important;
+        }
+    }
+
+    /// Messages
+    .rc-message-dialog {
+        &.info .p-dialog-header {
+            background: var(--default-message-info-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--default-message-info-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--default-text-color);
+                }
+            }
+        }
+
+        &.warning .p-dialog-header {
+            background: var(--default-message-warning-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--default-message-warning-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--default-text-color);
+                }
+            }
+        }
+
+        &.error .p-dialog-header {
+            background: var(--default-message-error-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--default-message-error-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--default-text-color);
+                }
+            }
+        }
+
+        &.question .p-dialog-header {
+            background: var(--default-message-question-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--default-message-question-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--default-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content, .p-dialog-footer {
+            background: var(--default-dialog-content-background);
+            color: var(--default-text-color);
+        }
+    }
+
+    /// Error Dialog
+    .rc-error-dialog {
+        background: var(--default-error-dialog-background);
+    }
+
+    /// Loading-Screen
+    .loading-screen {
+        background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--default-loading-screen-left-background) 70%, var(--default-loading-screen-right-background) 70%);
+        background: -o-radial-gradient(119% 190% at -6% -20%, var(--default-loading-screen-left-background) 70%, var(--default-loading-screen-right-background) 70%);
+        background: -moz-radial-gradient(119% 190% at -6% -20%, var(--default-loading-screen-left-background) 70%, var(--default-loading-screen-right-background) 70%);
+        background: radial-gradient(119% 190% at -6% -20%, var(--default-loading-screen-left-background) 70%, var(--default-loading-screen-right-background) 70%);
     }
 }
 

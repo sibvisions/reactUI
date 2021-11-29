@@ -115,7 +115,8 @@ const useStartup = (props:ICustomContent):boolean => {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                 }
                 afterStartup(result)
-            });
+            })
+            .catch(err => console.error(err));
         }
 
         const afterStartup = (results:BaseResponse[]) => {
@@ -186,6 +187,10 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (convertedOptions.has("theme")) {
                     context.appSettings.theme = convertedOptions.get("theme");
+                }
+
+                if (convertedOptions.has("style")) {
+                    context.appSettings.style = convertedOptions.get("style");
                 }
 
                 convertedOptions.forEach((v, k) => {
@@ -277,7 +282,11 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (data.theme) {
-                    context.appSettings.theme = data.theme
+                    context.appSettings.theme = data.theme;
+                }
+
+                if (data.style) {
+                    context.appSettings.style = data.style;
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

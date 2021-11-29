@@ -1,0 +1,748 @@
+/// Blue Style
+:root {
+    /// Blue client background
+    --blue-background: var(--default-background);
+
+    /// Blue background for topbar
+    --blue-menu-header-background: #2196F3;
+
+    /// Blue logo background
+    --blue-logo-background: var(--default-logo-background);
+
+    --blue-profile-seperator: 2px solid #1c7bc9;
+
+    // Blue topbar buttons hover background
+    --blue-topbar-buttons-hover: #1c7bc9;
+
+    /// Blue panel-menu background
+    --blue-panelmenu-background: var(--default-panelmenu-background);
+
+    /// Blue panel-menu hover background
+    --blue-panelmenu-hover-background: var(--default-panelmenu-hover-background);
+
+    /// Blue panel-menu color
+    --blue-panelmenu-text-color: var(--default-panelmenu-text-color);
+
+    /// Blue panel-menu color hover
+    --blue-panelmenu-hover-text-color: var(--default-panelmenu-hover-text-color);
+
+    /// Blue menubar submenu background
+    --blue-menubar-submenu-background: var(--default-menubar-submenu-background);
+
+    /// Blue menubar items hover background
+    --blue-menubar-items-hover-background: var(--default-menubar-items-hover-background);
+
+    /// Blue menubar item hover
+    --blue-menubar-item-hover: var(--default-menubar-item-hover);
+
+    /// Blue button color
+    --blue-button-color: #2196F3;
+
+    /// Blue component background
+    --blue-component-background: var(--default-component-background);
+
+    /// Blue component border
+    --blue-component-border: var(--default-component-border);
+
+    /// Blue text color
+    --blue-text-color: var(--default-text-color);
+
+    /// Blue checkbox, radiobutton selected color
+    --blue-selected-rb-cb-color: var(--default-selected-rb-cb-color);
+
+    /// Blue toolbar background
+    --blue-toolbar-background: var(--default-toolbar-background);
+
+    /// Blue toolbar border
+    --blue-toolbar-border: var(--default-toolbar-border);
+
+    /// Blue table-header background
+    --blue-table-header-background: var(--default-table-header-background);
+
+    /// Blue table-header border
+    --blue-table-header-border: var(--default-table-header-border);
+
+    /// Blue table-row background for odd rows
+    --blue-table-row-odd-background: var(--default-table-row-odd-background);
+
+    /// Blue table-row background for even rows
+    --blue-table-row-even-background: var(--default-table-row-even-background);
+
+    /// Blue background when hovering a table/linked row
+    --blue-table-hover-background: var(--default-table-hover-background);
+
+    /// Blue table-row border
+    --blue-table-row-border: var(--default-table-row-border);
+
+    /// Blue cell hover color
+    --blue-table-cell-hover-color: rgb(131, 131, 131);
+
+    /// Blue LinkedCellEditor panel background
+    --blue-linked-panel-background: var(--default-linked-panel-background);
+
+    /// Blue LinkedCellEditor item hover background
+    --blue-linked-item-hover-background: var(--default-linked-item-hover-background);
+
+    /// Blue overlay background for popupmenubuttons
+    --blue-popupmenubutton-overlay-background: var(--default-popupmenubutton-overlay-background);
+
+    /// Blue popupmenu item hover background
+    --blue-popupmenubutton-item-hover: var(--default-popupmenubutton-item-hover);
+
+    /// Blue DateCellEditor panel background
+    --blue-date-panel-background: --default-date-panel-background;
+
+    /// Blue DateCellEditor header border
+    --blue-date-panel-header-border: var(--default-date-panel-header-border);
+
+    /// Blue Dialog header background
+    --blue-dialog-header-background: var(--default-dialog-header-background);
+
+    /// Blue Dialog background
+    --blue-dialog-content-background: var(--default-dialog-content-background);
+
+    /// Blue TabSet navbar background
+    --blue-tab-navbar-background: var(--default-tab-navbar-background);
+
+    /// Blue TabSet navbar border
+    --blue-tab-navbar-border: var(--default-tab-navbar-border);
+
+    /// Blue TabSet hover background
+    --blue-tab-hover-background: var(--default-tab-hover-background);
+
+    --blue-tab-border-color: var(--default-tab-border-color);
+
+    /// Blue Tree background
+    --blue-tree-background: var(--default-tree-background);
+
+    /// Blue Tree border
+    --blue-tree-border: var(--default-tree-border);
+
+    /// Blue Tree item hover background
+    --blue-tree-item-hover-background: var(--default-tree-item-hover-background);
+
+    /// Blue Tree selected item background
+    --blue-tree-selected-item-background: var(--default-tree-selected-item-background);
+
+    /// Blue HTMLEditor toolbar background
+    --blue-html-toolbar-background: var(--default-html-toolbar-background);
+
+    /// Blue HTMLEditor toolbar border
+    --blue-html-toolbar-border: var(--default-html-toolbar-border);
+
+    /// Blue HTMLEditor button hover colors
+    --blue-html-toolbar-button-hover-background: var(--default-html-toolbar-button-hover-background);
+
+    /// Blue HTMLEditor picker expanded background
+    --blue-html-picker-expanded-background: var(--default-html-picker-expanded-background);
+
+    /// Blue HTMLEditor picker item hover background
+    --blue-html-picker-item-hover-background: var(--default-html-picker-item-hover-background);
+
+    /// Blue Message info background
+    --blue-message-info-header-background: var(--default-button-color);
+
+    /// Blue Message info hover background of closing element
+    --blue-message-info-header-close-hover: var(--default-message-info-header-close-hover);
+
+    /// Blue Message warning background
+    --blue-message-warning-header-background: var(--default-message-warning-header-background);
+
+    /// Blue Message warning hover background of closing element
+    --blue-message-warning-header-close-hover: var(--default-message-warning-header-close-hover);
+
+    /// Blue Message error background
+    --blue-message-error-header-background: var(--default-message-error-header-background);
+
+    /// Blue Message error hover background of closing element
+    --blue-message-error-header-close-hover: var(--default-message-error-header-close-hover);
+
+    /// Blue Message question background
+    --blue-message-question-header-background: var(--default-message-question-header-background);
+
+    /// Blue Message question hover background of closing element
+    --blue-message-question-header-close-hover: var(--default-message-question-header-close-hover);
+
+    /// Blue error-dialog background
+    --blue-error-dialog-background: var(--default-error-dialog-background);
+
+    /// Blue loading-screen background left
+    --blue-loading-screen-left-background: var(--default-loading-screen-left-background);
+
+    /// Blue loading-screen background right
+    --blue-loading-screen-right-background: var(--default-loading-screen-right-background);
+
+    /// Blue tab close button color
+    --blue-tab-close-color: var(--default-tab-close-color);
+}
+
+body.blue {
+    background: var(--blue-background);
+    color: var(--blue-text-color);
+}
+
+.blue {
+/// *----------General-Header----------*
+    .menu-header {
+        background: var(--blue-menu-header-background);
+    }
+
+    .p-button.p-button-icon-only.menu-topbar-buttons:hover {
+        background: var(--blue-topbar-buttons-hover);
+    }
+
+    /// *----------Standard-Menu----------*
+    .menu-logo-wrapper {
+        background: var(--blue-logo-background);
+    }
+
+    .menu-panelmenu-wrapper {
+        background: var(--blue-panelmenu-background);
+        @include styledScrollbarPanelDefault();
+    }
+
+    .p-panelmenu {
+        .p-panelmenu-header {
+            .p-panelmenu-header-link {
+                background: var(--blue-panelmenu-background);
+                border-color: var(--blue-panelmenu-background);
+                color: var(--blue-panelmenu-text-color);
+            }
+    
+            &:not(.p-highlight):not(.p-disabled) > a:hover {
+                background: var(--blue-panelmenu-hover-background);
+                border-color: var(--blue-panelmenu-hover-background);
+                color: var(--blue-panelmenu-hover-text-color);
+            }
+    
+            &.p-highlight {
+                > a, &:not(.p-disabled) > a:hover {
+                    background: var(--blue-panelmenu-background);
+                    color: var(--blue-panelmenu-hover-text-color);
+                }
+            }
+        }
+
+        .p-panelmenu-content {
+            background: var(--blue-panelmenu-background);
+
+            .p-menuitem {
+                &.p-menuitem--active {
+                    .p-menuitem-link {
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--blue-button-color);
+                        }
+                    }
+                }
+
+                .p-menuitem-link {
+                    background: var(--blue-panelmenu-background);
+                    .p-menuitem-icon, .p-menuitem-text {
+                        color: var(--blue-panelmenu-text-color);
+                    }
+
+                    &:hover {
+                        background: var(--blue-panelmenu-hover-background);
+                        .p-menuitem-icon, .p-menuitem-text {
+                            color: var(--blue-panelmenu-hover-text-color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// *----------Corporate/Profile Menu----------*
+    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
+        color: var(--blue-text-color);
+    }
+
+    .profile-menu {
+        border-left: var(--blue-profile-seperator);
+    }
+
+    .p-menubar {
+        background: var(--blue-menu-header-background);
+        
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--blue-menu-header-background);
+
+                    &:hover {
+                        background: var(--blue-topbar-buttons-hover);
+                    }
+                }
+
+                > .p-submenu-list {
+                    background: var(--blue-menubar-submenu-background);
+
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--blue-menubar-submenu-background);
+
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--blue-text-color);
+                        }
+
+                        &:hover {
+                            background: var(--blue-menubar-items-hover-background);
+
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--blue-panelmenu-hover-text-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .c-menu-header {
+        background: var(--blue-menu-header-background);
+    }
+
+    .c-menu-menubar {
+        background: var(--blue-menu-header-background);
+    }
+
+    /// *----------Mobile-Theme Specific----------*
+
+    &.btr-mobile {
+        .p-inputtext:enabled:focus {
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--blue-button-color);
+                color: var(--blue-button-color);
+            }
+        }
+
+        .rc-editor-linked, .rc-editor-date {
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--blue-button-color);
+                        color: var(--blue-button-color);
+                    }
+                }
+
+                .p-inputtext {
+                    border-color: var(--blue-button-color);
+                }
+            }
+
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--blue-text-color);
+            }
+        }
+    }
+
+    /// *----------Components----------*
+
+    /// Button
+    .rc-button.mouse-border {
+        color: var(--blue-text-color);
+    }
+
+    .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
+        color: var(--blue-text-color);
+    }
+
+    /// Checkbox
+    .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
+        background: var(--blue-component-background);
+        border: var(--blue-component-border);
+    }
+
+    .p-checkbox-box.p-highlight .p-checkbox-icon {
+        color: var(--blue-selected-rb-cb-color);
+    }
+
+    /// Radiobutton
+    .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+        background: var(--blue-selected-rb-cb-color);
+    }
+
+    /// PopupMenuButton
+    .rc-popupmenubutton {
+        background: var(--blue-button-color);
+        border-color: var(--blue-button-color);
+    }
+
+    .p-menu {
+        &.p-menu-overlay {
+            background: var(--blue-popupmenubutton-overlay-background);
+        }
+
+        .p-menuitem-link:not(.p-disabled):hover {
+            background: var(--blue-popupmenubutton-item-hover);
+            
+            .p-menuitem-text {
+                color: var(--blue-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// Inputfields
+    .p-inputtext {
+        background: var(--blue-component-background);
+        border: var(--blue-component-border);
+        &:not(.required-field) {
+            color: var(--blue-text-color);
+        }
+    }
+
+    // .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
+    //     background-color: var(--blue-component-background) !important;
+    // }
+
+    /// Table
+    .rc-table {
+        border: var(--blue-component-border);
+
+        .p-datatable-thead > tr > th {
+            background: var(--blue-table-header-background);
+            border: var(--blue-table-header-border);
+        }
+
+        .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+            background: var(--blue-table-hover-background);
+            color: var(--blue-text-color);
+        }
+
+        .p-datatable-tbody > tr {
+            background: var(--blue-table-row-odd-background);
+            color: var(--blue-text-color);
+            > td {
+                border: var(--blue-table-row-border);
+
+                &.p-highlight {
+                    color: var(--blue-text-color);
+                }
+
+                &:hover {
+                    color: var(--blue-table-cell-hover-color);
+                }
+            }
+
+            &.p-highlight {
+                color: var(--blue-text-color);
+            }
+
+            &:nth-child(even) {
+                background: var(--blue-table-row-even-background);
+            }
+
+            &:not(.p-highlight):hover {
+                background: var(--blue-table-hover-background);
+                color: var(--blue-text-color);
+            }
+        }
+    } 
+
+    /// Toolbar
+    .rc-toolbar {
+        background: var(--blue-toolbar-background);
+        border: var(--blue-toolbar-border);
+    }
+
+    /// LinkedCellEditor
+    .p-autocomplete-panel {
+        background: var(--blue-linked-panel-background);
+        .p-autocomplete-items {
+            .p-autocomplete-item {
+                background: var(--blue-linked-panel-background);
+                color: var(--blue-text-color);
+    
+                &:hover {
+                    background: var(--blue-linked-item-hover-background);
+                }
+            }
+        }
+
+        &.dropdown-table {
+            .p-autocomplete-items {
+                /// Swaping odd and even because "table header" is also a child
+                & li:nth-child(odd) {
+                    background: var(--blue-table-row-even-background);
+                    &:hover {
+                        background: var(--blue-table-hover-background);
+                    }
+                }
+
+                & li:nth-child(even) {
+                    background: var(--blue-table-row-odd-background);
+                    &:hover {
+                        background: var(--blue-table-hover-background);
+                    }
+                }
+            }
+            .p-autocomplete-item-group > * {
+                background: var(--blue-table-header-background);
+                color: var(--blue-text-color);
+                border-bottom: var(--blue-table-header-border);
+            }
+
+            .p-autocomplete-item > * {
+                border-bottom: var(--blue-table-row-border);
+
+                &:not(:first-child) {
+                    border-left: var(--blue-table-row-border);
+                }
+            }
+        }
+    }
+
+    /// DateCellEditor
+    .p-datepicker {
+        &:not(.p-datepicker-inline) {
+            &, .p-datepicker-header {
+                background: var(--blue-date-panel-background);
+                color: var(--blue-text-color);
+            }
+        }
+
+        .p-datepicker-header {
+            border-bottom: var(--blue-date-panel-header-border);
+            .p-datepicker-title {
+                .p-datepicker-month, .p-datepicker-year {
+                    background-color: var(--blue-date-panel-background);
+                    color: var(--blue-text-color);
+                }
+            }
+        } 
+
+        &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// Dialogs
+    .rc-popup {
+        .p-dialog-header {
+            background: var(--blue-dialog-header-background);
+            color: var(--blue-text-color);
+    
+            .p-dialog-header-icon {
+                color: var(--blue-text-color);
+    
+                &:hover {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content {
+            background: var(--blue-dialog-content-background);
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// TabSetPanel
+    .p-tabview .p-tabview-nav {
+        background: var(--blue-tab-navbar-background);
+        color: var(--blue-text-color);
+        border: var(--blue-tab-navbar-border);
+
+        li {
+            &:not(.p-highlight) {
+                .p-tabview-nav-link {
+                    color: var(--blue-text-color);
+                    border-color: transparent transparent var(--blue-tab-border-color) transparent;
+                }
+
+                &:not(.p-disabled):hover .p-tabview-nav-link {
+                    color: var(--blue-text-color);
+                    background: var(--blue-tab-hover-background);
+                    border-color: var(--blue-text-color);
+                }
+            }
+
+            .p-tabview-nav-link {
+                background: var(--blue-tab-navbar-background);
+            }
+        }
+    }
+
+    .tabview-button {
+        color: var(--blue-tab-close-color);
+    }
+
+    /// Tree
+    .p-tree {
+        background: var(--blue-tree-background);
+        border: var(--blue-tree-border);
+        color: var(--blue-text-color);
+
+        .p-tree-container .p-treenode .p-treenode-content {
+            &.p-treenode-selectable:not(.p-highlight):hover {
+                background: var(--blue-tree-item-hover-background);
+                color: var(--blue-text-color);
+            }
+
+            &.p-highlight {
+                background: var(--blue-tree-selected-item-background);
+                color: var(--blue-text-color);
+            }
+        }
+    }
+    
+    /// HTMLEditor
+    .p-editor-container {
+        .p-editor-toolbar {
+            background: var(--blue-html-toolbar-background);
+            border: var(--blue-html-toolbar-border);
+
+            &.ql-snow {
+                .ql-formats {
+                    .ql-picker .ql-picker-label, button {
+                        color: var(--blue-text-color);
+
+                        &:hover {
+                            color: var(--blue-html-toolbar-button-hover-background);
+        
+                            svg {
+                                polygon, path, line, rect, polyline {
+                                    stroke: var(--blue-html-toolbar-button-hover-background);
+                                }
+                            } 
+                        }
+        
+                        svg {
+                            polygon, path, line, rect, polyline {
+                                stroke: var(--blue-text-color);
+                            }
+                        }
+
+                        &.ql-source {
+                            svg path {
+                                fill: var(--blue-text-color);
+                            }
+
+                            &:hover {
+                                svg path {
+                                    fill: var(--blue-html-toolbar-button-hover-background);
+                                }
+                            }
+                        } 
+                    }
+
+                    .ql-picker.ql-expanded .ql-picker-options {
+                        background: var(--blue-html-picker-expanded-background);
+
+                        .ql-picker-item {
+                            color: var(--blue-text-color);
+
+                            &:hover {
+                                background: var(--blue-html-picker-item-hover-background);
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+
+        .p-editor-content {
+            border: var(--blue-component-border);
+            .ql-editor {
+                background: var(--blue-component-background);
+                color: var(--blue-text-color);
+            }
+        }
+    }
+
+    .rc-editor-html {
+        textarea.p-inputtext {
+            border: var(--blue-component-border) !important;
+        }
+    }
+
+    /// Messages
+    .rc-message-dialog {
+        &.info .p-dialog-header {
+            background: var(--blue-message-info-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-info-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.warning .p-dialog-header {
+            background: var(--blue-message-warning-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-warning-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.error .p-dialog-header {
+            background: var(--blue-message-error-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-error-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.question .p-dialog-header {
+            background: var(--blue-message-question-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-question-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content, .p-dialog-footer {
+            background: var(--blue-dialog-content-background);
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// Error Dialog
+    .rc-error-dialog {
+        background: var(--blue-error-dialog-background);
+    }
+
+    /// Loading-Screen
+    .loading-screen {
+        background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: -o-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: -moz-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .p-menubar .p-menubar-root-list {
+        background: var(--blue-menu-header-background);
+
+        > .p-menuitem {
+            background: var(--blue-menu-header-background);
+        }
+    }
+}

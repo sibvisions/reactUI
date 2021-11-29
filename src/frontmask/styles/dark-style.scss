@@ -2,12 +2,13 @@
 
 /// Darkmode Style
 :root {
-
     --dark-palette-a: #20262e;
 
     --dark-palette-b: #3f4b5b;
 
     --dark-palette-c: #2a323d;
+
+    --dark-item-hover: #303a48;
 
 
     /// Darkmode client background
@@ -18,6 +19,9 @@
 
     /// Darkmode logo background
     --dark-logo-background: linear-gradient(270deg, #4f5966 0%, var(--dark-palette-b) 100%);
+
+    // Darkmode topbar buttons hover background
+    --dark-topbar-buttons-hover: var(--dark-palette-c);
 
     /// Darkmode panel-menu background
     --dark-panelmenu-background: var(--dark-palette-c);
@@ -31,8 +35,14 @@
     /// Darkmode panel-menu color hover
     --dark-panelmenu-hover-text-color: #ffffff;
 
-    /// Darkmode panel-menu scrollbar background
-    --dark-panelmenu-scroll-background: #2f3741;
+    /// Darkmode menubar submenu background
+    --dark-menubar-submenu-background: var(--dark-palette-b);
+
+    /// Darkmode menubar items hover background
+    --dark-menubar-items-hover-background: var(--dark-item-hover);
+
+    /// Darkmode menubar item hover
+    --dark-menubar-item-hover: var(--dark-palette-c);
 
     /// Darkmode button color
     --dark-button-color: #205e8f;
@@ -45,6 +55,9 @@
 
     /// Darkmode text color
     --dark-text-color: rgba(255, 255, 255, 0.87);
+
+    /// Darkmode checkbox, radiobutton selected color
+    --dark-selected-rb-cb-color: #151515;
 
     /// Darkmode toolbar background
     --dark-toolbar-background: #303a48;
@@ -64,17 +77,107 @@
     /// Darkmode table-row background for even rows
     --dark-table-row-even-background: #272c33;
 
-    /// Darjmode background when hovering a table/linked row
-    --dark-table-hover-background: #303944;
+    /// Darkmode background when hovering a table/linked row
+    --dark-table-hover-background: var(--dark-item-hover);
 
     /// Darkmode table-row border
     --dark-table-row-border: 1px solid var(--dark-palette-b);
 
+    /// Darkmode cell hover color
+    --dark-table-cell-hover-color: rgb(131, 131, 131);
+
     /// Darkmode LinkedCellEditor panel background
     --dark-linked-panel-background: var(--dark-palette-b);
 
+    /// Darkmode LinkedCellEditor item hover background
+    --dark-linked-item-hover-background: var(--dark-item-hover);
+
+    /// Darkmode overlay background for popupmenubuttons
+    --dark-popupmenubutton-overlay-background: var(--dark-palette-b);
+
+    /// Darkmode popupmenu item hover background
+    --dark-popupmenubutton-item-hover: var(--dark-item-hover);
+
     /// Darkmode DateCellEditor panel background
     --dark-date-panel-background: var(--dark-palette-b);
+
+    /// Darkmode DateCellEditor header border
+    --dark-date-panel-header-border: 1px solid var(--dark-palette-c);
+
+    /// Darkmode Dialog header background
+    --dark-dialog-header-background: var(--dark-palette-b);
+
+    /// Darkmode Dialog background
+    --dark-dialog-content-background: var(--dark-palette-a);
+
+    /// Darkmode TabSet navbar background
+    --dark-tab-navbar-background: var(--dark-palette-b);
+
+    /// Darkmode TabSet navbar border
+    --dark-tab-navbar-border: 1px solid var(--dark-palette-b);
+
+    /// Darkmode TabSet hover background
+    --dark-tab-hover-background: var(--dark-palette-a);
+
+    /// Darkmode Tree background
+    --dark-tree-background: var(--dark-palette-a);
+
+    /// Darkmode Tree border
+    --dark-tree-border: 1px solid var(--dark-palette-c);
+
+    /// Darkmode Tree item hover background
+    --dark-tree-item-hover-background: var(--dark-item-hover);
+
+    /// Darkmode Tree selected item background
+    --dark-tree-selected-item-background: var(--dark-palette-b);
+
+    /// Darkmode HTMLEditor toolbar background
+    --dark-html-toolbar-background: var(--dark-palette-b);
+
+    /// Darkmode HTMLEditor toolbar border
+    --dark-html-toolbar-border: 1px solid var(--dark-palette-c);
+
+    /// Darkmode HTMLEditor button hover colors
+    --dark-html-toolbar-button-hover-background: rgba(255, 255, 255, 0.7);
+
+    /// Darkmode HTMLEditor picker expanded background
+    --dark-html-picker-expanded-background: var(--dark-palette-c);
+
+    /// Darkmode HTMLEditor picker item hover background
+    --dark-html-picker-item-hover-background: var(--dark-item-hover);
+
+    /// Darkmode Message info background
+    --dark-message-info-header-background: var(--dark-button-color);
+
+    /// Darkmode Message info hover background of closing element
+    --dark-message-info-header-close-hover: #276b96;
+
+    /// Darkmode Message warning background
+    --dark-message-warning-header-background: #ffcf40;
+
+    /// Darkmode Message warning hover background of closing element
+    --dark-message-warning-header-close-hover: #ebbd35;
+
+    /// Darkmode Message error background
+    --dark-message-error-header-background: #B00020;
+
+    /// Darkmode Message error hover background of closing element
+    --dark-message-error-header-close-hover: #a20d1b;
+
+    /// Darkmode Message question background
+    --dark-message-question-header-background: #018786;
+
+    /// Darkmode Message question hover background of closing element
+    --dark-message-question-header-close-hover: #017372;
+
+    /// Darkmode error-dialog background
+    --dark-error-dialog-background: rgba(32, 38, 46, 0.8);
+
+    /// Darkmode loading-screen background left
+    --dark-loading-screen-left-background: var(--dark-palette-a);
+
+    /// Darkmode loading-screen background right
+    --dark-loading-screen-right-background: var(--dark-palette-b);
 }
 
 body.dark {
@@ -89,7 +192,7 @@ body.dark {
     }
 
     .p-button.p-button-icon-only.menu-topbar-buttons:hover {
-        background: var(--dark-palette-c);
+        background: var(--dark-topbar-buttons-hover);
     }
 
     /// *----------Standard-Menu----------*
@@ -131,7 +234,7 @@ body.dark {
                 &.p-menuitem--active {
                     .p-menuitem-link {
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: #2196F3;
+                            color: var(--default-button-color);
                         }
                     }
                 }
@@ -167,7 +270,27 @@ body.dark {
                     background: var(--dark-menu-header-background);
 
                     &:hover {
-                        background: var(--dark-palette-c);
+                        background: var(--dark-topbar-buttons-hover);
+                    }
+                }
+
+                > .p-submenu-list {
+                    background: var(--dark-menubar-submenu-background);
+
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--dark-menubar-submenu-background);
+
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--dark-text-color);
+                        }
+
+                        &:hover {
+                            background: var(--dark-menubar-items-hover-background);
+
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--dark-panelmenu-hover-text-color);
+                            }
+                        }
                     }
                 }
             }
@@ -213,6 +336,8 @@ body.dark {
     }
 
     /// *----------Components----------*
+
+    /// Button
     .rc-button.mouse-border {
         color: var(--dark-text-color);
     }
@@ -221,24 +346,46 @@ body.dark {
         color: var(--dark-text-color);
     }
 
+    /// Checkbox
     .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
         background: var(--dark-component-background);
         border: var(--dark-component-border);
     }
 
     .p-checkbox-box.p-highlight .p-checkbox-icon {
-        color: #151515;
+        color: var(--dark-selected-rb-cb-color);
     }
 
+    /// Radiobutton
     .p-radiobutton-box.p-highlight .p-radiobutton-icon {
-        background: #151515;
+        background: var(--dark-selected-rb-cb-color);
     }
 
+    /// PopupMenuButton
     .rc-popupmenubutton {
         background: var(--dark-button-color);
         border-color: var(--dark-button-color);
     }
 
+    .p-menu {
+        &.p-menu-overlay {
+            background: var(--dark-popupmenubutton-overlay-background);
+        }
+
+        .p-menuitem-link:not(.p-disabled):hover {
+            background: var(--dark-popupmenubutton-item-hover);
+            
+            .p-menuitem-text {
+                color: var(--dark-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--dark-text-color);
+        }
+    }
+
+    /// Inputfields
     .p-inputtext {
         background: var(--dark-component-background);
         border: var(--dark-component-border);
@@ -247,6 +394,11 @@ body.dark {
         }
     }
 
+    .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
+        background-color: var(--dark-component-background) !important;
+    }
+
+    /// Table
     .rc-table {
         border: var(--dark-component-border);
 
@@ -271,7 +423,7 @@ body.dark {
                 }
 
                 &:hover {
-                    color: rgb(131, 131, 131);
+                    color: var(--dark-table-cell-hover-color);
                 }
             }
 
@@ -290,15 +442,13 @@ body.dark {
         }
     } 
 
-    .tabview-button {
-        color: var(--dark-tab-close-color);
-    }
-
+    /// Toolbar
     .rc-toolbar {
         background: var(--dark-toolbar-background);
         border: var(--dark-toolbar-border);
     }
 
+    /// LinkedCellEditor
     .p-autocomplete-panel {
         background: var(--dark-linked-panel-background);
         .p-autocomplete-items {
@@ -307,7 +457,7 @@ body.dark {
                 color: var(--dark-text-color);
     
                 &:hover {
-                    background: var(--dark-table-hover-background);
+                    background: var(--dark-linked-item-hover-background);
                 }
             }
         }
@@ -345,24 +495,7 @@ body.dark {
         }
     }
 
-    .p-menu {
-        &.p-menu-overlay {
-            background: var(--dark-linked-panel-background);
-        }
-
-        .p-menuitem-link:not(.p-disabled):hover {
-            background: var(--dark-table-hover-background);
-            
-            .p-menuitem-text {
-                color: var(--dark-text-color);
-            }
-        }
-
-        .p-menuitem-text{
-            color: var(--dark-text-color);
-        }
-    }
-
+    /// DateCellEditor
     .p-datepicker {
         &:not(.p-datepicker-inline) {
             &, .p-datepicker-header {
@@ -372,7 +505,7 @@ body.dark {
         }
 
         .p-datepicker-header {
-            border-bottom: 1px solid var(--dark-palette-c);
+            border-bottom: var(--dark-date-panel-header-border);
             .p-datepicker-title {
                 .p-datepicker-month, .p-datepicker-year {
                     background-color: var(--dark-date-panel-background);
@@ -386,13 +519,10 @@ body.dark {
         }
     }
 
-    .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
-        background-color: var(--dark-component-background) !important;
-    }
-
+    /// Dialogs
     .rc-popup {
         .p-dialog-header {
-            background: var(--dark-palette-b);
+            background: var(--dark-dialog-header-background);
             color: var(--dark-text-color);
     
             .p-dialog-header-icon {
@@ -405,15 +535,16 @@ body.dark {
         }
 
         .p-dialog-content {
-            background: var(--dark-palette-a);
-            color: var(--dark-panelmenu-text-color);
+            background: var(--dark-dialog-content-background);
+            color: var(--dark-text-color);
         }
     }
 
+    /// TabSetPanel
     .p-tabview .p-tabview-nav {
-        background: var(--dark-palette-b);
+        background: var(--dark-tab-navbar-background);
         color: var(--dark-text-color);
-        border: var(--dark-table-header-border);
+        border: var(--dark-tab-navbar-border);
 
         li {
             &:not(.p-highlight) {
@@ -424,39 +555,45 @@ body.dark {
 
                 &:not(.p-disabled):hover .p-tabview-nav-link {
                     color: var(--dark-text-color);
-                    background: var(--dark-palette-a);
+                    background: var(--dark-tab-hover-background);
                     border-color: var(--dark-text-color);
                 }
             }
 
             .p-tabview-nav-link {
-                background: var(--dark-palette-b);
+                background: var(--dark-tab-navbar-background);
             }
         }
     }
 
+    .tabview-button {
+        color: var(--dark-tab-close-color);
+    }
+
+    /// Tree
     .p-tree {
-        background: var(--dark-palette-a);
-        border: 1px solid var(--dark-palette-c);
+        background: var(--dark-tree-background);
+        border: var(--dark-tree-border);
         color: var(--dark-text-color);
 
         .p-tree-container .p-treenode .p-treenode-content {
             &.p-treenode-selectable:not(.p-highlight):hover {
-                background: var(--dark-table-hover-background);
+                background: var(--dark-tree-item-hover-background);
                 color: var(--dark-text-color);
             }
 
             &.p-highlight {
-                background: var(--dark-palette-b);
+                background: var(--dark-tree-selected-item-background);
                 color: var(--dark-text-color);
             }
         }
     }
     
+    /// HTMLEditor
     .p-editor-container {
         .p-editor-toolbar {
-            background: var(--dark-palette-b);
-            border: 1px solid var(--dark-palette-c);
+            background: var(--dark-html-toolbar-background);
+            border: var(--dark-html-toolbar-border);
 
             &.ql-snow {
                 .ql-formats {
@@ -464,11 +601,11 @@ body.dark {
                         color: var(--dark-text-color);
 
                         &:hover {
-                            color: rgba(255, 255, 255, 0.7);
+                            color: var(--dark-html-toolbar-button-hover-background);
         
                             svg {
                                 polygon, path, line, rect, polyline {
-                                    stroke: rgba(255, 255, 255, 0.7);
+                                    stroke: var(--dark-html-toolbar-button-hover-background);
                                 }
                             } 
                         }
@@ -486,20 +623,20 @@ body.dark {
 
                             &:hover {
                                 svg path {
-                                    fill: rgba(255, 255, 255, 0.7);
+                                    fill: var(--dark-html-toolbar-button-hover-background);
                                 }
                             }
                         } 
                     }
 
                     .ql-picker.ql-expanded .ql-picker-options {
-                        background: var(--dark-palette-c);
+                        background: var(--dark-html-picker-expanded-background);
 
                         .ql-picker-item {
                             color: var(--dark-text-color);
 
                             &:hover {
-                                background: var(--dark-table-hover-background);
+                                background: var(--dark-html-picker-item-hover-background);
                             }
                         }
                     }
@@ -520,6 +657,83 @@ body.dark {
         textarea.p-inputtext {
             border: var(--dark-component-border) !important;
         }
+    }
+
+    /// Messages
+    .rc-message-dialog {
+        &.info .p-dialog-header {
+            background: var(--dark-message-info-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--dark-message-info-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--dark-text-color);
+                }
+            }
+        }
+
+        &.warning .p-dialog-header {
+            background: var(--dark-message-warning-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--dark-message-warning-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--dark-text-color);
+                }
+            }
+        }
+
+        &.error .p-dialog-header {
+            background: var(--dark-message-error-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--dark-message-error-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--dark-text-color);
+                }
+            }
+        }
+
+        &.question .p-dialog-header {
+            background: var(--dark-message-question-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--dark-message-question-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--dark-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content, .p-dialog-footer {
+            background: var(--dark-dialog-content-background);
+            color: var(--dark-text-color);
+        }
+    }
+
+    /// Error Dialog
+    .rc-error-dialog {
+        background: var(--dark-error-dialog-background);
+    }
+
+    /// Loading-Screen
+    .loading-screen {
+        background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
+        background: -o-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
+        background: -moz-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
+        background: radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
     }
 }
 

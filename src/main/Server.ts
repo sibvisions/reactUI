@@ -183,6 +183,7 @@ class Server {
                         return results;
                     }).then(results => resolve(results), (err) => Promise.reject(err))
                     .catch(error => {
+                        console.log(error)
                         if (typeof error === "string") {
                             const splitErr = error.split(".");
                             this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));

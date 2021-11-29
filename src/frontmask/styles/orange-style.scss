@@ -1,0 +1,748 @@
+/// Orange Style
+:root {
+    /// Orange client background
+    --orange-background: var(--default-background);
+
+    /// Orange background for topbar
+    --orange-menu-header-background: #f78500;
+
+    /// Orange logo background
+    --orange-logo-background: var(--default-logo-background);
+
+    --orange-profile-seperator: 2px solid #d67b13;
+
+    // Orange topbar buttons hover background
+    --orange-topbar-buttons-hover: #d67b13;
+
+    /// Orange panel-menu background
+    --orange-panelmenu-background: var(--default-panelmenu-background);
+
+    /// Orange panel-menu hover background
+    --orange-panelmenu-hover-background: var(--default-panelmenu-hover-background);
+
+    /// Orange panel-menu color
+    --orange-panelmenu-text-color: var(--default-panelmenu-text-color);
+
+    /// Orange panel-menu color hover
+    --orange-panelmenu-hover-text-color: var(--default-panelmenu-hover-text-color);
+
+    /// Orange menubar submenu background
+    --orange-menubar-submenu-background: var(--default-menubar-submenu-background);
+
+    /// Orange menubar items hover background
+    --orange-menubar-items-hover-background: var(--default-menubar-items-hover-background);
+
+    /// Orange menubar item hover
+    --orange-menubar-item-hover: var(--default-menubar-item-hover);
+
+    /// Orange button color
+    --orange-button-color: #f78500;
+
+    /// Orange component background
+    --orange-component-background: var(--default-component-background);
+
+    /// Orange component border
+    --orange-component-border: var(--default-component-border);
+
+    /// Orange text color
+    --orange-text-color: var(--default-text-color);
+
+    /// Orange checkbox, radiobutton selected color
+    --orange-selected-rb-cb-color: var(--default-selected-rb-cb-color);
+
+    /// Orange toolbar background
+    --orange-toolbar-background: var(--default-toolbar-background);
+
+    /// Orange toolbar border
+    --orange-toolbar-border: var(--default-toolbar-border);
+
+    /// Orange table-header background
+    --orange-table-header-background: var(--default-table-header-background);
+
+    /// Orange table-header border
+    --orange-table-header-border: var(--default-table-header-border);
+
+    /// Orange table-row background for odd rows
+    --orange-table-row-odd-background: var(--default-table-row-odd-background);
+
+    /// Orange table-row background for even rows
+    --orange-table-row-even-background: var(--default-table-row-even-background);
+
+    /// Orange background when hovering a table/linked row
+    --orange-table-hover-background: var(--default-table-hover-background);
+
+    /// Orange table-row border
+    --orange-table-row-border: var(--default-table-row-border);
+
+    /// Orange cell hover color
+    --orange-table-cell-hover-color: rgb(131, 131, 131);
+
+    /// Orange LinkedCellEditor panel background
+    --orange-linked-panel-background: var(--default-linked-panel-background);
+
+    /// Orange LinkedCellEditor item hover background
+    --orange-linked-item-hover-background: var(--default-linked-item-hover-background);
+
+    /// Orange overlay background for popupmenubuttons
+    --orange-popupmenubutton-overlay-background: var(--default-popupmenubutton-overlay-background);
+
+    /// Orange popupmenu item hover background
+    --orange-popupmenubutton-item-hover: var(--default-popupmenubutton-item-hover);
+
+    /// Orange DateCellEditor panel background
+    --orange-date-panel-background: --default-date-panel-background;
+
+    /// Orange DateCellEditor header border
+    --orange-date-panel-header-border: var(--default-date-panel-header-border);
+
+    /// Orange Dialog header background
+    --orange-dialog-header-background: var(--default-dialog-header-background);
+
+    /// Orange Dialog background
+    --orange-dialog-content-background: var(--default-dialog-content-background);
+
+    /// Orange TabSet navbar background
+    --orange-tab-navbar-background: var(--default-tab-navbar-background);
+
+    /// Orange TabSet navbar border
+    --orange-tab-navbar-border: var(--default-tab-navbar-border);
+
+    /// Orange TabSet hover background
+    --orange-tab-hover-background: var(--default-tab-hover-background);
+
+    --orange-tab-border-color: var(--default-tab-border-color);
+
+    /// Orange Tree background
+    --orange-tree-background: var(--default-tree-background);
+
+    /// Orange Tree border
+    --orange-tree-border: var(--default-tree-border);
+
+    /// Orange Tree item hover background
+    --orange-tree-item-hover-background: var(--default-tree-item-hover-background);
+
+    /// Orange Tree selected item background
+    --orange-tree-selected-item-background: #fdefd4;
+
+    /// Orange HTMLEditor toolbar background
+    --orange-html-toolbar-background: var(--default-html-toolbar-background);
+
+    /// Orange HTMLEditor toolbar border
+    --orange-html-toolbar-border: var(--default-html-toolbar-border);
+
+    /// Orange HTMLEditor button hover colors
+    --orange-html-toolbar-button-hover-background: var(--default-html-toolbar-button-hover-background);
+
+    /// Orange HTMLEditor picker expanded background
+    --orange-html-picker-expanded-background: var(--default-html-picker-expanded-background);
+
+    /// Orange HTMLEditor picker item hover background
+    --orange-html-picker-item-hover-background: var(--default-html-picker-item-hover-background);
+
+    /// Orange Message info background
+    --orange-message-info-header-background: var(--default-button-color);
+
+    /// Orange Message info hover background of closing element
+    --orange-message-info-header-close-hover: var(--default-message-info-header-close-hover);
+
+    /// Orange Message warning background
+    --orange-message-warning-header-background: var(--default-message-warning-header-background);
+
+    /// Orange Message warning hover background of closing element
+    --orange-message-warning-header-close-hover: var(--default-message-warning-header-close-hover);
+
+    /// Orange Message error background
+    --orange-message-error-header-background: var(--default-message-error-header-background);
+
+    /// Orange Message error hover background of closing element
+    --orange-message-error-header-close-hover: var(--default-message-error-header-close-hover);
+
+    /// Orange Message question background
+    --orange-message-question-header-background: var(--default-message-question-header-background);
+
+    /// Orange Message question hover background of closing element
+    --orange-message-question-header-close-hover: var(--default-message-question-header-close-hover);
+
+    /// Orange error-dialog background
+    --orange-error-dialog-background: var(--default-error-dialog-background);
+
+    /// Orange loading-screen background left
+    --orange-loading-screen-left-background: var(--default-loading-screen-left-background);
+
+    /// Orange loading-screen background right
+    --orange-loading-screen-right-background: var(--default-loading-screen-right-background);
+
+    /// Orange tab close button color
+    --orange-tab-close-color: var(--default-tab-close-color);
+}
+
+body.orange {
+    background: var(--orange-background);
+    color: var(--orange-text-color);
+}
+
+.orange {
+/// *----------General-Header----------*
+    .menu-header {
+        background: var(--orange-menu-header-background);
+    }
+
+    .p-button.p-button-icon-only.menu-topbar-buttons:hover {
+        background: var(--orange-topbar-buttons-hover);
+    }
+
+    /// *----------Standard-Menu----------*
+    .menu-logo-wrapper {
+        background: var(--orange-logo-background);
+    }
+
+    .menu-panelmenu-wrapper {
+        background: var(--orange-panelmenu-background);
+        @include styledScrollbarPanelDefault();
+    }
+
+    .p-panelmenu {
+        .p-panelmenu-header {
+            .p-panelmenu-header-link {
+                background: var(--orange-panelmenu-background);
+                border-color: var(--orange-panelmenu-background);
+                color: var(--orange-panelmenu-text-color);
+            }
+    
+            &:not(.p-highlight):not(.p-disabled) > a:hover {
+                background: var(--orange-panelmenu-hover-background);
+                border-color: var(--orange-panelmenu-hover-background);
+                color: var(--orange-panelmenu-hover-text-color);
+            }
+    
+            &.p-highlight {
+                > a, &:not(.p-disabled) > a:hover {
+                    background: var(--orange-panelmenu-background);
+                    color: var(--orange-panelmenu-hover-text-color);
+                }
+            }
+        }
+
+        .p-panelmenu-content {
+            background: var(--orange-panelmenu-background);
+
+            .p-menuitem {
+                &.p-menuitem--active {
+                    .p-menuitem-link {
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--orange-button-color);
+                        }
+                    }
+                }
+
+                .p-menuitem-link {
+                    background: var(--orange-panelmenu-background);
+                    .p-menuitem-icon, .p-menuitem-text {
+                        color: var(--orange-panelmenu-text-color);
+                    }
+
+                    &:hover {
+                        background: var(--orange-panelmenu-hover-background);
+                        .p-menuitem-icon, .p-menuitem-text {
+                            color: var(--orange-panelmenu-hover-text-color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// *----------Corporate/Profile Menu----------*
+    .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
+        color: var(--orange-text-color);
+    }
+
+    .profile-menu {
+        border-left: var(--orange-profile-seperator);
+    }
+
+    .p-menubar {
+        background: var(--orange-menu-header-background);
+        
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--orange-menu-header-background);
+
+                    &:hover {
+                        background: var(--orange-topbar-buttons-hover);
+                    }
+                }
+
+                > .p-submenu-list {
+                    background: var(--orange-menubar-submenu-background);
+
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--orange-menubar-submenu-background);
+
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--orange-text-color);
+                        }
+
+                        &:hover {
+                            background: var(--orange-menubar-items-hover-background);
+
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--orange-panelmenu-hover-text-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .c-menu-header {
+        background: var(--orange-menu-header-background);
+    }
+
+    .c-menu-menubar {
+        background: var(--orange-menu-header-background);
+    }
+
+    /// *----------Mobile-Theme Specific----------*
+
+    &.btr-mobile {
+        .p-inputtext:enabled:focus {
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--orange-button-color);
+                color: var(--orange-button-color);
+            }
+        }
+
+        .rc-editor-linked, .rc-editor-date {
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--orange-button-color);
+                        color: var(--orange-button-color);
+                    }
+                }
+
+                .p-inputtext {
+                    border-color: var(--orange-button-color);
+                }
+            }
+
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--orange-text-color);
+            }
+        }
+    }
+
+    /// *----------Components----------*
+
+    /// Button
+    .rc-button.mouse-border {
+        color: var(--orange-text-color);
+    }
+
+    .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
+        color: var(--orange-text-color);
+    }
+
+    /// Checkbox
+    .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
+        background: var(--orange-component-background);
+        border: var(--orange-component-border);
+    }
+
+    .p-checkbox-box.p-highlight .p-checkbox-icon {
+        color: var(--orange-selected-rb-cb-color);
+    }
+
+    /// Radiobutton
+    .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+        background: var(--orange-selected-rb-cb-color);
+    }
+
+    /// PopupMenuButton
+    .rc-popupmenubutton {
+        background: var(--orange-button-color);
+        border-color: var(--orange-button-color);
+    }
+
+    .p-menu {
+        &.p-menu-overlay {
+            background: var(--orange-popupmenubutton-overlay-background);
+        }
+
+        .p-menuitem-link:not(.p-disabled):hover {
+            background: var(--orange-popupmenubutton-item-hover);
+            
+            .p-menuitem-text {
+                color: var(--orange-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--orange-text-color);
+        }
+    }
+
+    /// Inputfields
+    .p-inputtext {
+        background: var(--orange-component-background);
+        border: var(--orange-component-border);
+        &:not(.required-field) {
+            color: var(--orange-text-color);
+        }
+    }
+
+    // .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
+    //     background-color: var(--orange-component-background) !important;
+    // }
+
+    /// Table
+    .rc-table {
+        border: var(--orange-component-border);
+
+        .p-datatable-thead > tr > th {
+            background: var(--orange-table-header-background);
+            border: var(--orange-table-header-border);
+        }
+
+        .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+            background: var(--orange-table-hover-background);
+            color: var(--orange-text-color);
+        }
+
+        .p-datatable-tbody > tr {
+            background: var(--orange-table-row-odd-background);
+            color: var(--orange-text-color);
+            > td {
+                border: var(--orange-table-row-border);
+
+                &.p-highlight {
+                    color: var(--orange-text-color);
+                }
+
+                &:hover {
+                    color: var(--orange-table-cell-hover-color);
+                }
+            }
+
+            &.p-highlight {
+                color: var(--orange-text-color);
+            }
+
+            &:nth-child(even) {
+                background: var(--orange-table-row-even-background);
+            }
+
+            &:not(.p-highlight):hover {
+                background: var(--orange-table-hover-background);
+                color: var(--orange-text-color);
+            }
+        }
+    } 
+
+    /// Toolbar
+    .rc-toolbar {
+        background: var(--orange-toolbar-background);
+        border: var(--orange-toolbar-border);
+    }
+
+    /// LinkedCellEditor
+    .p-autocomplete-panel {
+        background: var(--orange-linked-panel-background);
+        .p-autocomplete-items {
+            .p-autocomplete-item {
+                background: var(--orange-linked-panel-background);
+                color: var(--orange-text-color);
+    
+                &:hover {
+                    background: var(--orange-linked-item-hover-background);
+                }
+            }
+        }
+
+        &.dropdown-table {
+            .p-autocomplete-items {
+                /// Swaping odd and even because "table header" is also a child
+                & li:nth-child(odd) {
+                    background: var(--orange-table-row-even-background);
+                    &:hover {
+                        background: var(--orange-table-hover-background);
+                    }
+                }
+
+                & li:nth-child(even) {
+                    background: var(--orange-table-row-odd-background);
+                    &:hover {
+                        background: var(--orange-table-hover-background);
+                    }
+                }
+            }
+            .p-autocomplete-item-group > * {
+                background: var(--orange-table-header-background);
+                color: var(--orange-text-color);
+                border-bottom: var(--orange-table-header-border);
+            }
+
+            .p-autocomplete-item > * {
+                border-bottom: var(--orange-table-row-border);
+
+                &:not(:first-child) {
+                    border-left: var(--orange-table-row-border);
+                }
+            }
+        }
+    }
+
+    /// DateCellEditor
+    .p-datepicker {
+        &:not(.p-datepicker-inline) {
+            &, .p-datepicker-header {
+                background: var(--orange-date-panel-background);
+                color: var(--orange-text-color);
+            }
+        }
+
+        .p-datepicker-header {
+            border-bottom: var(--orange-date-panel-header-border);
+            .p-datepicker-title {
+                .p-datepicker-month, .p-datepicker-year {
+                    background-color: var(--orange-date-panel-background);
+                    color: var(--orange-text-color);
+                }
+            }
+        } 
+
+        &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
+            color: var(--orange-text-color);
+        }
+    }
+
+    /// Dialogs
+    .rc-popup {
+        .p-dialog-header {
+            background: var(--orange-dialog-header-background);
+            color: var(--orange-text-color);
+    
+            .p-dialog-header-icon {
+                color: var(--orange-text-color);
+    
+                &:hover {
+                    color: var(--orange-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content {
+            background: var(--orange-dialog-content-background);
+            color: var(--orange-text-color);
+        }
+    }
+
+    /// TabSetPanel
+    .p-tabview .p-tabview-nav {
+        background: var(--orange-tab-navbar-background);
+        color: var(--orange-text-color);
+        border: var(--orange-tab-navbar-border);
+
+        li {
+            &:not(.p-highlight) {
+                .p-tabview-nav-link {
+                    color: var(--orange-text-color);
+                    border-color: transparent transparent var(--orange-tab-border-color) transparent;
+                }
+
+                &:not(.p-disabled):hover .p-tabview-nav-link {
+                    color: var(--orange-text-color);
+                    background: var(--orange-tab-hover-background);
+                    border-color: var(--orange-text-color);
+                }
+            }
+
+            .p-tabview-nav-link {
+                background: var(--orange-tab-navbar-background);
+            }
+        }
+    }
+
+    .tabview-button {
+        color: var(--orange-tab-close-color);
+    }
+
+    /// Tree
+    .p-tree {
+        background: var(--orange-tree-background);
+        border: var(--orange-tree-border);
+        color: var(--orange-text-color);
+
+        .p-tree-container .p-treenode .p-treenode-content {
+            &.p-treenode-selectable:not(.p-highlight):hover {
+                background: var(--orange-tree-item-hover-background);
+                color: var(--orange-text-color);
+            }
+
+            &.p-highlight {
+                background: var(--orange-tree-selected-item-background);
+                color: var(--orange-text-color);
+            }
+        }
+    }
+    
+    /// HTMLEditor
+    .p-editor-container {
+        .p-editor-toolbar {
+            background: var(--orange-html-toolbar-background);
+            border: var(--orange-html-toolbar-border);
+
+            &.ql-snow {
+                .ql-formats {
+                    .ql-picker .ql-picker-label, button {
+                        color: var(--orange-text-color);
+
+                        &:hover {
+                            color: var(--orange-html-toolbar-button-hover-background);
+        
+                            svg {
+                                polygon, path, line, rect, polyline {
+                                    stroke: var(--orange-html-toolbar-button-hover-background);
+                                }
+                            } 
+                        }
+        
+                        svg {
+                            polygon, path, line, rect, polyline {
+                                stroke: var(--orange-text-color);
+                            }
+                        }
+
+                        &.ql-source {
+                            svg path {
+                                fill: var(--orange-text-color);
+                            }
+
+                            &:hover {
+                                svg path {
+                                    fill: var(--orange-html-toolbar-button-hover-background);
+                                }
+                            }
+                        } 
+                    }
+
+                    .ql-picker.ql-expanded .ql-picker-options {
+                        background: var(--orange-html-picker-expanded-background);
+
+                        .ql-picker-item {
+                            color: var(--orange-text-color);
+
+                            &:hover {
+                                background: var(--orange-html-picker-item-hover-background);
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+
+        .p-editor-content {
+            border: var(--orange-component-border);
+            .ql-editor {
+                background: var(--orange-component-background);
+                color: var(--orange-text-color);
+            }
+        }
+    }
+
+    .rc-editor-html {
+        textarea.p-inputtext {
+            border: var(--orange-component-border) !important;
+        }
+    }
+
+    /// Messages
+    .rc-message-dialog {
+        &.info .p-dialog-header {
+            background: var(--orange-message-info-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--orange-message-info-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--orange-text-color);
+                }
+            }
+        }
+
+        &.warning .p-dialog-header {
+            background: var(--orange-message-warning-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--orange-message-warning-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--orange-text-color);
+                }
+            }
+        }
+
+        &.error .p-dialog-header {
+            background: var(--orange-message-error-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--orange-message-error-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--orange-text-color);
+                }
+            }
+        }
+
+        &.question .p-dialog-header {
+            background: var(--orange-message-question-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--orange-message-question-header-close-hover);
+                }
+    
+                .p-dialog-header-close-icon {
+                    color: var(--orange-text-color);
+                }
+            }
+        }
+
+        .p-dialog-content, .p-dialog-footer {
+            background: var(--orange-dialog-content-background);
+            color: var(--orange-text-color);
+        }
+    }
+
+    /// Error Dialog
+    .rc-error-dialog {
+        background: var(--orange-error-dialog-background);
+    }
+
+    /// Loading-Screen
+    .loading-screen {
+        background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--orange-loading-screen-left-background) 70%, var(--orange-loading-screen-right-background) 70%);
+        background: -o-radial-gradient(119% 190% at -6% -20%, var(--orange-loading-screen-left-background) 70%, var(--orange-loading-screen-right-background) 70%);
+        background: -moz-radial-gradient(119% 190% at -6% -20%, var(--orange-loading-screen-left-background) 70%, var(--orange-loading-screen-right-background) 70%);
+        background: radial-gradient(119% 190% at -6% -20%, var(--orange-loading-screen-left-background) 70%, var(--orange-loading-screen-right-background) 70%);
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .p-menubar .p-menubar-root-list {
+        background: var(--orange-menu-header-background);
+
+        > .p-menuitem {
+            background: var(--orange-menu-header-background);
+        }
+    }
+}

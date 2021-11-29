@@ -45,6 +45,8 @@
 @import './frontmask/themes/btr-mobile.scss';
 @import './frontmask/styles/default-style.scss';
 @import './frontmask/styles/dark-style.scss';
+@import './frontmask/styles/orange-style.scss';
+@import './frontmask/styles/blue-style.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
@@ -118,7 +120,6 @@ body {
                 color: white;
             }
         }
-
     }
 
     &.warning .p-dialog-header {
