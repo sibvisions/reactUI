@@ -1,179 +1,195 @@
+@import '../scssutil/scrollbar.scss';
+
 /// Orange Style
 :root {
     /// Orange client background
-    --orange-background: var(--default-background);
+    --orange-background: #ffffff;
 
     /// Orange background for topbar
     --orange-menu-header-background: #f78500;
 
     /// Orange logo background
-    --orange-logo-background: var(--default-logo-background);
+    --orange-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
 
+    /// Orange profile-menu seperator
     --orange-profile-seperator: 2px solid #d67b13;
 
     // Orange topbar buttons hover background
     --orange-topbar-buttons-hover: #d67b13;
 
     /// Orange panel-menu background
-    --orange-panelmenu-background: var(--default-panelmenu-background);
+    --orange-panelmenu-background: #fafafa;
 
     /// Orange panel-menu hover background
-    --orange-panelmenu-hover-background: var(--default-panelmenu-hover-background);
+    --orange-panelmenu-hover-background: #e9ecef;
 
     /// Orange panel-menu color
-    --orange-panelmenu-text-color: var(--default-panelmenu-text-color);
+    --orange-panelmenu-text-color: #495057;
 
     /// Orange panel-menu color hover
-    --orange-panelmenu-hover-text-color: var(--default-panelmenu-hover-text-color);
+    --orange-panelmenu-hover-text-color: #000000;
+
+    /// Orange color for active menuitem
+    --orange-menu-activeitem-color: #f78500;
 
     /// Orange menubar submenu background
-    --orange-menubar-submenu-background: var(--default-menubar-submenu-background);
+    --orange-menubar-submenu-background: #ffffff;
 
     /// Orange menubar items hover background
-    --orange-menubar-items-hover-background: var(--default-menubar-items-hover-background);
+    --orange-menubar-items-hover-background: #e9ecef;
 
     /// Orange menubar item hover
-    --orange-menubar-item-hover: var(--default-menubar-item-hover);
+    --orange-menubar-item-hover: #454b52;
 
     /// Orange button color
-    --orange-button-color: #f78500;
+    --orange-button-color: #f78500;;
 
     /// Orange component background
-    --orange-component-background: var(--default-component-background);
+    --orange-component-background: #ffffff;
 
     /// Orange component border
-    --orange-component-border: var(--default-component-border);
+    --orange-component-border: 1px solid #ced4da;
 
     /// Orange text color
-    --orange-text-color: var(--default-text-color);
+    --orange-text-color: #495057;
 
     /// Orange checkbox, radiobutton selected color
-    --orange-selected-rb-cb-color: var(--default-selected-rb-cb-color);
+    --orange-selected-rb-cb-color: #ffffff;
 
     /// Orange toolbar background
-    --orange-toolbar-background: var(--default-toolbar-background);
+    --orange-toolbar-background: #f8f9fa;
 
     /// Orange toolbar border
-    --orange-toolbar-border: var(--default-toolbar-border);
+    --orange-toolbar-border: 1px solid #dee2e6;
 
     /// Orange table-header background
-    --orange-table-header-background: var(--default-table-header-background);
+    --orange-table-header-background: #ffffff;
 
     /// Orange table-header border
-    --orange-table-header-border: var(--default-table-header-border);
+    --orange-table-header-border: 1px solid #e9ecef;
 
     /// Orange table-row background for odd rows
-    --orange-table-row-odd-background: var(--default-table-row-odd-background);
+    --orange-table-row-odd-background: #fafafa;
 
     /// Orange table-row background for even rows
-    --orange-table-row-even-background: var(--default-table-row-even-background);
+    --orange-table-row-even-background: #ffffff;
 
     /// Orange background when hovering a table/linked row
-    --orange-table-hover-background: var(--default-table-hover-background);
+    --orange-table-hover-background: #e9ecef;
 
     /// Orange table-row border
-    --orange-table-row-border: var(--default-table-row-border);
+    --orange-table-row-border: 1px solid #e9ecef;
 
     /// Orange cell hover color
     --orange-table-cell-hover-color: rgb(131, 131, 131);
 
+    /// Orange cell font color when a cell is required
+    --orange-table-required-color: var(--orange-text-color);
+
     /// Orange LinkedCellEditor panel background
-    --orange-linked-panel-background: var(--default-linked-panel-background);
+    --orange-linked-panel-background: #ffffff;
 
     /// Orange LinkedCellEditor item hover background
-    --orange-linked-item-hover-background: var(--default-linked-item-hover-background);
+    --orange-linked-item-hover-background: #e9ecef;
 
     /// Orange overlay background for popupmenubuttons
-    --orange-popupmenubutton-overlay-background: var(--default-popupmenubutton-overlay-background);
+    --orange-popupmenubutton-overlay-background: #ffffff;
 
     /// Orange popupmenu item hover background
-    --orange-popupmenubutton-item-hover: var(--default-popupmenubutton-item-hover);
+    --orange-popupmenubutton-item-hover: #e9ecef;
 
     /// Orange DateCellEditor panel background
-    --orange-date-panel-background: --default-date-panel-background;
+    --orange-date-panel-background: #ffffff;
 
     /// Orange DateCellEditor header border
-    --orange-date-panel-header-border: var(--default-date-panel-header-border);
+    --orange-date-panel-header-border: 1px solid #dee2e6;
+
+    /// Default color when hovering over a day to select
+    --orange-date-panel-hover-color: var(--orange-text-color);
 
     /// Orange Dialog header background
-    --orange-dialog-header-background: var(--default-dialog-header-background);
+    --orange-dialog-header-background: #ffffff;
+
+    /// Orange 'x' color when hovering
+    --orange-dialog-icon-hover-color: var(--orange-text-color);
 
     /// Orange Dialog background
-    --orange-dialog-content-background: var(--default-dialog-content-background);
+    --orange-dialog-content-background: #ffffff;
 
     /// Orange TabSet navbar background
-    --orange-tab-navbar-background: var(--default-tab-navbar-background);
+    --orange-tab-navbar-background: #ffffff;
 
     /// Orange TabSet navbar border
-    --orange-tab-navbar-border: var(--default-tab-navbar-border);
+    --orange-tab-navbar-border: 1px solid #dee2e6;
 
     /// Orange TabSet hover background
-    --orange-tab-hover-background: var(--default-tab-hover-background);
+    --orange-tab-hover-background: #ffffff;
 
-    --orange-tab-border-color: var(--default-tab-border-color);
+    /// Orange TabSet border color
+    --orange-tab-border-color: #dee2e6;
 
     /// Orange Tree background
-    --orange-tree-background: var(--default-tree-background);
+    --orange-tree-background: #ffffff;
 
     /// Orange Tree border
-    --orange-tree-border: var(--default-tree-border);
+    --orange-tree-border: 1px solid #dee2e6;
 
     /// Orange Tree item hover background
-    --orange-tree-item-hover-background: var(--default-tree-item-hover-background);
+    --orange-tree-item-hover-background: #e9ecef;
 
     /// Orange Tree selected item background
     --orange-tree-selected-item-background: #fdefd4;
 
     /// Orange HTMLEditor toolbar background
-    --orange-html-toolbar-background: var(--default-html-toolbar-background);
+    --orange-html-toolbar-background: #f8f9fa;
 
     /// Orange HTMLEditor toolbar border
-    --orange-html-toolbar-border: var(--default-html-toolbar-border);
+    --orange-html-toolbar-border: 1px solid #dee2e6;
 
     /// Orange HTMLEditor button hover colors
-    --orange-html-toolbar-button-hover-background: var(--default-html-toolbar-button-hover-background);
+    --orange-html-toolbar-button-hover-background: #000000;
 
     /// Orange HTMLEditor picker expanded background
-    --orange-html-picker-expanded-background: var(--default-html-picker-expanded-background);
+    --orange-html-picker-expanded-background: #ffffff;
 
     /// Orange HTMLEditor picker item hover background
-    --orange-html-picker-item-hover-background: var(--default-html-picker-item-hover-background);
+    --orange-html-picker-item-hover-background: #e9ecef;
 
     /// Orange Message info background
-    --orange-message-info-header-background: var(--default-button-color);
+    --orange-message-info-header-background: var(--orange-button-color);
 
     /// Orange Message info hover background of closing element
-    --orange-message-info-header-close-hover: var(--default-message-info-header-close-hover);
+    --orange-message-info-header-close-hover: #276b96;
 
     /// Orange Message warning background
-    --orange-message-warning-header-background: var(--default-message-warning-header-background);
+    --orange-message-warning-header-background: #ffcf40;
 
     /// Orange Message warning hover background of closing element
-    --orange-message-warning-header-close-hover: var(--default-message-warning-header-close-hover);
+    --orange-message-warning-header-close-hover: #ebbd35;
 
     /// Orange Message error background
-    --orange-message-error-header-background: var(--default-message-error-header-background);
+    --orange-message-error-header-background: #ff364a;
 
     /// Orange Message error hover background of closing element
-    --orange-message-error-header-close-hover: var(--default-message-error-header-close-hover);
+    --orange-message-error-header-close-hover: #db2739;
 
     /// Orange Message question background
-    --orange-message-question-header-background: var(--default-message-question-header-background);
+    --orange-message-question-header-background: #17c0eb;
 
     /// Orange Message question hover background of closing element
-    --orange-message-question-header-close-hover: var(--default-message-question-header-close-hover);
+    --orange-message-question-header-close-hover: #13aacf;
 
     /// Orange error-dialog background
-    --orange-error-dialog-background: var(--default-error-dialog-background);
+    --orange-error-dialog-background: rgba(255, 255, 255, 0.8);
 
     /// Orange loading-screen background left
-    --orange-loading-screen-left-background: var(--default-loading-screen-left-background);
+    --orange-loading-screen-left-background: #ffffff;
 
     /// Orange loading-screen background right
-    --orange-loading-screen-right-background: var(--default-loading-screen-right-background);
+    --orange-loading-screen-right-background: #f1f1f1;
 
     /// Orange tab close button color
-    --orange-tab-close-color: var(--default-tab-close-color);
+    --orange-tab-close-color: #cdcfd1;
 }
 
 body.orange {
@@ -230,7 +246,7 @@ body.orange {
                 &.p-menuitem--active {
                     .p-menuitem-link {
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: var(--orange-button-color);
+                            color: var(--orange-menu-activeitem-color);
                         }
                     }
                 }
@@ -418,6 +434,10 @@ body.orange {
             > td {
                 border: var(--orange-table-row-border);
 
+                &.cell-required {
+                    color: var(--orange-table-required-color);
+                }
+
                 &.p-highlight {
                     color: var(--orange-text-color);
                 }
@@ -515,7 +535,7 @@ body.orange {
         } 
 
         &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
-            color: var(--orange-text-color);
+            color: var(--orange-date-panel-hover-color);
         }
     }
 
@@ -529,7 +549,7 @@ body.orange {
                 color: var(--orange-text-color);
     
                 &:hover {
-                    color: var(--orange-text-color);
+                    color: var(--orange-dialog-icon-hover-color);
                 }
             }
         }

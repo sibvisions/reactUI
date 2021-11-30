@@ -2,29 +2,23 @@
 
 /// Darkmode Style
 :root {
-    --dark-palette-a: #20262e;
-
-    --dark-palette-b: #3f4b5b;
-
-    --dark-palette-c: #2a323d;
-
-    --dark-item-hover: #303a48;
-
-
     /// Darkmode client background
-    --dark-background: var(--dark-palette-a);
+    --dark-background: #20262e;
 
     /// Darkmode background for topbar
-    --dark-menu-header-background: var(--dark-palette-b);
+    --dark-menu-header-background: #3f4b5b;
 
     /// Darkmode logo background
-    --dark-logo-background: linear-gradient(270deg, #4f5966 0%, var(--dark-palette-b) 100%);
+    --dark-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
+
+    /// Darkmode profile-menu seperator
+    --dark-profile-seperator: 2px solid #5b6067;
 
     // Darkmode topbar buttons hover background
-    --dark-topbar-buttons-hover: var(--dark-palette-c);
+    --dark-topbar-buttons-hover: #2a323d;
 
     /// Darkmode panel-menu background
-    --dark-panelmenu-background: var(--dark-palette-c);
+    --dark-panelmenu-background: #2a323d;
 
     /// Darkmode panel-menu hover background
     --dark-panelmenu-hover-background: #222a33;
@@ -35,23 +29,26 @@
     /// Darkmode panel-menu color hover
     --dark-panelmenu-hover-text-color: #ffffff;
 
+    /// Darkmode color for active menuitem
+    --dark-menu-activeitem-color: #2196F3;
+
     /// Darkmode menubar submenu background
-    --dark-menubar-submenu-background: var(--dark-palette-b);
+    --dark-menubar-submenu-background: #3f4b5b;
 
     /// Darkmode menubar items hover background
-    --dark-menubar-items-hover-background: var(--dark-item-hover);
+    --dark-menubar-items-hover-background: #303a48;
 
     /// Darkmode menubar item hover
-    --dark-menubar-item-hover: var(--dark-palette-c);
+    --dark-menubar-item-hover: #2a323d;
 
     /// Darkmode button color
     --dark-button-color: #205e8f;
 
     /// Darkmode component background
-    --dark-component-background: var(--dark-palette-c);
+    --dark-component-background: #2a323d;
 
     /// Darkmode component border
-    --dark-component-border: 1px solid var(--dark-palette-b);
+    --dark-component-border: 1px solid #3f4b5b;
 
     /// Darkmode text color
     --dark-text-color: rgba(255, 255, 255, 0.87);
@@ -63,88 +60,100 @@
     --dark-toolbar-background: #303a48;
 
     /// Darkmode toolbar border
-    --dark-toolbar-border: 1px solid var(--dark-palette-b);
+    --dark-toolbar-border: 1px solid #3f4b5b;
 
     /// Darkmode table-header background
-    --dark-table-header-background: var(--dark-palette-a);
+    --dark-table-header-background: #20262e;
 
     /// Darkmode table-header border
-    --dark-table-header-border: 1px solid var(--dark-palette-b);
+    --dark-table-header-border: 1px solid #3f4b5b;
 
     /// Darkmode table-row background for odd rows
-    --dark-table-row-odd-background: var(--dark-palette-c);
+    --dark-table-row-odd-background: #2a323d;
 
     /// Darkmode table-row background for even rows
     --dark-table-row-even-background: #272c33;
 
     /// Darkmode background when hovering a table/linked row
-    --dark-table-hover-background: var(--dark-item-hover);
+    --dark-table-hover-background: #303a48;
 
     /// Darkmode table-row border
-    --dark-table-row-border: 1px solid var(--dark-palette-b);
+    --dark-table-row-border: 1px solid #3f4b5b;
 
     /// Darkmode cell hover color
     --dark-table-cell-hover-color: rgb(131, 131, 131);
 
+    /// Darkmode cell font color when a cell is required
+    --dark-table-required-color: #495057;
+
     /// Darkmode LinkedCellEditor panel background
-    --dark-linked-panel-background: var(--dark-palette-b);
+    --dark-linked-panel-background: #3f4b5b;
 
     /// Darkmode LinkedCellEditor item hover background
-    --dark-linked-item-hover-background: var(--dark-item-hover);
+    --dark-linked-item-hover-background: #303a48;
 
     /// Darkmode overlay background for popupmenubuttons
-    --dark-popupmenubutton-overlay-background: var(--dark-palette-b);
+    --dark-popupmenubutton-overlay-background: #3f4b5b;
 
     /// Darkmode popupmenu item hover background
-    --dark-popupmenubutton-item-hover: var(--dark-item-hover);
+    --dark-popupmenubutton-item-hover: #303a48;
 
     /// Darkmode DateCellEditor panel background
-    --dark-date-panel-background: var(--dark-palette-b);
+    --dark-date-panel-background: #3f4b5b;
 
     /// Darkmode DateCellEditor header border
-    --dark-date-panel-header-border: 1px solid var(--dark-palette-c);
+    --dark-date-panel-header-border: 1px solid #2a323d;
+
+    /// Darkmode color when hovering over a day to select
+    --dark-date-panel-hover-color: #495057;
 
     /// Darkmode Dialog header background
-    --dark-dialog-header-background: var(--dark-palette-b);
+    --dark-dialog-header-background: #3f4b5b;
+
+    /// Darkmode 'x' color when hovering
+    --dark-dialog-icon-hover-color: #495057;
 
     /// Darkmode Dialog background
-    --dark-dialog-content-background: var(--dark-palette-a);
+    --dark-dialog-content-background: #20262e;
 
     /// Darkmode TabSet navbar background
-    --dark-tab-navbar-background: var(--dark-palette-b);
+    --dark-tab-navbar-background: #3f4b5b;
 
     /// Darkmode TabSet navbar border
-    --dark-tab-navbar-border: 1px solid var(--dark-palette-b);
+    --dark-tab-navbar-border: 1px solid #3f4b5b;
 
     /// Darkmode TabSet hover background
-    --dark-tab-hover-background: var(--dark-palette-a);
+    --dark-tab-hover-background: #20262e;
+
+    /// Darkmode TabSet border color
+    --dark-tab-border-color: var(--dark-text-color);
 
     /// Darkmode Tree background
-    --dark-tree-background: var(--dark-palette-a);
+    --dark-tree-background: #20262e;
 
     /// Darkmode Tree border
-    --dark-tree-border: 1px solid var(--dark-palette-c);
+    --dark-tree-border: 1px solid #2a323d;
 
     /// Darkmode Tree item hover background
-    --dark-tree-item-hover-background: var(--dark-item-hover);
+    --dark-tree-item-hover-background: #303a48;
 
     /// Darkmode Tree selected item background
-    --dark-tree-selected-item-background: var(--dark-palette-b);
+    --dark-tree-selected-item-background: #3f4b5b;
 
     /// Darkmode HTMLEditor toolbar background
-    --dark-html-toolbar-background: var(--dark-palette-b);
+    --dark-html-toolbar-background: #3f4b5b;
 
     /// Darkmode HTMLEditor toolbar border
-    --dark-html-toolbar-border: 1px solid var(--dark-palette-c);
+    --dark-html-toolbar-border: 1px solid #2a323d;
 
     /// Darkmode HTMLEditor button hover colors
     --dark-html-toolbar-button-hover-background: rgba(255, 255, 255, 0.7);
 
     /// Darkmode HTMLEditor picker expanded background
-    --dark-html-picker-expanded-background: var(--dark-palette-c);
+    --dark-html-picker-expanded-background: #2a323d;
 
     /// Darkmode HTMLEditor picker item hover background
-    --dark-html-picker-item-hover-background: var(--dark-item-hover);
+    --dark-html-picker-item-hover-background: #303a48;
 
     /// Darkmode Message info background
     --dark-message-info-header-background: var(--dark-button-color);
@@ -174,10 +183,13 @@
     --dark-error-dialog-background: rgba(32, 38, 46, 0.8);
 
     /// Darkmode loading-screen background left
-    --dark-loading-screen-left-background: var(--dark-palette-a);
+    --dark-loading-screen-left-background: #20262e;
 
     /// Darkmode loading-screen background right
-    --dark-loading-screen-right-background: var(--dark-palette-b);
+    --dark-loading-screen-right-background: #3f4b5b;
+
+    /// Darkmode tab close button color
+    --dark-tab-close-color: #cdcfd1;
 }
 
 body.dark {
@@ -234,7 +246,7 @@ body.dark {
                 &.p-menuitem--active {
                     .p-menuitem-link {
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: var(--default-button-color);
+                            color: var(--dark-menu-activeitem-color);
                         }
                     }
                 }
@@ -259,6 +271,10 @@ body.dark {
     /// *----------Corporate/Profile Menu----------*
     .p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
         color: var(--dark-text-color);
+    }
+
+    .profile-menu {
+        border-left: var(--dark-profile-seperator);
     }
 
     .p-menubar {
@@ -418,6 +434,10 @@ body.dark {
             > td {
                 border: var(--dark-table-row-border);
 
+                &.cell-required {
+                    color: var(--dark-table-required-color);
+                }
+
                 &.p-highlight {
                     color: var(--dark-text-color);
                 }
@@ -515,7 +535,7 @@ body.dark {
         } 
 
         &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
-            color: var(--default-text-color);
+            color: var(--dark-date-panel-hover-color);
         }
     }
 
@@ -529,7 +549,7 @@ body.dark {
                 color: var(--dark-text-color);
     
                 &:hover {
-                    color: var(--default-text-color);
+                    color: var(--dark-dialog-icon-hover-color);
                 }
             }
         }
@@ -550,7 +570,7 @@ body.dark {
             &:not(.p-highlight) {
                 .p-tabview-nav-link {
                     color: var(--dark-text-color);
-                    border-color: transparent transparent var(--dark-text-color) transparent;
+                    border-color: transparent transparent var(--dark-tab-border-color) transparent;
                 }
 
                 &:not(.p-disabled):hover .p-tabview-nav-link {

@@ -1,179 +1,195 @@
+@import '../scssutil/scrollbar.scss';
+
 /// Blue Style
 :root {
     /// Blue client background
-    --blue-background: var(--default-background);
+    --blue-background: #ffffff;
 
     /// Blue background for topbar
     --blue-menu-header-background: #2196F3;
 
     /// Blue logo background
-    --blue-logo-background: var(--default-logo-background);
+    --blue-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
 
+    /// Blue profile-menu seperator
     --blue-profile-seperator: 2px solid #1c7bc9;
 
-    // Blue topbar buttons hover background
+    /// Blue topbar buttons hover background
     --blue-topbar-buttons-hover: #1c7bc9;
 
     /// Blue panel-menu background
-    --blue-panelmenu-background: var(--default-panelmenu-background);
+    --blue-panelmenu-background: #fafafa;
 
     /// Blue panel-menu hover background
-    --blue-panelmenu-hover-background: var(--default-panelmenu-hover-background);
+    --blue-panelmenu-hover-background: #e9ecef;
 
     /// Blue panel-menu color
-    --blue-panelmenu-text-color: var(--default-panelmenu-text-color);
+    --blue-panelmenu-text-color: #495057;
 
     /// Blue panel-menu color hover
-    --blue-panelmenu-hover-text-color: var(--default-panelmenu-hover-text-color);
+    --blue-panelmenu-hover-text-color: #000000;
+
+    /// Blue color for active menuitem
+    --blue-menu-activeitem-color: #2196F3;
 
     /// Blue menubar submenu background
-    --blue-menubar-submenu-background: var(--default-menubar-submenu-background);
+    --blue-menubar-submenu-background: #ffffff;
 
     /// Blue menubar items hover background
-    --blue-menubar-items-hover-background: var(--default-menubar-items-hover-background);
+    --blue-menubar-items-hover-background: #e9ecef;
 
     /// Blue menubar item hover
-    --blue-menubar-item-hover: var(--default-menubar-item-hover);
+    --blue-menubar-item-hover: #454b52;
 
     /// Blue button color
     --blue-button-color: #2196F3;
 
     /// Blue component background
-    --blue-component-background: var(--default-component-background);
+    --blue-component-background: #ffffff;
 
     /// Blue component border
-    --blue-component-border: var(--default-component-border);
+    --blue-component-border: 1px solid #ced4da;
 
     /// Blue text color
-    --blue-text-color: var(--default-text-color);
+    --blue-text-color: #495057;
 
     /// Blue checkbox, radiobutton selected color
-    --blue-selected-rb-cb-color: var(--default-selected-rb-cb-color);
+    --blue-selected-rb-cb-color: #ffffff;
 
     /// Blue toolbar background
-    --blue-toolbar-background: var(--default-toolbar-background);
+    --blue-toolbar-background: #f8f9fa;
 
     /// Blue toolbar border
-    --blue-toolbar-border: var(--default-toolbar-border);
+    --blue-toolbar-border: 1px solid #dee2e6;
 
     /// Blue table-header background
-    --blue-table-header-background: var(--default-table-header-background);
+    --blue-table-header-background: #ffffff;
 
     /// Blue table-header border
-    --blue-table-header-border: var(--default-table-header-border);
+    --blue-table-header-border: 1px solid #e9ecef;
 
     /// Blue table-row background for odd rows
-    --blue-table-row-odd-background: var(--default-table-row-odd-background);
+    --blue-table-row-odd-background: #fafafa;
 
     /// Blue table-row background for even rows
-    --blue-table-row-even-background: var(--default-table-row-even-background);
+    --blue-table-row-even-background: #ffffff;
 
     /// Blue background when hovering a table/linked row
-    --blue-table-hover-background: var(--default-table-hover-background);
+    --blue-table-hover-background: #e9ecef;
 
     /// Blue table-row border
-    --blue-table-row-border: var(--default-table-row-border);
+    --blue-table-row-border: 1px solid #e9ecef;
 
     /// Blue cell hover color
     --blue-table-cell-hover-color: rgb(131, 131, 131);
 
+    /// Default cell font color when a cell is required
+    --blue-table-required-color: var(--blue-text-color);
+
     /// Blue LinkedCellEditor panel background
-    --blue-linked-panel-background: var(--default-linked-panel-background);
+    --blue-linked-panel-background: #ffffff;
 
     /// Blue LinkedCellEditor item hover background
-    --blue-linked-item-hover-background: var(--default-linked-item-hover-background);
+    --blue-linked-item-hover-background: #e9ecef;
 
     /// Blue overlay background for popupmenubuttons
-    --blue-popupmenubutton-overlay-background: var(--default-popupmenubutton-overlay-background);
+    --blue-popupmenubutton-overlay-background: #ffffff;
 
     /// Blue popupmenu item hover background
-    --blue-popupmenubutton-item-hover: var(--default-popupmenubutton-item-hover);
+    --blue-popupmenubutton-item-hover: #e9ecef;
 
     /// Blue DateCellEditor panel background
-    --blue-date-panel-background: --default-date-panel-background;
+    --blue-date-panel-background: #ffffff;
 
     /// Blue DateCellEditor header border
-    --blue-date-panel-header-border: var(--default-date-panel-header-border);
+    --blue-date-panel-header-border: 1px solid #dee2e6;
+
+    /// Blue color when hovering over a day to select
+    --blue-date-panel-hover-color: var(--blue-text-color);
 
     /// Blue Dialog header background
-    --blue-dialog-header-background: var(--default-dialog-header-background);
+    --blue-dialog-header-background: #ffffff;
+
+    /// Blue 'x' color when hovering
+    --blue-dialog-icon-hover-color: var(--blue-text-color);
 
     /// Blue Dialog background
-    --blue-dialog-content-background: var(--default-dialog-content-background);
+    --blue-dialog-content-background: #ffffff;
 
     /// Blue TabSet navbar background
-    --blue-tab-navbar-background: var(--default-tab-navbar-background);
+    --blue-tab-navbar-background: #ffffff;
 
     /// Blue TabSet navbar border
-    --blue-tab-navbar-border: var(--default-tab-navbar-border);
+    --blue-tab-navbar-border: 1px solid #dee2e6;
 
     /// Blue TabSet hover background
-    --blue-tab-hover-background: var(--default-tab-hover-background);
+    --blue-tab-hover-background: #ffffff;
 
-    --blue-tab-border-color: var(--default-tab-border-color);
+    /// Blue TabSet border color
+    --blue-tab-border-color: #dee2e6;
 
     /// Blue Tree background
-    --blue-tree-background: var(--default-tree-background);
+    --blue-tree-background: #ffffff;
 
     /// Blue Tree border
-    --blue-tree-border: var(--default-tree-border);
+    --blue-tree-border: 1px solid #dee2e6;
 
     /// Blue Tree item hover background
-    --blue-tree-item-hover-background: var(--default-tree-item-hover-background);
+    --blue-tree-item-hover-background: #e9ecef;
 
     /// Blue Tree selected item background
-    --blue-tree-selected-item-background: var(--default-tree-selected-item-background);
+    --blue-tree-selected-item-background: #E3F2FD;
 
     /// Blue HTMLEditor toolbar background
-    --blue-html-toolbar-background: var(--default-html-toolbar-background);
+    --blue-html-toolbar-background: #f8f9fa;
 
     /// Blue HTMLEditor toolbar border
-    --blue-html-toolbar-border: var(--default-html-toolbar-border);
+    --blue-html-toolbar-border: 1px solid #dee2e6;
 
     /// Blue HTMLEditor button hover colors
-    --blue-html-toolbar-button-hover-background: var(--default-html-toolbar-button-hover-background);
+    --blue-html-toolbar-button-hover-background: #000000;
 
     /// Blue HTMLEditor picker expanded background
-    --blue-html-picker-expanded-background: var(--default-html-picker-expanded-background);
+    --blue-html-picker-expanded-background: #ffffff;
 
     /// Blue HTMLEditor picker item hover background
-    --blue-html-picker-item-hover-background: var(--default-html-picker-item-hover-background);
+    --blue-html-picker-item-hover-background: #e9ecef;
 
     /// Blue Message info background
-    --blue-message-info-header-background: var(--default-button-color);
+    --blue-message-info-header-background: var(--blue-button-color);
 
     /// Blue Message info hover background of closing element
-    --blue-message-info-header-close-hover: var(--default-message-info-header-close-hover);
+    --blue-message-info-header-close-hover: #276b96;
 
     /// Blue Message warning background
-    --blue-message-warning-header-background: var(--default-message-warning-header-background);
+    --blue-message-warning-header-background: #ffcf40;
 
     /// Blue Message warning hover background of closing element
-    --blue-message-warning-header-close-hover: var(--default-message-warning-header-close-hover);
+    --blue-message-warning-header-close-hover: #ebbd35;
 
     /// Blue Message error background
-    --blue-message-error-header-background: var(--default-message-error-header-background);
+    --blue-message-error-header-background: #ff364a;
 
     /// Blue Message error hover background of closing element
-    --blue-message-error-header-close-hover: var(--default-message-error-header-close-hover);
+    --blue-message-error-header-close-hover: #db2739;
 
     /// Blue Message question background
-    --blue-message-question-header-background: var(--default-message-question-header-background);
+    --blue-message-question-header-background: #17c0eb;
 
     /// Blue Message question hover background of closing element
-    --blue-message-question-header-close-hover: var(--default-message-question-header-close-hover);
+    --blue-message-question-header-close-hover: #13aacf;
 
     /// Blue error-dialog background
-    --blue-error-dialog-background: var(--default-error-dialog-background);
+    --blue-error-dialog-background: rgba(255, 255, 255, 0.8);
 
     /// Blue loading-screen background left
-    --blue-loading-screen-left-background: var(--default-loading-screen-left-background);
+    --blue-loading-screen-left-background: #ffffff;
 
     /// Blue loading-screen background right
-    --blue-loading-screen-right-background: var(--default-loading-screen-right-background);
+    --blue-loading-screen-right-background: #f1f1f1;
 
     /// Blue tab close button color
-    --blue-tab-close-color: var(--default-tab-close-color);
+    --blue-tab-close-color: #cdcfd1;
 }
 
 body.blue {
@@ -230,7 +246,7 @@ body.blue {
                 &.p-menuitem--active {
                     .p-menuitem-link {
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: var(--blue-button-color);
+                            color: var(--blue-menu-activeitem-color);
                         }
                     }
                 }
@@ -418,6 +434,10 @@ body.blue {
             > td {
                 border: var(--blue-table-row-border);
 
+                &.cell-required {
+                    color: var(--blue-table-required-color);
+                }
+
                 &.p-highlight {
                     color: var(--blue-text-color);
                 }
@@ -515,7 +535,7 @@ body.blue {
         } 
 
         &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
-            color: var(--blue-text-color);
+            color: var(--blue-date-panel-hover-color);
         }
     }
 
@@ -529,7 +549,7 @@ body.blue {
                 color: var(--blue-text-color);
     
                 &:hover {
-                    color: var(--blue-text-color);
+                    color: var(--blue-dialog-icon-hover-color);
                 }
             }
         }

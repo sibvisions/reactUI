@@ -19,7 +19,11 @@ export type IServerFailMessage = {
     retry:Function
 }
 
-const AppWrapper:FC = (props) => {
+interface IAppWrapper {
+    embedOptions?: { [key:string]:any } 
+}
+
+const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -39,8 +43,52 @@ const AppWrapper:FC = (props) => {
         link.href = 'application.css';
         document.getElementsByTagName('HEAD')[0].appendChild(link);
 
-        document.body.classList.add(context.appSettings.style)
-    }, [])
+        const urlParams = new URLSearchParams(window.location.search);
+
+        let styleToSet = "default"
+
+        const getStyle = () => {
+            let convertedOptions: Map<string, any>;
+
+            if(props.embedOptions) {
+                convertedOptions = new Map(Object.entries(props.embedOptions));
+            }
+            else {
+                convertedOptions = new Map(urlParams);
+            }
+
+            if (convertedOptions.has("style")) {
+                return convertedOptions.get("style");
+            }
+            else {
+                return "default";
+            }
+        }
+
+        if (process.env.NODE_ENV === "development") {
+            fetch('config.json')
+            .then((r) => r.json())
+            .then(data => {
+                if (data.style) {
+                    styleToSet = data.style;
+                    console.log(data.style)
+                }
+                else {
+                    styleToSet = getStyle();
+                }
+            })
+            .catch(() => styleToSet = getStyle())
+            .then(() => {
+                require('./frontmask/styles/' + styleToSet + '-style.scss');
+                document.body.classList.add(styleToSet);
+            });
+        }
+        else {
+            styleToSet = getStyle();
+            require('./frontmask/styles/' + styleToSet + '-style.scss');
+            document.body.classList.add(styleToSet);
+        }
+    }, []);
 
     /**
      * Subscribes to session-expired notification and app-ready

@@ -27,6 +27,8 @@ const useStartup = (props:ICustomContent):boolean => {
 
     const ws = useRef<WebSocket|null>(null);
 
+    const ws2 = useRef<WebSocket|null>(null);
+
     /**
      * Subscribes to session-expired notification and app-ready
      * @returns unsubscribes from session and app-ready
@@ -106,6 +108,12 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
                 }
             }
+
+            ws2.current = new WebSocket("ws://localhost:666");
+            ws2.current.onopen = () => {
+                console.log('ws2 opened')
+                ws2.current!.send("test")
+            };
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string) => {

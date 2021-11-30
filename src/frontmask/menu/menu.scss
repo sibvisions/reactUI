@@ -37,6 +37,9 @@
     /// Menu buttons small height
     --s-menu-buttons-small: 2.5rem;
 
+    ///--s-menu-header-background: #7a7f85
+    --s-menu-header-background: #7a7f85;
+
     /// Hover background for buttons
     --s-menu-buttons-hover-background: #454b52;
     
@@ -86,7 +89,7 @@
     z-index: 20;
     align-items: center;
     width: 100%;
-    background: var(--default-menu-header-background);
+    background: var(--s-menu-header-background);
 }
 
 /// When menu is collapsed
@@ -216,13 +219,13 @@
     /// Removes default primereact menubar style
     padding: 0;
     border: none;
-    background: var(--default-menu-header-background);
+    background: var(--s-menu-header-background);
 
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
             /// Sets menubar style on hover and active for text, subicon color and background
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--default-menu-header-background);
+                background: var(--s-menu-header-background);
                 color: var(--s-menu-color);
                 margin-left: 4px;
                 .p-menuitem-text, .p-submenu-icon {
@@ -390,10 +393,10 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
-            background: var(--default-menu-header-background);
+            background: var(--s-menu-header-background);
 
             >.p-menuitem {
-                background: var(--default-menu-header-background);
+                background: var(--s-menu-header-background);
                 width: initial;
             }
 
