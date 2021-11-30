@@ -28,23 +28,23 @@
     @include btnHover
 }
 
-.btr {
+.basti {
     .rc-button {
-        padding: var(--btnPadding, var(--btr-button-padding, 0.5rem 1rem));
+        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
     }
 
     .p-button.p-button-icon-only {
-        padding: var(--btnPadding, var(--btr-button-icon-only-padding, 0.5rem 0.5rem));
+        padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem));
     }
 }
 
-.btr-small {
+.basti_small {
     .rc-button {
-        padding: var(--btnPadding, var(--btrs-button-padding, 0.125rem 0.25rem));
+        padding: var(--btnPadding, var(--bastis-button-padding, 0.125rem 0.25rem));
     }
 
     .p-button.p-button-icon-only {
-        padding: var(--btnPadding, var(--btrs-button-icon-only-padding, 0.25rem 0.25rem));
+        padding: var(--btnPadding, var(--bastis-button-icon-only-padding, 0.25rem 0.25rem));
     }
 }
 

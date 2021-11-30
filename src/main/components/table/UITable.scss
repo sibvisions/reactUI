@@ -210,22 +210,22 @@
     }
 }
 
-.btr {
+.basti {
     .rc-table .p-datatable-tbody > tr > td  {
-        height: calc(8px + var(--btr-table-data-height));
+        height: calc(8px + var(--basti-table-data-height));
         
         &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
-            height: var(--btr-table-data-height);
+            height: var(--basti-table-data-height);
         }
     }
 }
 
-.btr-small {
+.basti_small {
     .rc-table .p-datatable-tbody > tr > td  {
-        height: calc(8px + var(--btrs-table-data-height));
+        height: calc(8px + var(--bastis-table-data-height));
         
         &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
-            height: var(--btrs-table-data-height);
+            height: var(--bastis-table-data-height);
         }
     }
 }

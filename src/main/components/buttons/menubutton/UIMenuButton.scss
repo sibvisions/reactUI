@@ -63,23 +63,23 @@
     margin-right: 4px;
 }
 
-.btr {
+.basti {
     .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--btr-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
+        padding: var(--menuBtnPadding, var(--basti-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
     }
 
     .p-button.p-splitbutton-menubutton {
-        padding: var(--btr-menubtn-rightbtn-padding);
+        padding: var(--basti-menubtn-rightbtn-padding);
     }
 }
 
-.btr-small {
+.basti_small {
     .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--btrs-menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
+        padding: var(--menuBtnPadding, var(--bastis-menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
     }
 
     .p-button.p-splitbutton-menubutton {
-        padding: var(--btrs-menubtn-rightbtn-padding);
+        padding: var(--bastis-menubtn-rightbtn-padding);
     }
 }
 

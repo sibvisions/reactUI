@@ -52,7 +52,7 @@ const ResizeHandler:FC = (props) => {
                         height = reactUIHeight - minusHeight;
                     }
                     else {
-                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(context.appSettings.theme === "btr-mobile" ? "--btrm-topbar-height" : "--s-menu-header-height"))
+                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(context.appSettings.theme === "basti_mobile" ? "--bastim-topbar-height" : "--s-menu-header-height"))
                         height = reactUIHeight - minusHeight;
                     }
                 }

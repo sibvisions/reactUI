@@ -307,7 +307,7 @@ body.dark {
 
     /// *----------Mobile-Theme Specific----------*
 
-    &.btr-mobile {
+    &.basti_mobile {
         .p-inputtext:enabled:focus {
             & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
                 border-color: var(--dark-button-color);

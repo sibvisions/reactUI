@@ -37,7 +37,7 @@ export const ResizeContext = createContext<IResizeContext>({});
 
 export function isCorporation(appLayout:string, theme:string) {
     if (appLayout === "corporation") {
-        if (theme === "btr-mobile" && window.innerWidth <= 530) {
+        if (theme === "basti_mobile" && window.innerWidth <= 530) {
             return false;
         }
         return true;

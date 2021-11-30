@@ -1,23 +1,23 @@
 :root {
     /// Font size
-    --btrm-font-size: 18px;
+    --bastim-font-size: 18px;
 
     /// Menu topbar height
-    --btrm-topbar-height: 35px;
+    --bastim-topbar-height: 35px;
 
     /// Topbar button size
-    --btrm-topbar-buttons-small: 30px;
+    --bastim-topbar-buttons-small: 30px;
 
     /// Profile height
-    --btrm-profile-size-small: 35px;
+    --bastim-profile-size-small: 35px;
 
     /// Profile image size
-    --btrm-profile-image-size: 30px;
+    --bastim-profile-image-size: 30px;
 }
 
-.btr-mobile {
+.basti_mobile {
     .p-component, body {
-        font-size: var(--btrm-font-size);
+        font-size: var(--bastim-font-size);
     }
 
     .c-menu {
@@ -83,46 +83,46 @@
 }
 
 @media screen and (max-width: 530px) {
-    .btr-mobile {
+    .basti_mobile {
         .menu-header {
-            height: var(--btrm-topbar-height);
+            height: var(--bastim-topbar-height);
         }
 
         .profile-menu .p-menubar .p-menubar-root-list {
             >.p-menuitem >.p-menuitem-link {
-                height: var(--btrm-profile-size-small);
+                height: var(--bastim-profile-size-small);
 
                 &:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                    width: var(--btrm-profile-size-small)
+                    width: var(--bastim-profile-size-small)
                 }
             }
         } 
 
         .profile-image, .profile-image-null {
-            width: var(--btrm-profile-image-size);
-            height: var(--btrm-profile-image-size);
+            width: var(--bastim-profile-image-size);
+            height: var(--bastim-profile-image-size);
         }
 
         .profile-image {
-            background-size: var(--btrm-profile-image-size) var(--btrm-profile-image-size);
+            background-size: var(--bastim-profile-image-size) var(--bastim-profile-image-size);
         }
 
         .profile-image-null::before {
-            font-size: calc(var(--btrm-profile-image-size) - 2px);
+            font-size: calc(var(--bastim-profile-image-size) - 2px);
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--btrm-topbar-buttons-small);
-            height: var(--btrm-topbar-buttons-small);
+            width: var(--bastim-topbar-buttons-small);
+            height: var(--bastim-topbar-buttons-small);
             padding: 0;
         }
 
         .menu-panelmenu-wrapper {
-            padding-top: var(--btrm-topbar-height);
+            padding-top: var(--bastim-topbar-height);
         }
 
         .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
-            margin-top: var(--btrm-topbar-height);
+            margin-top: var(--bastim-topbar-height);
         }
     }
 }

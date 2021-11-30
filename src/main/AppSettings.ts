@@ -62,7 +62,7 @@ export default class AppSettings {
     deviceMode:string = "desktop";
 
     /** Theme of the client */
-    theme:string = "btr";
+    theme:string = "basti";
 
     /** Style of the client */
     style:string = "default"
