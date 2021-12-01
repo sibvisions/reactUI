@@ -26,7 +26,6 @@
         outline-width: 0;
         outline-style: none;
         box-shadow: 0 0 0 0.2rem #8dcdff;
-        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     @include btnHover;
 }
@@ -52,11 +51,14 @@
     padding: var(--menuBtnPadding, 0.5rem 0rem 0.5rem 1rem);
 }
 
+.p-button.p-splitbutton-menubutton, .p-button.p-splitbutton-defaultbutton {
+    box-shadow: none;
+}
+
 /// Fixed width for menubutton part of splitbutton
 .p-button.p-splitbutton-menubutton {
     width: var(--menuBtnSplitWidth);
     padding: 0.5rem 0.5rem 0.5rem 0px;
-    box-shadow: none;
 }
 
 .rc-popupmenubutton-custom-icon {

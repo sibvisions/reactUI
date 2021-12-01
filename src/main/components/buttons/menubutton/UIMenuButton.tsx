@@ -68,8 +68,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
 
     /** Builds the menuitems and sets the state */
     useEffect(() => {
-        const buildMenu = (foundItems:Map<string, BaseComponent>) => {
-            let tempItems:Array<MenuItem> = [];
+        const buildMenu = (foundItems: Map<string, BaseComponent>) => {
+            let tempItems: Array<MenuItem> = [];
             foundItems.forEach(item => {
                 let iconProps = parseIconData(props.foreground, item.image);
                 tempItems.push({
@@ -78,19 +78,14 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     style: {
                         color: iconProps.color
                     },
-                    template: (item, options) => {
-                        if (!iconProps.icon?.includes('fa')) {
-                            return (
-                                <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
-                                    <img className='rc-popupmenubutton-custom-icon' src={context.server.RESOURCE_URL + item.icon} />
-                                    <span className={options.labelClassName}>{item.label}</span>
-                                </a>
-                            )
-                        }
-                        else {
-                            return undefined
-                        }
-                    },
+                    template: !iconProps.icon?.includes('fa') ? (item, options) => {
+                        return (
+                            <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
+                                <img className='rc-popupmenubutton-custom-icon' src={context.server.RESOURCE_URL + item.icon} />
+                                <span className={options.labelClassName}>{item.label}</span>
+                            </a>
+                        )
+                    } : undefined,
                     color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: () => {
@@ -102,10 +97,10 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             });
             setItems(tempItems);
         }
-        if(props.popupMenu) {
+        if (props.popupMenu) {
             buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
         }
-    },[context.contentStore, context.server, props]);
+    }, [context.contentStore, context.server, props]);
 
     useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());

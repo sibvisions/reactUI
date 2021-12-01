@@ -71,7 +71,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             .then(data => {
                 if (data.style) {
                     styleToSet = data.style;
-                    console.log(data.style)
                 }
                 else {
                     styleToSet = getStyle();

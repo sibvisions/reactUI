@@ -4,10 +4,6 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    &:focus img {
-        box-shadow: 0 0 0 0.2rem #8dcdff;
-        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
-    }
 }
 
 .rc-editor-choice-img {

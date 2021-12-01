@@ -2,10 +2,12 @@
     width: inherit;
     .p-inputtext {
         background: var(--dateBackground);
-        &:focus + .p-button {
-            outline: 0 none;
-            outline-offset: 0;
-            box-shadow: 0 0 0 0.2rem #a6d5fa;
+    }
+
+    .p-inputtext, .p-button {
+        &:focus {
+            box-shadow: unset;
+            -webkit-box-shadow: unset;
         }
     }
 }

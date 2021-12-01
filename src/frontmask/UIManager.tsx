@@ -157,8 +157,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     "reactUI",
                     isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
                     sessionExpired ? "reactUI-expired" : "",
-                    context.appSettings.theme,
-                    context.appSettings.style
+                    context.appSettings.theme
                 )}>
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
@@ -173,8 +172,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 "reactUI",
                 isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
                 sessionExpired ? "reactUI-expired" : "",
-                context.appSettings.theme,
-                context.appSettings.style
+                context.appSettings.theme
             )} >
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
                 {isCorporation(appLayout, context.appSettings.theme) ?
