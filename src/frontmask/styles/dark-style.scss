@@ -215,11 +215,23 @@
     /// Darkmode border-radius for editors
     --dark-editor-border-radius: 3px;
 
+    /// Darkmode border-radius for DatePicker panel
+    --dark-date-border-radius: 3px;
+
+    /// Darkmode border-radius for LinkedCellEditor panel
+    --dark-linked-border-radius: 3px;
+
     /// Darkmode border-radius for Tables/Trees
-    --dark-table-border-radius: 3px;
+    --dark-table-border-radius: 0px;
+
+    /// Darkmode border-radius for tabset navbar
+    --dark-tab-border-radius: 0px;
 
     /// Darkmode border-radius for Dialogs
-    --dark-dialog-border-radius: 3px;
+    --dark-dialog-border-radius: 0px;
+
+    /// Darkmode border-radius for toolbars which are NOT part of navigation-tables
+    --dark-toolbar-border-radius: 0px;
 }
 
 body.dark {
@@ -540,6 +552,8 @@ body.dark {
 }
 
 .p-datepicker {
+    border-radius: var(--dark-date-border-radius);
+
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
             background: var(--dark-date-panel-background);
@@ -576,6 +590,8 @@ body.dark {
 
 .p-autocomplete-panel {
     background: var(--dark-linked-panel-background);
+    border-radius: var(--dark-linked-border-radius);
+
     .p-autocomplete-items {
         .p-autocomplete-item {
             background: var(--dark-linked-panel-background);
@@ -620,149 +636,13 @@ body.dark {
     }
 }
 
-/// Table
-.rc-table {
-    border: var(--dark-component-border);
-
-    .p-datatable-thead > tr > th {
-        background: var(--dark-table-header-background);
-        border: var(--dark-table-header-border);
-    }
-
-    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--dark-table-hover-background);
-        color: var(--dark-text-color);
-    }
-
-    .p-datatable-tbody > tr {
-        background: var(--dark-table-row-odd-background);
-        color: var(--dark-text-color);
-        > td {
-            border: var(--dark-table-row-border);
-
-            &.cell-required {
-                color: var(--dark-table-required-color);
-            }
-
-            &.p-highlight {
-                color: var(--dark-text-color);
-            }
-
-            &:hover {
-                color: var(--dark-table-cell-hover-color);
-            }
-        }
-
-        &.p-highlight {
-            color: var(--dark-text-color);
-            background: var(--dark-table-selected-row-background);
-        }
-
-        &:nth-child(even) {
-            background: var(--dark-table-row-even-background);
-        }
-
-        &:not(.p-highlight):hover {
-            background: var(--dark-table-hover-background);
-            color: var(--dark-text-color);
-        }
-    }
-} 
-
-/// Toolbar
-.rc-toolbar {
-    background: var(--dark-toolbar-background);
-    border: var(--dark-toolbar-border);
-}
-
-/// Dialogs
-.rc-popup {
-    .p-dialog-header {
-        background: var(--dark-dialog-header-background);
-        color: var(--dark-text-color);
-        border-top-left-radius: var(--dark-dialog-border-radius);
-        border-top-right-radius: var(--dark-dialog-border-radius);
-
-        .p-dialog-header-icon {
-            color: var(--dark-text-color);
-
-            &:hover {
-                color: var(--dark-dialog-icon-hover-color);
-            }
-        }
-    }
-
-    .p-dialog-content {
-        background: var(--dark-dialog-content-background);
-        color: var(--dark-text-color);
-        border-bottom-left-radius: var(--dark-dialog-border-radius);
-        border-bottom-right-radius: var(--dark-dialog-border-radius);
-    }
-}
-
-/// TabSetPanel
-.p-tabview .p-tabview-nav {
-    background: var(--dark-tab-navbar-background);
-    color: var(--dark-text-color);
-    border: var(--dark-tab-navbar-border);
-
-    li {
-        &:not(.p-highlight) {
-            .p-tabview-nav-link {
-                color: var(--dark-text-color);
-                border-color: transparent transparent var(--dark-tab-border-color) transparent;
-            }
-
-            &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--dark-text-color);
-                background: var(--dark-tab-hover-background);
-                border-color: var(--dark-text-color);
-            }
-        }
-
-        &.p-highlight .p-tabview-nav-link {
-            color: var(--dark-tab-selected-color);
-            border-color: var(--dark-tab-selected-color);
-        }
-
-        .p-tabview-nav-link {
-            background: var(--dark-tab-navbar-background);
-        }
-    }
-}
-
-.tabview-button {
-    color: var(--dark-tab-close-color);
-}
-
-/// Tree
-.p-tree {
-    background: var(--dark-tree-background);
-    border: var(--dark-tree-border);
-    color: var(--dark-text-color);
-
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--dark-tree-item-hover-background);
-            color: var(--dark-text-color);
-        }
-
-        &.p-highlight {
-            background: var(--dark-tree-selected-item-background);
-            color: var(--dark-text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--dark-focus-box-shadow);
-        }
-    }
-}
-
 /// HTMLEditor
 .p-editor-container {
     .p-editor-toolbar {
         background: var(--dark-html-toolbar-background);
         border: var(--dark-html-toolbar-border);
+        border-top-left-radius: var(--dark-editor-border-radius);
+        border-top-right-radius: var(--dark-editor-border-radius);
 
         &.ql-snow {
             .ql-formats {
@@ -815,9 +695,14 @@ body.dark {
 
     .p-editor-content {
         border: var(--dark-component-border);
+        border-bottom-left-radius: var(--dark-editor-border-radius);
+        border-bottom-right-radius: var(--dark-editor-border-radius);
+
         .ql-editor {
             background: var(--dark-component-background);
             color: var(--dark-text-color);
+            border-bottom-left-radius: var(--dark-editor-border-radius);
+            border-bottom-right-radius: var(--dark-editor-border-radius);
         }
     }
 }
@@ -828,8 +713,228 @@ body.dark {
     }
 }
 
+/// Table
+.rc-table {
+    border: var(--dark-component-border);
+
+    table {
+        border-style: hidden;
+        box-shadow: 0 0 0 1px #e9ecef;
+    }
+
+    &.navtable-north {
+        border-bottom-left-radius: var(--dark-table-border-radius);
+        border-bottom-right-radius: var(--dark-table-border-radius);
+    }
+
+    &.navtable-west {
+        border-top-right-radius: var(--dark-table-border-radius);
+        border-bottom-right-radius: var(--dark-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:last-child {
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-right-radius: var(--dark-table-border-radius);
+        }
+    }
+
+    &.navtable-east {
+        border-top-left-radius: var(--dark-table-border-radius);
+        border-bottom-left-radius: var(--dark-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--dark-table-border-radius);
+        }
+    }
+
+    &.navtable-south {
+        border-top-left-radius: var(--dark-table-border-radius);
+        border-top-right-radius: var(--dark-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+        }
+        
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--dark-table-border-radius);
+            border-top-right-radius: var(--dark-table-border-radius);
+        }
+    }
+
+    &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
+        border-radius: var(--dark-table-border-radius);
+
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--dark-table-border-radius);
+            }
+        }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--dark-table-header-background);
+        border: var(--dark-table-header-border);
+    }
+
+    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+        background: var(--dark-table-hover-background);
+        color: var(--dark-text-color);
+    }
+
+    .p-datatable-tbody > tr {
+        background: var(--dark-table-row-odd-background);
+        color: var(--dark-text-color);
+        > td {
+            border: var(--dark-table-row-border);
+
+            &.cell-required {
+                color: var(--dark-table-required-color);
+            }
+
+            &.p-highlight {
+                color: var(--dark-text-color);
+            }
+
+            &:hover {
+                color: var(--dark-table-cell-hover-color);
+            }
+        }
+
+        &.p-highlight {
+            color: var(--dark-text-color);
+            background: var(--dark-table-selected-row-background);
+        }
+
+        &:nth-child(even) {
+            background: var(--dark-table-row-even-background);
+        }
+
+        &:not(.p-highlight):hover {
+            background: var(--dark-table-hover-background);
+            color: var(--dark-text-color);
+        }
+    }
+} 
+
+/// Toolbar
+.rc-toolbar {
+    background: var(--dark-toolbar-background);
+    border: var(--dark-toolbar-border);
+
+    &.navbar-north {
+        border-top-left-radius: var(--dark-table-border-radius);
+        border-top-right-radius: var(--dark-table-border-radius);
+    }
+
+    &.navbar-west {
+        border-top-left-radius: var(--dark-table-border-radius);
+        border-bottom-left-radius: var(--dark-table-border-radius);
+    }
+
+    &.navbar-east {
+        border-top-right-radius: var(--dark-table-border-radius);
+        border-bottom-right-radius: var(--dark-table-border-radius);
+    }
+
+    &.navbar-south {
+        border-bottom-left-radius: var(--dark-table-border-radius);
+        border-bottom-right-radius: var(--dark-table-border-radius);
+    }
+
+    &.toolbar-north {
+        border-top-left-radius: var(--dark-toolbar-border-radius);
+        border-top-right-radius: var(--dark-toolbar-border-radius);
+    }
+
+    &.toolbar-west {
+        border-top-left-radius: var(--dark-toolbar-border-radius);
+        border-bottom-left-radius: var(--dark-toolbar-border-radius);
+    }
+
+    &.toolbar-east {
+        border-top-right-radius: var(--dark-toolbar-border-radius);
+        border-bottom-right-radius: var(--dark-toolbar-border-radius);
+    }
+
+    &.toolbar-south {
+        border-bottom-left-radius: var(--dark-toolbar-border-radius);
+        border-bottom-right-radius: var(--dark-toolbar-border-radius);
+    }
+}
+
+/// Dialogs
+.rc-popup {
+    .p-dialog-header {
+        background: var(--dark-dialog-header-background);
+        color: var(--dark-text-color);
+        border-top-left-radius: var(--dark-dialog-border-radius);
+        border-top-right-radius: var(--dark-dialog-border-radius);
+
+        .p-dialog-header-icon {
+            color: var(--dark-text-color);
+
+            &:hover {
+                color: var(--dark-dialog-icon-hover-color);
+            }
+        }
+    }
+
+    .p-dialog-content {
+        background: var(--dark-dialog-content-background);
+        color: var(--dark-text-color);
+        border-bottom-left-radius: var(--dark-dialog-border-radius);
+        border-bottom-right-radius: var(--dark-dialog-border-radius);
+    }
+}
+
 /// Messages
 .rc-message-dialog {
+    .p-dialog-header {
+        border-top-left-radius: var(--dark-dialog-border-radius);
+        border-top-right-radius: var(--dark-dialog-border-radius);
+    }
+
     &.info .p-dialog-header {
         background: var(--dark-message-info-header-background);
 
@@ -886,6 +991,16 @@ body.dark {
         }
     }
 
+    .p-dialog-footer {
+        border-bottom-left-radius: var(--dark-dialog-border-radius);
+        border-bottom-right-radius: var(--dark-dialog-border-radius);
+    }
+
+    &.message-dialog-no-footer .p-dialog-content {
+        border-bottom-left-radius: var(--dark-dialog-border-radius);
+        border-bottom-right-radius: var(--dark-dialog-border-radius);
+    }    
+
     .p-dialog-content, .p-dialog-footer {
         background: var(--dark-dialog-content-background);
         color: var(--dark-text-color);
@@ -895,6 +1010,67 @@ body.dark {
 /// Error Dialog
 .rc-error-dialog {
     background: var(--dark-error-dialog-background);
+}
+
+/// TabSetPanel
+.p-tabview .p-tabview-nav {
+    background: var(--dark-tab-navbar-background);
+    color: var(--dark-text-color);
+    border: var(--dark-tab-navbar-border);
+    border-radius: var(--dark-tab-border-radius);
+    padding: 0 var(--dark-tab-border-radius);
+
+    li {
+        &:not(.p-highlight) {
+            .p-tabview-nav-link {
+                color: var(--dark-text-color);
+                border-color: transparent transparent var(--dark-tab-border-color) transparent;
+            }
+
+            &:not(.p-disabled):hover .p-tabview-nav-link {
+                color: var(--dark-text-color);
+                background: var(--dark-tab-hover-background);
+                border-color: var(--dark-text-color);
+            }
+        }
+
+        &.p-highlight .p-tabview-nav-link {
+            color: var(--dark-tab-selected-color);
+            border-color: var(--dark-tab-selected-color);
+        }
+
+        .p-tabview-nav-link {
+            background: var(--dark-tab-navbar-background);
+        }
+    }
+}
+
+.tabview-button {
+    color: var(--dark-tab-close-color);
+}
+
+/// Tree
+.p-tree {
+    background: var(--dark-tree-background);
+    border: var(--dark-tree-border);
+    color: var(--dark-text-color);
+    border-radius: var(--dark-table-border-radius);
+
+    .p-tree-container .p-treenode .p-treenode-content {
+        &.p-treenode-selectable:not(.p-highlight):hover {
+            background: var(--dark-tree-item-hover-background);
+            color: var(--dark-text-color);
+        }
+
+        &.p-highlight {
+            background: var(--dark-tree-selected-item-background);
+            color: var(--dark-text-color);
+        }
+
+        &:focus {
+            box-shadow: var(--dark-focus-box-shadow);
+        }
+    }
 }
 
 /// Loading-Screen

@@ -45,30 +45,36 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
         const urlParams = new URLSearchParams(window.location.search);
 
-        let styleToSet = "default"
+        let options = new Map(props.embedOptions ? Object.entries(props.embedOptions) : urlParams);
+
+        let themeToSet = "basti";
+        let styleToSet = "default";
 
         const getStyle = () => {
-            let convertedOptions: Map<string, any>;
+            if (options.has("style")) {
+                return options.get("style");
+            }
+            return "default";
+        }
 
-            if(props.embedOptions) {
-                convertedOptions = new Map(Object.entries(props.embedOptions));
+        const getTheme = () => {
+            if (options.has("theme")) {
+                return options.get("theme");
             }
-            else {
-                convertedOptions = new Map(urlParams);
-            }
-
-            if (convertedOptions.has("style")) {
-                return convertedOptions.get("style");
-            }
-            else {
-                return "default";
-            }
+            return "basti";
         }
 
         if (process.env.NODE_ENV === "development") {
             fetch('config.json')
             .then((r) => r.json())
             .then(data => {
+                if (data.theme) {
+                    themeToSet = data.theme;
+                }
+                else {
+                    themeToSet = getTheme();
+                }
+
                 if (data.style) {
                     styleToSet = data.style;
                 }
@@ -76,15 +82,45 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                     styleToSet = getStyle();
                 }
             })
-            .catch(() => styleToSet = getStyle())
+            .catch(() => {
+                themeToSet = getTheme();
+                styleToSet = getStyle();
+            })
             .then(() => {
-                require('./frontmask/styles/' + styleToSet + '-style.scss');
+                try {
+                    require('./frontmask/themes/' + themeToSet + '.scss');
+                }
+                catch(err) {
+                    require('./frontmask/themes/basti.scss');
+                }
+
+                try {
+                    require('./frontmask/styles/' + styleToSet + '-style.scss');
+                }
+                catch(err) {
+                    require('./frontmask/styles/default-style.scss');
+                }
+                
                 document.body.classList.add(styleToSet);
             });
         }
         else {
+            themeToSet = getTheme();
             styleToSet = getStyle();
-            require('./frontmask/styles/' + styleToSet + '-style.scss');
+
+            try {
+                require('./frontmask/themes/' + themeToSet + '.scss');
+            }
+            catch(err) {
+                require('./frontmask/themes/basti.scss');
+            }
+
+            try {
+                require('./frontmask/styles/' + styleToSet + '-style.scss');
+            }
+            catch(err) {
+                require('./frontmask/styles/default-style.scss');
+            }
             document.body.classList.add(styleToSet);
         }
     }, []);

@@ -27,4 +27,3 @@ yarn-error.log*
 debug.log
 config.json
 altConfig.json
-conf.env

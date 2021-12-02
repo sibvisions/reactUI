@@ -214,12 +214,24 @@
 
     /// Orange border-radius for editors
     --orange-editor-border-radius: 3px;
+
+    /// Orange border-radius for DatePicker panel
+    --orange-date-border-radius: 3px;
+
+    /// Orange border-radius for LinkedCellEditor panel
+    --orange-linked-border-radius: 3px;
     
     /// Orange border-radius for Tables/Trees
     --orange-table-border-radius: 3px;
+
+    /// Orange border-radius for tabset navbar
+    --orange-tab-border-radius: 0px;
     
     /// Orange border-radius for Dialogs
-    --orange-dialog-border-radius: 3px;
+    --orange-dialog-border-radius: 0px;
+
+    /// Orange border-radius for toolbars which are NOT part of navigation-tables
+    --orange-toolbar-border-radius: 0px;
 }
 
 body.orange {
@@ -540,6 +552,8 @@ body.orange {
 }
 
 .p-datepicker {
+    border-radius: var(--orange-date-border-radius);
+
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
             background: var(--orange-date-panel-background);
@@ -576,6 +590,8 @@ body.orange {
 
 .p-autocomplete-panel {
     background: var(--orange-linked-panel-background);
+    border-radius: var(--orange-linked-border-radius);
+
     .p-autocomplete-items {
         .p-autocomplete-item {
             background: var(--orange-linked-panel-background);
@@ -620,149 +636,13 @@ body.orange {
     }
 }
 
-/// Table
-.rc-table {
-    border: var(--orange-component-border);
-
-    .p-datatable-thead > tr > th {
-        background: var(--orange-table-header-background);
-        border: var(--orange-table-header-border);
-    }
-
-    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--orange-table-hover-background);
-        color: var(--orange-text-color);
-    }
-
-    .p-datatable-tbody > tr {
-        background: var(--orange-table-row-odd-background);
-        color: var(--orange-text-color);
-        > td {
-            border: var(--orange-table-row-border);
-
-            &.cell-required {
-                color: var(--orange-table-required-color);
-            }
-
-            &.p-highlight {
-                color: var(--orange-text-color);
-            }
-
-            &:hover {
-                color: var(--orange-table-cell-hover-color);
-            }
-        }
-
-        &.p-highlight {
-            color: var(--orange-text-color);
-            background: var(--orange-table-selected-row-background) !important;
-        }
-
-        &:nth-child(even) {
-            background: var(--orange-table-row-even-background);
-        }
-
-        &:not(.p-highlight):hover {
-            background: var(--orange-table-hover-background);
-            color: var(--orange-text-color);
-        }
-    }
-} 
-
-/// Toolbar
-.rc-toolbar {
-    background: var(--orange-toolbar-background);
-    border: var(--orange-toolbar-border);
-}
-
-/// Dialogs
-.rc-popup {
-    .p-dialog-header {
-        background: var(--orange-dialog-header-background);
-        color: var(--orange-text-color);
-        border-top-left-radius: var(--orange-dialog-border-radius);
-        border-top-right-radius: var(--orange-dialog-border-radius);
-
-        .p-dialog-header-icon {
-            color: var(--orange-text-color);
-
-            &:hover {
-                color: var(--orange-dialog-icon-hover-color);
-            }
-        }
-    }
-
-    .p-dialog-content {
-        background: var(--orange-dialog-content-background);
-        color: var(--orange-text-color);
-        border-bottom-left-radius: var(--orange-dialog-border-radius);
-        border-bottom-right-radius: var(--orange-dialog-border-radius);
-    }
-}
-
-/// TabSetPanel
-.p-tabview .p-tabview-nav {
-    background: var(--orange-tab-navbar-background);
-    color: var(--orange-text-color);
-    border: var(--orange-tab-navbar-border);
-
-    li {
-        &:not(.p-highlight) {
-            .p-tabview-nav-link {
-                color: var(--orange-text-color);
-                border-color: transparent transparent var(--orange-tab-border-color) transparent;
-            }
-
-            &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--orange-text-color);
-                background: var(--orange-tab-hover-background);
-                border-color: var(--orange-text-color);
-            }
-        }
-
-        &.p-highlight .p-tabview-nav-link {
-            color: var(--orange-tab-selected-color);
-            border-color: var(--orange-tab-selected-color);
-        }
-
-        .p-tabview-nav-link {
-            background: var(--orange-tab-navbar-background);
-        }
-    }
-}
-
-.tabview-button {
-    color: var(--orange-tab-close-color);
-}
-
-/// Tree
-.p-tree {
-    background: var(--orange-tree-background);
-    border: var(--orange-tree-border);
-    color: var(--orange-text-color);
-
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--orange-tree-item-hover-background);
-            color: var(--orange-text-color);
-        }
-
-        &.p-highlight {
-            background: var(--orange-tree-selected-item-background);
-            color: var(--orange-text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--orange-focus-box-shadow);
-        }
-    }
-}
-
 /// HTMLEditor
 .p-editor-container {
     .p-editor-toolbar {
         background: var(--orange-html-toolbar-background);
         border: var(--orange-html-toolbar-border);
+        border-top-left-radius: var(--orange-editor-border-radius);
+        border-top-right-radius: var(--orange-editor-border-radius);
 
         &.ql-snow {
             .ql-formats {
@@ -815,9 +695,14 @@ body.orange {
 
     .p-editor-content {
         border: var(--orange-component-border);
+        border-bottom-left-radius: var(--orange-editor-border-radius);
+        border-bottom-right-radius: var(--orange-editor-border-radius);
+
         .ql-editor {
             background: var(--orange-component-background);
             color: var(--orange-text-color);
+            border-bottom-left-radius: var(--orange-editor-border-radius);
+            border-bottom-right-radius: var(--orange-editor-border-radius);
         }
     }
 }
@@ -828,8 +713,228 @@ body.orange {
     }
 }
 
+/// Table
+.rc-table {
+    border: var(--orange-component-border);
+
+    table {
+        border-style: hidden;
+        box-shadow: 0 0 0 1px #e9ecef;
+    }
+
+    &.navtable-north {
+        border-bottom-left-radius: var(--orange-table-border-radius);
+        border-bottom-right-radius: var(--orange-table-border-radius);
+    }
+
+    &.navtable-west {
+        border-top-right-radius: var(--orange-table-border-radius);
+        border-bottom-right-radius: var(--orange-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:last-child {
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-right-radius: var(--orange-table-border-radius);
+        }
+    }
+
+    &.navtable-east {
+        border-top-left-radius: var(--orange-table-border-radius);
+        border-bottom-left-radius: var(--orange-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--orange-table-border-radius);
+        }
+    }
+
+    &.navtable-south {
+        border-top-left-radius: var(--orange-table-border-radius);
+        border-top-right-radius: var(--orange-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+        }
+        
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--orange-table-border-radius);
+            border-top-right-radius: var(--orange-table-border-radius);
+        }
+    }
+
+    &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
+        border-radius: var(--orange-table-border-radius);
+
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--orange-table-border-radius);
+                border-top-right-radius: var(--orange-table-border-radius);
+            }
+        }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--orange-table-header-background);
+        border: var(--orange-table-header-border);
+    }
+
+    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+        background: var(--orange-table-hover-background);
+        color: var(--orange-text-color);
+    }
+
+    .p-datatable-tbody > tr {
+        background: var(--orange-table-row-odd-background);
+        color: var(--orange-text-color);
+        > td {
+            border: var(--orange-table-row-border);
+
+            &.cell-required {
+                color: var(--orange-table-required-color);
+            }
+
+            &.p-highlight {
+                color: var(--orange-text-color);
+            }
+
+            &:hover {
+                color: var(--orange-table-cell-hover-color);
+            }
+        }
+
+        &.p-highlight {
+            color: var(--orange-text-color);
+            background: var(--orange-table-selected-row-background) !important;
+        }
+
+        &:nth-child(even) {
+            background: var(--orange-table-row-even-background);
+        }
+
+        &:not(.p-highlight):hover {
+            background: var(--orange-table-hover-background);
+            color: var(--orange-text-color);
+        }
+    }
+}
+
+/// Toolbar
+.rc-toolbar {
+    background: var(--orange-toolbar-background);
+    border: var(--orange-toolbar-border);
+
+    &.navbar-north {
+        border-top-left-radius: var(--orange-table-border-radius);
+        border-top-right-radius: var(--orange-table-border-radius);
+    }
+
+    &.navbar-west {
+        border-top-left-radius: var(--orange-table-border-radius);
+        border-bottom-left-radius: var(--orange-table-border-radius);
+    }
+
+    &.navbar-east {
+        border-top-right-radius: var(--orange-table-border-radius);
+        border-bottom-right-radius: var(--orange-table-border-radius);
+    }
+
+    &.navbar-south {
+        border-bottom-left-radius: var(--orange-table-border-radius);
+        border-bottom-right-radius: var(--orange-table-border-radius);
+    }
+
+    &.toolbar-north {
+        border-top-left-radius: var(--orange-toolbar-border-radius);
+        border-top-right-radius: var(--orange-toolbar-border-radius);
+    }
+
+    &.toolbar-west {
+        border-top-left-radius: var(--orange-toolbar-border-radius);
+        border-bottom-left-radius: var(--orange-toolbar-border-radius);
+    }
+
+    &.toolbar-east {
+        border-top-right-radius: var(--orange-toolbar-border-radius);
+        border-bottom-right-radius: var(--orange-toolbar-border-radius);
+    }
+
+    &.toolbar-south {
+        border-bottom-left-radius: var(--orange-toolbar-border-radius);
+        border-bottom-right-radius: var(--orange-toolbar-border-radius);
+    }
+}
+
+/// Dialogs
+.rc-popup {
+    .p-dialog-header {
+        background: var(--orange-dialog-header-background);
+        color: var(--orange-text-color);
+        border-top-left-radius: var(--orange-dialog-border-radius);
+        border-top-right-radius: var(--orange-dialog-border-radius);
+
+        .p-dialog-header-icon {
+            color: var(--orange-text-color);
+
+            &:hover {
+                color: var(--orange-dialog-icon-hover-color);
+            }
+        }
+    }
+
+    .p-dialog-content {
+        background: var(--orange-dialog-content-background);
+        color: var(--orange-text-color);
+        border-bottom-left-radius: var(--orange-dialog-border-radius);
+        border-bottom-right-radius: var(--orange-dialog-border-radius);
+    }
+}
+
 /// Messages
 .rc-message-dialog {
+    .p-dialog-header {
+        border-top-left-radius: var(--orange-dialog-border-radius);
+        border-top-right-radius: var(--orange-dialog-border-radius);
+    }
+
     &.info .p-dialog-header {
         background: var(--orange-message-info-header-background);
 
@@ -886,6 +991,16 @@ body.orange {
         }
     }
 
+    .p-dialog-footer {
+        border-bottom-left-radius: var(--orange-dialog-border-radius);
+        border-bottom-right-radius: var(--orange-dialog-border-radius);
+    }
+
+    &.message-dialog-no-footer .p-dialog-content {
+        border-bottom-left-radius: var(--orange-dialog-border-radius);
+        border-bottom-right-radius: var(--orange-dialog-border-radius);
+    }
+
     .p-dialog-content, .p-dialog-footer {
         background: var(--orange-dialog-content-background);
         color: var(--orange-text-color);
@@ -895,6 +1010,67 @@ body.orange {
 /// Error Dialog
 .rc-error-dialog {
     background: var(--orange-error-dialog-background);
+}
+
+/// TabSetPanel
+.p-tabview .p-tabview-nav {
+    background: var(--orange-tab-navbar-background);
+    color: var(--orange-text-color);
+    border: var(--orange-tab-navbar-border);
+    border-radius: var(--orange-tab-border-radius);
+    padding: 0 var(--orange-tab-border-radius);
+
+    li {
+        &:not(.p-highlight) {
+            .p-tabview-nav-link {
+                color: var(--orange-text-color);
+                border-color: transparent transparent var(--orange-tab-border-color) transparent;
+            }
+
+            &:not(.p-disabled):hover .p-tabview-nav-link {
+                color: var(--orange-text-color);
+                background: var(--orange-tab-hover-background);
+                border-color: var(--orange-text-color);
+            }
+        }
+
+        &.p-highlight .p-tabview-nav-link {
+            color: var(--orange-tab-selected-color);
+            border-color: var(--orange-tab-selected-color);
+        }
+
+        .p-tabview-nav-link {
+            background: var(--orange-tab-navbar-background);
+        }
+    }
+}
+
+.tabview-button {
+    color: var(--orange-tab-close-color);
+}
+
+/// Tree
+.p-tree {
+    background: var(--orange-tree-background);
+    border: var(--orange-tree-border);
+    color: var(--orange-text-color);
+    border-radius: var(--orange-table-border-radius);
+
+    .p-tree-container .p-treenode .p-treenode-content {
+        &.p-treenode-selectable:not(.p-highlight):hover {
+            background: var(--orange-tree-item-hover-background);
+            color: var(--orange-text-color);
+        }
+
+        &.p-highlight {
+            background: var(--orange-tree-selected-item-background);
+            color: var(--orange-text-color);
+        }
+
+        &:focus {
+            box-shadow: var(--orange-focus-box-shadow);
+        }
+    }
 }
 
 /// Loading-Screen

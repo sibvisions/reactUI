@@ -215,11 +215,23 @@
     /// Blue border-radius for editors
     --blue-editor-border-radius: 3px;
 
+    /// Blue border-radius for DatePicker panel
+    --blue-date-border-radius: 8px;
+
+    /// Blue border-radius for LinkedCellEditor panel
+    --blue-linked-border-radius: 8px;
+
     /// Blue border-radius for Tables/Trees
-    --blue-table-border-radius: 3px;
+    --blue-table-border-radius: 0px;
+
+    /// Blue border-radius for tabset navbar
+    --blue-tab-border-radius: 0px;
 
     /// Blue border-radius for Dialogs
-    --blue-dialog-border-radius: 3px;
+    --blue-dialog-border-radius: 0px;
+
+    /// Blue border-radius for toolbars which are NOT part of navigation-tables
+    --blue-toolbar-border-radius: 0px;
 }
 
 body.blue {
@@ -540,6 +552,8 @@ body.blue {
 }
 
 .p-datepicker {
+    border-radius: var(--blue-date-border-radius);
+
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
             background: var(--blue-date-panel-background);
@@ -576,6 +590,8 @@ body.blue {
 
 .p-autocomplete-panel {
     background: var(--blue-linked-panel-background);
+    border-radius: var(--blue-date-border-radius);
+
     .p-autocomplete-items {
         .p-autocomplete-item {
             background: var(--blue-linked-panel-background);
@@ -620,149 +636,13 @@ body.blue {
     }
 }
 
-/// Table
-.rc-table {
-    border: var(--blue-component-border);
-
-    .p-datatable-thead > tr > th {
-        background: var(--blue-table-header-background);
-        border: var(--blue-table-header-border);
-    }
-
-    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--blue-table-hover-background);
-        color: var(--blue-text-color);
-    }
-
-    .p-datatable-tbody > tr {
-        background: var(--blue-table-row-odd-background);
-        color: var(--blue-text-color);
-        > td {
-            border: var(--blue-table-row-border);
-
-            &.cell-required {
-                color: var(--blue-table-required-color);
-            }
-
-            &.p-highlight {
-                color: var(--blue-text-color);
-            }
-
-            &:hover {
-                color: var(--blue-table-cell-hover-color);
-            }
-        }
-
-        &.p-highlight {
-            color: var(--blue-text-color);
-            background: var(--blue-table-selected-row-background);
-        }
-
-        &:nth-child(even) {
-            background: var(--blue-table-row-even-background);
-        }
-
-        &:not(.p-highlight):hover {
-            background: var(--blue-table-hover-background);
-            color: var(--blue-text-color);
-        }
-    }
-} 
-
-/// Toolbar
-.rc-toolbar {
-    background: var(--blue-toolbar-background);
-    border: var(--blue-toolbar-border);
-}
-
-/// Dialogs
-.rc-popup {
-    .p-dialog-header {
-        background: var(--blue-dialog-header-background);
-        color: var(--blue-text-color);
-        border-top-left-radius: var(--blue-dialog-border-radius);
-        border-top-right-radius: var(--blue-dialog-border-radius);
-
-        .p-dialog-header-icon {
-            color: var(--blue-text-color);
-
-            &:hover {
-                color: var(--blue-dialog-icon-hover-color);
-            }
-        }
-    }
-
-    .p-dialog-content {
-        background: var(--blue-dialog-content-background);
-        color: var(--blue-text-color);
-        border-bottom-left-radius: var(--blue-dialog-border-radius);
-        border-bottom-right-radius: var(--blue-dialog-border-radius);
-    }
-}
-
-/// TabSetPanel
-.p-tabview .p-tabview-nav {
-    background: var(--blue-tab-navbar-background);
-    color: var(--blue-text-color);
-    border: var(--blue-tab-navbar-border);
-
-    li {
-        &:not(.p-highlight) {
-            .p-tabview-nav-link {
-                color: var(--blue-text-color);
-                border-color: transparent transparent var(--blue-tab-border-color) transparent;
-            }
-
-            &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--blue-text-color);
-                background: var(--blue-tab-hover-background);
-                border-color: var(--blue-text-color);
-            }
-        }
-
-        &.p-highlight .p-tabview-nav-link {
-            color: var(--blue-tab-selected-color);
-            border-color: var(--blue-tab-selected-color);
-        }
-
-        .p-tabview-nav-link {
-            background: var(--blue-tab-navbar-background);
-        }
-    }
-}
-
-.tabview-button {
-    color: var(--blue-tab-close-color);
-}
-
-/// Tree
-.p-tree {
-    background: var(--blue-tree-background);
-    border: var(--blue-tree-border);
-    color: var(--blue-text-color);
-
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--blue-tree-item-hover-background);
-            color: var(--blue-text-color);
-        }
-
-        &.p-highlight {
-            background: var(--blue-tree-selected-item-background);
-            color: var(--blue-text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--blue-focus-box-shadow);
-        }
-    }
-}
-
 /// HTMLEditor
 .p-editor-container {
     .p-editor-toolbar {
         background: var(--blue-html-toolbar-background);
         border: var(--blue-html-toolbar-border);
+        border-top-left-radius: var(--blue-editor-border-radius);
+        border-top-right-radius: var(--blue-editor-border-radius);
 
         &.ql-snow {
             .ql-formats {
@@ -815,9 +695,14 @@ body.blue {
 
     .p-editor-content {
         border: var(--blue-component-border);
+        border-bottom-left-radius: var(--blue-editor-border-radius);
+        border-bottom-right-radius: var(--blue-editor-border-radius);
+
         .ql-editor {
             background: var(--blue-component-background);
             color: var(--blue-text-color);
+            border-bottom-left-radius: var(--blue-editor-border-radius);
+            border-bottom-right-radius: var(--blue-editor-border-radius);
         }
     }
 }
@@ -828,8 +713,228 @@ body.blue {
     }
 }
 
+/// Table
+.rc-table {
+    border: var(--blue-component-border);
+
+    table {
+        border-style: hidden;
+        box-shadow: 0 0 0 1px #e9ecef;
+    }
+
+    &.navtable-north {
+        border-bottom-left-radius: var(--blue-table-border-radius);
+        border-bottom-right-radius: var(--blue-table-border-radius);
+    }
+
+    &.navtable-west {
+        border-top-right-radius: var(--blue-table-border-radius);
+        border-bottom-right-radius: var(--blue-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:last-child {
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-right-radius: var(--blue-table-border-radius);
+        }
+    }
+
+    &.navtable-east {
+        border-top-left-radius: var(--blue-table-border-radius);
+        border-bottom-left-radius: var(--blue-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--blue-table-border-radius);
+        }
+    }
+
+    &.navtable-south {
+        border-top-left-radius: var(--blue-table-border-radius);
+        border-top-right-radius: var(--blue-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+        }
+        
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--blue-table-border-radius);
+            border-top-right-radius: var(--blue-table-border-radius);
+        }
+    }
+
+    &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
+        border-radius: var(--blue-table-border-radius);
+
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--blue-table-border-radius);
+                border-top-right-radius: var(--blue-table-border-radius);
+            }
+        }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--blue-table-header-background);
+        border: var(--blue-table-header-border);
+    }
+
+    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+        background: var(--blue-table-hover-background);
+        color: var(--blue-text-color);
+    }
+
+    .p-datatable-tbody > tr {
+        background: var(--blue-table-row-odd-background);
+        color: var(--blue-text-color);
+        > td {
+            border: var(--blue-table-row-border);
+
+            &.cell-required {
+                color: var(--blue-table-required-color);
+            }
+
+            &.p-highlight {
+                color: var(--blue-text-color);
+            }
+
+            &:hover {
+                color: var(--blue-table-cell-hover-color);
+            }
+        }
+
+        &.p-highlight {
+            color: var(--blue-text-color);
+            background: var(--blue-table-selected-row-background);
+        }
+
+        &:nth-child(even) {
+            background: var(--blue-table-row-even-background);
+        }
+
+        &:not(.p-highlight):hover {
+            background: var(--blue-table-hover-background);
+            color: var(--blue-text-color);
+        }
+    }
+} 
+
+/// Toolbar
+.rc-toolbar {
+    background: var(--blue-toolbar-background);
+    border: var(--blue-toolbar-border);
+
+    &.navbar-north {
+        border-top-left-radius: var(--blue-table-border-radius);
+        border-top-right-radius: var(--blue-table-border-radius);
+    }
+
+    &.navbar-west {
+        border-top-left-radius: var(--blue-table-border-radius);
+        border-bottom-left-radius: var(--blue-table-border-radius);
+    }
+
+    &.navbar-east {
+        border-top-right-radius: var(--blue-table-border-radius);
+        border-bottom-right-radius: var(--blue-table-border-radius);
+    }
+
+    &.navbar-south {
+        border-bottom-left-radius: var(--blue-table-border-radius);
+        border-bottom-right-radius: var(--blue-table-border-radius);
+    }
+
+    &.toolbar-north {
+        border-top-left-radius: var(--blue-toolbar-border-radius);
+        border-top-right-radius: var(--blue-toolbar-border-radius);
+    }
+
+    &.toolbar-west {
+        border-top-left-radius: var(--blue-toolbar-border-radius);
+        border-bottom-left-radius: var(--blue-toolbar-border-radius);
+    }
+
+    &.toolbar-east {
+        border-top-right-radius: var(--blue-toolbar-border-radius);
+        border-bottom-right-radius: var(--blue-toolbar-border-radius);
+    }
+
+    &.toolbar-south {
+        border-bottom-left-radius: var(--blue-toolbar-border-radius);
+        border-bottom-right-radius: var(--blue-toolbar-border-radius);
+    }
+}
+
+/// Dialogs
+.rc-popup {
+    .p-dialog-header {
+        background: var(--blue-dialog-header-background);
+        color: var(--blue-text-color);
+        border-top-left-radius: var(--blue-dialog-border-radius);
+        border-top-right-radius: var(--blue-dialog-border-radius);
+
+        .p-dialog-header-icon {
+            color: var(--blue-text-color);
+
+            &:hover {
+                color: var(--blue-dialog-icon-hover-color);
+            }
+        }
+    }
+
+    .p-dialog-content {
+        background: var(--blue-dialog-content-background);
+        color: var(--blue-text-color);
+        border-bottom-left-radius: var(--blue-dialog-border-radius);
+        border-bottom-right-radius: var(--blue-dialog-border-radius);
+    }
+}
+
 /// Messages
 .rc-message-dialog {
+    .p-dialog-header {
+        border-top-left-radius: var(--blue-dialog-border-radius);
+        border-top-right-radius: var(--blue-dialog-border-radius);
+    }
+
     &.info .p-dialog-header {
         background: var(--blue-message-info-header-background);
 
@@ -886,6 +991,16 @@ body.blue {
         }
     }
 
+    .p-dialog-footer {
+        border-bottom-left-radius: var(--blue-dialog-border-radius);
+        border-bottom-right-radius: var(--blue-dialog-border-radius);
+    }
+
+    &.message-dialog-no-footer .p-dialog-content {
+        border-bottom-left-radius: var(--blue-dialog-border-radius);
+        border-bottom-right-radius: var(--blue-dialog-border-radius);
+    }
+
     .p-dialog-content, .p-dialog-footer {
         background: var(--blue-dialog-content-background);
         color: var(--blue-text-color);
@@ -895,6 +1010,67 @@ body.blue {
 /// Error Dialog
 .rc-error-dialog {
     background: var(--blue-error-dialog-background);
+}
+
+/// TabSetPanel
+.p-tabview .p-tabview-nav {
+    background: var(--blue-tab-navbar-background);
+    color: var(--blue-text-color);
+    border: var(--blue-tab-navbar-border);
+    border-radius: var(--blue-tab-border-radius);
+    padding: 0 var(--blue-tab-border-radius);
+
+    li {
+        &:not(.p-highlight) {
+            .p-tabview-nav-link {
+                color: var(--blue-text-color);
+                border-color: transparent transparent var(--blue-tab-border-color) transparent;
+            }
+
+            &:not(.p-disabled):hover .p-tabview-nav-link {
+                color: var(--blue-text-color);
+                background: var(--blue-tab-hover-background);
+                border-color: var(--blue-text-color);
+            }
+        }
+
+        &.p-highlight .p-tabview-nav-link {
+            color: var(--blue-tab-selected-color);
+            border-color: var(--blue-tab-selected-color);
+        }
+
+        .p-tabview-nav-link {
+            background: var(--blue-tab-navbar-background);
+        }
+    }
+}
+
+.tabview-button {
+    color: var(--blue-tab-close-color);
+}
+
+/// Tree
+.p-tree {
+    background: var(--blue-tree-background);
+    border: var(--blue-tree-border);
+    color: var(--blue-text-color);
+    border-radius: var(--blue-table-border-radius);
+
+    .p-tree-container .p-treenode .p-treenode-content {
+        &.p-treenode-selectable:not(.p-highlight):hover {
+            background: var(--blue-tree-item-hover-background);
+            color: var(--blue-text-color);
+        }
+
+        &.p-highlight {
+            background: var(--blue-tree-selected-item-background);
+            color: var(--blue-text-color);
+        }
+
+        &:focus {
+            box-shadow: var(--blue-focus-box-shadow);
+        }
+    }
 }
 
 /// Loading-Screen

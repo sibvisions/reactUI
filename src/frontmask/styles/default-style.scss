@@ -215,11 +215,23 @@
     /// Default border-radius for editors
     --default-editor-border-radius: 3px;
 
+    /// Default border-radius for DatePicker panel
+    --default-date-border-radius: 3px;
+
+    /// Orange border-radius for LinkedCellEditor panel
+    --default-linked-border-radius: 3px;
+
     /// Default border-radius for Tables/Trees
-    --default-table-border-radius: 3px;
+    --default-table-border-radius: 0px;
+
+    /// Default border-radius for tabset navbar
+    --default-tab-border-radius: 0px;
 
     /// Default border-radius for Dialogs
-    --default-dialog-border-radius: 3px;
+    --default-dialog-border-radius: 0px;
+
+    /// Default border-radius for toolbars which are NOT part of navigation-tables
+    --default-toolbar-border-radius: 0px;
 }
 
 body.default {
@@ -540,6 +552,8 @@ body.default {
 }
 
 .p-datepicker {
+    border-radius: var(--default-date-border-radius);
+
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
             background: var(--default-date-panel-background);
@@ -576,6 +590,8 @@ body.default {
 
 .p-autocomplete-panel {
     background: var(--default-linked-panel-background);
+    border-radius: var(--default-linked-border-radius);
+
     .p-autocomplete-items {
         .p-autocomplete-item {
             background: var(--default-linked-panel-background);
@@ -620,151 +636,13 @@ body.default {
     }
 }
 
-
-
-/// Table
-.rc-table {
-    border: var(--default-component-border);
-
-    .p-datatable-thead > tr > th {
-        background: var(--default-table-header-background);
-        border: var(--default-table-header-border);
-    }
-
-    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--default-table-hover-background);
-        color: var(--default-text-color);
-    }
-
-    .p-datatable-tbody > tr {
-        background: var(--default-table-row-odd-background);
-        color: var(--default-text-color);
-        > td {
-            border: var(--default-table-row-border);
-
-            &.cell-required {
-                color: var(--default-table-required-color);
-            }
-
-            &.p-highlight {
-                color: var(--default-text-color);
-            }
-
-            &:hover {
-                color: var(--default-table-cell-hover-color);
-            }
-        }
-
-        &.p-highlight {
-            background: var(--default-table-selected-row-background);
-            color: var(--default-text-color);
-        }
-
-        &:nth-child(even) {
-            background: var(--default-table-row-even-background);
-        }
-
-        &:not(.p-highlight):hover {
-            background: var(--default-table-hover-background);
-            color: var(--default-text-color);
-        }
-    }
-} 
-
-/// Toolbar
-.rc-toolbar {
-    background: var(--default-toolbar-background);
-    border: var(--default-toolbar-border);
-}
-
-/// Dialogs
-.rc-popup {
-    .p-dialog-header {
-        background: var(--default-dialog-header-background);
-        color: var(--default-text-color);
-        border-top-left-radius: var(--default-dialog-border-radius);
-        border-top-right-radius: var(--default-dialog-border-radius);
-
-        .p-dialog-header-icon {
-            color: var(--default-text-color);
-
-            &:hover {
-                color: var(--default-dialog-icon-hover-color);
-            }
-        }
-    }
-
-    .p-dialog-content {
-        background: var(--default-dialog-content-background);
-        color: var(--default-text-color);
-        border-bottom-left-radius: var(--default-dialog-border-radius);
-        border-bottom-right-radius: var(--default-dialog-border-radius);
-    }
-}
-
-/// TabSetPanel
-.p-tabview .p-tabview-nav {
-    background: var(--default-tab-navbar-background);
-    color: var(--default-text-color);
-    border: var(--default-tab-navbar-border);
-
-    li {
-        &:not(.p-highlight) {
-            .p-tabview-nav-link {
-                color: var(--default-text-color);
-                border-color: transparent transparent var(--default-tab-border-color) transparent;
-            }
-
-            &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--default-text-color);
-                background: var(--default-tab-hover-background);
-                border-color: var(--default-text-color);
-            }
-        }
-
-        &.p-highlight .p-tabview-nav-link {
-            color: var(--default-tab-selected-color);
-            border-color: var(--default-tab-selected-color);
-        }
-
-        .p-tabview-nav-link {
-            background: var(--default-tab-navbar-background);
-        }
-    }
-}
-
-.tabview-button {
-    color: var(--default-tab-close-color);
-}
-
-/// Tree
-.p-tree {
-    background: var(--default-tree-background);
-    border: var(--default-tree-border);
-    color: var(--default-text-color);
-
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--default-tree-item-hover-background);
-            color: var(--default-text-color);
-        }
-
-        &.p-highlight {
-            background: var(--default-tree-selected-item-background);
-            color: var(--default-text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--default-focus-box-shadow);
-        }
-    }
-}
-
 /// HTMLEditor
 .p-editor-container {
     .p-editor-toolbar {
         background: var(--default-html-toolbar-background);
         border: var(--default-html-toolbar-border);
+        border-top-left-radius: var(--default-editor-border-radius);
+        border-top-right-radius: var(--default-editor-border-radius);
 
         &.ql-snow {
             .ql-formats {
@@ -817,6 +695,9 @@ body.default {
 
     .p-editor-content {
         border: var(--default-component-border);
+        border-bottom-left-radius: var(--default-editor-border-radius);
+        border-bottom-right-radius: var(--default-editor-border-radius);
+
         .ql-editor {
             background: var(--default-component-background);
             color: var(--default-text-color);
@@ -830,8 +711,228 @@ body.default {
     }
 }
 
+/// Table
+.rc-table {
+    border: var(--default-component-border);
+
+    table {
+        border-style: hidden;
+        box-shadow: 0 0 0 1px #e9ecef;
+    }
+
+    &.navtable-north {
+        border-bottom-left-radius: var(--default-table-border-radius);
+        border-bottom-right-radius: var(--default-table-border-radius);
+    }
+
+    &.navtable-west {
+        border-top-right-radius: var(--default-table-border-radius);
+        border-bottom-right-radius: var(--default-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:last-child {
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--default-table-border-radius);
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-right-radius: var(--default-table-border-radius);
+        }
+    }
+
+    &.navtable-east {
+        border-top-left-radius: var(--default-table-border-radius);
+        border-bottom-left-radius: var(--default-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--default-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--default-table-border-radius);
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+        }
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--default-table-border-radius);
+        }
+    }
+
+    &.navtable-south {
+        border-top-left-radius: var(--default-table-border-radius);
+        border-top-right-radius: var(--default-table-border-radius);
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--default-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--default-table-border-radius);
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+        }
+        
+
+        /// VirtualScroll border radiuses, can probably be deleted after PR update
+        .p-datatable-scrollable-header {
+            border-top-left-radius: var(--default-table-border-radius);
+            border-top-right-radius: var(--default-table-border-radius);
+        }
+    }
+
+    &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
+        border-radius: var(--default-table-border-radius);
+
+        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+            &:first-child {
+                border-top-left-radius: var(--default-table-border-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+
+            &:only-child {
+                border-top-left-radius: var(--default-table-border-radius);
+                border-top-right-radius: var(--default-table-border-radius);
+            }
+        }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--default-table-header-background);
+        border: var(--default-table-header-border);
+    }
+
+    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+        background: var(--default-table-hover-background);
+        color: var(--default-text-color);
+    }
+
+    .p-datatable-tbody > tr {
+        background: var(--default-table-row-odd-background);
+        color: var(--default-text-color);
+        > td {
+            border: var(--default-table-row-border);
+
+            &.cell-required {
+                color: var(--default-table-required-color);
+            }
+
+            &.p-highlight {
+                color: var(--default-text-color);
+            }
+
+            &:hover {
+                color: var(--default-table-cell-hover-color);
+            }
+        }
+
+        &.p-highlight {
+            background: var(--default-table-selected-row-background);
+            color: var(--default-text-color);
+        }
+
+        &:nth-child(even) {
+            background: var(--default-table-row-even-background);
+        }
+
+        &:not(.p-highlight):hover {
+            background: var(--default-table-hover-background);
+            color: var(--default-text-color);
+        }
+    }
+} 
+
+/// Toolbar
+.rc-toolbar {
+    background: var(--default-toolbar-background);
+    border: var(--default-toolbar-border);
+
+    &.navbar-north {
+        border-top-left-radius: var(--default-table-border-radius);
+        border-top-right-radius: var(--default-table-border-radius);
+    }
+
+    &.navbar-west {
+        border-top-left-radius: var(--default-table-border-radius);
+        border-bottom-left-radius: var(--default-table-border-radius);
+    }
+
+    &.navbar-east {
+        border-top-right-radius: var(--default-table-border-radius);
+        border-bottom-right-radius: var(--default-table-border-radius);
+    }
+
+    &.navbar-south {
+        border-bottom-left-radius: var(--default-table-border-radius);
+        border-bottom-right-radius: var(--default-table-border-radius);
+    }
+
+    &.toolbar-north {
+        border-top-left-radius: var(--default-toolbar-border-radius);
+        border-top-right-radius: var(--default-toolbar-border-radius);
+    }
+
+    &.toolbar-west {
+        border-top-left-radius: var(--default-toolbar-border-radius);
+        border-bottom-left-radius: var(--default-toolbar-border-radius);
+    }
+
+    &.toolbar-east {
+        border-top-right-radius: var(--default-toolbar-border-radius);
+        border-bottom-right-radius: var(--default-toolbar-border-radius);
+    }
+
+    &.toolbar-south {
+        border-bottom-left-radius: var(--default-toolbar-border-radius);
+        border-bottom-right-radius: var(--default-toolbar-border-radius);
+    }
+}
+
+/// Dialogs
+.rc-popup {
+    .p-dialog-header {
+        background: var(--default-dialog-header-background);
+        color: var(--default-text-color);
+        border-top-left-radius: var(--default-dialog-border-radius);
+        border-top-right-radius: var(--default-dialog-border-radius);
+
+        .p-dialog-header-icon {
+            color: var(--default-text-color);
+
+            &:hover {
+                color: var(--default-dialog-icon-hover-color);
+            }
+        }
+    }
+
+    .p-dialog-content {
+        background: var(--default-dialog-content-background);
+        color: var(--default-text-color);
+        border-bottom-left-radius: var(--default-dialog-border-radius);
+        border-bottom-right-radius: var(--default-dialog-border-radius);
+    }
+}
+
 /// Messages
 .rc-message-dialog {
+    .p-dialog-header {
+        border-top-left-radius: var(--default-dialog-border-radius);
+        border-top-right-radius: var(--default-dialog-border-radius);
+    }
+
     &.info .p-dialog-header {
         background: var(--default-message-info-header-background);
 
@@ -888,6 +989,16 @@ body.default {
         }
     }
 
+    .p-dialog-footer {
+        border-bottom-left-radius: var(--default-dialog-border-radius);
+        border-bottom-right-radius: var(--default-dialog-border-radius);
+    }
+
+    &.message-dialog-no-footer .p-dialog-content {
+        border-bottom-left-radius: var(--default-dialog-border-radius);
+        border-bottom-right-radius: var(--default-dialog-border-radius);
+    }
+
     .p-dialog-content, .p-dialog-footer {
         background: var(--default-dialog-content-background);
         color: var(--default-text-color);
@@ -897,6 +1008,67 @@ body.default {
 /// Error Dialog
 .rc-error-dialog {
     background: var(--default-error-dialog-background);
+}
+
+/// TabSetPanel
+.p-tabview .p-tabview-nav {
+    background: var(--default-tab-navbar-background);
+    color: var(--default-text-color);
+    border: var(--default-tab-navbar-border);
+    border-radius: var(--default-tab-border-radius);
+    padding: 0 var(--default-tab-border-radius);
+
+    li {
+        &:not(.p-highlight) {
+            .p-tabview-nav-link {
+                color: var(--default-text-color);
+                border-color: transparent transparent var(--default-tab-border-color) transparent;
+            }
+
+            &:not(.p-disabled):hover .p-tabview-nav-link {
+                color: var(--default-text-color);
+                background: var(--default-tab-hover-background);
+                border-color: var(--default-text-color);
+            }
+        }
+
+        &.p-highlight .p-tabview-nav-link {
+            color: var(--default-tab-selected-color);
+            border-color: var(--default-tab-selected-color);
+        }
+
+        .p-tabview-nav-link {
+            background: var(--default-tab-navbar-background);
+        }
+    }
+}
+
+.tabview-button {
+    color: var(--default-tab-close-color);
+}
+
+/// Tree
+.p-tree {
+    background: var(--default-tree-background);
+    border: var(--default-tree-border);
+    color: var(--default-text-color);
+    border-radius: var(--default-table-border-radius);
+
+    .p-tree-container .p-treenode .p-treenode-content {
+        &.p-treenode-selectable:not(.p-highlight):hover {
+            background: var(--default-tree-item-hover-background);
+            color: var(--default-text-color);
+        }
+
+        &.p-highlight {
+            background: var(--default-tree-selected-item-background);
+            color: var(--default-text-color);
+        }
+
+        &:focus {
+            box-shadow: var(--default-focus-box-shadow);
+        }
+    }
 }
 
 /// Loading-Screen

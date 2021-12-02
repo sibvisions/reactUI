@@ -229,7 +229,8 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 closable: messageProps.closable,
                 className: concatClassnames(
                     "rc-message-dialog", 
-                    getHeaderType(messageProps.iconType), 
+                    getHeaderType(messageProps.iconType),
+                    messageProps.buttonType === 8 || messageProps.buttonType === -1 ? "message-dialog-no-footer" : ""
                 ) });
 
         }

@@ -1,8 +1,8 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
+import { useProperties, useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
@@ -18,9 +18,11 @@ export interface IToolBarHelper extends IPanel {
     toolBarVisible?:boolean
 }
 
-const ToolBarHelper:FC<IToolBarHelper> = (baseProps) => {
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
+const ToolBarHelper:FC<IToolBarHelper> = (props) => {
+    
+    const context = useContext(appContext)
+
+    const layoutStyle = useLayoutValue(props.id, { visibility: "hidden" });
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(props.id, props.className);
@@ -41,20 +43,36 @@ const ToolBarHelper:FC<IToolBarHelper> = (baseProps) => {
         return props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
     }, [props.className, components]);
 
-    const getTBPosClassName = (constraint:string) => {
-        switch(constraint) {
-            case "North":
-                return "navbar-north";
-            case "West":
-                return "navbar-west";
-            case "East":
-                return "navbar-east";
-            case "South":
-                return "navbar-south";
-            default:
-                return "navbar-north";
+    const getTBPosClassName = useCallback((constraint:string, isNavTable:boolean) => {
+        if (isNavTable) {
+            switch(constraint) {
+                case "North":
+                    return "navbar-north";
+                case "West":
+                    return "navbar-west";
+                case "East":
+                    return "navbar-east";
+                case "South":
+                    return "navbar-south";
+                default:
+                    return "navbar-north";
+            }
         }
-    }
+        else {
+            switch(constraint) {
+                case "North":
+                    return "toolbar-north";
+                case "West":
+                    return "toolbar-west";
+                case "East":
+                    return "toolbar-east";
+                case "South":
+                    return "toolbar-south";
+                default:
+                    return "toolbar-north";
+            }
+        }
+    }, [props.constraints])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -80,7 +98,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (baseProps) => {
             <div
                 className={concatClassnames(
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",
-                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN && props.isNavTable ? getTBPosClassName(props.constraints) : ""
+                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? getTBPosClassName(props.constraints, props.isNavTable) : ""
                 )}
                 ref={panelRef}
                 id={props.name}
@@ -122,11 +140,8 @@ const ToolBarHelper:FC<IToolBarHelper> = (baseProps) => {
 }
 
 const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** Component constants */
+    const [context, topbar, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
 
     useLayoutEffect(() => {
         const reportFunc = () => panelReportSize(

@@ -40,9 +40,6 @@
 @import './main/components/browser/UIBrowser.scss';
 @import './main/components/panels/toolbarPanel/UIToolBarPanel.scss';
 @import './frontmask/errorDialog/ErrorDialog.scss';
-@import './frontmask/themes/basti.scss';
-@import './frontmask/themes/basti_small.scss';
-@import './frontmask/themes/basti_mobile.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 :root {
@@ -103,6 +100,10 @@ body {
 }
 .rc-message-dialog {
     min-width: 20vw;
+
+    .p-dialog-header .p-dialog-header-icon:focus {
+        box-shadow: none;
+    }
 
     &.info .p-dialog-header {
         background: #347fae;

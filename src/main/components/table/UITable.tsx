@@ -32,6 +32,7 @@ import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 
 
 export interface CellFormatting {
@@ -568,7 +569,26 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
 
-
+    const getNavTableClassName = (parent?:string) => {
+        if (parent) {
+            const parentProps = context.contentStore.getComponentById(parent);
+            if (parentProps?.className === "ToolBarPanel" && (parentProps as IToolBarPanel).toolBarVisible !== false) {
+                switch((parentProps as IToolBarPanel).toolBarArea) {
+                    case 0:
+                        return "navtable-north";
+                    case 1:
+                        return "navtable-west";
+                    case 2:
+                        return "navtable-south";
+                    case 3:
+                        return "navtable-east";
+                    default:
+                        return "navtable-west";
+                }
+            }
+        }
+        return ""
+    }
 
     /**
      * Returns the next sort mode
@@ -1406,7 +1426,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",
-                        props.autoResize === false ? "no-auto-resize" : ""
+                        props.autoResize === false ? "no-auto-resize" : "",
+                        getNavTableClassName(props.parent)
                     )}
                     value={virtualRows}
                     selection={selectedCell}

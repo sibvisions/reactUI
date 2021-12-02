@@ -97,35 +97,6 @@ export default class ContentStore{
 
     //DataProvider Maps
     dataBooks = new Map<string, Map<string, IDataBook>>();
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value the data of the dataprovider
-     */
-    //dataProviderData = new Map<string, Map<string, any>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value the metadata of the dataprovider
-     */
-    //dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value if all data of the dataprovider has been fetched
-     */
-    //dataProviderFetched = new Map<string, Map<string, boolean>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value is the selectedRow of a dataprovider
-     */
-    //dataProviderSelectedRow = new Map<string, Map<string, any>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
-     */
-    //dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
     customStartUpProperties = new Array<CustomStartupProps>();
 
@@ -616,6 +587,30 @@ export default class ContentStore{
             entry = componentEntries.next();
         }
         return foundEntry;
+    }
+
+    /**
+     * Returns the data/properties of a component based on the id
+     * @param componentId - the id of the component
+     * @returns the data/properties of a component based on the id
+     */
+    getComponentById(componentId?: string): BaseComponent | undefined {
+        if (componentId) {
+            const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+            const componentEntries = mergedContent.entries();
+            let foundEntry: BaseComponent | undefined;
+            let entry = componentEntries.next();
+            while (!entry.done) {
+                if (entry.value[1].id === componentId) {
+                    foundEntry = entry.value[1];
+                }
+                entry = componentEntries.next();
+            }
+            return foundEntry;
+        }
+        else {
+            return undefined;
+        }
     }
 
     /**
