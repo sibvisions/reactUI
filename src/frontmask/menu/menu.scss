@@ -89,7 +89,6 @@
     z-index: 20;
     align-items: center;
     width: 100%;
-    background: var(--s-menu-header-background);
 }
 
 /// When menu is collapsed
@@ -120,9 +119,6 @@
     width: var(--s-menu-width);
     justify-content: center;
     align-items: center;
-    background: rgb(232,232,232);
-    background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
-    border-bottom: 1px solid var(--s-menu-border-color);
 }
 
 /// Align to center, so logo is properly positioned and other styling
@@ -160,14 +156,8 @@
     width: var(--s-menu-buttons-full);
     height: var(--s-menu-buttons-full);
     flex: 1;
-    background-color: transparent;
-    color: var(--s-menu-color);
     border: 0;
-    border-radius: 4px;
     margin-right: 0.5rem;
-    &:hover {
-        background-color: var(--s-menu-buttons-hover-background);
-    }
     .pi, .fa {
         font-size: 1.5rem;
     }
@@ -176,7 +166,6 @@
 /// Menu-screen-title styling
 .menu-screen-title {
     @extend %ellipsis-overflow;
-    color: var(--s-menu-color);
     font-size: 22px;
     font-weight: bold;
     margin-left: 10px;

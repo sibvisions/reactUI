@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, FormEvent, useContext, useRef, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useContext, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -19,6 +19,7 @@ import { concatClassnames } from "../../main/components/util";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";
 import { ResizeContext } from "../UIManager";
+import tinycolor from "tinycolor2";
 
 /** 
  * Properties which the dialog will receive when it's rendered
@@ -47,6 +48,8 @@ export const LoginForm:FC = () => {
     
     /** State for login-data */
     const [loginData, setLoginData] = useState<ILoginMaskType>({ username: "", password: "", email: "", rememberMe: false, showResetMask: false });
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.style + '-button-color');
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
@@ -119,13 +122,25 @@ export const LoginForm:FC = () => {
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
                                 <Button
                                     type="button"
-                                    className="lost-password-button"
+                                    className="lost-password-button rc-button"
+                                    style={{
+                                        '--background': btnBgd,
+                                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                                    } as CSSProperties}
                                     label={translations.get("Lost password")}
                                     icon="pi pi-question-circle"
                                     onClick={() => setLoginData(prevState => ({...prevState, showResetMask: true}))} />
                             }
                         </div>
-                        <Button type="submit" className="p-primary login-button" label={translations.get("Login")} icon="pi pi-lock-open" />
+                        <Button 
+                            type="submit" 
+                            className="login-button rc-button"
+                            style={{
+                                '--background': btnBgd,
+                                '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            } as CSSProperties} 
+                            label={translations.get("Login")}
+                            icon="pi pi-lock-open" />
                     </div>
                     :
                     <div className="p-fluid">
@@ -143,8 +158,26 @@ export const LoginForm:FC = () => {
                             <label htmlFor="email">{translations.get("Email")} </label>
                         </div>
                         <div className="change-password-button-wrapper">
-                            <Button type="button" className="lost-password-button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setLoginData(prevState => ({...prevState, showResetMask: false}))} />
-                            <Button type="button" className="lost-password-button" label={translations.get("Request")} icon="pi pi-send" onClick={sendResetPassword} />
+                            <Button 
+                                type="button" 
+                                className="lost-password-button rc-button" 
+                                style={{
+                                    '--background': btnBgd,
+                                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                                } as CSSProperties}
+                                label={translations.get("Cancel")} 
+                                icon="pi pi-times" 
+                                onClick={() => setLoginData(prevState => ({...prevState, showResetMask: false}))} />
+                            <Button 
+                                type="button" 
+                                className="lost-password-button rc-button"
+                                style={{
+                                    '--background': btnBgd,
+                                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                                } as CSSProperties}
+                                label={translations.get("Request")} 
+                                icon="pi pi-send" 
+                                onClick={sendResetPassword} />
                         </div>
                     </div>
                 }

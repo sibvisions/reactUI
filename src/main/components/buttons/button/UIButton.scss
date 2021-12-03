@@ -12,7 +12,7 @@
     align-items: var(--btnAlign);
     padding: var(--btnPadding, 0.5rem 1rem);
 
-    .p-button-icon-left {
+    &:not(.login-button):not(.lost-password-button) .p-button-icon-left {
         margin-right: 0;
     }
     .p-button-icon-right {

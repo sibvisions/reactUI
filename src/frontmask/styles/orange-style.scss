@@ -2,17 +2,38 @@
 
 /// Orange Style
 :root {
+    /// Orange login background
+    --orange-login-background: rgb(245, 245, 245, 0.93);
+
+    /// Orange login background
+    --orange-login-logo-background: #ffffff;
+
+    /// Orange login inputfields placeholder color
+    --orange-login-placeholder-color: #bcc0c4;
+
+    /// Orange login box-shadow
+    --orange-login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+
     /// Orange client background
     --orange-background: #ffffff;
 
     /// Orange background for topbar
     --orange-menu-header-background: #f78500;
 
+    /// Orange menu color
+    --orange-menu-color: #ffffff;
+
+    /// Orange menu border
+    --orange-menu-border: 1px solid rgba(120,130,140,.13);
+
     /// Orange logo background
     --orange-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
 
     /// Orange profile-menu seperator
     --orange-profile-seperator: 2px solid #d67b13;
+
+    /// Orange topbar buttons background
+    --orange-topbar-buttons-background: transparent;
 
     // Orange topbar buttons hover background
     --orange-topbar-buttons-hover: #d67b13;
@@ -31,6 +52,15 @@
 
     /// Orange color for active menuitem
     --orange-menu-activeitem-color: #f78500;
+
+    /// Orange background for corporation menu speeddial
+    --orange-speeddial-background: #ffffff;
+
+    /// Orange color for corporation menu speeddial
+    --orange-speeddial-color: #495057;
+
+    /// Orange shadow for corporation menu speeddial
+    --orange-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Orange menubar submenu background
     --orange-menubar-submenu-background: #ffffff;
@@ -200,6 +230,15 @@
     /// Orange loading-screen background right
     --orange-loading-screen-right-background: #f1f1f1;
 
+    /// Orange loading-screen spinner colors
+    --orange-loading-spinner-color-1: #b3ec23;
+
+    --orange-loading-spinner-color-2: #95c41f;
+
+    --orange-loading-spinner-color-3: #8bb61d;
+
+    --orange-loading-spinner-color-4: #80a818;
+
     /// Orange tab close button color
     --orange-tab-close-color: #cdcfd1;
 
@@ -208,6 +247,9 @@
 
     /// Orange hover border-color
     --orange-border-color-hover: #f78500;
+
+    /// Orange border-radius for login
+    --orange-login-border-radius: 6px;
 
     /// Orange border-radius for buttons
     --orange-button-border-radius: 3px;
@@ -239,18 +281,48 @@ body.orange {
     color: var(--orange-text-color);
 }
 
+/// *----------Login----------*
+.login-form {
+    background: var(--orange-login-background);
+    border-radius: var(--orange-login-border-radius);
+
+    .p-float-label label {
+        color: var(--orange-login-placeholder-color);
+    }
+}
+
+.login-logo-wrapper {
+    background: var(--orange-login-logo-background);
+}
+
+.login-form-position-wrapper {
+    border-radius: var(--orange-login-border-radius);
+    box-shadow: var(--orange-login-shadow);
+}
+
 /// *----------General-Header----------*
 .menu-header {
     background: var(--orange-menu-header-background);
 }
 
-.p-button.p-button-icon-only.menu-topbar-buttons:hover {
-    background: var(--orange-topbar-buttons-hover);
+.p-button.p-button-icon-only.menu-topbar-buttons {
+    background: var(--orange-topbar-buttons-background);
+    color: var(--orange-menu-color);
+    border-radius: var(--orange-button-border-radius);
+
+    &:hover {
+        background: var(--orange-topbar-buttons-hover);
+    }
+}
+
+.menu-screen-title {
+    color: var(--orange-menu-color);
 }
 
 /// *----------Standard-Menu----------*
 .menu-logo-wrapper {
     background: var(--orange-logo-background);
+    border-bottom: var(--orange-menu-border);
 }
 
 .menu-panelmenu-wrapper {
@@ -310,8 +382,19 @@ body.orange {
 }
 
 /// *----------Corporate/Profile Menu----------*
-.p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
-    color: var(--orange-text-color);
+.c-menu-header {
+    background: var(--orange-menu-header-background);
+}
+
+.c-menu-menubar {
+    background: var(--orange-menu-header-background);
+}
+
+.p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
+    background: var(--orange-speeddial-background);
+    border-color: var(--orange-speeddial-background);
+    color: var(--orange-speeddial-color);
+    box-shadow: var(--orange-speeddial-shadow);
 }
 
 .profile-menu {
@@ -352,14 +435,6 @@ body.orange {
             }
         }
     }
-}
-
-.c-menu-header {
-    background: var(--orange-menu-header-background);
-}
-
-.c-menu-menubar {
-    background: var(--orange-menu-header-background);
 }
 
 /// *----------Mobile-Theme Specific----------*
@@ -1081,6 +1156,10 @@ body.orange {
     background: radial-gradient(119% 190% at -6% -20%, var(--orange-loading-screen-left-background) 70%, var(--orange-loading-screen-right-background) 70%);
 }
 
+.loading-screen-spinner {
+    animation: progress-spinner-color 3s;
+}
+
 @media screen and (max-width: 960px) {
     .p-menubar .p-menubar-root-list {
         background: var(--orange-menu-header-background);
@@ -1088,5 +1167,22 @@ body.orange {
         > .p-menuitem {
             background: var(--orange-menu-header-background);
         }
+    }
+}
+
+@keyframes p-progress-spinner-color {
+    100%,
+    0% {
+        stroke: var(--orange-loading-spinner-color-1);
+    }
+    40% {
+        stroke: var(--orange-loading-spinner-color-2);
+    }
+    66% {
+        stroke: var(--orange-loading-spinner-color-3);
+    }
+    80%,
+    90% {
+        stroke: var(--orange-loading-spinner-color-4);
     }
 }

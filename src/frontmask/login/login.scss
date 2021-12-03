@@ -1,9 +1,6 @@
 :root {
   /// -----Login Variables-----
 
-  /// Login container background
-  --login-container-background: rgb(245, 245, 245, 0.93);
-
   /// Login form width
   --login-form-width: 450px;
 
@@ -35,12 +32,6 @@
   --login-logo-width: 100%;
 
   --login-logo-height: 140px;
-  
-  /// Login form logo background
-  --login-logo-background: white;
-  
-  /// Login inputfields placeholder color
-  --login-placeholder-color: #bcc0c4;
 
   --login-input-height: 240px;
 }
@@ -56,8 +47,6 @@
 
 .login-form{
   min-width: var(--login-form-width);
-  background: var(--login-container-background);  
-  border-radius: var(--login-form-border-radius);
 
   .p-fluid {
     padding: var(--login-form-logo-gap) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
@@ -71,9 +60,8 @@
 
 .login-logo-wrapper {
   padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) var(--login-form-logo-gap);
-  border-top-right-radius: var(--login-form-border-radius);
-  border-top-left-radius: var(--login-form-border-radius);
-  background: var(--login-logo-background);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .login-logo {
@@ -87,7 +75,6 @@
 
 .p-float-label {
   label {
-    color: var(--login-placeholder-color);
     line-height: unset;
   }
   /// Position and Size of floatlabel placeholder
@@ -139,7 +126,4 @@
 .login-form-position-wrapper {
   z-index: 10001;
   position: absolute;
-  border-radius: var(--login-form-border-radius);
-  -webkit-box-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6); 
-  box-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
 }

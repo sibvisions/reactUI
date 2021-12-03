@@ -2,11 +2,29 @@
 
 /// Darkmode Style
 :root {
+    /// Darkmode login background
+    --dark-login-background: rgba(63, 75, 91, 0.93);
+
+    /// Darkmode login logo background
+    --dark-login-logo-background: #3f4b5b;
+
+    /// Darkmode login inputfields placeholder color
+    --dark-login-placeholder-color: #bcc0c4;
+
+    /// Darkmode login box-shadow
+    --dark-login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+
     /// Darkmode client background
     --dark-background: #20262e;
 
     /// Darkmode background for topbar
     --dark-menu-header-background: #3f4b5b;
+
+    /// Darkmode menu color
+    --dark-menu-color: #ffffff;
+
+    /// Darkmode menu border
+    --dark-menu-border: 1px solid rgba(120,130,140,.13);
 
     /// Darkmode logo background
     --dark-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
@@ -14,7 +32,10 @@
     /// Darkmode profile-menu seperator
     --dark-profile-seperator: 2px solid #5b6067;
 
-    // Darkmode topbar buttons hover background
+    /// Darkmode topbar buttons background
+    --dark-topbar-buttons-background: transparent;
+
+    /// Darkmode topbar buttons hover background
     --dark-topbar-buttons-hover: #2a323d;
 
     /// Darkmode panel-menu background
@@ -31,6 +52,15 @@
 
     /// Darkmode color for active menuitem
     --dark-menu-activeitem-color: #2196F3;
+
+    /// Darkmode background for corporation menu speeddial
+    --dark-speeddial-background: #ffffff;
+
+    /// Darkmode color for corporation menu speeddial
+    --dark-speeddial-color: #495057;
+
+    /// Darkmode shadow for corporation menu speeddial
+    --dark-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Darkmode menubar submenu background
     --dark-menubar-submenu-background: #3f4b5b;
@@ -200,6 +230,15 @@
     /// Darkmode loading-screen background right
     --dark-loading-screen-right-background: #3f4b5b;
 
+    /// Darkmode loading-screen spinner colors
+    --dark-loading-spinner-color-1: #b3ec23;
+
+    --dark-loading-spinner-color-2: #95c41f;
+
+    --dark-loading-spinner-color-3: #8bb61d;
+
+    --dark-loading-spinner-color-4: #80a818;
+
     /// Darkmode tab close button color
     --dark-tab-close-color: #cdcfd1;
 
@@ -208,6 +247,9 @@
 
     /// Darkmode hover border-color
     --dark-border-color-hover: #2196fe;
+
+    /// Darkmode border-radius for login
+    --dark-login-border-radius: 6px;
 
     /// Darkmode border-radius for buttons
     --dark-button-border-radius: 3px;
@@ -239,18 +281,48 @@ body.dark {
     color: var(--dark-text-color);
 }
 
+/// *----------Login----------*
+.login-form {
+    background: var(--dark-login-background);
+    border-radius: var(--dark-login-border-radius);
+
+    .p-float-label label {
+        color: var(--dark-login-placeholder-color);
+    }
+}
+
+.login-logo-wrapper {
+    background: var(--dark-login-logo-background);
+}
+
+.login-form-position-wrapper {
+    border-radius: var(--dark-login-border-radius);
+    box-shadow: var(--dark-login-shadow);
+}
+
 /// *----------General-Header----------*
 .menu-header {
     background: var(--dark-menu-header-background);
 }
 
-.p-button.p-button-icon-only.menu-topbar-buttons:hover {
-    background: var(--dark-topbar-buttons-hover);
+.p-button.p-button-icon-only.menu-topbar-buttons {
+    background: var(--dark-topbar-buttons-background);
+    color: var(--dark-menu-color);
+    border-radius: var(--dark-button-border-radius);
+
+    &:hover {
+        background: var(--dark-topbar-buttons-hover);
+    }
+}
+
+.menu-screen-title {
+    color: var(--dark-menu-color);
 }
 
 /// *----------Standard-Menu----------*
 .menu-logo-wrapper {
     background: var(--dark-logo-background);
+    border-bottom: var(--dark-menu-border);
 }
 
 .menu-panelmenu-wrapper {
@@ -310,8 +382,19 @@ body.dark {
 }
 
 /// *----------Corporate/Profile Menu----------*
-.p-speeddial .p-speeddial-button.p-button-p-button-icon-only {
-    color: var(--dark-text-color);
+.c-menu-header {
+    background: var(--dark-menu-header-background);
+}
+
+.c-menu-menubar {
+    background: var(--dark-menu-header-background);
+}
+
+.p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
+    background: var(--dark-speeddial-background);
+    border-color: var(--dark-speeddial-background);
+    color: var(--dark-speeddial-color);
+    box-shadow: var(--dark-speeddial-shadow);
 }
 
 .profile-menu {
@@ -352,14 +435,6 @@ body.dark {
             }
         }
     }
-}
-
-.c-menu-header {
-    background: var(--dark-menu-header-background);
-}
-
-.c-menu-menubar {
-    background: var(--dark-menu-header-background);
 }
 
 /// *----------Mobile-Theme Specific----------*
@@ -1088,5 +1163,22 @@ body.dark {
         > .p-menuitem {
             background: var(--dark-menu-header-background);
         }
+    }
+}
+
+@keyframes p-progress-spinner-color {
+    100%,
+    0% {
+        stroke: var(--dark-loading-spinner-color-1);
+    }
+    40% {
+        stroke: var(--dark-loading-spinner-color-2);
+    }
+    66% {
+        stroke: var(--dark-loading-spinner-color-3);
+    }
+    80%,
+    90% {
+        stroke: var(--dark-loading-spinner-color-4);
     }
 }
