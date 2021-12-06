@@ -186,14 +186,14 @@
     }
 }
 
-.p-datatable-wrapper, .p-datatable-scrollable-wrapper {
+/*.p-datatable-wrapper, .p-datatable-scrollable-wrapper {
     height: 100%;
     max-width: 100%;
-}
+}*/
 
-.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
+/*.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
     height: 100%
-}
+}*/
 
 .loading-text {
     display: block;
@@ -224,43 +224,6 @@
 
 .p-datatable-emptymessage {
     display: none;
-}
-
-.p-datatable-scrollable {
-    .p-datatable-thead {
-       display: table-header-group;
-
-       >tr >th {
-           display: table-cell;
-           flex: unset;
-       }
-    }
-
-    .p-datatable-tbody {
-        display: table-row-group;
-
-        >tr >td {
-            display: table-cell;
-            flex: unset;
-        }
-    }
-
-    .p-datatable-thead, .p-datatable-tbody {
-        >tr {
-            display: table-row;
-            flex-wrap: unset;
-        }
-    }
-}
-
-.p-virtualscroller-content {
-    position: relative;
-    //top: unset;
-    //left: unset;
-    //contain: unset;
-    //min-height: unset;
-    //min-width: unset;
-    //will-change: unset;
 }
 
 @keyframes pulse {
