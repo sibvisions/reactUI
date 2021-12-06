@@ -42,7 +42,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     useEffect(() => {
         setVisible(false);
-    }, [closingFrame])
+    }, [closingFrame]);
 
     useEffect(() => {
         if (messageProps) {
@@ -215,7 +215,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const handleOnHide = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;
-                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar).then(() => setVisible(false));
             }
 
             setVisible(true);

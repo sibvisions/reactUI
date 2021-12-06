@@ -9,8 +9,6 @@
 /// Inherit height and width from parent who has set it by the layout
 .rc-popupmenubutton {
     --menuBtnSplitWidth: 38px;
-    background: var(--default-button-color);
-    border-color: var(--default-button-color);
     height: inherit;
     width: inherit;
     border-radius: 3px;
@@ -25,7 +23,6 @@
     &:focus-within {
         outline-width: 0;
         outline-style: none;
-        box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     @include btnHover;
 }

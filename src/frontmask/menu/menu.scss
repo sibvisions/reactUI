@@ -37,27 +37,6 @@
     /// Menu buttons small height
     --s-menu-buttons-small: 2.5rem;
 
-    ///--s-menu-header-background: #7a7f85
-    --s-menu-header-background: #7a7f85;
-
-    /// Hover background for buttons
-    --s-menu-buttons-hover-background: #454b52;
-    
-    /// Foreground of topbar
-    --s-menu-color: white;
-
-    /// Color for menu borders
-    --s-menu-border-color: rgba(120,130,140,.13);
-    
-    /// Background for each panel of panelmenu
-    --s-menu-panelmenu-header-background: #fafafa;
-    
-    /// Foreground color for each panel of panelmenu
-    --s-menu-panelmenu-header-color: #495057;
-    
-    /// Foreground color when a panel is hovered or active
-    --s-menu-panelmenu-header-color-hover: black;
-
     /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
     --s-menu-fadeout-width: 20px;
     
@@ -173,7 +152,6 @@
 
 .profile-menu {
     margin-right: 10px;
-    border-left: 2px solid #5b6067;
 
     .p-menubar  {
         .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
@@ -208,25 +186,12 @@
     /// Removes default primereact menubar style
     padding: 0;
     border: none;
-    background: var(--s-menu-header-background);
 
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
             /// Sets menubar style on hover and active for text, subicon color and background
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--s-menu-header-background);
-                color: var(--s-menu-color);
                 margin-left: 4px;
-                .p-menuitem-text, .p-submenu-icon {
-                    color: var(--s-menu-color);
-                }
-                &:hover {
-                    background: var(--s-menu-buttons-hover-background);
-                    color: var(--s-menu-color);
-                    .p-menuitem-text, .p-submenu-icon {
-                        color: var(--s-menu-color);
-                    }
-                }
             }
         }
     }
@@ -247,6 +212,7 @@
     background-size: 40px 40px;
     background-image: var(--profileImage);
 }
+
 .profile-image-null {
     background: white;
     text-align: center;
@@ -264,9 +230,7 @@
     z-index: 10;
     height: 100%;
     width: var(--s-menu-width);
-    border-right: 1px solid var(--s-menu-border-color);
     overflow-x: hidden;
-    background: #fafafa
 }
 
 /// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
@@ -295,8 +259,6 @@
     width: var(--s-menu-fadeout-width);
     margin-top: var(--s-menu-header-height);
     height: 100%;
-    background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%); 
-    background-image: linear-gradient(90deg,  rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
     -webkit-animation: fadein 1s;
     -moz-animation: fadein 1s;
     -ms-animation: fadein 1s;
@@ -317,49 +279,21 @@
                 margin-right: 0;
             }
         }
-        &:not(.p-highlight):not(.p-disabled) > a:hover {
-            color: var(--s-menu-panelmenu-header-color-hover);
-        }
         .p-panelmenu-header-link {
-            background: var(--s-menu-panelmenu-header-background);
             border: none;
-            color: var(--s-menu-panelmenu-header-color);
-            &:hover {
-                color: var(--s-menu-panelmenu-header-color-hover);
-            }
             /// When text is longer don't break
             .p-menuitem-text {
                 white-space: nowrap;
             }
         }
-        /// Selected menupoint styling
-        &.p-highlight {
-            > a, &:not(.p-disabled) > a:hover {
-                background: var(--s-menu-panelmenu-header-background);
-                color: var(--s-menu-panelmenu-header-color-hover);
-            }
-        }
     }
     .p-panelmenu-content {
         border: none;
-        background: var(--s-menu-panelmenu-header-background);
+
         .p-menuitem {
             /// Menu sub points little more to the right
             .p-menuitem-link:not(.p-disabled) {
                 padding: 0.75rem 0.75rem 0.75rem 1.5rem;
-                &:hover {
-                    .p-menuitem-icon, .p-menuitem-text {
-                        color: var(--s-menu-panelmenu-header-color-hover);
-                    }
-                }
-            }
-        }
-    }
-
-    .p-panelmenu-content .p-menuitem.p-menuitem--active {
-        .p-menuitem-link {
-            .p-menuitem-text, .p-menuitem-icon {
-                color: #2196F3;
             }
         }
     }
@@ -382,10 +316,8 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
-            background: var(--s-menu-header-background);
 
             >.p-menuitem {
-                background: var(--s-menu-header-background);
                 width: initial;
             }
 
@@ -397,9 +329,7 @@
             /// Submenu styling needed because primereact button menu looks different we have to redesign
             .p-submenu-list {
                 position: fixed;
-                -webkit-box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
-                box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
-                border: 1px solid #c8c8c8;
+                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
                 width: 12.5rem;
                 li {
                     a {

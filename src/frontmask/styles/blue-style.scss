@@ -53,6 +53,9 @@
     /// Blue color for active menuitem
     --blue-menu-activeitem-color: #2196F3;
 
+    /// Blue fadeout background
+    --blue-fadeout-background: linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
+
     /// Blue background for corporation menu speeddial
     --blue-speeddial-background: #ffffff;
 
@@ -122,8 +125,23 @@
     /// Blue cell hover color
     --blue-table-cell-hover-color: rgb(131, 131, 131);
 
-    /// Default cell font color when a cell is required
+    /// Blue cell background for required fields on even rows
+    --blue-table-required-even-background: rgb(253, 238, 195);
+
+    /// Blue cell background for required fields on odd rows
+    --blue-table-required-odd-background: rgb(255, 244, 210);
+
+    /// Blue cell font color when a cell is required
     --blue-table-required-color: var(--blue-text-color);
+
+    /// Blue cell background for readonly fields on even rows
+    --blue-table-readonly-even-background: rgb(230, 230, 230);
+
+    /// Blue cell background for readonly fields on odd rows
+    --blue-table-readonly-odd-background: rgb(239, 239, 239);
+
+    /// Blue table-header sort color
+    --blue-table-sort-color: #2196F3;
 
     /// Blue LinkedCellEditor panel background
     --blue-linked-panel-background: #ffffff;
@@ -274,898 +292,1006 @@
 
     /// Blue border-radius for toolbars which are NOT part of navigation-tables
     --blue-toolbar-border-radius: 0px;
+
+    /// Blue Topbar colors
+    --blue-topbar-colors: #2196F3, #2196F3;
 }
 
 body.blue {
     background: var(--blue-background);
     color: var(--blue-text-color);
-}
 
-/// *----------Login----------*
-.login-form {
-    background: var(--blue-login-background);
-    border-radius: var(--blue-login-border-radius);
+    /// *----------Login----------*
+    .login-form {
+        background: var(--blue-login-background);
+        border-radius: var(--blue-login-border-radius);
 
-    .p-float-label label {
-        color: var(--blue-login-placeholder-color);
-    }
-}
-
-.login-logo-wrapper {
-    background: var(--blue-login-logo-background);
-}
-
-.login-form-position-wrapper {
-    border-radius: var(--blue-login-border-radius);
-    box-shadow: var(--blue-login-shadow);
-}
-
-/// *----------General-Header----------*
-.menu-header {
-    background: var(--blue-menu-header-background);
-}
-
-.p-button.p-button-icon-only.menu-topbar-buttons {
-    background: var(--blue-topbar-buttons-background);
-    color: var(--blue-menu-color);
-    border-radius: var(--blue-button-border-radius);
-
-    &:hover {
-        background: var(--blue-topbar-buttons-hover);
-    }
-}
-
-.menu-screen-title {
-    color: var(--blue-menu-color);
-}
-
-/// *----------Standard-Menu----------*
-.menu-logo-wrapper {
-    background: var(--blue-logo-background);
-    border-bottom: var(--blue-menu-border);
-}
-
-.menu-panelmenu-wrapper {
-    background: var(--blue-panelmenu-background);
-    @include styledScrollbarPanelDefault();
-}
-
-.p-panelmenu {
-    .p-panelmenu-header {
-        .p-panelmenu-header-link {
-            background: var(--blue-panelmenu-background);
-            border-color: var(--blue-panelmenu-background);
-            color: var(--blue-panelmenu-text-color);
+        .p-float-label label {
+            color: var(--blue-login-placeholder-color);
         }
+    }
 
-        &:not(.p-highlight):not(.p-disabled) > a:hover {
-            background: var(--blue-panelmenu-hover-background);
-            border-color: var(--blue-panelmenu-hover-background);
-            color: var(--blue-panelmenu-hover-text-color);
+    .login-logo-wrapper {
+        background: var(--blue-login-logo-background);
+    }
+
+    .login-form-position-wrapper {
+        border-radius: var(--blue-login-border-radius);
+        box-shadow: var(--blue-login-shadow);
+    }
+
+    /// *----------General-Header----------*
+    .menu-header {
+        background: var(--blue-menu-header-background);
+    }
+
+    .p-button.p-button-icon-only.menu-topbar-buttons {
+        background: var(--blue-topbar-buttons-background);
+        color: var(--blue-menu-color);
+        border-radius: var(--blue-button-border-radius);
+
+        &:hover {
+            background: var(--blue-topbar-buttons-hover);
         }
+    }
 
-        &.p-highlight {
-            > a, &:not(.p-disabled) > a:hover {
+    .menu-screen-title {
+        color: var(--blue-menu-color);
+    }
+
+    /// *----------Standard-Menu----------*
+    .menu-logo-wrapper {
+        background: var(--blue-logo-background);
+        border-bottom: var(--blue-menu-border);
+    }
+
+    .menu-panelmenu-wrapper {
+        background: var(--blue-panelmenu-background);
+        @include styledScrollbarPanelDefault();
+        border-right: var(--blue-menu-border);
+    }
+
+    .p-panelmenu {
+        .p-panelmenu-header {
+            .p-panelmenu-header-link {
                 background: var(--blue-panelmenu-background);
+                border-color: var(--blue-panelmenu-background);
+                color: var(--blue-panelmenu-text-color);
+            }
+
+            &:not(.p-highlight):not(.p-disabled) > a:hover {
+                background: var(--blue-panelmenu-hover-background);
+                border-color: var(--blue-panelmenu-hover-background);
                 color: var(--blue-panelmenu-hover-text-color);
             }
-        }
-    }
 
-    .p-panelmenu-content {
-        background: var(--blue-panelmenu-background);
-
-        .p-menuitem {
-            &.p-menuitem--active {
-                .p-menuitem-link {
-                    .p-menuitem-text, .p-menuitem-icon {
-                        color: var(--blue-menu-activeitem-color);
-                    }
+            &.p-highlight {
+                > a, &:not(.p-disabled) > a:hover {
+                    background: var(--blue-panelmenu-background);
+                    color: var(--blue-panelmenu-hover-text-color);
                 }
             }
+        }
 
-            .p-menuitem-link {
-                background: var(--blue-panelmenu-background);
-                .p-menuitem-icon, .p-menuitem-text {
-                    color: var(--blue-panelmenu-text-color);
-                }
+        .p-panelmenu-content {
+            background: var(--blue-panelmenu-background);
 
-                &:hover {
-                    background: var(--blue-panelmenu-hover-background);
+            .p-menuitem {
+                .p-menuitem-link:not(.p-disabled) {
+                    background: var(--blue-panelmenu-background);
                     .p-menuitem-icon, .p-menuitem-text {
-                        color: var(--blue-panelmenu-hover-text-color);
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// *----------Corporate/Profile Menu----------*
-.c-menu-header {
-    background: var(--blue-menu-header-background);
-}
-
-.c-menu-menubar {
-    background: var(--blue-menu-header-background);
-}
-
-.p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
-    background: var(--blue-speeddial-background);
-    border-color: var(--blue-speeddial-background);
-    color: var(--blue-speeddial-color);
-    box-shadow: var(--blue-speeddial-shadow);
-}
-
-.profile-menu {
-    border-left: var(--blue-profile-seperator);
-}
-
-.p-menubar {
-    background: var(--blue-menu-header-background);
-    
-    .p-menubar-root-list {
-        >.p-menuitem, >.p-menuitem.p-menuitem-active  {
-            > .p-menuitem-link:not(.p-disabled) {
-                background: var(--blue-menu-header-background);
-
-                &:hover {
-                    background: var(--blue-topbar-buttons-hover);
-                }
-            }
-
-            > .p-submenu-list {
-                background: var(--blue-menubar-submenu-background);
-
-                .p-menuitem .p-menuitem-link {
-                    background: var(--blue-menubar-submenu-background);
-
-                    .p-menuitem-text, .p-menuitem-icon {
-                        color: var(--blue-text-color);
+                        color: var(--blue-panelmenu-text-color);
                     }
 
                     &:hover {
-                        background: var(--blue-menubar-items-hover-background);
-
-                        .p-menuitem-text, .p-menuitem-icon {
+                        background: var(--blue-panelmenu-hover-background);
+                        .p-menuitem-icon, .p-menuitem-text {
                             color: var(--blue-panelmenu-hover-text-color);
                         }
                     }
                 }
+
+                &.p-menuitem--active {
+                    .p-menuitem-link {
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--blue-menu-activeitem-color);
+                        }
+                    }
+                }
             }
         }
     }
-}
 
-/// *----------Mobile-Theme Specific----------*
+    .fadeout {
+        background-image: var(--orange-fadeout-background);
+    }
 
-.reactUI.basti_mobile {
-    .p-inputtext:enabled:focus {
-        & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-            border-color: var(--blue-button-color);
-            color: var(--blue-button-color);
+    /// *----------Corporate/Profile Menu----------*
+    .c-menu-header {
+        background: var(--blue-menu-header-background);
+    }
+
+    .c-menu-menubar {
+        background: var(--blue-menu-header-background);
+    }
+
+    .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
+        background: var(--blue-speeddial-background);
+        border-color: var(--blue-speeddial-background);
+        color: var(--blue-speeddial-color);
+        box-shadow: var(--blue-speeddial-shadow);
+    }
+
+    .profile-menu {
+        border-left: var(--blue-profile-seperator);
+    }
+
+    .p-menubar {
+        background: var(--blue-menu-header-background);
+        
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--blue-menu-header-background);
+                    color: var(--blue-menu-color);
+
+                    .p-menuitem-text, .p-submenu-icon {
+                        color: var(--blue-menu-color);
+                    }
+
+                    &:hover {
+                        background: var(--blue-topbar-buttons-hover);
+                        color: var(--blue-menu-color);
+                        .p-menuitem-text, .p-submenu-icon {
+                            color: var(--blue-menu-color);
+                        }
+                    }
+                }
+
+                > .p-submenu-list {
+                    background: var(--blue-menubar-submenu-background);
+
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--blue-menubar-submenu-background);
+
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--blue-text-color);
+                        }
+
+                        &:hover {
+                            background: var(--blue-menubar-items-hover-background);
+
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--blue-panelmenu-hover-text-color);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    .rc-editor-linked, .rc-editor-date {
-        &:hover {
-            .p-button.p-button-icon-only {
-                &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+    /// *----------Mobile-Theme Specific----------*
+
+    .reactUI.basti_mobile {
+        .p-inputtext:enabled:focus {
+            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                border-color: var(--blue-button-color);
+                color: var(--blue-button-color);
+            }
+        }
+
+        .rc-editor-linked, .rc-editor-date {
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--blue-button-color);
+                        color: var(--blue-button-color);
+                    }
+                }
+
+                .p-inputtext {
                     border-color: var(--blue-button-color);
-                    color: var(--blue-button-color);
                 }
             }
 
-            .p-inputtext {
-                border-color: var(--blue-button-color);
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--blue-text-color);
             }
         }
+    }
 
-        .p-autocomplete-dropdown, .p-datepicker-trigger {
+    /// *----------Components----------*
+
+    /// Button
+    .p-button {
+        border-radius: var(--blue-button-border-radius);
+    }
+
+    .rc-button {
+        .mouse-border {
             color: var(--blue-text-color);
         }
+
+        &:focus {
+            box-shadow: var(--blue-focus-box-shadow);
+        }
     }
-}
 
-/// *----------Components----------*
-
-/// Button
-.p-button {
-    border-radius: var(--blue-button-border-radius);
-}
-
-.rc-button {
-    .mouse-border {
+    .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
         color: var(--blue-text-color);
     }
 
-    &:focus {
-        box-shadow: var(--blue-focus-box-shadow);
-    }
-}
-
-.border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
-    color: var(--blue-text-color);
-}
-
-/// Checkbox & Radiobutton
-.p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
-    background: var(--blue-component-background);
-    border: var(--blue-component-border);
-}
-
-.p-checkbox {
-    &:not(.p-checkbox-disabled) .p-checkbox-box {
-        &:hover {
-            border-color: var(--blue-border-color-hover);
-        }
-    
-        &.p-focus {
-            box-shadow: var(--blue-focus-box-shadow);
-            border-color: var(--blue-selected-rb-cb-outer-color);
-        }
-
-        &.p-highlight:hover {
-            background: var(--blue-selected-rb-cb-outer-hover-color);
-            border-color: var(--blue-selected-rb-cb-outer-hover-color);
-        }
+    /// Checkbox & Radiobutton
+    .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
+        background: var(--blue-component-background);
+        border: var(--blue-component-border);
     }
 
-    .p-checkbox-box {
-        border-radius: var(--blue-button-border-radius);
-
-        .p-highlight {
-            background: var(--blue-selected-rb-cb-outer-color);
-            border-color: var(--blue-selected-rb-cb-outer-color);
-        }
-    }
-}
-
-.p-checkbox-box.p-highlight .p-checkbox-icon {
-    color: var(--blue-selected-rb-cb-inner-color);
-}
-
-.p-radiobutton {
-    .p-radiobutton-box {
-        &:not(.p-disabled) {
-            .p-focus {
+    .p-checkbox {
+        &:not(.p-checkbox-disabled) .p-checkbox-box {
+            &:hover {
+                border-color: var(--blue-border-color-hover);
+            }
+        
+            &.p-focus {
                 box-shadow: var(--blue-focus-box-shadow);
+                border-color: var(--blue-selected-rb-cb-outer-color);
             }
 
-            &:not(.p-highlight):hover {
-                border-color: var(--blue-selected-rb-cb-outer-hover-color);
-            }
-        }
-
-        &.p-highlight {
-            background: var(--blue-selected-rb-cb-outer-color);
-            border-color: var(--blue-selected-rb-cb-outer-color);
-
-            &:not(.p-disabled):hover {
+            &.p-highlight:hover {
                 background: var(--blue-selected-rb-cb-outer-hover-color);
                 border-color: var(--blue-selected-rb-cb-outer-hover-color);
             }
         }
-    }
-} 
 
-.p-radiobutton-box.p-highlight .p-radiobutton-icon {
-    background: var(--blue-selected-rb-cb-inner-color);
-}
+        .p-checkbox-box {
+            border-radius: var(--blue-button-border-radius);
 
-/// PopupMenuButton
-.rc-popupmenubutton {
-    background: var(--blue-button-color);
-    border-color: var(--blue-button-color);
-    border-radius: var(--blue-button-border-radius);
-
-    &:focus-within {
-        box-shadow: var(--blue-focus-box-shadow);
-    }
-}
-
-.p-menu {
-    &.p-menu-overlay {
-        background: var(--blue-popupmenubutton-overlay-background);
-    }
-
-    .p-menuitem-link:not(.p-disabled):hover {
-        background: var(--blue-popupmenubutton-item-hover);
-        
-        .p-menuitem-text {
-            color: var(--blue-text-color);
+            .p-highlight {
+                background: var(--blue-selected-rb-cb-outer-color);
+                border-color: var(--blue-selected-rb-cb-outer-color);
+            }
         }
     }
 
-    .p-menuitem-text{
-        color: var(--blue-text-color);
-    }
-}
-
-/// Togglebutton
-.rc-togglebutton:focus {
-    box-shadow: var(--blue-focus-box-shadow);
-}
-
-/// ChoiceCellEditor
-.rc-editor-choice:focus img {
-    box-shadow: var(--blue-focus-box-shadow);
-}
-
-/// Inputfields
-.p-inputtext {
-    background: var(--blue-component-background);
-    border: var(--blue-component-border);
-    border-radius: var(--blue-input-border-radius);
-
-    &:not(.required-field) {
-        color: var(--blue-text-color);
+    .p-checkbox-box.p-highlight .p-checkbox-icon {
+        color: var(--blue-selected-rb-cb-inner-color);
     }
 
-    &:enabled {
-        &:focus {
-            box-shadow: var(--blue-focus-box-shadow);
-            border-color: var(--blue-border-color-hover);
-        }
+    .p-radiobutton {
+        .p-radiobutton-box {
+            &:not(.p-disabled) {
+                .p-focus {
+                    box-shadow: var(--blue-focus-box-shadow);
+                }
 
-        &:hover {
-            border-color: var(--blue-border-color-hover);
-        }
-    }
-}
+                &:not(.p-highlight):hover {
+                    border-color: var(--blue-selected-rb-cb-outer-hover-color);
+                }
+            }
 
-// .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
-//     background-color: var(--blue-component-background) !important;
-// }
+            &.p-highlight {
+                background: var(--blue-selected-rb-cb-outer-color);
+                border-color: var(--blue-selected-rb-cb-outer-color);
 
-/// DateCellEditor
-.p-calendar:focus-within {
-    outline: 0 none;
-    outline-offset: 0;
-    box-shadow: var(--blue-focus-box-shadow);
-    border-radius: var(--blue-editor-border-radius);
-}
-
-.p-datepicker {
-    border-radius: var(--blue-date-border-radius);
-
-    &:not(.p-datepicker-inline) {
-        &, .p-datepicker-header {
-            background: var(--blue-date-panel-background);
-            color: var(--blue-text-color);
-        }
-    }
-
-    .p-datepicker-header {
-        border-bottom: var(--blue-date-panel-header-border);
-        .p-datepicker-title {
-            .p-datepicker-month, .p-datepicker-year {
-                background-color: var(--blue-date-panel-background);
-                color: var(--blue-text-color);
+                &:not(.p-disabled):hover {
+                    background: var(--blue-selected-rb-cb-outer-hover-color);
+                    border-color: var(--blue-selected-rb-cb-outer-hover-color);
+                }
             }
         }
     } 
 
-    &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
-        color: var(--blue-date-panel-hover-color);
+    .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+        background: var(--blue-selected-rb-cb-inner-color);
     }
-}
 
-/// ImageCellEditor, Icon
-.rc-editor-image, .rc-icon, .rc-validator {
-    &:focus img {
+    /// PopupMenuButton
+    .rc-popupmenubutton {
+        background: var(--blue-button-color);
+        border-color: var(--blue-button-color);
+        border-radius: var(--blue-button-border-radius);
+
+        &:focus-within {
+            box-shadow: var(--blue-focus-box-shadow);
+        }
+    }
+
+    .p-menu {
+        &.p-menu-overlay {
+            background: var(--blue-popupmenubutton-overlay-background);
+        }
+
+        .p-menuitem-link:not(.p-disabled):hover {
+            background: var(--blue-popupmenubutton-item-hover);
+            
+            .p-menuitem-text {
+                color: var(--blue-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// Togglebutton
+    .rc-togglebutton:focus {
         box-shadow: var(--blue-focus-box-shadow);
     }
-}
 
-/// LinkedCellEditor
-.rc-editor-linked:focus-within {
-    box-shadow: var(--blue-focus-box-shadow);
-}
+    /// ChoiceCellEditor
+    .rc-editor-choice:focus img {
+        box-shadow: var(--blue-focus-box-shadow);
+    }
 
-.p-autocomplete-panel {
-    background: var(--blue-linked-panel-background);
-    border-radius: var(--blue-date-border-radius);
+    /// Inputfields
+    .p-inputtext {
+        background: var(--blue-component-background);
+        border: var(--blue-component-border);
+        border-radius: var(--blue-input-border-radius);
 
-    .p-autocomplete-items {
-        .p-autocomplete-item {
-            background: var(--blue-linked-panel-background);
+        &:not(.required-field) {
             color: var(--blue-text-color);
+        }
+
+        &:enabled {
+            &:focus {
+                box-shadow: var(--blue-focus-box-shadow);
+                border-color: var(--blue-border-color-hover);
+            }
 
             &:hover {
-                background: var(--blue-linked-item-hover-background);
+                border-color: var(--blue-border-color-hover);
             }
         }
     }
 
-    &.dropdown-table {
-        .p-autocomplete-items {
-            /// Swaping odd and even because "table header" is also a child
-            & li:nth-child(odd) {
-                background: var(--blue-table-row-even-background);
-                &:hover {
-                    background: var(--blue-table-hover-background);
-                }
-            }
+    // .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
+    //     background-color: var(--blue-component-background) !important;
+    // }
 
-            & li:nth-child(even) {
-                background: var(--blue-table-row-odd-background);
-                &:hover {
-                    background: var(--blue-table-hover-background);
-                }
-            }
-        }
-        .p-autocomplete-item-group > * {
-            background: var(--blue-table-header-background);
-            color: var(--blue-text-color);
-            border-bottom: var(--blue-table-header-border);
-        }
-
-        .p-autocomplete-item > * {
-            border-bottom: var(--blue-table-row-border);
-
-            &:not(:first-child) {
-                border-left: var(--blue-table-row-border);
-            }
-        }
+    /// DateCellEditor
+    .p-calendar:focus-within {
+        outline: 0 none;
+        outline-offset: 0;
+        box-shadow: var(--blue-focus-box-shadow);
+        border-radius: var(--blue-editor-border-radius);
     }
-}
 
-/// HTMLEditor
-.p-editor-container {
-    .p-editor-toolbar {
-        background: var(--blue-html-toolbar-background);
-        border: var(--blue-html-toolbar-border);
-        border-top-left-radius: var(--blue-editor-border-radius);
-        border-top-right-radius: var(--blue-editor-border-radius);
+    .p-datepicker {
+        border-radius: var(--blue-date-border-radius);
 
-        &.ql-snow {
-            .ql-formats {
-                .ql-picker .ql-picker-label, button {
+        &:not(.p-datepicker-inline) {
+            &, .p-datepicker-header {
+                background: var(--blue-date-panel-background);
+                color: var(--blue-text-color);
+            }
+        }
+
+        .p-datepicker-header {
+            border-bottom: var(--blue-date-panel-header-border);
+            .p-datepicker-title {
+                .p-datepicker-month, .p-datepicker-year {
+                    background-color: var(--blue-date-panel-background);
                     color: var(--blue-text-color);
-
-                    &:hover {
-                        color: var(--blue-html-toolbar-button-hover-background);
-    
-                        svg {
-                            polygon, path, line, rect, polyline {
-                                stroke: var(--blue-html-toolbar-button-hover-background);
-                            }
-                        } 
-                    }
-    
-                    svg {
-                        polygon, path, line, rect, polyline {
-                            stroke: var(--blue-text-color);
-                        }
-                    }
-
-                    &.ql-source {
-                        svg path {
-                            fill: var(--blue-text-color);
-                        }
-
-                        &:hover {
-                            svg path {
-                                fill: var(--blue-html-toolbar-button-hover-background);
-                            }
-                        }
-                    } 
-                }
-
-                .ql-picker.ql-expanded .ql-picker-options {
-                    background: var(--blue-html-picker-expanded-background);
-
-                    .ql-picker-item {
-                        color: var(--blue-text-color);
-
-                        &:hover {
-                            background: var(--blue-html-picker-item-hover-background);
-                        }
-                    }
                 }
             }
         } 
+
+        &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
+            color: var(--blue-date-panel-hover-color);
+        }
     }
 
-    .p-editor-content {
-        border: var(--blue-component-border);
-        border-bottom-left-radius: var(--blue-editor-border-radius);
-        border-bottom-right-radius: var(--blue-editor-border-radius);
+    /// ImageCellEditor, Icon
+    .rc-editor-image, .rc-icon, .rc-validator {
+        &:focus img {
+            box-shadow: var(--blue-focus-box-shadow);
+        }
+    }
 
-        .ql-editor {
-            background: var(--blue-component-background);
-            color: var(--blue-text-color);
+    /// LinkedCellEditor
+    .rc-editor-linked:focus-within {
+        box-shadow: var(--blue-focus-box-shadow);
+    }
+
+    .p-autocomplete-panel {
+        background: var(--blue-linked-panel-background);
+        border-radius: var(--blue-date-border-radius);
+
+        .p-autocomplete-items {
+            .p-autocomplete-item {
+                background: var(--blue-linked-panel-background);
+                color: var(--blue-text-color);
+
+                &:hover {
+                    background: var(--blue-linked-item-hover-background);
+                }
+            }
+        }
+
+        &.dropdown-table {
+            .p-autocomplete-items {
+                /// Swaping odd and even because "table header" is also a child
+                & li:nth-child(odd) {
+                    background: var(--blue-table-row-even-background);
+                    &:hover {
+                        background: var(--blue-table-hover-background);
+                    }
+                }
+
+                & li:nth-child(even) {
+                    background: var(--blue-table-row-odd-background);
+                    &:hover {
+                        background: var(--blue-table-hover-background);
+                    }
+                }
+            }
+            .p-autocomplete-item-group > * {
+                background: var(--blue-table-header-background);
+                color: var(--blue-text-color);
+                border-bottom: var(--blue-table-header-border);
+            }
+
+            .p-autocomplete-item > * {
+                border-bottom: var(--blue-table-row-border);
+
+                &:not(:first-child) {
+                    border-left: var(--blue-table-row-border);
+                }
+            }
+        }
+    }
+
+    /// HTMLEditor
+    .p-editor-container {
+        .p-editor-toolbar {
+            background: var(--blue-html-toolbar-background);
+            border: var(--blue-html-toolbar-border);
+            border-top-left-radius: var(--blue-editor-border-radius);
+            border-top-right-radius: var(--blue-editor-border-radius);
+
+            &.ql-snow {
+                border: var(--blue-component-border);
+
+                .ql-formats {
+                    .ql-picker .ql-picker-label, button {
+                        color: var(--blue-text-color);
+
+                        &:hover {
+                            color: var(--blue-html-toolbar-button-hover-background);
+        
+                            svg {
+                                polygon, path, line, rect, polyline {
+                                    stroke: var(--blue-html-toolbar-button-hover-background);
+                                }
+                            } 
+                        }
+        
+                        svg {
+                            polygon, path, line, rect, polyline {
+                                stroke: var(--blue-text-color);
+                            }
+                        }
+
+                        &.ql-source {
+                            svg path {
+                                fill: var(--blue-text-color);
+                            }
+
+                            &:hover {
+                                svg path {
+                                    fill: var(--blue-html-toolbar-button-hover-background);
+                                }
+                            }
+                        } 
+                    }
+
+                    .ql-picker.ql-expanded .ql-picker-options {
+                        background: var(--blue-html-picker-expanded-background);
+
+                        .ql-picker-item {
+                            color: var(--blue-text-color);
+
+                            &:hover {
+                                background: var(--blue-html-picker-item-hover-background);
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+
+        .p-editor-content {
+            border: var(--blue-component-border);
             border-bottom-left-radius: var(--blue-editor-border-radius);
             border-bottom-right-radius: var(--blue-editor-border-radius);
-        }
-    }
-}
 
-.rc-editor-html {
-    textarea.p-inputtext {
-        border: var(--blue-component-border) !important;
-    }
-}
-
-/// Table
-.rc-table {
-    border: var(--blue-component-border);
-
-    table {
-        border-style: hidden;
-        box-shadow: 0 0 0 1px #e9ecef;
-    }
-
-    &.navtable-north {
-        border-bottom-left-radius: var(--blue-table-border-radius);
-        border-bottom-right-radius: var(--blue-table-border-radius);
-    }
-
-    &.navtable-west {
-        border-top-right-radius: var(--blue-table-border-radius);
-        border-bottom-right-radius: var(--blue-table-border-radius);
-        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
-            &:last-child {
-                border-top-right-radius: var(--blue-table-border-radius);
+            .ql-editor {
+                background: var(--blue-component-background);
+                color: var(--blue-text-color);
+                border-bottom-left-radius: var(--blue-editor-border-radius);
+                border-bottom-right-radius: var(--blue-editor-border-radius);
             }
 
-            &:only-child {
-                border-top-left-radius: var(--blue-table-border-radius);
-                border-top-right-radius: var(--blue-table-border-radius);
+            &.ql-snow {
+                border: var(--blue-component-border);
+                border-top: 0px;
             }
         }
+    }
 
-        /// VirtualScroll border radiuses, can probably be deleted after PR update
-        .p-datatable-scrollable-header {
+    .rc-editor-html {
+        textarea.p-inputtext {
+            border: var(--blue-component-border) !important;
+        }
+    }
+
+    /// Table
+    .rc-table {
+        border: var(--blue-component-border);
+
+        table {
+            border-style: hidden;
+            box-shadow: 0 0 0 1px #e9ecef;
+        }
+
+        &.navtable-north {
+            border-bottom-left-radius: var(--blue-table-border-radius);
+            border-bottom-right-radius: var(--blue-table-border-radius);
+        }
+
+        &.navtable-west {
             border-top-right-radius: var(--blue-table-border-radius);
-        }
-    }
+            border-bottom-right-radius: var(--blue-table-border-radius);
+            &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+                &:last-child {
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
 
-    &.navtable-east {
-        border-top-left-radius: var(--blue-table-border-radius);
-        border-bottom-left-radius: var(--blue-table-border-radius);
-        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
-            &:first-child {
-                border-top-left-radius: var(--blue-table-border-radius);
+                &:only-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
             }
 
-            &:only-child {
-                border-top-left-radius: var(--blue-table-border-radius);
+            /// VirtualScroll border radiuses, can probably be deleted after PR update
+            .p-datatable-scrollable-header {
                 border-top-right-radius: var(--blue-table-border-radius);
             }
         }
 
-        /// VirtualScroll border radiuses, can probably be deleted after PR update
-        .p-datatable-scrollable-header {
+        &.navtable-east {
             border-top-left-radius: var(--blue-table-border-radius);
-        }
-    }
+            border-bottom-left-radius: var(--blue-table-border-radius);
+            &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+                &:first-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                }
 
-    &.navtable-south {
-        border-top-left-radius: var(--blue-table-border-radius);
-        border-top-right-radius: var(--blue-table-border-radius);
-        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
-            &:first-child {
+                &:only-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
+            }
+
+            /// VirtualScroll border radiuses, can probably be deleted after PR update
+            .p-datatable-scrollable-header {
                 border-top-left-radius: var(--blue-table-border-radius);
             }
-
-            &:last-child {
-                border-top-right-radius: var(--blue-table-border-radius);
-            }
-
-            &:only-child {
-                border-top-left-radius: var(--blue-table-border-radius);
-                border-top-right-radius: var(--blue-table-border-radius);
-            }
         }
-        
 
-        /// VirtualScroll border radiuses, can probably be deleted after PR update
-        .p-datatable-scrollable-header {
+        &.navtable-south {
             border-top-left-radius: var(--blue-table-border-radius);
             border-top-right-radius: var(--blue-table-border-radius);
-        }
-    }
+            &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+                &:first-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                }
 
-    &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
-        border-radius: var(--blue-table-border-radius);
+                &:last-child {
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
 
-        &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
-            &:first-child {
-                border-top-left-radius: var(--blue-table-border-radius);
+                &:only-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
             }
+            
 
-            &:last-child {
+            /// VirtualScroll border radiuses, can probably be deleted after PR update
+            .p-datatable-scrollable-header {
+                border-top-left-radius: var(--blue-table-border-radius);
                 border-top-right-radius: var(--blue-table-border-radius);
             }
+        }
 
-            &:only-child {
-                border-top-left-radius: var(--blue-table-border-radius);
-                border-top-right-radius: var(--blue-table-border-radius);
+        &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
+            border-radius: var(--blue-table-border-radius);
+
+            &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
+                &:first-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                }
+
+                &:last-child {
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
+
+                &:only-child {
+                    border-top-left-radius: var(--blue-table-border-radius);
+                    border-top-right-radius: var(--blue-table-border-radius);
+                }
             }
         }
-    }
 
-    .p-datatable-thead > tr > th {
-        background: var(--blue-table-header-background);
-        border: var(--blue-table-header-border);
-    }
+        .p-datatable-thead > tr > th {
+            background: var(--blue-table-header-background);
+            border: var(--blue-table-header-border);
 
-    .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--blue-table-hover-background);
-        color: var(--blue-text-color);
-    }
+            &.sort-asc, &.sort-des {
+                color: var(--blue-table-sort-color);
+            }
 
-    .p-datatable-tbody > tr {
-        background: var(--blue-table-row-odd-background);
-        color: var(--blue-text-color);
-        > td {
-            border: var(--blue-table-row-border);
+            .p-sortable-column-icon {
+                color: var(--blue-table-sort-color);
+            }
+        }
 
-            &.cell-required {
-                color: var(--blue-table-required-color);
+        .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
+            background: var(--blue-table-hover-background);
+            color: var(--blue-text-color);
+
+            &.sort-asc, &.sort-des {
+                color: var(--blue-table-sort-color);
+
+                .p-sortable-column-icon {
+                    color: var(--blue-table-sort-color);
+                }
+            }
+        }
+
+        .p-datatable-tbody > tr {
+            background: var(--blue-table-row-odd-background);
+            color: var(--blue-text-color);
+            > td {
+                border: var(--blue-table-row-border);
+
+                &.cell-required {
+                    background: var(--blue-table-required-odd-background);
+                    color: var(--blue-table-required-color);
+                }
+
+                &.cell-readonly {
+                    background: var(--blue-table-readonly-odd-background);
+                }
+
+                &.p-highlight {
+                    color: var(--blue-text-color);
+                }
+
+                &:hover {
+                    color: var(--blue-table-cell-hover-color);
+                }
             }
 
             &.p-highlight {
                 color: var(--blue-text-color);
+                background: var(--blue-table-selected-row-background) !important;
+
+                &.cell-required {
+                    background: var(--blue-table-required-odd-background);
+                    opacity: 0.8;
+                }
+
+                &.cell-readonly {
+                    background: var(--blue-table-readonly-odd-background);
+                    opacity: 0.8;
+                }
             }
 
-            &:hover {
-                color: var(--blue-table-cell-hover-color);
+            &:nth-child(even) {
+                background: var(--blue-table-row-even-background);
+
+                > td {
+                    &.cell-required {
+                        background: var(--blue-table-required-even-background);
+                    }
+
+                    &.cell-readonly {
+                        background: var(--blue-table-readonly-even-background);
+                    }
+                }
+
+                &.p-highlight > td {
+                    &.cell-required {
+                        background: var(--blue-table-required-even-background);
+                        opacity: 0.8;
+                    }
+
+                    &.cell-readonly {
+                        background: var(--blue-table-readonly-even-background);
+                        opacity: 0.8;
+                    }
+                }
             }
         }
 
-        &.p-highlight {
-            color: var(--blue-text-color);
-            background: var(--blue-table-selected-row-background);
-        }
-
-        &:nth-child(even) {
-            background: var(--blue-table-row-even-background);
-        }
-
-        &:not(.p-highlight):hover {
+        &.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover {
             background: var(--blue-table-hover-background);
             color: var(--blue-text-color);
         }
+    } 
+
+    /// Toolbar
+    .rc-toolbar {
+        background: var(--blue-toolbar-background);
+        border: var(--blue-toolbar-border);
+
+        &.navbar-north {
+            border-top-left-radius: var(--blue-table-border-radius);
+            border-top-right-radius: var(--blue-table-border-radius);
+        }
+
+        &.navbar-west {
+            border-top-left-radius: var(--blue-table-border-radius);
+            border-bottom-left-radius: var(--blue-table-border-radius);
+        }
+
+        &.navbar-east {
+            border-top-right-radius: var(--blue-table-border-radius);
+            border-bottom-right-radius: var(--blue-table-border-radius);
+        }
+
+        &.navbar-south {
+            border-bottom-left-radius: var(--blue-table-border-radius);
+            border-bottom-right-radius: var(--blue-table-border-radius);
+        }
+
+        &.toolbar-north {
+            border-top-left-radius: var(--blue-toolbar-border-radius);
+            border-top-right-radius: var(--blue-toolbar-border-radius);
+        }
+
+        &.toolbar-west {
+            border-top-left-radius: var(--blue-toolbar-border-radius);
+            border-bottom-left-radius: var(--blue-toolbar-border-radius);
+        }
+
+        &.toolbar-east {
+            border-top-right-radius: var(--blue-toolbar-border-radius);
+            border-bottom-right-radius: var(--blue-toolbar-border-radius);
+        }
+
+        &.toolbar-south {
+            border-bottom-left-radius: var(--blue-toolbar-border-radius);
+            border-bottom-right-radius: var(--blue-toolbar-border-radius);
+        }
     }
-} 
 
-/// Toolbar
-.rc-toolbar {
-    background: var(--blue-toolbar-background);
-    border: var(--blue-toolbar-border);
-
-    &.navbar-north {
-        border-top-left-radius: var(--blue-table-border-radius);
-        border-top-right-radius: var(--blue-table-border-radius);
-    }
-
-    &.navbar-west {
-        border-top-left-radius: var(--blue-table-border-radius);
-        border-bottom-left-radius: var(--blue-table-border-radius);
-    }
-
-    &.navbar-east {
-        border-top-right-radius: var(--blue-table-border-radius);
-        border-bottom-right-radius: var(--blue-table-border-radius);
-    }
-
-    &.navbar-south {
-        border-bottom-left-radius: var(--blue-table-border-radius);
-        border-bottom-right-radius: var(--blue-table-border-radius);
-    }
-
-    &.toolbar-north {
-        border-top-left-radius: var(--blue-toolbar-border-radius);
-        border-top-right-radius: var(--blue-toolbar-border-radius);
-    }
-
-    &.toolbar-west {
-        border-top-left-radius: var(--blue-toolbar-border-radius);
-        border-bottom-left-radius: var(--blue-toolbar-border-radius);
-    }
-
-    &.toolbar-east {
-        border-top-right-radius: var(--blue-toolbar-border-radius);
-        border-bottom-right-radius: var(--blue-toolbar-border-radius);
-    }
-
-    &.toolbar-south {
-        border-bottom-left-radius: var(--blue-toolbar-border-radius);
-        border-bottom-right-radius: var(--blue-toolbar-border-radius);
-    }
-}
-
-/// Dialogs
-.rc-popup {
-    .p-dialog-header {
-        background: var(--blue-dialog-header-background);
-        color: var(--blue-text-color);
-        border-top-left-radius: var(--blue-dialog-border-radius);
-        border-top-right-radius: var(--blue-dialog-border-radius);
-
-        .p-dialog-header-icon {
+    /// Dialogs
+    .rc-popup {
+        .p-dialog-header {
+            background: var(--blue-dialog-header-background);
             color: var(--blue-text-color);
+            border-top-left-radius: var(--blue-dialog-border-radius);
+            border-top-right-radius: var(--blue-dialog-border-radius);
 
-            &:hover {
-                color: var(--blue-dialog-icon-hover-color);
+            .p-dialog-header-icon {
+                color: var(--blue-text-color);
+
+                &:enabled:hover {
+                    background: #e9ecef;
+                    color: var(--blue-dialog-icon-hover-color);
+                }
+            }
+        }
+
+        .p-dialog-content {
+            background: var(--blue-dialog-content-background);
+            color: var(--blue-text-color);
+            border-bottom-left-radius: var(--blue-dialog-border-radius);
+            border-bottom-right-radius: var(--blue-dialog-border-radius);
+        }
+    }
+
+    /// Messages
+    .rc-message-dialog {
+        .p-dialog-header {
+            border-top-left-radius: var(--blue-dialog-border-radius);
+            border-top-right-radius: var(--blue-dialog-border-radius);
+        }
+
+        &.info .p-dialog-header {
+            background: var(--blue-message-info-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-info-header-close-hover);
+                }
+
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.warning .p-dialog-header {
+            background: var(--blue-message-warning-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-warning-header-close-hover);
+                }
+
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.error .p-dialog-header {
+            background: var(--blue-message-error-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-error-header-close-hover);
+                }
+
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        &.question .p-dialog-header {
+            background: var(--blue-message-question-header-background);
+
+            .p-dialog-header-close {
+                &:hover {
+                    background: var(--blue-message-question-header-close-hover);
+                }
+
+                .p-dialog-header-close-icon {
+                    color: var(--blue-text-color);
+                }
+            }
+        }
+
+        .p-dialog-footer {
+            border-bottom-left-radius: var(--blue-dialog-border-radius);
+            border-bottom-right-radius: var(--blue-dialog-border-radius);
+        }
+
+        &.message-dialog-no-footer .p-dialog-content {
+            border-bottom-left-radius: var(--blue-dialog-border-radius);
+            border-bottom-right-radius: var(--blue-dialog-border-radius);
+        }
+
+        .p-dialog-content, .p-dialog-footer {
+            background: var(--blue-dialog-content-background);
+            color: var(--blue-text-color);
+        }
+    }
+
+    /// Info Toasts
+    #toast-info {
+        .p-toast-message {
+            background: var(--blue-dialog-content-background);
+        }
+
+        .toast-header {
+            color: white;
+
+            &.info {
+                background: var(--blue-message-info-header-background);
+
+                .toast-header-close {
+                    color: white;
+
+                    &:hover {
+                        background: var(--blue-message-info-header-close-hover);
+                    }
+                }
             }
         }
     }
 
-    .p-dialog-content {
-        background: var(--blue-dialog-content-background);
+    /// Error Dialog
+    .rc-error-dialog {
+        background: var(--blue-error-dialog-background);
+    }
+
+    /// GroupPanel
+    .rc-panel-group-caption {
+        border-bottom: var(--blue-component-border);
+    }
+
+    /// TabSetPanel
+    .p-tabview .p-tabview-nav {
+        background: var(--blue-tab-navbar-background);
         color: var(--blue-text-color);
-        border-bottom-left-radius: var(--blue-dialog-border-radius);
-        border-bottom-right-radius: var(--blue-dialog-border-radius);
-    }
-}
+        border: var(--blue-tab-navbar-border);
+        border-radius: var(--blue-tab-border-radius);
+        padding: 0 var(--blue-tab-border-radius);
 
-/// Messages
-.rc-message-dialog {
-    .p-dialog-header {
-        border-top-left-radius: var(--blue-dialog-border-radius);
-        border-top-right-radius: var(--blue-dialog-border-radius);
-    }
+        li {
+            &:not(.p-highlight) {
+                .p-tabview-nav-link {
+                    color: var(--blue-text-color);
+                    border-color: transparent transparent var(--blue-tab-border-color) transparent;
+                }
 
-    &.info .p-dialog-header {
-        background: var(--blue-message-info-header-background);
-
-        .p-dialog-header-close {
-            &:hover {
-                background: var(--blue-message-info-header-close-hover);
+                &:not(.p-disabled):hover .p-tabview-nav-link {
+                    color: var(--blue-text-color);
+                    background: var(--blue-tab-hover-background);
+                    border-color: var(--blue-text-color);
+                }
             }
 
-            .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
-            }
-        }
-    }
-
-    &.warning .p-dialog-header {
-        background: var(--blue-message-warning-header-background);
-
-        .p-dialog-header-close {
-            &:hover {
-                background: var(--blue-message-warning-header-close-hover);
+            &.p-highlight .p-tabview-nav-link {
+                color: var(--blue-tab-selected-color);
+                border-color: var(--blue-tab-selected-color);
             }
 
-            .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
-            }
-        }
-    }
-
-    &.error .p-dialog-header {
-        background: var(--blue-message-error-header-background);
-
-        .p-dialog-header-close {
-            &:hover {
-                background: var(--blue-message-error-header-close-hover);
-            }
-
-            .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
-            }
-        }
-    }
-
-    &.question .p-dialog-header {
-        background: var(--blue-message-question-header-background);
-
-        .p-dialog-header-close {
-            &:hover {
-                background: var(--blue-message-question-header-close-hover);
-            }
-
-            .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
-            }
-        }
-    }
-
-    .p-dialog-footer {
-        border-bottom-left-radius: var(--blue-dialog-border-radius);
-        border-bottom-right-radius: var(--blue-dialog-border-radius);
-    }
-
-    &.message-dialog-no-footer .p-dialog-content {
-        border-bottom-left-radius: var(--blue-dialog-border-radius);
-        border-bottom-right-radius: var(--blue-dialog-border-radius);
-    }
-
-    .p-dialog-content, .p-dialog-footer {
-        background: var(--blue-dialog-content-background);
-        color: var(--blue-text-color);
-    }
-}
-
-/// Error Dialog
-.rc-error-dialog {
-    background: var(--blue-error-dialog-background);
-}
-
-/// TabSetPanel
-.p-tabview .p-tabview-nav {
-    background: var(--blue-tab-navbar-background);
-    color: var(--blue-text-color);
-    border: var(--blue-tab-navbar-border);
-    border-radius: var(--blue-tab-border-radius);
-    padding: 0 var(--blue-tab-border-radius);
-
-    li {
-        &:not(.p-highlight) {
             .p-tabview-nav-link {
-                color: var(--blue-text-color);
-                border-color: transparent transparent var(--blue-tab-border-color) transparent;
-            }
-
-            &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--blue-text-color);
-                background: var(--blue-tab-hover-background);
-                border-color: var(--blue-text-color);
+                background: var(--blue-tab-navbar-background);
             }
         }
+    }
 
-        &.p-highlight .p-tabview-nav-link {
-            color: var(--blue-tab-selected-color);
-            border-color: var(--blue-tab-selected-color);
-        }
+    .tabview-button {
+        color: var(--blue-tab-close-color);
+    }
 
-        .p-tabview-nav-link {
-            background: var(--blue-tab-navbar-background);
+    /// Tree
+    .p-tree {
+        background: var(--blue-tree-background);
+        border: var(--blue-tree-border);
+        color: var(--blue-text-color);
+        border-radius: var(--blue-table-border-radius);
+
+        .p-tree-container .p-treenode .p-treenode-content {
+            &.p-treenode-selectable:not(.p-highlight):hover {
+                background: var(--blue-tree-item-hover-background);
+                color: var(--blue-text-color);
+            }
+
+            &.p-highlight {
+                background: var(--blue-tree-selected-item-background);
+                color: var(--blue-text-color);
+            }
+
+            &:focus {
+                box-shadow: var(--blue-focus-box-shadow);
+            }
         }
     }
-}
 
-.tabview-button {
-    color: var(--blue-tab-close-color);
-}
-
-/// Tree
-.p-tree {
-    background: var(--blue-tree-background);
-    border: var(--blue-tree-border);
-    color: var(--blue-text-color);
-    border-radius: var(--blue-table-border-radius);
-
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--blue-tree-item-hover-background);
-            color: var(--blue-text-color);
-        }
-
-        &.p-highlight {
-            background: var(--blue-tree-selected-item-background);
-            color: var(--blue-text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--blue-focus-box-shadow);
-        }
+    /// Loading-Screen
+    .loading-screen {
+        background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: -o-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: -moz-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
+        background: radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
     }
-}
 
-/// Loading-Screen
-.loading-screen {
-    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
-    background: -o-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
-    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
-    background: radial-gradient(119% 190% at -6% -20%, var(--blue-loading-screen-left-background) 70%, var(--blue-loading-screen-right-background) 70%);
-}
-
-.loading-screen-spinner {
-    animation: progress-spinner-color 3s;
+    .loading-screen-spinner {
+        animation: progress-spinner-color 3s;
+    }
 }
 
 @media screen and (max-width: 960px) {
-    .p-menubar .p-menubar-root-list {
-        background: var(--blue-menu-header-background);
-
-        > .p-menuitem {
+    body.blue {
+        .p-menubar .p-menubar-root-list {
             background: var(--blue-menu-header-background);
+    
+            > .p-menuitem {
+                background: var(--blue-menu-header-background);
+            }
         }
     }
 }

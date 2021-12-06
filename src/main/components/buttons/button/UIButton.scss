@@ -22,7 +22,6 @@
     &.mouse-border {
         background: transparent;
         border-color: transparent;
-        color: var(--default-text-color);
     }
 
     @include btnHover
@@ -83,7 +82,6 @@
 .border-notpainted, .border-notpainted:enabled:hover {
     background: transparent !important;
     border-color: transparent !important;
-    color: var(--default-text-color);
 }
 
 .p-button-label {

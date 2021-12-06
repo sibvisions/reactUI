@@ -24,9 +24,6 @@
     .p-autocomplete-items {
         max-height: none !important;
         padding: 0;
-        .p-autocomplete-item {
-            background: white;
-        }
     }
 
     &.dropdown-table {
@@ -42,7 +39,6 @@
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
-                border-bottom: 1px solid #ccc;
             }
         }
 
@@ -54,11 +50,6 @@
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
-                border-bottom: 1px solid #ccc;
-
-                &:not(:first-child) {
-                    border-left: 1px solid #eee;
-                }
             }
         }
     }

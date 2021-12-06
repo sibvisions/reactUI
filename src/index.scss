@@ -105,71 +105,6 @@ body {
         box-shadow: none;
     }
 
-    &.info .p-dialog-header {
-        background: #347fae;
-
-        .p-dialog-header-close {
-            &:hover {
-                background: #276b96;
-            }
-
-            .p-dialog-header-close-icon {
-                color: white;
-            }
-        }
-    }
-
-    &.warning .p-dialog-header {
-        background: #ffcf40;
-        .message-dialog-header {
-            .message-dialog-header-text {
-                color: #926d00;
-            }
-
-            .message-dialog-header-left .message-dialog-header-icon {
-                color: #926d00;
-            }
-        }
-
-        .p-dialog-header-close {
-            &:hover {
-                background: #ebbd35;
-            }
-
-            .p-dialog-header-close-icon {
-                color: #926d00;
-            }
-        }
-    }
-
-    &.error .p-dialog-header {
-        background: #ff364a;
-
-        .p-dialog-header-close {
-            &:hover {
-                background: #db2739;
-            }
-
-            .p-dialog-header-close-icon {
-                color: white;
-            }
-        }
-    }
-
-    &.question .p-dialog-header {
-        background: #17c0eb;
-
-        .p-dialog-header-close {
-            &:hover {
-                background: #13aacf;
-            }
-
-            .p-dialog-header-close-icon {
-                color: white;
-            }
-        }
-    }
-
     .p-dialog-header {
         padding: 0;
 
@@ -183,37 +118,8 @@ body {
             padding: 0.5rem;
             color: white;
 
-            &.warning {
-                .message-dialog-header-close {
-                    color: #926d00;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #ebbd35;                        
-                    }
-                }
-            }
-
-            &.error {
-                .message-dialog-header-close {
-                    color: white;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #db2739;
-                    }
-                }
-            }
-
-            &.question {
-                .message-dialog-header-close {
-                    color: white;
-
-                    &:hover {
-                        border-radius: 50%;
-                        background: #13aacf;
-                    }
-                }
+            .message-dialog-header-close:hover {
+                border-radius: 50%;
             }
 
             .message-dialog-header-text {
@@ -235,7 +141,6 @@ body {
                 background: transparent;
                 padding: 0.5rem;
                 cursor: pointer;
-                color: #444444;
             }
         }
     }

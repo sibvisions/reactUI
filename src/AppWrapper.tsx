@@ -107,7 +107,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         else {
             themeToSet = getTheme();
             styleToSet = getStyle();
-
             try {
                 require('./frontmask/themes/' + themeToSet + '.scss');
             }
@@ -124,6 +123,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             document.body.classList.add(styleToSet);
         }
     }, []);
+
+    
 
     /**
      * Subscribes to session-expired notification and app-ready

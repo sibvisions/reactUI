@@ -177,6 +177,7 @@
     
             >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
                 width: var(--basti-profile-width-small);
+                padding: 0;
             }
         }
     }
