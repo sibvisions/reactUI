@@ -124,9 +124,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     const focused = useRef<boolean>(false);
 
-    const style = context.appSettings.style;
-
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.colorScheme + '-button-color');
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_

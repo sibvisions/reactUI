@@ -20,7 +20,9 @@ export type IServerFailMessage = {
 }
 
 interface IAppWrapper {
-    embedOptions?: { [key:string]:any } 
+    embedOptions?: { [key:string]:any }
+    theme?:string
+    colorScheme?:string
 }
 
 const AppWrapper:FC<IAppWrapper> = (props) => {
@@ -48,17 +50,23 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         let options = new Map(props.embedOptions ? Object.entries(props.embedOptions) : urlParams);
 
         let themeToSet = "basti";
-        let styleToSet = "default";
+        let schemeToSet = "default";
 
         const getStyle = () => {
-            if (options.has("style")) {
-                return options.get("style");
+            if (options.has("colorScheme")) {
+                if (props.colorScheme) {
+                    return props.colorScheme;
+                }
+                return options.get("colorScheme");
             }
             return "default";
         }
 
         const getTheme = () => {
             if (options.has("theme")) {
+                if (props.theme) {
+                    return props.theme;
+                }
                 return options.get("theme");
             }
             return "basti";
@@ -70,21 +78,29 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             .then(data => {
                 if (data.theme) {
                     themeToSet = data.theme;
+
+                    if (props.theme) {
+                        themeToSet = props.theme
+                    }
                 }
                 else {
                     themeToSet = getTheme();
                 }
 
-                if (data.style) {
-                    styleToSet = data.style;
+                if (data.colorScheme) {
+                    schemeToSet = data.colorScheme;
+
+                    if (props.colorScheme) {
+                        schemeToSet = props.colorScheme
+                    }
                 }
                 else {
-                    styleToSet = getStyle();
+                    schemeToSet = getStyle();
                 }
             })
             .catch(() => {
                 themeToSet = getTheme();
-                styleToSet = getStyle();
+                schemeToSet = getStyle();
             })
             .then(() => {
                 try {
@@ -95,18 +111,18 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                 }
 
                 try {
-                    require('./frontmask/styles/' + styleToSet + '-style.scss');
+                    require('./frontmask/color-schemes/' + schemeToSet + '-scheme.scss');
                 }
                 catch(err) {
-                    require('./frontmask/styles/default-style.scss');
+                    require('./frontmask/color-schemes/default-scheme.scss');
                 }
                 
-                document.body.classList.add(styleToSet);
+                document.body.classList.add(schemeToSet);
             });
         }
         else {
             themeToSet = getTheme();
-            styleToSet = getStyle();
+            schemeToSet = getStyle();
             try {
                 require('./frontmask/themes/' + themeToSet + '.scss');
             }
@@ -115,12 +131,12 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             }
 
             try {
-                require('./frontmask/styles/' + styleToSet + '-style.scss');
+                require('./frontmask/color-schemes/' + schemeToSet + '-scheme.scss');
             }
             catch(err) {
-                require('./frontmask/styles/default-style.scss');
+                require('./frontmask/color-schemes/default-scheme.scss');
             }
-            document.body.classList.add(styleToSet);
+            document.body.classList.add(schemeToSet);
         }
     }, []);
 

@@ -31,7 +31,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (
-        <AppWrapper>
+        <AppWrapper theme={props.theme} colorScheme={props.colorScheme}>
             {appReady ?
                 <>
                     <Switch>

@@ -65,7 +65,7 @@ export default class AppSettings {
     theme:string = "basti";
 
     /** Style of the client */
-    style:string = "dark"
+    colorScheme:string = "dark"
 
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,

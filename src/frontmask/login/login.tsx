@@ -49,7 +49,7 @@ export const LoginForm:FC = () => {
     /** State for login-data */
     const [loginData, setLoginData] = useState<ILoginMaskType>({ username: "", password: "", email: "", rememberMe: false, showResetMask: false });
 
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.style + '-button-color');
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.colorScheme + '-button-color');
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.

@@ -78,9 +78,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
 
-    const style = context.appSettings.style;
-
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.colorScheme + '-button-color');
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;

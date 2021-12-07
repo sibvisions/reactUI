@@ -197,8 +197,16 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.theme = convertedOptions.get("theme");
                 }
 
-                if (convertedOptions.has("style")) {
-                    context.appSettings.style = convertedOptions.get("style");
+                if (convertedOptions.has("colorScheme")) {
+                    context.appSettings.colorScheme = convertedOptions.get("colorScheme");
+                }
+
+                if (props.theme) {
+                    context.appSettings.theme = props.theme;
+                }
+
+                if (props.colorScheme) {
+                    context.appSettings.colorScheme = props.colorScheme;
                 }
 
                 convertedOptions.forEach((v, k) => {
@@ -293,8 +301,8 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.theme = data.theme;
                 }
 
-                if (data.style) {
-                    context.appSettings.style = data.style;
+                if (data.colorScheme) {
+                    context.appSettings.colorScheme = data.style;
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

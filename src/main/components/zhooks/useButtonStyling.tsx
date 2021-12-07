@@ -36,8 +36,8 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     /** The font of a button */
     const font = useMemo(() => getFont(props.font), [props.font]);
 
-    /** client theme */
-    const style = context.appSettings.style;
+    /** client colorScheme */
+    const colorScheme = context.appSettings.colorScheme;
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle:CSSProperties = useMemo(() => {
@@ -47,7 +47,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
 
         if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-background');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-background');
             }
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
@@ -59,7 +59,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
         }
         else {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + style + '-button-color');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
             }
 
             if (!btnJustify) {
