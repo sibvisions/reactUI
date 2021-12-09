@@ -32,7 +32,7 @@ import { ApplicationMetaDataResponse,
          CloseFrameResponse,
          ContentResponse,
          CloseContentResponse} from "./response";
-import { createFetchRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createFetchRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";

@@ -15,114 +15,119 @@
     --bastim-profile-image-size: 30px;
 }
 
-.basti_mobile {
-    .p-component, body {
-        font-size: var(--bastim-font-size);
-    }
-
-    .c-menu {
-        .c-menu-menubar .p-menubar {
-            height: unset;
+body {
+    .basti_mobile {
+        .p-component, body {
+            font-size: var(--bastim-font-size);
         }
-    }
-
-    .p-inputtext {
-        border-width: 0 0 2px 0;
-        border-color: #CCCCCC;
-        border-style: solid;
-        border-radius: 0;
-
-        &:enabled:focus {
-            box-shadow: none;
-            -webkit-box-shadow: none;
-
-            & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-                border-color: var(--default-button-color);
-                color: var(--default-button-color);
+    
+        .c-menu {
+            .c-menu-menubar .p-menubar {
+                height: unset;
             }
         }
-    }
-
-    .rc-editor-linked, .rc-editor-date {
-        &:focus-within {
-            box-shadow: none;
-            -webkit-box-shadow: none;        
-        }
-
-        &:hover {
-            .p-button.p-button-icon-only {
-                &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                    border-color: var(--default-button-color);
-                    color: var(--default-button-color);
-                }
-            }
-
-            .p-inputtext {
-                border-color: var(--default-button-color);
-            }
-        }
-
-        .p-autocomplete-dropdown, .p-datepicker-trigger {
-            color: var(--default-text-color);
-        }
-
-        .p-button:focus {
-            box-shadow: none;
-            -webkit-box-shadow: none;
-        }
-    }
-
-    .p-button.p-button-icon-only {
-        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+    
+        .p-inputtext {
             border-width: 0 0 2px 0;
             border-color: #CCCCCC;
             border-style: solid;
             border-radius: 0;
+    
+            &:enabled:focus {
+                box-shadow: none;
+                -webkit-box-shadow: none;
+    
+                & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
+                    border-color: var(--default-button-color);
+                    color: var(--default-button-color);
+                }
+            }
+        }
+    
+        .rc-editor-linked, .rc-editor-date {
+            &:focus-within {
+                box-shadow: none;
+                -webkit-box-shadow: none;        
+            }
+    
+            &:hover {
+                .p-button.p-button-icon-only {
+                    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                        border-color: var(--default-button-color);
+                        color: var(--default-button-color);
+                    }
+                }
+    
+                .p-inputtext {
+                    border-color: var(--default-button-color);
+                }
+            }
+    
+            .p-autocomplete-dropdown, .p-datepicker-trigger {
+                color: var(--default-text-color);
+            }
+    
+            .p-button:focus {
+                box-shadow: none;
+                -webkit-box-shadow: none;
+            }
+        }
+    
+        .p-button.p-button-icon-only {
+            &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                border-width: 0 0 2px 0;
+                border-color: #CCCCCC;
+                border-style: solid;
+                border-radius: 0;
+            }
         }
     }
 }
 
+
 @media screen and (max-width: 530px) {
-    .basti_mobile {
-        .menu-header {
-            height: var(--bastim-topbar-height);
-        }
-
-        .profile-menu .p-menubar .p-menubar-root-list {
-            >.p-menuitem >.p-menuitem-link {
-                height: var(--bastim-profile-size-small);
-
-                &:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                    width: var(--bastim-profile-size-small)
-                }
+    body {
+        .basti_mobile {
+            .menu-header {
+                height: var(--bastim-topbar-height);
             }
-        } 
-
-        .profile-image, .profile-image-null {
-            width: var(--bastim-profile-image-size);
-            height: var(--bastim-profile-image-size);
-        }
-
-        .profile-image {
-            background-size: var(--bastim-profile-image-size) var(--bastim-profile-image-size);
-        }
-
-        .profile-image-null::before {
-            font-size: calc(var(--bastim-profile-image-size) - 2px);
-        }
-
-        .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--bastim-topbar-buttons-small);
-            height: var(--bastim-topbar-buttons-small);
-            padding: 0;
-        }
-
-        .menu-panelmenu-wrapper {
-            padding-top: var(--bastim-topbar-height);
-        }
-
-        .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
-            margin-top: var(--bastim-topbar-height);
+    
+            .profile-menu .p-menubar .p-menubar-root-list {
+                >.p-menuitem >.p-menuitem-link {
+                    height: var(--bastim-profile-size-small);
+    
+                    &:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                        width: var(--bastim-profile-size-small)
+                    }
+                }
+            } 
+    
+            .profile-image, .profile-image-null {
+                width: var(--bastim-profile-image-size);
+                height: var(--bastim-profile-image-size);
+            }
+    
+            .profile-image {
+                background-size: var(--bastim-profile-image-size) var(--bastim-profile-image-size);
+            }
+    
+            .profile-image-null::before {
+                font-size: calc(var(--bastim-profile-image-size) - 2px);
+            }
+    
+            .p-button.p-button-icon-only.menu-topbar-buttons {
+                width: var(--bastim-topbar-buttons-small);
+                height: var(--bastim-topbar-buttons-small);
+                padding: 0;
+            }
+    
+            .menu-panelmenu-wrapper {
+                padding-top: var(--bastim-topbar-height);
+            }
+    
+            .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
+                margin-top: var(--bastim-topbar-height);
+            }
         }
     }
 }

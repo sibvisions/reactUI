@@ -103,39 +103,12 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                 schemeToSet = getStyle();
             })
             .then(() => {
-                try {
-                    require('./frontmask/themes/' + themeToSet + '.scss');
-                }
-                catch(err) {
-                    require('./frontmask/themes/basti.scss');
-                }
-
-                try {
-                    require('./frontmask/color-schemes/' + schemeToSet + '-scheme.scss');
-                }
-                catch(err) {
-                    require('./frontmask/color-schemes/default-scheme.scss');
-                }
-                
                 document.body.classList.add(schemeToSet);
             });
         }
         else {
             themeToSet = getTheme();
             schemeToSet = getStyle();
-            try {
-                require('./frontmask/themes/' + themeToSet + '.scss');
-            }
-            catch(err) {
-                require('./frontmask/themes/basti.scss');
-            }
-
-            try {
-                require('./frontmask/color-schemes/' + schemeToSet + '-scheme.scss');
-            }
-            catch(err) {
-                require('./frontmask/color-schemes/default-scheme.scss');
-            }
             document.body.classList.add(schemeToSet);
         }
     }, []);

@@ -52,7 +52,7 @@ const ResizeHandler:FC = (props) => {
                         height = reactUIHeight - minusHeight;
                     }
                     else {
-                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(context.appSettings.theme === "basti_mobile" ? "--bastim-topbar-height" : "--s-menu-header-height"))
+                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((context.appSettings.theme === "basti_mobile" && window.innerWidth <= 530) ? "--bastim-topbar-height" : "--s-menu-header-height"))
                         height = reactUIHeight - minusHeight;
                     }
                 }
@@ -98,7 +98,7 @@ const ResizeHandler:FC = (props) => {
         const deviceStatusReq = createDeviceStatusRequest();
         deviceStatusReq.screenHeight = window.innerHeight;
         deviceStatusReq.screenWidth = window.innerWidth;
-        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
+        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS).catch(() => {});
     },150);
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */

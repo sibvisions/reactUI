@@ -25,6 +25,8 @@ const useStartup = (props:ICustomContent):boolean => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
+    const restartArguments = useRef<any>(null);
+
     const ws = useRef<WebSocket|null>(null);
 
     const ws2 = useRef<WebSocket|null>(null);
@@ -104,20 +106,40 @@ const useStartup = (props:ICustomContent):boolean => {
             ws.current.onopen = () => console.log("ws opened");
             ws.current.onclose = () => console.log("ws closed");
             ws.current.onmessage = (e) => {
-                console.log(e.data)
-                if (e.data === "api/changes") {
-                    context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                console.log(e)
+                if (e.data instanceof Blob) {
+                    const reader = new FileReader()
+
+                    reader.onloadend = () => { 
+                        let jscmd = JSON.parse(String(reader.result)); 
+            
+                        console.log(jscmd);
+                        if (jscmd.command === "restart") {
+                            restartArguments.current = jscmd.arguments;
+                            setRestart(prevState => !prevState);
+                        }
+                    }
+                    reader.readAsText(e.data);
+                }
+                else {
+                    if (e.data === "api/changes") {
+                        context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                    }
                 }
             }
 
-            ws2.current = new WebSocket("ws://localhost:666");
-            ws2.current.onopen = () => {
-                console.log('ws2 opened')
-                ws2.current!.send("test")
-            };
+            // ws2.current = new WebSocket("ws://localhost:666");
+            // ws2.current.onopen = () => {
+            //     console.log('ws2 opened')
+            //     ws2.current!.send("test")
+            // };
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string) => {
+            if (restartArguments.current !== null && !preserve) {
+                (req as StartupRequest).arguments = restartArguments.current;
+                restartArguments.current = null;
+            }
             context.server.sendRequest(req, (preserve && startupRequestHash) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
                 if (!preserve) {
@@ -235,7 +257,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     startupReq.deviceMode,
                 ].join('::');
                 const startupRequestCache = sessionStorage.getItem(startupRequestHash);
-                if (startupRequestCache) {
+                if (startupRequestCache && !restartArguments.current) {
                     let preserveOnReload = false;
                     (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
                         if (response.preserveOnReload) {
