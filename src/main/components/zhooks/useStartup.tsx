@@ -135,12 +135,12 @@ const useStartup = (props:ICustomContent):boolean => {
             // };
         }
 
-        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string) => {
-            if (restartArguments.current !== null && !preserve) {
-                (req as StartupRequest).arguments = restartArguments.current;
+        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {
+            if (restartArgs) {
+                (req as StartupRequest).arguments = restartArgs;
                 restartArguments.current = null;
             }
-            context.server.sendRequest(req, (preserve && startupRequestHash) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
@@ -273,7 +273,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestHash);
                 } 
                 else {
-                    sendStartup(startupReq, false, startupRequestHash);
+                    sendStartup(startupReq, false, startupRequestHash, restartArguments.current);
                 }
             }
         }
