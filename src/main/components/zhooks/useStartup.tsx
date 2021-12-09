@@ -104,6 +104,7 @@ const useStartup = (props:ICustomContent):boolean => {
             ws.current.onopen = () => console.log("ws opened");
             ws.current.onclose = () => console.log("ws closed");
             ws.current.onmessage = (e) => {
+                console.log(e.data)
                 if (e.data === "api/changes") {
                     context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
                 }
@@ -302,7 +303,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (data.colorScheme) {
-                    context.appSettings.colorScheme = data.style;
+                    context.appSettings.colorScheme = data.colorScheme;
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
