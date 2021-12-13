@@ -50,7 +50,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                     document.head.removeChild(link);
                 }
             }
-            link.href = context.server.RESOURCE_URL + 'application.css' + "?version=" + cssVersion;
+            link.href = 'application.css' + "?version=" + cssVersion;
         }
         else {
             link.href = 'application.css';
