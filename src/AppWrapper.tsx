@@ -44,76 +44,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         link.type = 'text/css';
         link.href = 'application.css';
         document.getElementsByTagName('HEAD')[0].appendChild(link);
-
-        const urlParams = new URLSearchParams(window.location.search);
-
-        let options = new Map(props.embedOptions ? Object.entries(props.embedOptions) : urlParams);
-
-        let themeToSet = "basti";
-        let schemeToSet = "default";
-
-        const getStyle = () => {
-            if (options.has("colorScheme")) {
-                if (props.colorScheme) {
-                    return props.colorScheme;
-                }
-                return options.get("colorScheme");
-            }
-            return "default";
-        }
-
-        const getTheme = () => {
-            if (options.has("theme")) {
-                if (props.theme) {
-                    return props.theme;
-                }
-                return options.get("theme");
-            }
-            return "basti";
-        }
-
-        if (process.env.NODE_ENV === "development") {
-            fetch('config.json')
-            .then((r) => r.json())
-            .then(data => {
-                if (data.theme) {
-                    themeToSet = data.theme;
-
-                    if (props.theme) {
-                        themeToSet = props.theme
-                    }
-                }
-                else {
-                    themeToSet = getTheme();
-                }
-
-                if (data.colorScheme) {
-                    schemeToSet = data.colorScheme;
-
-                    if (props.colorScheme) {
-                        schemeToSet = props.colorScheme
-                    }
-                }
-                else {
-                    schemeToSet = getStyle();
-                }
-            })
-            .catch(() => {
-                themeToSet = getTheme();
-                schemeToSet = getStyle();
-            })
-            .then(() => {
-                document.body.classList.add(schemeToSet);
-            });
-        }
-        else {
-            themeToSet = getTheme();
-            schemeToSet = getStyle();
-            document.body.classList.add(schemeToSet);
-        }
     }, []);
-
-    
 
     /**
      * Subscribes to session-expired notification and app-ready

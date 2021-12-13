@@ -216,22 +216,38 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.deviceMode = convertedOptions.get("deviceMode");
                 }
 
+                let themeToSet = "";
+                let schemeToSet = "";
+
+
                 if (convertedOptions.has("theme")) {
-                    context.appSettings.theme = convertedOptions.get("theme");
+                    themeToSet = convertedOptions.get("theme");
                     convertedOptions.delete("theme");
                 }
 
+                if (props.theme) {
+                    themeToSet = props.theme;
+                }
+
+                if (themeToSet) {
+                    context.appSettings.setApplicationThemeByURL(themeToSet);
+                }
+
                 if (convertedOptions.has("colorScheme")) {
-                    context.appSettings.colorScheme = convertedOptions.get("colorScheme");
+                    schemeToSet = convertedOptions.get("colorScheme");
                     convertedOptions.delete("colorScheme");
                 }
 
-                if (props.theme) {
-                    context.appSettings.theme = props.theme;
+                if (props.colorScheme) {
+                    schemeToSet = props.colorScheme;
                 }
 
-                if (props.colorScheme) {
-                    context.appSettings.colorScheme = props.colorScheme;
+                if (schemeToSet) {
+                    if (document.body.classList.length) {
+                        document.body.className = "";
+                    }
+                    document.body.classList.add(schemeToSet);
+                    context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
                 }
 
                 convertedOptions.forEach((v, k) => {
@@ -323,11 +339,15 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (data.theme) {
-                    context.appSettings.theme = data.theme;
+                    context.appSettings.setApplicationThemeByURL(data.theme)
                 }
 
                 if (data.colorScheme) {
-                    context.appSettings.colorScheme = data.colorScheme;
+                    context.appSettings.setApplicationColorSchemeByURL(data.colorScheme);
+                    if (document.body.classList.length) {
+                        document.body.className = "";
+                    }
+                    document.body.classList.add(data.colorScheme);
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

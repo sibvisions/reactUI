@@ -83,6 +83,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
+    const appTheme = useMemo(() => context.appSettings.applicationMetaData.applicationTheme.value, [context.appSettings.applicationMetaData]);
+
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
      * @param start - Biggest possible size of menu
@@ -155,9 +157,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             <div
                 className={concatClassnames(
                     "reactUI",
-                    isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
+                    isCorporation(appLayout, appTheme) ? "corporation" : "",
                     sessionExpired ? "reactUI-expired" : "",
-                    context.appSettings.theme
+                    appTheme
                 )}>
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
@@ -170,12 +172,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             </div>
             : <div className={concatClassnames(
                 "reactUI",
-                isCorporation(appLayout, context.appSettings.theme) ? "corporation" : "",
+                isCorporation(appLayout, appTheme) ? "corporation" : "",
                 sessionExpired ? "reactUI-expired" : "",
-                context.appSettings.theme
+                appTheme
             )} >
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
-                {isCorporation(appLayout, context.appSettings.theme) ?
+                {isCorporation(appLayout, appTheme) ?
                     <CorporateMenu
                         menuVisibility={menuVisibility}
                         visibleButtons={visibleButtons} />
@@ -187,7 +189,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         visibleButtons={visibleButtons} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    isCorporation(appLayout, context.appSettings.theme) ? "main--with-c-menu" : "main--with-s-menu",
+                    isCorporation(appLayout, appTheme) ? "main--with-c-menu" : "main--with-s-menu",
                     ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuVisibility.toolBar ? "toolbar-visible" : "",

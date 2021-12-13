@@ -20,8 +20,6 @@ export type AppContextType={
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    //theme: string,
-    //setTheme: Function
 }
 
 /** Contentstore instance */
@@ -46,8 +44,6 @@ const initValue: AppContextType = {
     appSettings: appSettings,
     subscriptions: subscriptions,
     ctrlPressed: false,
-    //theme: "",
-    //setTheme: () => {},
 }
 
 /** Context containing the server and contentstore */

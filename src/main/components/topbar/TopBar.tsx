@@ -23,7 +23,7 @@ const TopBar:FC = ({children}) => {
 
     const context = useContext(appContext)
 
-    const colorScheme = useMemo(() => context.appSettings.colorScheme, [context.appSettings.colorScheme]);
+    const colorScheme = useMemo(() => context.appSettings.applicationMetaData.applicationColorScheme.value, [context.appSettings.applicationMetaData]);
 
     const { barColors, shadowBlur, barThickness, shadowColor } = getSettingsFromCSSVar({
         barColors: {

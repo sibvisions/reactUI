@@ -377,7 +377,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const focusIsClicked = useRef<boolean>(false);
 
-    const isSmallTheme = context.appSettings.theme === "basti_small";
+    const isSmallTheme = useMemo(() => context.appSettings.applicationMetaData.applicationTheme.value === "basti_small", [context.appSettings.applicationMetaData]);
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {

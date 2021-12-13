@@ -11,7 +11,9 @@ type ApplicationMetaData = {
     languageResource: string
     lostPasswordEnabled: boolean
     preserveOnReload: boolean
-    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
+    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean }
+    applicationColorScheme: { value: string, urlSet: boolean }
+    applicationTheme: { value: string, urlSet: boolean }
     applicationName: string
 }
 
@@ -61,12 +63,6 @@ export default class AppSettings {
     /** The devicemode of the client */
     deviceMode:string = "desktop";
 
-    /** Theme of the client */
-    theme:string = "basti";
-
-    /** Style of the client */
-    colorScheme:string = "default"
-
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
      * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
@@ -88,6 +84,8 @@ export default class AppSettings {
         lostPasswordEnabled: false, 
         preserveOnReload: false, 
         applicationLayout: { layout: "standard", urlSet: false },
+        applicationTheme: { value: "basti", urlSet: false },
+        applicationColorScheme: { value: "default", urlSet: false },
         applicationName: ""
     };
 
@@ -150,22 +148,36 @@ export default class AppSettings {
         this.applicationMetaData.languageResource = appMetaData.languageResource;
         this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
+
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
         }
+
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
             this.#subManager.notifyAppNameChanged(appMetaData.applicationName);
             this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
         }
-        
-        if (appMetaData.theme) {
-            this.theme = appMetaData.theme;
+
+        if (!this.applicationMetaData.applicationTheme.urlSet) {
+            this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
+        }
+
+        if (!this.applicationMetaData.applicationColorScheme.urlSet) {
+            this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme
         }
     }
 
+    setApplicationThemeByURL(pTheme:string) {
+        this.applicationMetaData.applicationTheme = { value: pTheme, urlSet: true };
+    }
+
+    setApplicationColorSchemeByURL(pScheme:string) {
+        this.applicationMetaData.applicationColorScheme = { value: pScheme, urlSet: true };
+    }
+
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {
-        this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true }
+        this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true };
     }
 
     /**

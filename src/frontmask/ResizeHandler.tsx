@@ -47,12 +47,12 @@ const ResizeHandler:FC = (props) => {
                 else {
                     const reactUIHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight
                     let minusHeight = 0;
-                    if (isCorporation(appLayout, context.appSettings.theme) && document.querySelector(".c-menu-topbar")) {
+                    if (isCorporation(appLayout, context.appSettings.applicationMetaData.applicationTheme.value) && document.querySelector(".c-menu-topbar")) {
                         minusHeight = (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight
                         height = reactUIHeight - minusHeight;
                     }
                     else {
-                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((context.appSettings.theme === "basti_mobile" && window.innerWidth <= 530) ? "--bastim-topbar-height" : "--s-menu-header-height"))
+                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((context.appSettings.applicationMetaData.applicationTheme.value === "basti_mobile" && window.innerWidth <= 530) ? "--bastim-topbar-height" : "--s-menu-header-height"))
                         height = reactUIHeight - minusHeight;
                     }
                 }

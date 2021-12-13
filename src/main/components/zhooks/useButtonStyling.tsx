@@ -37,7 +37,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     const font = useMemo(() => getFont(props.font), [props.font]);
 
     /** client colorScheme */
-    const colorScheme = context.appSettings.colorScheme;
+    const colorScheme = useMemo(() => context.appSettings.applicationMetaData.applicationColorScheme.value, [context.appSettings.applicationMetaData]);
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle:CSSProperties = useMemo(() => {
