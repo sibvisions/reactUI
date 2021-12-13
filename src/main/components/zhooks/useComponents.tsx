@@ -31,15 +31,21 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
         let tempSizes = new Map<string, ComponentSizes>();
+        let componentsChanged = false
         const children = context.contentStore.getChildren(id, className);
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
             tempSizes = new Map([...preferredSizes]);
-            // tempSizes.forEach((val, key) => {
-            //     if ((!context.contentStore.flatContent.has(key) && !context.contentStore.replacedContent.has(key) && !context.contentStore.desktopContent.has(key)) || context.contentStore.flatContent.get(key)?.visible === false) {
-            //         tempSizes.delete(key)
-            //     }
-            // });
+            tempSizes.forEach((val, key) => {
+                if (!children.has(key)) {
+                    tempSizes.delete(key)
+                    componentsChanged = true;
+                }
+            });
+
+            if (componentsChanged) {
+                setPreferredSizes(new Map(tempSizes));
+            }
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
