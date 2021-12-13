@@ -99,7 +99,7 @@
     --blue-toolbar-background: #f8f9fa;
 
     /// Blue toolbar border
-    --blue-toolbar-border: 1px solid #dee2e6;
+    --blue-toolbar-border-color: #dee2e6;
 
     /// Blue table-header background
     --blue-table-header-background: #ffffff;
@@ -509,7 +509,7 @@ body.blue {
     }
 
     .rc-button {
-        .mouse-border {
+        &.mouse-border {
             color: var(--blue-text-color);
         }
 
@@ -653,11 +653,23 @@ body.blue {
     // }
 
     /// DateCellEditor
-    .p-calendar:focus-within {
-        outline: 0 none;
-        outline-offset: 0;
-        box-shadow: var(--blue-focus-box-shadow);
-        border-radius: var(--blue-editor-border-radius);
+    .p-calendar {
+        &:focus-within {
+            outline: 0 none;
+            outline-offset: 0;
+            box-shadow: var(--blue-focus-box-shadow);
+            border-radius: var(--blue-editor-border-radius);
+        }
+
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-datepicker {
@@ -693,8 +705,20 @@ body.blue {
     }
 
     /// LinkedCellEditor
-    .rc-editor-linked:focus-within {
-        box-shadow: var(--blue-focus-box-shadow);
+    .rc-editor-linked {
+        &:focus-within {
+            box-shadow: var(--blue-focus-box-shadow);
+        }
+
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-autocomplete-panel {
@@ -1029,7 +1053,7 @@ body.blue {
     /// Toolbar
     .rc-toolbar {
         background: var(--blue-toolbar-background);
-        border: var(--blue-toolbar-border);
+        border-color: var(--blue-toolbar-border-color);
 
         &.navbar-north {
             border-top-left-radius: var(--blue-table-border-radius);

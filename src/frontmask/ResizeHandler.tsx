@@ -98,7 +98,7 @@ const ResizeHandler:FC = (props) => {
         const deviceStatusReq = createDeviceStatusRequest();
         deviceStatusReq.screenHeight = window.innerHeight;
         deviceStatusReq.screenWidth = window.innerWidth;
-        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS).catch(() => {});
+        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
     },150);
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */

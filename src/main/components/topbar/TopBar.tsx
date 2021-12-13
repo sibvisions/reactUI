@@ -15,7 +15,7 @@ export const TopBarContext = createContext<TopBarContextType>({
 
 export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
     topbar.show();
-    return promise.finally(() => topbar.hide()).catch(() => {});
+    return promise.finally(() => topbar.hide());
 };
 
 const TopBar:FC = ({children}) => {

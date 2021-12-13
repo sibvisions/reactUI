@@ -99,7 +99,7 @@
     --orange-toolbar-background: #f8f9fa;
 
     /// Orange toolbar border
-    --orange-toolbar-border: 1px solid #dee2e6;
+    --orange-toolbar-border-color: #dee2e6;
 
     /// Orange table-header background
     --orange-table-header-background: #ffffff;
@@ -509,7 +509,7 @@ body.orange {
     }
 
     .rc-button {
-        .mouse-border {
+        &.mouse-border {
             color: var(--orange-text-color);
         }
 
@@ -653,11 +653,23 @@ body.orange {
     // }
 
     /// DateCellEditor
-    .p-calendar:focus-within {
-        outline: 0 none;
-        outline-offset: 0;
-        box-shadow: var(--orange-focus-box-shadow);
-        border-radius: var(--orange-editor-border-radius);
+    .p-calendar {
+        &:focus-within {
+            outline: 0 none;
+            outline-offset: 0;
+            box-shadow: var(--orange-focus-box-shadow);
+            border-radius: var(--orange-editor-border-radius);
+        }
+        
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-datepicker {
@@ -693,8 +705,20 @@ body.orange {
     }
 
     /// LinkedCellEditor
-    .rc-editor-linked:focus-within {
-        box-shadow: var(--orange-focus-box-shadow);
+    .rc-editor-linked {
+        &:focus-within {
+            box-shadow: var(--orange-focus-box-shadow);
+        }
+
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-autocomplete-panel {
@@ -1029,7 +1053,7 @@ body.orange {
     /// Toolbar
     .rc-toolbar {
         background: var(--orange-toolbar-background);
-        border: var(--orange-toolbar-border);
+        border-color: var(--orange-toolbar-border-color);
 
         &.navbar-north {
             border-top-left-radius: var(--orange-table-border-radius);

@@ -99,7 +99,7 @@
     --dark-toolbar-background: #303a48;
 
     /// Darkmode toolbar border
-    --dark-toolbar-border: 1px solid #3f4b5b;
+    --dark-toolbar-border-color:#3f4b5b;
 
     /// Darkmode table-header background
     --dark-table-header-background: #20262e;
@@ -509,7 +509,7 @@ body.dark {
     }
 
     .rc-button {
-        .mouse-border {
+        &.mouse-border {
             color: var(--dark-text-color);
         }
 
@@ -653,11 +653,23 @@ body.dark {
     }
 
     /// DateCellEditor
-    .p-calendar:focus-within {
-        outline: 0 none;
-        outline-offset: 0;
-        box-shadow: var(--dark-focus-box-shadow);
-        border-radius: var(--dark-editor-border-radius);
+    .p-calendar {
+        &:focus-within {
+            outline: 0 none;
+            outline-offset: 0;
+            box-shadow: var(--dark-focus-box-shadow);
+            border-radius: var(--dark-editor-border-radius);
+        }
+
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-datepicker {
@@ -693,8 +705,20 @@ body.dark {
     }
 
     /// LinkedCellEditor
-    .rc-editor-linked:focus-within {
-        box-shadow: var(--dark-focus-box-shadow);
+    .rc-editor-linked {
+        &:focus-within {
+            box-shadow: var(--dark-focus-box-shadow);
+        }
+
+        input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        button {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
     }
 
     .p-autocomplete-panel {
@@ -1029,7 +1053,7 @@ body.dark {
     /// Toolbar
     .rc-toolbar {
         background: var(--dark-toolbar-background);
-        border: var(--dark-toolbar-border);
+        border-color: var(--dark-toolbar-border-color);
 
         &.navbar-north {
             border-top-left-radius: var(--dark-table-border-radius);
@@ -1203,7 +1227,8 @@ body.dark {
 
     /// Error Dialog
     .rc-error-dialog {
-        background: var(--dark-error-dialog-background);
+        ///background: var(--dark-error-dialog-background);
+        ///color: #495057;
     }
 
     /// GroupPanel
