@@ -191,7 +191,6 @@ class Server {
                             this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                         }
                         this.subManager.emitErrorDialogVisible(true);
-                        reject(error);
                         console.error(error)
                     }).finally(() => {
                         this.openRequests.delete(request);

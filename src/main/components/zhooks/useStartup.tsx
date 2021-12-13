@@ -146,8 +146,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                 }
                 afterStartup(result)
-            })
-            .catch(err => console.error(err));
+            });
         }
 
         const afterStartup = (results:BaseResponse[]) => {
