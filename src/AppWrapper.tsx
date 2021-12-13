@@ -38,13 +38,30 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Reference for the dialog which shows the timeout error message */
     const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
 
+    const [cssVersion, setCssVersion] = useState<string>("");
+
     useLayoutEffect(() => {
-        const link:HTMLLinkElement = document.createElement('link'); 
+        const link:HTMLLinkElement = document.createElement('link');
         link.rel = 'stylesheet'; 
         link.type = 'text/css';
-        link.href = 'application.css';
-        document.getElementsByTagName('HEAD')[0].appendChild(link);
-    }, []);
+        if (cssVersion) {
+            for (let link of document.head.getElementsByTagName('link')) {
+                if (link.href.includes("application.css")) {
+                    document.head.removeChild(link);
+                }
+            }
+            link.href = context.server.RESOURCE_URL + 'application.css' + "?version=" + cssVersion;
+        }
+        else {
+            link.href = 'application.css';
+        }
+        
+        document.head.appendChild(link);
+    }, [cssVersion]);
+
+    for (let link of document.head.getElementsByTagName('link')) {
+        console.log(link.href)
+    }
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -57,10 +74,13 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
         context.subscriptions.subscribeToAppName((newAppName:string) => setAppName(newAppName));
 
+        context.subscriptions.subscribeToCssVersion((version:string) => setCssVersion(version));
+
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setDialogVisible(show));
             context.subscriptions.unsubscribeFromAppName((newAppName:string) => setAppName(newAppName));
+            context.subscriptions.unsubscribeFromCssVersion();
         }
     },[context.subscriptions]);
 

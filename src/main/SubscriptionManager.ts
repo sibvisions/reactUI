@@ -132,6 +132,8 @@ export class SubscriptionManager {
 
     appNameSubscriber = new Array<Function>();
 
+    cssVersionSubscriber:Function = () => {};
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -404,6 +406,10 @@ export class SubscriptionManager {
         this.appNameSubscriber.push(fn);
     }
 
+    subscribeToCssVersion(fn:Function) {
+        this.cssVersionSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -602,6 +608,10 @@ export class SubscriptionManager {
         this.appNameSubscriber.splice(this.appNameSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    unsubscribeFromCssVersion() {
+        this.cssVersionSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -767,5 +777,9 @@ export class SubscriptionManager {
         if (func) {
             func.apply(undefined, [dialog]);
         }
+    }
+
+    emitCssVersion(version:string) {
+        this.cssVersionSubscriber.apply(undefined, [version]);
     }
 }

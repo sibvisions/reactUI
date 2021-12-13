@@ -36,6 +36,7 @@ enum REQUEST_ENDPOINTS {
     FOCUS_GAINED = "/api/focusGained",
     FOCUS_LOST = "/api/focusLost",
     CLOSE_FRAME = "/api/closeFrame",
-    CLOSE_CONTENT = "/api/closeContent"
+    CLOSE_CONTENT = "/api/closeContent",
+    REOPEN_SCREEN = "/api/reopenScreen"
 }
 export default REQUEST_ENDPOINTS

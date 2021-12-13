@@ -6,15 +6,19 @@ import { useHistory } from "react-router";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { createChangesRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
+import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, StartupRequest, UIRefreshRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -25,7 +29,7 @@ const useStartup = (props:ICustomContent):boolean => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
-    const restartArguments = useRef<any>(null);
+    const relaunchArguments = useRef<any>(null);
 
     const ws = useRef<WebSocket|null>(null);
 
@@ -114,9 +118,17 @@ const useStartup = (props:ICustomContent):boolean => {
                         let jscmd = JSON.parse(String(reader.result)); 
             
                         console.log(jscmd);
-                        if (jscmd.command === "restart") {
-                            restartArguments.current = jscmd.arguments;
+                        if (jscmd.command === "relaunch") {
+                            relaunchArguments.current = jscmd.arguments;
                             setRestart(prevState => !prevState);
+                        }
+                        else if (jscmd.command === "api/reopenScreen") {
+                            const openReq = createOpenScreenRequest();
+                            openReq.className = jscmd.arguments.className;
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.REOPEN_SCREEN), topbar);
+                        }
+                        else if (jscmd.command === "reloadCss") {
+                            context.subscriptions.emitCssVersion(jscmd.arguments.version);
                         }
                     }
                     reader.readAsText(e.data);
@@ -138,7 +150,7 @@ const useStartup = (props:ICustomContent):boolean => {
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {
             if (restartArgs) {
                 (req as StartupRequest).arguments = restartArgs;
-                restartArguments.current = null;
+                relaunchArguments.current = null;
             }
             context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
@@ -274,7 +286,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     startupReq.deviceMode,
                 ].join('::');
                 const startupRequestCache = sessionStorage.getItem(startupRequestHash);
-                if (startupRequestCache && !restartArguments.current) {
+                if (startupRequestCache && !relaunchArguments.current) {
                     let preserveOnReload = false;
                     (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
                         if (response.preserveOnReload) {
@@ -290,7 +302,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestHash);
                 } 
                 else {
-                    sendStartup(startupReq, false, startupRequestHash, restartArguments.current);
+                    sendStartup(startupReq, false, startupRequestHash, relaunchArguments.current);
                 }
             }
         }
