@@ -218,10 +218,12 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (convertedOptions.has("theme")) {
                     context.appSettings.theme = convertedOptions.get("theme");
+                    convertedOptions.delete("theme");
                 }
 
                 if (convertedOptions.has("colorScheme")) {
                     context.appSettings.colorScheme = convertedOptions.get("colorScheme");
+                    convertedOptions.delete("colorScheme");
                 }
 
                 if (props.theme) {
@@ -288,7 +290,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     if (k === "appName") {
                         startUpRequest.applicationName = v;
                     }
-                    else {
+                    else if (["theme", "colorScheme"].indexOf(k) === -1) {
                         startUpRequest[k] = v;
                     }
                 });
