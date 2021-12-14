@@ -164,7 +164,8 @@ export default class AppSettings {
         }
 
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
-            this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme
+            this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
+            document.body.classList.add(appMetaData.applicationColorScheme);
         }
     }
 

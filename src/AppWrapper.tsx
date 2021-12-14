@@ -59,10 +59,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         document.head.appendChild(link);
     }, [cssVersion]);
 
-    for (let link of document.head.getElementsByTagName('link')) {
-        console.log(link.href)
-    }
-
     /**
      * Subscribes to session-expired notification and app-ready
      * @returns unsubscribes from session and app-ready

@@ -99,6 +99,8 @@ const useStartup = (props:ICustomContent):boolean => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const authKey = localStorage.getItem("authKey");
+        let themeToSet = "";
+        let schemeToSet = "";
 
         if (props.onStartup) {
             props.onStartup();
@@ -227,10 +229,6 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.deviceMode = convertedOptions.get("deviceMode");
                 }
 
-                let themeToSet = "";
-                let schemeToSet = "";
-
-
                 if (convertedOptions.has("theme")) {
                     themeToSet = convertedOptions.get("theme");
                     convertedOptions.delete("theme");
@@ -254,11 +252,8 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (schemeToSet) {
-                    if (document.body.classList.length) {
-                        document.body.className = "";
-                    }
-                    document.body.classList.add(schemeToSet);
                     context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
+                    document.body.classList.add(schemeToSet);
                 }
 
                 convertedOptions.forEach((v, k) => {
@@ -354,11 +349,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (data.colorScheme) {
-                    context.appSettings.setApplicationColorSchemeByURL(data.colorScheme);
-                    if (document.body.classList.length) {
-                        document.body.className = "";
-                    }
-                    document.body.classList.add(data.colorScheme);
+                    schemeToSet = data.colorScheme
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
