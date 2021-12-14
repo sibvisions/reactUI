@@ -1020,6 +1020,11 @@ body.dark {
             &:nth-child(even) {
                 background: var(--dark-table-row-even-background);
 
+                &.p-highlight {
+                    background: var(--dark-table-selected-row-background);
+                    color: var(--dark-text-color);
+                }
+
                 > td {
                     &.cell-required {
                         background: var(--dark-table-required-even-background);

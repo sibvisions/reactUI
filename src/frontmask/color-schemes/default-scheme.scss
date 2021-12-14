@@ -1020,6 +1020,11 @@ body.default {
             &:nth-child(even) {
                 background: var(--default-table-row-even-background);
 
+                &.p-highlight {
+                    background: var(--default-table-selected-row-background);
+                    color: var(--default-text-color);
+                }
+
                 > td {
                     &.cell-required {
                         background: var(--default-table-required-even-background);

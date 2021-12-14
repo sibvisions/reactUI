@@ -1020,6 +1020,11 @@ body.blue {
             &:nth-child(even) {
                 background: var(--blue-table-row-even-background);
 
+                &.p-highlight {
+                    background: var(--blue-table-selected-row-background);
+                    color: var(--blue-text-color);
+                }
+
                 > td {
                     &.cell-required {
                         background: var(--blue-table-required-even-background);
