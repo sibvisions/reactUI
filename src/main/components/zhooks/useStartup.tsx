@@ -12,6 +12,7 @@ import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { addCSSDynamically } from "../util";
 
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
@@ -121,6 +122,7 @@ const useStartup = (props:ICustomContent):boolean => {
             
                         console.log(jscmd);
                         if (jscmd.command === "relaunch") {
+                            context.contentStore.reset();
                             relaunchArguments.current = jscmd.arguments;
                             setRestart(prevState => !prevState);
                         }
@@ -217,8 +219,8 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
                 }
 
-                if (convertedOptions.has("language")) {
-                    context.appSettings.language = convertedOptions.get("language");
+                if (convertedOptions.has("langCode")) {
+                    context.appSettings.language = convertedOptions.get("langCode");
                 }
 
                 if (convertedOptions.has("timezone")) {
@@ -227,19 +229,6 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (convertedOptions.has("deviceMode")) {
                     context.appSettings.deviceMode = convertedOptions.get("deviceMode");
-                }
-
-                if (convertedOptions.has("theme")) {
-                    themeToSet = convertedOptions.get("theme");
-                    convertedOptions.delete("theme");
-                }
-
-                if (props.theme) {
-                    themeToSet = props.theme;
-                }
-
-                if (themeToSet) {
-                    context.appSettings.setApplicationThemeByURL(themeToSet);
                 }
 
                 if (convertedOptions.has("colorScheme")) {
@@ -253,7 +242,23 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (schemeToSet) {
                     context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
-                    document.body.classList.add(schemeToSet);
+                    addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "scheme");
+                    context.subscriptions.emitColorSchemeChanged(schemeToSet);
+                }
+
+                if (convertedOptions.has("theme")) {
+                    themeToSet = convertedOptions.get("theme");
+                    convertedOptions.delete("theme");
+                }
+
+                if (props.theme) {
+                    themeToSet = props.theme;
+                }
+
+                if (themeToSet) {
+                    context.appSettings.setApplicationThemeByURL(themeToSet);
+                    addCSSDynamically('themes/' + themeToSet + '.css', "theme");
+                    context.subscriptions.emitThemeChanged(themeToSet);
                 }
 
                 convertedOptions.forEach((v, k) => {
@@ -336,20 +341,20 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.LOGO_LOGIN = data.logoBig;
                 }
 
-                if (data.language) {
-                    context.appSettings.language = data.language;
+                if (data.langCode) {
+                    context.appSettings.language = data.langCode;
                 }
 
                 if (data.timezone) {
                     context.appSettings.timezone = data.timezone;
                 }
 
-                if (data.theme) {
-                    context.appSettings.setApplicationThemeByURL(data.theme)
-                }
-
                 if (data.colorScheme) {
                     schemeToSet = data.colorScheme
+                }
+
+                if (data.theme) {
+                    themeToSet = data.theme
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

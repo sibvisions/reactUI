@@ -1,4 +1,4 @@
-import { CSSProperties, useContext, useMemo } from "react";
+import { CSSProperties, useContext, useEffect, useMemo, useState } from "react";
 import tinycolor from "tinycolor2";
 import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
@@ -36,8 +36,15 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     /** The font of a button */
     const font = useMemo(() => getFont(props.font), [props.font]);
 
-    /** client colorScheme */
-    const colorScheme = useMemo(() => context.appSettings.applicationMetaData.applicationColorScheme.value, [context.appSettings.applicationMetaData]);
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToColorScheme(props.id, (colorScheme:string) => setColorScheme(colorScheme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme(props.id);
+        }
+    }, [context.subscriptions]);
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle:CSSProperties = useMemo(() => {

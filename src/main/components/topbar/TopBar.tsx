@@ -1,4 +1,4 @@
-import React, { FC, useState, createContext, useContext, useMemo } from "react";
+import React, { FC, useState, createContext, useContext, useMemo, useEffect } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { appContext } from "../../AppProvider";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
@@ -23,7 +23,15 @@ const TopBar:FC = ({children}) => {
 
     const context = useContext(appContext)
 
-    const colorScheme = useMemo(() => context.appSettings.applicationMetaData.applicationColorScheme.value, [context.appSettings.applicationMetaData]);
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToColorScheme("topbar", (colorScheme:string) => setColorScheme(colorScheme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromColorScheme("topbar");
+        }
+    }, [context.subscriptions]);
 
     const { barColors, shadowBlur, barThickness, shadowColor } = getSettingsFromCSSVar({
         barColors: {

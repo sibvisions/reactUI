@@ -1,5 +1,5 @@
 /** React imports */
-import React, { Children, createContext, CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import * as _ from 'underscore'
@@ -83,7 +83,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
-    const appTheme = useMemo(() => context.appSettings.applicationMetaData.applicationTheme.value, [context.appSettings.applicationMetaData]);
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -121,6 +121,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
         context.subscriptions.subscribeToErrorDialog((show:boolean) => setSessionExpired(show));
 
+        context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
@@ -136,6 +137,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 });
             });
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));
+            context.subscriptions.unsubscribeFromTheme("uimanager");
         }
     }, [context.subscriptions])
 

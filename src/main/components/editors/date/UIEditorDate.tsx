@@ -124,7 +124,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     const focused = useRef<boolean>(false);
 
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.applicationMetaData.applicationColorScheme.value + '-button-color');
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -155,6 +157,14 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToColorScheme(id, (colorScheme:string) => setColorScheme(colorScheme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromColorScheme(id);
+        }
+    }, [context.subscriptions]);
 
     useEffect(() => {
         setMounted(true)

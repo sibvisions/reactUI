@@ -1,4 +1,5 @@
 import BaseComponent from "./components/BaseComponent";
+import { addCSSDynamically } from "./components/util";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
@@ -159,13 +160,26 @@ export default class AppSettings {
             this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
         }
 
-        if (!this.applicationMetaData.applicationTheme.urlSet) {
-            this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
-        }
-
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
-            this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-            document.body.classList.add(appMetaData.applicationColorScheme);
+            if (appMetaData.applicationColorScheme) {
+                this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "scheme");
+            }
+            else {
+                addCSSDynamically('color-schemes/default-scheme.css', "scheme");
+            }
+            this.#subManager.emitColorSchemeChanged(appMetaData.applicationColorScheme);
+        }
+        
+        if (!this.applicationMetaData.applicationTheme.urlSet) {
+            if (appMetaData.applicationTheme) {
+                this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
+                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "theme");
+            }
+            else {
+                addCSSDynamically('themes/basti.css', "theme");
+            }
+            this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
     }
 

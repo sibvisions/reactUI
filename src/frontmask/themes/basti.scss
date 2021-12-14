@@ -70,63 +70,72 @@
     --basti-label-padding: 9px;
 }
 
-body {
-    .basti {
-        .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--basti-topbar-buttons);
-            height: var(--basti-topbar-buttons);
+.basti {
+    .p-button.p-button-icon-only.menu-topbar-buttons {
+        width: var(--basti-topbar-buttons);
+        height: var(--basti-topbar-buttons);
+    }
+    
+    .profile-menu .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+        height: var(--basti-profile-height);
+        padding: var(--basti-profile-padding);
+    }
+    
+    .profile-image, .profile-image-null {
+        width: var(--basti-profile-pic);
+        height: var(--basti-profile-pic);
+    }
+    
+    .profile-image {
+        background-size: var(--basti-profile-pic) var(--basti-profile-pic);
+    }
+    
+    .profile-image-null::before {
+        font-size: calc(var(--basti-profile-pic) - 2px);
+    }
+    
+    .p-panelmenu {
+        .p-panelmenu-header > a {
+            padding: var(--basti-s-menu-header-padding);
         }
-        
-        .profile-menu .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-            height: var(--basti-profile-height);
-            padding: var(--basti-profile-padding);
+    
+        .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
+            padding: var(--basti-s-menu-item-padding);
         }
-        
-        .profile-image, .profile-image-null {
-            width: var(--basti-profile-pic);
-            height: var(--basti-profile-pic);
+    }
+    
+    .p-menubar {
+        .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
+            padding: var(--basti-c-menu-header-padding);
         }
-        
-        .profile-image {
-            background-size: var(--basti-profile-pic) var(--basti-profile-pic);
+        .p-menuitem-link {
+            padding: var(--basti-c-menu-item-padding);
         }
-        
-        .profile-image-null::before {
-            font-size: calc(var(--basti-profile-pic) - 2px);
-        }
-        
-        .p-panelmenu {
-            .p-panelmenu-header > a {
-                padding: var(--basti-s-menu-header-padding);
+    }
+    
+    .p-inputtext {
+        padding: var(--basti-input-padding);
+    }
+
+    .rc-button {
+        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
+    }
+    
+    .p-button.p-button-icon-only {
+        padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem));
+
+        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+            padding: var(--basti-input-button-padding);
+            > .p-button-icon {
+                font-size: var(--basti-input-button-icon-size);
             }
-        
-            .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
-                padding: var(--basti-s-menu-item-padding);
-            }
         }
-        
-        .p-menubar {
-            .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
-                padding: var(--basti-c-menu-header-padding);
-            }
-            .p-menuitem-link {
-                padding: var(--basti-c-menu-item-padding);
-            }
-        }
-        
-        .p-inputtext {
-            padding: var(--basti-input-padding);
-        }
-        
-        .p-button.p-button-icon-only {
-            &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                padding: var(--basti-input-button-padding);
-                > .p-button-icon {
-                    font-size: var(--basti-input-button-icon-size);
-                }
-            }
-        }
-        
+    }
+    
+    .p-checkbox {
+        width: var(--basti-checkbox-size);
+        height: var(--basti-checkbox-size);
+
         .p-checkbox-box {
             width: var(--basti-checkbox-size);
             height: var(--basti-checkbox-size);
@@ -135,67 +144,74 @@ body {
                 font-size: calc(var(--basti-checkbox-size) * 0.7);
             }
         }
-        
-        .p-radiobutton .p-radiobutton-box {
-            width: var(--basti-radiobutton-size);
-            height: var(--basti-radiobutton-size);
-        
-            .p-radiobutton-icon {
-                height: calc(var(--basti-radiobutton-size) * 0.6);
-                width: calc(var(--basti-radiobutton-size) * 0.6);
+    }
+    
+    .p-radiobutton .p-radiobutton-box {
+        width: var(--basti-radiobutton-size);
+        height: var(--basti-radiobutton-size);
+    
+        .p-radiobutton-icon {
+            height: calc(var(--basti-radiobutton-size) * 0.6);
+            width: calc(var(--basti-radiobutton-size) * 0.6);
+        }
+    }
+
+    .p-splitbutton-defaultbutton {
+        padding: var(--menuBtnPadding, var(--basti-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
+    }
+
+    .p-button.p-splitbutton-menubutton {
+        padding: var(--basti-menubtn-rightbtn-padding);
+    }
+
+    .rc-togglebutton {
+        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
+    }
+    
+    .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+        padding: var(--basti-tab-padding);
+    }
+    
+    .rc-table {
+        .p-datatable-thead > tr > th {
+            padding: var(--basti-table-header-padding);
+        }
+    
+        .p-datatable-tbody > tr > td {
+            height: calc(8px + var(--basti-table-data-height));
+    
+            &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
+                height: var(--basti-table-data-height);
             }
         }
-        
-        .p-tabview .p-tabview-nav li .p-tabview-nav-link {
-            padding: var(--basti-tab-padding);
-        }
-        
-        .rc-table {
-            .p-datatable-thead > tr > th {
-                padding: var(--basti-table-header-padding);
-            }
-        
-            .p-datatable-tbody > tr > td {
-                height: calc(8px + var(--basti-table-data-height));
-        
-                &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
-                    height: var(--basti-table-data-height);
-                }
-            }
-        }
-        
-        .rc-label >span {
-            padding: var(--basti-label-padding) 0px;
-        }
+    }
+    
+    .rc-label >span {
+        padding: var(--basti-label-padding) 0px;
     }
 }
 
 
 @media screen and (max-width: 960px) {
-    body {
-        .basti {
-            .profile-menu .p-menubar .p-menubar-root-list {
-                .p-submenu-list {
-                    left: calc(var(--basti-profile-width-small) - var(--s-menu-profile-mini-sub-width))
-                }
-        
-                >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                    width: var(--basti-profile-width-small);
-                    padding: 0;
-                }
+    .basti {
+        .profile-menu .p-menubar .p-menubar-root-list {
+            .p-submenu-list {
+                left: calc(var(--basti-profile-width-small) - var(--s-menu-profile-mini-sub-width))
+            }
+    
+            >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                width: var(--basti-profile-width-small);
+                padding: 0;
             }
         }
     }
-
 }
 
 @media screen and (max-width: 530px) {
-    body {
-        .basti {
-            .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--basti-topbar-buttons-small);
-                height: var(--basti-topbar-buttons-small);
-            }
+    .basti {
+        .p-button.p-button-icon-only.menu-topbar-buttons {
+            width: var(--basti-topbar-buttons-small);
+            height: var(--basti-topbar-buttons-small);
         }
     }
 }

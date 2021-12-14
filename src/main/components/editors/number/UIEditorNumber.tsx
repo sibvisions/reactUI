@@ -210,6 +210,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     prefix={prefixLength}
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
+                    tabIndex={props.tabIndex}
                     value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                     style={{ width: '100%' }}
                     inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
@@ -233,6 +234,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 useGrouping={useGrouping}
                 locale={context.appSettings.locale}
                 prefix={prefixLength}
+                tabIndex={-1}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
                 value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}

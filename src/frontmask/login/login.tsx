@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, FormEvent, useContext, useRef, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useContext, useEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -49,7 +49,17 @@ export const LoginForm:FC = () => {
     /** State for login-data */
     const [loginData, setLoginData] = useState<ILoginMaskType>({ username: "", password: "", email: "", rememberMe: false, showResetMask: false });
 
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.applicationMetaData.applicationColorScheme.value + '-button-color');
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
+
+    useEffect(() => {
+        context.subscriptions.subscribeToColorScheme("login", (colorScheme:string) => setColorScheme(colorScheme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromColorScheme("login");
+        }
+    }, [context.subscriptions]);
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.

@@ -24,6 +24,8 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     const [closingFrame, setClosingFrame] = useState<{name:string, flag:boolean}>({name: "", flag:false});
 
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
     /** The topbar component */
     const topbar = useContext(TopBarContext);
 
@@ -33,10 +35,12 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     useEffect(() => {
         context.subscriptions.subscribeToDialog("message-dialog", (dialog:DialogResponse) => setMessageProps(dialog));
         context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(prevState => { return { name: compId, flag:!prevState.flag } }));
+        context.subscriptions.subscribeToColorScheme("message-dialog", (colorScheme:string) => setColorScheme(colorScheme));
 
         return () => {
             context.subscriptions.unsubscribeFromDialog("message-dialog");
             context.subscriptions.unsubscribeFromCloseFrame();
+            context.subscriptions.unsubscribeFromColorScheme("message-dialog")
         }
     },[context.subscriptions]);
 
@@ -74,7 +78,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 }
 
                 const getButtonBackground = ():string => {
-                    return window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.applicationMetaData.applicationColorScheme.value + '-button-color');
+                    return window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
                 }
     
                 if (buttonType === 4 || buttonType === 5) {

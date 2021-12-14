@@ -377,7 +377,17 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const focusIsClicked = useRef<boolean>(false);
 
-    const isSmallTheme = useMemo(() => context.appSettings.applicationMetaData.applicationTheme.value === "basti_small", [context.appSettings.applicationMetaData]);
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    const isSmallTheme = useMemo(() => appTheme === "basti_small", [appTheme]);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToTheme(id, (theme:string) => setAppTheme(theme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme(id);
+        }
+    }, [context.subscriptions]);
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {

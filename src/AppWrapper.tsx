@@ -11,6 +11,7 @@ import { appContext, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
 import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
+import { addCSSDynamically } from "./main/components/util";
 
 export type IServerFailMessage = {
     headerMessage:string,
@@ -41,22 +42,11 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     const [cssVersion, setCssVersion] = useState<string>("");
 
     useLayoutEffect(() => {
-        const link:HTMLLinkElement = document.createElement('link');
-        link.rel = 'stylesheet'; 
-        link.type = 'text/css';
+        let path = 'application.css'
         if (cssVersion) {
-            for (let link of document.head.getElementsByTagName('link')) {
-                if (link.href.includes("application.css")) {
-                    document.head.removeChild(link);
-                }
-            }
-            link.href = 'application.css' + "?version=" + cssVersion;
+            path = path + "?version=" + cssVersion;
         }
-        else {
-            link.href = 'application.css';
-        }
-        
-        document.head.appendChild(link);
+        addCSSDynamically(path, "app")
     }, [cssVersion]);
 
     /**

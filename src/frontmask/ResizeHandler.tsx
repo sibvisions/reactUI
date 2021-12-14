@@ -30,8 +30,18 @@ const ResizeHandler:FC = (props) => {
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
     /** The currently active app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToTheme("resizeHandler", (theme:string) => setAppTheme(theme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme("resizeHandler");
+        }
+    }, [context.subscriptions]);
 
     /** 
      * When the window resizes, the screen-container will measure itself and set its size, 
@@ -47,12 +57,12 @@ const ResizeHandler:FC = (props) => {
                 else {
                     const reactUIHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight
                     let minusHeight = 0;
-                    if (isCorporation(appLayout, context.appSettings.applicationMetaData.applicationTheme.value) && document.querySelector(".c-menu-topbar")) {
+                    if (isCorporation(appLayout, appTheme) && document.querySelector(".c-menu-topbar")) {
                         minusHeight = (document.querySelector(".c-menu-topbar") as HTMLElement).offsetHeight
                         height = reactUIHeight - minusHeight;
                     }
                     else {
-                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((context.appSettings.applicationMetaData.applicationTheme.value === "basti_mobile" && window.innerWidth <= 530) ? "--bastim-topbar-height" : "--s-menu-header-height"))
+                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((appTheme === "basti_mobile" && window.innerWidth <= 530) ? "--bastim-topbar-height" : "--s-menu-header-height"))
                         height = reactUIHeight - minusHeight;
                     }
                 }

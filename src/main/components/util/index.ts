@@ -26,3 +26,4 @@ export { getDateLocale, setDateLocale } from './GetDateLocale';
 export { getFocusComponent } from './GetFocusComponent';
 export { panelReportSize } from './PanelReportSize';
 export { panelGetStyle } from './PanelGetStyle';
+export { addCSSDynamically } from './AddCSSDynamically'

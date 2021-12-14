@@ -62,26 +62,6 @@
     margin-right: 4px;
 }
 
-.basti {
-    .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--basti-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
-    }
-
-    .p-button.p-splitbutton-menubutton {
-        padding: var(--basti-menubtn-rightbtn-padding);
-    }
-}
-
-.basti_small {
-    .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--bastis-menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
-    }
-
-    .p-button.p-splitbutton-menubutton {
-        padding: var(--bastis-menubtn-rightbtn-padding);
-    }
-}
-
 .p-menu {
     .p-menuitem-text {
         line-height: unset;

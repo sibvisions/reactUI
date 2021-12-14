@@ -65,12 +65,14 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json",
+    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/frontmask/color-schemes -o build/color-schemes && node-sass src/frontmask/themes -o build/themes",
     "bundle": "webpack -c ./webpack.config.js",
     "devbundle": "webpack -c ./webpack.config-dev.js",
     "test": "react-scripts test",
     "createdoc": "jsdoc src -r -d docs",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "scss-schemes": "node-sass src/frontmask/color-schemes -o public/color-schemes",
+    "scss-themes": "node-sass src/frontmask/themes -o public/themes"
   },
   "eslintConfig": {
     "extends": "react-app"

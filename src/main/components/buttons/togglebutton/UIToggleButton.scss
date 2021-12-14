@@ -20,15 +20,3 @@
 
     @include toggleBtnHover;
 }
-
-.basti {
-    .rc-togglebutton {
-        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
-    }
-}
-
-.basti_small {
-    .rc-togglebutton {
-        padding: var(--btnPadding, var(--bastis-button-padding, 0.125rem 0.25rem));
-    }
-}

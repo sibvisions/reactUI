@@ -78,7 +78,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
 
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + context.appSettings.applicationMetaData.applicationColorScheme.value + '-button-color');
+    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
@@ -87,6 +89,14 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToColorScheme(id, (colorScheme:string) => setColorScheme(colorScheme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromColorScheme(id);
+        }
+    }, [context.subscriptions]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

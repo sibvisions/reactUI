@@ -143,26 +143,6 @@
     }
 }
 
-.basti {
-    .rc-table .p-datatable-tbody > tr > td  {
-        height: calc(8px + var(--basti-table-data-height));
-        
-        &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
-            height: var(--basti-table-data-height);
-        }
-    }
-}
-
-.basti_small {
-    .rc-table .p-datatable-tbody > tr > td  {
-        height: calc(8px + var(--bastis-table-data-height));
-        
-        &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) > .cell-data {
-            height: var(--bastis-table-data-height);
-        }
-    }
-}
-
 .p-datatable-wrapper, .p-datatable-scrollable-wrapper {
     height: 100%;
     max-width: 100%;

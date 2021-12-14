@@ -1,0 +1,118 @@
+:root {
+  --basti-topbar-buttons: 60px;
+  --basti-topbar-buttons-small: 40px;
+  --basti-profile-height: 60px;
+  --basti-profile-width-small: 60px;
+  --basti-profile-padding: 0.75rem 1rem;
+  --basti-profile-pic: 40px;
+  --basti-s-menu-header-padding: 1rem 1rem 1rem 0.625rem;
+  --basti-s-menu-item-padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+  --basti-c-menu-header-padding: 0.75rem 1rem;
+  --basti-c-menu-item-padding: 0.75rem 1rem;
+  --basti-input-padding: 0.5rem 0.5rem;
+  --basti-input-button-padding: 0rem 0.5rem;
+  --basti-input-button-icon-size: 14px;
+  --basti-button-padding: 0.5rem 1rem;
+  --basti-button-icon-only-padding: 0.5rem 0.5rem;
+  --basti-menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
+  --basti-menubtn-rightbtn-padding: 0.5rem 0rem;
+  --basti-checkbox-size: 20px;
+  --basti-radiobutton-size: 20px;
+  --basti-tab-padding: 0rem 1rem;
+  --basti-table-header-padding: 0.6rem 1rem;
+  --basti-table-data-height: 27px;
+  --basti-label-padding: 9px; }
+
+.basti .p-button.p-button-icon-only.menu-topbar-buttons {
+  width: var(--basti-topbar-buttons);
+  height: var(--basti-topbar-buttons); }
+
+.basti .profile-menu .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+  height: var(--basti-profile-height);
+  padding: var(--basti-profile-padding); }
+
+.basti .profile-image, .basti .profile-image-null {
+  width: var(--basti-profile-pic);
+  height: var(--basti-profile-pic); }
+
+.basti .profile-image {
+  background-size: var(--basti-profile-pic) var(--basti-profile-pic); }
+
+.basti .profile-image-null::before {
+  font-size: calc(var(--basti-profile-pic) - 2px); }
+
+.basti .p-panelmenu .p-panelmenu-header > a {
+  padding: var(--basti-s-menu-header-padding); }
+
+.basti .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
+  padding: var(--basti-s-menu-item-padding); }
+
+.basti .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
+  padding: var(--basti-c-menu-header-padding); }
+
+.basti .p-menubar .p-menuitem-link {
+  padding: var(--basti-c-menu-item-padding); }
+
+.basti .p-inputtext {
+  padding: var(--basti-input-padding); }
+
+.basti .rc-button {
+  padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem)); }
+
+.basti .p-button.p-button-icon-only {
+  padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem)); }
+  .basti .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti .p-button.p-button-icon-only.p-datepicker-trigger {
+    padding: var(--basti-input-button-padding); }
+    .basti .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
+      font-size: var(--basti-input-button-icon-size); }
+
+.basti .p-checkbox {
+  width: var(--basti-checkbox-size);
+  height: var(--basti-checkbox-size); }
+  .basti .p-checkbox .p-checkbox-box {
+    width: var(--basti-checkbox-size);
+    height: var(--basti-checkbox-size); }
+    .basti .p-checkbox .p-checkbox-box .p-checkbox-icon {
+      font-size: calc(var(--basti-checkbox-size) * 0.7); }
+
+.basti .p-radiobutton .p-radiobutton-box {
+  width: var(--basti-radiobutton-size);
+  height: var(--basti-radiobutton-size); }
+  .basti .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    height: calc(var(--basti-radiobutton-size) * 0.6);
+    width: calc(var(--basti-radiobutton-size) * 0.6); }
+
+.basti .p-splitbutton-defaultbutton {
+  padding: var(--menuBtnPadding, var(--basti-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem)); }
+
+.basti .p-button.p-splitbutton-menubutton {
+  padding: var(--basti-menubtn-rightbtn-padding); }
+
+.basti .rc-togglebutton {
+  padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem)); }
+
+.basti .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: var(--basti-tab-padding); }
+
+.basti .rc-table .p-datatable-thead > tr > th {
+  padding: var(--basti-table-header-padding); }
+
+.basti .rc-table .p-datatable-tbody > tr > td {
+  height: calc(8px + var(--basti-table-data-height)); }
+  .basti .rc-table .p-datatable-tbody > tr > td:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
+    height: var(--basti-table-data-height); }
+
+.basti .rc-label > span {
+  padding: var(--basti-label-padding) 0px; }
+
+@media screen and (max-width: 960px) {
+  .basti .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
+    left: calc(var(--basti-profile-width-small) - var(--s-menu-profile-mini-sub-width)); }
+  .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
+    width: var(--basti-profile-width-small);
+    padding: 0; } }
+
+@media screen and (max-width: 530px) {
+  .basti .p-button.p-button-icon-only.menu-topbar-buttons {
+    width: var(--basti-topbar-buttons-small);
+    height: var(--basti-topbar-buttons-small); } }
