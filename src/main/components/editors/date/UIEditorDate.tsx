@@ -87,9 +87,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    //const context = useContext(appContext);
-
     const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
@@ -97,7 +94,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Mounted state used because useEventHandler ref is null when cell-editor is opened -> not added */
     const [mounted, setMounted] = useState<boolean>(false)
 
+    /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
+
+    /** The month/year which is currently displayed */
+    const [viewDate, setViewDate] = useState<any>(new Date(selectedRow));
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -120,12 +121,16 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
 
+    /** Reference if the date has already been save to avoid multiple setValue calls */
     const alreadySaved = useRef<boolean>(false);
 
+    /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
+    /** Currently used color-scheme */
     const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
 
+    /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
 
     /** If the CellEditor is read-only */
@@ -188,6 +193,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEffect(() => {
         setDateValue(selectedRow ? new Date(selectedRow) : undefined);
         lastValue.current = selectedRow;
+        setViewDate(selectedRow ? new Date(selectedRow) : undefined);
     },[selectedRow])
 
     /**
@@ -295,8 +301,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                 }}
-                monthNavigator={true}
-                yearNavigator={true}
+                monthNavigator
+                yearNavigator
                 yearRange="1900:2030"
                 dateFormat={dateFormat}
                 showTime={showTime}
@@ -304,7 +310,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 timeOnly={timeOnly}
                 visible={visible}
                 hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
-                showIcon={true}
+                showIcon
                 showOnFocus={false}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
@@ -350,6 +356,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     }
                 }}
                 tooltip={props.toolTipText}
+                viewDate={viewDate}
+                onViewDateChange={(e) => setViewDate(e.value)}
             />
         </span>
 
