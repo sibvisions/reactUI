@@ -346,7 +346,7 @@ body {
   .p-datepicker:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
     color: var(--default-date-panel-hover-color); }
   .p-datepicker table td > span.p-highlight {
-    background: var(--blue-date-selected-background); }
+    background: var(--default-date-selected-background); }
 
 .rc-editor-image:focus img, .rc-icon:focus img, .rc-validator:focus img {
   box-shadow: var(--default-focus-box-shadow); }

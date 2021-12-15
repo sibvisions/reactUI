@@ -305,7 +305,6 @@ body {
     color: var(--default-text-color);
 }
 
-
 /// *----------Login----------*
 .login-form {
     background: var(--default-login-background);
@@ -702,7 +701,7 @@ body {
     }
 
     table td > span.p-highlight {
-        background: var(--blue-date-selected-background);
+        background: var(--default-date-selected-background);
     }
 }
 
