@@ -708,6 +708,11 @@ body {
                 background-color: var(--dark-date-panel-background);
                 color: var(--dark-text-color);
             }
+
+            select:focus {
+                box-shadow: var(--dark-focus-box-shadow);
+                border-color: var(--dark-border-color-hover);
+            }
         }
     } 
 

@@ -24,7 +24,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         className
     } = baseProps
 
-    /** Current state of the calculatedStyle by the FormLayout */
+    /** Current state of the calculatedStyle by the GridLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

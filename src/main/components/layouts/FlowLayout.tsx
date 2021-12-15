@@ -33,7 +33,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Margins of the BorderLayout */
+    /** Margins of the FlowLayout */
     const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
 
     /** Current state of the calculatedStyle by the FormLayout */

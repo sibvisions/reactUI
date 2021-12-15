@@ -700,6 +700,11 @@ body {
                 background-color: var(--blue-date-panel-background);
                 color: var(--blue-text-color);
             }
+
+            select:focus {
+                box-shadow: var(--blue-focus-box-shadow);
+                border-color: var(--blue-border-color-hover);
+            }
         }
     } 
 
