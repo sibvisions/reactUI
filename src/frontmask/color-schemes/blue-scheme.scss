@@ -559,7 +559,7 @@ body {
     .p-checkbox-box {
         border-radius: var(--blue-button-border-radius);
 
-        .p-highlight {
+        &.p-highlight {
             background: var(--blue-selected-rb-cb-outer-color);
             border-color: var(--blue-selected-rb-cb-outer-color);
         }

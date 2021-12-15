@@ -262,7 +262,7 @@ body {
 
 .p-checkbox .p-checkbox-box {
   border-radius: var(--blue-button-border-radius); }
-  .p-checkbox .p-checkbox-box .p-highlight {
+  .p-checkbox .p-checkbox-box.p-highlight {
     background: var(--blue-selected-rb-cb-outer-color);
     border-color: var(--blue-selected-rb-cb-outer-color); }
 

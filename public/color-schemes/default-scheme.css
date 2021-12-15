@@ -265,7 +265,7 @@ body {
 
 .p-checkbox .p-checkbox-box {
   border-radius: var(--default-button-border-radius); }
-  .p-checkbox .p-checkbox-box .p-highlight {
+  .p-checkbox .p-checkbox-box.p-highlight {
     background: var(--default-selected-rb-cb-outer-color);
     border-color: var(--default-selected-rb-cb-outer-color); }
 
