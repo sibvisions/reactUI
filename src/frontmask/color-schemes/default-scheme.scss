@@ -173,6 +173,9 @@
     /// Default 'x' color when hovering
     --default-dialog-icon-hover-color: var(--default-text-color);
 
+    /// Default Dialog header border
+    --default-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+
     /// Default Dialog background
     --default-dialog-content-background: #ffffff;
 
@@ -224,11 +227,17 @@
     /// Default Message info hover background of closing element
     --default-message-info-header-close-hover: #276b96;
 
+    /// Default Message info header text color
+    --default-message-info-header-color: #ffffff;
+
     /// Default Message warning background
     --default-message-warning-header-background: #ffcf40;
 
     /// Default Message warning hover background of closing element
     --default-message-warning-header-close-hover: #ebbd35;
+
+    /// Default Message warning header text color
+    --default-message-warning-header-color: #ffffff;
 
     /// Default Message error background
     --default-message-error-header-background: #ff364a;
@@ -236,11 +245,17 @@
     /// Default Message error hover background of closing element
     --default-message-error-header-close-hover: #db2739;
 
+    /// Default Message error header text color
+    --default-message-error-header-color: #ffffff;
+
     /// Default Message question background
     --default-message-question-header-background: #17c0eb;
 
     /// Default Message question hover background of closing element
     --default-message-question-header-close-hover: #13aacf;
+
+    /// Default Message question header text color
+    --default-message-question-header-color: #ffffff;
 
     /// Default error-dialog background
     --default-error-dialog-background: rgba(255, 255, 255, 0.8);
@@ -740,6 +755,7 @@ body {
 
             &:hover {
                 background: var(--default-linked-item-hover-background);
+                color: var(--default-panelmenu-hover-text-color);
             }
         }
     }
@@ -1118,6 +1134,7 @@ body {
         color: var(--default-text-color);
         border-top-left-radius: var(--default-dialog-border-radius);
         border-top-right-radius: var(--default-dialog-border-radius);
+        border-bottom: var(--default-dialog-header-border);
 
         .p-dialog-header-icon {
             color: var(--default-text-color);
@@ -1146,6 +1163,7 @@ body {
 
     &.info .p-dialog-header {
         background: var(--default-message-info-header-background);
+        color: var(--default-message-info-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1153,13 +1171,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--default-text-color);
+                color: var(--default-message-info-header-color);
             }
         }
     }
 
     &.warning .p-dialog-header {
         background: var(--default-message-warning-header-background);
+        color: var(--default-message-warning-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1167,13 +1186,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--default-text-color);
+                color: var(--default-message-warning-header-color);
             }
         }
     }
 
     &.error .p-dialog-header {
         background: var(--default-message-error-header-background);
+        color: var(--default-message-error-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1181,13 +1201,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--default-text-color);
+                color: var(--default-message-error-header-color);
             }
         }
     }
 
     &.question .p-dialog-header {
         background: var(--default-message-question-header-background);
+        color: var(--default-message-question-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1195,7 +1216,7 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--default-text-color);
+                color: var(--default-message-question-header-color);
             }
         }
     }

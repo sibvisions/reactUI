@@ -286,7 +286,10 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             aria-expanded={visible} 
-            style={{...layoutStyle, '--dateBackground': props.cellEditor_background_} as CSSProperties}>
+            style={{
+                ...layoutStyle, 
+                '--dateBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-component-background')
+            } as CSSProperties}>
             <CustomCalendar
                 ref={calendar}
                 id={!props.isCellEditor ? props.name : undefined}

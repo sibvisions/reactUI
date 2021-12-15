@@ -356,12 +356,16 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         <span 
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
-            style={{...layoutStyle, '--linkedBackground': props.cellEditor_background_} as CSSProperties}>
+            style={{
+                ...layoutStyle, 
+                '--linkedBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-component-background')
+            } as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
                 id={!props.isCellEditor ? props.name : undefined}
                 style={{ 
-                    width: 'inherit', 
+                    width: 'inherit',
+                    height: 'inherit',
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                 }}

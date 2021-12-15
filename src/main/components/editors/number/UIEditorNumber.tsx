@@ -212,7 +212,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     maxFractionDigits={scaleDigits.maxScale}
                     tabIndex={props.tabIndex}
                     value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', height: "100%" }}
                     inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
                     onChange={event => setValue(event.value) }
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}

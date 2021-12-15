@@ -173,6 +173,9 @@
     /// Orange 'x' color when hovering
     --orange-dialog-icon-hover-color: var(--orange-text-color);
 
+    /// Orange Dialog header border
+    --orange-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+
     /// Orange Dialog background
     --orange-dialog-content-background: #ffffff;
 
@@ -224,11 +227,17 @@
     /// Orange Message info hover background of closing element
     --orange-message-info-header-close-hover: #276b96;
 
+    /// Orange Message info header color
+    --orange-message-info-header-color: #ffffff;
+
     /// Orange Message warning background
     --orange-message-warning-header-background: #ffcf40;
 
     /// Orange Message warning hover background of closing element
     --orange-message-warning-header-close-hover: #ebbd35;
+
+    /// Orange Message warning header color
+    --orange-message-warning-header-color: #ffffff;
 
     /// Orange Message error background
     --orange-message-error-header-background: #ff364a;
@@ -236,11 +245,17 @@
     /// Orange Message error hover background of closing element
     --orange-message-error-header-close-hover: #db2739;
 
+    /// Orange Message error header color
+    --orange-message-error-header-color: #ffffff;
+
     /// Orange Message question background
     --orange-message-question-header-background: #17c0eb;
 
     /// Orange Message question hover background of closing element
     --orange-message-question-header-close-hover: #13aacf;
+
+    /// Orange Message question header color
+    --orange-message-question-header-color: #ffffff;
 
     /// Orange error-dialog background
     --orange-error-dialog-background: rgba(255, 255, 255, 0.8);
@@ -740,6 +755,7 @@ body {
 
             &:hover {
                 background: var(--orange-linked-item-hover-background);
+                color: var(--orange-panelmenu-hover-text-color);
             }
         }
     }
@@ -1118,6 +1134,7 @@ body {
         color: var(--orange-text-color);
         border-top-left-radius: var(--orange-dialog-border-radius);
         border-top-right-radius: var(--orange-dialog-border-radius);
+        border-bottom: var(--orange-dialog-header-border);
 
         .p-dialog-header-icon {
             color: var(--orange-text-color);
@@ -1146,6 +1163,7 @@ body {
 
     &.info .p-dialog-header {
         background: var(--orange-message-info-header-background);
+        color: var(--orange-message-info-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1153,13 +1171,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--orange-text-color);
+                color: var(--orange-message-info-header-color);
             }
         }
     }
 
     &.warning .p-dialog-header {
         background: var(--orange-message-warning-header-background);
+        color: var(--orange-message-warning-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1167,13 +1186,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--orange-text-color);
+                color: var(--orange-message-warning-header-color);
             }
         }
     }
 
     &.error .p-dialog-header {
         background: var(--orange-message-error-header-background);
+        color: var(--orange-message-error-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1181,13 +1201,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--orange-text-color);
+                color: var(--orange-message-error-header-color);
             }
         }
     }
 
     &.question .p-dialog-header {
         background: var(--orange-message-question-header-background);
+        color: var(--orange-message-question-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1195,7 +1216,7 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--orange-text-color);
+                color: var(--orange-message-question-header-color);
             }
         }
     }

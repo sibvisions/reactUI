@@ -173,6 +173,9 @@
     /// Blue 'x' color when hovering
     --blue-dialog-icon-hover-color: var(--blue-text-color);
 
+    /// Blue Dialog header border
+    --blue-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+
     /// Blue Dialog background
     --blue-dialog-content-background: #ffffff;
 
@@ -223,6 +226,9 @@
 
     /// Blue Message info hover background of closing element
     --blue-message-info-header-close-hover: #276b96;
+
+    /// Blue Message info header color
+    --blue-message-info-header-color: #ffffff;
 
     /// Blue Message warning background
     --blue-message-warning-header-background: #ffcf40;
@@ -741,6 +747,7 @@ body {
 
             &:hover {
                 background: var(--blue-linked-item-hover-background);
+                color: var(--blue-panelmenu-hover-text-color);
             }
         }
     }
@@ -1119,6 +1126,7 @@ body {
         color: var(--blue-text-color);
         border-top-left-radius: var(--blue-dialog-border-radius);
         border-top-right-radius: var(--blue-dialog-border-radius);
+        border-bottom: var(--blue-dialog-header-border);
 
         .p-dialog-header-icon {
             color: var(--blue-text-color);
@@ -1147,6 +1155,7 @@ body {
 
     &.info .p-dialog-header {
         background: var(--blue-message-info-header-background);
+        color: var(--blue-message-info-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1154,13 +1163,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
+                color: var(--blue-message-info-header-color);
             }
         }
     }
 
     &.warning .p-dialog-header {
         background: var(--blue-message-warning-header-background);
+        color: var(--blue-message-warning-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1168,13 +1178,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
+                color: var(--blue-message-warning-header-color);
             }
         }
     }
 
     &.error .p-dialog-header {
         background: var(--blue-message-error-header-background);
+        color: var(--blue-message-error-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1182,13 +1193,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
+                color: var(--blue-message-error-header-color);
             }
         }
     }
 
     &.question .p-dialog-header {
         background: var(--blue-message-question-header-background);
+        color: var(--blue-message-question-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1196,7 +1208,7 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--blue-text-color);
+                color: var(--blue-message-question-header-color);
             }
         }
     }

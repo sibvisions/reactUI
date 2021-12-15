@@ -56,6 +56,7 @@
   --dark-date-selected-background: #e3f2fd;
   --dark-dialog-header-background: #3f4b5b;
   --dark-dialog-icon-hover-color: #495057;
+  --dark-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
   --dark-dialog-content-background: #20262e;
   --dark-tab-navbar-background: #3f4b5b;
   --dark-tab-navbar-border: 1px solid #3f4b5b;
@@ -73,12 +74,16 @@
   --dark-html-picker-item-hover-background: #303a48;
   --dark-message-info-header-background: var(--dark-button-color);
   --dark-message-info-header-close-hover: #276b96;
+  --dark-message-info-header-color: #ffffff;
   --dark-message-warning-header-background: #ffcf40;
   --dark-message-warning-header-close-hover: #ebbd35;
+  --dark-message-warning-header-color: #ffffff;
   --dark-message-error-header-background: #B00020;
   --dark-message-error-header-close-hover: #a20d1b;
+  --dark-message-error-header-color: #ffffff;
   --dark-message-question-header-background: #018786;
   --dark-message-question-header-close-hover: #017372;
+  --dark-message-question-header-color: #ffffff;
   --dark-error-dialog-background: rgba(32, 38, 46, 0.8);
   --dark-loading-screen-left-background: #20262e;
   --dark-loading-screen-right-background: #3f4b5b;
@@ -372,7 +377,8 @@ body {
     background: var(--dark-linked-panel-background);
     color: var(--dark-text-color); }
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
-      background: var(--dark-linked-item-hover-background); }
+      background: var(--dark-linked-item-hover-background);
+      color: var(--dark-panelmenu-hover-text-color); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd) {
     background: var(--dark-table-row-even-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd):hover {
@@ -570,7 +576,8 @@ body {
   background: var(--dark-dialog-header-background);
   color: var(--dark-text-color);
   border-top-left-radius: var(--dark-dialog-border-radius);
-  border-top-right-radius: var(--dark-dialog-border-radius); }
+  border-top-right-radius: var(--dark-dialog-border-radius);
+  border-bottom: var(--dark-dialog-header-border); }
   .rc-popup .p-dialog-header .p-dialog-header-icon {
     color: var(--dark-text-color); }
     .rc-popup .p-dialog-header .p-dialog-header-icon:enabled:hover {
@@ -589,32 +596,36 @@ body {
   background: var(--dark-dialog-header-background); }
 
 .rc-message-dialog.info .p-dialog-header {
-  background: var(--dark-message-info-header-background); }
+  background: var(--dark-message-info-header-background);
+  color: var(--dark-message-info-header-color); }
   .rc-message-dialog.info .p-dialog-header .p-dialog-header-close:hover {
     background: var(--dark-message-info-header-close-hover); }
   .rc-message-dialog.info .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--dark-text-color); }
+    color: var(--dark-message-info-header-color); }
 
 .rc-message-dialog.warning .p-dialog-header {
-  background: var(--dark-message-warning-header-background); }
+  background: var(--dark-message-warning-header-background);
+  color: var(--dark-message-warning-header-color); }
   .rc-message-dialog.warning .p-dialog-header .p-dialog-header-close:hover {
     background: var(--dark-message-warning-header-close-hover); }
   .rc-message-dialog.warning .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--dark-text-color); }
+    color: var(--dark-message-warning-header-color); }
 
 .rc-message-dialog.error .p-dialog-header {
-  background: var(--dark-message-error-header-background); }
+  background: var(--dark-message-error-header-background);
+  color: var(--dark-message-error-header-color); }
   .rc-message-dialog.error .p-dialog-header .p-dialog-header-close:hover {
     background: var(--dark-message-error-header-close-hover); }
   .rc-message-dialog.error .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--dark-text-color); }
+    color: var(--dark-message-error-header-color); }
 
 .rc-message-dialog.question .p-dialog-header {
-  background: var(--dark-message-question-header-background); }
+  background: var(--dark-message-question-header-background);
+  color: var(--dark-message-question-header-color); }
   .rc-message-dialog.question .p-dialog-header .p-dialog-header-close:hover {
     background: var(--dark-message-question-header-close-hover); }
   .rc-message-dialog.question .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--dark-text-color); }
+    color: var(--dark-message-question-header-color); }
 
 .rc-message-dialog .p-dialog-footer {
   border-bottom-left-radius: var(--dark-dialog-border-radius);

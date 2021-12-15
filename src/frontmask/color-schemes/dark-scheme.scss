@@ -173,6 +173,9 @@
     /// Darkmode 'x' color when hovering
     --dark-dialog-icon-hover-color: #495057;
 
+    /// Darkmode Dialog header border
+    --dark-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+
     /// Darkmode Dialog background
     --dark-dialog-content-background: #20262e;
 
@@ -224,11 +227,17 @@
     /// Darkmode Message info hover background of closing element
     --dark-message-info-header-close-hover: #276b96;
 
+    /// Darkmode Message info header color
+    --dark-message-info-header-color: #ffffff;
+
     /// Darkmode Message warning background
     --dark-message-warning-header-background: #ffcf40;
 
     /// Darkmode Message warning hover background of closing element
     --dark-message-warning-header-close-hover: #ebbd35;
+
+    /// Darkmode Message warning header color
+    --dark-message-warning-header-color: #ffffff;
 
     /// Darkmode Message error background
     --dark-message-error-header-background: #B00020;
@@ -236,11 +245,17 @@
     /// Darkmode Message error hover background of closing element
     --dark-message-error-header-close-hover: #a20d1b;
 
+    /// Darkmode Message error header color
+    --dark-message-error-header-color: #ffffff;
+
     /// Darkmode Message question background
     --dark-message-question-header-background: #018786;
 
     /// Darkmode Message question hover background of closing element
     --dark-message-question-header-close-hover: #017372;
+
+    /// Darkmode Message question header color
+    --dark-message-question-header-color: #ffffff;
 
     /// Darkmode error-dialog background
     --dark-error-dialog-background: rgba(32, 38, 46, 0.8);
@@ -740,6 +755,7 @@ body {
 
             &:hover {
                 background: var(--dark-linked-item-hover-background);
+                color: var(--dark-panelmenu-hover-text-color);
             }
         }
     }
@@ -1118,6 +1134,7 @@ body {
         color: var(--dark-text-color);
         border-top-left-radius: var(--dark-dialog-border-radius);
         border-top-right-radius: var(--dark-dialog-border-radius);
+        border-bottom: var(--dark-dialog-header-border);
 
         .p-dialog-header-icon {
             color: var(--dark-text-color);
@@ -1147,6 +1164,7 @@ body {
 
     &.info .p-dialog-header {
         background: var(--dark-message-info-header-background);
+        color: var(--dark-message-info-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1154,13 +1172,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-text-color);
+                color: var(--dark-message-info-header-color);
             }
         }
     }
 
     &.warning .p-dialog-header {
         background: var(--dark-message-warning-header-background);
+        color: var(--dark-message-warning-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1168,13 +1187,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-text-color);
+                color: var(--dark-message-warning-header-color);
             }
         }
     }
 
     &.error .p-dialog-header {
         background: var(--dark-message-error-header-background);
+        color: var(--dark-message-error-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1182,13 +1202,14 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-text-color);
+                color: var(--dark-message-error-header-color);
             }
         }
     }
 
     &.question .p-dialog-header {
         background: var(--dark-message-question-header-background);
+        color: var(--dark-message-question-header-color);
 
         .p-dialog-header-close {
             &:hover {
@@ -1196,7 +1217,7 @@ body {
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-text-color);
+                color: var(--dark-message-question-header-color);
             }
         }
     }

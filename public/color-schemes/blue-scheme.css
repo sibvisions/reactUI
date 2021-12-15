@@ -56,6 +56,7 @@
   --blue-date-selected-background: #e3f2fd;
   --blue-dialog-header-background: #ffffff;
   --blue-dialog-icon-hover-color: var(--blue-text-color);
+  --blue-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
   --blue-dialog-content-background: #ffffff;
   --blue-tab-navbar-background: #ffffff;
   --blue-tab-navbar-border: 1px solid #dee2e6;
@@ -73,6 +74,7 @@
   --blue-html-picker-item-hover-background: #e9ecef;
   --blue-message-info-header-background: var(--blue-button-color);
   --blue-message-info-header-close-hover: #276b96;
+  --blue-message-info-header-color: #ffffff;
   --blue-message-warning-header-background: #ffcf40;
   --blue-message-warning-header-close-hover: #ebbd35;
   --blue-message-error-header-background: #ff364a;
@@ -369,7 +371,8 @@ body {
     background: var(--blue-linked-panel-background);
     color: var(--blue-text-color); }
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
-      background: var(--blue-linked-item-hover-background); }
+      background: var(--blue-linked-item-hover-background);
+      color: var(--blue-panelmenu-hover-text-color); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd) {
     background: var(--blue-table-row-even-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd):hover {
@@ -567,7 +570,8 @@ body {
   background: var(--blue-dialog-header-background);
   color: var(--blue-text-color);
   border-top-left-radius: var(--blue-dialog-border-radius);
-  border-top-right-radius: var(--blue-dialog-border-radius); }
+  border-top-right-radius: var(--blue-dialog-border-radius);
+  border-bottom: var(--blue-dialog-header-border); }
   .rc-popup .p-dialog-header .p-dialog-header-icon {
     color: var(--blue-text-color); }
     .rc-popup .p-dialog-header .p-dialog-header-icon:enabled:hover {
@@ -585,32 +589,36 @@ body {
   border-top-right-radius: var(--blue-dialog-border-radius); }
 
 .rc-message-dialog.info .p-dialog-header {
-  background: var(--blue-message-info-header-background); }
+  background: var(--blue-message-info-header-background);
+  color: var(--blue-message-info-header-color); }
   .rc-message-dialog.info .p-dialog-header .p-dialog-header-close:hover {
     background: var(--blue-message-info-header-close-hover); }
   .rc-message-dialog.info .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--blue-text-color); }
+    color: var(--blue-message-info-header-color); }
 
 .rc-message-dialog.warning .p-dialog-header {
-  background: var(--blue-message-warning-header-background); }
+  background: var(--blue-message-warning-header-background);
+  color: var(--blue-message-warning-header-color); }
   .rc-message-dialog.warning .p-dialog-header .p-dialog-header-close:hover {
     background: var(--blue-message-warning-header-close-hover); }
   .rc-message-dialog.warning .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--blue-text-color); }
+    color: var(--blue-message-warning-header-color); }
 
 .rc-message-dialog.error .p-dialog-header {
-  background: var(--blue-message-error-header-background); }
+  background: var(--blue-message-error-header-background);
+  color: var(--blue-message-error-header-color); }
   .rc-message-dialog.error .p-dialog-header .p-dialog-header-close:hover {
     background: var(--blue-message-error-header-close-hover); }
   .rc-message-dialog.error .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--blue-text-color); }
+    color: var(--blue-message-error-header-color); }
 
 .rc-message-dialog.question .p-dialog-header {
-  background: var(--blue-message-question-header-background); }
+  background: var(--blue-message-question-header-background);
+  color: var(--blue-message-question-header-color); }
   .rc-message-dialog.question .p-dialog-header .p-dialog-header-close:hover {
     background: var(--blue-message-question-header-close-hover); }
   .rc-message-dialog.question .p-dialog-header .p-dialog-header-close .p-dialog-header-close-icon {
-    color: var(--blue-text-color); }
+    color: var(--blue-message-question-header-color); }
 
 .rc-message-dialog .p-dialog-footer {
   border-bottom-left-radius: var(--blue-dialog-border-radius);
