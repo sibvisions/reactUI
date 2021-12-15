@@ -334,7 +334,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const wrapRef = useRef<HTMLDivElement>(null);
 
     /** Reference for the Table */
-    const tableRef = useRef(null);
+    const tableRef = useRef<DataTable>(null);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -1228,6 +1228,21 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param e - the event
      */
     const handleColReorder = (e:any) => {
+        const { dragIndex, dropIndex } = e;
+        
+        let colWidthCSS = (tableRef?.current as any).styleElement?.innerHTML;
+        if(colWidthCSS) {
+            const fromRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dragIndex + 1}\\) {)([^}]+)(})`);
+            const toRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dropIndex + 1}\\) {)([^}]+)(})`);
+            const from = colWidthCSS.match(fromRegex);
+            const to = colWidthCSS.match(toRegex);
+            if (from && to) {
+                colWidthCSS = colWidthCSS.replace(fromRegex, from[1] +   to[2] + from[3]);
+                colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
+                (tableRef?.current as any).styleElement.innerHTML = colWidthCSS;
+            }
+        }
+
         setColumnOrder(e.columns.map((column:any) => column.props.field));
     }
     
@@ -1335,8 +1350,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         //this will force the table to refresh its internal visible item count
         setItemSize(35 + Math.random() / 1E10);
     }, [layoutStyle?.width])
-
-    console.log('yay', virtualRows);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
