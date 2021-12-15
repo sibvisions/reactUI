@@ -70,8 +70,8 @@
     "test": "react-scripts test",
     "createdoc": "jsdoc src -r -d docs",
     "eject": "react-scripts eject",
-    "scss-schemes": "node-sass src/frontmask/color-schemes -o public/color-schemes",
-    "scss-themes": "node-sass src/frontmask/themes -o public/themes"
+    "scss-schemes": "node-sass --watch src/frontmask/color-schemes -o public/color-schemes",
+    "scss-themes": "node-sass --watch src/frontmask/themes -o public/themes"
   },
   "eslintConfig": {
     "extends": "react-app"

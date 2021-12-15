@@ -53,6 +53,7 @@
   --orange-date-panel-background: #ffffff;
   --orange-date-panel-header-border: 1px solid #dee2e6;
   --orange-date-panel-hover-color: var(--orange-text-color);
+  --orange-date-selected-background: #fff3e0;
   --orange-dialog-header-background: #ffffff;
   --orange-dialog-icon-hover-color: var(--orange-text-color);
   --orange-dialog-content-background: #ffffff;
@@ -344,6 +345,8 @@ body {
       color: var(--orange-text-color); }
   .p-datepicker:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
     color: var(--orange-date-panel-hover-color); }
+  .p-datepicker table td > span.p-highlight {
+    background: var(--orange-date-selected-background); }
 
 .rc-editor-image:focus img, .rc-icon:focus img, .rc-validator:focus img {
   box-shadow: var(--orange-focus-box-shadow); }

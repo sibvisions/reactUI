@@ -164,6 +164,9 @@
     /// Darkmode color when hovering over a day to select
     --dark-date-panel-hover-color: #495057;
 
+    /// Darkmode date panel selected date background
+    --dark-date-selected-background: #e3f2fd;
+
     /// Darkmode Dialog header background
     --dark-dialog-header-background: #3f4b5b;
 
@@ -301,7 +304,6 @@ body {
     background: var(--dark-background);
     color: var(--dark-text-color);
 }
-
 
 /// *----------Login----------*
 .login-form {
@@ -696,6 +698,10 @@ body {
 
     &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
         color: var(--dark-date-panel-hover-color);
+    }
+
+    table td > span.p-highlight {
+        background: var(--dark-date-selected-background);
     }
 }
 

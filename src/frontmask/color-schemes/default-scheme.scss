@@ -164,6 +164,9 @@
     /// Default color when hovering over a day to select
     --default-date-panel-hover-color: var(--default-text-color);
 
+    /// Default date panel selected date background
+    --default-date-selected-background: #e3f2fd;
+
     /// Default Dialog header background
     --default-dialog-header-background: #ffffff;
 
@@ -696,6 +699,10 @@ body {
 
     &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
         color: var(--default-date-panel-hover-color);
+    }
+
+    table td > span.p-highlight {
+        background: var(--blue-date-selected-background);
     }
 }
 

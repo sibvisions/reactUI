@@ -59,12 +59,13 @@
 .basti .rc-button {
   padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem)); }
 
-.basti .p-button.p-button-icon-only {
+.basti .p-button.p-button-icon-only:not(.rc-toolbar-button) {
   padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem)); }
-  .basti .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti .p-button.p-button-icon-only.p-datepicker-trigger {
-    padding: var(--basti-input-button-padding); }
-    .basti .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
-      font-size: var(--basti-input-button-icon-size); }
+
+.basti .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti .p-button.p-button-icon-only.p-datepicker-trigger {
+  padding: var(--basti-input-button-padding); }
+  .basti .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
+    font-size: var(--basti-input-button-icon-size); }
 
 .basti .p-checkbox {
   width: var(--basti-checkbox-size);

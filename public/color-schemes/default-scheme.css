@@ -53,6 +53,7 @@
   --default-date-panel-background: #ffffff;
   --default-date-panel-header-border: 1px solid #dee2e6;
   --default-date-panel-hover-color: var(--default-text-color);
+  --default-date-selected-background: #e3f2fd;
   --default-dialog-header-background: #ffffff;
   --default-dialog-icon-hover-color: var(--default-text-color);
   --default-dialog-content-background: #ffffff;
@@ -344,6 +345,8 @@ body {
       color: var(--default-text-color); }
   .p-datepicker:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
     color: var(--default-date-panel-hover-color); }
+  .p-datepicker table td > span.p-highlight {
+    background: var(--blue-date-selected-background); }
 
 .rc-editor-image:focus img, .rc-icon:focus img, .rc-validator:focus img {
   box-shadow: var(--default-focus-box-shadow); }

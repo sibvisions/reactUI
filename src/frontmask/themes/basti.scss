@@ -122,7 +122,9 @@
     }
     
     .p-button.p-button-icon-only {
-        padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem));
+        &:not(.rc-toolbar-button) {
+            padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem));
+        }
 
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
             padding: var(--basti-input-button-padding);

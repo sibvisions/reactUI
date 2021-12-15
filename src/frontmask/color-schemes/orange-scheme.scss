@@ -164,6 +164,9 @@
     /// Orange color when hovering over a day to select
     --orange-date-panel-hover-color: var(--orange-text-color);
 
+    /// Orange date panel selected date background
+    --orange-date-selected-background: #fff3e0;
+
     /// Orange Dialog header background
     --orange-dialog-header-background: #ffffff;
 
@@ -695,6 +698,10 @@ body {
 
     &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
         color: var(--orange-date-panel-hover-color);
+    }
+
+    table td > span.p-highlight {
+        background: var(--orange-date-selected-background);
     }
 }
 
