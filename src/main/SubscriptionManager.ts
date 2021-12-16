@@ -136,8 +136,6 @@ export class SubscriptionManager {
 
     themeSubscriber = new Map<string, Function>();
 
-    colorSchemeSubscriber = new Map<string, Function>();
-
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -418,10 +416,6 @@ export class SubscriptionManager {
         this.themeSubscriber.set(id, fn);
     }
 
-    subscribeToColorScheme(id:string, fn:Function) {
-        this.colorSchemeSubscriber.set(id, fn);
-    }
-
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -628,10 +622,6 @@ export class SubscriptionManager {
         this.themeSubscriber.delete(id);
     }
 
-    unsubscribeFromColorScheme(id:string) {
-        this.colorSchemeSubscriber.delete(id);
-    }
-
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -805,9 +795,5 @@ export class SubscriptionManager {
 
     emitThemeChanged(theme:string) {
         this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
-    }
-
-    emitColorSchemeChanged(colorScheme:string) {
-        this.colorSchemeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [colorScheme]));
     }
 }

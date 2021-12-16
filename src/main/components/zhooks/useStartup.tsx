@@ -243,7 +243,6 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (schemeToSet) {
                     context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
                     addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "scheme");
-                    context.subscriptions.emitColorSchemeChanged(schemeToSet);
                 }
 
                 if (convertedOptions.has("theme")) {

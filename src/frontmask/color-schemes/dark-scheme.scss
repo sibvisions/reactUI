@@ -3,409 +3,513 @@
 /// Darkmode Scheme
 :root {
     /// Darkmode login background
-    --dark-login-background: rgba(63, 75, 91, 0.93);
+    --login-mask-background: rgba(63, 75, 91, 0.93);
 
     /// Darkmode login logo background
-    --dark-login-logo-background: #3f4b5b;
+    --login-logo-background: #3f4b5b;
 
     /// Darkmode login inputfields placeholder color
-    --dark-login-placeholder-color: #bcc0c4;
+    --login-placeholder-color: #bcc0c4;
 
     /// Darkmode login box-shadow
-    --dark-login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+    --login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
 
     /// Darkmode client background
-    --dark-background: #20262e;
-
-    /// Darkmode background for topbar
-    --dark-menu-header-background: #3f4b5b;
-
-    /// Darkmode menu color
-    --dark-menu-color: #ffffff;
-
-    /// Darkmode menu border
-    --dark-menu-border: 1px solid rgba(120,130,140,.13);
-
-    /// Darkmode logo background
-    --dark-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
-
-    /// Darkmode profile-menu seperator
-    --dark-profile-seperator: 2px solid #5b6067;
-
-    /// Darkmode topbar buttons background
-    --dark-topbar-buttons-background: transparent;
-
-    /// Darkmode topbar buttons hover background
-    --dark-topbar-buttons-hover: #2a323d;
-
-    /// Darkmode panel-menu background
-    --dark-panelmenu-background: #2a323d;
-
-    /// Darkmode panel-menu hover background
-    --dark-panelmenu-hover-background: #222a33;
-
-    /// Darkmode panel-menu color
-    --dark-panelmenu-text-color: #d9d9d9;
-
-    /// Darkmode panel-menu color hover
-    --dark-panelmenu-hover-text-color: #ffffff;
-
-    /// Darkmode color for active menuitem
-    --dark-menu-activeitem-color: #2196F3;
-
-    /// Darkmode fadeout background
-    --dark-fadeout-background: linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
-
-    /// Darkmode background for corporation menu speeddial
-    --dark-speeddial-background: #ffffff;
-
-    /// Darkmode color for corporation menu speeddial
-    --dark-speeddial-color: #495057;
-
-    /// Darkmode shadow for corporation menu speeddial
-    --dark-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-
-    /// Darkmode menubar submenu background
-    --dark-menubar-submenu-background: #3f4b5b;
-
-    /// Darkmode menubar items hover background
-    --dark-menubar-items-hover-background: #303a48;
-
-    /// Darkmode menubar item hover
-    --dark-menubar-item-hover: #2a323d;
-
-    /// Darkmode button color
-    --dark-button-color: #205e8f;
-
-    /// Darkmode component background
-    --dark-component-background: #2a323d;
-
-    /// Darkmode component border
-    --dark-component-border: 1px solid #3f4b5b;
+    --screen-background: #20262e;
 
     /// Darkmode text color
-    --dark-text-color: rgba(255, 255, 255, 0.87);
+    --text-color: rgba(255, 255, 255, 0.87);
 
-    /// Darkmode checkbox, radiobutton selected outer color
-    --dark-selected-rb-cb-outer-color: #2196f3;
+    /// Darkmode background for topbar
+    --topbar-background: #3f4b5b;
 
-    /// Darkmode checkbox, radiobutton selected outer hover color
-    --dark-selected-rb-cb-outer-hover-color: #0b7ad1;
+    /// Darkmode menu color
+    --topbar-text-color: #ffffff;
 
-    /// Darkmode checkbox, radiobutton selected inner color
-    --dark-selected-rb-cb-inner-color: #151515;
+    /// Darkmode logo background
+    --topbar-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
+
+    /// Darkmode topbar buttons background
+    --topbar-button-background: transparent;
+
+    /// Darkmode topbar buttons hover background
+    --topbar-button-hover-background: #2a323d;
+
+    /// Profile-menu background
+    --profile-background: #3f4b5b;
+
+    /// profile-menu hover background-color
+    --profile-hover-background: #2a323d;
+
+    /// profile-menu text-color
+    --profile-text-color: #ffffff;
+
+    /// profile-menu seperator
+    --profile-seperator: 2px solid #5b6067;
+
+    /// profile-menu submenu background
+    --profile-submenu-background: #3f4b5b;
+
+    /// profile-menu items hover background
+    --profile-item-hover-background: #303a48;
+
+    /// profile items hover text color
+    --profile-item-hover-text-color: #ffffff;
+
+    /// Darkmode panel-menu background
+    --std-menu-background: #2a323d;
+
+    /// Darkmode panel-menu hover background
+    --std-menu-item-hover-background: #222a33;
+
+    /// Darkmode panel-menu color
+    --std-menu-text-color: #d9d9d9;
+
+    /// Darkmode panel-menu color hover
+    --std-menu-item-hover-text-color: #ffffff;
+
+    /// Darkmode color for active menuitem
+    --std-menu-activeitem-color: #2196F3;
+
+    /// Darkmode menu border
+    --std-menu-border: 1px solid rgba(120,130,140,.13);
+
+    /// Darkmode fadeout background
+    --std-menu-fadeout-background: linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
+
+    /// corporation menubar background
+    --corp-menu-background: #3f4b5b;
+
+    /// corporation menubar hover background
+    --corp-menu-hover-background: #2a323d;
+
+    /// corporation menubar text-color
+    --corp-menu-text-color: #ffffff;
+
+    /// corporation menubar submenu background
+    --corp-menu-submenu-background: #3f4b5b;
+
+    /// corporation items hover background
+    --corp-menu-item-hover-background: #303a48;
+
+    /// corporation items hover text-color
+    --corp-menu-item-hover-text-color: #ffffff;
+
+    /// Darkmode background for corporation menu speeddial
+    --corp-menu-speeddial-background: #ffffff;
+
+    /// Darkmode color for corporation menu speeddial
+    --corp-menu-speeddial-color: #495057;
+
+    /// Darkmode shadow for corporation menu speeddial
+    --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
+
+    /// Darkmode button color
+    --button-background: #205e8f;
+
+    /// Darkmode component background
+    --input-background: #2a323d;
+
+    /// Darkmode component border
+    --input-border: 1px solid #3f4b5b;
+
+    /// checkbox unselected background
+    --checkbox-background: #2a323d;
+
+    /// checkbox unselected border
+    --checkbox-border: 1px solid #3f4b5b;
+
+    /// checkbox selected outer background
+    --checkbox-selected-background: #2196f3;
+
+    /// checkbox selected outer hover background
+    --checkbox-selected-hover-background: #0b7ad1;
+
+    /// checkbox selected inner color
+    --checkbox-color: #151515;
+
+    /// radiobutton unselected background
+    --radiobutton-background: #2a323d;
+
+    /// checkbox unselected border
+    --radiobutton-border: 1px solid #3f4b5b;
+
+    /// checkbox selected outer background
+    --radiobutton-selected-outer-background: #2196f3;
+
+    /// checkbox selected outer hover background
+    --radiobutton-selected-outer-hover-background: #0b7ad1;
+
+    /// checkbox selected inner color
+    --radiobutton-inner-color: #151515;
 
     /// Darkmode toolbar background
-    --dark-toolbar-background: #303a48;
+    --toolbar-background: #303a48;
 
     /// Darkmode toolbar border
-    --dark-toolbar-border-color:#3f4b5b;
+    --toolbar-border-color:#3f4b5b;
 
     /// Darkmode table-header background
-    --dark-table-header-background: #20262e;
+    --table-header-background: #20262e;
 
     /// Darkmode table-header border
-    --dark-table-header-border: 1px solid #3f4b5b;
+    --table-header-border: 1px solid #3f4b5b;
+
+    /// Background when hovering a table header column
+    --table-header-hover-background: #1c283a;
 
     /// Darkmode table selected row background
-    --dark-table-selected-row-background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
+    --table-selected-row-background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
 
     /// Darkmode table-row background for odd rows
-    --dark-table-row-odd-background: #2a323d;
+    --table-row-odd-background: #2a323d;
 
     /// Darkmode table-row background for even rows
-    --dark-table-row-even-background: #272c33;
+    --table-row-even-background: #272c33;
 
     /// Darkmode background when hovering a table/linked row
-    --dark-table-hover-background: #1c283a;
+    --table-row-hover-background: #1c283a;
 
     /// Darkmode table-row border
-    --dark-table-row-border: 1px solid #3f4b5b;
+    --table-row-border: 1px solid #3f4b5b;
 
     /// Darkmode cell hover color
-    --dark-table-cell-hover-color: rgb(131, 131, 131);
+    --table-cell-hover-color: rgb(131, 131, 131);
 
     /// Darkmode cell background for required fields on even rows
-    --dark-table-required-even-background: rgb(253, 238, 195);
+    --table-required-even-background: rgb(253, 238, 195);
 
     /// Darkmode cell background for required fields on odd rows
-    --dark-table-required-odd-background: rgb(255, 244, 210);
+    --table-required-odd-background: rgb(255, 244, 210);
 
     /// Darkmode cell font color when a cell is required
-    --dark-table-required-color: #495057;
+    --table-required-color: #495057;
 
     /// Darkmode cell background for readonly fields on even rows
-    --dark-table-readonly-even-background: rgb(230, 230, 230);
+    --table-readonly-even-background: rgb(230, 230, 230);
 
     /// Darkmode cell background for readonly fields on odd rows
-    --dark-table-readonly-odd-background: rgb(239, 239, 239);
+    --table-readonly-odd-background: rgb(239, 239, 239);
 
     /// Darkmode table-header sort color
-    --dark-table-sort-color: #2196F3;
+    --table-sort-color: #2196F3;
 
     /// Darkmode LinkedCellEditor panel background
-    --dark-linked-panel-background: #3f4b5b;
+    --linked-panel-background: #3f4b5b;
 
     /// Darkmode LinkedCellEditor item hover background
-    --dark-linked-item-hover-background: #303a48;
+    --linked-item-hover-background: #303a48;
+
+    /// LinkedCellEditor hover text-color
+    --linked-item-hover-text-color: #ffffff;
 
     /// Darkmode overlay background for popupmenubuttons
-    --dark-popupmenubutton-overlay-background: #3f4b5b;
+    --popupmenubutton-overlay-background: #3f4b5b;
 
     /// Darkmode popupmenu item hover background
-    --dark-popupmenubutton-item-hover: #303a48;
+    --popupmenubutton-item-hover: #303a48;
 
     /// Darkmode DateCellEditor panel background
-    --dark-date-panel-background: #3f4b5b;
+    --date-panel-background: #3f4b5b;
 
     /// Darkmode DateCellEditor header border
-    --dark-date-panel-header-border: 1px solid #2a323d;
+    --date-panel-header-border: 1px solid #2a323d;
 
     /// Darkmode color when hovering over a day to select
-    --dark-date-panel-hover-color: #495057;
+    --date-panel-hover-color: #495057;
 
     /// Darkmode date panel selected date background
-    --dark-date-selected-background: #e3f2fd;
+    --date-selected-background: #e3f2fd;
 
     /// Darkmode Dialog header background
-    --dark-dialog-header-background: #3f4b5b;
+    --dialog-header-background: #3f4b5b;
 
     /// Darkmode 'x' color when hovering
-    --dark-dialog-icon-hover-color: #495057;
+    --dialog-icon-hover-color: #495057;
 
     /// Darkmode Dialog header border
-    --dark-dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+    --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
 
     /// Darkmode Dialog background
-    --dark-dialog-content-background: #20262e;
+    --dialog-content-background: #20262e;
 
     /// Darkmode TabSet navbar background
-    --dark-tab-navbar-background: #3f4b5b;
+    --tab-navbar-background: #3f4b5b;
 
     /// Darkmode TabSet navbar border
-    --dark-tab-navbar-border: 1px solid #3f4b5b;
+    --tab-navbar-border: 1px solid #3f4b5b;
 
     /// Darkmode border and color of a selected tab
-    --dark-tab-selected-color: #2196fe;
+    --tab-selected-color: #2196fe;
 
     /// Darkmode TabSet hover background
-    --dark-tab-hover-background: #20262e;
+    --tab-hover-background: #20262e;
 
     /// Darkmode TabSet border color
-    --dark-tab-border-color: var(--dark-text-color);
+    --tab-border-color: var(--text-color);
 
     /// Darkmode Tree background
-    --dark-tree-background: #20262e;
+    --tree-background: #20262e;
 
     /// Darkmode Tree border
-    --dark-tree-border: 1px solid #2a323d;
+    --tree-border: 1px solid #2a323d;
 
     /// Darkmode Tree item hover background
-    --dark-tree-item-hover-background: #303a48;
+    --tree-item-hover-background: #303a48;
 
     /// Darkmode Tree selected item background
-    --dark-tree-selected-item-background: #3f4b5b;
+    --tree-selected-item-background: #3f4b5b;
 
     /// Darkmode HTMLEditor toolbar background
-    --dark-html-toolbar-background: #3f4b5b;
+    --html-toolbar-background: #3f4b5b;
 
     /// Darkmode HTMLEditor toolbar border
-    --dark-html-toolbar-border: 1px solid #2a323d;
+    --html-toolbar-border: 1px solid #2a323d;
 
     /// Darkmode HTMLEditor button hover colors
-    --dark-html-toolbar-button-hover-background: rgba(255, 255, 255, 0.7);
+    --html-toolbar-button-hover-background: rgba(255, 255, 255, 0.7);
 
     /// Darkmode HTMLEditor picker expanded background
-    --dark-html-picker-expanded-background: #2a323d;
+    --html-picker-expanded-background: #2a323d;
 
     /// Darkmode HTMLEditor picker item hover background
-    --dark-html-picker-item-hover-background: #303a48;
+    --html-picker-item-hover-background: #303a48;
 
     /// Darkmode Message info background
-    --dark-message-info-header-background: var(--dark-button-color);
+    --message-info-header-background: var(--button-background);
 
     /// Darkmode Message info hover background of closing element
-    --dark-message-info-header-close-hover: #276b96;
+    --message-info-header-close-hover: #276b96;
 
     /// Darkmode Message info header color
-    --dark-message-info-header-color: #ffffff;
+    --message-info-header-color: #ffffff;
 
     /// Darkmode Message warning background
-    --dark-message-warning-header-background: #ffcf40;
+    --message-warning-header-background: #ffcf40;
 
     /// Darkmode Message warning hover background of closing element
-    --dark-message-warning-header-close-hover: #ebbd35;
+    --message-warning-header-close-hover: #ebbd35;
 
     /// Darkmode Message warning header color
-    --dark-message-warning-header-color: #ffffff;
+    --message-warning-header-color: #ffffff;
 
     /// Darkmode Message error background
-    --dark-message-error-header-background: #B00020;
+    --message-error-header-background: #B00020;
 
     /// Darkmode Message error hover background of closing element
-    --dark-message-error-header-close-hover: #a20d1b;
+    --message-error-header-close-hover: #a20d1b;
 
     /// Darkmode Message error header color
-    --dark-message-error-header-color: #ffffff;
+    --message-error-header-color: #ffffff;
 
     /// Darkmode Message question background
-    --dark-message-question-header-background: #018786;
+    --message-question-header-background: #018786;
 
     /// Darkmode Message question hover background of closing element
-    --dark-message-question-header-close-hover: #017372;
+    --message-question-header-close-hover: #017372;
 
     /// Darkmode Message question header color
-    --dark-message-question-header-color: #ffffff;
+    --message-question-header-color: #ffffff;
 
     /// Darkmode error-dialog background
-    --dark-error-dialog-background: rgba(32, 38, 46, 0.8);
+    --error-dialog-background: rgba(32, 38, 46, 0.8);
 
     /// Darkmode loading-screen background left
-    --dark-loading-screen-left-background: #20262e;
+    --loading-screen-left-background: #20262e;
 
     /// Darkmode loading-screen background right
-    --dark-loading-screen-right-background: #3f4b5b;
+    --loading-screen-right-background: #3f4b5b;
 
     /// Darkmode loading-screen spinner colors
-    --dark-loading-spinner-color-1: #b3ec23;
+    --loading-spinner-color-1: #b3ec23;
 
-    --dark-loading-spinner-color-2: #95c41f;
+    --loading-spinner-color-2: #95c41f;
 
-    --dark-loading-spinner-color-3: #8bb61d;
+    --loading-spinner-color-3: #8bb61d;
 
-    --dark-loading-spinner-color-4: #80a818;
+    --loading-spinner-color-4: #80a818;
 
     /// Darkmode tab close button color
-    --dark-tab-close-color: #cdcfd1;
+    --tab-close-color: #cdcfd1;
 
     /// Darkmode focus border/shadow
-    --dark-focus-box-shadow: 0 0 0 0.2rem #93cbf9;
+    --focus-box-shadow: 0 0 0 0.2rem #93cbf9;
 
     /// Darkmode hover border-color
-    --dark-border-color-hover: #2196fe;
+    --border-color-hover: #2196fe;
 
     /// Darkmode border-radius for login
-    --dark-login-border-radius: 6px;
+    --login-border-radius: 6px;
 
     /// Darkmode border-radius for buttons
-    --dark-button-border-radius: 3px;
+    --button-border-radius: 3px;
 
     /// Darkmode border-radius for editors
-    --dark-editor-border-radius: 3px;
+    --editor-border-radius: 3px;
 
     /// Darkmode border-radius for DatePicker panel
-    --dark-date-border-radius: 3px;
+    --date-border-radius: 3px;
 
     /// Darkmode border-radius for LinkedCellEditor panel
-    --dark-linked-border-radius: 3px;
+    --linked-border-radius: 3px;
 
     /// Darkmode border-radius for Tables/Trees
-    --dark-table-border-radius: 0px;
+    --table-border-radius: 0px;
 
     /// Darkmode border-radius for tabset navbar
-    --dark-tab-border-radius: 0px;
+    --tab-border-radius: 0px;
 
     /// Darkmode border-radius for Dialogs
-    --dark-dialog-border-radius: 0px;
+    --dialog-border-radius: 0px;
 
     /// Darkmode border-radius for toolbars which are NOT part of navigation-tables
-    --dark-toolbar-border-radius: 0px;
+    --toolbar-border-radius: 0px;
 
     /// Darkmode Topbar color
-    --dark-topbar-colors: #2196F3, #2196F3;
+    --topbar-colors: #2196F3, #2196F3;
 }
 
 body {
-    background: var(--dark-background);
-    color: var(--dark-text-color);
+    background: var(--screen-background);
+    color: var(--text-color);
 }
 
 /// *----------Login----------*
 .login-form {
-    background: var(--dark-login-background);
-    border-radius: var(--dark-login-border-radius);
+    background: var(--login-mask-background);
+    border-radius: var(--login-border-radius);
 
     .p-float-label label {
-        color: var(--dark-login-placeholder-color);
+        color: var(--login-placeholder-color);
     }
 }
 
 .login-logo-wrapper {
-    background: var(--dark-login-logo-background);
+    background: var(--login-logo-background);
 }
 
 .login-form-position-wrapper {
-    border-radius: var(--dark-login-border-radius);
-    box-shadow: var(--dark-login-shadow);
+    border-radius: var(--login-border-radius);
+    box-shadow: var(--login-shadow);
 }
 
 /// *----------General-Header----------*
 .menu-header {
-    background: var(--dark-menu-header-background);
+    background: var(--topbar-background);
 }
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
-    background: var(--dark-topbar-buttons-background);
-    color: var(--dark-menu-color);
-    border-radius: var(--dark-button-border-radius);
+    background: var(--topbar-button-background);
+    color: var(--topbar-text-color);
+    border-radius: var(--button-border-radius);
 
     &:hover {
-        background: var(--dark-topbar-buttons-hover);
+        background: var(--topbar-button-hover-background);
     }
 }
 
 .menu-screen-title {
-    color: var(--dark-menu-color);
+    color: var(--topbar-text-color);
+}
+
+/// *----------Profile-Menu----------*
+.profile-menu {
+    border-left: var(--profile-seperator);
+
+    .p-menubar {
+        background: var(--profile-background);
+
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--profile-background);
+                    color: var(--profile-text-color);
+    
+                    .p-menuitem-text, .p-submenu-icon {
+                        color: var(--profile-text-color);
+                    }
+    
+                    &:hover {
+                        background: var(--profile-hover-background);
+                        color: var(--profile-text-color);
+                        .p-menuitem-text, .p-submenu-icon {
+                            color: var(--profile-text-color);
+                        }
+                    }
+                }
+    
+                > .p-submenu-list {
+                    background: var(--profile-submenu-background);
+    
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--profile-submenu-background);
+    
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--text-color);
+                        }
+    
+                        &:hover {
+                            background: var(--profile-item-hover-background);
+    
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--profile-item-hover-text-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// *----------Standard-Menu----------*
 .menu-logo-wrapper {
-    background: var(--dark-logo-background);
-    border-bottom: var(--dark-menu-border);
+    background: var(--topbar-logo-background);
+    border-bottom: var(--std-menu-border);
 }
 
 .menu-panelmenu-wrapper {
-    background: var(--dark-panelmenu-background);
+    background: var(--std-menu-background);
     @include styledScrollbarPanelDark();
-    border-right: var(--dark-menu-border);
+    border-right: var(--std-menu-border);
 }
 
 .p-panelmenu {
     .p-panelmenu-header {
         .p-panelmenu-header-link {
-            background: var(--dark-panelmenu-background);
-            border-color: var(--dark-panelmenu-background);
-            color: var(--dark-panelmenu-text-color);
+            background: var(--std-menu-background);
+            border-color: var(--std-menu-background);
+            color: var(--std-menu-text-color);
         }
 
         &:not(.p-highlight):not(.p-disabled) > a:hover {
-            background: var(--dark-panelmenu-hover-background);
-            border-color: var(--dark-panelmenu-hover-background);
-            color: var(--dark-panelmenu-hover-text-color);
+            background: var(--std-menu-item-hover-background);
+            border-color: var(--std-menu-item-hover-background);
+            color: var(--std-menu-item-hover-text-color);
         }
 
         &.p-highlight {
             > a, &:not(.p-disabled) > a:hover {
-                background: var(--dark-panelmenu-background);
-                color: var(--dark-panelmenu-hover-text-color);
+                background: var(--std-menu-background);
+                color: var(--std-menu-item-hover-text-color);
             }
         }
     }
 
     .p-panelmenu-content {
-        background: var(--dark-panelmenu-background);
+        background: var(--std-menu-background);
 
         .p-menuitem {
             .p-menuitem-link:not(.p-disabled) {
-                background: var(--dark-panelmenu-background);
+                background: var(--std-menu-background);
                 .p-menuitem-icon, .p-menuitem-text {
-                    color: var(--dark-panelmenu-text-color);
+                    color: var(--std-menu-text-color);
                 }
 
                 &:hover {
-                    background: var(--dark-panelmenu-hover-background);
+                    background: var(--std-menu-item-hover-background);
                     .p-menuitem-icon, .p-menuitem-text {
-                        color: var(--dark-panelmenu-hover-text-color);
+                        color: var(--std-menu-item-hover-text-color);
                     }
                 }
             }
@@ -413,7 +517,7 @@ body {
             &.p-menuitem--active {
                 .p-menuitem-link {
                     .p-menuitem-text, .p-menuitem-icon {
-                        color: var(--dark-menu-activeitem-color);
+                        color: var(--std-menu-activeitem-color);
                     }
                 }
             }
@@ -422,66 +526,62 @@ body {
 }
 
 .fadeout {
-    background-image: var(--dark-fadeout-background);
+    background-image: var(--std-menu-fadeout-background);
 }
 
-/// *----------Corporate/Profile Menu----------*
+/// *----------Corporate-Menu----------*
 .c-menu-header {
-    background: var(--dark-menu-header-background);
+    background: var(--topbar-background);
 }
 
 .c-menu-menubar {
-    background: var(--dark-menu-header-background);
+    background: var(--topbar-background);
 }
 
 .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
-    background: var(--dark-speeddial-background);
-    border-color: var(--dark-speeddial-background);
-    color: var(--dark-speeddial-color);
-    box-shadow: var(--dark-speeddial-shadow);
-}
-
-.profile-menu {
-    border-left: var(--dark-profile-seperator);
+    background: var(--corp-menu-speeddial-background);
+    border-color: var(--corp-menu-speeddial-background);
+    color: var(--corp-menu-speeddial-color);
+    box-shadow: var(--corp-menu-speeddial-shadow);
 }
 
 .p-menubar {
-    background: var(--dark-menu-header-background);
+    background: var(--corp-menu-background);
     
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active  {
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--dark-menu-header-background);
-                color: var(--dark-menu-color);
+                background: var(--corp-menu-background);
+                color: var(--corp-menu-text-color);
 
                 .p-menuitem-text, .p-submenu-icon {
-                    color: var(--dark-menu-color);
+                    color: var(--corp-menu-text-color);
                 }
 
                 &:hover {
-                    background: var(--dark-topbar-buttons-hover);
-                    color: var(--dark-menu-color);
+                    background: var(--corp-menu-hover-background);
+                    color: var(--corp-menu-text-color);
                     .p-menuitem-text, .p-submenu-icon {
-                        color: var(--dark-menu-color);
+                        color: var(--corp-menu-text-color);
                     }
                 }
             }
 
             > .p-submenu-list {
-                background: var(--dark-menubar-submenu-background);
+                background: var(--corp-menu-submenu-background);
 
                 .p-menuitem .p-menuitem-link {
-                    background: var(--dark-menubar-submenu-background);
+                    background: var(--corp-menu-submenu-background);
 
                     .p-menuitem-text, .p-menuitem-icon {
-                        color: var(--dark-text-color);
+                        color: var(--text-color);
                     }
 
                     &:hover {
-                        background: var(--dark-menubar-items-hover-background);
+                        background: var(--corp-menu-item-hover-background);
 
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: var(--dark-panelmenu-hover-text-color);
+                            color: var(--corp-menu-item-hover-text-color);
                         }
                     }
                 }
@@ -495,8 +595,8 @@ body {
 .reactUI.basti_mobile {
     .p-inputtext:enabled:focus {
         & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-            border-color: var(--dark-button-color);
-            color: var(--dark-button-color);
+            border-color: var(--button-background);
+            color: var(--button-background);
         }
     }
 
@@ -504,18 +604,18 @@ body {
         &:hover {
             .p-button.p-button-icon-only {
                 &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                    border-color: var(--dark-button-color);
-                    color: var(--dark-button-color);
+                    border-color: var(--button-background);
+                    color: var(--button-background);
                 }
             }
 
             .p-inputtext {
-                border-color: var(--dark-button-color);
+                border-color: var(--button-background);
             }
         }
 
         .p-autocomplete-dropdown, .p-datepicker-trigger {
-            color: var(--dark-text-color);
+            color: var(--text-color);
         }
     }
 }
@@ -524,151 +624,151 @@ body {
 
 /// Button
 .p-button {
-    border-radius: var(--dark-button-border-radius);
+    border-radius: var(--button-border-radius);
 }
 
 .rc-button {
     &.mouse-border {
-        color: var(--dark-text-color);
+        color: var(--text-color);
     }
 
     &:focus {
-        box-shadow: var(--dark-focus-box-shadow);
+        box-shadow: var(--focus-box-shadow);
     }
 }
 
 .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
-    color: var(--dark-text-color);
+    color: var(--text-color);
 }
 
 /// Checkbox & Radiobutton
 .p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
-    background: var(--dark-component-background);
-    border: var(--dark-component-border);
+    background: var(--input-background);
+    border: var(--input-border);
 }
 
 .p-checkbox {
     &:not(.p-checkbox-disabled) .p-checkbox-box {
         &:hover {
-            border-color: var(--dark-border-color-hover);
+            border-color: var(--border-color-hover);
         }
     
         &.p-focus {
-            box-shadow: var(--dark-focus-box-shadow);
-            border-color: var(--dark-selected-rb-cb-outer-color);
+            box-shadow: var(--focus-box-shadow);
+            border-color: var(--checkbox-selected-background);
         }
 
         &.p-highlight:hover {
-            background: var(--dark-selected-rb-cb-outer-hover-color);
-            border-color: var(--dark-selected-rb-cb-outer-hover-color);
+            background: var(--checkbox-selected-hover-background);
+            border-color: var(--checkbox-selected-hover-background);
         }
     }
 
     .p-checkbox-box {
-        border-radius: var(--dark-button-border-radius);
+        border-radius: var(--button-border-radius);
 
         &.p-highlight {
-            background: var(--dark-selected-rb-cb-outer-color);
-            border-color: var(--dark-selected-rb-cb-outer-color);
+            background: var(--checkbox-selected-background);
+            border-color: var(--checkbox-selected-background);
         }
     }
 } 
 
 .p-checkbox-box.p-highlight .p-checkbox-icon {
-    color: var(--dark-selected-rb-cb-inner-color);
+    color: var(--checkbox-color);
 }
 
 .p-radiobutton {
     .p-radiobutton-box {
         &:not(.p-disabled) {
             .p-focus {
-                box-shadow: var(--dark-focus-box-shadow);
+                box-shadow: var(--focus-box-shadow);
             }
 
             &:not(.p-highlight):hover {
-                border-color: var(--dark-selected-rb-cb-outer-color);
+                border-color: var(--radiobutton-selected-outer-hover-background);
             }
         }
 
         &.p-highlight {
-            background: var(--dark-selected-rb-cb-outer-color);
-            border-color: var(--dark-selected-rb-cb-outer-color);
+            background: var(--radiobutton-selected-outer-background);
+            border-color: var(--radiobutton-selected-outer-background);
 
             &:not(.p-disabled):hover {
-                background: var(--dark-selected-rb-cb-outer-hover-color);
-                border-color: var(--dark-selected-rb-cb-outer-hover-color);
+                background: var(--radiobutton-selected-outer-hover-background);
+                border-color: var(--radiobutton-selected-outer-hover-background);
             }
         }
     }
 }
 
 .p-radiobutton-box.p-highlight .p-radiobutton-icon {
-    background: var(--dark-selected-rb-cb-inner-color);
+    background: var(--radiobutton-inner-color);
 }
 
 /// PopupMenuButton
 .rc-popupmenubutton {
-    background: var(--dark-button-color);
-    border-color: var(--dark-button-color);
-    border-radius: var(--dark-button-border-radius);
+    background: var(--button-background);
+    border-color: var(--button-background);
+    border-radius: var(--button-border-radius);
 
     &:focus-within {
-        box-shadow: var(--dark-focus-box-shadow);
+        box-shadow: var(--focus-box-shadow);
     }
 }
 
 .p-menu {
     &.p-menu-overlay {
-        background: var(--dark-popupmenubutton-overlay-background);
+        background: var(--popupmenubutton-overlay-background);
     }
 
     .p-menuitem-link:not(.p-disabled):hover {
-        background: var(--dark-popupmenubutton-item-hover);
+        background: var(--popupmenubutton-item-hover);
         
         .p-menuitem-text {
-            color: var(--dark-text-color);
+            color: var(--text-color);
         }
     }
 
     .p-menuitem-text{
-        color: var(--dark-text-color);
+        color: var(--text-color);
     }
 }
 
 /// Togglebutton
 .rc-togglebutton:focus {
-    box-shadow: var(--dark-focus-box-shadow);
+    box-shadow: var(--focus-box-shadow);
 }
 
 /// ChoiceCellEditor
 .rc-editor-choice:focus img {
-    box-shadow: var(--dark-focus-box-shadow);
+    box-shadow: var(--focus-box-shadow);
 }
 
 /// Inputfields
 .p-inputtext {
-    background: var(--dark-component-background);
-    border: var(--dark-component-border);
-    border-radius: var(--dark-editor-border-radius);
+    background: var(--input-background);
+    border: var(--input-border);
+    border-radius: var(--editor-border-radius);
 
     &:not(.required-field) {
-        color: var(--dark-text-color);
+        color: var(--text-color);
     }
 
     &:enabled {
         &:focus {
-            box-shadow: var(--dark-focus-box-shadow);
-            border-color: var(--dark-border-color-hover);
+            box-shadow: var(--focus-box-shadow);
+            border-color: var(--border-color-hover);
         }
 
         &:hover {
-            border-color: var(--dark-border-color-hover);
+            border-color: var(--border-color-hover);
         }
     }
 }
 
 .readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
-    background-color: var(--dark-component-background) !important;
+    background-color: var(--input-background) !important;
 }
 
 /// DateCellEditor
@@ -676,8 +776,8 @@ body {
     &:focus-within {
         outline: 0 none;
         outline-offset: 0;
-        box-shadow: var(--dark-focus-box-shadow);
-        border-radius: var(--dark-editor-border-radius);
+        box-shadow: var(--focus-box-shadow);
+        border-radius: var(--editor-border-radius);
     }
 
     input {
@@ -692,50 +792,50 @@ body {
 }
 
 .p-datepicker {
-    border-radius: var(--dark-date-border-radius);
+    border-radius: var(--date-border-radius);
 
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
-            background: var(--dark-date-panel-background);
-            color: var(--dark-text-color);
+            background: var(--date-panel-background);
+            color: var(--text-color);
         }
     }
 
     .p-datepicker-header {
-        border-bottom: var(--dark-date-panel-header-border);
+        border-bottom: var(--date-panel-header-border);
         .p-datepicker-title {
             .p-datepicker-month, .p-datepicker-year {
-                background-color: var(--dark-date-panel-background);
-                color: var(--dark-text-color);
+                background-color: var(--date-panel-background);
+                color: var(--text-color);
             }
 
             select:focus {
-                box-shadow: var(--dark-focus-box-shadow);
-                border-color: var(--dark-border-color-hover);
+                box-shadow: var(--focus-box-shadow);
+                border-color: var(--border-color-hover);
             }
         }
     } 
 
     &:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
-        color: var(--dark-date-panel-hover-color);
+        color: var(--date-panel-hover-color);
     }
 
     table td > span.p-highlight {
-        background: var(--dark-date-selected-background);
+        background: var(--date-selected-background);
     }
 }
 
 /// ImageCellEditor, Icon
 .rc-editor-image, .rc-icon, .rc-validator {
     &:focus img {
-        box-shadow: var(--dark-focus-box-shadow);
+        box-shadow: var(--focus-box-shadow);
     }
 }
 
 /// LinkedCellEditor
 .rc-editor-linked {
     &:focus-within {
-        box-shadow: var(--dark-focus-box-shadow);
+        box-shadow: var(--focus-box-shadow);
     }
 
     input {
@@ -750,17 +850,17 @@ body {
 }
 
 .p-autocomplete-panel {
-    background: var(--dark-linked-panel-background);
-    border-radius: var(--dark-linked-border-radius);
+    background: var(--linked-panel-background);
+    border-radius: var(--linked-border-radius);
 
     .p-autocomplete-items {
         .p-autocomplete-item {
-            background: var(--dark-linked-panel-background);
-            color: var(--dark-text-color);
+            background: var(--linked-panel-background);
+            color: var(--text-color);
 
             &:hover {
-                background: var(--dark-linked-item-hover-background);
-                color: var(--dark-panelmenu-hover-text-color);
+                background: var(--linked-item-hover-background);
+                color: var(--linked-item-hover-text-color);
             }
         }
     }
@@ -769,30 +869,30 @@ body {
         .p-autocomplete-items {
             /// Swaping odd and even because "table header" is also a child
             & li:nth-child(odd) {
-                background: var(--dark-table-row-even-background);
+                background: var(--table-row-even-background);
                 &:hover {
-                    background: var(--dark-table-hover-background);
+                    background: var(--table-row-hover-background);
                 }
             }
 
             & li:nth-child(even) {
-                background: var(--dark-table-row-odd-background);
+                background: var(--table-row-odd-background);
                 &:hover {
-                    background: var(--dark-table-hover-background);
+                    background: var(--table-row-hover-background);
                 }
             }
         }
         .p-autocomplete-item-group > * {
-            background: var(--dark-table-header-background);
-            color: var(--dark-text-color);
-            border-bottom: var(--dark-table-header-border);
+            background: var(--table-header-background);
+            color: var(--text-color);
+            border-bottom: var(--table-header-border);
         }
 
         .p-autocomplete-item > * {
-            border-bottom: var(--dark-table-row-border);
+            border-bottom: var(--table-row-border);
 
             &:not(:first-child) {
-                border-left: var(--dark-table-row-border);
+                border-left: var(--table-row-border);
             }
         }
     }
@@ -801,55 +901,55 @@ body {
 /// HTMLEditor
 .p-editor-container {
     .p-editor-toolbar {
-        background: var(--dark-html-toolbar-background);
-        border: var(--dark-html-toolbar-border);
-        border-top-left-radius: var(--dark-editor-border-radius);
-        border-top-right-radius: var(--dark-editor-border-radius);
+        background: var(--html-toolbar-background);
+        border: var(--html-toolbar-border);
+        border-top-left-radius: var(--editor-border-radius);
+        border-top-right-radius: var(--editor-border-radius);
 
         &.ql-snow {
-            border: var(--dark-component-border);
+            border: var(--input-border);
             
             .ql-formats {
                 .ql-picker .ql-picker-label, button {
-                    color: var(--dark-text-color);
+                    color: var(--text-color);
 
                     &:hover {
-                        color: var(--dark-html-toolbar-button-hover-background);
+                        color: var(--html-toolbar-button-hover-background);
     
                         svg {
                             polygon, path, line, rect, polyline {
-                                stroke: var(--dark-html-toolbar-button-hover-background);
+                                stroke: var(--html-toolbar-button-hover-background);
                             }
                         } 
                     }
     
                     svg {
                         polygon, path, line, rect, polyline {
-                            stroke: var(--dark-text-color);
+                            stroke: var(--text-color);
                         }
                     }
 
                     &.ql-source {
                         svg path {
-                            fill: var(--dark-text-color);
+                            fill: var(--text-color);
                         }
 
                         &:hover {
                             svg path {
-                                fill: var(--dark-html-toolbar-button-hover-background);
+                                fill: var(--html-toolbar-button-hover-background);
                             }
                         }
                     } 
                 }
 
                 .ql-picker.ql-expanded .ql-picker-options {
-                    background: var(--dark-html-picker-expanded-background);
+                    background: var(--html-picker-expanded-background);
 
                     .ql-picker-item {
-                        color: var(--dark-text-color);
+                        color: var(--text-color);
 
                         &:hover {
-                            background: var(--dark-html-picker-item-hover-background);
+                            background: var(--html-picker-item-hover-background);
                         }
                     }
                 }
@@ -858,19 +958,19 @@ body {
     }
 
     .p-editor-content {
-        border: var(--dark-component-border);
-        border-bottom-left-radius: var(--dark-editor-border-radius);
-        border-bottom-right-radius: var(--dark-editor-border-radius);
+        border: var(--input-border);
+        border-bottom-left-radius: var(--editor-border-radius);
+        border-bottom-right-radius: var(--editor-border-radius);
 
         .ql-editor {
-            background: var(--dark-component-background);
-            color: var(--dark-text-color);
-            border-bottom-left-radius: var(--dark-editor-border-radius);
-            border-bottom-right-radius: var(--dark-editor-border-radius);
+            background: var(--input-background);
+            color: var(--text-color);
+            border-bottom-left-radius: var(--editor-border-radius);
+            border-bottom-right-radius: var(--editor-border-radius);
         }
 
         &.ql-snow {
-            border: var(--dark-component-border);
+            border: var(--input-border);
             border-top: 0px;
         }
     }
@@ -878,13 +978,13 @@ body {
 
 .rc-editor-html {
     textarea.p-inputtext {
-        border: var(--dark-component-border) !important;
+        border: var(--input-border) !important;
     }
 }
 
 /// Table
 .rc-table {
-    border: var(--dark-component-border);
+    border: var(--input-border);
 
     table {
         border-style: hidden;
@@ -892,188 +992,188 @@ body {
     }
 
     &.navtable-north {
-        border-bottom-left-radius: var(--dark-table-border-radius);
-        border-bottom-right-radius: var(--dark-table-border-radius);
+        border-bottom-left-radius: var(--table-border-radius);
+        border-bottom-right-radius: var(--table-border-radius);
     }
 
     &.navtable-west {
-        border-top-right-radius: var(--dark-table-border-radius);
-        border-bottom-right-radius: var(--dark-table-border-radius);
+        border-top-right-radius: var(--table-border-radius);
+        border-bottom-right-radius: var(--table-border-radius);
         &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
             &:last-child {
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
 
             &:only-child {
-                border-top-left-radius: var(--dark-table-border-radius);
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
         }
 
         /// VirtualScroll border radiuses, can probably be deleted after PR update
         .p-datatable-scrollable-header {
-            border-top-right-radius: var(--dark-table-border-radius);
+            border-top-right-radius: var(--table-border-radius);
         }
     }
 
     &.navtable-east {
-        border-top-left-radius: var(--dark-table-border-radius);
-        border-bottom-left-radius: var(--dark-table-border-radius);
+        border-top-left-radius: var(--table-border-radius);
+        border-bottom-left-radius: var(--table-border-radius);
         &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
             &:first-child {
-                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
             }
 
             &:only-child {
-                border-top-left-radius: var(--dark-table-border-radius);
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
         }
 
         /// VirtualScroll border radiuses, can probably be deleted after PR update
         .p-datatable-scrollable-header {
-            border-top-left-radius: var(--dark-table-border-radius);
+            border-top-left-radius: var(--table-border-radius);
         }
     }
 
     &.navtable-south {
-        border-top-left-radius: var(--dark-table-border-radius);
-        border-top-right-radius: var(--dark-table-border-radius);
+        border-top-left-radius: var(--table-border-radius);
+        border-top-right-radius: var(--table-border-radius);
         &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
             &:first-child {
-                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
             }
 
             &:last-child {
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
 
             &:only-child {
-                border-top-left-radius: var(--dark-table-border-radius);
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
         }
         
 
         /// VirtualScroll border radiuses, can probably be deleted after PR update
         .p-datatable-scrollable-header {
-            border-top-left-radius: var(--dark-table-border-radius);
-            border-top-right-radius: var(--dark-table-border-radius);
+            border-top-left-radius: var(--table-border-radius);
+            border-top-right-radius: var(--table-border-radius);
         }
     }
 
     &:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south) {
-        border-radius: var(--dark-table-border-radius);
+        border-radius: var(--table-border-radius);
 
         &:not(.p-datatable-scrollable) .p-datatable-thead > tr > th {
             &:first-child {
-                border-top-left-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
             }
 
             &:last-child {
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
 
             &:only-child {
-                border-top-left-radius: var(--dark-table-border-radius);
-                border-top-right-radius: var(--dark-table-border-radius);
+                border-top-left-radius: var(--table-border-radius);
+                border-top-right-radius: var(--table-border-radius);
             }
         }
     }
 
     .p-datatable-thead > tr > th {
-        background: var(--dark-table-header-background);
-        border: var(--dark-table-header-border);
+        background: var(--table-header-background);
+        border: var(--table-header-border);
 
         &.sort-asc, &.sort-des {
-            color: var(--dark-table-sort-color);
+            color: var(--table-sort-color);
         }
 
         .p-sortable-column-icon {
-            color: var(--dark-table-sort-color);
+            color: var(--table-sort-color);
         }
     }
 
     .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-        background: var(--dark-table-hover-background);
-        color: var(--dark-text-color);
+        background: var(--table-header-hover-background);
+        color: var(--text-color);
 
         &.sort-asc, &.sort-des {
-            color: var(--dark-table-sort-color);
+            color: var(--table-sort-color);
 
             .p-sortable-column-icon {
-                color: var(--dark-table-sort-color);
+                color: var(--table-sort-color);
             }
         }
     }
 
     .p-datatable-tbody > tr {
-        background: var(--dark-table-row-odd-background);
-        color: var(--dark-text-color);
+        background: var(--table-row-odd-background);
+        color: var(--text-color);
         > td {
-            border: var(--dark-table-row-border);
+            border: var(--table-row-border);
 
             &.cell-required {
-                background: var(--dark-table-required-odd-background);
-                color: var(--dark-table-required-color);
+                background: var(--table-required-odd-background);
+                color: var(--table-required-color);
             }
 
             &.cell-readonly {
-                background: var(--dark-table-readonly-odd-background);
+                background: var(--table-readonly-odd-background);
             }
 
             &.p-highlight {
-                color: var(--dark-text-color);
+                color: var(--text-color);
             }
 
             &:hover {
-                color: var(--dark-table-cell-hover-color);
+                color: var(--table-cell-hover-color);
             }
         }
 
         &.p-highlight {
-            color: var(--dark-text-color);
-            background: var(--dark-table-selected-row-background) !important;
+            color: var(--text-color);
+            background: var(--table-selected-row-background) !important;
 
             td {
                 &.cell-required {
-                    background: var(--dark-table-required-odd-background);
+                    background: var(--table-required-odd-background);
                     opacity: 0.8;
                 }
 
                 &.cell-readonly {
-                    background: var(--dark-table-readonly-odd-background);
+                    background: var(--table-readonly-odd-background);
                     opacity: 0.8;
                 }
             }
         }
 
         &:nth-child(even) {
-            background: var(--dark-table-row-even-background);
+            background: var(--table-row-even-background);
 
             &.p-highlight {
-                background: var(--dark-table-selected-row-background);
-                color: var(--dark-text-color);
+                background: var(--table-selected-row-background);
+                color: var(--text-color);
             }
 
             > td {
                 &.cell-required {
-                    background: var(--dark-table-required-even-background);
+                    background: var(--table-required-even-background);
                 }
 
                 &.cell-readonly {
-                    background: var(--dark-table-readonly-even-background);
+                    background: var(--table-readonly-even-background);
                 }
             }
 
             &.p-highlight > td {
                 &.cell-required {
-                    background: var(--dark-table-required-even-background);
+                    background: var(--table-required-even-background);
                     opacity: 0.8;
                 }
 
                 &.cell-readonly {
-                    background: var(--dark-table-readonly-even-background);
+                    background: var(--table-readonly-even-background);
                     opacity: 0.8;
                 }
             }
@@ -1081,185 +1181,185 @@ body {
     }
 
     &.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover {
-        background: var(--dark-table-hover-background);
-        color: var(--dark-text-color);
+        background: var(--table-row-hover-background);
+        color: var(--text-color);
     }
 } 
 
 /// Toolbar
 .rc-toolbar {
-    background: var(--dark-toolbar-background);
-    border-color: var(--dark-toolbar-border-color);
+    background: var(--toolbar-background);
+    border-color: var(--toolbar-border-color);
 
     &.navbar-north {
-        border-top-left-radius: var(--dark-table-border-radius);
-        border-top-right-radius: var(--dark-table-border-radius);
+        border-top-left-radius: var(--table-border-radius);
+        border-top-right-radius: var(--table-border-radius);
     }
 
     &.navbar-west {
-        border-top-left-radius: var(--dark-table-border-radius);
-        border-bottom-left-radius: var(--dark-table-border-radius);
+        border-top-left-radius: var(--table-border-radius);
+        border-bottom-left-radius: var(--table-border-radius);
     }
 
     &.navbar-east {
-        border-top-right-radius: var(--dark-table-border-radius);
-        border-bottom-right-radius: var(--dark-table-border-radius);
+        border-top-right-radius: var(--table-border-radius);
+        border-bottom-right-radius: var(--table-border-radius);
     }
 
     &.navbar-south {
-        border-bottom-left-radius: var(--dark-table-border-radius);
-        border-bottom-right-radius: var(--dark-table-border-radius);
+        border-bottom-left-radius: var(--table-border-radius);
+        border-bottom-right-radius: var(--table-border-radius);
     }
 
     &.toolbar-north {
-        border-top-left-radius: var(--dark-toolbar-border-radius);
-        border-top-right-radius: var(--dark-toolbar-border-radius);
+        border-top-left-radius: var(--toolbar-border-radius);
+        border-top-right-radius: var(--toolbar-border-radius);
     }
 
     &.toolbar-west {
-        border-top-left-radius: var(--dark-toolbar-border-radius);
-        border-bottom-left-radius: var(--dark-toolbar-border-radius);
+        border-top-left-radius: var(--toolbar-border-radius);
+        border-bottom-left-radius: var(--toolbar-border-radius);
     }
 
     &.toolbar-east {
-        border-top-right-radius: var(--dark-toolbar-border-radius);
-        border-bottom-right-radius: var(--dark-toolbar-border-radius);
+        border-top-right-radius: var(--toolbar-border-radius);
+        border-bottom-right-radius: var(--toolbar-border-radius);
     }
 
     &.toolbar-south {
-        border-bottom-left-radius: var(--dark-toolbar-border-radius);
-        border-bottom-right-radius: var(--dark-toolbar-border-radius);
+        border-bottom-left-radius: var(--toolbar-border-radius);
+        border-bottom-right-radius: var(--toolbar-border-radius);
     }
 }
 
 /// Dialogs
 .rc-popup {
     .p-dialog-header {
-        background: var(--dark-dialog-header-background);
-        color: var(--dark-text-color);
-        border-top-left-radius: var(--dark-dialog-border-radius);
-        border-top-right-radius: var(--dark-dialog-border-radius);
-        border-bottom: var(--dark-dialog-header-border);
+        background: var(--dialog-header-background);
+        color: var(--text-color);
+        border-top-left-radius: var(--dialog-border-radius);
+        border-top-right-radius: var(--dialog-border-radius);
+        border-bottom: var(--dialog-header-border);
 
         .p-dialog-header-icon {
-            color: var(--dark-text-color);
+            color: var(--text-color);
 
             &:enabled:hover {
-                color: var(--dark-text-color);
+                color: var(--text-color);
                 background: #303946;
             }
         }
     }
 
     .p-dialog-content {
-        background: var(--dark-dialog-content-background);
-        color: var(--dark-text-color);
-        border-bottom-left-radius: var(--dark-dialog-border-radius);
-        border-bottom-right-radius: var(--dark-dialog-border-radius);
+        background: var(--dialog-content-background);
+        color: var(--text-color);
+        border-bottom-left-radius: var(--dialog-border-radius);
+        border-bottom-right-radius: var(--dialog-border-radius);
     }
 }
 
 /// Messages
 .rc-message-dialog {
     .p-dialog-header {
-        border-top-left-radius: var(--dark-dialog-border-radius);
-        border-top-right-radius: var(--dark-dialog-border-radius);
-        background: var(--dark-dialog-header-background);
+        border-top-left-radius: var(--dialog-border-radius);
+        border-top-right-radius: var(--dialog-border-radius);
+        background: var(--dialog-header-background);
     }
 
     &.info .p-dialog-header {
-        background: var(--dark-message-info-header-background);
-        color: var(--dark-message-info-header-color);
+        background: var(--message-info-header-background);
+        color: var(--message-info-header-color);
 
         .p-dialog-header-close {
             &:hover {
-                background: var(--dark-message-info-header-close-hover);
+                background: var(--message-info-header-close-hover);
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-message-info-header-color);
+                color: var(--message-info-header-color);
             }
         }
     }
 
     &.warning .p-dialog-header {
-        background: var(--dark-message-warning-header-background);
-        color: var(--dark-message-warning-header-color);
+        background: var(--message-warning-header-background);
+        color: var(--message-warning-header-color);
 
         .p-dialog-header-close {
             &:hover {
-                background: var(--dark-message-warning-header-close-hover);
+                background: var(--message-warning-header-close-hover);
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-message-warning-header-color);
+                color: var(--message-warning-header-color);
             }
         }
     }
 
     &.error .p-dialog-header {
-        background: var(--dark-message-error-header-background);
-        color: var(--dark-message-error-header-color);
+        background: var(--message-error-header-background);
+        color: var(--message-error-header-color);
 
         .p-dialog-header-close {
             &:hover {
-                background: var(--dark-message-error-header-close-hover);
+                background: var(--message-error-header-close-hover);
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-message-error-header-color);
+                color: var(--message-error-header-color);
             }
         }
     }
 
     &.question .p-dialog-header {
-        background: var(--dark-message-question-header-background);
-        color: var(--dark-message-question-header-color);
+        background: var(--message-question-header-background);
+        color: var(--message-question-header-color);
 
         .p-dialog-header-close {
             &:hover {
-                background: var(--dark-message-question-header-close-hover);
+                background: var(--message-question-header-close-hover);
             }
 
             .p-dialog-header-close-icon {
-                color: var(--dark-message-question-header-color);
+                color: var(--message-question-header-color);
             }
         }
     }
 
     .p-dialog-footer {
-        border-bottom-left-radius: var(--dark-dialog-border-radius);
-        border-bottom-right-radius: var(--dark-dialog-border-radius);
+        border-bottom-left-radius: var(--dialog-border-radius);
+        border-bottom-right-radius: var(--dialog-border-radius);
     }
 
     &.message-dialog-no-footer .p-dialog-content {
-        border-bottom-left-radius: var(--dark-dialog-border-radius);
-        border-bottom-right-radius: var(--dark-dialog-border-radius);
+        border-bottom-left-radius: var(--dialog-border-radius);
+        border-bottom-right-radius: var(--dialog-border-radius);
     }    
 
     .p-dialog-content, .p-dialog-footer {
-        background: var(--dark-dialog-content-background);
-        color: var(--dark-text-color);
+        background: var(--dialog-content-background);
+        color: var(--text-color);
     }
 }
 
 /// Info Toasts
 #toast-info {
     .p-toast-message {
-        background: var(--dark-dialog-content-background);
+        background: var(--dialog-content-background);
     }
 
     .toast-header {
         color: white;
 
         &.info {
-            background: var(--dark-message-info-header-background);
+            background: var(--message-info-header-background);
 
             .toast-header-close {
                 color: white;
 
                 &:hover {
-                    background: var(--dark-message-info-header-close-hover);
+                    background: var(--message-info-header-close-hover);
                 }
             }
         }
@@ -1268,82 +1368,82 @@ body {
 
 /// Error Dialog
 .rc-error-dialog {
-    ///background: var(--dark-error-dialog-background);
+    ///background: var(--error-dialog-background);
     ///color: #495057;
 }
 
 /// GroupPanel
 .rc-panel-group-caption {
-    border-bottom: var(--dark-component-border);
+    border-bottom: var(--input-border);
 }
 
 /// TabSetPanel
 .p-tabview .p-tabview-nav {
-    background: var(--dark-tab-navbar-background);
-    color: var(--dark-text-color);
-    border: var(--dark-tab-navbar-border);
-    border-radius: var(--dark-tab-border-radius);
-    padding: 0 var(--dark-tab-border-radius);
+    background: var(--tab-navbar-background);
+    color: var(--text-color);
+    border: var(--tab-navbar-border);
+    border-radius: var(--tab-border-radius);
+    padding: 0 var(--tab-border-radius);
 
     li {
         &:not(.p-highlight) {
             .p-tabview-nav-link {
-                color: var(--dark-text-color);
-                border-color: transparent transparent var(--dark-tab-border-color) transparent;
+                color: var(--text-color);
+                border-color: transparent transparent var(--tab-border-color) transparent;
             }
 
             &:not(.p-disabled):hover .p-tabview-nav-link {
-                color: var(--dark-text-color);
-                background: var(--dark-tab-hover-background);
-                border-color: var(--dark-text-color);
+                color: var(--text-color);
+                background: var(--tab-hover-background);
+                border-color: var(--text-color);
             }
         }
 
         &.p-highlight .p-tabview-nav-link {
-            color: var(--dark-tab-selected-color);
-            border-color: var(--dark-tab-selected-color);
+            color: var(--tab-selected-color);
+            border-color: var(--tab-selected-color);
         }
 
         .p-tabview-nav-link {
-            background: var(--dark-tab-navbar-background);
+            background: var(--tab-navbar-background);
         }
     }
 }
 
 .tabview-button {
-    color: var(--dark-tab-close-color);
+    color: var(--tab-close-color);
 }
 
 /// Tree
 .p-tree {
-    background: var(--dark-tree-background);
-    border: var(--dark-tree-border);
-    color: var(--dark-text-color);
-    border-radius: var(--dark-table-border-radius);
+    background: var(--tree-background);
+    border: var(--tree-border);
+    color: var(--text-color);
+    border-radius: var(--table-border-radius);
 
     .p-tree-container .p-treenode .p-treenode-content {
         &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--dark-tree-item-hover-background);
-            color: var(--dark-text-color);
+            background: var(--tree-item-hover-background);
+            color: var(--text-color);
         }
 
         &.p-highlight {
-            background: var(--dark-tree-selected-item-background);
-            color: var(--dark-text-color);
+            background: var(--tree-selected-item-background);
+            color: var(--text-color);
         }
 
         &:focus {
-            box-shadow: var(--dark-focus-box-shadow);
+            box-shadow: var(--focus-box-shadow);
         }
     }
 }
 
 /// Loading-Screen
 .loading-screen {
-    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
-    background: -o-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
-    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
-    background: radial-gradient(119% 190% at -6% -20%, var(--dark-loading-screen-left-background) 70%, var(--dark-loading-screen-right-background) 70%);
+    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
 }
 
 .loading-screen-spinner {
@@ -1352,10 +1452,10 @@ body {
 
 @media screen and (max-width: 960px) {
     .p-menubar .p-menubar-root-list {
-        background: var(--dark-menu-header-background);
+        background: var(--topbar-background);
 
         > .p-menuitem {
-            background: var(--dark-menu-header-background);
+            background: var(--topbar-background);
         }
     }
 }
@@ -1363,16 +1463,16 @@ body {
 @keyframes p-progress-spinner-color {
     100%,
     0% {
-        stroke: var(--dark-loading-spinner-color-1);
+        stroke: var(--loading-spinner-color-1);
     }
     40% {
-        stroke: var(--dark-loading-spinner-color-2);
+        stroke: var(--loading-spinner-color-2);
     }
     66% {
-        stroke: var(--dark-loading-spinner-color-3);
+        stroke: var(--loading-spinner-color-3);
     }
     80%,
     90% {
-        stroke: var(--dark-loading-spinner-color-4);
+        stroke: var(--loading-spinner-color-4);
     }
 }

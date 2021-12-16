@@ -23,19 +23,9 @@ const TopBar:FC = ({children}) => {
 
     const context = useContext(appContext)
 
-    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
-
-    useEffect(() => {
-        context.subscriptions.subscribeToColorScheme("topbar", (colorScheme:string) => setColorScheme(colorScheme));
-
-        return () => {
-            context.subscriptions.unsubscribeFromColorScheme("topbar");
-        }
-    }, [context.subscriptions]);
-
     const { barColors, shadowBlur, barThickness, shadowColor } = getSettingsFromCSSVar({
         barColors: {
-            cssVar: '--' + colorScheme + '-topbar-colors',
+            cssVar: '--topbar-colors',
             transform: 'csv'
         },
         shadowBlur: {

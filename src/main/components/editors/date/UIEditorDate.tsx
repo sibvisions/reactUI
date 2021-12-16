@@ -127,11 +127,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
-    /** Currently used color-scheme */
-    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
-
     /** Button background */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -162,14 +159,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    useEffect(() => {
-        context.subscriptions.subscribeToColorScheme(id, (colorScheme:string) => setColorScheme(colorScheme));
-
-        return () => {
-            context.subscriptions.unsubscribeFromColorScheme(id);
-        }
-    }, [context.subscriptions]);
 
     useEffect(() => {
         setMounted(true)
@@ -288,7 +277,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             aria-expanded={visible} 
             style={{
                 ...layoutStyle, 
-                '--dateBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-component-background')
+                '--dateBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--input-background')
             } as CSSProperties}>
             <CustomCalendar
                 ref={calendar}

@@ -168,7 +168,6 @@ export default class AppSettings {
             else {
                 addCSSDynamically('color-schemes/default-scheme.css', "scheme");
             }
-            this.#subManager.emitColorSchemeChanged(appMetaData.applicationColorScheme);
         }
         
         if (!this.applicationMetaData.applicationTheme.urlSet) {

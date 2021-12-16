@@ -36,16 +36,6 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     /** The font of a button */
     const font = useMemo(() => getFont(props.font), [props.font]);
 
-    const [colorScheme, setColorScheme] = useState<string>(context.appSettings.applicationMetaData.applicationColorScheme.value);
-
-    useEffect(() => {
-        context.subscriptions.subscribeToColorScheme(props.id, (colorScheme:string) => setColorScheme(colorScheme));
-
-        return () => {
-            context.subscriptions.unsubscribeFromTheme(props.id);
-        }
-    }, [context.subscriptions]);
-
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle:CSSProperties = useMemo(() => {
         let btnBackground = props.background ? tinycolor(props.background).toString() : undefined;
@@ -54,7 +44,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
 
         if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-background');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--screen-background');
             }
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
@@ -66,7 +56,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
         }
         else {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--' + colorScheme + '-button-color');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
             }
 
             if (!btnJustify) {
