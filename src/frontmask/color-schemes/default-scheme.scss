@@ -204,10 +204,13 @@
     --linked-item-hover-text-color: #000000;
 
     /// Default overlay background for popupmenubuttons
-    --popupmenubutton-overlay-background: #ffffff;
+    --popupmenubutton-panel-background: #ffffff;
 
     /// Default popupmenu item hover background
-    --popupmenubutton-item-hover: #e9ecef;
+    --popupmenubutton-item-hover-background: #e9ecef;
+
+    /// popupmenu item hover text-color
+    --popupmenubutton-item-hover-text-color: #000000;
 
     /// Default DateCellEditor panel background
     --date-panel-background: #ffffff;
@@ -223,6 +226,9 @@
 
     /// Default Dialog header background
     --dialog-header-background: #ffffff;
+
+    /// Dialog header text-color
+    --dialog-header-text-color: var(--text-color);
 
     /// Default 'x' color when hovering
     --dialog-icon-hover-color: var(--text-color);
@@ -719,14 +725,14 @@ body {
 
 .p-menu {
     &.p-menu-overlay {
-        background: var(--popupmenubutton-overlay-background);
+        background: var(--popupmenubutton-panel-background);
     }
 
     .p-menuitem-link:not(.p-disabled):hover {
-        background: var(--popupmenubutton-item-hover);
+        background: var(--popupmenubutton-item-hover-background);
         
         .p-menuitem-text {
-            color: var(--text-color);
+            color: var(--popupmenubutton-item-hover-text-color);
         }
     }
 
@@ -1236,7 +1242,7 @@ body {
 .rc-popup {
     .p-dialog-header {
         background: var(--dialog-header-background);
-        color: var(--text-color);
+        color: var(--dialog-header-text-color);
         border-top-left-radius: var(--dialog-border-radius);
         border-top-right-radius: var(--dialog-border-radius);
         border-bottom: var(--dialog-header-border);

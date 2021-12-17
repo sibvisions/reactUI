@@ -66,13 +66,15 @@
   --linked-panel-background: #ffffff;
   --linked-item-hover-background: #e9ecef;
   --linked-item-hover-text-color: #000000;
-  --popupmenubutton-overlay-background: #ffffff;
-  --popupmenubutton-item-hover: #e9ecef;
+  --popupmenubutton-panel-background: #ffffff;
+  --popupmenubutton-item-hover-background: #e9ecef;
+  --popupmenubutton-item-hover-text-color: #000000;
   --date-panel-background: #ffffff;
   --date-panel-header-border: 1px solid #dee2e6;
   --date-panel-hover-color: var(--text-color);
   --date-selected-background: #e3f2fd;
   --dialog-header-background: #ffffff;
+  --dialog-header-text-color: var(--text-color);
   --dialog-icon-hover-color: var(--text-color);
   --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
   --dialog-content-background: #ffffff;
@@ -333,12 +335,12 @@ body {
     box-shadow: var(--focus-box-shadow); }
 
 .p-menu.p-menu-overlay {
-  background: var(--popupmenubutton-overlay-background); }
+  background: var(--popupmenubutton-panel-background); }
 
 .p-menu .p-menuitem-link:not(.p-disabled):hover {
-  background: var(--popupmenubutton-item-hover); }
+  background: var(--popupmenubutton-item-hover-background); }
   .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
-    color: var(--text-color); }
+    color: var(--popupmenubutton-item-hover-text-color); }
 
 .p-menu .p-menuitem-text {
   color: var(--text-color); }
@@ -611,7 +613,7 @@ body {
 
 .rc-popup .p-dialog-header {
   background: var(--dialog-header-background);
-  color: var(--text-color);
+  color: var(--dialog-header-text-color);
   border-top-left-radius: var(--dialog-border-radius);
   border-top-right-radius: var(--dialog-border-radius);
   border-bottom: var(--dialog-header-border); }
