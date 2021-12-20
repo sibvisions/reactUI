@@ -95,11 +95,11 @@
   --message-info-header-background: var(--button-background);
   --message-info-header-close-hover: #276b96;
   --message-info-header-color: #ffffff;
-  --message-warning-header-background: #ffcf40;
-  --message-warning-header-close-hover: #ebbd35;
+  --message-warning-header-background: #b69425;
+  --message-warning-header-close-hover: #978138;
   --message-warning-header-color: #ffffff;
   --message-error-header-background: #B00020;
-  --message-error-header-close-hover: #a20d1b;
+  --message-error-header-close-hover: #860f1b;
   --message-error-header-color: #ffffff;
   --message-question-header-background: #018786;
   --message-question-header-close-hover: #017372;
