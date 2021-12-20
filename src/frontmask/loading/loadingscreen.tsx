@@ -11,7 +11,6 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 const LoadingScreen: FC = () => {
     return (
         <div className="loading-screen">
-            <span className="loading-logo-container">
                 <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                     width="300px" height="300px" viewBox="0 0 1035 900" enableBackground="new 0 0 1035 900">
                     <g>
@@ -29,7 +28,6 @@ const LoadingScreen: FC = () => {
                         <rect x="711.094" y="99" fill="#069339" width="104.104" height="406.13" />
                     </g>
                 </svg>
-            </span>
             <ProgressSpinner className="loading-screen-spinner" strokeWidth="10px"/>
         </div>
         

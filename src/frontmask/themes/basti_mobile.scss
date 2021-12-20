@@ -1,23 +1,53 @@
 :root {
+    /// Login form top bottom padding
+    --login-form-top-bottom-padding: 30px;
+  
+    /// Login form left right padding
+    --login-form-left-right-padding: 40px;
+
+    /// Login form field margin
+    --login-form-field-margin: 1.5rem;
+
+    /// Topbar height
+    --header-height: 70px
+
     /// Font size
-    --bastim-font-size: 18px;
+    --font-size: 18px;
 
     /// Menu topbar height
-    --bastim-topbar-height: 35px;
+    --topbar-height: 35px;
 
     /// Topbar button size
-    --bastim-topbar-buttons-small: 30px;
+    --topbar-buttons-small: 30px;
 
     /// Profile height
-    --bastim-profile-size-small: 35px;
+    --profile-size-small: 35px;
 
     /// Profile image size
-    --bastim-profile-image-size: 30px;
+    --profile-image-size: 30px;
+}
+
+.login-form {
+    .p-fluid {
+        padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
+
+        .p-field {
+            margin-bottom: var(--login-form-field-margin);
+        }
+    }
+
+    .login-logo-wrapper {
+        padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2);
+    }
 }
 
 .basti_mobile {
     .p-component, body {
-        font-size: var(--bastim-font-size);
+        font-size: var(--font-size);
+    }
+
+    .menu-header {
+        height: var(--header-height);
     }
 
     .c-menu {
@@ -94,44 +124,44 @@
 @media screen and (max-width: 530px) {
     .basti_mobile {
         .menu-header {
-            height: var(--bastim-topbar-height);
+            height: var(--topbar-height);
         }
 
         .profile-menu .p-menubar .p-menubar-root-list {
             >.p-menuitem >.p-menuitem-link {
-                height: var(--bastim-profile-size-small);
+                height: var(--profile-size-small);
 
                 &:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                    width: var(--bastim-profile-size-small)
+                    width: var(--profile-size-small)
                 }
             }
         } 
 
         .profile-image, .profile-image-null {
-            width: var(--bastim-profile-image-size);
-            height: var(--bastim-profile-image-size);
+            width: var(--profile-image-size);
+            height: var(--profile-image-size);
         }
 
         .profile-image {
-            background-size: var(--bastim-profile-image-size) var(--bastim-profile-image-size);
+            background-size: var(--profile-image-size) var(--profile-image-size);
         }
 
         .profile-image-null::before {
-            font-size: calc(var(--bastim-profile-image-size) - 2px);
+            font-size: calc(var(--profile-image-size) - 2px);
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--bastim-topbar-buttons-small);
-            height: var(--bastim-topbar-buttons-small);
+            width: var(--topbar-buttons-small);
+            height: var(--topbar-buttons-small);
             padding: 0;
         }
 
         .menu-panelmenu-wrapper {
-            padding-top: var(--bastim-topbar-height);
+            padding-top: var(--topbar-height);
         }
 
         .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
-            margin-top: var(--bastim-topbar-height);
+            margin-top: var(--topbar-height);
         }
     }
 }

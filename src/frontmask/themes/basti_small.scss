@@ -1,195 +1,225 @@
 /// Basic Theme React - Small
 :root {
+    /// Login form top bottom padding
+    --login-form-top-bottom-padding: 30px;
+  
+    /// Login form left right padding
+    --login-form-left-right-padding: 40px;
+
+    /// Login form field margin
+    --login-form-field-margin: 1.5rem;
+
+    /// Header height
+    --header-height: 70px;
+
     /// Full size of topbar buttons.
-    --bastis-topbar-buttons: 40px;
+    --topbar-buttons: 40px;
 
     /// Small size of topbar buttons.
-    --bastis-topbar-buttons-small: 25px;
+    --topbar-buttons-small: 25px;
 
     /// Height of the profile-menu.
-    --bastis-profile-height: 60px;
+    --profile-height: 60px;
 
     ///Small Profile-menu width.
-    --bastis-profile-width-small: 60px;
+    --profile-width-small: 60px;
 
     /// Profile-menu padding.
-    --bastis-profile-padding: 0.25rem 0.5rem;
+    --profile-padding: 0.25rem 0.5rem;
 
     /// Profile-menu picture size.
-    --bastis-profile-pic: 35px;
+    --profile-pic: 35px;
 
     /// Padding of a menu-header for standard menu.
-    --bastis-s-menu-header-padding: 0.5rem 1rem 0.5rem 0.625rem;
+    --s-menu-header-padding: 0.5rem 1rem 0.5rem 0.625rem;
 
     /// Padding of a menu-item for standard menu.
-    --bastis-s-menu-item-padding: 0.375rem 0.75rem 0.375rem 1.5rem;
+    --s-menu-item-padding: 0.375rem 0.75rem 0.375rem 1.5rem;
 
     /// Padding of a menu-header for coporation-menu.
-    --bastis-c-menu-header-padding: 0.75rem 0.5rem;
+    --c-menu-header-padding: 0.75rem 0.5rem;
 
     /// Padding of a menu-item for corporation menu.
-    --bastis-c-menu-item-padding: 0.25rem 0.5rem;
+    --c-menu-item-padding: 0.25rem 0.5rem;
 
     /// Padding of input fields
-    --bastis-input-padding: 0.125rem 0.125rem;
+    --input-padding: 0.125rem 0.125rem;
 
     /// Padding for buttons next to input fields. e.g. LinkedCellEditor, DateCellEditor
-    --bastis-input-button-padding: 0rem 0.125rem;
+    --input-button-padding: 0rem 0.125rem;
 
     /// Icon size for LinkedCellEditor and DateCellEditor
-    --bastis-input-button-icon-size: 12px;
+    --input-button-icon-size: 12px;
 
     /// Padding for normal buttons
-    --bastis-button-padding: 0.125rem 0.25rem;
+    --button-padding: 0.125rem 0.25rem;
 
     /// Padding for icon-only buttons
-    --bastis-button-icon-only-padding: 0.125rem 0.125rem;
+    --button-icon-only-padding: 0.125rem 0.125rem;
 
     /// Padding for the left part of the menu-button
-    --bastis-menubtn-leftbtn-padding: 0.125rem 0rem 0.125rem 0.25rem;
+    --menubtn-leftbtn-padding: 0.125rem 0rem 0.125rem 0.25rem;
 
     /// Padding for the right part of the menu-button
-    --bastis-menubtn-rightbtn-padding: 0rem 0.125rem 0rem 0.125rem;
+    --menubtn-rightbtn-padding: 0rem 0.125rem 0rem 0.125rem;
 
     /// Size of a checkbox
-    --bastis-checkbox-size: 14px;
+    --checkbox-size: 14px;
 
     /// Size of a radiobutton
-    --bastis-radiobutton-size: 14px;
+    --radiobutton-size: 14px;
 
     /// Padding of tabs
-    --bastis-tab-padding: 0rem 0.5rem;
+    --tab-padding: 0rem 0.5rem;
 
     /// Padding of table headers
-    --bastis-table-header-padding: 0.3rem 0.5rem;
+    --table-header-padding: 0.3rem 0.5rem;
 
     ///Height of cell data in a table
-    --bastis-table-data-height: 18px;
+    --table-data-height: 18px;
 
     /// Fixed Padding for Labels
-    --bastis-label-padding: 2.25px;
+    --label-padding: 2.25px;
+}
+
+.login-form {
+    .p-fluid {
+        padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
+
+        .p-field {
+            margin-bottom: var(--login-form-field-margin);
+        }
+    }
+
+    .login-logo-wrapper {
+        padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2);
+    }
 }
 
 .basti_small {
+    .menu-header {
+        height: var(--header-height);
+    }
+
     .p-button.p-button-icon-only.menu-topbar-buttons {
-        width: var(--bastis-topbar-buttons);
-        height: var(--bastis-topbar-buttons);
+        width: var(--topbar-buttons);
+        height: var(--topbar-buttons);
     }
 
     .profile-menu .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-        height: var(--bastis-profile-height);
-        padding: var(--bastis-profile-padding);
+        height: var(--profile-height);
+        padding: var(--profile-padding);
     }
 
     .profile-image, .profile-image-null {
-        width: var(--bastis-profile-pic);
-        height: var(--bastis-profile-pic);
+        width: var(--profile-pic);
+        height: var(--profile-pic);
     }
 
     .profile-image {
-        background-size: var(--bastis-profile-pic) var(--bastis-profile-pic);
+        background-size: var(--profile-pic) var(--profile-pic);
     }
 
     .profile-image-null::before {
-        font-size: calc(var(--bastis-profile-pic) - 2px);
+        font-size: calc(var(--profile-pic) - 2px);
     }
 
     .p-panelmenu {
         .p-panelmenu-header > a {
-            padding: var(--bastis-s-menu-header-padding);
+            padding: var(--s-menu-header-padding);
         }
 
         .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
-            padding: var(--bastis-s-menu-item-padding);
+            padding: var(--s-menu-item-padding);
         }
     }
 
     .p-menubar {
         .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
-            padding: var(--bastis-c-menu-header-padding);
+            padding: var(--c-menu-header-padding);
         }
         .p-menuitem-link {
-            padding: var(--bastis-c-menu-item-padding);
+            padding: var(--c-menu-item-padding);
         }
     }
 
     .p-inputtext {
-        padding: var(--bastis-input-padding);
+        padding: var(--input-padding);
     }
 
     .rc-button {
-        padding: var(--btnPadding, var(--bastis-button-padding, 0.125rem 0.25rem));
+        padding: var(--btnPadding, var(--button-padding, 0.125rem 0.25rem));
     }
 
     .p-button.p-button-icon-only {
         &:not(.rc-toolbar-button) {
-            padding: var(--btnPadding, var(--bastis-button-icon-only-padding, 0.25rem 0.25rem));
+            padding: var(--btnPadding, var(--button-icon-only-padding, 0.25rem 0.25rem));
         }
         
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-            padding: var(--bastis-input-button-padding);
+            padding: var(--input-button-padding);
             > .p-button-icon {
-                font-size: var(--bastis-input-button-icon-size);
+                font-size: var(--input-button-icon-size);
             }
         }
     }
 
     .p-checkbox {
-        width: var(--bastis-checkbox-size);
-        height: var(--bastis-checkbox-size);
+        width: var(--checkbox-size);
+        height: var(--checkbox-size);
         
         .p-checkbox-box {
-            width: var(--bastis-checkbox-size);
-            height: var(--bastis-checkbox-size);
+            width: var(--checkbox-size);
+            height: var(--checkbox-size);
     
             .p-checkbox-icon {
-                font-size: calc(var(--bastis-checkbox-size) * 0.7);
+                font-size: calc(var(--checkbox-size) * 0.7);
             }
         }
     }
 
     .p-radiobutton .p-radiobutton-box {
-        width: var(--bastis-radiobutton-size);
-        height: var(--bastis-radiobutton-size);
+        width: var(--radiobutton-size);
+        height: var(--radiobutton-size);
 
         .p-radiobutton-icon {
-            height: calc(var(--bastis-radiobutton-size) * 0.6);
-            width: calc(var(--bastis-radiobutton-size) * 0.6);
+            height: calc(var(--radiobutton-size) * 0.6);
+            width: calc(var(--radiobutton-size) * 0.6);
         }
     }
 
     .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--bastis-menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
+        padding: var(--menuBtnPadding, var(--menubtn-leftbtn-padding, 0.125rem 0rem 0.125rem 0.25rem));
     }
 
     .p-button.p-splitbutton-menubutton {
-        padding: var(--bastis-menubtn-rightbtn-padding);
+        padding: var(--menubtn-rightbtn-padding);
     }
 
     .rc-togglebutton {
-        padding: var(--btnPadding, var(--bastis-button-padding, 0.125rem 0.25rem));
+        padding: var(--btnPadding, var(--button-padding, 0.125rem 0.25rem));
     }
 
     .p-tabview .p-tabview-nav li .p-tabview-nav-link {
-        padding: var(--bastis-tab-padding);
+        padding: var(--tab-padding);
     }
 
     .rc-table {
         .p-datatable-thead > tr > th {
-            padding: var(--bastis-table-header-padding);
+            padding: var(--table-header-padding);
         }
 
         .p-datatable-tbody > tr > td {
-            height: calc(8px + var(--bastis-table-data-height));
+            height: calc(8px + var(--table-data-height));
 
             &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
-                height: var(--bastis-table-data-height);
+                height: var(--table-data-height);
             }
         }
     }
 
     .rc-label >span {
-        padding: var(--bastis-label-padding) 0px;
+        padding: var(--label-padding) 0px;
     }
 }
 
@@ -198,11 +228,11 @@
     .basti_small {
         .profile-menu .p-menubar .p-menubar-root-list {
             .p-submenu-list {
-                left: calc(var(--bastis-profile-width-small) - var(--s-menu-profile-mini-sub-width))
+                left: calc(var(--profile-width-small) - var(--s-menu-profile-mini-sub-width))
             }
 
             >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                width: var(--bastis-profile-width-small);
+                width: var(--profile-width-small);
                 padding: 0;
             }
         }
@@ -212,8 +242,8 @@
 @media screen and (max-width: 530px) {
     .basti_small {
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--bastis-topbar-buttons-small);
-            height: var(--bastis-topbar-buttons-small);
+            width: var(--topbar-buttons-small);
+            height: var(--topbar-buttons-small);
         }
     }
 }

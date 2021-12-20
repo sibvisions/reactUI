@@ -1,195 +1,225 @@
 /// Basic Theme React
 :root {
+    /// Login form top bottom padding
+    --login-form-top-bottom-padding: 30px;
+  
+    /// Login form left right padding
+    --login-form-left-right-padding: 40px;
+
+    /// Login form field margin
+    --login-form-field-margin: 1.5rem;
+
+    /// Header height
+    --header-height: 70px;
+
     /// Full size of topbar buttons.
-    --basti-topbar-buttons: 60px;
+    --topbar-buttons: 60px;
 
     /// Small size of topbar buttons.
-    --basti-topbar-buttons-small: 40px;
+    --topbar-buttons-small: 40px;
 
     /// Height of the profile-menu.
-    --basti-profile-height: 60px;
+    --profile-height: 60px;
 
     ///Small Profile-menu width.
-    --basti-profile-width-small: 60px;
+    --profile-width-small: 60px;
 
     /// Profile-menu padding.
-    --basti-profile-padding: 0.75rem 1rem;
+    --profile-padding: 0.75rem 1rem;
 
     /// Profile-menu picture size.
-    --basti-profile-pic: 40px;
+    --profile-pic: 40px;
 
     /// Padding of a menu-header for standard menu.
-    --basti-s-menu-header-padding: 1rem 1rem 1rem 0.625rem;
+    --s-menu-header-padding: 1rem 1rem 1rem 0.625rem;
 
     /// Padding of a menu-item for standard menu.
-    --basti-s-menu-item-padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+    --s-menu-item-padding: 0.75rem 0.75rem 0.75rem 1.5rem;
 
     /// Padding of a menu-header for coporation-menu.
-    --basti-c-menu-header-padding: 0.75rem 1rem;
+    --c-menu-header-padding: 0.75rem 1rem;
 
     /// Padding of a menu-item for corporation menu.
-    --basti-c-menu-item-padding: 0.75rem 1rem;
+    --c-menu-item-padding: 0.75rem 1rem;
 
     /// Padding of input fields
-    --basti-input-padding: 0.5rem 0.5rem;
+    --input-padding: 0.5rem 0.5rem;
 
     /// Padding for buttons next to input fields. e.g. LinkedCellEditor, DateCellEditor
-    --basti-input-button-padding: 0rem 0.5rem;
+    --input-button-padding: 0rem 0.5rem;
 
     /// Icon size for LinkedCellEditor and DateCellEditor
-    --basti-input-button-icon-size: 14px;
+    --input-button-icon-size: 14px;
 
     /// Padding for normal buttons
-    --basti-button-padding: 0.5rem 1rem;
+    --button-padding: 0.5rem 1rem;
 
     /// Padding for icon-only buttons
-    --basti-button-icon-only-padding: 0.5rem 0.5rem;
+    --button-icon-only-padding: 0.5rem 0.5rem;
 
     /// Padding for the left part of the menu-button
-    --basti-menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
+    --menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
 
     /// Padding for the right part of the menu-button
-    --basti-menubtn-rightbtn-padding: 0.5rem 0rem;
+    --menubtn-rightbtn-padding: 0.5rem 0rem;
 
     /// Size of a checkbox
-    --basti-checkbox-size: 20px;
+    --checkbox-size: 20px;
 
     /// Size of a radiobutton
-    --basti-radiobutton-size: 20px;
+    --radiobutton-size: 20px;
 
     /// Padding of tabs
-    --basti-tab-padding: 0rem 1rem;
+    --tab-padding: 0rem 1rem;
 
     /// Padding of table headers
-    --basti-table-header-padding: 0.6rem 1rem;
+    --table-header-padding: 0.6rem 1rem;
 
     /// Height of cell data in a table
-    --basti-table-data-height: 27px;
+    --table-data-height: 27px;
 
     /// Fixed Padding for Labels
-    --basti-label-padding: 9px;
+    --label-padding: 9px;
+}
+
+.login-form {
+    .p-fluid {
+        padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
+
+        .p-field {
+            margin-bottom: var(--login-form-field-margin);
+        }
+    }
+
+    .login-logo-wrapper {
+        padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2);
+    }
 }
 
 .basti {
+    .menu-header {
+        height: var(--header-height);
+    }
+
     .p-button.p-button-icon-only.menu-topbar-buttons {
-        width: var(--basti-topbar-buttons);
-        height: var(--basti-topbar-buttons);
+        width: var(--topbar-buttons);
+        height: var(--topbar-buttons);
     }
     
     .profile-menu .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-        height: var(--basti-profile-height);
-        padding: var(--basti-profile-padding);
+        height: var(--profile-height);
+        padding: var(--profile-padding);
     }
     
     .profile-image, .profile-image-null {
-        width: var(--basti-profile-pic);
-        height: var(--basti-profile-pic);
+        width: var(--profile-pic);
+        height: var(--profile-pic);
     }
     
     .profile-image {
-        background-size: var(--basti-profile-pic) var(--basti-profile-pic);
+        background-size: var(--profile-pic) var(--profile-pic);
     }
     
     .profile-image-null::before {
-        font-size: calc(var(--basti-profile-pic) - 2px);
+        font-size: calc(var(--profile-pic) - 2px);
     }
     
     .p-panelmenu {
         .p-panelmenu-header > a {
-            padding: var(--basti-s-menu-header-padding);
+            padding: var(--s-menu-header-padding);
         }
     
         .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
-            padding: var(--basti-s-menu-item-padding);
+            padding: var(--s-menu-item-padding);
         }
     }
     
     .p-menubar {
         .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
-            padding: var(--basti-c-menu-header-padding);
+            padding: var(--c-menu-header-padding);
         }
         .p-menuitem-link {
-            padding: var(--basti-c-menu-item-padding);
+            padding: var(--c-menu-item-padding);
         }
     }
     
     .p-inputtext {
-        padding: var(--basti-input-padding);
+        padding: var(--input-padding);
     }
 
     .rc-button {
-        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
+        padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem));
     }
     
     .p-button.p-button-icon-only {
         &:not(.rc-toolbar-button) {
-            padding: var(--btnPadding, var(--basti-button-icon-only-padding, 0.5rem 0.5rem));
+            padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem));
         }
 
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-            padding: var(--basti-input-button-padding);
+            padding: var(--input-button-padding);
             > .p-button-icon {
-                font-size: var(--basti-input-button-icon-size);
+                font-size: var(--input-button-icon-size);
             }
         }
     }
     
     .p-checkbox {
-        width: var(--basti-checkbox-size);
-        height: var(--basti-checkbox-size);
+        width: var(--checkbox-size);
+        height: var(--checkbox-size);
 
         .p-checkbox-box {
-            width: var(--basti-checkbox-size);
-            height: var(--basti-checkbox-size);
+            width: var(--checkbox-size);
+            height: var(--checkbox-size);
         
             .p-checkbox-icon {
-                font-size: calc(var(--basti-checkbox-size) * 0.7);
+                font-size: calc(var(--checkbox-size) * 0.7);
             }
         }
     }
     
     .p-radiobutton .p-radiobutton-box {
-        width: var(--basti-radiobutton-size);
-        height: var(--basti-radiobutton-size);
+        width: var(--radiobutton-size);
+        height: var(--radiobutton-size);
     
         .p-radiobutton-icon {
-            height: calc(var(--basti-radiobutton-size) * 0.6);
-            width: calc(var(--basti-radiobutton-size) * 0.6);
+            height: calc(var(--radiobutton-size) * 0.6);
+            width: calc(var(--radiobutton-size) * 0.6);
         }
     }
 
     .p-splitbutton-defaultbutton {
-        padding: var(--menuBtnPadding, var(--basti-menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
+        padding: var(--menuBtnPadding, var(--menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem));
     }
 
     .p-button.p-splitbutton-menubutton {
-        padding: var(--basti-menubtn-rightbtn-padding);
+        padding: var(--menubtn-rightbtn-padding);
     }
 
     .rc-togglebutton {
-        padding: var(--btnPadding, var(--basti-button-padding, 0.5rem 1rem));
+        padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem));
     }
     
     .p-tabview .p-tabview-nav li .p-tabview-nav-link {
-        padding: var(--basti-tab-padding);
+        padding: var(--tab-padding);
     }
     
     .rc-table {
         .p-datatable-thead > tr > th {
-            padding: var(--basti-table-header-padding);
+            padding: var(--table-header-padding);
         }
     
         .p-datatable-tbody > tr > td {
-            height: calc(8px + var(--basti-table-data-height));
+            height: calc(8px + var(--table-data-height));
     
             &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
-                height: var(--basti-table-data-height);
+                height: var(--table-data-height);
             }
         }
     }
     
     .rc-label >span {
-        padding: var(--basti-label-padding) 0px;
+        padding: var(--label-padding) 0px;
     }
 }
 
@@ -198,11 +228,11 @@
     .basti {
         .profile-menu .p-menubar .p-menubar-root-list {
             .p-submenu-list {
-                left: calc(var(--basti-profile-width-small) - var(--s-menu-profile-mini-sub-width))
+                left: calc(var(--profile-width-small) - var(--s-menu-profile-mini-sub-width))
             }
     
             >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                width: var(--basti-profile-width-small);
+                width: var(--profile-width-small);
                 padding: 0;
             }
         }
@@ -212,8 +242,8 @@
 @media screen and (max-width: 530px) {
     .basti {
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--basti-topbar-buttons-small);
-            height: var(--basti-topbar-buttons-small);
+            width: var(--topbar-buttons-small);
+            height: var(--topbar-buttons-small);
         }
     }
 }

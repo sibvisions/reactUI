@@ -1,41 +1,3 @@
-:root {
-  /// -----Login Variables-----
-
-  /// Login form width
-  --login-form-width: 450px;
-
-  /// Login form height
-  --login-form-height: 360px;
-  
-  /// Half of the login form width used for positioning
-  --login-form-left-position: calc(var(--login-form-width) / 2);
-  
-  /// Half of the login form height used for positioning
-  --login-form-top-position: calc(var(--login-form-height) / 2);
-  
-  /// Login form top bottom padding
-  --login-form-top-bottom-padding: 30px;
-  
-  /// Login form left right padding
-  --login-form-left-right-padding: 40px;
-
-  /// Login form border-radius
-  --login-form-border-radius: 6px;
-
-  /// Login form field margin
-  --login-form-field-margin: 1.5rem;
-  
-  /// Login form gap between logo and inputfields
-  --login-form-logo-gap: 15px;
-
-  /// Login form logo size.
-  --login-logo-width: 100%;
-
-  --login-logo-height: 140px;
-
-  --login-input-height: 240px;
-}
-
 .login-container {
   height: var(--main-height);
   display: flex;
@@ -45,32 +7,19 @@
   background-repeat: no-repeat;
 }
 
-.login-form{
-  min-width: var(--login-form-width);
-
-  .p-fluid {
-    padding: var(--login-form-logo-gap) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding);
-
-    .lost-password-button {
-      width: unset;
-      padding: 0.5rem;
-    }
-  }
+.login-form .p-fluid .lost-password-button {
+    width: unset;
+    padding: 0.5rem;
 }
 
 .login-logo-wrapper {
-  padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) var(--login-form-logo-gap);
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }
 
 .login-logo {
-  min-width: var(--login-logo-width);
+  min-width: 100%;
   display: block;
-}
-
-.p-field {
-  margin-bottom: var(--login-form-field-margin);
 }
 
 .p-float-label {

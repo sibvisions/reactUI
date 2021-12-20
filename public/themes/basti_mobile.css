@@ -1,12 +1,29 @@
 :root {
-  --bastim-font-size: 18px;
-  --bastim-topbar-height: 35px;
-  --bastim-topbar-buttons-small: 30px;
-  --bastim-profile-size-small: 35px;
-  --bastim-profile-image-size: 30px; }
+  --login-form-top-bottom-padding: 30px;
+  --login-form-left-right-padding: 40px;
+  --login-form-field-margin: 1.5rem;
+  --header-height: 70px
+
+    /// Font size
+    --font-size: 18px;
+  --topbar-height: 35px;
+  --topbar-buttons-small: 30px;
+  --profile-size-small: 35px;
+  --profile-image-size: 30px; }
+
+.login-form .p-fluid {
+  padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
+  .login-form .p-fluid .p-field {
+    margin-bottom: var(--login-form-field-margin); }
+
+.login-form .login-logo-wrapper {
+  padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
 
 .basti_mobile .p-component, .basti_mobile body {
-  font-size: var(--bastim-font-size); }
+  font-size: var(--font-size); }
+
+.basti_mobile .menu-header {
+  height: var(--header-height); }
 
 .basti_mobile .c-menu .c-menu-menubar .p-menubar {
   height: unset; }
@@ -55,23 +72,23 @@
 
 @media screen and (max-width: 530px) {
   .basti_mobile .menu-header {
-    height: var(--bastim-topbar-height); }
+    height: var(--topbar-height); }
   .basti_mobile .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-    height: var(--bastim-profile-size-small); }
+    height: var(--profile-size-small); }
     .basti_mobile .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti_mobile .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-      width: var(--bastim-profile-size-small); }
+      width: var(--profile-size-small); }
   .basti_mobile .profile-image, .basti_mobile .profile-image-null {
-    width: var(--bastim-profile-image-size);
-    height: var(--bastim-profile-image-size); }
+    width: var(--profile-image-size);
+    height: var(--profile-image-size); }
   .basti_mobile .profile-image {
-    background-size: var(--bastim-profile-image-size) var(--bastim-profile-image-size); }
+    background-size: var(--profile-image-size) var(--profile-image-size); }
   .basti_mobile .profile-image-null::before {
-    font-size: calc(var(--bastim-profile-image-size) - 2px); }
+    font-size: calc(var(--profile-image-size) - 2px); }
   .basti_mobile .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--bastim-topbar-buttons-small);
-    height: var(--bastim-topbar-buttons-small);
+    width: var(--topbar-buttons-small);
+    height: var(--topbar-buttons-small);
     padding: 0; }
   .basti_mobile .menu-panelmenu-wrapper {
-    padding-top: var(--bastim-topbar-height); }
+    padding-top: var(--topbar-height); }
   .basti_mobile .main--with-s-menu.desktop-panel-enabled:not(.menu-not-visible) {
-    margin-top: var(--bastim-topbar-height); } }
+    margin-top: var(--topbar-height); } }

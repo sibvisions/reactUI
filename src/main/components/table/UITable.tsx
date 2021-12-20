@@ -377,18 +377,6 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const focusIsClicked = useRef<boolean>(false);
 
-    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
-
-    const isSmallTheme = useMemo(() => appTheme === "basti_small", [appTheme]);
-
-    useEffect(() => {
-        context.subscriptions.subscribeToTheme(id, (theme:string) => setAppTheme(theme));
-
-        return () => {
-            context.subscriptions.unsubscribeFromTheme(id);
-        }
-    }, [context.subscriptions]);
-
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {
         let pks:(LengthBasedColumnDescription | NumericColumnDescription)[] | undefined;
@@ -468,7 +456,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const containerLeft = container.scrollLeft;
             const containerRight = containerLeft + container.clientWidth;
     
-            const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8);
+            const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
             const eleBottom = eleTop + ele.clientHeight;
         
             const containerTop = container.scrollTop;
@@ -517,7 +505,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const moveDirections = isVisible(selectedElem, container, cell);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8))
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
                     }
                     else if (selectedElem !== null) {
                         let sLeft:number = container.scrollLeft
@@ -528,16 +516,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
     
                         if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8);
+                            sTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
                         }
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8));
+                            sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
                         }
     
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8));
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
                     }
                 }
             }
@@ -626,7 +614,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
@@ -1449,7 +1437,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     virtualScroll={virtualEnabled}
                     rows={rows}
                     totalRecords={providerData.length}
-                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue(isSmallTheme ? "--bastis-table-data-height" : "--basti-table-data-height")) + 8}
+                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns
