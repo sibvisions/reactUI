@@ -135,11 +135,6 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<any>();
 
-    /** get the currently selected row */
-    const [selectedRow] = useRowSelect(compId, props.pointsDataBook);
-
-    console.log(selectedRow, providedPointData)
-
     /** Colors for polygon filling and polygon lines */
     const options:PolylineOptions = {
         color: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
@@ -191,17 +186,20 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** If there is no center set, set center to selectedMarker Position, if locked on center selectedMarker position is always center */
     useEffect(() => {
         if (selectedMarker) {
-            if (!props.center)
+            if (!props.center) {
                 map.setView(selectedMarker.getLatLng(), props.zoomLevel ? props.zoomLevel : 11);
-            if (props.pointSelectionLockedOnCenter)
+            }
+            if (props.pointSelectionLockedOnCenter) {
                 selectedMarker.setLatLng(map.getCenter())
+            }
         }
     }, [selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
 
     /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
     const onMove = useCallback((e) => {
-        if (props.pointSelectionLockedOnCenter && selectedMarker)
+        if (props.pointSelectionLockedOnCenter && selectedMarker) {
             selectedMarker.setLatLng(map.getCenter());
+        }
     },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
 
     /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
@@ -233,12 +231,13 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             {
                 /** Build markers with icon */
                 providedPointData.map((point: any, i: number) => {
+                    console.log(point)
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}
                         key={props.id + "-Marker-" + i}
-                        position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE,
-                        props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE]}
+                        position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE ? point.LATITUDE : 0,
+                        props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE ? point.LONGITUDE : 0]}
                         icon={new L.Icon({
                             iconUrl: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon),
                             iconAnchor: iconData !== "/com/sibvisions/rad/ui/swing/ext/images/map_defaultmarker.png" ? 
