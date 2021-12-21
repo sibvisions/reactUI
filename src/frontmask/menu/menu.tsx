@@ -241,7 +241,7 @@ const Menu: FC<IMenu> = (props) => {
      */
     useEffect(() => {
         if (props.menuVisibility.menuBar) {
-            const menuOuter = document.getElementsByClassName("menu")[0] as HTMLElement;
+            const menuOuter = document.getElementsByClassName("std-menu")[0] as HTMLElement;
             if (props.forwardedRef.current) {
                 const menuRef = props.forwardedRef.current;
                 const hoverExpand = () => {
@@ -313,7 +313,7 @@ const Menu: FC<IMenu> = (props) => {
         <>
             {(props.menuVisibility.menuBar && !embeddedContext) &&
                 <div className={concatClassnames(
-                    "menu",
+                    "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",
                     props.showMenuMini ? "" : "no-mini"
                 )}>

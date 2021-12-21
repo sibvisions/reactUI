@@ -44,8 +44,8 @@
     /// profile-menu text-color
     --profile-text-color: #ffffff;
 
-    /// profile-menu seperator
-    --profile-seperator: 2px solid #1c7bc9;
+    /// profile-menu separator
+    --profile-separator: 2px solid #1c7bc9;
 
     /// profile-menu submenu background
     --profile-submenu-background: #ffffff;
@@ -407,7 +407,7 @@ body {
 
 /// *----------Profile-Menu----------*
 .profile-menu {
-    border-left: var(--profile-seperator);
+    border-left: var(--profile-separator);
 
     .p-menubar {
         background: var(--profile-background);
@@ -527,11 +527,11 @@ body {
 }
 
 /// *----------Corporate-Menu----------*
-.c-menu-header {
+.corp-menu-header {
     background: var(--topbar-background);
 }
 
-.c-menu-menubar {
+.corp-menu-menubar {
     background: var(--topbar-background);
 }
 

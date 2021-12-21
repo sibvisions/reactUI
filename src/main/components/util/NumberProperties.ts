@@ -11,16 +11,16 @@ export function getGrouping(numberFormat:string) {
 }
 
 /**
- * Returns the minimum digits of a number format before the decimal seperator
+ * Returns the minimum digits of a number format before the decimal separator
  * @param numberFormat - the number format 
- * @returns the minimum digits of a number format before the decimal seperator
+ * @returns the minimum digits of a number format before the decimal separator
  */
 export function getMinimumIntDigits(numberFormat:string) {
     return (numberFormat.split('.')[0].match(/0/g) || []).length;
 }
 
 /**
- * Returns a string of leading zeros or undefined based on the minimum digits before the decimal seperator and the value
+ * Returns a string of leading zeros or undefined based on the minimum digits before the decimal separator and the value
  * @param numberFormat - the number format
  * @param value - the current value of the number editor
  * @returns a string of leading zeros or undefined
@@ -46,7 +46,7 @@ export function getScaleDigits(numberFormat:string, scale:number) {
 /**
  * Returns the maximum length for the number editor
  * @param scaleDigits - the minimum and maximum amount of scale digits
- * @param precision - combined digits before and after the decimal seperator
+ * @param precision - combined digits before and after the decimal separator
  * @param scale - the server sent scale
  * @param grouping - if grouping is enabled
  * @param minInt - minimum integer digits
@@ -59,7 +59,7 @@ export function getNumberLength(scaleDigits:ScaleType, precision:number, scale:n
     /** If there is a ',' add it to the max length */
     else if (precision !== 0 && scale !== -1)
         returnLength = precision+1;
-    /** If grouping is enabled add the thousand seperators to the max length */
+    /** If grouping is enabled add the thousand separators to the max length */
     if (grouping && returnLength)
         returnLength += Math.floor((precision - scale)/4)
     /** If there are leading zeros add them to the maximum length */
@@ -70,7 +70,7 @@ export function getNumberLength(scaleDigits:ScaleType, precision:number, scale:n
 
 /**
  * Returns the deciaml length of the number editor
- * @param precision - combined digits before and after the decimal seperator
+ * @param precision - combined digits before and after the decimal separator
  * @param scale - the server sent scale
  * @returns the deciaml length of the number editor
  */

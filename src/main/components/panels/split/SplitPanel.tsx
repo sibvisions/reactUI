@@ -36,7 +36,7 @@ interface ISplitPanel extends IForwardRef {
 }
 
 /**
- * This component holds two components divided by a seperator which can be dragged to adjust their size 
+ * This component holds two components divided by a separator which can be dragged to adjust their size 
  * @param props - Props received by UISplitPanel which is the "wrapper" of this component
  */
 const SplitPanel: FC<ISplitPanel> = (props) => {
@@ -66,7 +66,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         }
     }
 
-    /** When dragging, calcuate the new seperator position based on mouseposition and set it, resize is also called throttled while dragging */
+    /** When dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
     const dragging = (event: MouseEvent) => {
         let newSeparatorPosition
         if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
@@ -106,7 +106,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         document.removeEventListener("touchmove", touchDragging);
     }
 
-    /** When touch-dragging, calcuate the new seperator position based on mouseposition and set it, resize is also called throttled while dragging */
+    /** When touch-dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
     const touchDragging = (event: TouchEvent) => {
          const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
@@ -161,7 +161,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                     {props.leftComponent}
                 </div>
                 <div
-                    className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-seperator" : "v-seperator")}
+                    className={"separator " + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "h-separator" : "v-separator")}
                     onMouseDown={dragStart}
                     onTouchStart={dragTouchStart}>
                 </div>

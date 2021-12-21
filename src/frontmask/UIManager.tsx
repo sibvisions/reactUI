@@ -102,8 +102,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
-    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-width')),
-    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-collapsed-width')) : 0), menuCollapsed);
+    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
+    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
@@ -191,7 +191,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         visibleButtons={visibleButtons} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    isCorporation(appLayout, appTheme) ? "main--with-c-menu" : "main--with-s-menu",
+                    isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
                     ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuVisibility.toolBar ? "toolbar-visible" : "",

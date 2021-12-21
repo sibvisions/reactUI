@@ -111,8 +111,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     [props.cellEditor.numberFormat, selectedRow]);
 
     /**
-     * Returns the maximal length before the deciaml seperator
-     * @returns the maximal length before the deciaml seperator
+     * Returns the maximal length before the deciaml separator
+     * @returns the maximal length before the deciaml separator
      */
     const decimalLength = useMemo(() => columnMetaData ? getDecimalLength((columnMetaData as NumericColumnDescription).precision, (columnMetaData as NumericColumnDescription).scale) : undefined, [columnMetaData]);
 

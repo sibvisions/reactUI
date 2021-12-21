@@ -62,22 +62,22 @@ const CorporateMenu:FC<IMenu> = (props) => {
     return (
         <>
             {(!embeddedContext) &&
-                <div className="c-menu">
-                    <div className="c-menu-topbar">
-                        <div className="c-menu-header">
-                            <div className="c-menu-logo-wrapper">
+                <div className="corp-menu">
+                    <div className="corp-menu-topbar">
+                        <div className="corp-menu-header">
+                            <div className="corp-menu-logo-wrapper">
                                 <img
                                     className="menu-logo"
                                     draggable="false"
                                     src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                             </div>
                             <span className="menu-screen-title">{screenTitle}</span>
-                            <div className="c-menu-profile">
+                            <div className="corp-menu-profile">
                                 <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
                             </div>
                         </div>
                         {props.menuVisibility.menuBar &&
-                            <div className="c-menu-menubar">
+                            <div className="corp-menu-menubar">
                                 {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
                                     <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right" />

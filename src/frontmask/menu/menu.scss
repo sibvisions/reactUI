@@ -1,49 +1,6 @@
 @import '../scssutil/scrollbar.scss';
 @import '../scssutil/variables.scss';
 
-:root {
-    /// Menu-width when extended
-    --s-menu-width: 240px;
-
-    /// Menu-width when collapsed
-    --s-menu-collapsed-width: 80px;
-    
-    /// Header height
-    --s-menu-header-height: 70px;
-
-    /// Logo width when expanded
-    --s-menu-logo-width: 190px;
-    
-    /// Logo width when collapsed
-    --s-menu-logo-collapsed-width: 60px;
-        
-    /// Logo height
-    --s-menu-logo-max-height: 60px;
-
-    /// profilemenu height
-    --s-menu-profile-height: 60px;
-
-    /// Profile-menu seperator margin
-    --s-menu-profile-seperator-margin: 4px;
-
-    /// Profile sub-menu width when mini
-    --s-menu-profile-mini-sub-width: 10rem;
-
-    --s-menu-profile-mini-size: 60px;
-
-    /// Menu buttons big height
-    --s-menu-buttons-full: 60px;
-
-    /// Menu buttons small height
-    --s-menu-buttons-small: 2.5rem;
-
-    /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
-    --s-menu-fadeout-width: 20px;
-    
-    /// Fadeout positioning
-    --s-menu-fadeout-left: calc(var(--s-menu-collapsed-width) - var(--s-menu-fadeout-width));
-}
-
 /// Mixin for menu-transitions
 @mixin menuTransitions() {
     -webkit-transition: 0.5s ease-in-out;
@@ -53,7 +10,7 @@
 }
 
 /// No blue borders on focus
-.menu {
+.std-menu {
     :focus {
         box-shadow: none !important;
         -webkit-box-shadow: none !important;
@@ -71,20 +28,8 @@
 
 /// When menu is collapsed
 .menu-collapsed {
-    /// Set new widths and hide overflow because menu overflows on y axis
     .menu-logo-wrapper, .menu-panelmenu-wrapper {
-        width: var(--s-menu-collapsed-width);
         overflow: hidden;
-        .menu-logo {
-            width: var(--s-menu-logo-collapsed-width);
-        }
-    }
-    /// Set margin to adapt to new widths
-    .menu-topbar {
-        margin-left: var(--s-menu-collapsed-width);
-    }
-    .menu-logo-mini {
-        width: var(--s-menu-logo-collapsed-width);
     }
 }
 
@@ -93,8 +38,6 @@
     @include menuTransitions();
     position: fixed;
     display: flex;
-    height: var(--s-menu-header-height);
-    width: var(--s-menu-width);
     justify-content: center;
     align-items: center;
 }
@@ -103,15 +46,12 @@
 .menu-logo {
     @include menuTransitions();
     align-self: center;
-    width: var(--s-menu-logo-width);
-    max-height: var(--s-menu-logo-max-height);
     object-fit: contain;
 }
 
 /// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
 .menu-topbar {
     @include menuTransitions();
-    margin-left: var(--s-menu-width);
     display: flex;
     flex-grow: 1;
     align-items: center;
@@ -131,8 +71,6 @@
 }
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--s-menu-buttons-full);
-    height: var(--s-menu-buttons-full);
     flex: 1;
     border: 0;
     margin-right: 0.5rem;
@@ -153,15 +91,6 @@
     margin-right: 10px;
 
     .p-menubar  {
-        .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-            height: var(--s-menu-profile-height);
-        }
-
-        .p-submenu-list {
-            width: calc(100% - var(--s-menu-profile-seperator-margin));
-            margin-left: var(--s-menu-profile-seperator-margin);
-        }
-
         .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
             .p-menuitem-text {
                 @extend %ellipsis-overflow;
@@ -225,10 +154,8 @@
     @include menuTransitions();
     @include styledScrollbarPanelDefault();
     position: fixed;
-    padding-top: var(--s-menu-header-height);
     z-index: 10;
     height: 100%;
-    width: var(--s-menu-width);
     overflow-x: hidden;
 }
 
@@ -246,7 +173,6 @@
 
 .menu-logo-mini {
     max-height: 0px;
-    width: var(--s-menu-logo-width);
 }
 
 /// Fadeout div for not readable text if collapsed
@@ -254,9 +180,6 @@
     @include menuTransitions();
     position: absolute;
     top: 0;
-    left: var(--s-menu-fadeout-left);
-    width: var(--s-menu-fadeout-width);
-    margin-top: var(--s-menu-header-height);
     height: 100%;
     -webkit-animation: fadein 1s;
     -moz-animation: fadein 1s;
@@ -274,7 +197,6 @@
             //Positioning of menu-arrow
             .p-panelmenu-icon {
                 position: absolute;
-                left: calc(var(--s-menu-width) - 30px);
                 margin-right: 0;
             }
         }
@@ -299,7 +221,7 @@
 }
 
 @media screen and (max-width: 960px) {
-    .menu-topbar-right, .c-menu-profile {
+    .menu-topbar-right, .corp-menu-profile {
         margin-right: 4px;
     }
 
@@ -347,8 +269,6 @@
             .p-menubar-root-list {
                 .p-submenu-list {
                     position: absolute;
-                    width: var(--s-menu-profile-mini-sub-width);
-                    left: calc(var(--s-menu-profile-mini-size) - var(--s-menu-profile-mini-sub-width));
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {
@@ -364,7 +284,6 @@
                         }
                     }
                     >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                        width: var(--s-menu-profile-mini-size);
                         padding: 0;
                         display: flex;
                         justify-content: center;
@@ -381,9 +300,9 @@
     .menu-logo-wrapper {
         &, .menu-collapsed & {
             visibility: hidden;
-            width: 0px;
+            width: 0px !important;
             .menu-logo {
-                width: 0px;
+                width: 0px !important;
             }
         }
     }
@@ -391,34 +310,14 @@
     /// Colored part of menu always on the left side
     .menu-topbar {
         &, .menu-collapsed & {
-            margin-left: 0px;
+            margin-left: 0px !important;
         }
     }
 
-    /// Show logo-mini-wrapper
-    .menu-logo-mini-wrapper {
-        height: var(--s-menu-logo-max-height);
-    }
-
-    /// Mini logo displaying and styling
-    .menu-logo-mini {
-        @include menuTransitions();
-        width: var(--s-menu-logo-width);
-        max-height: var(--s-menu-logo-max-height);
-    }
-
-    /// Fadeout position needs to be adjusted.
-    .fadeout {
-        margin-top: calc(var(--s-menu-header-height) + var(--s-menu-logo-max-height));
-    }
-
     .menu-collapsed.no-mini {
-        .menu-logo-wrapper, .menu-panelmenu-wrapper {
-            width: 0px;
+        .menu-panelmenu-wrapper {
+            width: 0px !important;
             overflow: hidden;
-            .menu-logo {
-                width: 0px;
-            }
         }
     }
 
