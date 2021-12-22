@@ -98,7 +98,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** The month/year which is currently displayed */
-    const [viewDate, setViewDate] = useState<any>(new Date(selectedRow));
+    const [viewDate, setViewDate] = useState<any>(selectedRow ? new Date(selectedRow) : new Date());
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -182,7 +182,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     useEffect(() => {
         setDateValue(selectedRow ? new Date(selectedRow) : undefined);
         lastValue.current = selectedRow;
-        setViewDate(selectedRow ? new Date(selectedRow) : undefined);
+        setViewDate(selectedRow ? new Date(selectedRow) : new Date());
     },[selectedRow])
 
     /**

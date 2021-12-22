@@ -1,5 +1,11 @@
 /// Basic Theme React - Small
 :root {
+    /// Font-family
+    --font-family: 'Roboto', sans-serif;
+
+    /// Font-size
+    --font-size: 12px;
+
     /// Login form top bottom padding
     --login-form-top-bottom-padding: 30px;
   
@@ -43,7 +49,7 @@
     --std-profile-separator-margin: 4px;
 
     /// Standard-menu profile-menu sub-menu width when in mini mode
-    --std-profile-submenu-width-mini: 10rem;
+    --std-profile-submenu-width-small: 10rem;
 
     /// Standard-menu full size of topbar buttons
     --std-topbar-buttons: 40px;
@@ -85,7 +91,7 @@
     --corp-profile-separator-margin: 4px;
 
     /// Corporation-menu profile-menu sub-menu width when in mini mode
-    --corp-profile-submenu-width-mini: 10rem;
+    --corp-profile-submenu-width-small: 10rem;
 
     /// Corporation-menu full size of topbar buttons
     --corp-topbar-buttons: 40px;
@@ -143,6 +149,11 @@
 
     /// Fixed Padding for Labels
     --label-padding: 2.25px;
+}
+
+body {
+    font-size: var(--font-size);
+    font-family: var(--font-family);
 }
 
 .login-form {
@@ -333,6 +344,11 @@
         }
     }
 
+    .p-component {
+        font-size: var(--font-size);
+        font-family: var(--font-family);
+    }
+
     .p-inputtext {
         padding: var(--input-padding);
     }
@@ -416,8 +432,8 @@
             .profile-menu {
                 .p-menubar .p-menubar-root-list {
                     .p-submenu-list {
-                        width: var(--std-profile-submenu-width-mini);
-                        left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-mini));
+                        width: var(--std-profile-submenu-width-small);
+                        left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small));
                     }
             
                     >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
@@ -432,8 +448,8 @@
             .profile-menu {
                 .p-menubar .p-menubar-root-list {
                     .p-submenu-list {
-                        width: var(--corp-profile-submenu-width-mini);
-                        left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-mini));
+                        width: var(--corp-profile-submenu-width-small);
+                        left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-small));
                     }
             
                     >.p-menuitem >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {

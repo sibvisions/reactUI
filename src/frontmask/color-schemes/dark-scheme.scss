@@ -318,7 +318,7 @@
     --message-question-header-color: #ffffff;
 
     /// Darkmode error-dialog background
-    --error-dialog-background: rgba(32, 38, 46, 0.8);
+    --error-dialog-background: rgba(66, 73, 82, 0.8);
 
     /// Darkmode loading-screen background left
     --loading-screen-left-background: #20262e;
@@ -1374,8 +1374,17 @@ body {
 
 /// Error Dialog
 .rc-error-dialog {
-    ///background: var(--error-dialog-background);
-    ///color: #495057;
+    background: var(--error-dialog-background);
+    color: var(--text-color);
+}
+
+/// TagPanel
+.tag-panel {
+    color: #495057;
+
+    .rc-button.mouse-border {
+        color: #495057;
+    }
 }
 
 /// GroupPanel

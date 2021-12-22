@@ -9,7 +9,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 
@@ -83,7 +83,10 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         <>
             <Tooltip target={"#" + props.name} />
             <div
-                className="rc-panel"
+                className={concatClassnames(
+                    "rc-panel",
+                    props.style === "tagpanel" ? "tag-panel" : ""
+                )}
                 ref={panelRef}
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {

@@ -1,4 +1,6 @@
 :root {
+  --font-family: 'Roboto', sans-serif;
+  --font-size: 18px;
   --login-form-top-bottom-padding: 30px;
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
@@ -15,7 +17,7 @@
   --std-profile-pic: 40px;
   --std-profile-pic-mini: 30px;
   --std-profile-separator-margin: 4px;
-  --std-profile-submenu-width-mini: 10rem;
+  --std-profile-submenu-width-small: 10rem;
   --std-topbar-buttons: 60px;
   --std-topbar-buttons-small: 30px;
   --std-fadeout-width: 20px;
@@ -29,14 +31,30 @@
   --corp-profile-padding: 0.75rem 1rem;
   --corp-profile-pic: 40px;
   --corp-profile-separator-margin: 4px;
-  --corp-profile-submenu-width-mini: 10rem;
+  --corp-profile-submenu-width-small: 10rem;
   --corp-topbar-buttons: 60px;
   --corp-topbar-buttons-small: 40px;
   --corp-menubar-height: 40px;
   --corp-speeddial-size: 2rem;
   --corp-menu-header-padding: 0.75rem 1rem;
   --corp-menu-item-padding: 0.75rem 1rem;
-  --font-size: 18px; }
+  --input-padding: 0.5rem 0.5rem;
+  --input-button-padding: 0rem 0.5rem;
+  --input-button-icon-size: 14px;
+  --button-padding: 0.5rem 1rem;
+  --button-icon-only-padding: 0.5rem 0.5rem;
+  --menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
+  --menubtn-rightbtn-padding: 0.5rem 0rem;
+  --checkbox-size: 20px;
+  --radiobutton-size: 20px;
+  --tab-padding: 0rem 1rem;
+  --table-header-padding: 0.6rem 1rem;
+  --table-data-height: 27px;
+  --label-padding: 9px; }
+
+body {
+  font-size: var(--font-size);
+  font-family: var(--font-family); }
 
 .login-form .p-fluid {
   padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
@@ -164,8 +182,9 @@
   .basti_mobile .corp-menu .p-speeddial .p-speeddial-action .p-speeddial-action-icon {
     font-size: calc(var(--corp-speeddial-size) / 2); }
 
-.basti_mobile .p-component, .basti_mobile body {
-  font-size: var(--font-size); }
+.basti_mobile .p-component {
+  font-size: var(--font-size);
+  font-family: var(--font-family); }
 
 .basti_mobile .corp-menu .corp-menu-menubar .p-menubar {
   height: unset; }
@@ -212,6 +231,57 @@
   border-style: solid;
   border-radius: 0; }
 
+.basti_mobile .p-inputtext {
+  padding: var(--input-padding); }
+
+.basti_mobile .rc-button {
+  padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }
+
+.basti_mobile .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
+  padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem)); }
+
+.basti_mobile .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti_mobile .p-button.p-button-icon-only.p-datepicker-trigger {
+  padding: var(--input-button-padding); }
+  .basti_mobile .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti_mobile .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
+    font-size: var(--input-button-icon-size); }
+
+.basti_mobile .p-checkbox {
+  width: var(--checkbox-size);
+  height: var(--checkbox-size); }
+  .basti_mobile .p-checkbox .p-checkbox-box {
+    width: var(--checkbox-size);
+    height: var(--checkbox-size); }
+    .basti_mobile .p-checkbox .p-checkbox-box .p-checkbox-icon {
+      font-size: calc(var(--checkbox-size) * 0.7); }
+
+.basti_mobile .p-radiobutton .p-radiobutton-box {
+  width: var(--radiobutton-size);
+  height: var(--radiobutton-size); }
+  .basti_mobile .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    height: calc(var(--radiobutton-size) * 0.6);
+    width: calc(var(--radiobutton-size) * 0.6); }
+
+.basti_mobile .p-splitbutton-defaultbutton {
+  padding: var(--menuBtnPadding, var(--menubtn-leftbtn-padding, 0.5rem 0rem 0.5rem 1rem)); }
+
+.basti_mobile .p-button.p-splitbutton-menubutton {
+  padding: var(--menubtn-rightbtn-padding); }
+
+.basti_mobile .rc-togglebutton {
+  padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }
+
+.basti_mobile .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: var(--tab-padding); }
+
+.basti_mobile .rc-table .p-datatable-thead > tr > th {
+  padding: var(--table-header-padding); }
+
+.basti_mobile .rc-table .p-datatable-tbody > tr > td {
+  height: calc(8px + var(--table-data-height)); }
+
+.basti_mobile .rc-label > span {
+  padding: var(--label-padding) 0px; }
+
 @media screen and (max-width: 530px) {
   .basti_mobile .std-menu .menu-header {
     height: var(--std-header-mini-height); }
@@ -222,8 +292,8 @@
     height: var(--std-topbar-buttons-small);
     padding: 0; }
   .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
-    width: var(--std-profile-submenu-width-mini);
-    left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-mini)); }
+    width: var(--std-profile-submenu-width-small);
+    left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small)); }
   .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
     height: var(--corp-profile-width-small);
     padding: 0; }

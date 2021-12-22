@@ -1,4 +1,6 @@
 :root {
+  --font-family: 'Roboto', sans-serif;
+  --font-size: 12px;
   --login-form-top-bottom-padding: 30px;
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
@@ -13,7 +15,7 @@
   --std-profile-padding: 0.25rem 0.5rem;
   --std-profile-pic: 35px;
   --std-profile-separator-margin: 4px;
-  --std-profile-submenu-width-mini: 10rem;
+  --std-profile-submenu-width-small: 10rem;
   --std-topbar-buttons: 40px;
   --std-topbar-buttons-small: 25px;
   --std-fadeout-width: 20px;
@@ -27,7 +29,7 @@
   --corp-profile-padding: 0.25rem 0.5rem;
   --corp-profile-pic: 35px;
   --corp-profile-separator-margin: 4px;
-  --corp-profile-submenu-width-mini: 10rem;
+  --corp-profile-submenu-width-small: 10rem;
   --corp-topbar-buttons: 40px;
   --corp-topbar-buttons-small: 25px;
   --corp-menubar-height: 40px;
@@ -47,6 +49,10 @@
   --table-header-padding: 0.3rem 0.5rem;
   --table-data-height: 18px;
   --label-padding: 2.25px; }
+
+body {
+  font-size: var(--font-size);
+  font-family: var(--font-family); }
 
 .login-form .p-fluid {
   padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
@@ -174,6 +180,10 @@
   .basti_small .corp-menu .p-speeddial .p-speeddial-action .p-speeddial-action-icon {
     font-size: calc(var(--corp-speeddial-size) / 2); }
 
+.basti_small .p-component {
+  font-size: var(--font-size);
+  font-family: var(--font-family); }
+
 .basti_small .p-inputtext {
   padding: var(--input-padding); }
 
@@ -227,14 +237,14 @@
 
 @media screen and (max-width: 960px) {
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
-    width: var(--std-profile-submenu-width-mini);
-    left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-mini)); }
+    width: var(--std-profile-submenu-width-small);
+    left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small)); }
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
     width: var(--std-profile-width-small);
     padding: 0; }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
-    width: var(--corp-profile-submenu-width-mini);
-    left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-mini)); }
+    width: var(--corp-profile-submenu-width-small);
+    left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-small)); }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
     width: var(--corp-profile-width-small);
     padding: 0; } }

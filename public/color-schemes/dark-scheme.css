@@ -104,7 +104,7 @@
   --message-question-header-background: #018786;
   --message-question-header-close-hover: #017372;
   --message-question-header-color: #ffffff;
-  --error-dialog-background: rgba(32, 38, 46, 0.8);
+  --error-dialog-background: rgba(66, 73, 82, 0.8);
   --loading-screen-left-background: #20262e;
   --loading-screen-right-background: #3f4b5b;
   --loading-spinner-color-1: #b3ec23;
@@ -695,6 +695,15 @@ body {
       color: white; }
       #toast-info .toast-header.info .toast-header-close:hover {
         background: var(--message-info-header-close-hover); }
+
+.rc-error-dialog {
+  background: var(--error-dialog-background);
+  color: var(--text-color); }
+
+.tag-panel {
+  color: #495057; }
+  .tag-panel .rc-button.mouse-border {
+    color: #495057; }
 
 .rc-panel-group-caption {
   border-bottom: var(--input-border); }
