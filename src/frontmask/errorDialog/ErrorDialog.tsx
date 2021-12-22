@@ -35,7 +35,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     /**
      * Either starts the session restart or retries the last failed request
      */
-    useEventHandler(document.body, "keydown", (event) => {
+    useEventHandler(props.sessionExpired || props.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
             if (props.sessionExpired) {
                 if (!alreadySent.current) {
@@ -53,14 +53,16 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
         <>
             <div className="rc-glasspane" />
             <div className="rc-error-dialog" tabIndex={0} onClick={() => {
-                if (props.sessionExpired) {
-                    if (!alreadySent.current) {
-                        alreadySent.current = true;
-                        handleRestart();
+                if (props.sessionExpired || props.retry) {
+                    if (props.sessionExpired) {
+                        if (!alreadySent.current) {
+                            alreadySent.current = true;
+                            handleRestart();
+                        }
                     }
-                }
-                else {
-                    showTopBar(props.retry(), topbar)
+                    else {
+                        showTopBar(props.retry(), topbar)
+                    }
                 }
             }}>
                 <div className="rc-error-dialog-header">
