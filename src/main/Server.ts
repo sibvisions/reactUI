@@ -161,6 +161,10 @@ class Server {
                 this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000, () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests))
                     .then((response: any) => response.json())
                     .then(result => {
+                        if (this.appSettings.applicationMetaData.aliveInterval) {
+                            this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
+                        }
+                        
                         if (result.code) {
                             if (400 >= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);

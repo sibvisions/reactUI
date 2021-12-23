@@ -12,7 +12,7 @@ import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
-import { addCSSDynamically } from "../util";
+import { addCSSDynamically, Timer } from "../util";
 
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
@@ -33,16 +33,6 @@ const useStartup = (props:ICustomContent):boolean => {
     const relaunchArguments = useRef<any>(null);
 
     const ws = useRef<WebSocket|null>(null);
-
-    const aliveSent = useRef<boolean>(false);
-
-    const retryCounter = useRef<number>(0);
-
-    const maxRetries = 4;
-
-    let maxTriesExceeded = useRef<boolean>(false);
-
-    let errorDialogVisible = useRef<boolean>(false);
 
     const ws2 = useRef<WebSocket|null>(null);
 
@@ -122,7 +112,14 @@ const useStartup = (props:ICustomContent):boolean => {
             
             ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
             ws.current.onopen = () => console.log("ws opened");
-            ws.current.onclose = () => console.log("ws closed");
+            ws.current.onclose = () => {
+                console.log("ws closed");
+                context.subscriptions.emitMessage({ name:"", message: "The WebSocket closed!" }, "warning")
+            };
+            ws.current.onerror = () => {
+                console.error("ws error");
+                context.subscriptions.emitMessage({ name:"", message: "The WebSocket encountered an Error!" }, "error");
+            };
             ws.current.onmessage = (e) => {
                 if (e.data instanceof Blob) {
                     const reader = new FileReader()
@@ -150,43 +147,41 @@ const useStartup = (props:ICustomContent):boolean => {
                     if (e.data === "api/changes") {
                         context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
                     }
-                    if (e.data === "OK") {
-                        aliveSent.current = false;
-                        if (errorDialogVisible.current) {
-                            context.subscriptions.emitErrorDialogVisible(false);
-                        }
-                    }
                 }
             }
-            setInterval(() => {
-                if (!maxTriesExceeded.current) {
-                    if (retryCounter.current < maxRetries) {
-                        ws.current?.send("ALIVE");
-                        if (aliveSent.current) {
-                            retryCounter.current++;
-                            context.subscriptions.emitDialog(
-                                "server", 
-                                false, 
-                                "Alive Check failed.", 
-                                "The server did not respond to the alive check. The client is retrying to reach the server. Retry: " + retryCounter.current + " out of " + maxRetries)
-                            if (retryCounter.current === 1) {
-                                context.subscriptions.emitErrorDialogVisible(true);
-                                errorDialogVisible.current = true;
-                            }
-                        }
-                        else {
-                            aliveSent.current = true;
-                            retryCounter.current = 0;
-                        }
-                    }
-                    else {
-                        context.subscriptions.emitDialog("server", false, "Alive Check exceeded Max-Retries!", "The server did not respond after " + maxRetries + " tries to send the alive-check.");
-                        context.subscriptions.emitErrorDialogVisible(true);
-                        maxTriesExceeded.current = true;
-                    }
-                }
 
-            }, 5000);
+            if (context.appSettings.applicationMetaData.aliveInterval) {
+                context.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), context.appSettings.applicationMetaData.aliveInterval));
+            }
+            
+            // setInterval(() => {
+            //     if (!maxTriesExceeded.current) {
+            //         if (retryCounter.current < maxRetries) {
+            //             ws.current?.send("ALIVE");
+            //             if (aliveSent.current) {
+            //                 retryCounter.current++;
+            //                 context.subscriptions.emitDialog(
+            //                     "server", 
+            //                     false, 
+            //                     "Alive Check failed.", 
+            //                     "The server did not respond to the alive check. The client is retrying to reach the server. Retry: " + retryCounter.current + " out of " + maxRetries)
+            //                 if (retryCounter.current === 1) {
+            //                     context.subscriptions.emitErrorDialogVisible(true);
+            //                     errorDialogVisible.current = true;
+            //                 }
+            //             }
+            //             else {
+            //                 aliveSent.current = true;
+            //                 retryCounter.current = 0;
+            //             }
+            //         }
+            //         else {
+            //             context.subscriptions.emitDialog("server", false, "Alive Check exceeded Max-Retries!", "The server did not respond after " + maxRetries + " tries to send the alive-check.");
+            //             context.subscriptions.emitErrorDialogVisible(true);
+            //             maxTriesExceeded.current = true;
+            //         }
+            //     }
+            // }, 5000);
             
 
             // ws2.current = new WebSocket("ws://localhost:666");

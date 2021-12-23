@@ -770,7 +770,7 @@ export class SubscriptionManager {
     }
 
     /** Tell UIToast that there is a new message */
-    emitMessage(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info") {
+    emitMessage(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info"|"warning") {
         this.messageSubscriber.apply(undefined, [messageResponse, err]);
     }
 

@@ -10,7 +10,7 @@ import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
 import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
-import { getMetaData } from "./components/util";
+import { getMetaData, Timer } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
@@ -114,6 +114,10 @@ export default class ContentStore{
     dialogButtons:Array<string> = new Array<string>();
 
     missingDataCalls: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
+
+    ws:WebSocket|undefined;
+
+    timer:Timer|undefined;
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -1035,6 +1039,17 @@ export default class ContentStore{
     addToolbarItem(toolbarItem:BaseMenuButton) {
         if (!this.toolbarItems.some(item => item === toolbarItem)) {
             this.toolbarItems.push(toolbarItem);
+        }
+    }
+
+    setWsAndTimer(ws:WebSocket, timer:Timer) {
+        this.ws = ws;
+        this.timer = timer
+    }
+
+    restartAliveSending(newMs:number) {
+        if (this.ws && this.timer) {
+            this.timer.reset(newMs);
         }
     }
 

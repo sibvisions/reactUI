@@ -1,21 +1,22 @@
 import BaseComponent from "./components/BaseComponent";
 import { addCSSDynamically } from "./components/util";
 import ContentStore from "./ContentStore";
-import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
+import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 
 type ApplicationMetaData = {
-    version: string
-    clientId: string
-    langCode: string
-    languageResource: string
-    lostPasswordEnabled: boolean
-    preserveOnReload: boolean
-    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean }
-    applicationColorScheme: { value: string, urlSet: boolean }
-    applicationTheme: { value: string, urlSet: boolean }
-    applicationName: string
+    version: string,
+    clientId: string,
+    langCode: string,
+    languageResource: string,
+    lostPasswordEnabled: boolean,
+    preserveOnReload: boolean,
+    applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
+    applicationColorScheme: { value: string, urlSet: boolean },
+    applicationTheme: { value: string, urlSet: boolean },
+    applicationName: string,
+    aliveInterval?: number
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -149,6 +150,7 @@ export default class AppSettings {
         this.applicationMetaData.languageResource = appMetaData.languageResource;
         this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
+        this.applicationMetaData.aliveInterval = appMetaData.aliveInterval;
 
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout

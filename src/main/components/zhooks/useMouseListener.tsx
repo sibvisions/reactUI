@@ -30,48 +30,57 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
 
     const pressedElement = useRef<boolean>(false);
 
-    const handleMouseClicked = (event:MouseEvent) => {
-        const clickReq = createMouseClickedRequest();
-        clickReq.componentId = compName;
-        clickReq.button = getMouseButton(event.button);
-        clickReq.x = event.x;
-        clickReq.y = event.y;
-        clickReq.clickCount = event.detail;
-        if (eventMouseClicked) {
-            showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar);
-        }
-    }
+    const pressedX = useRef<number>();
+    
+    const pressedY = useRef<number>();
 
-    const handleMouse = (event:MouseEvent, released:boolean) => {
+    const handleMousePressed = (event:MouseEvent) => {
         if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
             event.stopPropagation();
         }
-        const pressReq = createMouseRequest();
-        pressReq.componentId = compName;
-        pressReq.button = getMouseButton(event.button);
-        pressReq.x = event.x;
-        pressReq.y = event.y;
-        if (released && pressedElement.current) {
-            if (eventMouseReleased) {
-                showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
-            }
-        }
-        else if (!released) {
-            if (eventMousePressed) {
-                showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
-            }
-            
-        }
-        if (!released) {
-            pressedElement.current = true;
-        }
-        else {
-            pressedElement.current = false;
+
+        pressedX.current = event.x;
+        pressedY.current = event.y;
+        pressedElement.current = true;
+
+        if (eventMousePressed) {
+            const pressReq = createMouseRequest();
+            pressReq.componentId = compName;
+            pressReq.button = getMouseButton(event.button);
+            pressReq.x = event.x;
+            pressReq.y = event.y;
+            setTimeout(() => showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar), 75);
         }
     }
 
-    useEventHandler(element, "mouseup", (event) =>  handleMouseClicked(event as MouseEvent));
-    useEventHandler(element, "mousedown", (event) => handleMouse(event as MouseEvent, false));
-    useEventHandler(document.body, "mouseup", (event) => handleMouse(event as MouseEvent, true));
+    const handleMouseUp = (event:MouseEvent) => {
+        if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
+            event.stopPropagation();
+        }
+
+        if (eventMouseReleased && pressedElement.current) {
+            const releaseReq = createMouseRequest();
+            releaseReq.componentId = compName;
+            releaseReq.button = getMouseButton(event.button);
+            releaseReq.x = event.x;
+            releaseReq.y = event.y;
+            setTimeout(() => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar), 76);
+        }
+
+        pressedElement.current = false;
+
+        if (eventMouseClicked && pressedX.current === event.x && pressedY.current === event.y) {
+            const clickReq = createMouseClickedRequest();
+            clickReq.componentId = compName;
+            clickReq.button = getMouseButton(event.button);
+            clickReq.x = event.x;
+            clickReq.y = event.y;
+            clickReq.clickCount = event.detail;
+            setTimeout(() => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar), 77);
+        }
+    }
+
+    useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent));
+    useEventHandler(document.body, "mouseup", (event) => handleMouseUp(event as MouseEvent));
 }
 export default useMouseListener;
