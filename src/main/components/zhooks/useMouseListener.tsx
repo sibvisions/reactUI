@@ -64,7 +64,7 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             releaseReq.button = getMouseButton(event.button);
             releaseReq.x = event.x;
             releaseReq.y = event.y;
-            setTimeout(() => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar), 76);
+            setTimeout(() => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar), 77);
         }
 
         pressedElement.current = false;
@@ -76,7 +76,7 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             clickReq.x = event.x;
             clickReq.y = event.y;
             clickReq.clickCount = event.detail;
-            setTimeout(() => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar), 77);
+            setTimeout(() => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar), 76);
         }
     }
 
