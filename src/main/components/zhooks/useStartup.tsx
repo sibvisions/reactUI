@@ -111,18 +111,9 @@ const useStartup = (props:ICustomContent):boolean => {
             const urlSubstr = baseURL.substring(context.server.BASE_URL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
             
             ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
-            ws.current.onopen = () => {
-                console.log("ws opened");
-                context.subscriptions.emitMessage({ name:"", message: "The WebSocket opened!" }, "success")
-            };
-            ws.current.onclose = () => {
-                console.log("ws closed");
-                context.subscriptions.emitMessage({ name:"", message: "The WebSocket closed!" }, "warn")
-            };
-            ws.current.onerror = () => {
-                console.error("ws error");
-                context.subscriptions.emitMessage({ name:"", message: "The WebSocket encountered an Error!" }, "error");
-            };
+            ws.current.onopen = () => console.log("ws opened");
+            ws.current.onclose = () => console.log("ws closed");
+            ws.current.onerror = () => console.error("ws error");
             ws.current.onmessage = (e) => {
                 if (e.data instanceof Blob) {
                     const reader = new FileReader()
