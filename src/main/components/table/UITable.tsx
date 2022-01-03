@@ -35,6 +35,7 @@ import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
+import { DomHandler } from "primereact/utils";
 
 
 export interface CellFormatting {
@@ -1210,10 +1211,56 @@ const UITable: FC<TableProps> = (baseProps) => {
      */
     const handleColResizeEnd = (e:any) => {
         if (tableRef.current) {
+            const table = tableRef.current as any;
             //@ts-ignore
-            const container = tableRef.current.el;
+            const container = table.el;
 
             container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
+
+            if (props.autoResize !== false) {
+                //reverse prime fit sizing
+                let newColumnWidth = e.element.offsetWidth - e.delta;
+                let nextColumn = e.element.nextElementSibling;
+                let nextColumnWidth = nextColumn.offsetWidth + e.delta;
+
+                if (newColumnWidth > 15 && nextColumnWidth > 15) {
+                    table.resizeTableCells(newColumnWidth, nextColumnWidth);
+                }
+                
+                newColumnWidth = e.element.offsetWidth + e.delta;
+
+                //custom sizing based on primes original column sizing code
+                let widths:number[] = [];
+                let colIndex = DomHandler.index(table.resizeColumnElement);
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+        
+                (tableRef.current as any).destroyStyleElement();
+                (tableRef.current as any).createStyleElement();
+        
+                let innerHTML = '';
+                const dp = e.delta / (widths.length - colIndex - 1);
+                widths.forEach((width, index) => {
+                    let colWidth = index === colIndex 
+                        ? newColumnWidth 
+                        : (index > colIndex) 
+                            ? width - Math[index === widths.length - 1 ? "ceil" : "floor"](dp) 
+                            : width;
+
+                    let style = table.props.scrollable 
+                        ? `flex: 0 0 ${colWidth}px !important` 
+                        : `width: ${colWidth}px !important`;
+                    
+                    innerHTML += `
+                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                            ${style}
+                        }
+                    `
+                });
+                table.styleElement.innerHTML = innerHTML;
+            }
 
             if (virtualEnabled) {
                 
