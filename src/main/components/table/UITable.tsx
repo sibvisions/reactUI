@@ -1235,8 +1235,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
                 headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
         
-                (tableRef.current as any).destroyStyleElement();
-                (tableRef.current as any).createStyleElement();
+                table.destroyStyleElement();
+                table.createStyleElement();
         
                 let innerHTML = '';
                 const dp = e.delta / (widths.length - colIndex - 1);
@@ -1396,6 +1396,39 @@ const UITable: FC<TableProps> = (baseProps) => {
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
         setItemSize(35 + Math.random() / 1E10);
+
+        if (tableRef.current) {
+            const table = tableRef.current as any;
+            //resize columns
+            if(props.autoResize !== false) {
+                let widths:number[] = [];
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+                const totalWidth = widths.reduce((agg, w) => agg + w, 0);
+                const tableWidth = table.table.offsetWidth;
+
+                table.destroyStyleElement();
+                table.createStyleElement();
+
+                let innerHTML = '';
+                widths.forEach((width, index) => {
+                    let colWidth = (width / totalWidth) * tableWidth;
+
+                    let style = table.props.scrollable 
+                        ? `flex: 0 0 ${colWidth}px !important` 
+                        : `width: ${colWidth}px !important`;
+                    
+                    innerHTML += `
+                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                            ${style}
+                        }
+                    `
+                });
+                table.styleElement.innerHTML = innerHTML;              
+            }
+        }
     }, [layoutStyle?.width])
 
     return (
