@@ -1239,12 +1239,13 @@ const UITable: FC<TableProps> = (baseProps) => {
                 table.createStyleElement();
         
                 let innerHTML = '';
-                const dp = e.delta / (widths.length - colIndex - 1);
+                const dp = Math.round(e.delta / (widths.length - colIndex - 1));
+                const dpr = e.delta - dp * (widths.length - colIndex - 2);
                 widths.forEach((width, index) => {
                     let colWidth = index === colIndex 
                         ? newColumnWidth 
                         : (index > colIndex) 
-                            ? width - Math[index === widths.length - 1 ? "ceil" : "floor"](dp) 
+                            ? width - (index === widths.length - 1 ? dpr : dp) 
                             : width;
 
                     let style = table.props.scrollable 
