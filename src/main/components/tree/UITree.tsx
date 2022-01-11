@@ -7,7 +7,7 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
-import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -33,37 +33,43 @@ export interface ITree extends BaseComponent {
 const UITree: FC<ITree> = (baseProps) => {
     /** Reference for the span that is wrapping the tree containing layout information */
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<ITree>(baseProps.id, baseProps);
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
+
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(compId, props.dataBooks);
+
     /** The selected rows of each databook */
-    const selectedRows = useAllRowSelect(compId, props.dataBooks)
+    const selectedRows = useAllRowSelect(compId, props.dataBooks);
+
     /** State flag which gets switched, if the Tree is supposed to rebuild itself from scratch */
     const [rebuildTree, setRebuildTree] = useState<boolean>(false);
+
     /** 
      * A Map of the current state of every node with their respective referenced column, the nodes
      * The keys are the nodes saved as TreePath and the value is the parents primary key/referenced column
      */
     const [treeData, setTreeData] = useState<Map<string, any>>(new Map<string, any>());
+
     /** Current state of the node objects which are handled by PrimeReact to display in the Tree */
     const [nodes, setNodes] = useState<any[]>([]);
+
     /** State of the keys of the nodes which are expanded */
     const [expandedKeys, setExpandedKeys] = useState<any>({});
+
     /** State of the key of a single node that is selected */
     const [selectedKey, setSelectedKey] = useState<any>();
+
     /** Helper state so the second useEffect doesn't trigger on the first render */
-    const [initRender, setInitRender] = useState<boolean>(false)
+    const [initRender, setInitRender] = useState<boolean>(false);
+
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, treeWrapperRef.current ? treeWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 

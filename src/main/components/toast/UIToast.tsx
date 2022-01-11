@@ -15,7 +15,7 @@ import { concatClassnames } from '../util';
 
 type IToast = {
     dialog:MessageResponse|ErrorResponse,
-    severity:"error"|"info"
+    severity:"error"|"info"|"warn"|"success"
 }
 
 /** This component displays a toast which either is a error toast or a message sent by the server */
@@ -57,7 +57,7 @@ const UIToast: FC = () => {
 
     /** Subscribes the toast components to messages */
     useEffect(() => {
-        context.subscriptions.subscribeToMessage((dialog:MessageResponse|ErrorResponse, err:"error"|"info") => setToastProps({dialog: dialog, severity: err}));
+        context.subscriptions.subscribeToMessage((dialog:MessageResponse|ErrorResponse, err:"error"|"info"|"warn"|"success") => setToastProps({dialog: dialog, severity: err}));
         return () => {
             context.subscriptions.unsubscribeFromMessage();
         }
@@ -106,7 +106,7 @@ const UIToast: FC = () => {
     return (
         <>
             <Toast id="toastErr" ref={toastErrRef} position="top-right" />
-            <Toast id="toastInfo" ref={toastInfoRef} position="center" />
+            <Toast id="toast-info" ref={toastInfoRef} position="center" />
         </>
     )
 }

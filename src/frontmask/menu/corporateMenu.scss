@@ -1,32 +1,28 @@
 @import '../scssutil/scrollbar.scss';
 
 /// No blue borders on focus
-.c-menu {
+.corp-menu {
     :focus {
         box-shadow: none !important;
         -webkit-box-shadow: none !important;
     }
 }
 
-.c-menu-header {
+.corp-menu-header {
     display: flex;
     justify-content: space-between;
-    background: var(--s-menu-header-background);
     align-items: center;
-    height: var(--s-menu-profile-height);
 }
 
-.c-menu-profile {
+.corp-menu-profile {
     display: flex;
     align-items: center;
 }
 
-.c-menu-menubar {
-    background: var(--s-menu-header-background);
+.corp-menu-menubar {
     padding-left: 10px;
     .p-menubar {
         border-radius: 0;
-        height: 40px;
         .p-submenu-list {
             max-height: 600px;
             overflow: auto;
@@ -35,14 +31,13 @@
     }
 }
 
-.c-menu-logo-wrapper {
+.corp-menu-logo-wrapper {
     margin-left: 10px;
     display: flex;
-    max-width: var(--c-menu-logo-width);
     transition: max-width 0.5s ease-out;
 }
 
-.c-menu-menubar {
+.corp-menu-menubar {
     display: flex;
     align-items: center;
 
@@ -65,22 +60,7 @@
     z-index: auto;
     position: relative;
     .p-speeddial-button.p-button.p-button-icon-only {
-        width: 2rem;
-        height: 2rem;
-        background: #ffffff;
-        border-color: #ffffff;
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-        color: var(--standardTextColor);
         padding: 0;
-
-        .p-button-icon {
-            font-size: 1rem;
-        } 
-    }
-    
-    .p-speeddial-action {
-        width: 2rem;
-        height: 2rem;
     }
 
     &.p-speeddial-opened {
@@ -91,15 +71,14 @@
 }
 
 @media screen and (max-width: 530px) {
-    .c-menu-header {
+    .corp-menu-header {
         justify-content: unset;
-        .c-menu-logo-wrapper {
-            max-width: 0px;
+        .corp-menu-logo-wrapper {
+            max-width: 0px !important;
             transition: max-width 0.5s ease-out;
         }
-        .c-menu-profile {
+        .corp-menu-profile {
             margin-left: auto;
         }
     }
-
 }

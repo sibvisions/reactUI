@@ -1,10 +1,8 @@
-#toastInfo {
-    z-index: 3000 !important;
+#toast-info {
     opacity: 1;
     width: unset;
-    .p-toast-message.p-toast-message {
+    .p-toast-message {
         border: none;
-        background:white;
         color: unset
     }
 
@@ -20,17 +18,11 @@
             display: flex;
             justify-content: space-between;
             padding: 0.5rem;
-            color: white;
 
             &.info {
-                background: #347fae;
-
                 .toast-header-close {
-                    color:white;
-
                     &:hover {
                         border-radius: 50%;
-                        background: #276b96;
                     }
                 }
             }
@@ -54,7 +46,6 @@
                 background: transparent;
                 padding: 0.5rem;
                 cursor: pointer;
-                color: #444444;
             }
         }
 

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { Children, createContext, CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import * as _ from 'underscore'
@@ -28,11 +28,22 @@ export interface IResizeContext {
     menuSize?:number,
     menuRef?: any,
     login?:boolean,
-    style?: CSSProperties
-    menuCollapsed?:boolean
+    menuCollapsed?:boolean,
+    mobileStandard?:boolean,
+    setMobileStandard?: Function
 }
 
 export const ResizeContext = createContext<IResizeContext>({});
+
+export function isCorporation(appLayout:string, theme:string) {
+    if (appLayout === "corporation") {
+        if (theme === "basti_mobile" && window.innerWidth <= 530) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
 
 /**
  * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating
@@ -54,10 +65,16 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false)
+    /** True, if the session is expired */
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
+    /** True, if the standard menu for mobile is active IF corporation applayout is set */
+    const [mobileStandard, setMobileStandard] = useState<boolean>(false);
+
+    /** True, if the menu should be shown in mini mode */
     const menuMini = false;
 
+    /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** ComponentId of Screen extracted by useParams hook */
@@ -65,6 +82,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
+
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -83,8 +102,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
-    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-width')),
-    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--s-menu-collapsed-width')) : 0), menuCollapsed);
+    getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
+    menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
@@ -102,6 +121,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
         context.subscriptions.subscribeToErrorDialog((show:boolean) => setSessionExpired(show));
 
+        context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
@@ -117,6 +137,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 });
             });
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));
+            context.subscriptions.unsubscribeFromTheme("uimanager");
         }
     }, [context.subscriptions])
 
@@ -128,7 +149,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
                 screenTitle = childWithProps.props.screen_title_;
         })      
-        context.subscriptions.notifyScreenNameChanged(screenTitle)
+        context.subscriptions.notifyScreenTitleChanged(screenTitle)
     }, [props.children, context.subscriptions]);
 
     const CustomWrapper = props.customAppWrapper;
@@ -138,10 +159,11 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             <div
                 className={concatClassnames(
                     "reactUI",
-                    appLayout === "corporation" ? "corporation" : "",
-                    sessionExpired ? "reactUI-expired" : ""
+                    isCorporation(appLayout, appTheme) ? "corporation" : "",
+                    sessionExpired ? "reactUI-expired" : "",
+                    appTheme
                 )}>
-                <ChangePasswordDialog username={context.contentStore.currentUser.name} loggedIn={true} />
+                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
                 <CustomWrapper>
                     <div id="reactUI-main" className="main">
                         <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
@@ -152,10 +174,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             </div>
             : <div className={concatClassnames(
                 "reactUI",
-                appLayout === "corporation" ? "corporation" : "",
-                sessionExpired ? "reactUI-expired" : "")} >
-                <ChangePasswordDialog username={context.contentStore.currentUser.userName} loggedIn={true} />
-                {appLayout === "corporation" ?
+                isCorporation(appLayout, appTheme) ? "corporation" : "",
+                sessionExpired ? "reactUI-expired" : "",
+                appTheme
+            )} >
+                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
+                {isCorporation(appLayout, appTheme) ?
                     <CorporateMenu
                         menuVisibility={menuVisibility}
                         visibleButtons={visibleButtons} />
@@ -167,14 +191,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         visibleButtons={visibleButtons} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    appLayout === "corporation" ? "main--with-c-menu" : "main--with-s-menu",
-                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined)) ? " screen-expanded" : "",
+                    isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
+                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuVisibility.toolBar ? "toolbar-visible" : "",
                     !menuVisibility.menuBar ? "menu-not-visible" : "",
-                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : ""
+                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
-                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed }}>
+                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>
                         <ScreenManager />
                     </ResizeContext.Provider>
                 </div>

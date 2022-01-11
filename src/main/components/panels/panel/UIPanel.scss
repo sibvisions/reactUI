@@ -1,11 +1,7 @@
 .rc-popup {
     .p-dialog-header {
-        background: #ffffff;
-        color: #495057;
         padding: 0.5rem;
-        border-top-right-radius: 3px;
-        border-top-left-radius: 3px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+
         .p-dialog-title {
             padding-left: 0.5rem;
             font-weight: 600;
@@ -13,6 +9,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            line-height: 1;
         }
         .p-dialog-header-icon:focus {
             box-shadow: none;
@@ -21,19 +18,18 @@
         .p-dialog-header-icon {
             width: 1.5rem;
             height: 1.5rem;
-            &:last-child {
-                margin-right: 4px;
-            }
         }
     }
     .p-dialog-content {
         padding: 0;
-        overflow-y: hidden;
-        border-bottom-right-radius: 3px;
-        border-bottom-left-radius: 3px;
     }
 }
 
 .rc-panel {
     background-image: var(--backgroundImage);
+}
+
+.tag-panel {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
 }

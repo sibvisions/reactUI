@@ -69,10 +69,9 @@ export class SubscriptionManager {
     screenDataChangeSubscriber = new Map<string, Function>();
 
     /**
-     * A Map which stores a function to update the screen-name state of the subscribers, the key is the name of the subscribers
-     * and the value is the function to update the screen-name state
+     * A function to update the screenTitle of the menu
      */
-    screenNameSubscriber = new Map<string, Function>();
+    screenTitleSubscriber:Function = () => {};
 
     /**
      * A Map which stores a function to update the menu-collapsed state of the subscribers, the key is the name of the subscribers
@@ -132,6 +131,10 @@ export class SubscriptionManager {
     restartSubscriber:Function = () => {};
 
     appNameSubscriber = new Array<Function>();
+
+    cssVersionSubscriber:Function = () => {};
+
+    themeSubscriber = new Map<string, Function>();
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -260,11 +263,10 @@ export class SubscriptionManager {
 
     /**
      * Subscribes components to the screen-name, to change their screen-name state
-     * @param id - the id of the component
      * @param fn - the function to update the screen-name state
      */
-    subscribeToScreenName(id:string, fn: Function) {
-        this.screenNameSubscriber.set(id, fn);
+    subscribeToScreenTitle(fn: Function) {
+        this.screenTitleSubscriber = fn;
     }
 
     /**
@@ -406,6 +408,14 @@ export class SubscriptionManager {
         this.appNameSubscriber.push(fn);
     }
 
+    subscribeToCssVersion(fn:Function) {
+        this.cssVersionSubscriber = fn;
+    }
+
+    subscribeToTheme(id:string, fn:Function) {
+        this.themeSubscriber.set(id, fn);
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -499,8 +509,8 @@ export class SubscriptionManager {
      * Unsubscribes a component from screen-name changes
      * @param id - the component id
      */
-    unsubscribeFromScreenName(id: string) {
-        this.screenNameSubscriber.delete(id)
+    unsubscribeFromScreenTitle() {
+        this.screenTitleSubscriber = () => {}
     }
 
     /**
@@ -604,6 +614,14 @@ export class SubscriptionManager {
         this.appNameSubscriber.splice(this.appNameSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    unsubscribeFromCssVersion() {
+        this.cssVersionSubscriber = () => {};
+    }
+
+    unsubscribeFromTheme(id:string) {
+        this.themeSubscriber.delete(id);
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param compId 
@@ -639,11 +657,11 @@ export class SubscriptionManager {
     }
 
     /**
-     * Calls the function of the screen-name subscribers to change their state
-     * @param screenName - the current screen-name
+     * Calls the function of the screen-title subscriber to change their state
+     * @param screenTitle - the current screen-name
      */
-    notifyScreenNameChanged(screenName:string) {
-        this.screenNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [screenName]))
+    notifyScreenTitleChanged(screenTitle:string) {
+        this.screenTitleSubscriber.apply(undefined, [screenTitle])
     }
 
     notifyAppNameChanged(appName:string) {
@@ -752,7 +770,7 @@ export class SubscriptionManager {
     }
 
     /** Tell UIToast that there is a new message */
-    emitMessage(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info") {
+    emitMessage(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info"|"warn"|"success") {
         this.messageSubscriber.apply(undefined, [messageResponse, err]);
     }
 
@@ -769,5 +787,13 @@ export class SubscriptionManager {
         if (func) {
             func.apply(undefined, [dialog]);
         }
+    }
+
+    emitCssVersion(version:string) {
+        this.cssVersionSubscriber.apply(undefined, [version]);
+    }
+
+    emitThemeChanged(theme:string) {
+        this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
     }
 }

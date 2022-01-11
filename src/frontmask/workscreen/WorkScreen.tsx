@@ -12,6 +12,7 @@ const WorkScreen: FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** State of the active-screens */
     const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);
 
     /** Returns the built windows */
@@ -28,6 +29,7 @@ const WorkScreen: FC = () => {
         return tempArray
     }, [context.contentStore]);
 
+    /** The screens which need to be rendered */
     const [renderedScreens, setRenderedScreens] = useState<Array<ReactElement>>(buildWindow(activeScreens))
 
     useEffect(() => {

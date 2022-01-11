@@ -1,18 +1,22 @@
 import BaseComponent from "./components/BaseComponent";
+import { addCSSDynamically } from "./components/util";
 import ContentStore from "./ContentStore";
-import { ApplicationMetaDataResponse, ApplicationSettingsResponse, LoginModeType } from "./response";
+import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 
 type ApplicationMetaData = {
-    version: string
-    clientId: string
-    langCode: string
-    languageResource: string
-    lostPasswordEnabled: boolean
-    preserveOnReload: boolean
+    version: string,
+    clientId: string,
+    langCode: string,
+    languageResource: string,
+    lostPasswordEnabled: boolean,
+    preserveOnReload: boolean,
     applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
-    applicationName: string
+    applicationColorScheme: { value: string, urlSet: boolean },
+    applicationTheme: { value: string, urlSet: boolean },
+    applicationName: string,
+    aliveInterval?: number
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -52,6 +56,15 @@ export default class AppSettings {
     /** The current region */
     locale:string = "de-DE";
 
+    /** The language of the app */
+    language:string = "de";
+
+    /** The timezone of the app */
+    timezone:string = "CET";
+
+    /** The devicemode of the client */
+    deviceMode:string = "desktop";
+
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
      * the value gets reset to true if the window width goes from less than 1030 pixel to more than 1030 pixel and menuModeAuto is false
@@ -73,6 +86,8 @@ export default class AppSettings {
         lostPasswordEnabled: false, 
         preserveOnReload: false, 
         applicationLayout: { layout: "standard", urlSet: false },
+        applicationTheme: { value: "basti", urlSet: false },
+        applicationColorScheme: { value: "default", urlSet: false },
         applicationName: ""
     };
 
@@ -135,19 +150,50 @@ export default class AppSettings {
         this.applicationMetaData.languageResource = appMetaData.languageResource;
         this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
+        this.applicationMetaData.aliveInterval = appMetaData.aliveInterval;
+
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
         }
+
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
             this.#subManager.notifyAppNameChanged(appMetaData.applicationName);
-            this.#subManager.notifyScreenNameChanged(appMetaData.applicationName);
+            this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
+        }
+
+        if (!this.applicationMetaData.applicationColorScheme.urlSet) {
+            if (appMetaData.applicationColorScheme) {
+                this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "scheme");
+            }
+            else {
+                addCSSDynamically('color-schemes/default-scheme.css', "scheme");
+            }
         }
         
+        if (!this.applicationMetaData.applicationTheme.urlSet) {
+            if (appMetaData.applicationTheme) {
+                this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
+                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "theme");
+            }
+            else {
+                addCSSDynamically('themes/basti.css', "theme");
+            }
+            this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
+        }
+    }
+
+    setApplicationThemeByURL(pTheme:string) {
+        this.applicationMetaData.applicationTheme = { value: pTheme, urlSet: true };
+    }
+
+    setApplicationColorSchemeByURL(pScheme:string) {
+        this.applicationMetaData.applicationColorScheme = { value: pScheme, urlSet: true };
     }
 
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {
-        this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true }
+        this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true };
     }
 
     /**

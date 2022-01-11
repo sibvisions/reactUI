@@ -8,35 +8,28 @@ import { Tooltip } from 'primereact/tooltip'
 import { MenuItem } from "primereact/menuitem";
 
 /** Hook imports */
-import { useDeviceStatus, useMenuItems } from "../../main/components/zhooks";
+import { useConstants, useMenuItems, useScreenTitle } from "../../main/components/zhooks";
 
 /** Other imports */
-import { appContext } from "../../main/AppProvider";
 import { IMenu, ProfileMenu } from "./menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
-import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { showTopBar } from "../../main/components/topbar/TopBar";
 import { EmbeddedContext } from "../../MiddleMan";
 
 
 
 const CorporateMenu:FC<IMenu> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** Returns utility variables */
+    const [context, topbar] = useConstants();
 
     const embeddedContext = useContext(EmbeddedContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     /** Current state of screen title, displays the screen title */
-    const [screenTitle, setScreenTitle] = useState<string>("");
+    const screenTitle = useScreenTitle();
 
     /** get menu items */
     const menuItems = useMenuItems();
-
-    /** The current state of device-status */
-    const deviceStatus = useDeviceStatus();
 
     const handleNewToolbarItems = useCallback((toolbarItems: Array<MenuItem>) => {
         const tbItems = new Array<MenuItem>();
@@ -61,34 +54,30 @@ const CorporateMenu:FC<IMenu> = (props) => {
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('c-menu', (appName: string) => setScreenTitle(appName));
         context.subscriptions.subscribeToToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
 
-        return () => {
-            context.subscriptions.unsubscribeFromScreenName('c-menu');
-            context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
-        }
+        return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
     }, [context.subscriptions]);
 
     return (
         <>
             {(!embeddedContext) &&
-                <div className="c-menu">
-                    <div className="c-menu-topbar">
-                        <div className="c-menu-header">
-                            <div className="c-menu-logo-wrapper">
+                <div className="corp-menu">
+                    <div className="corp-menu-topbar">
+                        <div className="corp-menu-header">
+                            <div className="corp-menu-logo-wrapper">
                                 <img
                                     className="menu-logo"
                                     draggable="false"
                                     src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                             </div>
                             <span className="menu-screen-title">{screenTitle}</span>
-                            <div className="c-menu-profile">
+                            <div className="corp-menu-profile">
                                 <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
                             </div>
                         </div>
                         {props.menuVisibility.menuBar &&
-                            <div className="c-menu-menubar">
+                            <div className="corp-menu-menubar">
                                 {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
                                     <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right" />

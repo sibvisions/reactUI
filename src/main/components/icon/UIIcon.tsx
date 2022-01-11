@@ -2,10 +2,9 @@
 import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useImageStyle, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
-import { appContext } from "../../AppProvider";
 import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../util";
@@ -18,19 +17,21 @@ import { Tooltip } from "primereact/tooltip";
 const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** Reference for the span that is wrapping the icon containing layout information */
     const iconRef = useRef<HTMLSpanElement>(null);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<BaseComponent>(baseProps.id, baseProps);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<BaseComponent>(baseProps);
+
     const [preferredSize, setPreferredSize] = useState<Dimension>();
+
     /** Properties for icon */
     const iconProps = parseIconData(props.foreground, props.image);
+
     /** Extracting onLoadCallback, id and alignments from baseProps */
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
+
     /**CSS properties for icon */
-    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined)
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 

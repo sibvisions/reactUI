@@ -3,7 +3,6 @@
 .rc-togglebutton {
     --btnJustify: center;
     --btnAlign: center;
-    --btnPadding: var(--btnPTB) var(--btnPLR);
 
     height: inherit;
     width: inherit;
@@ -20,14 +19,4 @@
     }
 
     @include toggleBtnHover;
-}
-
-.rc-inputswitch {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.rc-inputswitch-label {
-    margin-right: 4px;
 }

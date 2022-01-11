@@ -1,16 +1,15 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
-import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 
 /** Interface for ToolbarPanels */
@@ -20,14 +19,8 @@ export interface IToolBarPanel extends IPanel {
 }
 
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties(baseProps.id, baseProps);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
@@ -9,14 +9,12 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks"
+import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { appContext } from "../../../AppProvider";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId,
-         sendSetValues, 
+import { sendSetValues, 
          handleEnterKey, 
          onBlurCallback, 
          sendOnLoadCallback, 
@@ -24,10 +22,15 @@ import { getEditorCompId,
          parseMinSize, 
          parseMaxSize, 
          concatClassnames} from "../../util";
-import { LengthBasedColumnDescription } from "../../../response";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
-import { getColMetaData } from "../../table/UITable";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+
+export function isReadOnlyStandardColor(isReadOnly:boolean, background?:string) {
+    if (isReadOnly && background === "#EFEFEF") {
+        return true;
+    }
+    return false;
+}
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -189,24 +192,11 @@ function transformHTMLToQuill(html: string = ''):string {
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText> = (props) => {
+const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
-
-    /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore);
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);
@@ -217,17 +207,11 @@ const UIEditorText: FC<IEditorText> = (props) => {
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
-    /** The metaData of the dataRow */
-    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined)
-
     /** Returns the maximum length for the TextCellEditor */
     const length = useMemo(() => columnMetaData?.length, [columnMetaData]);
 
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
-
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
 
     /** Reference if escape has been pressed */
     const escapePressed = useRef<boolean>(false)
@@ -237,6 +221,9 @@ const UIEditorText: FC<IEditorText> = (props) => {
     useFetchMissingData(props.parent as string, compId, props.dataRow);
 
     const popupMenu = usePopupMenu(props);
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -288,7 +275,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
     },[selectedRow]);
 
     useEffect(() => {
-        if (isCellEditor && props.passedKey) {
+        if (props.isCellEditor && props.passedKey) {
             setText("");
         }
     }, [])
@@ -296,7 +283,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         handleEnterKey(event, event.target, name, stopCellEditing);
-        if (isCellEditor && stopCellEditing) {
+        if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Tab") {
                 (event.target as HTMLElement).blur();
                 stopCellEditing(event);
@@ -306,14 +293,14 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 stopCellEditing(event);
             }
         }
-    }, [name, stopCellEditing, isCellEditor]);
+    }, [name, stopCellEditing, props.isCellEditor]);
 
     const taOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (event.key === "Enter" && event.shiftKey) {
             handleEnterKey(event, event.target, name, stopCellEditing);
         }
-        if (isCellEditor && stopCellEditing) {
+        if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Tab") {
                 (event.target as HTMLElement).blur();
                 stopCellEditing(event);
@@ -323,11 +310,11 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 stopCellEditing(event);
             }
         }
-    },[name, stopCellEditing, isCellEditor])
+    },[name, stopCellEditing, props.isCellEditor])
 
     const pwOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
-        if (isCellEditor && stopCellEditing) {
+        if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
                 onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
                 stopCellEditing(event);
@@ -337,7 +324,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 stopCellEditing(event);
             }
         }
-    }, [props, stopCellEditing, dataRow, columnName, name, text, isCellEditor, context.server]);
+    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, context.server]);
 
     const disabled = !props.cellEditor_editable_;
 
@@ -421,12 +408,16 @@ const UIEditorText: FC<IEditorText> = (props) => {
             )
         } : {
             ...(fieldType === FieldTypes.PASSWORD ? { inputRef: textRef } : { ref: textRef }),
-            id: isCellEditor ? undefined : props.name,
-            className: concatClassnames(getClassName(fieldType), columnMetaData?.nullable === false ? "required-field" : ""),
+            id: props.isCellEditor ? undefined : props.name,
+            className: concatClassnames(
+                getClassName(fieldType), 
+                columnMetaData?.nullable === false ? "required-field" : "",
+                isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+            ),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,
             disabled,
-            autoFocus: props.autoFocus ? true : isCellEditor ? true : false,
+            autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
             value: text || "",
             "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
@@ -442,7 +433,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
             tooltip: props.toolTipText
         }
-    }, [props, context.server, fieldType, isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+    }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
@@ -452,7 +443,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             <div 
                 ref={textRef} 
                 style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
-                id={isCellEditor ? undefined : props.name}
+                id={props.isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}
                 className={[
                     getClassName(fieldType), 

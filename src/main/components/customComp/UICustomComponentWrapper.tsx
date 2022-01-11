@@ -1,14 +1,12 @@
 /** React imports */
-import React, { FC, ReactElement, useContext, useLayoutEffect, useRef } from "react";
+import React, { FC, ReactElement, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useLayoutValue, useProperties } from "../zhooks";
+import { useComponentConstants } from "../zhooks";
 
 /** Other imports */
-import { LayoutContext } from "../../LayoutContext";
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util";
-import { appContext } from "../../AppProvider";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {
@@ -24,15 +22,12 @@ export interface ICustomComponentWrapper extends BaseComponent {
 const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Reference for the custom-component-wrapper element*/
     const wrapperRef = useRef(null);
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(baseProps.id);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<ICustomComponentWrapper>(baseProps.id, baseProps)
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ICustomComponentWrapper>(baseProps);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

@@ -10,7 +10,7 @@ import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
 import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
-import { getMetaData } from "./components/util";
+import { getMetaData, Timer } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
@@ -97,35 +97,6 @@ export default class ContentStore{
 
     //DataProvider Maps
     dataBooks = new Map<string, Map<string, IDataBook>>();
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value the data of the dataprovider
-     */
-    //dataProviderData = new Map<string, Map<string, any>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value the metadata of the dataprovider
-     */
-    //dataProviderMetaData = new Map<string, Map<string, MetaDataResponse>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value if all data of the dataprovider has been fetched
-     */
-    //dataProviderFetched = new Map<string, Map<string, boolean>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value is the selectedRow of a dataprovider
-     */
-    //dataProviderSelectedRow = new Map<string, Map<string, any>>();
-
-    /**
-     * A Map which stores another Map of dataproviders of a screen, the key is the screens component id and the
-     * value is another map which key is the dataprovider and the value are the sortdefinitions of a dataprovider
-     */
-    //dataProviderSortedColumns = new Map<string, Map<string, SortDefinition[]>>();
 
     customStartUpProperties = new Array<CustomStartupProps>();
 
@@ -143,6 +114,10 @@ export default class ContentStore{
     dialogButtons:Array<string> = new Array<string>();
 
     missingDataCalls: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
+
+    ws:WebSocket|undefined;
+
+    timer:Timer|undefined;
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -503,7 +478,7 @@ export default class ContentStore{
      * When a screen closes cleanUp the data for the window 
      * @param windowName - the name of the window to close
      */
-    closeScreen(windowName: string, opensAnother?:boolean) {
+    closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
         this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
         this.subManager.emitActiveScreens();
         if (this.activeScreens.length) {
@@ -513,7 +488,7 @@ export default class ContentStore{
             this.subManager.emitSelectedMenuItem("");
         }
         const window = this.getComponentByName(windowName);
-        if(window){
+        if(window && !closeContent){
             this.cleanUp(window.id, window.name, window.className);
         }
     }
@@ -542,10 +517,7 @@ export default class ContentStore{
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                //this.dataProviderData.delete(name);
-                //this.dataProviderMetaData.delete(name);
-                //this.dataProviderFetched.delete(name);
-                //this.dataProviderSelectedRow.delete(name);
+                this.dataBooks.delete(name);
                 this.subManager.rowSelectionSubscriber.delete(name);
             }
         }
@@ -565,11 +537,7 @@ export default class ContentStore{
         this.currentUser = new UserData();
         this.navigationNames.clear();
         this.screenWrappers.clear();
-        //this.dataProviderData.clear();
-        //this.dataProviderMetaData.clear();
-        //this.dataProviderFetched.clear();
-        //this.dataProviderSelectedRow.clear();
-        //this.dataProviderSortedColumns.clear();
+        this.dataBooks.clear();
         this.activeScreens = [];
         this.selectedMenuItem = "";
         this.toolbarItems = [];
@@ -623,6 +591,30 @@ export default class ContentStore{
             entry = componentEntries.next();
         }
         return foundEntry;
+    }
+
+    /**
+     * Returns the data/properties of a component based on the id
+     * @param componentId - the id of the component
+     * @returns the data/properties of a component based on the id
+     */
+    getComponentById(componentId?: string): BaseComponent | undefined {
+        if (componentId) {
+            const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+            const componentEntries = mergedContent.entries();
+            let foundEntry: BaseComponent | undefined;
+            let entry = componentEntries.next();
+            while (!entry.done) {
+                if (entry.value[1].id === componentId) {
+                    foundEntry = entry.value[1];
+                }
+                entry = componentEntries.next();
+            }
+            return foundEntry;
+        }
+        else {
+            return undefined;
+        }
     }
 
     /**
@@ -930,7 +922,6 @@ export default class ContentStore{
         }
         this.subManager.emitRowSelect(compId, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
-            console.log(dataProvider.split('/')[1], dataProvider)
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }
     }
@@ -1048,6 +1039,17 @@ export default class ContentStore{
     addToolbarItem(toolbarItem:BaseMenuButton) {
         if (!this.toolbarItems.some(item => item === toolbarItem)) {
             this.toolbarItems.push(toolbarItem);
+        }
+    }
+
+    setWsAndTimer(ws:WebSocket, timer:Timer) {
+        this.ws = ws;
+        this.timer = timer
+    }
+
+    restartAliveSending(newMs:number) {
+        if (this.ws && this.timer) {
+            this.timer.reset(newMs);
         }
     }
 

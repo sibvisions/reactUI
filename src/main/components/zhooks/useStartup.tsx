@@ -6,15 +6,20 @@ import { useHistory } from "react-router";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { createChangesRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
+import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, StartupRequest, UIRefreshRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { addCSSDynamically, Timer } from "../util";
 
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -25,7 +30,11 @@ const useStartup = (props:ICustomContent):boolean => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
+    const relaunchArguments = useRef<any>(null);
+
     const ws = useRef<WebSocket|null>(null);
+
+    const ws2 = useRef<WebSocket|null>(null);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -91,6 +100,8 @@ const useStartup = (props:ICustomContent):boolean => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const authKey = localStorage.getItem("authKey");
+        let themeToSet = "";
+        let schemeToSet = "";
 
         if (props.onStartup) {
             props.onStartup();
@@ -98,18 +109,88 @@ const useStartup = (props:ICustomContent):boolean => {
 
         const initWS = (baseURL:string) => {
             const urlSubstr = baseURL.substring(context.server.BASE_URL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
+            
             ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
             ws.current.onopen = () => console.log("ws opened");
             ws.current.onclose = () => console.log("ws closed");
+            ws.current.onerror = () => console.error("ws error");
             ws.current.onmessage = (e) => {
-                if (e.data === "api/changes") {
-                    context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                if (e.data instanceof Blob) {
+                    const reader = new FileReader()
+
+                    reader.onloadend = () => { 
+                        let jscmd = JSON.parse(String(reader.result)); 
+            
+                        if (jscmd.command === "relaunch") {
+                            context.contentStore.reset();
+                            relaunchArguments.current = jscmd.arguments;
+                            setRestart(prevState => !prevState);
+                        }
+                        else if (jscmd.command === "api/reopenScreen") {
+                            const openReq = createOpenScreenRequest();
+                            openReq.className = jscmd.arguments.className;
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.REOPEN_SCREEN), topbar);
+                        }
+                        else if (jscmd.command === "reloadCss") {
+                            context.subscriptions.emitCssVersion(jscmd.arguments.version);
+                        }
+                    }
+                    reader.readAsText(e.data);
+                }
+                else {
+                    if (e.data === "api/changes") {
+                        context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                    }
                 }
             }
+
+            if (context.appSettings.applicationMetaData.aliveInterval) {
+                context.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), context.appSettings.applicationMetaData.aliveInterval));
+            }
+            
+            // setInterval(() => {
+            //     if (!maxTriesExceeded.current) {
+            //         if (retryCounter.current < maxRetries) {
+            //             ws.current?.send("ALIVE");
+            //             if (aliveSent.current) {
+            //                 retryCounter.current++;
+            //                 context.subscriptions.emitDialog(
+            //                     "server", 
+            //                     false, 
+            //                     "Alive Check failed.", 
+            //                     "The server did not respond to the alive check. The client is retrying to reach the server. Retry: " + retryCounter.current + " out of " + maxRetries)
+            //                 if (retryCounter.current === 1) {
+            //                     context.subscriptions.emitErrorDialogVisible(true);
+            //                     errorDialogVisible.current = true;
+            //                 }
+            //             }
+            //             else {
+            //                 aliveSent.current = true;
+            //                 retryCounter.current = 0;
+            //             }
+            //         }
+            //         else {
+            //             context.subscriptions.emitDialog("server", false, "Alive Check exceeded Max-Retries!", "The server did not respond after " + maxRetries + " tries to send the alive-check.");
+            //             context.subscriptions.emitErrorDialogVisible(true);
+            //             maxTriesExceeded.current = true;
+            //         }
+            //     }
+            // }, 5000);
+            
+
+            // ws2.current = new WebSocket("ws://localhost:666");
+            // ws2.current.onopen = () => {
+            //     console.log('ws2 opened')
+            //     ws2.current!.send("test")
+            // };
         }
 
-        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string) => {
-            context.server.sendRequest(req, (preserve && startupRequestHash) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {
+            if (restartArgs) {
+                (req as StartupRequest).arguments = restartArgs;
+                relaunchArguments.current = null;
+            }
+            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
@@ -159,11 +240,12 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
                 else if (process.env.NODE_ENV === "production") {
                     const splitURLPath = window.location.pathname.split("/");
-                    if (splitURLPath[1]) {
-                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
-                    }
-                    else {
+
+                    if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
                         context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                    }
+                    else if (splitURLPath[1]) {
+                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
                     }
                 }
 
@@ -171,14 +253,57 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
                 }
 
+                if (convertedOptions.has("langCode")) {
+                    context.appSettings.language = convertedOptions.get("langCode");
+                }
+
+                if (convertedOptions.has("timezone")) {
+                    context.appSettings.timezone = convertedOptions.get("timezone");
+                }
+
+                if (convertedOptions.has("deviceMode")) {
+                    context.appSettings.deviceMode = convertedOptions.get("deviceMode");
+                }
+
+                if (convertedOptions.has("colorScheme")) {
+                    schemeToSet = convertedOptions.get("colorScheme");
+                    convertedOptions.delete("colorScheme");
+                }
+
+                if (props.colorScheme) {
+                    schemeToSet = props.colorScheme;
+                }
+
+                if (schemeToSet) {
+                    context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
+                    addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "scheme");
+                }
+
+                if (convertedOptions.has("theme")) {
+                    themeToSet = convertedOptions.get("theme");
+                    convertedOptions.delete("theme");
+                }
+
+                if (props.theme) {
+                    themeToSet = props.theme;
+                }
+
+                if (themeToSet) {
+                    context.appSettings.setApplicationThemeByURL(themeToSet);
+                    addCSSDynamically('themes/' + themeToSet + '.css', "theme");
+                    context.subscriptions.emitThemeChanged(themeToSet);
+                }
+
                 convertedOptions.forEach((v, k) => {
-                    startUpRequest[k] = v;
+                    startupReq[k] = v;
                 });
+
+                startupReq.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2)
 
                 if(authKey) {
                     startupReq.authKey = authKey;
                 }
-                startupReq.deviceMode = "desktop";
+                startupReq.deviceMode = context.appSettings.deviceMode;
                 startupReq.screenHeight = window.innerHeight;
                 startupReq.screenWidth = window.innerWidth;
                 if (context.contentStore.customStartUpProperties.length) {
@@ -194,7 +319,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     startupReq.deviceMode,
                 ].join('::');
                 const startupRequestCache = sessionStorage.getItem(startupRequestHash);
-                if (startupRequestCache) {
+                if (startupRequestCache && !relaunchArguments.current) {
                     let preserveOnReload = false;
                     (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
                         if (response.preserveOnReload) {
@@ -210,7 +335,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestHash);
                 } 
                 else {
-                    sendStartup(startupReq, false, startupRequestHash);
+                    sendStartup(startupReq, false, startupRequestHash, relaunchArguments.current);
                 }
             }
         }
@@ -225,7 +350,7 @@ const useStartup = (props:ICustomContent):boolean => {
                     if (k === "appName") {
                         startUpRequest.applicationName = v;
                     }
-                    else {
+                    else if (["theme", "colorScheme"].indexOf(k) === -1) {
                         startUpRequest[k] = v;
                     }
                 });
@@ -247,6 +372,22 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
                 else if (data.logoBig) {
                     context.appSettings.LOGO_LOGIN = data.logoBig;
+                }
+
+                if (data.langCode) {
+                    context.appSettings.language = data.langCode;
+                }
+
+                if (data.timezone) {
+                    context.appSettings.timezone = data.timezone;
+                }
+
+                if (data.colorScheme) {
+                    schemeToSet = data.colorScheme
+                }
+
+                if (data.theme) {
+                    themeToSet = data.theme
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

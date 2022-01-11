@@ -1,33 +1,8 @@
-:root {
-    /// -----Loading-Screen Variables-----
-
-    /// The loading-screen-logo height
-    --loading-screen-logo-height: 300px;
-
-    /// The loading-screen-logo width
-    --loading-screen-logo-width: 300px;
-
-    /// The left color of the loading-screen.
-    --loading-screen-background-left: #ffffff;
-
-    /// The right color of the loading-screen.
-    --loading-screen-background-right: #f1f1f1;
-
-    /// The first of four progress-spinner colors.
-    --loading-screen-spinner-color-1: #b3ec23;
-
-    /// The second of four progress-spinner colors.
-    --loading-screen-spinner-color-2: #95c41f;
-
-    /// The third of four progress-spinner colors.
-    --loading-screen-spinner-color-3: #8bb61d;
-
-    /// The fourth of four progress-spinner colors.
-    --loading-screen-spinner-color-4: #80a818;
-}
-
 .loading-screen {
     height: var(--main-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
     background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
@@ -35,35 +10,10 @@
     background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
 }
 
-.loading-logo-container {
-    position: absolute;
-    height: var(--loading-screen-logo-height);
-    width: var(--loading-screen-logo-width);
-    top: calc(50% - calc(var(--loading-screen-logo-height) / 2));
-    left: calc(50% - calc(var(--loading-screen-logo-width) / 2));
-}
-
 .loading-screen-spinner {
     position: absolute;
-    height: calc(var(--loading-screen-logo-height) / 5);
-    width: calc(var(--loading-screen-logo-width) / 5);
-    top: calc(50% - calc(var(--loading-screen-logo-height) / 20));
-    left: calc(50% - calc(var(--loading-screen-logo-width) / 10));
-}
-
-@keyframes p-progress-spinner-color {
-    100%,
-    0% {
-        stroke: var(--loading-screen-spinner-color-1);
-    }
-    40% {
-        stroke: var(--loading-screen-spinner-color-2);
-    }
-    66% {
-        stroke: var(--loading-screen-spinner-color-3);
-    }
-    80%,
-    90% {
-        stroke: var(--loading-screen-spinner-color-4);
-    }
+    height: 60px;
+    width: 60px;
+    top: calc(50% - 15px);
+    left: calc(50% - 30px);
 }

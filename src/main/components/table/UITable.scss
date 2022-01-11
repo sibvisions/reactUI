@@ -1,7 +1,6 @@
 .rc-table {
     width: 100%;
     height: 100%;
-    border: 1px solid #d4d4d4;
     border-collapse: collapse;
 
     &.no-auto-resize {
@@ -25,18 +24,9 @@
                 border-width: 0px 1px 1px 1px;
                 font-weight: bold;
                 padding: 0.6rem 1rem;
-                background: white;
-                &:hover {
-                    background: #e9ecef;
-                    color: inherit;
-                }
-                &.sort-asc, &.sort-des {
-                    color: #2196F3;
-                }
                 .p-sortable-column-icon {
                     font-size: 14px;
                     margin-left: 4px;
-                    color: #2196F3
                 }
                 .sort-index {
                     font-size: 10px;
@@ -53,39 +43,16 @@
     }
     .p-datatable-tbody {
         >tr {
-            &:nth-child(even) {
-                background: #fafafa;
-            }
             &:focus {
                 outline: none;
             }
             &.p-highlight {
-                background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%) !important;
-                //color: white;
-
-                > td {
-                    &:hover {
-                        color: white;
-                    }
-
-                    &.cell-required {
-                        background: rgba(255, 244, 210, 0.8);
-                    }
-
-                    &.cell-readonly {
-                        background: rgba(239, 239, 239, 0.8);
-                    }
-                }
-
                 .cancel-padding {
                     box-shadow: inset 0 0 0 1000px rgba(#1b87e3 , .4);
                 }
             }
             ::-moz-focus-inner {
                 border: 0;
-            }
-            &.table-row-selected {
-                background: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
             }
 
             &.row-deleted td:before {
@@ -106,14 +73,6 @@
                 border-width: 0px 0px 1px 0px !important;
                 user-select: none;
                 outline: none;
-
-                &.cell-required {
-                    background: rgb(255, 244, 210)
-                }
-
-                &.cell-readonly {
-                    background: rgb(239, 239, 239);
-                }
 
                 .cancel-padding {
                     margin: -0.2rem -0.4rem;
@@ -154,22 +113,19 @@
                     &>.cell-data {
                         display: flex;
                         align-items: center;
-                        .cell-data-content {
-                            padding: 6.5px 8.688px;
-                        }
                         &:not(.html-cell) .cell-data-content {
                             overflow: hidden;
                             text-overflow: ellipsis;
                         }
                         &.cancel-padding {
-                            padding: calc(0.2rem + 6.5px) calc(0.4rem + 8.688px);
+                            padding: 0.2rem 0.4rem;
                         }
                     }
                 }
                 &.p-highlight {
-                    outline: 2px solid black;
+                    outline: 2px solid #7f7f7f;
                     outline-offset: -2px;
-                    color: var(--standardTextColor);
+                    color: var(--default-text-color);
                     &:not(.cell-readonly):not(.cell-required) {
                         background: unset;
                     }
@@ -206,15 +162,6 @@
 
 .p-column-title {
     user-select: none;
-}
-
-.p-datatable .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
-    &.sort-asc, &.sort-des {
-        color: #2196F3;
-        .p-sortable-column-icon {
-            color: #2196F3;
-        }
-    }
 }
 
 .cell-editor-arrow {

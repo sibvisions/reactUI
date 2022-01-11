@@ -5,10 +5,9 @@ import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react"
 import { InputTextarea } from "primereact/inputtextarea";
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
+import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
-import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
@@ -25,16 +24,16 @@ interface ITextArea extends ITextField {
 const UITextArea: FC<ITextArea> = (baseProps) => {
     /** Reference for the textarea */
     const inputRef = useRef<any>(null);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<ITextArea>(baseProps.id, baseProps);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITextArea>(baseProps);
+
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text);
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 

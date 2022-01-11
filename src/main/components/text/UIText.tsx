@@ -1,16 +1,15 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useLayoutEffect, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
 
 /** Hook imports */
-import { useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
-import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
@@ -21,24 +20,18 @@ export interface ITextField extends BaseComponent {
  * This component displays an input field not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIText: FC<BaseComponent> = (baseProps) => {
+const UIText: FC<ITextField> = (baseProps) => {
     /** Reference for the input field */
     const inputRef = useRef<any>(null);
 
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<ITextField>(baseProps.id, baseProps);
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

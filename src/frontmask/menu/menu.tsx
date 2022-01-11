@@ -9,15 +9,14 @@ import { Button } from "primereact/button";
 import { MenuItem } from "primereact/menuitem";
 
 /** Hook imports */
-import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation, useDeviceStatus } from '../../main/components/zhooks'
+import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation, useDeviceStatus, useScreenTitle, useConstants } from '../../main/components/zhooks'
 
 /** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
-//import { MenuItem } from "primereact/api";
 import { concatClassnames } from "../../main/components/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { EmbeddedContext } from "../../MiddleMan";
@@ -29,24 +28,27 @@ export interface MenuItemCustom extends MenuItem {
     screenClassName:string
 }
 
+/** Interface for menu */
 export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
     menuVisibility:MenuVisibility,
     visibleButtons:VisibleButtons
 }
 
-export const ProfileMenu:FC<{showButtons?:boolean, visibleButtons?:VisibleButtons}> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+/** Interface for profile-menu */
+interface IProfileMenu {
+    showButtons?: boolean,
+    visibleButtons?: VisibleButtons
+}
+
+export const ProfileMenu:FC<IProfileMenu> = (props) => {
+    /** Returns utility variables */
+    const [context, topbar, translations] = useConstants();
+
     const slideOptions = useProfileMenuItems();
+
     /** History of react-router-dom */
     const history = useHistory();
-
-    /** Current state of translations */
-    const translations = useTranslation();
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
     
     return (
         <>
@@ -134,7 +136,7 @@ const Menu: FC<IMenu> = (props) => {
     const deviceStatus = useDeviceStatus();
 
     /** Current state of screen title, displays the screen title */
-    const [screenTitle, setScreenTitle] = useState<string>("");
+    const screenTitle = useScreenTitle();
 
     /** Reference for logo container element*/
     const menuLogoRef = useRef<HTMLDivElement>(null);
@@ -176,15 +178,9 @@ const Menu: FC<IMenu> = (props) => {
      *  @returns unsubscribing from the screen name on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToScreenName('s-menu', (appName: string) => {
-            setScreenTitle(appName)
-        });
         context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
 
-        return () => {
-            context.subscriptions.unsubscribeFromScreenName('s-menu');
-            context.subscriptions.unsubscribeFromSelectedMenuItem();
-        }
+        return () => context.subscriptions.unsubscribeFromSelectedMenuItem();
     }, [context.subscriptions]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
@@ -218,7 +214,7 @@ const Menu: FC<IMenu> = (props) => {
                 if (foundMenuItem && !panelMenu.current?.state.activeItem) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
                 }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
                 }
                 setActiveItemChanged(prev => !prev)
@@ -235,7 +231,6 @@ const Menu: FC<IMenu> = (props) => {
                 menuElem.classList.add("p-menuitem--active");
             } 
         }
-
     },[activeItemChanged])
 
     /**
@@ -246,7 +241,7 @@ const Menu: FC<IMenu> = (props) => {
      */
     useEffect(() => {
         if (props.menuVisibility.menuBar) {
-            const menuOuter = document.getElementsByClassName("menu")[0] as HTMLElement;
+            const menuOuter = document.getElementsByClassName("std-menu")[0] as HTMLElement;
             if (props.forwardedRef.current) {
                 const menuRef = props.forwardedRef.current;
                 const hoverExpand = () => {
@@ -318,7 +313,7 @@ const Menu: FC<IMenu> = (props) => {
         <>
             {(props.menuVisibility.menuBar && !embeddedContext) &&
                 <div className={concatClassnames(
-                    "menu",
+                    "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",
                     props.showMenuMini ? "" : "no-mini"
                 )}>

@@ -42,7 +42,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             context.server.sendRequest(ccRequest, REQUEST_ENDPOINTS.CLOSE_CONTENT).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
                     context.server.lastClosedWasPopUp = true;
-                    context.contentStore.closeScreen(baseProps.name);
+                    context.contentStore.closeScreen(baseProps.name, undefined, true);
                 }
             });
         }

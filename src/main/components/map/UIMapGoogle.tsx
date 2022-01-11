@@ -1,13 +1,13 @@
 /* global google */
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useLayoutValue, useMouseListener, usePopupMenu } from "../zhooks";
+import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -18,12 +18,11 @@ import { getMarkerIcon,
          parseMaxSize, 
          sendOnLoadCallback, 
          sendSetValues, 
-         sendMapFetchRequests, 
          sortGroupDataGoogle, 
          sendSaveRequest } from "../util";
 import { IMap } from ".";
 import { IconProps } from "../compprops";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { FetchResponse } from "../../response";
@@ -35,28 +34,41 @@ import { FetchResponse } from "../../response";
 const UIMapGoogle: FC<IMap> = (baseProps) => {
     /** Reference for the div that is wrapping the map containing layout information */
     const mapWrapperRef = useRef<any>(null);
+
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMap>(baseProps);
+
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
+
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<google.maps.Marker>();
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IMap>(baseProps.id, baseProps);
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
-    /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
+
     /** The center position of the map */
-    const centerPosition = parseMapLocation(props.center);
+    const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
+
+    /** ComponentId of the screen */
+    const compId = context.contentStore.getComponentId(props.id) as string;
+
+    /** The provided data for groups */
+    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+
+    /** The provided data for points/markers */
+    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+
+    const markerArray = useRef<Array<google.maps.Marker>>(new Array<google.maps.Marker>());
+
+    const polygonArray = useRef<Array<google.maps.Polygon>>(new Array<google.maps.Polygon>());
+
     /** Hook for MouseListener */
     useMouseListener(props.name, mapWrapperRef.current ? mapWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
     /** Options for map controls/display */
     const options = {
         center: centerPosition ? { lat: centerPosition.latitude, lng: centerPosition.longitude} : { lat: 0, lng: 0 },
@@ -70,6 +82,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         zoom: props.zoomLevel || 9,
         zoomControl: true
     };
+
     /** Colors for polygon filling and polygon lines */
     const polyColors = {
         strokeColor: props.lineColor ? props.lineColor : tinycolor("rgba (200, 0, 0, 210)").toHexString(),
@@ -99,36 +112,58 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         const fetchG = createFetchRequest();
         fetchG.dataProvider = props.groupDataBook;
         fetchG.fromRow = 0;
-        Promise.all([context.server.sendRequest(fetchP, REQUEST_ENDPOINTS.FETCH), context.server.sendRequest(fetchG, REQUEST_ENDPOINTS.FETCH)]).then((res) => {
-            const pointData = context.server.buildDatasets((res[0][0] as FetchResponse));
-            const groupData = sortGroupDataGoogle(context.server.buildDatasets((res[1][0] as FetchResponse)), props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
-            if (mapInnerRef.current) {
-                //@ts-ignore
-                const map = mapInnerRef.current.map
-                const latColName = props.latitudeColumnName;
-                const lngColname = props.longitudeColumnName;
-                /** If there are marker/points, create the marker at the position with the correct icon, if it is the last marker, set it as selectedMarker */
-                if (pointData.length) {
-                    pointData.forEach((point: any, i: number) => {
-                        let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
-                        const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
-                        marker.setMap(map);
-                        if (i === pointData.length - 1)
-                            setSelectedMarker(marker);
-                    });
+        if (props.pointsDataBook) {
+            context.server.sendRequest(fetchP, REQUEST_ENDPOINTS.FETCH);
+        }
+
+        if (props.groupDataBook) {
+            context.server.sendRequest(fetchG, REQUEST_ENDPOINTS.FETCH);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (mapInnerRef.current && providedPointData) {
+            //@ts-ignore
+            const map = mapInnerRef.current.map
+
+            // Deleting marker before setting new ones
+            markerArray.current.forEach(marker => {
+                marker.setMap(null);
+            });
+
+            const latColName = props.latitudeColumnName;
+            const lngColname = props.longitudeColumnName;
+            providedPointData.forEach((point: any, i: number) => {
+                let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
+                const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
+                markerArray.current.push(marker);
+                marker.setMap(map);
+                if (i === providedPointData.length - 1) {
+                    setSelectedMarker(marker);
                 }
-                /** If there are groups, create a poligon */
-                if (groupData.length) {
-                    groupData.forEach((group) => {
-                        const polygon = new google.maps.Polygon({ paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor });
-                        polygon.setMap(map)
-                    });
-                }
+            })
+        }
+    }, [providedPointData, mapReady]);
+
+    useEffect(() => {
+        if (mapInnerRef.current && providedGroupData) {
+            //@ts-ignore
+            const map = mapInnerRef.current.map
+
+            // Deleting marker before setting new ones
+            polygonArray.current.forEach(polygon => {
+                polygon.setMap(null);
+            });
+
+            const groupData = sortGroupDataGoogle(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
+            if (groupData.length) {
+                groupData.forEach((group) => {
+                    const polygon = new google.maps.Polygon({ paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor });
+                    polygon.setMap(map)
+                });
             }
-        })
-    }, [context.server, polyColors.fillColor, polyColors.strokeColor, props.groupColumnName, 
-        props.groupDataBook, props.latitudeColumnName, props.longitudeColumnName, props.marker, 
-        props.markerImageColumnName, props.pointsDataBook]);
+        }
+    }, [providedGroupData, mapReady]);
 
     /** 
      *  At start set center to selectedMarker position
@@ -139,13 +174,24 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             //@ts-ignore
             const map = mapInnerRef.current.map
             if (selectedMarker) {
-                if (!props.center)
+                if (!props.center) {
                     map.panTo({lat: selectedMarker.getPosition()?.lat(), lng: selectedMarker.getPosition()?.lng()});
-                if (props.pointSelectionLockedOnCenter)
+                }
+                    
+                if (props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
+                }
             }
         }
-    })
+    }, []);
+
+    useEffect(() => {
+        if (centerPosition && mapInnerRef.current) {
+            //@ts-ignore
+            const map = mapInnerRef.current.map
+            map.panTo({lat: centerPosition.latitude, lng: centerPosition.longitude})
+        }
+    }, [centerPosition])
 
     /** 
      * Adds eventlisteners to the map

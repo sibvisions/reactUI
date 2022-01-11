@@ -1,70 +1,6 @@
 @import '../scssutil/scrollbar.scss';
 @import '../scssutil/variables.scss';
 
-:root {
-    /// Menu-width when extended
-    --s-menu-width: 240px;
-
-    /// Menu-width when collapsed
-    --s-menu-collapsed-width: 80px;
-    
-    /// Header height
-    --s-menu-header-height: 70px;
-
-    ///--s-menu-header-background: #7a7f85
-    --s-menu-header-background: #7a7f85;
-
-    /// Logo width when expanded
-    --s-menu-logo-width: 190px;
-    
-    /// Logo width when collapsed
-    --s-menu-logo-collapsed-width: 60px;
-        
-    /// Logo height
-    --s-menu-logo-max-height: 60px;
-
-    /// profilemenu height
-    --s-menu-profile-height: 60px;
-
-    /// Profile-menu seperator margin
-    --s-menu-profile-seperator-margin: 4px;
-
-    /// Profile sub-menu width when mini
-    --s-menu-profile-mini-sub-width: 10rem;
-
-    --s-menu-profile-mini-size: 60px;
-
-    /// Menu buttons big height
-    --s-menu-buttons-full: 60px;
-
-    /// Menu buttons small height
-    --s-menu-buttons-small: 2.5rem;
-
-    /// Hover background for buttons
-    --s-menu-buttons-hover-background: #454b52;
-    
-    /// Foreground of topbar
-    --s-menu-color: white;
-
-    /// Color for menu borders
-    --s-menu-border-color: rgba(120,130,140,.13);
-    
-    /// Background for each panel of panelmenu
-    --s-menu-panelmenu-header-background: #fafafa;
-    
-    /// Foreground color for each panel of panelmenu
-    --s-menu-panelmenu-header-color: #495057;
-    
-    /// Foreground color when a panel is hovered or active
-    --s-menu-panelmenu-header-color-hover: black;
-
-    /// Fadeout width, fadeout: when menu is collapsed the text gets faded out with a gradient from right to left
-    --s-menu-fadeout-width: 20px;
-    
-    /// Fadeout positioning
-    --s-menu-fadeout-left: calc(var(--s-menu-collapsed-width) - var(--s-menu-fadeout-width));
-}
-
 /// Mixin for menu-transitions
 @mixin menuTransitions() {
     -webkit-transition: 0.5s ease-in-out;
@@ -74,7 +10,7 @@
 }
 
 /// No blue borders on focus
-.menu {
+.std-menu {
     :focus {
         box-shadow: none !important;
         -webkit-box-shadow: none !important;
@@ -85,29 +21,15 @@
 .menu-header {
     position: fixed;
     display: flex;
-    height: var(--s-menu-header-height);
     z-index: 20;
     align-items: center;
     width: 100%;
-    background: var(--s-menu-header-background);
 }
 
 /// When menu is collapsed
 .menu-collapsed {
-    /// Set new widths and hide overflow because menu overflows on y axis
     .menu-logo-wrapper, .menu-panelmenu-wrapper {
-        width: var(--s-menu-collapsed-width);
         overflow: hidden;
-        .menu-logo {
-            width: var(--s-menu-logo-collapsed-width);
-        }
-    }
-    /// Set margin to adapt to new widths
-    .menu-topbar {
-        margin-left: var(--s-menu-collapsed-width);
-    }
-    .menu-logo-mini {
-        width: var(--s-menu-logo-collapsed-width);
     }
 }
 
@@ -116,28 +38,20 @@
     @include menuTransitions();
     position: fixed;
     display: flex;
-    height: var(--s-menu-header-height);
-    width: var(--s-menu-width);
     justify-content: center;
     align-items: center;
-    background: rgb(232,232,232);
-    background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
-    border-bottom: 1px solid var(--s-menu-border-color);
 }
 
 /// Align to center, so logo is properly positioned and other styling
 .menu-logo {
     @include menuTransitions();
     align-self: center;
-    width: var(--s-menu-logo-width);
-    max-height: var(--s-menu-logo-max-height);
     object-fit: contain;
 }
 
 /// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
 .menu-topbar {
     @include menuTransitions();
-    margin-left: var(--s-menu-width);
     display: flex;
     flex-grow: 1;
     align-items: center;
@@ -157,17 +71,9 @@
 }
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--s-menu-buttons-full);
-    height: var(--s-menu-buttons-full);
     flex: 1;
-    background-color: transparent;
-    color: var(--s-menu-color);
     border: 0;
-    border-radius: 4px;
     margin-right: 0.5rem;
-    &:hover {
-        background-color: var(--s-menu-buttons-hover-background);
-    }
     .pi, .fa {
         font-size: 1.5rem;
     }
@@ -176,7 +82,6 @@
 /// Menu-screen-title styling
 .menu-screen-title {
     @extend %ellipsis-overflow;
-    color: var(--s-menu-color);
     font-size: 22px;
     font-weight: bold;
     margin-left: 10px;
@@ -184,18 +89,8 @@
 
 .profile-menu {
     margin-right: 10px;
-    border-left: 2px solid #5b6067;
 
     .p-menubar  {
-        .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-            height: var(--s-menu-profile-height);
-        }
-
-        .p-submenu-list {
-            width: calc(100% - var(--s-menu-profile-seperator-margin));
-            margin-left: var(--s-menu-profile-seperator-margin);
-        }
-
         .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
             .p-menuitem-text {
                 @extend %ellipsis-overflow;
@@ -219,25 +114,12 @@
     /// Removes default primereact menubar style
     padding: 0;
     border: none;
-    background: var(--s-menu-header-background);
 
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active {
             /// Sets menubar style on hover and active for text, subicon color and background
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--s-menu-header-background);
-                color: var(--s-menu-color);
                 margin-left: 4px;
-                .p-menuitem-text, .p-submenu-icon {
-                    color: var(--s-menu-color);
-                }
-                &:hover {
-                    background: var(--s-menu-buttons-hover-background);
-                    color: var(--s-menu-color);
-                    .p-menuitem-text, .p-submenu-icon {
-                        color: var(--s-menu-color);
-                    }
-                }
             }
         }
     }
@@ -258,6 +140,7 @@
     background-size: 40px 40px;
     background-image: var(--profileImage);
 }
+
 .profile-image-null {
     background: white;
     text-align: center;
@@ -269,15 +152,11 @@
 /// Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
     @include menuTransitions();
-    @include styledScrollbarPanel();
+    @include styledScrollbarPanelDefault();
     position: fixed;
-    padding-top: var(--s-menu-header-height);
     z-index: 10;
     height: 100%;
-    width: var(--s-menu-width);
-    border-right: 1px solid var(--s-menu-border-color);
     overflow-x: hidden;
-    background: #fafafa
 }
 
 /// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
@@ -294,7 +173,6 @@
 
 .menu-logo-mini {
     max-height: 0px;
-    width: var(--s-menu-logo-width);
 }
 
 /// Fadeout div for not readable text if collapsed
@@ -302,12 +180,7 @@
     @include menuTransitions();
     position: absolute;
     top: 0;
-    left: var(--s-menu-fadeout-left);
-    width: var(--s-menu-fadeout-width);
-    margin-top: var(--s-menu-header-height);
     height: 100%;
-    background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%); 
-    background-image: linear-gradient(90deg,  rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
     -webkit-animation: fadein 1s;
     -moz-animation: fadein 1s;
     -ms-animation: fadein 1s;
@@ -324,60 +197,31 @@
             //Positioning of menu-arrow
             .p-panelmenu-icon {
                 position: absolute;
-                left: calc(var(--s-menu-width) - 30px);
                 margin-right: 0;
             }
         }
-        &:not(.p-highlight):not(.p-disabled) > a:hover {
-            color: var(--s-menu-panelmenu-header-color-hover);
-        }
         .p-panelmenu-header-link {
-            background: var(--s-menu-panelmenu-header-background);
             border: none;
-            color: var(--s-menu-panelmenu-header-color);
-            &:hover {
-                color: var(--s-menu-panelmenu-header-color-hover);
-            }
             /// When text is longer don't break
             .p-menuitem-text {
                 white-space: nowrap;
             }
         }
-        /// Selected menupoint styling
-        &.p-highlight {
-            > a, &:not(.p-disabled) > a:hover {
-                background: var(--s-menu-panelmenu-header-background);
-                color: var(--s-menu-panelmenu-header-color-hover);
-            }
-        }
     }
     .p-panelmenu-content {
         border: none;
-        background: var(--s-menu-panelmenu-header-background);
+
         .p-menuitem {
             /// Menu sub points little more to the right
             .p-menuitem-link:not(.p-disabled) {
                 padding: 0.75rem 0.75rem 0.75rem 1.5rem;
-                &:hover {
-                    .p-menuitem-icon, .p-menuitem-text {
-                        color: var(--s-menu-panelmenu-header-color-hover);
-                    }
-                }
-            }
-        }
-    }
-
-    .p-panelmenu-content .p-menuitem.p-menuitem--active {
-        .p-menuitem-link {
-            .p-menuitem-text, .p-menuitem-icon {
-                color: #2196F3;
             }
         }
     }
 }
 
 @media screen and (max-width: 960px) {
-    .menu-topbar-right {
+    .menu-topbar-right, .corp-menu-profile {
         margin-right: 4px;
     }
 
@@ -393,10 +237,8 @@
             -webkit-box-shadow: initial;
             box-shadow: initial;
             padding: initial;
-            background: var(--s-menu-header-background);
 
             >.p-menuitem {
-                background-color: var(--s-menu-header-background);
                 width: initial;
             }
 
@@ -408,11 +250,8 @@
             /// Submenu styling needed because primereact button menu looks different we have to redesign
             .p-submenu-list {
                 position: fixed;
-                -webkit-box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
-                box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.16);
-                border: 1px solid #c8c8c8;
+                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
                 width: 12.5rem;
-                top: calc(var(--s-menu-profile-height) + var(--cMenuHeight));
                 li {
                     a {
                         padding: 0.75rem;
@@ -430,9 +269,6 @@
             .p-menubar-root-list {
                 .p-submenu-list {
                     position: absolute;
-                    width: var(--s-menu-profile-mini-sub-width);
-                    left: calc(var(--s-menu-profile-mini-size) - var(--s-menu-profile-mini-sub-width));
-                    top: unset;
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {
@@ -448,8 +284,10 @@
                         }
                     }
                     >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                        width: var(--s-menu-profile-mini-size);
-                        padding: 0.5rem 0.625rem;
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
                 }
             }
@@ -462,9 +300,9 @@
     .menu-logo-wrapper {
         &, .menu-collapsed & {
             visibility: hidden;
-            width: 0px;
+            width: 0px !important;
             .menu-logo {
-                width: 0px;
+                width: 0px !important;
             }
         }
     }
@@ -472,34 +310,14 @@
     /// Colored part of menu always on the left side
     .menu-topbar {
         &, .menu-collapsed & {
-            margin-left: 0px;
+            margin-left: 0px !important;
         }
     }
 
-    /// Show logo-mini-wrapper
-    .menu-logo-mini-wrapper {
-        height: var(--s-menu-logo-max-height);
-    }
-
-    /// Mini logo displaying and styling
-    .menu-logo-mini {
-        @include menuTransitions();
-        width: var(--s-menu-logo-width);
-        max-height: var(--s-menu-logo-max-height);
-    }
-
-    /// Fadeout position needs to be adjusted.
-    .fadeout {
-        margin-top: calc(var(--s-menu-header-height) + var(--s-menu-logo-max-height));
-    }
-
     .menu-collapsed.no-mini {
-        .menu-logo-wrapper, .menu-panelmenu-wrapper {
-            width: 0px;
+        .menu-panelmenu-wrapper {
+            width: 0px !important;
             overflow: hidden;
-            .menu-logo {
-                width: 0px;
-            }
         }
     }
 

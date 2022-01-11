@@ -11,15 +11,22 @@ import { appContext, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
 import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
+import { addCSSDynamically } from "./main/components/util";
 
-type ServerFailMessage = {
+export type IServerFailMessage = {
     headerMessage:string,
     bodyMessage:string,
     sessionExpired:boolean,
     retry:Function
 }
 
-const AppWrapper:FC = (props) => {
+interface IAppWrapper {
+    embedOptions?: { [key:string]:any }
+    theme?:string
+    colorScheme?:string
+}
+
+const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -30,15 +37,17 @@ const AppWrapper:FC = (props) => {
     const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** Reference for the dialog which shows the timeout error message */
-    const [errorProps, setErrorProps] = useState<ServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, retry: () => {} });
+
+    const [cssVersion, setCssVersion] = useState<string>("");
 
     useLayoutEffect(() => {
-        const link:HTMLLinkElement = document.createElement('link'); 
-        link.rel = 'stylesheet'; 
-        link.type = 'text/css';
-        link.href = 'application.css';
-        document.getElementsByTagName('HEAD')[0].appendChild(link);
-    }, [])
+        let path = 'application.css'
+        if (cssVersion) {
+            path = path + "?version=" + cssVersion;
+        }
+        addCSSDynamically(path, "app")
+    }, [cssVersion]);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -51,10 +60,13 @@ const AppWrapper:FC = (props) => {
 
         context.subscriptions.subscribeToAppName((newAppName:string) => setAppName(newAppName));
 
+        context.subscriptions.subscribeToCssVersion((version:string) => setCssVersion(version));
+
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setDialogVisible(show));
             context.subscriptions.unsubscribeFromAppName((newAppName:string) => setAppName(newAppName));
+            context.subscriptions.unsubscribeFromCssVersion();
         }
     },[context.subscriptions]);
 

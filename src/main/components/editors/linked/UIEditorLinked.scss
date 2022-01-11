@@ -1,11 +1,10 @@
 .rc-editor-linked {
     .p-inputtext {
         text-align: left;
+        background: var(--linkedBackground);
     }
     /// When either of the children is focused, display a blue shadow to show the button is focused
     &:focus-within {
-        box-shadow: 0 0 0 0.2rem #8dcdff;
-        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
         border-radius: 3px;
     }
     /// Unset focus shadow because not the whole editor is focused but only either inputfield or button
@@ -19,7 +18,6 @@
 
 /// Lazyloading loading animation
 .p-autocomplete-panel {
-
     &.linked-min-width {
         min-width: 120px !important;
     }
@@ -27,9 +25,6 @@
     .p-autocomplete-items {
         max-height: none !important;
         padding: 0;
-        .p-autocomplete-item {
-            background: white;
-        }
     }
 
     &.dropdown-table {
@@ -45,7 +40,6 @@
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
-                border-bottom: 1px solid #ccc;
             }
         }
 
@@ -57,11 +51,6 @@
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
-                border-bottom: 1px solid #ccc;
-
-                &:not(:first-child) {
-                    border-left: 1px solid #eee;
-                }
             }
         }
     }

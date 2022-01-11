@@ -32,7 +32,7 @@ import { ApplicationMetaDataResponse,
          CloseFrameResponse,
          ContentResponse,
          CloseContentResponse} from "./response";
-import { createFetchRequest, createStartupRequest } from "./factories/RequestFactory";
+import { createFetchRequest } from "./factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -161,6 +161,10 @@ class Server {
                 this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000, () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests))
                     .then((response: any) => response.json())
                     .then(result => {
+                        if (this.appSettings.applicationMetaData.aliveInterval) {
+                            this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
+                        }
+                        
                         if (result.code) {
                             if (400 >= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
@@ -183,10 +187,14 @@ class Server {
                         return results;
                     }).then(results => resolve(results), (err) => Promise.reject(err))
                     .catch(error => {
-                        const splitErr = error.split(".")
-                        this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                        if (typeof error === "string") {
+                            const splitErr = error.split(".");
+                            this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                        }
+                        else {
+                            this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                        }
                         this.subManager.emitErrorDialogVisible(true);
-                        reject(error);
                         console.error(error)
                     }).finally(() => {
                         this.openRequests.delete(request);
@@ -754,7 +762,7 @@ class Server {
 
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
-            this.contentStore.closeScreen(closeContentData.componentId);
+            this.contentStore.closeScreen(closeContentData.componentId, undefined, true);
         }
     }
 

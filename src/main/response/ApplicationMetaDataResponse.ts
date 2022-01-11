@@ -11,5 +11,8 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     preserveOnReload: boolean
     applicationLayout: "standard"|"corporation" |"modern"
     applicationName: string
+    applicationTheme: string
+    applicationColorScheme: string
+    aliveInterval?: number
 }
 export default ApplicationMetaDataResponse;

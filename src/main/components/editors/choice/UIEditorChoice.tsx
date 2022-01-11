@@ -1,17 +1,16 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useMemo, useRef } from "react";
+import React, { FC, useCallback, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMetaData, useMouseListener, usePopupMenu, useProperties, useRowSelect } from "../../zhooks";
+import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { appContext } from "../../../AppProvider";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
 
@@ -32,38 +31,22 @@ export interface IEditorChoice extends IEditor{
  * being clicked different images then will be displayed and the value in the databook will be changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice> = (props) => {
+const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
     const wrapRef = useRef<HTMLSpanElement>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
-
-    /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore);
-
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorChoice>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
-    const isReadOnly = (isCellEditor && props.readonly) || !props.cellEditor_editable_
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, true, isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
+    const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     useFetchMissingData(props.parent as string, compId, props.dataRow);
 
@@ -75,8 +58,6 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
-
-    const columnMetaData = useMetaData(compId, props.dataRow, props.columnName, undefined);
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -183,14 +164,14 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             )}
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
-            style={isCellEditor ?
+            style={props.isCellEditor ?
                 { justifyContent: alignments.ha, alignItems: alignments.va }
                 :
                 { ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }
             }
             onKeyDown={(event) => {
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-                if (event.key === "Tab" && isCellEditor && props.stopCellEditing) {
+                if (event.key === "Tab" && props.isCellEditor && props.stopCellEditing) {
                     props.stopCellEditing(event)
                 }
                 if (event.key === " ") {
@@ -202,18 +183,18 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                     onFocusGained(props.name, context.server);
                 }
                 else {
-                    if (isCellEditor) {
+                    if (props.isCellEditor) {
                         event.preventDefault();
                     }
                 }
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tabIndex={isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+            tabIndex={props.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
              >
-            <Tooltip target={!isCellEditor ? "#" + props.name : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             <img
                 ref={imgRef}
-                id={!isCellEditor ? props.name : undefined}
+                id={!props.isCellEditor ? props.name : undefined}
                 className={concatClassnames("rc-editor-choice-img", isReadOnly ? "choice-read-only" : "")}
                 alt=""
                 onClick={setNextValue}

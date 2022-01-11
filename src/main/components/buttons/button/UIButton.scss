@@ -12,7 +12,7 @@
     align-items: var(--btnAlign);
     padding: var(--btnPadding, 0.5rem 1rem);
 
-    .p-button-icon-left {
+    &:not(.login-button):not(.lost-password-button) .p-button-icon-left {
         margin-right: 0;
     }
     .p-button-icon-right {
@@ -22,37 +22,9 @@
     &.mouse-border {
         background: transparent;
         border-color: transparent;
-        color: var(--standardTextColor);
     }
 
     @include btnHover
-}
-
-/// If the button is dark set the foreground to white
-.bright {
-    color: var(--btnColorBright);
-    &:enabled:hover {
-        color: var(--btnColorBright);
-    }
-}
-
-/// If the button is bright set the foreground to a darker color
-.dark {
-    color: var(--standardTextColor);
-    &:enabled:hover {
-        color: var(--standardTextColor);
-    }
-}
-
-/// When the border is not painted background and border are transparent and the color is set to standard
-.border-notpainted, .border-notpainted:enabled:hover {
-    background: transparent !important;
-    border-color: transparent !important;
-    color: var(--standardTextColor);
-}
-
-.p-button-label {
-    flex: unset;
 }
 
 .p-button.p-button-icon-only {
@@ -70,11 +42,45 @@
     }
 }
 
+/// If the button is dark set the foreground to white
+.bright-button {
+    color: var(--button-color-bright);
+    &:enabled:hover {
+        color: var(--button-color-bright);
+    }
+}
+
+/// If the button is bright set the foreground to a darker color
+.dark-button {
+    color: var(--button-color-dark);
+    &:enabled:hover {
+        color: var(--button-color-dark);
+    }
+}
+
+/// When the border is not painted background and border are transparent and the color is set to standard
+.border-notpainted, .border-notpainted:enabled:hover {
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+.p-button-label {
+    flex: unset;
+}
+
+.reactUI:not(.basti_mobile) {
+    .p-button.p-button-icon-only {
+        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+            @include btnHover;
+        }
+    }
+}
+
+
 .rc-button.p-button.p-button-icon-only {
     width: inherit;
     height: inherit;
 }
-
 
 .rc-button-icon {
     font-size: var(--iconHeight);

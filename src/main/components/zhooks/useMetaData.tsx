@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { ColumnDescription, LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
+import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { getMetaData } from "../util";
 
 //T is the column which metadata is needed, if column is set it is looking for U which is whether the column is numeric or length.

@@ -7,14 +7,14 @@ import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
 
 /** Hook imports */
-import { useTranslation } from "../../main/components/zhooks";
+import { useConstants } from "../../main/components/zhooks";
 
 /** Other imports */
-import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../main/components/topbar/TopBar";
+import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
+import { ILoginCredentials } from "../login/login";
 
 interface IChangePasswordDialog  {
     loggedIn: boolean,
@@ -22,30 +22,28 @@ interface IChangePasswordDialog  {
     password?: string
 }
 
+/** Interface for change-password-state */
+interface IChangePasswordType extends ILoginCredentials {
+    newPassword: string,
+    confirmPassword: string
+}
+
+/**
+ * This component displays a dialog to change the password of a user. There are two modes depending on password changing or resetting
+ * @param props - the props to start the dialog with
+ */
 const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
-    /** Current state of username */
-    const [username, setUsername] = useState<string>(props.username)
+    /** Returns utility variables */
+    const [context, topbar, translations] = useConstants();
 
-    /** Current state of password */
-    const [password, setPassword] = useState<string>(props.password || "");
-
-    /** Current state of new password when changing/resetting password */
-    const [newPassword, setNewPassword] = useState<string>("");
-
-    /** Current state of confirming password field */
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Current state of translations */
-    const translations = useTranslation()
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
+    /** Contains data of the change-password mask */
+    const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
 
     /** Whether to show the change password dialog */
     const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+
+    /** True, if the password is resetting and not changing */
+    const isReset = context.appSettings.loginMode === "changeOneTimePassword";
 
     useEffect(() => {
         context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true));
@@ -53,24 +51,35 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         return () => context.subscriptions.unsubscribeFromDialog("change-password");
     }, [context.subscriptions]);
 
-    const isReset = context.appSettings.loginMode === "changeOneTimePassword";
+    useEffect(() => {
+        setChangePWData(prevState => ({...prevState, username: props.username}));
+    }, [props.username])
 
+    useEffect(() => {
+        setChangePWData(prevState => ({...prevState, password: props.password || ""}));
+    }, [props.password])
+
+    /**
+     * Sends a login request to change the password of a user.
+     * Checks if the new password is legitimate and sends the correct request based on logged in or not
+     * @param e - the FormEvent
+     */
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!newPassword) {
+        if (!changePWData.newPassword) {
             context.subscriptions.emitMessage({ message: translations.get("The new password is empty"), name: "" });
         }
-        else if (newPassword !== confirmPassword) {
+        else if (changePWData.newPassword !== changePWData.confirmPassword) {
             context.subscriptions.emitMessage({ message: translations.get("The passwords are different!"), name: "" });
         }
-        else if (newPassword === props.password) {
+        else if (changePWData.newPassword === props.password) {
             context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" });
         }
         else {
             if (props.loggedIn) {
                 const changeReq = createChangePasswordRequest();
-                changeReq.password = password;
-                changeReq.newPassword = newPassword;
+                changeReq.password = changePWData.password;
+                changeReq.newPassword = changePWData.newPassword;
                 showTopBar(context.server.sendRequest(changeReq, REQUEST_ENDPOINTS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
                     results.forEach(result => {
                         if (result.name === RESPONSE_NAMES.DIALOG) {
@@ -78,21 +87,21 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                         }
                     })
                 });
+                setChangePWData(prevState => ({...prevState, password: "", newPassword: "", confirmPassword: ""}));
             }
             else {
                 const loginReq = createLoginRequest();
-                loginReq.username = username;
-                loginReq.password = password;
-                loginReq.newPassword = newPassword;
+                loginReq.username = changePWData.username;
+                loginReq.password = changePWData.password;
+                loginReq.newPassword = changePWData.newPassword;
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
-                showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
+                showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar);
+                setChangePWData(prevState => ({...prevState, password: props.password || "", newPassword: "", confirmPassword: ""}));
                 context.subscriptions.emitMenuUpdate();
             }
         }
-        setPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
+        
     }
 
     return (
@@ -101,7 +110,8 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
             header={isReset ? translations.get("Reset password") : translations.get("Change password")}
             visible={dialogVisible} 
             onHide={() => setDialogVisible(false)}
-            draggable={false} >
+            draggable={false}
+            baseZIndex={10005} >
             <div className="change-dialog-container">
                 <form onSubmit={sendChangedPassword} className="change-password-form">
                     <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }}>
@@ -110,23 +120,23 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-user" />
                         <InputText
-                            value={username}
+                            value={changePWData.username}
                             id="change-username"
                             type="text"
                             autoComplete="change-username"
-                            onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value) : undefined}
+                            onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, username: event.target.value})) : undefined}
                             disabled={!isReset} />
                         <label className="change-password-label" htmlFor="change-username">{translations.get("Username")} </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-key" />
                         <InputText
-                            value={password}
+                            value={changePWData.password}
                             id="change-password"
                             type="password"
                             autoComplete="change-password"
-                            onChange={(props.loggedIn || isReset) ? (passEvent: React.ChangeEvent<HTMLInputElement>) => setPassword(passEvent.target.value) : undefined}
-                            disabled={!(props.loggedIn || isReset)} />
+                            onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value})) : undefined}
+                            disabled={!isReset} />
                         <label className="change-password-label" htmlFor="change-password">
                             {isReset ? translations.get("One-time password") : translations.get("Password")}
                         </label>
@@ -134,26 +144,26 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-key" />
                         <InputText
-                            value={newPassword}
+                            value={changePWData.newPassword}
                             id="change-password-new"
                             type="password"
                             autoComplete="change-password-new"
-                            onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => setNewPassword(passEvent.target.value)} />
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, newPassword: event.target.value}))} />
                         <label className="change-password-label" htmlFor="change-password-new">{translations.get("New Password")} </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-check" />
                         <InputText
-                            value={confirmPassword}
+                            value={changePWData.confirmPassword}
                             id="change-password-confirm"
                             type="password"
                             autoComplete="change-password-new"
-                            onChange={(passEvent: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(passEvent.target.value)} />
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, confirmPassword: event.target.value}))} />
                         <label className="change-password-label" htmlFor="change-password-confirm">{translations.get("Confirm Password")} </label>
                     </div>
                     <div className="change-password-button-wrapper">
                         <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setDialogVisible(false)} />
-                        <Button type="submit" label={translations.get(props.loggedIn ? "Change" : "Login")} icon="pi pi-lock-open" />
+                        <Button type="submit" label={translations.get(!isReset ? "Change" : "Login")} icon="pi pi-lock-open" />
                     </div>
                 </form>
             </div>

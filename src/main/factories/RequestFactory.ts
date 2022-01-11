@@ -63,7 +63,7 @@ export const createStartupRequest = (values?: StartupRequest): StartupRequest =>
         screenWidth: values?.screenWidth || 1920,
         screenHeight: values?.screenHeight || 1080,
 
-        deviceMode: values?.deviceMode || "mobile",
+        deviceMode: values?.deviceMode || "desktop",
 
         deviceType: values?.deviceType || 'Browser',
         deviceTypeModel: values?.deviceTypeModel || navigator.userAgent,

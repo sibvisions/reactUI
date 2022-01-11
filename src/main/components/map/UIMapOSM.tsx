@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "react-leaflet";
@@ -8,11 +8,10 @@ import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 
 /** Hook imports */
-import { useProperties, useDataProviderData, useMouseListener, usePopupMenu } from "../zhooks";
+import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../zhooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { LayoutContext } from "../../LayoutContext";
 import { getMarkerIcon, 
          parseMapLocation, 
          parsePrefSize, 
@@ -22,7 +21,8 @@ import { getMarkerIcon,
          sendSetValues, 
          sendMapFetchRequests, 
          sortGroupDataOSM, 
-         sendSaveRequest } from "../util";
+         sendSaveRequest, 
+         MapLocation} from "../util";
 import BaseComponent from "../BaseComponent";
 import { IconProps } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
@@ -44,6 +44,8 @@ export interface IMap extends BaseComponent {
     pointSelectionLockedOnCenter?: boolean
     tileProvider?: string
     zoomLevel?: number
+    layoutVal?:CSSProperties,
+    centerPosition?:MapLocation
 }
 
 /**
@@ -55,8 +57,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
 
-    /** Use context for the positioning, size informations of the layout */
-    const layoutValue = useContext(LayoutContext);
+    const layoutStyle = useLayoutValue(baseProps.id);
 
     /** Current state of the properties for the component sent by the server */
     const [props] = useProperties<IMap>(baseProps.id, baseProps);
@@ -65,10 +66,10 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     const {onLoadCallback, id} = props;
 
     /** The center position of the map */
-    const centerPosition = parseMapLocation(props.center);
+    const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
 
     /** Start zoom value is switched in Google and OSM */
-    const startZoom = 19 - (props.zoomLevel ? props.zoomLevel : 10);
+    const startZoom = useMemo(() => props.zoomLevel ? props.zoomLevel : 9, [props.zoomLevel]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -87,11 +88,11 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
      * Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,
      * set a default preferredSize (100x100) the layout can use to calculate. 
      */
-    if (layoutValue.has(id)) {
+    if (layoutStyle) {
         return (
-            <div ref={mapRef} {...popupMenu} style={layoutValue.get(id)}>
-                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: layoutValue.get(id)?.height, width: layoutValue.get(id)?.width}}>
-                    <UIMapOSMConsumer {...props} zoomLevel={startZoom}/>
+            <div ref={mapRef} {...popupMenu} style={layoutStyle}>
+                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+                    <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>
             </div>
         )
@@ -141,6 +142,11 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         fillOpacity: 1.0
     }
 
+    // Inits the size of the map (no gray borders)
+    useEffect(() => {
+        map.invalidateSize();
+    }, [props.layoutVal?.width, props.layoutVal?.height]);
+
     /**
      * Returns an array with the server sent groups sorted
      * @returns array with the server sent groups sorted
@@ -163,29 +169,37 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         showTopBar(sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server), topbar);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
+    // When the center changes set map view
+    useEffect(() => {
+        if (props.centerPosition) {
+            map.setView([props.centerPosition.latitude, props.centerPosition.longitude])
+        }
+    }, [props.centerPosition]);
+
     /** Set the last marker as selectedMarker */
     useEffect(() => {
         if (markerRefs.current) {
             setSelectedMarker(markerRefs.current.slice(-1).pop())
         }
-            
-    },[providedPointData])
+    }, [providedPointData]);
 
     /** If there is no center set, set center to selectedMarker Position, if locked on center selectedMarker position is always center */
     useEffect(() => {
         if (selectedMarker) {
-            if (!props.center)
+            if (!props.center) {
                 map.setView(selectedMarker.getLatLng(), props.zoomLevel ? props.zoomLevel : 11);
-            if (props.pointSelectionLockedOnCenter)
+            }
+            if (props.pointSelectionLockedOnCenter) {
                 selectedMarker.setLatLng(map.getCenter())
+            }
         }
-            
-    },[selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
+    }, [selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
 
     /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
     const onMove = useCallback((e) => {
-        if (props.pointSelectionLockedOnCenter && selectedMarker)
+        if (props.pointSelectionLockedOnCenter && selectedMarker) {
             selectedMarker.setLatLng(map.getCenter());
+        }
     },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
 
     /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
@@ -217,12 +231,13 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             {
                 /** Build markers with icon */
                 providedPointData.map((point: any, i: number) => {
+                    console.log(point)
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}
                         key={props.id + "-Marker-" + i}
-                        position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE,
-                        props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE]}
+                        position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE ? point.LATITUDE : 0,
+                        props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE ? point.LONGITUDE : 0]}
                         icon={new L.Icon({
                             iconUrl: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon),
                             iconAnchor: iconData !== "/com/sibvisions/rad/ui/swing/ext/images/map_defaultmarker.png" ? 

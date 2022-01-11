@@ -1,10 +1,14 @@
 .p-calendar {
     width: inherit;
+    height: inherit;
     .p-inputtext {
-        &:focus + .p-button {
-            outline: 0 none;
-            outline-offset: 0;
-            box-shadow: 0 0 0 0.2rem #a6d5fa;
+        background: var(--dateBackground);
+    }
+
+    .p-inputtext, .p-button {
+        &:focus {
+            box-shadow: unset;
+            -webkit-box-shadow: unset;
         }
     }
 }
@@ -30,7 +34,7 @@
             select {
                 cursor: pointer;
                 appearance: none;
-                font-family: var(--standardFont);
+                font-family: var(--standard-font-family);
                 font-size: 1rem;
                 border: 0;
                 padding-right: 1.25rem;

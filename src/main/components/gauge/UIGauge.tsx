@@ -1,13 +1,12 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useRef } from "react";
 
 /** Hook imports */
-import { useFetchMissingData, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
+import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
 import BaseComponent from "../BaseComponent";
-import { appContext } from "../../AppProvider";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
 
@@ -62,14 +61,13 @@ function getColor(value: number, steps?: [number, number, number, number]) {
 const UIGauge: FC<IGauge> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const wrapperRef = useRef<HTMLSpanElement>(null);
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IGauge>(baseProps.id, baseProps);
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
+
     /** ComponentId of the screen */
     const compId = context.contentStore.getComponentId(props.id) as string;
+
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 

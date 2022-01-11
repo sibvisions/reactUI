@@ -1,21 +1,20 @@
 /** React imports */
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import React, { CSSProperties, FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import { TabView, TabPanel } from 'primereact/tabview';
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { LayoutContext } from "../../../LayoutContext";
-import { appContext } from "../../../AppProvider";
 import { parseIconData, IconProps } from "../../compprops";
 import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { showTopBar } from "../../topbar/TopBar";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {
@@ -30,17 +29,11 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** Reference for TabsetPanel element */
     const panelRef = useRef<any>();
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<ITabsetPanel>(baseProps.id, baseProps);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, compSizes] = useComponents(baseProps.id, props.className);
@@ -53,9 +46,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

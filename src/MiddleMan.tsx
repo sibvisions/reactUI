@@ -21,6 +21,8 @@ export interface ICustomContent {
     onLogin?: Function
     style?: CSSProperties
     embedOptions?:{ [key:string]:any }
+    theme?: string
+    colorScheme?: string
 }
 
 export const EmbeddedContext = createContext<boolean>(false)

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { CSSProperties, useContext, useEffect, useState } from "react";
 
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
@@ -10,6 +10,7 @@ import { DialogResponse } from "../../response";
 import { createCloseFrameRequest, createPressButtonRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { concatClassnames } from "../util";
+import tinycolor from "tinycolor2";
 
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     /** Use context to gain access for contentstore and server methods */
@@ -41,7 +42,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     useEffect(() => {
         setVisible(false);
-    }, [closingFrame])
+    }, [closingFrame]);
 
     useEffect(() => {
         if (messageProps) {
@@ -71,40 +72,94 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                         showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
                     }
                 }
+
+                const getButtonBackground = ():string => {
+                    return window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
+                }
     
                 if (buttonType === 4 || buttonType === 5) {
                     return (
                         <>
-                            <Button type="button" label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")} onClick={event => {
-                                sendPressButton(cancelCompId);
-                            }} />
-                            <Button type="button" label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")} onClick={event => {
-                                sendPressButton(okCompId);
-                            }} />
+                            <Button
+                                type="button"
+                                className="rc-button"
+                                style={{
+                                    '--background': getButtonBackground(),
+                                    '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                                } as CSSProperties}
+                                label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")}
+                                onClick={() => {
+                                    sendPressButton(cancelCompId);
+                                }} />
+                            <Button
+                                type="button"
+                                className="rc-button"
+                                style={{
+                                    '--background': getButtonBackground(),
+                                    '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                                } as CSSProperties}
+                                label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")}
+                                onClick={() => {
+                                    sendPressButton(okCompId);
+                                }} />
                         </>
                     )
                 }
                 else if (buttonType === 6) {
                     return (
-                        <Button type="button" label={translation.get("OK")} onClick={event => {
-                            sendPressButton(okCompId);
-                        }} />
+                        <Button
+                            type="button"
+                            className="rc-button"
+                            style={{
+                                '--background': getButtonBackground(),
+                                '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                            } as CSSProperties}
+                            label={translation.get("OK")}
+                            onClick={() => {
+                                sendPressButton(okCompId);
+                            }} />
                     )
                 }
                 else if (buttonType === 7) {
                     return (
                         <>
                             <div>
-                                <Button type="button" label={translation.get("Cancel")} onClick={event => {
-                                    sendPressButton(cancelCompId);
-                                }} />
-                                <Button type="button" label={translation.get("No")} style={{ marginLeft: '0.5rem' }} onClick={event => {
-                                    sendPressButton(notOkCompId);
-                                }} />
+                                <Button
+                                    type="button"
+                                    className="rc-button"
+                                    style={{
+                                        '--background': getButtonBackground(),
+                                        '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                                    } as CSSProperties}
+                                    label={translation.get("Cancel")}
+                                    onClick={() => {
+                                        sendPressButton(cancelCompId);
+                                    }} />
+                                <Button
+                                    type="button"
+                                    className="rc-button"
+                                    label={translation.get("No")}
+                                    style={{
+                                        marginLeft: '0.5rem',
+                                        '--background': getButtonBackground(),
+                                        '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                                    } as CSSProperties}
+                                    onClick={() => {
+                                        sendPressButton(notOkCompId);
+                                    }} />
                             </div>
-                            <Button type="button" label={translation.get("Yes")} onClick={event => {
-                                sendPressButton(okCompId);
-                            }} />
+                            <Button
+                                type="button"
+                                className="rc-button"
+                                style={{
+                                    marginLeft: '0.5rem',
+                                    '--background': getButtonBackground(),
+                                    '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
+                                } as CSSProperties}
+                                label={translation.get("Yes")}
+                                onClick={() => {
+                                    sendPressButton(okCompId);
+                                }} />
                         </>
                     )
                 }
@@ -159,7 +214,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const handleOnHide = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;
-                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar).then(() => setVisible(false));
             }
 
             setVisible(true);
@@ -173,7 +228,8 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 closable: messageProps.closable,
                 className: concatClassnames(
                     "rc-message-dialog", 
-                    getHeaderType(messageProps.iconType), 
+                    getHeaderType(messageProps.iconType),
+                    messageProps.buttonType === 8 || messageProps.buttonType === -1 ? "message-dialog-no-footer" : ""
                 ) });
 
         }

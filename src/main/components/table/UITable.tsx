@@ -7,16 +7,15 @@ import { DataTable } from "primereact/datatable";
 import _ from "underscore";
 
 /** Hook imports */
-import { useProperties, 
-         useDataProviderData, 
+import { useDataProviderData, 
          useRowSelect, 
          useMultipleEventHandler, 
          useSortDefinitions, 
-         useLayoutValue,
          useFetchMissingData,
          useMouseListener,
          useMetaData,
-         usePopupMenu} from "../zhooks";
+         usePopupMenu,
+         useComponentConstants} from "../zhooks";
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
@@ -26,9 +25,10 @@ import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
 import { createEditor } from "../../factories/UIFactory";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import { CellEditor } from "./CellEditor";
@@ -105,7 +105,7 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any) {
         const containerLeft = container.scrollLeft;
         const containerRight = containerLeft + container.clientWidth;
 
-        const eleTop = cell.rowIndex * 35;
+        const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
         const eleBottom = eleTop + ele.clientHeight;
     
         const containerTop = container.scrollTop;
@@ -149,17 +149,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Reference for the Table */
     const tableRef = useRef<DataTable>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<TableProps>(baseProps.id, baseProps);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id);
+    /** Component constants */
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<TableProps>(baseProps);
 
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
@@ -292,7 +283,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const moveDirections = isVisible(selectedElem, container, cell);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * 35)
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
                     }
                     else if (selectedElem !== null) {
                         let sLeft:number = container.scrollLeft
@@ -303,16 +294,16 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
     
                         if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * 35;
+                            sTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
                         }
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? 35 : -35);
+                            sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
                         }
     
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * 35);
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
                     }
                 }
             }
@@ -354,6 +345,44 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
 
+    const getNavTableClassName = (parent?:string) => {
+        if (parent) {
+            const parentProps = context.contentStore.getComponentById(parent);
+            if (parentProps?.className === "ToolBarPanel" && (parentProps as IToolBarPanel).toolBarVisible !== false) {
+                switch((parentProps as IToolBarPanel).toolBarArea) {
+                    case 0:
+                        return "navtable-north";
+                    case 1:
+                        return "navtable-west";
+                    case 2:
+                        return "navtable-south";
+                    case 3:
+                        return "navtable-east";
+                    default:
+                        return "navtable-west";
+                }
+            }
+        }
+        return ""
+    }
+
+    /**
+     * Returns the next sort mode
+     * @param mode - the current sort mode
+     * @returns the next sort mode
+     */
+    const getNextSort = (mode?: "Ascending" | "Descending" | "None") => {
+        if (mode === "Ascending") {
+            return "Descending";
+        }
+        else if (mode === "Descending") {
+            return "None";
+        }
+        else {
+            return "Ascending";
+        }
+    }
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if(wrapRef.current){
@@ -363,7 +392,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length*35 + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
@@ -791,7 +820,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                                     values: primaryKeys.map(pk => currDataRow[pk])
                                 }
                             },
-                            readonly: columnMetaData?.readonly
+                            readonly: columnMetaData?.readonly,
+                            isCellEditor: true,
+                            cellCompId: props.dataBook.split("/")[1]
                         })
                     }
                     else {
@@ -1163,7 +1194,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",
-                        props.autoResize === false ? "no-auto-resize" : ""
+                        props.autoResize === false ? "no-auto-resize" : "",
+                        getNavTableClassName(props.parent)
                     )}
                     value={virtualRows}
                     selection={selectedCell}
@@ -1179,6 +1211,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     } : undefined}
                     rows={rows}
                     totalRecords={providerData.length}
+                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns

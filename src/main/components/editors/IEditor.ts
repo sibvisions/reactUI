@@ -34,4 +34,6 @@ export interface IEditor extends BaseComponent{
     passedKey?: string,
     rowIndex?: Function,
     filter?: Function
+    isCellEditor: boolean,
+    cellCompId: string
 }

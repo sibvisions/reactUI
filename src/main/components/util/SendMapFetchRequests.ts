@@ -18,6 +18,12 @@ export async function sendMapFetchRequests(groupDataProvider:string, pointDataPr
             server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH).then(() => resolve());
         })
     }
-    await sendFetchRequest(groupDataProvider);
-    await sendFetchRequest(pointDataProvider);
+
+    if (groupDataProvider) {
+        await sendFetchRequest(groupDataProvider);
+    }
+    
+    if (pointDataProvider) {
+        await sendFetchRequest(pointDataProvider);
+    }
 }

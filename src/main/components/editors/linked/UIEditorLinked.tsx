@@ -1,22 +1,23 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
+import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useRowSelect, useDataProviderData, useEventHandler, useLayoutValue, useFetchMissingData, useMouseListener, usePopupMenu, useMetaData} from "../../zhooks"
+import { useDataProviderData, useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { appContext } from "../../../AppProvider";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { getEditorCompId, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
-import { showTopBar, TopBarContext } from "../../topbar/TopBar";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
+import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { FetchResponse } from "../../../response";
+import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -45,30 +46,17 @@ export interface IEditorLinked extends IEditor{
  * when text is entered into the inputfield, the dropdownlist gets filtered
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorLinked: FC<IEditorLinked> = (props) => {
+const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, props.editorStyle);
-
-    /** ComponentId of the screen */
-    const compId = getEditorCompId(props.id, context.contentStore);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
 
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
-
-    /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -82,11 +70,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    /** If the editor is a cell-editor */
-    const isCellEditor = props.id === "";
-
-    const columnMetaData = useMetaData(compId, props.cellEditor.linkReference.referencedDataBook||"", props.columnName);
-
     const tableOptions = props.cellEditor.columnView?.columnCount > 1;
 
     const focused = useRef<boolean>(false);
@@ -94,6 +77,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
     const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
+
+    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
 
     useFetchMissingData(props.parent as string, compId, props.dataRow);
 
@@ -133,7 +121,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             });
         }
 
-        if (isCellEditor && props.passedKey) {
+        if (props.isCellEditor && props.passedKey) {
             setText("");
         }
     }, []);
@@ -176,7 +164,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         filterReq.editorComponentId = props.name;
         filterReq.value = value;
 
-        if (isCellEditor) {
+        if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
         await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER).then(() => {
@@ -188,13 +176,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     useEffect(() => {
         setTimeout(() => {
-            if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && isCellEditor)) {
+            if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.isCellEditor)) {
                 sendFilter("");
                 (linkedRef.current as any).showOverlay();
             }
         }, 33)
 
-    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, isCellEditor, sendFilter]);
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.isCellEditor, sendFilter]);
 
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
@@ -212,7 +200,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             (linkedRef.current as any).hideOverlay();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
-        else if (isCellEditor && props.stopCellEditing) {
+        else if (props.isCellEditor && props.stopCellEditing) {
             if ((event as KeyboardEvent).key === "Tab") {
                 (event.target as HTMLElement).blur()
                 props.stopCellEditing(event);
@@ -355,20 +343,34 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }, [columnMetaData]);
 
     return (
-        <span aria-label={props.ariaLabel} {...usePopupMenu(props)} style={layoutStyle}>
+        <span 
+            aria-label={props.ariaLabel} 
+            {...usePopupMenu(props)} 
+            style={{
+                ...layoutStyle, 
+                '--linkedBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--input-background')
+            } as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
-                id={!isCellEditor ? props.name : undefined}
-                style={{ width: 'inherit' }}
+                id={!props.isCellEditor ? props.name : undefined}
+                style={{ 
+                    width: 'inherit',
+                    height: 'inherit',
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                }}
                 inputRef={linkedInput}
-                autoFocus={props.autoFocus ? true : isCellEditor ? true : false}
+                autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
-                className={"rc-editor-linked"}
+                className={concatClassnames(
+                    "rc-editor-linked", 
+                    columnMetaData?.nullable === false ? "required-field" : "",
+                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+                )}
                 panelClassName={concatClassnames(
-                    "dropdown-" + props.name, isCellEditor ? "dropdown-celleditor" : "", 
+                    "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",
-                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : "",
-                    columnMetaData?.nullable === false ? "required-field" : ""
+                    linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
                 scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
@@ -401,7 +403,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                         focused.current = false
                     }
                 }}
-                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad, className: isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
+                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
                 onSelect={(event) => handleInput(event.value)}
                 tooltip={props.toolTipText}
                 itemTemplate={itemTemplate}

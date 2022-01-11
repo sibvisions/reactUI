@@ -1,10 +1,14 @@
 @import '../../../../frontmask/scssutil/buttonColors.scss';
 
+.rc-popupmenubutton-wrapper {
+    outline-width: 0;
+    outline-style: none;
+}
+
 /// background and border-color set because children need to inherit
 /// Inherit height and width from parent who has set it by the layout
 .rc-popupmenubutton {
-    background: var(--btnDefaultBgd);
-    border-color: var(--btnDefaultBgd);
+    --menuBtnSplitWidth: 38px;
     height: inherit;
     width: inherit;
     border-radius: 3px;
@@ -19,8 +23,6 @@
     &:focus-within {
         outline-width: 0;
         outline-style: none;
-        box-shadow: 0 0 0 0.2rem #8dcdff;
-        -webkit-box-shadow: 0 0 0 0.2rem #8dcdff;
     }
     @include btnHover;
 }
@@ -38,20 +40,26 @@
 .p-splitbutton {
     --menuBtnJustify: center;
     --menuBtnAlign: center;
-    --menuBtnPadding: 0.5rem 0px 0.5rem 1rem;
 }
 
 .p-splitbutton-defaultbutton {
     justify-content: var(--menuBtnJustify);
     align-items: var(--menuBtnAlign);
-    padding: var(--menuBtnPadding);
+    padding: var(--menuBtnPadding, 0.5rem 0rem 0.5rem 1rem);
+}
+
+.p-button.p-splitbutton-menubutton, .p-button.p-splitbutton-defaultbutton {
+    box-shadow: none;
 }
 
 /// Fixed width for menubutton part of splitbutton
 .p-button.p-splitbutton-menubutton {
-    width: var(--menuBtnIconWidth);
+    width: var(--menuBtnSplitWidth);
     padding: 0.5rem 0.5rem 0.5rem 0px;
-    box-shadow: none;
+}
+
+.rc-popupmenubutton-custom-icon {
+    margin-right: 4px;
 }
 
 .p-menu {
