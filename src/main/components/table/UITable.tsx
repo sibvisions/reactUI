@@ -1,5 +1,5 @@
 /** React imports */
-import React, { createContext, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import { Column } from "primereact/column";
@@ -19,7 +19,6 @@ import { useDataProviderData,
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import { appContext } from "../../AppProvider";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
@@ -177,7 +176,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     })());
 
     /** the list row height */
-    const [itemSize, setItemSize] = useState(35);
+    const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
 
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
@@ -364,23 +363,6 @@ const UITable: FC<TableProps> = (baseProps) => {
             }
         }
         return ""
-    }
-
-    /**
-     * Returns the next sort mode
-     * @param mode - the current sort mode
-     * @returns the next sort mode
-     */
-    const getNextSort = (mode?: "Ascending" | "Descending" | "None") => {
-        if (mode === "Ascending") {
-            return "Descending";
-        }
-        else if (mode === "Descending") {
-            return "None";
-        }
-        else {
-            return "Ascending";
-        }
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -1103,7 +1085,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
-        setItemSize(35 + Math.random() / 1E10);
+        setItemSize(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8 + Math.random() / 1E10);
 
         if (tableRef.current) {
             const table = tableRef.current as any;
@@ -1211,7 +1193,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     } : undefined}
                     rows={rows}
                     totalRecords={providerData.length}
-                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns
