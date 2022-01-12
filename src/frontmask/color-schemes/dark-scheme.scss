@@ -338,6 +338,9 @@
     /// Darkmode tab close button color
     --tab-close-color: #cdcfd1;
 
+    /// Darkmode tab close button hover color
+    --tab-close-hover-color: #6f757a;
+
     /// Darkmode focus border/shadow
     --focus-box-shadow: 0 0 0 0.2rem #93cbf9;
 
@@ -1429,8 +1432,13 @@ body {
     }
 }
 
-.tabview-button {
+.p-tabview-close {
     color: var(--tab-close-color);
+
+    &:hover {
+        font-weight: bold;
+        color: var(--tab-close-hover-color);
+    }
 }
 
 /// Tree

@@ -338,6 +338,9 @@
     /// Orange tab close button color
     --tab-close-color: #cdcfd1;
 
+    /// Orange tab close button hover color
+    --tab-close-hover-color: #6f757a;
+
     /// Orange focus border/shadow
     --focus-box-shadow: 0 0 0 0.2rem #ffe69c;
 
@@ -1418,8 +1421,13 @@ body {
     }
 }
 
-.tabview-button {
+.p-tabview-close {
     color: var(--tab-close-color);
+
+    &:hover {
+        font-weight: bold;
+        color: var(--tab-close-hover-color);
+    }
 }
 
 /// Tree

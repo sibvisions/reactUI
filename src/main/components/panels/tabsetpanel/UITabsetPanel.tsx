@@ -104,16 +104,17 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         closing.current = false;
     }
 
+    /** When a tab is closed send a tabCloseRequest to the server */
+    const handleClose = (tabId:number) => {
+        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.CLOSE_TAB), topbar);
+        closing.current = true
+    }
+
     /**
      * Returns the built Tab elements for the TabsetPanel
      * @returns the built Tab elements for the TabsetPanel
      */
     const buildTabs = useMemo(() => {
-        /** When a tab is closed send a tabCloseRequest to the server */
-        const handleClose = (tabId:number) => {
-            showTopBar(context.server.sendRequest(buildTabRequest(components.findIndex(elem => elem.props.id === tabId)), REQUEST_ENDPOINTS.CLOSE_TAB), topbar);
-            closing.current = true
-        }
         /** Array for the built tabs */
         let builtTabs:Array<JSX.Element> = [];
         if (components) {
@@ -133,6 +134,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                     constraints = componentConstraints.split(';');
                     icon = parseIconData(props.foreground, constraints[3])
                 }
+                const isDisabled = constraints[0] === "false";
                 /** Content/styling of tabs */
                 let header = 
                 <span>
@@ -142,14 +144,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                     /** Tab text */
                     constraints[2]
                     }
-                    {
-                    /** If the Tab is closable, add a close button */
-                    constraints[1] === 'true' &&
-                    <button
-                        className="tabview-button pi pi-times"
-                        onClick={() => handleClose(component.props.id)}/>}
                 </span>
-                builtTabs.push(<TabPanel key={component.props.id} disabled={constraints[0] === "false"} headerClassName={"black"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
+                builtTabs.push(<TabPanel key={component.props.id} disabled={isDisabled} closable={!isDisabled} headerClassName={"black"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
             });
         }
         return builtTabs;
@@ -167,7 +163,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                         if (event.index !== props.selectedIndex)
                             handleSelect(event.index)
                     }}
-                    {...usePopupMenu(props)} >
+                    onTabClose={event => handleClose(event.index)}
+                    {...usePopupMenu(props)}>
                     {buildTabs}
                 </TabView>
             </div>

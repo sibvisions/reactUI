@@ -61,7 +61,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
-    const [value, setValue] = useState<number|string>(selectedRow);
+    const [value, setValue] = useState<number|string|null>(selectedRow);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();

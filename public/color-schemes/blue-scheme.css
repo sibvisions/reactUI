@@ -109,6 +109,7 @@
   --loading-spinner-color-3: #8bb61d;
   --loading-spinner-color-4: #80a818;
   --tab-close-color: #cdcfd1;
+  --tab-close-hover-color: #6f757a;
   --focus-box-shadow: 0 0 0 0.2rem #8dcdff;
   --border-color-hover: #2196fe;
   --login-border-radius: 6px;
@@ -716,8 +717,11 @@ body {
   .p-tabview .p-tabview-nav li .p-tabview-nav-link {
     background: var(--tab-navbar-background); }
 
-.tabview-button {
+.p-tabview-close {
   color: var(--tab-close-color); }
+  .p-tabview-close:hover {
+    font-weight: bold;
+    color: var(--tab-close-hover-color); }
 
 .p-tree {
   background: var(--tree-background);

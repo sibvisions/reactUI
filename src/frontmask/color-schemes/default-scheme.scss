@@ -338,6 +338,9 @@
     /// Default tab close button color
     --tab-close-color: #cdcfd1;
 
+    /// Default tab close button hover color
+    --tab-close-hover-color: #6f757a;
+
     /// Default focus border/shadow
     --focus-box-shadow: 0 0 0 0.2rem #8dcdff;
 
@@ -1418,8 +1421,13 @@ body {
     }
 }
 
-.tabview-button {
+.p-tabview-close {
     color: var(--tab-close-color);
+
+    &:hover {
+        font-weight: bold;
+        color: var(--tab-close-hover-color);
+    }
 }
 
 /// Tree

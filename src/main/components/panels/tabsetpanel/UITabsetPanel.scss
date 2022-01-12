@@ -45,23 +45,6 @@
     }
 }
 
-.tabview-button {
-    padding: 0;
-    border: none;
-    background: transparent;
-    font-size: 10px;
-    cursor: pointer;
-    color: var(--default-tab-close-color);
-    position: relative;
-    margin-left: 2px;
-    z-index: 1;
-    &:hover {
-        font-weight: bold;
-        color: black;
-        opacity: 1;
-    }
-}
-
 .black .p-ink {
     background: rgba(0,0,0,.2);
 }
