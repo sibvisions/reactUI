@@ -22,3 +22,7 @@
         border-top: none;
     }
 }
+
+.rc-toolbar .p-button.p-disabled {
+    opacity: 0.3;
+}

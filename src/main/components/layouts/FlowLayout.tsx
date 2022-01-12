@@ -255,7 +255,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
+                                borderRight: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
                             });
                         }
                         else {
@@ -265,7 +265,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
+                                borderRight: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
                             });
                         }
 
@@ -288,7 +288,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
+                                borderBottom: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
                             });
                         }
                         else {
@@ -298,7 +298,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
+                                borderBottom: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
                             });
                         }
 

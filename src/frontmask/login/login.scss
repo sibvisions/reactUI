@@ -53,6 +53,10 @@
   &.lost-password-enabled {
     margin-top: -1rem;
     margin-bottom: 1.4rem;
+
+    .login-cbx-container {
+      margin-right: 0.5rem;
+    }
   }
   &:not(.lost-password-enabled) {
     margin-top: -0.5rem;
@@ -61,7 +65,10 @@
 }
 
 .login-cbx-container {
-  align-self: center
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
 }
 
 .login-container-with-desktop {
@@ -73,6 +80,6 @@
 }
 
 .login-form-position-wrapper {
-  z-index: 10001;
+  z-index: 1001;
   position: absolute;
 }

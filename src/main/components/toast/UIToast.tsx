@@ -105,7 +105,7 @@ const UIToast: FC = () => {
 
     return (
         <>
-            <Toast id="toastErr" ref={toastErrRef} position="top-right" />
+            <Toast id="toast-error" ref={toastErrRef} position="top-right" />
             <Toast id="toast-info" ref={toastInfoRef} position="center" />
         </>
     )
