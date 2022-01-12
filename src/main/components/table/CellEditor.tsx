@@ -219,7 +219,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
         (!props.readonly && props.tableEnabled !== false) ?
             (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
-                    <div ref={wrapperRef}>
+                    <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>
                     :
@@ -245,17 +245,11 @@ export const CellEditor: FC<CellEditor> = (props) => {
                         </div>
                         {showDropDownArrow() &&
                             <div style={{ marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
-                                <i
-                                    style={{
-                                        visibility: (props.selectedRow && props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1])) ?
-                                            "visible" : "hidden"
-                                    }}
-                                    className="pi pi-chevron-down cell-editor-arrow"
-                                />
+                                <i className="pi pi-chevron-down cell-editor-arrow" />
                             </div>}
                     </div>
                     :
-                    <div ref={wrapperRef}>
+                    <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>)
             : <div

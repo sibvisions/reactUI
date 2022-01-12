@@ -412,7 +412,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             className: concatClassnames(
                 getClassName(fieldType), 
                 columnMetaData?.nullable === false ? "required-field" : "",
-                isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+                isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
+                props.isCellEditor ? "open-cell-editor" : undefined
             ),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
             maxLength: length,

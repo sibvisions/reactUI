@@ -86,7 +86,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         return concatClassnames(
             "rc-editor-number",
             columnMetaData?.nullable === false ? "required-field" : "",
-            isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+            isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
+            props.isCellEditor ? "open-cell-editor" : undefined
         )
     }, [columnMetaData?.nullable]);
 

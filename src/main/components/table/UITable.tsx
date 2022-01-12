@@ -244,24 +244,12 @@ const UITable: FC<TableProps> = (baseProps) => {
         await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true), topbar);
     }, [props.dataBook, props.name, context.server])
 
-    const tableSelect = useCallback((multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
-        if (tableRef.current) {
-            if (multi) {
-                //@ts-ignore
-                return !virtualEnabled ? tableRef.current.el.querySelectorAll(noVirtualSelector) : tableRef.current.el.querySelectorAll(noVirtualSelector);
-            }
-            //@ts-ignore
-            return !virtualEnabled ? (tableRef.current.table ? tableRef.current.table.querySelector(noVirtualSelector) : undefined) : tableRef.current.el.querySelector(noVirtualSelector);
-        }
-    },[virtualEnabled]);
-
     /**
      * Returns the number of records visible based on row height.
      * @returns the number of records visible based on row height.
      */
     const getNumberOfRowsPerPage = () => {
-        //TODO: In the future with custom styles it's possible that the header or row height could have another height!
-        return Math.ceil((layoutStyle?.height as number - 41) / 44)
+        return Math.floor((layoutStyle?.height as number - 40) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
     }
 
     /**
@@ -272,17 +260,18 @@ const UITable: FC<TableProps> = (baseProps) => {
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
             if (tableRef.current) {
-                const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
                 //@ts-ignore
-                const container = tableRef.current.el.querySelector('.p-datatable-wrapper');
-                //@ts-ignore
-                const loadingTable = tableRef.current.el.querySelector('.p-datatable-loading-virtual-table')
+                const table = tableRef.current.el
+                const selectedElem = DomHandler.findSingle(table, 'tbody > tr.p-highlight td.p-highlight');
+                const container = DomHandler.findSingle(table, !virtualEnabled ? '.p-datatable-wrapper' : '.p-virtualscroller');
+                const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table')
 
                 if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
                     const moveDirections = isVisible(selectedElem, container, cell);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
+                        container.focus();
                     }
                     else if (selectedElem !== null) {
                         let sLeft:number = container.scrollLeft
@@ -321,7 +310,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     value: selectedRow.data[selectedRow.selectedColumn]
                 }
                 setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex!.toString() + "-" + newCell.cellIndex.toString()});
-                scrollToSelectedCell(newCell, lastSelectedRowIndex.current !== undefined ? lastSelectedRowIndex.current < selectedRow.index : false);
+                if (selectedRow && (lastSelectedRowIndex.current !== selectedRow.index || lastSelectedRowIndex.current === undefined)) {
+                    scrollToSelectedCell(newCell, lastSelectedRowIndex.current !== undefined ? lastSelectedRowIndex.current < selectedRow.index : false);
+                }    
                 lastSelectedRowIndex.current = selectedRow.index;
                 return newCell
             }
@@ -486,43 +477,52 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Adds the sort classnames to the headers for styling */
     useEffect(() => {
-        const allTableColumns = tableSelect(true, "th", ".p-datatable-scrollable-header-table th");
-        for (const col of allTableColumns) {
-            const sortIcon = col.querySelector('.p-sortable-column-icon');
-            col.classList.remove("sort-asc", "sort-des");
-            sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
-            const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
-            const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-            if (sortDef !== undefined) {
-                if (sortDef.mode === "Ascending") {
-                    col.classList.add("sort-asc");
-                    sortIcon.classList.add("pi-sort-amount-up-alt");
-                }
-                else if (sortDef.mode === "Descending") {
-                    col.classList.add("sort-des");
-                    sortIcon.classList.add("pi-sort-amount-down");
+        if (tableRef.current) {
+            const table = tableRef.current as any;
+            const allTableColumns = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+            for (const col of allTableColumns) {
+                const sortIcon = col.querySelector('.p-sortable-column-icon');
+                col.classList.remove("sort-asc", "sort-des");
+                sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
+                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+                if (sortDef !== undefined) {
+                    if (sortDef.mode === "Ascending") {
+                        col.classList.add("sort-asc");
+                        sortIcon.classList.add("pi-sort-amount-up-alt");
+                    }
+                    else if (sortDef.mode === "Descending") {
+                        col.classList.add("sort-des");
+                        sortIcon.classList.add("pi-sort-amount-down");
+                    }
                 }
             }
+            
         }
-    }, [sortDefinitions, tableSelect]);
+
+    }, [sortDefinitions]);
 
     /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
     useEffect(() => {
-        const selectedTds = tableSelect(true, 'tbody > tr td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr td.p-highlight');
-        if (selectedTds) {
-            for (const elem of selectedTds) {
-                elem.classList.remove("p-highlight");
+        if (tableRef.current) {
+            const table = (tableRef.current as any).el
+            const selectedTds = DomHandler.find(table, 'tbody > tr td.p-highlight');
+            if (selectedTds) {
+                for (const elem of selectedTds) {
+                    elem.classList.remove("p-highlight");
+                }
+            }
+    
+            const highlightedRow = DomHandler.findSingle(table, 'tbody > tr.p-highlight');
+            if (selectedRow && columnOrder) {
+                const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
+                if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
+                    highlightedRow.children[colIdx].classList.add("p-highlight");
+                }
             }
         }
 
-        const highlightedRow = tableSelect(false, 'tbody > tr.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight');
-        if (selectedRow && columnOrder) {
-            const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
-            if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
-                highlightedRow.children[colIdx].classList.add("p-highlight");
-            }
-        }
-    }, [virtualRows, selectedRow, columnOrder, tableSelect]);
+    }, [virtualRows, selectedRow, columnOrder]);
 
     /**
      * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
@@ -1074,7 +1074,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
-            tableSelect(true, "th .p-column-resizer", ".p-datatable-scrollable-header-table th .p-column-resizer")
+            //@ts-ignore
+            DomHandler.find(tableRef.current.el, "th .p-column-resizer")
             : undefined,
         'mousedown',
         (elem:any) => elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,

@@ -365,7 +365,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 className={concatClassnames(
                     "rc-editor-linked", 
                     columnMetaData?.nullable === false ? "required-field" : "",
-                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
+                    props.isCellEditor ? "open-cell-editor" : undefined
                 )}
                 panelClassName={concatClassnames(
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
