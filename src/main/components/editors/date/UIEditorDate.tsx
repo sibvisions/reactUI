@@ -287,7 +287,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     "rc-editor-text",
                     "rc-editor-date",
                     columnMetaData?.nullable === false ? "required-field" : "",
-                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : ""
+                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
+                    props.isCellEditor ? "open-cell-editor" : undefined
                 )}
                 style={{
                     '--background': btnBgd,

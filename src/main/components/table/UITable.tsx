@@ -1,5 +1,5 @@
 /** React imports */
-import React, { createContext, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import { Column } from "primereact/column";
@@ -9,10 +9,8 @@ import _ from "underscore";
 /** Hook imports */
 import { useDataProviderData, 
          useRowSelect, 
-         useOutsideClick, 
          useMultipleEventHandler, 
          useSortDefinitions, 
-         useEventHandler,
          useFetchMissingData,
          useMouseListener,
          useMetaData,
@@ -21,26 +19,19 @@ import { useDataProviderData,
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import { appContext } from "../../AppProvider";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
-import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
-import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
+import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
+import { DomHandler } from "primereact/utils";
+import { CellEditor } from "./CellEditor";
 
-
-export interface CellFormatting {
-    foreground?: string;
-    background?: string;
-    font?: string;
-    image?: string;
-}
 
 /** Interface for Table */
 export interface TableProps extends BaseComponent{
@@ -69,30 +60,6 @@ enum CellVisibility {
     NOT_VISIBLE = 0
 }
 
-/** Type for CellEditor */
-type CellEditor = {
-    pk: any,
-    compId: string,
-    name: string,
-    cellData: any,
-    dataProvider: string,
-    colName: string,
-    resource: string,
-    cellId: Function,
-    tableContainer?: any,
-    selectNext: Function,
-    selectPrevious: Function,
-    enterNavigationMode: number,
-    tabNavigationMode: number,
-    selectedRow: any,
-    className?: string,
-    readonly?: boolean,
-    tableEnabled?: boolean
-    cellFormatting?: CellFormatting,
-    startEditing?:boolean,
-    stopEditing:Function
-}
-
 /** Interface for selected cells */
 interface ISelectedCell {
     selectedCellId?:string
@@ -106,222 +73,69 @@ export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
 }
 
 /**
- * This component displays either just the value of the cell or an in-cell editor
- * @param props - props received by Table
+ * Returns the next sort mode
+ * @param mode - the current sort mode
+ * @returns the next sort mode
  */
-const CellEditor: FC<CellEditor> = (props) => {
-    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
-    
-    /** State if editing is currently possible */
-    const [edit, setEdit] = useState(false);
-
-    /** Reference for element wrapping the cell value/editor */
-    const wrapperRef = useRef(null);
-
-    /** Reference which contains the pressed key for input editors */
-    const passRef = useRef<string>("")
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** Context for the selected cell */
-    const cellContext = useContext(SelectedCellContext);
-
-    /** Metadata of the columns */
-    const columnMetaData = useMetaData(props.compId, props.dataProvider, props.colName)
-
-    /** State if the CellEditor is currently waiting for the selectedRow */
-    const [waiting, setWaiting] = useState<boolean>(false);
-
-    const showDropDownArrow = useCallback(() => {
-        if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-            || columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
-            return true;
-        }
-        return false;
-    }, [columnMetaData])
-
-    /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
-    useEffect(() => {
-        if (props.selectedRow) {
-            if (!edit) {
-                passRef.current = "";
-            }
-            const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
-            if (waiting && _.isEqual(pickedVals, props.pk)) {
-                setWaiting(false);
-            }
-        }
-    }, [props.selectedRow, edit])
-
-    /** Whenn the selected cell changes and the editor is editable close it */
-    useEffect(() => {
-        if (cellContext.selectedCellId !== props.cellId().selectedCellId) {
-            if (edit) {
-                setEdit(false);
-                props.stopEditing()
-            }
-        }
-    }, [cellContext.selectedCellId]);
-
-    useEffect(() => {
-        if (cellContext.selectedCellId === props.cellId().selectedCellId && props.startEditing) {
-            setEdit(true);
-        }
-    },[props.startEditing])
-
-    /**
-     * Callback for stopping the cell editing process, closes editor and based on keyboard input, selects the next or previous cell/row
-     * @param event - the KeyboardEvent
-     */
-    const stopCellEditing = useCallback((event?:KeyboardEvent) => {
-        setEdit(false);
-        props.stopEditing()
-        if (event) {
-            if (event.key === "Enter") {
-                if (event.shiftKey) {
-                    selectPrevious(enterNavigationMode);
-                }
-                else {
-                    selectNext(enterNavigationMode);
-                }
-            }
-            else if (event.key === "Tab") {
-                event.preventDefault();
-                if (event.shiftKey) {
-                    selectPrevious(tabNavigationMode);
-                }
-                else {
-                    selectNext(tabNavigationMode);
-                }
-            }
-        }
-        else {
-            selectNext(enterNavigationMode);
-        }
-        tableContainer.focus()
-    }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
-
-    /** Hook which detects if there was a click outside of the element (to close editor) */
-    useOutsideClick(wrapperRef, () => { setEdit(false); props.stopEditing() }, columnMetaData);
-
-    /**
-     * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
-     */
-    const handleCellKeyDown = useCallback((event: KeyboardEvent) => {
-        if (cellContext.selectedCellId === props.cellId().selectedCellId) {
-            switch (event.key) {
-                case "F2":
-                    setEdit(true);
-                    break;
-                default:
-                    if (event.key.length === 1) {
-                        passRef.current = event.key;
-                        setEdit(true);
-                    }
-            }
-        }
-    }, [cellContext.selectedCellId, setEdit])
-
-    /** Adds Keylistener to the tableContainer */
-    useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
-
-    let cellStyle:any = { };
-    const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
-    let cellIcon: IconProps | null = null;
-
-    if (props.cellFormatting) {
-        if(props.cellFormatting.background) {
-            cellStyle.backgroundColor = props.cellFormatting.background;
-            cellClassNames.push('cancel-padding');
-        }
-        if(props.cellFormatting.foreground) {
-            cellStyle.color = props.cellFormatting.foreground;
-        }
-        if(props.cellFormatting.font) {
-            const font = getFont(props.cellFormatting.font);
-            cellStyle = {
-                ...cellStyle,
-                fontFamily: font ? font.fontFamily : undefined,
-                fontWeight: font ? font.fontWeight : undefined,
-                fontStyle: font ? font.fontStyle : undefined,
-                fontSize: font ? font.fontSize : undefined
-            }
-        }
-        if(props.cellFormatting.image) {
-            cellIcon = parseIconData(props.cellFormatting.foreground, props.cellFormatting.image);
-        }
+function getNextSort(mode?: "Ascending" | "Descending" | "None") {
+    if (mode === "Ascending") {
+        return "Descending";
     }
-
-    const icon = useMemo(() => {
-        if (cellIcon?.icon) {
-            if(cellIcon.icon.includes('fa fa-'))
-                return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
-            else {
-                return <img
-                    id={props.name}
-                    alt="icon"
-                    src={context.server.RESOURCE_URL + cellIcon.icon}
-                    style={{width: `${cellIcon.size?.width}px`, height: `${cellIcon.size?.height}px` }}
-                />
-            }    
-        } else {
-            return null
-        }
-    }, [cellIcon?.icon, context.server.RESOURCE_URL]);
-
-    /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
-    return (
-        (!props.readonly && props.tableEnabled !== false) ?
-            (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-                ((edit && !waiting) ?
-                    <div ref={wrapperRef}>
-                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
-                    </div>
-                    :
-                    <div
-                        style={cellStyle}
-                        className={cellClassNames.join(' ')}
-                        onClick={() => {
-                            if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
-                                setWaiting(true);
-                                setEdit(true);
-                            }
-                        }}>
-                        {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
-                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
-                    </div>
-                ) : (!edit ?
-                    <div
-                        style={cellStyle}
-                        className={cellClassNames.join(' ')}
-                        onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
-                        <div className="cell-data-content">
-                            {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
-                        </div>
-                        {showDropDownArrow() &&
-                            <div style={{ marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
-                                <i
-                                    style={{
-                                        visibility: (props.selectedRow && props.selectedRow.index === parseInt(props.cellId().selectedCellId.split('-')[1])) ?
-                                            "visible" : "hidden"
-                                    }}
-                                    className="pi pi-chevron-down cell-editor-arrow"
-                                />
-                            </div>}
-                    </div>
-                    :
-                    <div ref={wrapperRef}>
-                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
-                    </div>)
-            : <div
-                style={cellStyle}
-                className={cellClassNames.join(' ')}>
-                {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
-            </div>
-    )
+    else if (mode === "Descending") {
+        return "None";
+    }
+    else {
+        return "Ascending";
+    }
 }
+
+/**
+ * Helper function to see if the next element in a container is fully or partly visible
+ * @param ele - the element which needs to be checked
+ * @param container - the container of the element
+ * @param cell  - the current cell
+ * @returns if the element is fully or partly visible
+ */
+function isVisible(ele:HTMLElement, container:HTMLElement, cell:any) {
+    if (ele) {
+        const eleLeft = ele.offsetLeft;
+        const eleRight = eleLeft + ele.clientWidth;
+    
+        const containerLeft = container.scrollLeft;
+        const containerRight = containerLeft + container.clientWidth;
+
+        const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+        const eleBottom = eleTop + ele.clientHeight;
+    
+        const containerTop = container.scrollTop;
+        const containerBottom = containerTop + container.clientHeight;
+
+        let visLeft:CellVisibility = CellVisibility.NOT_VISIBLE;
+        let visTop:CellVisibility = CellVisibility.NOT_VISIBLE;
+
+        if (eleLeft >= containerLeft && eleRight <= containerRight) {
+            visLeft = CellVisibility.FULL_VISIBLE;
+        }
+        if ((eleLeft < containerLeft && containerLeft < eleRight) || (eleLeft < containerRight && containerRight < eleRight)) {
+            visLeft = CellVisibility.PART_VISIBLE;
+        }
+
+        if (eleTop >= containerTop && eleBottom <= containerBottom) {
+            visTop = CellVisibility.FULL_VISIBLE;
+        }
+        if ((eleTop < containerTop && containerTop < eleBottom) ||(eleTop < containerBottom && containerBottom < eleBottom)) {
+            visTop = CellVisibility.PART_VISIBLE;
+        }
+    
+        // The element is fully visible in the container
+        return {visLeft: visLeft, visTop: visTop}
+    }
+    else {
+        return {visLeft: CellVisibility.NOT_VISIBLE, visTop: CellVisibility.NOT_VISIBLE}
+    }
+};
+
+
 
 /**
  * This component displays a DataTable
@@ -332,7 +146,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const wrapRef = useRef<HTMLDivElement>(null);
 
     /** Reference for the Table */
-    const tableRef = useRef(null);
+    const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<TableProps>(baseProps);
@@ -349,16 +163,23 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The amount of virtual rows loaded */
     const rows = 40;
 
-    /** The virtual rows filled with data */
-    const [virtualRows, setVirtualRows] = useState(providerData.slice(0, rows));
-
-    /** The current firstRow displayed in the table */
-    const firstRowIndex = useRef(0);
-
     /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows * 2
     }, [providerData.length]);
+
+    /** The virtual rows filled with data */
+    const [virtualRows, setVirtualRows] = useState<any[]>((() => { 
+        const out = Array.from({ length: providerData.length }); 
+        out.splice(0, rows, ...providerData.slice(0, rows + 1)); 
+        return out;
+    })());
+
+    /** the list row height */
+    const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+
+    /** The current firstRow displayed in the table */
+    const firstRowIndex = useRef(0);
 
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
@@ -376,6 +197,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined);
 
     const focusIsClicked = useRef<boolean>(false);
+
+    const [listLoading, setListLoading] = useState(false);
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {
@@ -405,7 +228,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Hook for MouseListener */
     //@ts-ignore
-    useMouseListener(props.name, tableRef.current ? (virtualEnabled ? tableRef.current.container : tableRef.current.table) : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, tableRef.current ? (virtualEnabled ? tableRef.current.el : tableRef.current.table) : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
@@ -421,71 +244,13 @@ const UITable: FC<TableProps> = (baseProps) => {
         await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true), topbar);
     }, [props.dataBook, props.name, context.server])
 
-    const tableSelect = useCallback((multi:boolean, noVirtualSelector?:string, virtualSelector?:string) => {
-        if (tableRef.current) {
-            if (multi) {
-                //@ts-ignore
-                return !virtualEnabled ? tableRef.current.container.querySelectorAll(noVirtualSelector) : tableRef.current.container.querySelectorAll(virtualSelector);
-            }
-            //@ts-ignore
-            return !virtualEnabled ? (tableRef.current.table ? tableRef.current.table.querySelector(noVirtualSelector) : undefined) : tableRef.current.container.querySelector(virtualSelector);
-        }
-    },[virtualEnabled]);
-
     /**
      * Returns the number of records visible based on row height.
      * @returns the number of records visible based on row height.
      */
     const getNumberOfRowsPerPage = () => {
-        //TODO: In the future with custom styles it's possible that the header or row height could have another height!
-        return Math.ceil((layoutStyle?.height as number - 41) / 44)
+        return Math.floor((layoutStyle?.height as number - 40) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
     }
-
-    /**
-     * Helper function to see if the next element in a container is fully or partly visible
-     * @param ele - the element which needs to be checked
-     * @param container - the container of the element
-     * @param cell  - the current cell
-     * @returns if the element is fully or partly visible
-     */
-    const isVisible = (ele:HTMLElement, container:HTMLElement, cell:any) => {
-        if (ele) {
-            const eleLeft = ele.offsetLeft;
-            const eleRight = eleLeft + ele.clientWidth;
-        
-            const containerLeft = container.scrollLeft;
-            const containerRight = containerLeft + container.clientWidth;
-    
-            const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
-            const eleBottom = eleTop + ele.clientHeight;
-        
-            const containerTop = container.scrollTop;
-            const containerBottom = containerTop + container.clientHeight;
-
-            let visLeft:CellVisibility = CellVisibility.NOT_VISIBLE;
-            let visTop:CellVisibility = CellVisibility.NOT_VISIBLE;
-
-            if (eleLeft >= containerLeft && eleRight <= containerRight) {
-                visLeft = CellVisibility.FULL_VISIBLE;
-            }
-            if ((eleLeft < containerLeft && containerLeft < eleRight) || (eleLeft < containerRight && containerRight < eleRight)) {
-                visLeft = CellVisibility.PART_VISIBLE;
-            }
-
-            if (eleTop >= containerTop && eleBottom <= containerBottom) {
-                visTop = CellVisibility.FULL_VISIBLE;
-            }
-            if ((eleTop < containerTop && containerTop < eleBottom) ||(eleTop < containerBottom && containerBottom < eleBottom)) {
-                visTop = CellVisibility.PART_VISIBLE;
-            }
-        
-            // The element is fully visible in the container
-            return {visLeft: visLeft, visTop: visTop}
-        }
-        else {
-            return {visLeft: CellVisibility.NOT_VISIBLE, visTop: CellVisibility.NOT_VISIBLE}
-        }
-    };
 
     /**
      * Scrolls the table to the selected cell
@@ -495,17 +260,18 @@ const UITable: FC<TableProps> = (baseProps) => {
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
             if (tableRef.current) {
-                const selectedElem = tableSelect(false, 'tbody > tr.p-highlight td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight td.p-highlight');
                 //@ts-ignore
-                const container = tableRef.current.container.querySelector(!virtualEnabled ? '.p-datatable-wrapper' : '.p-datatable-scrollable-body');
-                //@ts-ignore
-                const loadingTable = tableRef.current.container.querySelector('.p-datatable-loading-virtual-table')
-                
+                const table = tableRef.current.el
+                const selectedElem = DomHandler.findSingle(table, 'tbody > tr.p-highlight td.p-highlight');
+                const container = DomHandler.findSingle(table, !virtualEnabled ? '.p-datatable-wrapper' : '.p-virtualscroller');
+                const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table')
+
                 if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
                     const moveDirections = isVisible(selectedElem, container, cell);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
+                        container.focus();
                     }
                     else if (selectedElem !== null) {
                         let sLeft:number = container.scrollLeft
@@ -544,7 +310,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                     value: selectedRow.data[selectedRow.selectedColumn]
                 }
                 setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex!.toString() + "-" + newCell.cellIndex.toString()});
-                scrollToSelectedCell(newCell, lastSelectedRowIndex.current !== undefined ? lastSelectedRowIndex.current < selectedRow.index : false);
+                if (selectedRow && (lastSelectedRowIndex.current !== selectedRow.index || lastSelectedRowIndex.current === undefined)) {
+                    scrollToSelectedCell(newCell, lastSelectedRowIndex.current !== undefined ? lastSelectedRowIndex.current < selectedRow.index : false);
+                }    
                 lastSelectedRowIndex.current = selectedRow.index;
                 return newCell
             }
@@ -588,23 +356,6 @@ const UITable: FC<TableProps> = (baseProps) => {
         return ""
     }
 
-    /**
-     * Returns the next sort mode
-     * @param mode - the current sort mode
-     * @returns the next sort mode
-     */
-    const getNextSort = (mode?: "Ascending" | "Descending" | "None") => {
-        if (mode === "Ascending") {
-            return "Descending";
-        }
-        else if (mode === "Descending") {
-            return "None";
-        }
-        else {
-            return "Ascending";
-        }
-    }
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if(wrapRef.current){
@@ -622,16 +373,18 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
 
     /** Determine the estimated width of the table */
-    useLayoutEffect(() => {        
+    useLayoutEffect(() => {
         if (tableRef.current) {
-            let cellDataWidthList:Array<{widthPreSet:boolean, width:number}> = [];
+            let cellDataWidthList: Array<{ widthPreSet: boolean, width: number }> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows: any, index: number) => {
-                const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *");
+                const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *:not(.p-column-title)");
+                //console.log(cellDatas, cellDataWidthList)
                 for (let j = 0; j < cellDatas.length; j++) {
                     if (!cellDataWidthList[j].widthPreSet) {
                         let tempWidth: number;
                         if (cellDatas[j] !== undefined) {
+                            //console.log(cellDatas[j].parentElement)
                             /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
@@ -642,23 +395,21 @@ const UITable: FC<TableProps> = (baseProps) => {
                             else {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width;
                             }
+
                             /** If the measured width is greater than the current widest width for the column, replace it */
                             if (tempWidth > cellDataWidthList[j].width) {
                                 cellDataWidthList[j].width = tempWidth;
-                            } 
+                            }
                         }
                     }
                 }
             }
-
-            /** If there is no lazy loading */
-            if (!virtualEnabled) {
+            setTimeout(() => {
                 //@ts-ignore
-                if (tableRef.current.table) {
-                    //@ts-ignore
-                    const theader = tableRef.current.table.querySelectorAll('th');
-                    //@ts-ignore
-                    const trows = tableRef.current.table.querySelectorAll('th, tbody > tr');
+                const currentTable:HTMLTableElement = tableRef?.current?.table;
+                if (currentTable) {
+                    const theader = currentTable.querySelectorAll('th');
+                    const trows = currentTable.querySelectorAll('tbody > tr');
 
                     /** First set width of headers for columns then rows */
                     for (let i = 0; i < theader.length; i++) {
@@ -670,32 +421,21 @@ const UITable: FC<TableProps> = (baseProps) => {
                             newCellWidth.widthPreSet = true
                         }
                         else {
-                            newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
+                            const title = theader[i].querySelector('.p-column-title');
+                            newCellWidth.width = title ? title.getBoundingClientRect().width + 34 : 0;
                         }
                         cellDataWidthList.push(newCellWidth);
                     }
-
-                    (tableRef.current as any).container.classList.add("read-size");
+                    (tableRef.current as any).el.classList.add("read-size");
                     for (let i = 0; i < Math.min(trows.length, 100); i++) {
                         goThroughCellData(trows, i);
                     }
-                    (tableRef.current as any).container.classList.remove("read-size");
+                    (tableRef.current as any).el.classList.remove("read-size");
 
                     let tempWidth: number = 0;
                     cellDataWidthList.forEach(cellDataWidth => {
                         tempWidth += cellDataWidth.width
                     });
-
-                    /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                    for (let i = 0; i < theader.length; i++) {
-                        let w = cellDataWidthList[i].width as any;
-                        if (props.autoResize === false) {
-                            w = `${w}px`;
-                        } else {
-                            w = `${100 * w / tempWidth}%`;
-                        }
-                        theader[i].style.setProperty('width', w);
-                    }
 
                     /** set EstTableWidth for size reporting */
                     setEstTableWidth(tempWidth);
@@ -703,66 +443,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                 else {
                     setEstTableWidth(0);
                 }
-            }
-            /** If there is lazyloading do the same thing as above but set width not only for header but for column groups and header */
-            else {
-                //@ts-ignore
-                const theader = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-header-table th');
-                //@ts-ignore
-                const tColGroup = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
-                if (tColGroup.length) {
-                    const tCols1 = tColGroup[0].querySelectorAll('col');
-                    const tCols2 = tColGroup[1].querySelectorAll('col');
-                    for (let i = 0; i < theader.length; i++) {
-                        const newCellWidth = { widthPreSet: false, width: 0 }
-                        const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                        const columnMetaData = getColMetaData(colName, metaData)
-                        if (columnMetaData?.width) {
-                            newCellWidth.width = columnMetaData.width;
-                            newCellWidth.widthPreSet = true
-                        }
-                        else {
-                            newCellWidth.width = theader[i].querySelector('.p-column-title').getBoundingClientRect().width + 34;
-                        }
-                        cellDataWidthList.push(newCellWidth);
-                    }
-                    //@ts-ignore
-                    const trows = tableRef.current.container.querySelectorAll('.p-datatable-scrollable-body-table > .p-datatable-tbody > tr');
-                    (tableRef.current as any).container.classList.add("read-size");
-                    for (let i = 0; i < Math.min(trows.length, 100); i++) {
-                        goThroughCellData(trows, i)
-                    }
-                    (tableRef.current as any).container.classList.remove("read-size");
-
-                    let tempWidth: number = 0;
-                    cellDataWidthList.forEach(cellDataWidth => {
-                        tempWidth += cellDataWidth.width
-                    });
-
-                    for (let i = 0; i < theader.length; i++) {
-                        let w = cellDataWidthList[i].width as any;
-                        if (props.autoResize === false) {
-                            w = `${w}px`;
-                        } else {
-                            w = `${100 * w / tempWidth}%`;
-                        }
-                        theader[i].style.setProperty('width', w);
-                        tCols1[i].style.setProperty('width', w);
-                        tCols2[i].style.setProperty('width', w);
-                    }
-                    setEstTableWidth(tempWidth)
-                }
-                else {
-                    setEstTableWidth(0);
-                }
-            }
+            }, 0);
         }
     }, []);
 
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore
-            const colResizers = tableRef.current.container.getElementsByClassName("p-column-resizer");
+            const colResizers = tableRef.current.el.getElementsByClassName("p-column-resizer");
             for (const colResizer of colResizers) {
                 if (!colResizer.parentElement.classList.contains("cell-not-resizable") && colResizer.style.display === "none") {
                     colResizer.style.setProperty("display", "block");
@@ -779,47 +467,62 @@ const UITable: FC<TableProps> = (baseProps) => {
     },[metaData])
 
     /** When providerData changes set state of virtual rows*/
-    useLayoutEffect(() => setVirtualRows(providerData.slice(firstRowIndex.current, firstRowIndex.current+(rows*2))), [providerData]);
+    useLayoutEffect(() => {
+        setVirtualRows((() => { 
+            const out = Array.from({ length: providerData.length }); 
+            out.splice(0, rows, ...providerData.slice(0, rows + 1)); 
+            return out;
+        })());
+    }, [providerData]);
 
     /** Adds the sort classnames to the headers for styling */
     useEffect(() => {
-        const allTableColumns = tableSelect(true, "th", ".p-datatable-scrollable-header-table th");
-        for (const col of allTableColumns) {
-            const sortIcon = col.querySelector('.p-sortable-column-icon');
-            col.classList.remove("sort-asc", "sort-des");
-            sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
-            const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
-            const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-            if (sortDef !== undefined) {
-                if (sortDef.mode === "Ascending") {
-                    col.classList.add("sort-asc");
-                    sortIcon.classList.add("pi-sort-amount-up-alt");
-                }
-                else if (sortDef.mode === "Descending") {
-                    col.classList.add("sort-des");
-                    sortIcon.classList.add("pi-sort-amount-down");
+        if (tableRef.current) {
+            const table = tableRef.current as any;
+            const allTableColumns = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+            for (const col of allTableColumns) {
+                const sortIcon = col.querySelector('.p-sortable-column-icon');
+                col.classList.remove("sort-asc", "sort-des");
+                sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
+                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+                if (sortDef !== undefined) {
+                    if (sortDef.mode === "Ascending") {
+                        col.classList.add("sort-asc");
+                        sortIcon.classList.add("pi-sort-amount-up-alt");
+                    }
+                    else if (sortDef.mode === "Descending") {
+                        col.classList.add("sort-des");
+                        sortIcon.classList.add("pi-sort-amount-down");
+                    }
                 }
             }
+            
         }
-    }, [sortDefinitions, tableSelect]);
+
+    }, [sortDefinitions]);
 
     /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
     useEffect(() => {
-            const selectedTds = tableSelect(true, 'tbody > tr td.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr td.p-highlight');
+        if (tableRef.current) {
+            const table = (tableRef.current as any).el
+            const selectedTds = DomHandler.find(table, 'tbody > tr td.p-highlight');
             if (selectedTds) {
                 for (const elem of selectedTds) {
                     elem.classList.remove("p-highlight");
                 }
             }
-
-            const highlightedRow = tableSelect(false, 'tbody > tr.p-highlight', '.p-datatable-scrollable-body-table > .p-datatable-tbody > tr.p-highlight');
+    
+            const highlightedRow = DomHandler.findSingle(table, 'tbody > tr.p-highlight');
             if (selectedRow && columnOrder) {
                 const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
                 if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
                     highlightedRow.children[colIdx].classList.add("p-highlight");
                 }
             }
-    }, [virtualRows, selectedRow, columnOrder, tableSelect]);
+        }
+
+    }, [virtualRows, selectedRow, columnOrder]);
 
     /**
      * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
@@ -911,7 +614,7 @@ const UITable: FC<TableProps> = (baseProps) => {
      * Selects the next cell, if there is no cell anymore select the next row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the next component should be focused if there are no more cells/rows
      */
-    const selectNextCellAndRow =  useCallback(async (delegateFocus:boolean) => {
+    const selectNextCellAndRow = useCallback(async (delegateFocus:boolean) => {
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             const nextSelectedRowIndex = selectedRow.index + 1;
@@ -1080,6 +783,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
+                    if (!rowData) { return <div></div> }
                     if (columnMetaData?.cellEditor.directCellEditor) {
                         return createEditor({
                             id: "",
@@ -1133,20 +837,23 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 }
                 style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
-                className={concatClassnames(
+                bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
                     columnMetaData?.readonly ? "cell-readonly" : "",
                     columnMetaData?.nullable === false ? "cell-required" : ""
                 )}
-                loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
+                //loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
                 reorderable={columnMetaData?.movable}
                 sortable
             />
         })
-    }, [props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
-    context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
-        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, props.startEditing])
+    }, [
+        props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
+        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
+        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, 
+        props.startEditing
+    ])
 
     /** When a row is selected send a selectRow request to the server */
     const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
@@ -1168,19 +875,30 @@ const UITable: FC<TableProps> = (baseProps) => {
      * if yes, fetch data, no set virtual rows to the next bunch of datarows
      * @param event - the scroll event
      */
-    const handleVirtualScroll = (e: {first: number, rows: number}) => {
-        const slicedProviderData = providerData.slice(e.first, e.first+e.rows);
-        firstRowIndex.current = e.first;
-        if((providerData.length < e.first+(e.rows*2)) && !context.contentStore.getDataBook(compId, props.dataBook)?.allFetched) {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = props.dataBook;
-            fetchReq.fromRow = providerData.length;
-            fetchReq.rowCount = e.rows*4;
-            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar);
-        } else {
-            setVirtualRows(slicedProviderData);
+    const handleLazyLoad = useCallback((e: VirtualScrollerLazyParams) => {
+        let {first, last} = e;
+        if(typeof first === "number" && typeof last === "number") {
+            last = Math.max(first, last);
+            const length = last - first + 1;
+            setListLoading(true);
+            firstRowIndex.current = first;
+            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(compId, props.dataBook)?.allFetched) {
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = props.dataBook;
+                fetchReq.fromRow = providerData.length;
+                fetchReq.rowCount = length * 4;
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar).then(() => {
+                    setListLoading(false);
+                });
+            } else {
+                const slicedProviderData = providerData.slice(first, last + 1);
+                const data = [...virtualRows];
+                data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                setVirtualRows(data);
+                setListLoading(false);
+            }
         }
-    }
+    }, [virtualRows]);
 
     /**
      *  When column-resizing stops, adjust the width of resize
@@ -1188,83 +906,83 @@ const UITable: FC<TableProps> = (baseProps) => {
      */
     const handleColResizeEnd = (e:any) => {
         if (tableRef.current) {
-            //@ts-ignore
-            const container = tableRef.current.container;
-            if (virtualEnabled) {
-                const theader = container.querySelectorAll('.p-datatable-scrollable-header-table th');
-                const tColGroupHeader = container.querySelector('.p-datatable-scrollable-header-table > colgroup');
-                const tColGroup = container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
-                const tCols1 = tColGroup[0].querySelectorAll('col');
-                const tCols2 = tColGroup[1].querySelectorAll('col');
-                const width = tColGroup[0].offsetWidth;
-                for (let i = 0; i < tCols1.length; i++) {
-                    let w = tCols1[i].offsetWidth;
-                    if (props.autoResize === false) {
-                        w = `${w}px`;
-                    } else {
-                        w = `${100 * w / width}%`;
-                    }
-                    theader[i].style.setProperty('width', w)
-                    tCols1[i].style.setProperty('width', w)
-                    tCols2[i].style.setProperty('width', w)
-                    tColGroupHeader.children[i].style.setProperty('width', w)
-                    theader[i].style.removeProperty('pointer-events')
-                }
-                if (props.autoResize === false) {
-                container.querySelector('.p-datatable-scrollable-header').style.setProperty("width", `${container.offsetWidth - 2}px`);
-                container.querySelector('.p-datatable-scrollable-body').style.setProperty("width", `${container.offsetWidth - 2}px`);
-                }
-            }
-            else {
-                const theader = container.querySelectorAll('th');
-                //@ts-ignore
-                const width = tableRef.current.table.offsetWidth
-                for (let i = 0; i < theader.length; i++) {
-                    let w = theader[i].offsetWidth;
-                    if (props.autoResize === false) {
-                        w = `${w}px`;
-                    } else {
-                        w = `${100 * w / width}%`;
-                    }
+            const table = tableRef.current as any;
+            const container = table.el;
 
-                    theader[i].style.setProperty('width', w);
-                    theader[i].style.removeProperty('pointer-events')
+            container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
+
+            if (props.autoResize !== false) {
+                //reverse prime fit sizing
+                let newColumnWidth = e.element.offsetWidth - e.delta;
+                let nextColumn = e.element.nextElementSibling;
+                let nextColumnWidth = nextColumn.offsetWidth + e.delta;
+
+                if (newColumnWidth > 15 && nextColumnWidth > 15) {
+                    table.resizeTableCells(newColumnWidth, nextColumnWidth);
                 }
+                
+                newColumnWidth = e.element.offsetWidth + e.delta;
+
+                //custom sizing based on primes original column sizing code
+                let widths:number[] = [];
+                let colIndex = DomHandler.index(table.resizeColumnElement);
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+        
+                table.destroyStyleElement();
+                table.createStyleElement();
+        
+                let innerHTML = '';
+                const dp = Math.round(e.delta / (widths.length - colIndex - 1));
+                const dpr = e.delta - dp * (widths.length - colIndex - 2);
+                widths.forEach((width, index) => {
+                    let colWidth = index === colIndex 
+                        ? newColumnWidth 
+                        : (index > colIndex) 
+                            ? width - (index === widths.length - 1 ? dpr : dp) 
+                            : width;
+
+                    let style = table.props.scrollable 
+                        ? `flex: 0 0 ${colWidth}px !important` 
+                        : `width: ${colWidth}px !important`;
+                    
+                    innerHTML += `
+                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                            ${style}
+                        }
+                    `
+                });
+                table.styleElement.innerHTML = innerHTML;
             }
         }
     }
 
     /**
-     * When columns are reordered, set the column order.
+     * When columns are reordered, set the column order and fix the table css
      * @param e - the event
      */
     const handleColReorder = (e:any) => {
-        setColumnOrder(e.columns.map((column:any) => column.props.field));
-    }
-
-    useLayoutEffect(() => {
-        if (tableRef.current) {
-            //@ts-ignore
-            const container = tableRef.current.container;
-            if (virtualEnabled) {
-                //@ts-ignore
-                const theader = container.querySelectorAll('.p-datatable-scrollable-header-table th');
-                //@ts-ignore
-                const tColGroupHeader = container.querySelector('.p-datatable-scrollable-header-table > colgroup');
-                //@ts-ignore
-                const tColGroup = container.querySelectorAll('.p-datatable-scrollable-body-table > colgroup');
-                const tCols1 = tColGroup[0].querySelectorAll('col');
-                const tCols2 = tColGroup[1].querySelectorAll('col');
-                for (let i = 0; i < tCols1.length; i++) {
-                    const w = theader[i].style.getPropertyValue('width');
-                    tCols1[i].style.setProperty('width', w)
-                    tCols2[i].style.setProperty('width', w)
-                    tColGroupHeader.children[i].style.setProperty('width', w)
-                }
+        const { dragIndex, dropIndex } = e;
+        
+        //update primes' table css according to reordering
+        let colWidthCSS = (tableRef?.current as any).styleElement?.innerHTML;
+        if(colWidthCSS) {
+            const fromRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dragIndex + 1}\\) {)([^}]+)(})`);
+            const toRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dropIndex + 1}\\) {)([^}]+)(})`);
+            const from = colWidthCSS.match(fromRegex);
+            const to = colWidthCSS.match(toRegex);
+            if (from && to) {
+                colWidthCSS = colWidthCSS.replace(fromRegex, from[1] +   to[2] + from[3]);
+                colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
+                (tableRef?.current as any).styleElement.innerHTML = colWidthCSS;
             }
         }
-    }, [columnOrder])
 
+        setColumnOrder(e.columns.map((column:any) => column.props.field));
+    }
+    
     /**
      * Keylistener for the table
      * @param event - the keyboardevent
@@ -1356,18 +1074,53 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
-            tableSelect(true, "th .p-column-resizer", ".p-datatable-scrollable-header-table th .p-column-resizer")
+            //@ts-ignore
+            DomHandler.find(tableRef.current.el, "th .p-column-resizer")
             : undefined,
         'mousedown',
         (elem:any) => elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,
         true
     )
 
-    //to subtract header Height
-    //TODO: In the future with custom styles it's possible that the header could have another height!
-    const heightNoHeaders = (layoutStyle?.height as number - 41).toString() + "px" || undefined;
-
     const focused = useRef<boolean>(false);
+
+    useEffect(() => {
+        //this will force the table to refresh its internal visible item count
+        setItemSize(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8 + Math.random() / 1E10);
+
+        if (tableRef.current) {
+            const table = tableRef.current as any;
+            //resize columns
+            if(props.autoResize !== false) {
+                let widths:number[] = [];
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+                const totalWidth = widths.reduce((agg, w) => agg + w, 0);
+                const tableWidth = table.table.offsetWidth;
+
+                table.destroyStyleElement();
+                table.createStyleElement();
+
+                let innerHTML = '';
+                widths.forEach((width, index) => {
+                    let colWidth = (width / totalWidth) * tableWidth;
+
+                    let style = table.props.scrollable 
+                        ? `flex: 0 0 ${colWidth}px !important` 
+                        : `width: ${colWidth}px !important`;
+                    
+                    innerHTML += `
+                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                            ${style}
+                        }
+                    `
+                });
+                table.styleElement.innerHTML = innerHTML;              
+            }
+        }
+    }, [layoutStyle?.width])
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
@@ -1431,18 +1184,20 @@ const UITable: FC<TableProps> = (baseProps) => {
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
-                    scrollHeight={heightNoHeaders}
+                    scrollHeight={layoutStyle?.height ? `${layoutStyle?.height}px` : undefined}
                     scrollable={virtualEnabled}
-                    lazy={virtualEnabled}
-                    virtualScroll={virtualEnabled}
+                    virtualScrollerOptions={ virtualEnabled ? { 
+                        itemSize, 
+                        lazy: true,
+                        onLazyLoad: handleLazyLoad,
+                        loading: listLoading,
+                    } : undefined}
                     rows={rows}
                     totalRecords={providerData.length}
-                    virtualRowHeight={parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8}
                     resizableColumns
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns
                     onSelectionChange={handleRowSelection}
-                    onVirtualScroll={handleVirtualScroll}
                     onColumnResizeEnd={handleColResizeEnd}
                     onColReorder={handleColReorder}
                     onSort={(event) => handleSort(event.sortField)}
@@ -1451,7 +1206,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         if (selectedRow && selectedRow.data === data) {
                             cn["p-highlight"] = true;
                         }
-                        if (data.recordStatus === "D") {
+                        if (data?.recordStatus === "D") {
                             cn["row-deleted"] = true;
                         }
                         return cn

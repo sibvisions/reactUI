@@ -9,7 +9,7 @@
         }
 
         table {
-            margin-right: 100%;
+            //margin-right: 100%;
         }
     }
     &.read-size {
@@ -46,11 +46,23 @@
             &:focus {
                 outline: none;
             }
+
             &.p-highlight {
                 .cancel-padding {
                     box-shadow: inset 0 0 0 1000px rgba(#1b87e3 , .4);
                 }
+
+                .cell-editor-arrow {
+                    visibility: visible;
+                }
             }
+
+            &:not(.p-highlight) {
+                .cell-editor-arrow {
+                    visibility: hidden;
+                }
+            }
+
             ::-moz-focus-inner {
                 border: 0;
             }
@@ -84,11 +96,8 @@
 
                 &.ChoiceCellEditor, &.CheckBoxCellEditor {
                     text-align: center;
-                    >.cell-data {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }
+                    justify-content: center;
+                    align-items: center;
                 }
                 &.NumberCellEditor {
                     text-align: right;
@@ -111,6 +120,7 @@
                 }
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
                     &>.cell-data {
+                        width: 100%;
                         display: flex;
                         align-items: center;
                         &:not(.html-cell) .cell-data-content {
@@ -142,14 +152,14 @@
     }
 }
 
-.p-datatable-wrapper, .p-datatable-scrollable-wrapper {
+/*.p-datatable-wrapper, .p-datatable-scrollable-wrapper {
     height: 100%;
     max-width: 100%;
-}
+}*/
 
-.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
+/*.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
     height: 100%
-}
+}*/
 
 .loading-text {
     display: block;
