@@ -12,12 +12,16 @@
     align-items: var(--btnAlign);
     padding: var(--btnPadding, 0.5rem 1rem);
 
-    &:not(.login-button):not(.lost-password-button) .p-button-icon-left {
-        margin-right: 0;
-    }
-    .p-button-icon-right {
-        margin-left: 0;
-    }
+    &:not(.login-button):not(.lost-password-button) {
+        .p-button-icon-left {
+            margin-right: 0;
+        }
+
+        .p-button-icon-right {
+            margin-left: 0;
+        }
+    } 
+
 
     &.mouse-border {
         background: transparent;
@@ -97,23 +101,27 @@
     }
 
     @at-root #{selector-unify(&, "span")} {
-        .gap-top:not(.p-button-icon-only) & {
+        .gap-top:not(.p-button-icon-only):not(.login-button):not(.lost-password-button) & {
             margin-top: var(--iconTextGap);
         }
-        .gap-left:not(.p-button-icon-only) & {
+
+        .gap-left:not(.p-button-icon-only):not(.login-button):not(.lost-password-button) & {
             margin-left: var(--iconTextGap);
         }
-        .gap-right:not(.p-button-icon-only) & {
+
+        .gap-right:not(.p-button-icon-only):not(.login-button):not(.lost-password-button) & {
             margin-right: var(--iconTextGap);
         }
-        .gap-bottom:not(.p-button-icon-only) & {
+
+        .gap-bottom:not(.p-button-icon-only):not(.login-button):not(.lost-password-button) & {
             margin-bottom: var(--iconTextGap);
         }
-        .icon-center-left & {
-            margin-left: var(--iconCenterGap)
+
+        .icon-center-left:not(.p-button-icon-only):not(.no-center-gap):not(.login-button):not(.lost-password-button) & {
+            margin-left: var(--iconCenterGap);
         }
-        .icon-center-right & {
-            margin-right: var(--iconCenterGap)
+        .icon-center-right:not(.p-button-icon-only):not(.no-center-gap):not(.login-button):not(.lost-password-button) & {
+            margin-right: var(--iconCenterGap);
         }
     }
 }

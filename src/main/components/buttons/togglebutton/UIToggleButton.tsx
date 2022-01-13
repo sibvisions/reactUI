@@ -73,7 +73,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${btnStyle.iconGapPos}`,
-                    btnStyle.iconDirection
+                    btnStyle.iconDirection,
+                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : ""
                 )}
                 style={{
                     ...btnStyle.style,

@@ -976,7 +976,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             if (from && to) {
                 colWidthCSS = colWidthCSS.replace(fromRegex, from[1] +   to[2] + from[3]);
                 colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
-                (tableRef?.current as any).styleElement.innerHTML = colWidthCSS;
+                (tableRef.current as any).styleElement.innerHTML = colWidthCSS;
             }
         }
 

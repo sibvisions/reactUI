@@ -1,4 +1,4 @@
-import { CSSProperties, useContext, useEffect, useMemo, useState } from "react";
+import { CSSProperties, useContext, useMemo } from "react";
 import tinycolor from "tinycolor2";
 import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
@@ -46,6 +46,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
             if (!btnBackground) {
                 btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--screen-background');
             }
+            
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
             }
@@ -60,11 +61,11 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
             }
 
             if (!btnJustify) {
-                btnJustify = "center"
+                btnJustify = "center";
             }
 
             if (!btnAlign) {
-                btnAlign = "center"
+                btnAlign = "center";
             }
         }
 
@@ -103,7 +104,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
         }
         else {
             if (ref) {
-                return (ref.children[1] as HTMLElement).offsetWidth / 2 - (ref.children[0] as HTMLElement).offsetWidth / 2;
+                return (ref.children[1] as HTMLElement).offsetWidth / 2 - (iconProps.size?.width ? iconProps.size?.width / 2 : (ref.children[0] as HTMLElement).offsetWidth / 2);
             }
         }
         return 0;
@@ -114,7 +115,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
         if (props.horizontalTextPosition === undefined) {
             return "right";
         }
-        else if (props.horizontalTextPosition === 1 && props.verticalTextPosition === 2) {
+        else if (props.horizontalTextPosition === 1 && (props.verticalTextPosition === 2 || props.verticalTextPosition === undefined)) {
             return "bottom";
         }
         else if (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0) {
@@ -152,7 +153,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     const mouseOverIconData = useMemo(() => parseIconData(props.foreground, props.mouseOverImage), [props.foreground, props.mouseOverImage]);
 
     return { 
-        style: buttonStyle, 
+        style: buttonStyle,
         iconProps: iconProps, 
         iconPos: iconPos, 
         iconCenterGap: iconCenterGap, 
