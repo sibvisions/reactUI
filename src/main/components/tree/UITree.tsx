@@ -327,7 +327,6 @@ const UITree: FC<ITree> = (baseProps) => {
             }
             return tempNode
         }
-
         for (let [key, data] of sortedSR.entries()) {
             if (!isSelfJoined(key)) {
                 selectedIndices.push(data.index);
@@ -335,7 +334,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 if (path.getParentPath().length() > 0) {
                     expKeys[path.getParentPath().toString()] = true;
                 }
-                if (getDataBook(path.length())) {
+                if (path.array[0] !== -1 && getDataBook(path.length())) {
                     if (props.detectEndNode !== false) {
                         const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
                         const dataRowChildren:any[] = path.length() !== 1 ? currData : [currData[data.index]];
