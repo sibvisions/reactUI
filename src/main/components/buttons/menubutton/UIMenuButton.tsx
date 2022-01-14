@@ -42,7 +42,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const btnStyle = useButtonStyling(props, layoutStyle);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const { onLoadCallback, id } = baseProps;
 
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<MenuItem>>();
@@ -64,7 +64,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
             buttonRef.current.defaultButton.setAttribute("aria-haspopup", true);
             (buttonRef.current.container.querySelector(".p-splitbutton-menubutton") as HTMLElement).setAttribute("tabindex", "-1");
         }
-    },[])
+    }, [])
 
     /** Builds the menuitems and sets the state */
     useEffect(() => {
@@ -115,8 +115,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         <span
             className="rc-popupmenubutton-wrapper"
             id={props.name + "-wrapper"}
-            ref={buttonWrapperRef} 
-            style={{position: 'absolute', ...layoutStyle}}
+            ref={buttonWrapperRef}
+            style={{ position: 'absolute', ...layoutStyle }}
             aria-label={props.ariaLabel}
             onFocus={(e) => {
                 if (props.eventFocusGained) {
@@ -140,7 +140,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     `gap-${btnStyle.iconGapPos}`
                 )}
                 style={{
-                    ...btnStyle.style, 
+                    ...btnStyle.style,
                     padding: '0',
                     background: undefined,
                     borderColor: undefined,

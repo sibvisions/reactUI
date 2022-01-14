@@ -34,7 +34,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const btnStyle = useButtonStyling(props, layoutStyle, buttonRef.current ? buttonRef.current.container : undefined)
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const { onLoadCallback, id } = baseProps;
 
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current.container : undefined);
@@ -48,7 +48,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = () => {
@@ -58,9 +58,9 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     }
 
     return (
-        <span 
-            ref={buttonWrapperRef} 
-            style={layoutStyle} 
+        <span
+            ref={buttonWrapperRef}
+            style={layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}
         >

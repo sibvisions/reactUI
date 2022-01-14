@@ -332,15 +332,17 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const itemTemplate = useCallback(d => {
         if(Array.isArray(d)) {
+            console.log(d, providedData, props.dataRow)
             return d.map((d, i) => <div key={i}>{d}</div>)
         } else {
             return d;
         }
-    }, []);
+    }, [providedData]);
 
     const groupedItemTemplate = useCallback(d => {
+        console.log(columnMetaData, providedData)
         return (d.label as string[]).map((d, i) => <div key={i}>{columnMetaData?.label ?? d}</div>)
-    }, [columnMetaData]);
+    }, [columnMetaData, providedData]);
 
     return (
         <span 
@@ -373,7 +375,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     tableOptions ? "dropdown-table" : "",
                     linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
-                scrollHeight={(providedData.length * 33) > 200 ? "200px" : `${providedData.length * 33}px`}
+                scrollHeight={tableOptions ? ((providedData.length + 1) * 38) > 200 ? "200px" : `${(providedData.length + 1) * 38}px` : (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`}
                 inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
                 disabled={!props.cellEditor_editable_}
                 dropdown
@@ -404,7 +406,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                         focused.current = false
                     }
                 }}
-                virtualScrollerOptions={{ itemSize: 33, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
+                virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
                 onSelect={(event) => handleInput(event.value)}
                 tooltip={props.toolTipText}
                 itemTemplate={itemTemplate}

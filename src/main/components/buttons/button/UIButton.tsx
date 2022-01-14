@@ -34,7 +34,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     const btnStyle = useButtonStyling(props, layoutStyle, buttonRef.current)
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const { onLoadCallback, id } = baseProps;
 
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current : undefined);
@@ -58,7 +58,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
     }
 
-    return(
+    return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
                 id={props.name}
@@ -78,7 +78,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     ...btnStyle.style,
                     background: undefined,
                     borderColor: undefined,
-                    '--btnJustify': btnStyle.style.justifyContent, 
+                    '--btnJustify': btnStyle.style.justifyContent,
                     '--btnAlign': btnStyle.style.alignItems,
                     '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
                     '--background': btnStyle.style.background,

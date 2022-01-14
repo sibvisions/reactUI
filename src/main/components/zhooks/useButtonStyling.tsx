@@ -8,14 +8,14 @@ import { getAlignments, getFont, getMargins, IconProps, parseIconData } from "..
 interface IButtonStyle {
     style: CSSProperties,
     iconProps: IconProps,
-    iconPos: "left"|"right",
+    iconPos: "left" | "right",
     iconCenterGap: number,
-    iconGapPos: "left"|"right"|"top"|"bottom",
+    iconGapPos: "left" | "right" | "top" | "bottom",
     borderPainted: boolean,
     tabIndex: number,
-    iconDirection: "icon-center-left"|"icon-center-right"|"",
-    pressedIconProps: IconProps|undefined,
-    mouseOverIconProps: IconProps|undefined
+    iconDirection: "icon-center-left" | "icon-center-right" | "",
+    pressedIconProps: IconProps | undefined,
+    mouseOverIconProps: IconProps | undefined
 }
 
 /**
@@ -26,7 +26,7 @@ interface IButtonStyle {
  * @param ref2 - an extra element reference to center button content, needed for checkbox and radiobutton
  * @returns style properties used by all button components
  */
-const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLElement, ref2?:HTMLElement): IButtonStyle => {
+const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -37,7 +37,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     const font = useMemo(() => getFont(props.font), [props.font]);
 
     /** Various style properties which are set by the properties received from the server */
-    const buttonStyle:CSSProperties = useMemo(() => {
+    const buttonStyle: CSSProperties = useMemo(() => {
         let btnBackground = props.background ? tinycolor(props.background).toString() : undefined;
         let btnJustify = props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va;
         let btnAlign = props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha;
@@ -46,7 +46,7 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
             if (!btnBackground) {
                 btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--screen-background');
             }
-            
+
             if (!btnJustify) {
                 btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
             }
@@ -152,14 +152,14 @@ const useButtonStyling = (props:IButton, layoutStyle?:CSSProperties, ref?:HTMLEl
     /** The parsed icon properties of the icon which is displayed when hovering the mouse over the button */
     const mouseOverIconData = useMemo(() => parseIconData(props.foreground, props.mouseOverImage), [props.foreground, props.mouseOverImage]);
 
-    return { 
+    return {
         style: buttonStyle,
-        iconProps: iconProps, 
-        iconPos: iconPos, 
-        iconCenterGap: iconCenterGap, 
+        iconProps: iconProps,
+        iconPos: iconPos,
+        iconCenterGap: iconCenterGap,
         iconGapPos: iconGapPos,
-        iconDirection: iconDirection, 
-        borderPainted: borderPainted, 
+        iconDirection: iconDirection,
+        borderPainted: borderPainted,
         tabIndex: tabIndex,
         pressedIconProps: pressedIconData,
         mouseOverIconProps: mouseOverIconData
