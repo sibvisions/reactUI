@@ -40,6 +40,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
 }
 
 /// Align to center, so logo is properly positioned and other styling
@@ -85,6 +86,7 @@
     font-size: 22px;
     font-weight: bold;
     margin-left: 10px;
+    caret-color: transparent;
 }
 
 .profile-menu {

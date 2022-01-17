@@ -80,7 +80,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                 <Checkbox
                     ref={cbRef}
                     inputId={props.id}
-                    style={{order: btnStyle.iconPos === 'left' ? 1 : 2}}
+                    style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
                     onChange={() => {
                         const req = createSetValueRequest();
@@ -99,7 +99,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                         )} 
                     htmlFor={props.id} 
-                    style={{order: btnStyle.iconPos === 'left' ? 2 : 1}}>
+                    style={{ order: btnStyle.iconPos === 'left' ? 2 : 1, caretColor: "transparent" }}>
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }

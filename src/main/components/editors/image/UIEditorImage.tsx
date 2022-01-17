@@ -95,7 +95,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
                 "rc-editor-image",
                 columnMetaData?.nullable === false ? "required-field" : ""
             )}
-            style={{ ...layoutStyle, overflow: "hidden" }}
+            style={{ ...layoutStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
@@ -106,6 +106,8 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
                 <img
                     id={!props.isCellEditor ? props.name : undefined}
                     className={imageStyle}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}
                     src={selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                     alt="could not be loaded"

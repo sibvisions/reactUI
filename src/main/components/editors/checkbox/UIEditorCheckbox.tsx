@@ -153,6 +153,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                         "rc-editor-checkbox-label",
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                     )}
+                    style={{ caretColor: "transparent" }}
                     htmlFor={id}>
                     {props.cellEditor?.text}
                 </label>

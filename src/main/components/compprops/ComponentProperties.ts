@@ -59,7 +59,6 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
             /** If there is a semicolon the icondata string has to be split and sliced differently */
             if (iconData.includes(';')) {
                 let splittedColorIconData = iconData.slice(iconData.indexOf('.') + 1).split(';');
-                iconName = "fa fa-" + splittedColorIconData[0]
                 splittedColorIconData.forEach((prop:string) => {
                     if (prop.includes("color"))
                         iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString();

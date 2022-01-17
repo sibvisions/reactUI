@@ -287,7 +287,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
                             sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
                         }
-    
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
@@ -379,12 +378,10 @@ const UITable: FC<TableProps> = (baseProps) => {
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows: any, index: number) => {
                 const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *:not(.p-column-title)");
-                //console.log(cellDatas, cellDataWidthList)
                 for (let j = 0; j < cellDatas.length; j++) {
                     if (!cellDataWidthList[j].widthPreSet) {
                         let tempWidth: number;
                         if (cellDatas[j] !== undefined) {
-                            //console.log(cellDatas[j].parentElement)
                             /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
@@ -469,8 +466,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => {
         setVirtualRows((() => { 
-            const out = Array.from({ length: providerData.length }); 
-            out.splice(0, rows, ...providerData.slice(0, rows + 1)); 
+            const out = Array.from({ length: providerData.length });
+            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows + 1));
             return out;
         })());
     }, [providerData]);
@@ -1130,6 +1127,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 style={{
                     ...layoutStyle,
                     outline: "none",
+                    caretColor: "transparent"
                 } as any}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
                 onClick={() => { 

@@ -81,7 +81,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                 <RadioButton
                     ref={rbRef}
                     inputId={props.id}
-                    style={{order: btnStyle.iconPos === 'left' ? 1 : 2}}
+                    style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
                     onChange={() => {
                         let checked = props.selected === undefined ? true : !props.selected;
@@ -101,7 +101,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                         )} 
                     htmlFor={props.id} 
-                    style={{order: btnStyle.iconPos === 'left' ? 2 : 1}}>
+                    style={{ order: btnStyle.iconPos === 'left' ? 2 : 1, caretColor: "transparent" }}>
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }

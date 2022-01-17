@@ -2,6 +2,7 @@
 .rc-editor-image, .rc-icon, .rc-validator {
     >img {
         position: absolute;
+        
         &.image-h-stretch {
             width: 100%;
         }
