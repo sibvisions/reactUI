@@ -10,7 +10,7 @@ import { IconProps } from "../compprops";
 
 
 const isFAIcon = (iconName?:string) => {
-    return iconName?.includes('fa fa-');
+    return (iconName?.includes('fas fa-') || iconName?.includes('far fa-') || iconName?.includes('fab fa-'));
 }
 
 const removeIcon = (elem:HTMLElement, iconName:string) => {

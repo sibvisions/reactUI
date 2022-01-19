@@ -66,11 +66,11 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current){
-            if (iconProps.icon?.includes('fa fa-') || !props.image) {
+            if (props.image?.includes('FontAwesome') || !props.image) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
-    },[onLoadCallback, id, iconProps.icon, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** 
     * Returns wether the icon is a FontAwesome icon or an image sent by the server 
@@ -78,7 +78,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     */
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
-            if(icon.includes('fa fa-'))
+            if(props.image?.includes('FontAwesome'))
                 return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} />
             else {
                 return (
@@ -86,7 +86,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     id={props.name}
                     {...popupMenu}
                     alt="icon"
-                    src={context.server.RESOURCE_URL + iconProps.icon}
+                    src={context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
                     //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}

@@ -86,7 +86,7 @@ const useProfileMenuItems = () => {
         setSlideOptions([
             {
                 label: currUser.displayName,
-                icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fa fa-user',
+                icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fas fa-user',
                 items: profileMenuItems
             }
         ])

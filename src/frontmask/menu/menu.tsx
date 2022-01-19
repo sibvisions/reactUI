@@ -53,7 +53,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     return (
         <>
             {props.showButtons && <Button
-                icon="fa fa-home"
+                icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
                     const openWelcomeOrHome = () => {
@@ -91,14 +91,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
             }
             {props.showButtons && (!props.visibleButtons || props.visibleButtons.save) && <Button
-                icon="fa fa-save"
+                icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
             {(!props.visibleButtons || (props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
                 <Button
-                    icon={!props.visibleButtons ? "fa fa-refresh" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fa fa-refresh" : "pi pi-undo"}
+                    icon={!props.visibleButtons ? "fas fa-sync" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fas fa-sync" : "pi pi-undo"}
                     className="menu-topbar-buttons"
                     onClick={() => {
                         if (!props.visibleButtons || (props.visibleButtons.reload && !props.visibleButtons.rollback)) {

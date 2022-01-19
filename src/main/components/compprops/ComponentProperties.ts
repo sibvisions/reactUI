@@ -3,7 +3,7 @@ import tinycolor from 'tinycolor2';
 
 /** Other imports */
 import { Margins } from '../layouts';
-import { Dimension } from '../util';
+import { convertIcon, Dimension } from '../util';
 import { UIFont, IconProps } from '.';
 
 /**
@@ -53,8 +53,8 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
 
         if (iconData.includes("FontAwesome")) {
             splittedIconData = iconData.slice(iconData.indexOf('.') + 1).split(',');
-            iconName = "fa fa-" + splittedIconData[0];
-            iconSize = {width: parseInt(splittedIconData[1] ?? 14), height: parseInt(splittedIconData[2] ?? 14)};
+            iconName = convertIcon(splittedIconData[0])
+            iconSize = {width: parseInt(splittedIconData[1] ?? 16), height: parseInt(splittedIconData[2] ?? 16)};
             iconColor = foreground ? tinycolor(foreground).toString() : undefined;
             /** If there is a semicolon the icondata string has to be split and sliced differently */
             if (iconData.includes(';')) {

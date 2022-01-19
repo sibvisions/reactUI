@@ -199,7 +199,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
 
     const icon = useMemo(() => {
         if (cellIcon?.icon) {
-            if(cellIcon.icon.includes('fa fa-'))
+            if(cellIcon.icon.includes('fas fa-') || cellIcon.icon.includes('far fa-') || cellIcon.icon.includes('fab fa-'))
                 return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
             else {
                 return <img

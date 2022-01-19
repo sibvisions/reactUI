@@ -89,7 +89,7 @@
 .rc-button-icon {
     font-size: var(--iconHeight);
     color: var(--iconColor);
-    &:not([class*="fa fa-"]) {
+    &:not([class*="fas fa-"]):not([class*="far fa-"]):not([class*="fab fa-"]) {
         width: var(--iconWidth);
         height: var(--iconHeight);
         display: inline-block;

@@ -27,4 +27,5 @@ export { getFocusComponent } from './GetFocusComponent';
 export { panelReportSize } from './PanelReportSize';
 export { panelGetStyle } from './PanelGetStyle';
 export { addCSSDynamically } from './AddCSSDynamically';
-export { default as Timer } from './Timer' 
+export { default as Timer } from './Timer';
+export { convertIcon } from './FontAwesomeConverter';

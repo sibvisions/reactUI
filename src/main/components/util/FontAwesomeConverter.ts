@@ -178,1842 +178,1845 @@ export function convertIcon(icon:string) {
         return "fas fa-align-justify"
     
         case 'list':
-        return ""
+        return "fas fa-list"
     
         case 'dedent':
-        return ""
+        return "fas fa-outdent"
     
         case 'outdent':
-        return ""
+        return "fas fa-outdent"
     
         case 'indent':
-        return ""
+        return "fas fa-indent"
     
-        case 'videoCamera':
-        return ""
+        case 'video-camera':
+        return "fas fa-video"
     
         case 'photo':
-        return ""
+        return "far fa-image"
     
         case 'image':
-        return ""
+        return "far fa-image"
     
-        case 'pictureO':
-        return ""
+        case 'picture-o':
+        return "far fa-image"
     
         case 'pencil':
-        return ""
+        return "fas fa-pencil-alt"
     
-        case 'mapMarker':
-        return ""
+        case 'map-marker':
+        return "fas fa-map-marker-alt"
     
         case 'adjust':
-        return ""
+        return "fas fa-adjust"
     
         case 'tint':
-        return ""
+        return "fas fa-tint"
     
         case 'edit':
-        return ""
+        return "far fa-edit"
     
-        case 'pencilSquareO':
-        return ""
+        case 'pencil-square-o':
+        return "fas fa-pen-square"
     
-        case 'shareSquareO':
-        return ""
+        case 'share-square-o':
+        return "far fa-share-square"
     
-        case 'checkSquareO':
-        return ""
+        case 'check-square-o':
+        return "far fa-check-square"
     
         case 'arrows':
-        return ""
+        return "fas fa-arrows-alt"
     
-        case 'stepBackward':
-        return ""
+        case 'step-backward':
+        return "fas fa-step-backward"
     
-        case 'fastBackward':
-        return ""
+        case 'fast-backward':
+        return "fas fa-fast-backward"
     
         case 'backward':
-        return ""
+        return "fas fa-backward"
     
         case 'play':
-        return ""
+        return "fas fa-play"
     
         case 'pause':
-        return ""
+        return "fas fa-pause"
     
         case 'stop':
-        return ""
+        return "fas fa-stop"
     
         case 'forward':
-        return ""
+        return "fas fa-forward"
     
-        case 'fastForward':
-        return ""
+        case 'fast-forward':
+        return "fas fa-fast-forward"
     
-        case 'stepForward':
-        return ""
+        case 'step-forward':
+        return "fas fa-step-forward"
     
         case 'eject':
-        return ""
+        return "fas fa-eject"
     
-        case 'chevronLeft':
-        return ""
+        case 'chevron-left':
+        return "fas fa-chevron-left"
     
-        case 'chevronRight':
-        return ""
+        case 'chevron-right':
+        return "fas fa-chevron-right"
     
-        case 'plusCircle':
-        return ""
+        case 'plus-circle':
+        return "fas fa-plus-circle"
     
-        case 'minusCircle':
-        return ""
+        case 'minus-circle':
+        return "minus-circle"
     
-        case 'timesCircle':
-        return ""
+        case 'times-circle':
+        return "fas fa-times-circle"
     
-        case 'checkCircle':
-        return ""
+        case 'check-circle':
+        return "fas fa-check-circle"
     
-        case 'questionCircle':
-        return ""
+        case 'question-circle':
+        return "fas fa-question-circle"
     
-        case 'infoCircle':
-        return ""
+        case 'info-circle':
+        return "fas fa-info-circle"
     
         case 'crosshairs':
-        return ""
+        return "fas fa-crosshairs"
     
-        case 'timesCircleO':
-        return ""
+        case 'times-circle-o':
+        return "far fa-times-circle"
     
-        case 'checkCircleO':
-        return ""
+        case 'check-circle-o':
+        return "far fa-check-circle"
     
         case 'ban':
-        return ""
+        return "fas fa-ban"
     
-        case 'arrowLeft':
-        return ""
+        case 'arrow-left':
+        return "fas fa-arrow-left"
     
-        case 'arrowRight':
-        return ""
+        case 'arrow-right':
+        return "fas fa-arrow-right"
     
-        case 'arrowUp':
-        return ""
+        case 'arrow-up':
+        return "fas fa-arrow-up"
     
-        case 'arrowDown':
-        return ""
+        case 'arrow-down':
+        return "fas fa-arrow-down"
     
-        case 'mailForward':
-        return ""
+        case 'mail-forward':
+        return "fas fa-share"
     
         case 'share':
-        return ""
+        return "fas fa-share"
     
         case 'expand':
-        return ""
+        return "fas fa-expand"
     
         case 'compress':
-        return ""
+        return "fas fa-compress"
     
         case 'plus':
-        return ""
+        return "fas fa-plus"
     
         case 'minus':
-        return ""
+        return "fas fa-minus"
     
         case 'asterisk':
-        return ""
+        return "fas fa-asterisk"
     
-        case 'exclamationCircle':
-        return ""
+        case 'exclamation-circle':
+        return "fas fa-exclamation-circle"
     
         case 'gift':
-        return ""
+        return "fas fa-gift"
     
         case 'leaf':
-        return ""
+        return "fas fa-leaf"
     
         case 'fire':
-        return ""
+        return "fas fa-fire"
     
         case 'eye':
-        return ""
+        return "far fa-eye"
     
-        case 'eyeSlash':
-        return ""
+        case 'eye-slash':
+        return "far fa-eye-slash"
     
         case 'warning':
-        return ""
+        return "fas fa-exclamation-triangle"
     
-        case 'exclamationTriangle':
-        return ""
+        case 'exclamation-triangle':
+        return "fas fa-exclamation-triangle"
     
         case 'plane':
-        return ""
+        return "fas fa-plane"
     
         case 'calendar':
-        return ""
+        return "fas fa-calendar"
     
         case 'random':
-        return ""
+        return "fas fa-random"
     
         case 'comment':
-        return ""
+        return "fas fa-comment"
     
         case 'magnet':
-        return ""
+        return "fas fa-magnet"
     
-        case 'chevronUp':
-        return ""
+        case 'chevron-up':
+        return "fas fa-chevron-up"
     
-        case 'chevronDown':
-        return ""
+        case 'chevron-down':
+        return "fas fa-chevron-down"
     
         case 'retweet':
-        return ""
+        return "fas fa-retweet"
     
-        case 'shoppingCart':
-        return ""
+        case 'shopping-cart':
+        return "fas fa-shopping-cart"
     
         case 'folder':
-        return ""
+        return "fas fa-folder"
     
         case 'folderOpen':
-        return ""
+        return "fas fa-folder-open"
     
-        case 'arrowsV':
-        return ""
+        case 'arrows-v':
+        return "fas fa-arrows-alt-v"
     
-        case 'arrowsH':
-        return ""
+        case 'arrows-h':
+        return "fas fa-arrows-alt-h"
     
-        case 'barChartO':
-        return ""
+        case 'bar-chart-o':
+        return "far fa-chart-bar"
     
-        case 'barChart':
-        return ""
+        case 'bar-chart':
+        return "fas fa-chart-bar"
     
-        case 'twitterSquare':
-        return ""
+        case 'twitter-square':
+        return "fab fa-twitter-square"
     
-        case 'facebookSquare':
-        return ""
+        case 'facebook-square':
+        return "fab fa-facebook-square"
     
-        case 'cameraRetro':
-        return ""
+        case 'camera-retro':
+        return "fas fa-camera-retro"
     
         case 'key':
-        return ""
+        return "fas fa-key"
     
         case 'gears':
-        return ""
+        return "fas fa-cogs"
     
         case 'cogs':
-        return ""
+        return "fas fa-cogs"
     
         case 'comments':
-        return ""
+        return "fas fa-comments"
     
-        case 'thumbsOUp':
-        return ""
+        case 'thumbs-o-up':
+        return "far fa-thumbs-up"
     
-        case 'thumbsODown':
-        return ""
+        case 'thumbs-o-down':
+        return "far fa-thumbs-down"
     
-        case 'starHalf':
-        return ""
+        case 'star-half':
+        return "fas fa-star-half"
     
-        case 'heartO':
-        return ""
+        case 'heart-o':
+        return "far fa-heart"
     
-        case 'signOut':
-        return ""
+        case 'sign-out':
+        return "fas fa-sign-out-alt"
     
-        case 'linkedinSquare':
-        return ""
+        case 'linkedin-square':
+        return "fab fa-linkedin"
     
         case 'thumbTack':
-        return ""
+        return "fas fa-thumbtack"
     
-        case 'externalLink':
-        return ""
+        case 'external-link':
+        return "fas fa-external-link-alt"
     
         case 'signIn':
-        return ""
+        return "fas fa-sign-in-alt"
     
         case 'trophy':
-        return ""
+        return "fas fa-trophy"
     
         case 'githubSquare':
-        return ""
+        return "fab fa-github-square"
     
         case 'upload':
-        return ""
+        return "fas fa-upload"
     
-        case 'lemonO':
-        return ""
+        case 'lemon-o':
+        return "far fa-lemon"
     
         case 'phone':
-        return ""
+        return "fas fa-phone"
     
-        case 'squareO':
-        return ""
+        case 'square-o':
+        return "far fa-square"
     
-        case 'bookmarkO':
-        return ""
+        case 'bookmark-o':
+        return "far fa-bookmark"
     
-        case 'phoneSquare':
-        return ""
+        case 'phone-square':
+        return "fas fa-phone-square"
     
         case 'twitter':
-        return ""
+        return "fab fa-twitter"
     
-        case 'facebookF':
-        return ""
+        case 'facebook-f':
+        return "fab fa-facebook-f"
     
         case 'facebook':
-        return ""
+        return "fab fa-facebook"
     
         case 'github':
-        return ""
+        return "fab fa-github"
     
         case 'unlock':
-        return ""
+        return "fas fa-unlock"
     
-        case 'creditCard':
-        return ""
+        case 'credit-card':
+        return "far fa-credit-card"
     
         case 'feed':
-        return ""
+        return "fas fa-rss"
     
         case 'rss':
-        return ""
+        return "fas fa-rss"
     
-        case 'hddO':
-        return ""
+        case 'hdd-o':
+        return "far fa-hdd"
     
         case 'bullhorn':
-        return ""
+        return "fas fa-bullhorn"
     
         case 'bell':
-        return ""
+        return "fas fa-bell"
     
         case 'certificate':
-        return ""
+        return "fas fa-certificate"
     
-        case 'handORight':
-        return ""
+        case 'hand-o-right':
+        return "far fa-hand-point-right"
     
-        case 'handOLeft':
-        return ""
+        case 'hand-o-left':
+        return "far fa-hand-point-left"
     
-        case 'handOUp':
-        return ""
+        case 'hand-o-up':
+        return "far fa-hand-point-up"
     
-        case 'handODown':
-        return ""
+        case 'hand-o-down':
+        return "far fa-hand-point-down"
     
-        case 'arrowCircleLeft':
-        return ""
+        case 'arrow-circle-left':
+        return "fas fa-arrow-circle-left"
     
-        case 'arrowCircleRight':
-        return ""
+        case 'arrow-circle-right':
+        return "fas fa-arrow-circle-right"
     
-        case 'arrowCircleUp':
-        return ""
+        case 'arrow-circle-up':
+        return "fas fa-arrow-circle-up"
     
-        case 'arrowCircleDown':
-        return ""
+        case 'arrow-circle-down':
+        return "fas fa-arrow-circle-down"
     
         case 'globe':
-        return ""
+        return "fas fa-globe"
     
         case 'wrench':
-        return ""
+        return "fas fa-wrench"
     
         case 'tasks':
-        return ""
+        return "fas fa-tasks"
     
         case 'filter':
-        return ""
+        return "fas fa-filter"
     
         case 'briefcase':
-        return ""
+        return "fas fa-briefcase"
     
-        case 'arrowsAlt':
-        return ""
+        case 'arrows-alt':
+        return "fas fa-expand-arrows-alt"
     
         case 'group':
-        return ""
+        return "fas fa-users"
     
         case 'users':
-        return ""
+        return "fas fa-users"
     
         case 'chain':
-        return ""
+        return "fas fa-link"
     
         case 'link':
-        return ""
+        return "fas fa-link"
     
         case 'cloud':
-        return ""
+        return "fas fa-cloud"
     
         case 'flask':
-        return ""
+        return "fas fa-flask"
     
         case 'cut':
-        return ""
+        return "fas fa-cut"
     
         case 'scissors':
-        return ""
+        return "fas fa-cut"
     
         case 'copy':
-        return ""
+        return "far fa-copy"
     
-        case 'filesO':
-        return ""
+        case 'files-o':
+        return "far fa-copy"
     
         case 'paperclip':
-        return ""
+        return "fas fa-paperclip"
     
         case 'save':
-        return ""
+        return "far fa-save"
     
-        case 'floppyO':
-        return ""
+        case 'floppy-o':
+        return "far fa-save"
     
         case 'square':
-        return ""
+        return "fas fa-square"
     
         case 'navicon':
-        return ""
+        return "fas fa-bars"
     
         case 'reorder':
-        return ""
+        return "fas fa-bars"
     
         case 'bars':
-        return ""
+        return "fas fa-bars"
     
-        case 'listUl':
-        return ""
+        case 'list-ul':
+        return "fas fa-list-ul"
     
-        case 'listOl':
-        return ""
+        case 'list-ol':
+        return "fas fa-list-ol"
     
         case 'strikethrough':
-        return ""
+        return "fas fa-strikethrough"
     
         case 'underline':
-        return ""
+        return "fas fa-underline"
     
         case 'table':
-        return ""
+        return "fas fa-table"
     
         case 'magic':
-        return ""
+        return "fas fa-magic"
     
         case 'truck':
-        return ""
+        return "fas fa-truck"
     
         case 'pinterest':
-        return ""
+        return "fab fa-pinterest"
     
-        case 'pinterestSquare':
-        return ""
+        case 'pinterest-square':
+        return "fab fa-pinterest-square"
     
-        case 'googlePlusSquare':
-        return ""
+        case 'google-plus-square':
+        return "fab fa-google-plus-square"
     
-        case 'googlePlus':
-        return ""
+        case 'google-plus':
+        return "fab fa-google-plus"
     
         case 'money':
-        return ""
+        return "far fa-money-bill-alt"
     
-        case 'caretDown':
-        return ""
+        case 'caret-down':
+        return "fas fa-caret-down"
     
-        case 'caretUp':
-        return ""
+        case 'caret-up':
+        return "fas fa-caret-up"
     
-        case 'caretLeft':
-        return ""
+        case 'caret-left':
+        return "fas fa-caret-left"
     
-        case 'caretRight':
-        return ""
+        case 'caret-right':
+        return "fas fa-caret-right"
     
         case 'columns':
-        return ""
+        return "fas fa-columns"
     
         case 'unsorted':
-        return ""
+        return "fas fa-sort"
     
         case 'sort':
-        return ""
+        return "fas fa-sort"
     
-        case 'sortDown':
-        return ""
+        case 'sort-down':
+        return "fas fa-sort-down"
     
-        case 'sortDesc':
-        return ""
+        case 'sort-desc':
+        return "fas fa-sort-down"
     
-        case 'sortUp':
-        return ""
+        case 'sort-up':
+        return "fas fa-sort-up"
     
-        case 'sortAsc':
-        return ""
+        case 'sort-asc':
+        return "fas fa-sort-up"
     
         case 'envelope':
-        return ""
+        return "fas fa-envelope"
     
         case 'linkedin':
-        return ""
+        return "fab fa-linkedin"
     
-        case 'rotateLeft':
-        return ""
+        case 'rotate-left':
+        return "fas fa-undo"
     
         case 'undo':
-        return ""
+        return "fas fa-undo"
     
         case 'legal':
-        return ""
+        return "fas fa-gavel"
     
         case 'gavel':
-        return ""
+        return "fas fa-gavel"
     
         case 'dashboard':
-        return ""
+        return "fas fa-tachometer-alt"
     
         case 'tachometer':
-        return ""
+        return "fas fa-tachometer-alt"
     
-        case 'commentO':
-        return ""
+        case 'comment-o':
+        return "far fa-comment"
     
-        case 'commentsO':
-        return ""
+        case 'comments-o':
+        return "far fa-comments"
     
         case 'flash':
-        return ""
+        return "fas fa-bolt"
     
         case 'bolt':
-        return ""
+        return "fas fa-bolt"
     
         case 'sitemap':
-        return ""
+        return "fas fa-sitemap"
     
         case 'umbrella':
-        return ""
+        return "fas fa-umbrella"
     
         case 'paste':
-        return ""
+        return "fas fa-paste"
     
         case 'clipboard':
-        return ""
+        return "far fa-clipboard"
     
-        case 'lightbulbO':
-        return ""
+        case 'lightbulb-o':
+        return "far fa-lightbulb"
     
         case 'exchange':
-        return ""
+        return "fas fa-exchange-alt"
     
-        case 'cloudDownload':
-        return ""
+        case 'cloud-download':
+        return "fas fa-cloud-download-alt"
     
-        case 'cloudUpload':
-        return ""
+        case 'cloud-upload':
+        return "fas fa-cloud-upload-alt"
     
-        case 'userMd':
-        return ""
+        case 'user-md':
+        return "fas fa-user-md"
     
         case 'stethoscope':
-        return ""
+        return "fas fa-stethoscope"
     
         case 'suitcase':
-        return ""
+        return "fas fa-suitcase"
     
-        case 'bellO':
-        return ""
+        case 'bell-o':
+        return "far fa-bell"
     
         case 'coffee':
-        return ""
+        return "fas fa-coffee"
     
         case 'cutlery':
-        return ""
+        return "fas fa-utensils"
     
-        case 'fileTextO':
-        return ""
+        case 'file-text-o':
+        return "far fa-file-alt"
     
-        case 'buildingO':
-        return ""
+        case 'building-o':
+        return "far fa-building"
     
-        case 'hospitalO':
-        return ""
+        case 'hospital-o':
+        return "far fa-hospital"
     
         case 'ambulance':
-        return ""
+        return "fas fa-ambulance"
     
         case 'medkit':
-        return ""
+        return "fas fa-medkit"
     
-        case 'fighterJet':
-        return ""
+        case 'fighter-jet':
+        return "fas fa-fighter-jet"
     
         case 'beer':
-        return ""
+        return "fas fa-beer"
     
-        case 'hSquare':
-        return ""
+        case 'h-square':
+        return "fas fa-h-square"
     
-        case 'plusSquare':
-        return ""
+        case 'plus-square':
+        return "fas fa-plus-square"
     
-        case 'angleDoubleLeft':
-        return ""
+        case 'angle-double-left':
+        return "fas fa-angle-double-left"
     
-        case 'angleDoubleRight':
-        return ""
+        case 'angle-double-right':
+        return "fas fa-angle-double-right"
     
-        case 'angleDoubleUp':
-        return ""
+        case 'angle-double-up':
+        return "fas fa-angle-double-up"
     
-        case 'angleDoubleDown':
-        return ""
+        case 'angle-double-down':
+        return "fas fa-angle-double-down"
     
-        case 'angleLeft':
-        return ""
+        case 'angle-left':
+        return "fas fa-angle-left"
     
-        case 'angleRight':
-        return ""
+        case 'angle-right':
+        return "fas fa-angle-right"
     
-        case 'angleUp':
-        return ""
+        case 'angle-up':
+        return "fas fa-angle-up"
     
-        case 'angleDown':
-        return ""
+        case 'angle-down':
+        return "fas fa-angle-down"
     
         case 'desktop':
-        return ""
+        return "fas fa-desktop"
     
         case 'laptop':
-        return ""
+        return "fas fa-laptop"
     
         case 'tablet':
-        return ""
+        return "fas fa-tablet-alt"
     
-        case 'mobilePhone':
-        return ""
+        case 'mobile-phone':
+        return "fas fa-mobile-alt"
     
         case 'mobile':
-        return ""
+        return "fas fa-mobile-alt"
     
-        case 'circleO':
-        return ""
+        case 'circle-o':
+        return "far fa-circle"
     
-        case 'quoteLeft':
-        return ""
+        case 'quote-left':
+        return "fas fa-quote-left"
     
-        case 'quoteRight':
-        return ""
+        case 'quote-right':
+        return "fas fa-quote-right"
     
         case 'spinner':
-        return ""
+        return "fas fa-spinner"
     
         case 'circle':
-        return ""
+        return "fas fa-circle"
     
-        case 'mailReply':
-        return ""
+        case 'mail-reply':
+        return "fas fa-reply"
     
         case 'reply':
-        return ""
+        return "fas fa-reply"
     
-        case 'githubAlt':
-        return ""
+        case 'github-alt':
+        return "fab fa-github-alt"
     
-        case 'folderO':
-        return ""
+        case 'folder-o':
+        return "far fa-folder"
     
-        case 'folderOpenO':
-        return ""
+        case 'folder-open-o':
+        return "far fa-folder-open"
     
-        case 'smileO':
-        return ""
+        case 'smile-o':
+        return "far fa-smile"
     
-        case 'frownO':
-        return ""
+        case 'frown-o':
+        return "far fa-frown"
     
-        case 'mehO':
-        return ""
+        case 'meh-o':
+        return "far fa-meh"
     
         case 'gamepad':
-        return ""
+        return "fas fa-gamepad"
     
-        case 'keyboardO':
-        return ""
+        case 'keyboard-o':
+        return "far fa-keyboard"
     
-        case 'flagO':
-        return ""
+        case 'flag-o':
+        return "far fa-flag"
     
-        case 'flagCheckered':
-        return ""
+        case 'flag-checkered':
+        return "fas fa-flag-checkered"
     
         case 'terminal':
-        return ""
+        return "fas fa-terminal"
     
         case 'code':
-        return ""
+        return "fas fa-code"
     
-        case 'mailReplyAll':
-        return ""
+        case 'mail-reply-all':
+        return "fas fa-reply-all"
     
-        case 'replyAll':
-        return ""
+        case 'reply-all':
+        return "fas fa-reply-all"
     
-        case 'starHalfEmpty':
-        return ""
+        case 'star-half-empty':
+        return "fas fa-star-half-alt"
     
-        case 'starHalfFull':
-        return ""
+        case 'star-half-full':
+        return "fas fa-star-half-alt"
     
-        case 'starHalfO':
-        return ""
+        case 'star-half-o':
+        return "fas fa-star-half-alt"
     
-        case 'locationArrow':
-        return ""
+        case 'location-arrow':
+        return "fas fa-location-arrow"
     
         case 'crop':
-        return ""
+        return "fas fa-crop"
     
-        case 'codeFork':
-        return ""
+        case 'code-fork':
+        return "fas fa-code-branch"
     
         case 'unlink':
-        return ""
+        return "fas fa-unlink"
     
-        case 'chainBroken':
-        return ""
+        case 'chain-broken':
+        return "fas fa-unlink"
     
         case 'question':
-        return ""
+        return "fas fa-question"
     
         case 'info':
-        return ""
+        return "fas fa-info"
     
         case 'exclamation':
-        return ""
+        return "fas fa-exclamation"
     
         case 'superscript':
-        return ""
+        return "fas fa-superscript"
     
         case 'subscript':
-        return ""
+        return "fas fa-subscript"
     
         case 'eraser':
-        return ""
+        return "fas fa-eraser"
     
-        case 'puzzlePiece':
-        return ""
+        case 'puzzle-piece':
+        return "fas fa-puzzle-piece"
     
         case 'microphone':
-        return ""
+        return "fas fa-microphone"
     
-        case 'microphoneSlash':
-        return ""
+        case 'microphone-slash':
+        return "fas fa-microphone-slash"
     
         case 'shield':
-        return ""
+        return "fas fa-shield-alt"
     
         case 'calendarO':
-        return ""
+        return "far fa-calendar"
     
-        case 'fireExtinguisher':
-        return ""
+        case 'fire-extinguisher':
+        return "fas fa-fire-extinguisher"
     
         case 'rocket':
-        return ""
+        return "fas fa-rocket"
     
         case 'maxcdn':
-        return ""
+        return "fab fa-maxcdn"
     
-        case 'chevronCircleLeft':
-        return ""
+        case 'chevron-circle-left':
+        return "fas fa-chevron-circle-left"
     
-        case 'chevronCircleRight':
-        return ""
+        case 'chevron-circle-right':
+        return "fas fa-chevron-circle-right"
     
-        case 'chevronCircleUp':
-        return ""
+        case 'chevron-circle-up':
+        return "fas fa-chevron-circle-up"
     
-        case 'chevronCircleDown':
-        return ""
+        case 'chevron-circle-down':
+        return "fas fa-chevron-circle-down"
     
         case 'html5':
-        return ""
+        return "fab fa-html5"
     
         case 'css3':
-        return ""
+        return "fab fa-css3"
     
         case 'anchor':
-        return ""
+        return "fas fa-anchor"
     
-        case 'unlockAlt':
-        return ""
+        case 'unlock-alt':
+        return "fas fa-unlock-alt"
     
         case 'bullseye':
-        return ""
+        return "fas fa-bullseye"
     
-        case 'ellipsisH':
-        return ""
+        case 'ellipsis-h':
+        return "fas fa-ellipsis-h"
     
-        case 'ellipsisV':
-        return ""
+        case 'ellipsis-v':
+        return "fas fa-ellipsis-v"
     
-        case 'rssSquare':
-        return ""
+        case 'rss-square':
+        return "fas fa-rss-square"
     
-        case 'playCircle':
-        return ""
+        case 'play-circle':
+        return "fas fa-play-circle"
     
         case 'ticket':
-        return ""
+        return "fas fa-ticket-alt"
     
-        case 'minusSquare':
-        return ""
+        case 'minus-square':
+        return "fas fa-minus-square"
     
-        case 'minusSquareO':
-        return ""
+        case 'minus-square-o':
+        return "far fa-minus-square"
     
-        case 'levelUp':
-        return ""
+        case 'level-up':
+        return "fas fa-level-up-alt"
     
-        case 'levelDown':
-        return ""
+        case 'level-down':
+        return "fas fa-level-down-alt"
     
-        case 'checkSquare':
-        return ""
+        case 'check-square':
+        return "fas fa-check-square"
     
-        case 'pencilSquare':
-        return ""
+        case 'pencil-square':
+        return "fas fa-pencil-square"
     
-        case 'externalLinkSquare':
-        return ""
+        case 'external-link-square':
+        return "fas fa-external-link-square-alt"
     
-        case 'shareSquare':
-        return ""
+        case 'share-square':
+        return "fas fa-share-square"
     
         case 'compass':
-        return ""
+        return "far fa-compass"
     
-        case 'alignLeft':
-        return ""
-    
-        case 'turkishLira':
-        return ""
+        case 'turkish-lira':
+        return "fas fa-lira-sign"
     
         case 'meanpath':
-        return ""
+        return "fab fa-font-awesome"
     
         case 'try':
-        return ""
+        return "fas fa-lira-sign"
     
-        case 'caretSquareODown':
-        return ""
+        case 'caret-square-o-down':
+        return "far fa-caret-square-down"
     
-        case 'toggleUp':
-        return ""
+        case 'toggle-up':
+        return "far fa-caret-square-up"
     
-        case 'caretSquareOUp':
-        return ""
+        case 'caret-square-o-up':
+        return "far fa-caret-square-up"
     
-        case 'toggleRight':
-        return ""
+        case 'toggle-right':
+        return "far fa-caret-square-right"
     
-        case 'caretSquareORight':
-        return ""
+        case 'caret-square-o-right':
+        return "far fa-caret-square-right"
     
         case 'euro':
-        return ""
+        return "fas fa-euro-sign"
     
         case 'eur':
-        return ""
+        return "fas fa-euro-sign"
     
         case 'gbp':
-        return ""
+        return "fas fa-pound-sign"
     
         case 'dollar':
-        return ""
+        return "fas fa-dollar-sign"
     
         case 'usd':
-        return ""
+        return "fas fa-dollar-sign"
     
         case 'rupee':
-        return ""
+        return "fas fa-rupee-sign"
     
         case 'inr':
-        return ""
+        return "fas fa-rupee-sign"
     
         case 'cny':
-        return ""
+        return "fas fa-yen-sign"
     
         case 'rmb':
-        return ""
+        return "fas fa-yen-sign"
     
         case 'yen':
-        return ""
+        return "fas fa-yen-sign"
     
         case 'jpy':
-        return ""
+        return "fas fa-yen-sign"
     
         case 'ruble':
-        return ""
+        return "fas fa-ruble-sign"
     
         case 'rouble':
-        return ""
+        return "fas fa-ruble-sign"
     
         case 'rub':
-        return ""
+        return "fas fa-ruble-sign"
     
         case 'won':
-        return ""
+        return "fas fa-won-sign"
     
         case 'krw':
-        return ""
+        return "fas fa-won-sign"
     
         case 'bitcoin':
-        return ""
+        return "fab fa-bitcoin"
     
         case 'btc':
-        return ""
+        return "fab fa-bitcoin"
     
         case 'file':
-        return ""
+        return "fas fa-file"
     
         case 'fileText':
-        return ""
+        return "fas fa-file-alt"
     
-        case 'sortAlphaAsc':
-        return ""
+        case 'sort-alpha-asc':
+        return "fas fa-sort-alpha-down"
     
-        case 'sortAlphaDesc':
-        return ""
+        case 'sort-alpha-desc':
+        return "fas fa-sort-alpha-alt"
     
-        case 'sortAmountAsc':
-        return ""
+        case 'sort-amount-asc':
+        return "fas fa-sort-amount-down-alt"
     
-        case 'sortAmountDesc':
-        return ""
+        case 'sort-amount-desc':
+        return "fas fa-sort-amount-down"
     
-        case 'sortNumericAsc':
-        return ""
+        case 'sort-numeric-asc':
+        return "fas fa-sort-numeric-down"
     
-        case 'sortNumericDesc':
-        return ""
+        case 'sort-numeric-desc':
+        return "fas fa-sort-numeric-alt"
     
-        case 'thumbsUp':
-        return ""
+        case 'thumbs-up':
+        return "fas fa-thumbs-up"
     
-        case 'thumbsDown':
-        return ""
+        case 'thumbs-down':
+        return "fas fa-thumbs-down"
     
-        case 'youtubeSquare':
-        return ""
+        case 'youtube-square':
+        return "fab fa-youtube-square"
     
         case 'youtube':
-        return ""
+        return "fab fa-youtube"
     
         case 'xing':
-        return ""
+        return "fab fa-xing"
     
-        case 'xingSquare':
-        return ""
+        case 'xing-square':
+        return "fab fa-xing-square"
     
-        case 'youtubePlay':
-        return ""
+        case 'youtube-play':
+        return "fab fa-youtube"
     
         case 'dropbox':
-        return ""
+        return "fab fa-dropbox"
     
-        case 'stackOverflow':
-        return ""
+        case 'stack-overflow':
+        return "fab fa-stack-overflow"
     
         case 'instagram':
-        return ""
+        return "fab fa-instagram"
     
         case 'flickr':
-        return ""
+        return "fab fa-flickr"
     
         case 'adn':
-        return ""
+        return "fab fa-adn"
     
         case 'bitbucket':
-        return ""
+        return "fab fa-bitbucket"
     
-        case 'bitbucketSquare':
-        return ""
+        case 'bitbucket-square':
+        return "fab fa-bitbucket"
     
         case 'tumblr':
-        return ""
+        return "fab fa-tumblr"
     
-        case 'tumblrSquare':
-        return ""
+        case 'tumblr-square':
+        return "fab fa-tumblr-square"
     
-        case 'longArrowDown':
-        return ""
+        case 'long-arrow-down':
+        return "fas fa-long-arrow-alt-down"
     
-        case 'longArrowUp':
-        return ""
+        case 'long-arrow-up':
+        return "fas fa-long-arrow-alt-up"
     
-        case 'longArrowLeft':
-        return ""
+        case 'long-arrow-left':
+        return "fas fa-long-arrow-alt-left"
     
-        case 'longArrowRight':
-        return ""
+        case 'long-arrow-right':
+        return "fas fa-long-arrow-alt-right"
     
         case 'apple':
-        return ""
+        return "fab fa-apple"
     
         case 'windows':
-        return ""
+        return "fab fa-windows"
     
         case 'android':
-        return ""
+        return "fab fa-android"
     
         case 'linux':
-        return ""
+        return "fab fa-linux"
     
         case 'dribbble':
-        return ""
+        return "fab fa-dribbble"
     
         case 'skype':
-        return ""
+        return "fab fa-skype"
     
         case 'foursquare':
-        return ""
+        return "fab fa-foursquare"
     
         case 'trello':
-        return ""
+        return "fab fa-trello"
     
         case 'female':
-        return ""
+        return "fas fa-female"
     
         case 'male':
-        return ""
+        return "fas fa-male"
     
         case 'gittip':
-        return ""
+        return "fab fa-gratipay"
     
         case 'gratipay':
-        return ""
+        return "fab fa-gratipay"
     
-        case 'sunO':
-        return ""
+        case 'sun-o':
+        return "far fa-sun"
     
-        case 'moonO':
-        return ""
+        case 'moon-o':
+        return "far fa-moon"
     
         case 'archive':
-        return ""
+        return "fas fa-archive"
     
         case 'bug':
-        return ""
+        return "fas fa-bug"
     
         case 'vk':
-        return ""
+        return "fab fa-vk"
     
         case 'weibo':
-        return ""
+        return "fab fa-weibo"
     
         case 'renren':
-        return ""
+        return "fab fa-renren"
     
         case 'pagelines':
-        return ""
+        return "fab fa-pagelines"
     
-        case 'stackExchange':
-        return ""
+        case 'stack-exchange':
+        return "fab fa-stack-exchange"
     
-        case 'arrowCircleORight':
-        return ""
+        case 'arrow-circle-o-right':
+        return "far fa-arrow-alt-circle-right"
     
-        case 'arrowCircleOLeft':
-        return ""
+        case 'arrow-circle-o-left':
+        return "far fa-arrow-alt-circle-left"
     
-        case 'caretSquareOLeft':
-        return ""
+        case 'caret-square-o-left':
+        return "far fa-caret-square-left"
     
-        case 'dotCircleO':
-        return ""
+        case 'dot-circle-o':
+        return "far fa-dot-circle"
     
         case 'wheelchair':
-        return ""
+        return "fas fa-wheelchair"
     
-        case 'vimeoSquare':
-        return ""
+        case 'vimeo-square':
+        return "fab fa-vimeo-square"
     
-        case 'plusSquareO':
-        return ""
+        case 'plus-square-o':
+        return "far fa-plus-square"
     
-        case 'spaceShuttle':
-        return ""
+        case 'space-shuttle':
+        return "fas fa-space-shuttle"
     
         case 'slack':
-        return ""
+        return "fab fa-slack"
     
-        case 'envelopeSquare':
-        return ""
+        case 'envelope-square':
+        return "fas fa-envelope-square"
     
         case 'wordpress':
-        return ""
+        return "fab fa-wordpress"
     
         case 'openid':
-        return ""
+        return "fab fa-openid"
     
         case 'institution':
-        return ""
+        return "fas fa-university"
     
         case 'bank':
-        return ""
+        return "fas fa-university"
     
         case 'university':
-        return ""
+        return "fas fa-university"
     
-        case 'mortarBoard':
-        return ""
+        case 'mortar-board':
+        return "fas fa-graduation-cap"
     
-        case 'graduationCap':
-        return ""
+        case 'graduation-cap':
+        return "fas fa-graduation-cap"
     
         case 'yahoo':
-        return ""
+        return "fab fa-yahoo"
     
         case 'google':
-        return ""
+        return "fab fa-google"
     
         case 'reddit':
-        return ""
+        return "fab fa-reddit"
     
-        case 'redditSquare':
-        return ""
+        case 'reddit-square':
+        return "fab fa-reddit-square"
     
-        case 'stumbleuponCircle':
-        return ""
+        case 'stumbleupon-circle':
+        return "fab fa-stumbleupon-circle"
     
         case 'stumbleupon':
-        return ""
+        return "fab fa-stumbleupon"
     
         case 'delicious':
-        return ""
+        return "fab fa-delicious"
     
         case 'digg':
-        return ""
+        return "fab fa-digg"
     
-        case 'piedPiper':
-        return ""
+        case 'pied-piper':
+        return "fab fa-pied-piper"
     
-        case 'piedPiperAlt':
-        return ""
+        case 'pied-piper-alt':
+        return "fab fa-pied-piper-alt"
     
         case 'drupal':
-        return ""
+        return "fab fa-drupal"
     
         case 'joomla':
-        return ""
+        return "fab fa-joomla"
     
         case 'language':
-        return ""
+        return "fas fa-language"
     
         case 'fax':
-        return ""
+        return "fas fa-fax"
     
         case 'building':
-        return ""
+        return "fas fa-building"
     
         case 'child':
-        return ""
+        return "fas fa-child"
     
         case 'paw':
-        return ""
+        return "fas fa-paw"
     
         case 'spoon':
-        return ""
+        return "fas fa-spoon"
     
         case 'cube':
-        return ""
+        return "fas fa-cube"
     
         case 'cubes':
-        return ""
+        return "fas fa-cubes"
     
         case 'behance':
-        return ""
+        return "fab fa-behance"
     
-        case 'behanceSquare':
-        return ""
+        case 'behance-square':
+        return "fab fa-behance-square"
     
         case 'steam':
-        return ""
+        return "fab fa-steam"
     
-        case 'steamSquare':
-        return ""
+        case 'steam-square':
+        return "fab fa-steam-square"
     
         case 'recycle':
-        return ""
+        return "fas fa-recycle"
     
         case 'automobile':
-        return ""
+        return "fas fa-car-alt"
     
         case 'car':
-        return ""
+        return "fas fa-car-alt"
     
         case 'cab':
-        return ""
+        return "fas fa-taxi"
     
         case 'taxi':
-        return ""
+        return "fas fa-taxi"
     
         case 'tree':
-        return ""
+        return "fas fa-tree"
     
         case 'spotify':
-        return ""
+        return "fab fa-spotify"
     
         case 'deviantart':
-        return ""
+        return "fab fa-deviantart"
     
         case 'soundcloud':
-        return ""
+        return "fab fa-soundcloud"
     
         case 'database':
-        return ""
+        return "fas fa-database"
     
-        case 'filePdfO':
-        return ""
+        case 'file-pdf-o':
+        return "far fa-file-pdf"
     
-        case 'fileWordO':
-        return ""
+        case 'file-word-o':
+        return "far fa-file-word"
     
-        case 'fileExcelO':
-        return ""
+        case 'file-excel-o':
+        return "far fa-file-excel"
     
-        case 'filePowerpointO':
-        return ""
+        case 'file-powerpoint-o':
+        return "far fa-file-powerpoint"
     
-        case 'filePhotoO':
-        return ""
+        case 'file-photo-o':
+        return "far fa-file-image"
     
-        case 'filePictureO':
-        return ""
+        case 'file-picture-o':
+        return "far fa-file-image"
     
-        case 'fileImageO':
-        return ""
+        case 'file-image-o':
+        return "far fa-file-image"
     
-        case 'fileZipO':
-        return ""
+        case 'file-zip-o':
+        return "far fa-file-archive"
     
-        case 'fileArchiveO':
-        return ""
+        case 'file-archive-o':
+        return "far fa-file-archive"
     
-        case 'fileSoundO':
-        return ""
+        case 'file-sound-o':
+        return "far fa-file-audio"
     
-        case 'fileAudioO':
-        return ""
+        case 'file-audio-o':
+        return "far fa-file-audio"
     
-        case 'fileMovieO':
-        return ""
+        case 'file-movie-o':
+        return "far fa-file-video"
     
-        case 'fileVideoO':
-        return ""
+        case 'file-video-o':
+        return "far fa-file-video"
     
-        case 'fileCodeO':
-        return ""
+        case 'file-code-o':
+        return "far fa-file-code"
     
         case 'vine':
-        return ""
+        return "fab fa-vine"
     
         case 'codepen':
-        return ""
+        return "fab fa-codepen"
     
         case 'jsfiddle':
-        return ""
+        return "fab fa-jsfiddle"
     
-        case 'lifeBouy':
-        return ""
+        case 'life-bouy':
+        return "far fa-life-ring"
     
-        case 'lifeBuoy':
-        return ""
+        case 'life-buoy':
+        return "far fa-life-ring"
     
-        case 'lifeSaver':
-        return ""
+        case 'life-saver':
+        return "far fa-life-ring"
     
         case 'support':
-        return ""
+        return "far fa-life-ring"
     
-        case 'lifeRing':
-        return ""
+        case 'life-ring':
+        return "far fa-life-ring"
     
-        case 'circleONotch':
-        return ""
+        case 'circle-o-notch':
+        return "fas fa-circle-notch"
     
         case 'ra':
-        return ""
+        return "fab fa-rebel"
     
         case 'rebel':
-        return ""
+        return "fab fa-rebel"
     
         case 'ge':
-        return ""
+        return "fab fa-empire"
     
         case 'empire':
-        return ""
+        return "fab fa-empire"
     
         case 'gitSquare':
-        return ""
+        return "fab fa-git-square"
     
         case 'git':
-        return ""
+        return "fab fa-git"
     
-        case 'yCombinatorSquare':
-        return ""
+        case 'y-combinator-square':
+        return "fab fa-y-combinator"
     
-        case 'ycSquare':
-        return ""
+        case 'yc-square':
+        return "fab fa-y-combinator"
     
-        case 'hackerNews':
-        return ""
+        case 'hacker-news':
+        return "fab fa-hacker-news"
     
-        case 'tencentWeibo':
-        return ""
+        case 'tencent-weibo':
+        return "fab fa-tencent-weibo"
     
         case 'qq':
-        return ""
+        return "fab fa-qq"
     
         case 'wechat':
-        return ""
+        return "fab fa-wechat"
     
         case 'weixin':
-        return ""
+        return "fab fa-weixin"
     
         case 'send':
-        return ""
+        return "fas fa-paper-plane"
     
-        case 'paperPlane':
-        return ""
+        case 'paper-plane':
+        return "fas fa-paper-plane"
     
-        case 'sendO':
-        return ""
+        case 'send-o':
+        return "far fa-paper-plane"
     
-        case 'paperPlaneO':
-        return ""
+        case 'paper-plane-o':
+        return "far fa-paper-plane"
     
         case 'history':
-        return ""
+        return "fas fa-history"
     
-        case 'circleThin':
-        return ""
+        case 'circle-thin':
+        return "far fa-circle"
     
         case 'header':
-        return ""
+        return "fas fa-heading"
     
         case 'paragraph':
-        return ""
+        return "fas fa-paragraph"
     
         case 'sliders':
-        return ""
+        return "fas fa-sliders-h"
     
-        case 'shareAlt':
-        return ""
+        case 'share-alt':
+        return "fas fa-share-alt"
     
-        case 'shareAltSquare':
-        return ""
+        case 'share-alt-square':
+        return "fas fa-share-alt-square"
     
         case 'bomb':
-        return ""
+        return "fas fa-bomb"
     
-        case 'soccerBallO':
-        return ""
+        case 'soccer-ball-o':
+        return "far fa-futbol"
     
-        case 'futbolO':
-        return ""
+        case 'futbol-o':
+        return "far fa-futbol"
     
         case 'tty':
-        return ""
+        return "fas fa-tty"
     
         case 'binoculars':
-        return ""
+        return "fas fa-binoculars"
     
         case 'plug':
-        return ""
+        return "fas fa-plug"
     
         case 'slideshare':
-        return ""
+        return "fab fa-slideshare"
     
         case 'twitch':
-        return ""
+        return "fab fa-twitch"
     
         case 'yelp':
-        return ""
+        return "fab fa-yelp"
     
-        case 'newspaperO':
-        return ""
+        case 'newspaper-o':
+        return "far fa-newspaper"
     
         case 'wifi':
-        return ""
+        return "fas fa-wifi"
     
         case 'calculator':
-        return ""
+        return "fas fa-calculator"
     
         case 'paypal':
-        return ""
+        return "fab fa-paypal"
     
-        case 'googleWallet':
-        return ""
+        case 'google-wallet':
+        return "fab fa-google-wallet"
     
-        case 'ccVisa':
-        return ""
+        case 'cc-visa':
+        return "fab fa-cc-visa"
     
-        case 'ccMastercard':
-        return ""
+        case 'cc-mastercard':
+        return "fab fa-cc-mastercard"
     
-        case 'ccDiscover':
-        return ""
+        case 'cc-discover':
+        return "fab fa-cc-discover"
     
-        case 'ccAmex':
-        return ""
+        case 'cc-amex':
+        return "fab fa-cc-amex"
     
-        case 'ccPaypal':
-        return ""
+        case 'cc-paypal':
+        return "fab fa-cc-paypal"
     
-        case 'ccStripe':
-        return ""
+        case 'cc-stripe':
+        return "fab fa-cc-stripe"
     
-        case 'bellSlash':
-        return ""
+        case 'bell-slash':
+        return "fas fa-bell-slash"
     
-        case 'bellSlashO':
-        return ""
+        case 'bell-slash-o':
+        return "far fa-bell-slash"
     
         case 'trash':
-        return ""
+        return "fas fa-trash-alt"
     
         case 'copyright':
-        return ""
+        return "far fa-copyright"
     
         case 'at':
-        return ""
+        return "fas fa-at"
     
         case 'eyedropper':
-        return ""
+        return "fas fa-eye-dropper"
     
-        case 'paintBrush':
-        return ""
+        case 'paint-brush':
+        return "fas fa-paint-brush"
     
-        case 'birthdayCake':
-        return ""
+        case 'birthday-cake':
+        return "fas fa-birthday-cake"
     
-        case 'areaChart':
-        return ""
+        case 'area-chart':
+        return "fas fa-chart-area"
     
-        case 'pieChart':
-        return ""
+        case 'pie-chart':
+        return "fas fa-chart-pie"
     
-        case 'lineChart':
-        return ""
+        case 'line-chart':
+        return "fas fa-chart-line"
     
         case 'lastfm':
-        return ""
+        return "fab fa-lastfm"
     
-        case 'lastfmSquare':
-        return ""
+        case 'lastfm-square':
+        return "fab fa-lastfm-square"
     
-        case 'toggleOff':
-        return ""
+        case 'toggle-off':
+        return "fas fa-toggle-off"
     
-        case 'toggleOn':
-        return ""
+        case 'toggle-on':
+        return "fas fa-toggle-on"
     
         case 'bicycle':
-        return ""
+        return "fas fa-bicycle"
     
         case 'bus':
-        return ""
+        return "fas fa-bus"
     
         case 'ioxhost':
-        return ""
+        return "fab fa-ioxhost"
     
         case 'angellist':
-        return ""
+        return "fab fa-angellist"
     
         case 'cc':
-        return ""
+        return "far fa-closed-captioning"
     
         case 'shekel':
-        return ""
+        return "fas fa-shekel-sign"
     
         case 'sheqel':
-        return ""
+        return "fas fa-shekel-sign"
     
         case 'ils':
-        return ""
+        return "fas fa-shekel-sign"
     
         case 'buysellads':
-        return ""
+        return "fab fa-buysellads"
     
         case 'connectdevelop':
-        return ""
+        return "fab fa-connectdevelop"
     
         case 'dashcube':
-        return ""
+        return "fab fa-dashcube"
     
         case 'forumbee':
-        return ""
+        return "fab fa-forumbee"
     
         case 'leanpub':
-        return ""
+        return "fab fa-leanpub"
     
         case 'sellsy':
-        return ""
+        return "fab fa-sellsy"
     
         case 'shirtsinbulk':
-        return ""
+        return "fab fa-shirtsinbulk"
     
         case 'simplybuilt':
-        return ""
+        return "fab fa-simplybuilt"
     
         case 'skyatlas':
-        return ""
+        return "fab fa-skyatlas"
     
-        case 'cartPlus':
-        return ""
+        case 'cart-plus':
+        return "fas fa-cart-plus"
     
-        case 'cartArrowDown':
-        return ""
+        case 'cart-arrow-down':
+        return "fas fa-cart-arrow-down"
     
         case 'diamond':
-        return ""
+        return "far fa-gem"
     
         case 'ship':
-        return ""
+        return "fas fa-ship"
     
-        case 'userSecret':
-        return ""
+        case 'user-secret':
+        return "fas fa-user-secret"
     
         case 'motorcycle':
-        return ""
+        return "fas fa-motorcycle"
     
-        case 'streetView':
-        return ""
+        case 'street-view':
+        return "fas fa-street-view"
     
         case 'heartbeat':
-        return ""
+        return "fas fa-heartbeat"
     
         case 'venus':
-        return ""
+        return "fas fa-venus"
     
         case 'mars':
-        return ""
+        return "fas fa-mars"
     
         case 'mercury':
-        return ""
+        return "fas fa-mercury"
     
         case 'intersex':
-        return ""
+        return "fas fa-transgender"
     
         case 'transgender':
-        return ""
+        return "fas fa-transgender"
     
-        case 'transgenderAlt':
-        return ""
+        case 'transgender-alt':
+        return "fas fa-transgender-alt"
     
-        case 'venusDouble':
-        return ""
+        case 'venus-double':
+        return "fas fa-venus-double"
     
-        case 'marsDouble':
-        return ""
+        case 'mars-double':
+        return "fas fa-mars-double"
     
-        case 'venusMars':
-        return ""
+        case 'venus-mars':
+        return "fas fa-venus-mars"
     
-        case 'marsStroke':
-        return ""
+        case 'mars-stroke':
+        return "fas fa-mars-stroke"
     
-        case 'marsStrokeV':
-        return ""
+        case 'mars-stroke-v':
+        return "fas fa-mars-stroke-v"
     
-        case 'marsStrokeH':
-        return ""
+        case 'mars-stroke-h':
+        return "fas fa-mars-stroke-h"
     
         case 'neuter':
-        return ""
+        return "fas fa-neuter"
     
         case 'genderless':
-        return ""
+        return "fas fa-genderless"
     
-        case 'facebookOfficial':
-        return ""
+        case 'facebook-official':
+        return "fab fa-facebook"
     
-        case 'pinterestP':
-        return ""
+        case 'pinterest-p':
+        return "fab fa-pinterest-p"
     
         case 'whatsapp':
-        return ""
+        return "fab fa-whatsapp"
     
         case 'server':
-        return ""
+        return "fas fa-server"
     
-        case 'userPlus':
-        return ""
+        case 'user-plus':
+        return "fas fa-user-plus"
     
-        case 'userTimes':
-        return ""
+        case 'user-times':
+        return "fas fa-user-times"
     
         case 'hotel':
-        return ""
+        return "fas fa-hotel"
     
         case 'bed':
-        return ""
+        return "fas fa-bed"
     
         case 'viacoin':
-        return ""
+        return "fab fa-viacoin"
     
         case 'train':
-        return ""
+        return "fas fa-train"
     
         case 'subway':
-        return ""
+        return "fas fa-subway"
     
         case 'medium':
-        return ""
+        return "fab fa-medium"
     
         case 'yc':
-        return ""
+        return "fab fa-y-combinator"
     
-        case 'yCombinator':
-        return ""
+        case 'y-combinator':
+        return "fab fa-y-combinator"
     
-        case 'optinMonster':
-        return ""
+        case 'optin-monster':
+        return "fab fa-optin-monster"
     
         case 'opencart':
-        return ""
+        return "fab fa-opencart"
     
         case 'expeditedssl':
-        return ""
+        return "fab fa-expeditedssl"
     
-        case 'battery4':
-        return ""
+        case 'battery-4':
+        return "fas fa-battery-full"
     
-        case 'batteryFull':
-        return ""
+        case 'battery-full':
+        return "fas fa-battery-full"
     
-        case 'battery3':
-        return ""
+        case 'battery-3':
+        return "fas fa-battery-three-quarters"
     
-        case 'batteryThreeQuarters':
-        return ""
+        case 'battery-three-quarters':
+        return "fas fa-battery-three-quarters"
     
-        case 'battery2':
-        return ""
+        case 'battery-2':
+        return "fas fa-battery-half"
     
-        case 'batteryHalf':
-        return ""
+        case 'battery-half':
+        return "fas fa-battery-half"
     
-        case 'battery1':
-        return ""
+        case 'battery-1':
+        return "fas fa-battery-quarter"
     
-        case 'batteryQuarter':
-        return ""
+        case 'battery-quarter':
+        return "fas fa-battery-quarter"
     
-        case 'battery0':
-        return ""
+        case 'battery-0':
+        return "fas fa-battery-empty"
     
-        case 'batteryEmpty':
-        return ""
+        case 'battery-empty':
+        return "fas fa-battery-empty"
     
-        case 'mousePointer':
-        return ""
+        case 'mouse-pointer':
+        return "fas fa-mouse-pointer"
     
-        case 'iCursor':
-        return ""
+        case 'i-cursor':
+        return "fas fa-i-cursor"
     
-        case 'objectGroup':
-        return ""
+        case 'object-group':
+        return "far fa-object-group"
     
-        case 'objectUngroup':
-        return ""
+        case 'object-ungroup':
+        return "far fa-object-ungroup"
     
-        case 'stickyNote':
-        return ""
+        case 'sticky-note':
+        return "fas fa-sticky-note"
     
-        case 'stickyNoteO':
-        return ""
+        case 'sticky-note-o':
+        return "far fa-sticky-note"
     
-        case 'ccJcb':
-        return ""
+        case 'cc-jcb':
+        return "fab fa-cc-jcb"
     
-        case 'ccDinersClub':
-        return ""
+        case 'cc-diners-club':
+        return "fab fa-cc-diners-club"
     
         case 'clone':
-        return ""
+        return "far fa-clone"
     
-        case 'balanceScale':
-        return ""
+        case 'balance-scale':
+        return "fas fa-balance-scale"
     
-        case 'hourglassO':
-        return ""
+        case 'hourglass-o':
+        return "far fa-hourglass"
     
-        case 'hourglass1':
-        return ""
+        case 'hourglass-1':
+        return "fas fa-hourglass-start"
     
-        case 'hourglassStart':
-        return ""
+        case 'hourglass-start':
+        return "fas fa-hourglass-start"
     
-        case 'hourglass2':
-        return ""
+        case 'hourglass-2':
+        return "fas fa-hourglass-half"
     
-        case 'hourglassHalf':
-        return ""
+        case 'hourglass-half':
+        return "fas fa-hourglass-start"
     
-        case 'hourglass3':
-        return ""
+        case 'hourglass-3':
+        return "fas fa-hourglass-end"
     
-        case 'hourglassEnd':
-        return ""
+        case 'hourglass-end':
+        return "fas fa-hourglass-start"
     
         case 'hourglass':
-        return ""
+        return "fas fa-hourglass"
     
-        case 'handGrabO':
-        return ""
+        case 'hand-grab-o':
+        return "far fa-hand-rock"
     
-        case 'handRockO':
-        return ""
+        case 'hand-rock-o':
+        return "far fa-hand-rock"
     
-        case 'handStopO':
-        return ""
+        case 'hand-stop-o':
+        return "far fa-hand-paper"
     
-        case 'handPaperO':
-        return ""
+        case 'hand-paper-o':
+        return "far fa-hand-paper"
     
-        case 'handScissorsO':
-        return ""
+        case 'hand-scissors-o':
+        return "far fa-hand-scissors"
     
-        case 'handLizardO':
-        return ""
+        case 'hand-lizard-o':
+        return "far fa-hand-lizard"
     
-        case 'handSpockO':
-        return ""
+        case 'hand-spock-o':
+        return "far fa-hand-spock"
     
-        case 'handPointerO':
-        return ""
+        case 'hand-pointer-o':
+        return "far fa-hand-pointer"
     
-        case 'handPeaceO':
-        return ""
+        case 'hand-peace-o':
+        return "far fa-hand-peace"
     
         case 'trademark':
-        return ""
+        return "fas fa-trademark"
     
         case 'registered':
-        return ""
+        return "far fa-registered"
     
-        case 'creativeCommons':
-        return ""
+        case 'creative-commons':
+        return "fab fa-creative-commons"
     
         case 'gg':
-        return ""
+        return "fab fa-gg"
     
-        case 'ggCircle':
-        return ""
+        case 'gg-circle':
+        return "fab fa-gg-circle"
     
         case 'tripadvisor':
-        return ""
+        return "fab fa-tripadvisor"
     
         case 'odnoklassniki':
-        return ""
+        return "fab fa-odnoklassniki"
     
-        case 'odnoklassnikiSquare':
-        return ""
+        case 'odnoklassniki-square':
+        return "fab fa-odnoklassniki-square"
     
-        case 'getPocket':
-        return ""
+        case 'get-pocket':
+        return "fab fa-get-pocket"
     
-        case 'wikipediaW':
-        return ""
+        case 'wikipedia-w':
+        return "fab fa-wikipedia-w"
     
         case 'safari':
-        return ""
+        return "fab fa-safari"
     
         case 'chrome':
-        return ""
+        return "fab fa-chrome"
     
         case 'firefox':
-        return ""
+        return "fab fa-firefox"
     
         case 'opera':
-        return ""
+        return "fab fa-opera"
     
-        case 'internetExplorer':
-        return ""
+        case 'internet-explorer':
+        return "fab fa-internet-explorer"
     
         case 'tv':
-        return ""
+        return "fas fa-tv"
     
         case 'television':
-        return ""
+        return "fas fa-tv"
     
         case 'contao':
-        return ""
+        return "fab fa-contao"
     
         case 'px':
-        return ""
+        return "fas fa-question"
     
         case 'amazon':
-        return ""
+        return "fab fa-amazon"
     
-        case 'calendarPlusO':
-        return ""
+        case 'calendar-plus-o':
+        return "far fa-calendar-plus"
     
-        case 'calendarMinusO':
-        return ""
+        case 'calendar-minus-o':
+        return "far fa-calendar-minus"
     
-        case 'calendarTimesO':
-        return ""
+        case 'calendar-times-o':
+        return "far fa-calendar-times"
     
-        case 'calendarCheckO':
-        return ""
+        case 'calendar-check-o':
+        return "far fa-calendar-check"
     
         case 'industry':
-        return ""
+        return "fas fa-industry"
     
-        case 'mapPin':
-        return ""
+        case 'map-pin':
+        return "fas fa-map-pin"
     
-        case 'mapSigns':
-        return ""
+        case 'map-signs':
+        return "fas fa-map-signs"
     
-        case 'mapO':
-        return ""
+        case 'map-o':
+        return "far fa-map"
     
         case 'map':
-        return ""
+        return "fas fa-map"
     
         case 'commenting':
-        return ""
-        case 'commentingO':
-        return ""
+        return "fas fa-comment-dots"
+
+        case 'commenting-o':
+        return "far fa-comment-dots"
+
         case 'houzz':
-        return ""
+        return "fab fa-houzz"
+
         case 'vimeo':
-        return ""
-        case 'blackTie':
-        return ""
+        return "fab fa-vimeo"
+
+        case 'black-tie':
+        return "fab fa-black-tie"
+
         case 'fonticons':
-        return ""
+        return "fab fa-fonticons"
+
         default:
-        return ""
+        return "fas fa-question"
     }
 }
