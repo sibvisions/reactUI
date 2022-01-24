@@ -68,7 +68,6 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
 
 export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
-    console.log(componentSizes.get(component.id)!.minimumSize, component.id)
     if (componentSizes.has(component.id)) {
         if (component.minimumSize || componentSizes.get(component.id)!.minimumSize !== undefined) {
             minimumSize = componentSizes.get(component.id)!.minimumSize;
