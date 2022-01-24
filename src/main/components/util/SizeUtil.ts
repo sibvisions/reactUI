@@ -68,6 +68,7 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
 
 export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
+    console.log(componentSizes.get(component.id)!.minimumSize, component.id)
     if (componentSizes.has(component.id)) {
         if (component.minimumSize || componentSizes.get(component.id)!.minimumSize !== undefined) {
             minimumSize = componentSizes.get(component.id)!.minimumSize;
@@ -79,16 +80,21 @@ export function getMinimumSize(component:BaseComponent, componentSizes:Map<strin
         }
         else {
             minimumSize = componentSizes.get(component.id)!.preferredSize;
+            if (component.className === COMPONENT_CLASSNAMES.LABEL && minimumSize.width > 50 && component.text) {
+                minimumSize.width = 50;
+            }
         }
 
         if (component.maximumSize) {
             let dimMax:Dimension = componentSizes.get(component.id)!.maximumSize;
-            if (dimMax.width < minimumSize.width) {
-                minimumSize.width = dimMax.width;
-            }
-
-            if (dimMax.height < minimumSize.height) {
-                minimumSize.height = dimMax.height;
+            if (dimMax) {
+                if (dimMax.width < minimumSize.width) {
+                    minimumSize.width = dimMax.width;
+                }
+    
+                if (dimMax.height < minimumSize.height) {
+                    minimumSize.height = dimMax.height;
+                }
             }
         }
     }

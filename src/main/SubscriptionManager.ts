@@ -695,11 +695,14 @@ export class SubscriptionManager {
         const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
         const selectedRow = this.contentStore.getDataBook(compId, dataProvider)?.selectedRow;
         if(rowSubscriber) {
-            this.jobQueue.set("rowSelect_" + dataProvider + "_" + compId, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
+            //this.jobQueue.set("rowSelect_" + dataProvider + "_" + compId, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
+            /// Removed JobQueue because upload didn't work anymore, JobQueue is possibly not needed anymore or when problems with multiple rowSelections occur we need it back
+            rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
         }
             
         if (screenRowSubs) {
             this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
+            //screenRowSubs.apply(undefined, []);
         }
     }
 

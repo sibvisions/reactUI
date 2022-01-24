@@ -892,7 +892,6 @@ export default class ContentStore{
     setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
         const compPanel = this.getComponentByName(compId) as IPanel;
         const existingMap = this.getScreenDataproviderMap(compId);
-
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
                 (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};

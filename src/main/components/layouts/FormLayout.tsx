@@ -298,7 +298,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 children.forEach(component => {
                     if(component.visible !== false){
                         const constraint = componentConstraints.get(component.id);
-
                         const preferredComponentSize = getPreferredSize(component, compSizes);
                         const minimumComponentSize = getMinimumSize(component, compSizes);
 
@@ -494,16 +493,23 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 const minSize = getMinimumSize(minimumWidth, minimumHeight);
 
-                if(calcSize.width < minSize.width)
+                if(calcSize.width < minSize.width) {
                     calcSize.width = minSize.width;
-                if(calcSize.height < minSize.height)
+                }
+                    
+                if(calcSize.height < minSize.height) {
                     calcSize.height = minSize.height;
+                }
+                    
 
                 if(maximumSize) {
-                    if(calcSize.width > maximumSize.width)
+                    if(calcSize.width > maximumSize.width) {
                         calcSize.width = maximumSize.width;
-                    if(calcSize.height > maximumSize.height)
+                    }
+                        
+                    if(calcSize.height > maximumSize.height) {
                         calcSize.height = maximumSize.height;
+                    }
                 }
 
                 const lba = anchors.get("l");

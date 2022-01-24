@@ -13,16 +13,23 @@ import { CELLEDITOR_CLASSNAMES } from "../editors";
 function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxSize:Dimension|undefined):Dimension {
     let sizeToSend:Dimension = prefSize;
     if (minSize) {
-        if (prefSize.width < minSize.width)
+        if (prefSize.width < minSize.width) {
             sizeToSend.width = minSize.width;
-        if (prefSize.height < minSize.height)
+        }
+            
+        if (prefSize.height < minSize.height) {
             sizeToSend.height = minSize.height;
+        }
+            
     }
     if (maxSize) {
-        if (maxSize.width < prefSize.width)
+        if (maxSize.width < prefSize.width) {
             sizeToSend.width = maxSize.width;
-        if (maxSize.height < prefSize.height)
+        }
+            
+        if (maxSize.height < prefSize.height) {
             sizeToSend.height = maxSize.height
+        }
     }
     return sizeToSend
 }

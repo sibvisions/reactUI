@@ -231,7 +231,6 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
             {
                 /** Build markers with icon */
                 providedPointData.map((point: any, i: number) => {
-                    console.log(point)
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}

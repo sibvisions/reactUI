@@ -190,6 +190,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
 
+    console.log(selectedRow.selectedColumn, props.id, selectedRow.index)
+
     /** Reference if the page up/down key was pressed */
     const pageKeyPressed = useRef<boolean>(false);
 
