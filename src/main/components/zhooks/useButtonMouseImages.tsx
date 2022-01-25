@@ -15,8 +15,19 @@ const isFAIcon = (iconName?:string) => {
 
 const removeIcon = (elem:HTMLElement, iconName:string) => {
     if (isFAIcon(iconName)) {
-        elem.classList.remove(iconName.substring(3));
-    } else {
+        switch (iconName.split(" ")[0]) {
+            case "fas": case "far": case "fab":
+                elem.classList.remove(iconName.substring(4));
+                break;
+            case "fa":
+                elem.classList.remove(iconName.substring(3));
+                break;
+            default:
+                elem.classList.remove(iconName.substring(4));
+                break;
+        }
+    } 
+    else {
         elem.style.setProperty('--iconImage', '');
     }
 }
@@ -33,14 +44,25 @@ const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconPro
     const context = useContext(appContext);
 
     const containsIcon = useCallback((elem:HTMLElement, iconName:string) => {
-        return elem.classList.contains(iconName.substring(3)) || 
+        return elem.classList.contains(iconName.substring(4)) || 
             window.getComputedStyle(elem).getPropertyValue('--iconImage') === `url(${context.server.RESOURCE_URL + iconName})`
     }, [context.server.RESOURCE_URL]);
 
     const addIcon = useCallback((elem:HTMLElement, iconName:string) => {
         if (isFAIcon(iconName)) {
-            elem.classList.add(iconName.substring(3));
-        } else {
+            switch (iconName.split(" ")[0]) {
+                case "fas": case "far": case "fab":
+                    elem.classList.add(iconName.substring(4));
+                    break;
+                case "fa":
+                    elem.classList.add(iconName.substring(3));
+                    break;
+                default:
+                    elem.classList.add(iconName.substring(4));
+                    break;
+            }
+        } 
+        else {
             elem.style.setProperty('--iconImage', `url(${context.server.RESOURCE_URL + iconName})`);
         }
     }, [context.server.RESOURCE_URL]);
@@ -50,7 +72,8 @@ const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconPro
     const handleMouseImagePressed = useCallback(() => {
         if (mouseOverIconData?.icon && containsIcon(iconElement, mouseOverIconData.icon)) {
             removeIcon(iconElement, mouseOverIconData.icon)
-        } else if (containsIcon(iconElement, iconData!.icon!)) {
+        } 
+        else if (containsIcon(iconElement, iconData!.icon!)) {
             removeIcon(iconElement, iconData!.icon!)
         }
         addIcon(iconElement, mousePressedIconData!.icon!)
@@ -60,7 +83,8 @@ const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconPro
         removeIcon(iconElement, mousePressedIconData!.icon!);
         if (mouseOverIconData?.icon) {
             addIcon(iconElement, mouseOverIconData.icon);
-        } else {
+        } 
+        else {
             addIcon(iconElement, iconData!.icon!);
         }
     }, [iconElement, iconData?.icon, mouseOverIconData?.icon, mousePressedIconData?.icon]);
@@ -73,7 +97,8 @@ const useButtonMouseImages = (iconData?:IconProps, mousePressedIconData?:IconPro
     const handleMouseImageOut = useCallback(() => {
         if (mousePressedIconData?.icon && containsIcon(iconElement, mousePressedIconData.icon)) {
             removeIcon(iconElement, mousePressedIconData.icon);
-        } else if (mouseOverIconData?.icon) {
+        } 
+        else if (mouseOverIconData?.icon) {
             removeIcon(iconElement, mouseOverIconData?.icon)
         }
         addIcon(iconElement, iconData!.icon!)

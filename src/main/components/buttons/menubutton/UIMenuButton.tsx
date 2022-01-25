@@ -74,11 +74,11 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 let iconProps = parseIconData(props.foreground, item.image);
                 tempItems.push({
                     label: item.text,
-                    icon: iconProps ? iconProps.icon : undefined,
+                    icon: iconProps.icon ? iconProps.icon : undefined,
                     style: {
                         color: iconProps.color
                     },
-                    template: !iconProps.icon?.includes('fa') ? (item, options) => {
+                    template: (iconProps.icon && !iconProps.icon?.includes('fa')) ? (item, options) => {
                         return (
                             <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
                                 <img className='rc-popupmenubutton-custom-icon' src={context.server.RESOURCE_URL + item.icon} />

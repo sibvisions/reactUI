@@ -731,11 +731,17 @@ body {
         background: var(--popupmenubutton-panel-background);
     }
 
-    .p-menuitem-link:not(.p-disabled):hover {
-        background: var(--popupmenubutton-item-hover-background);
-        
-        .p-menuitem-text {
-            color: var(--popupmenubutton-item-hover-text-color);
+    .p-menuitem-link {
+        &:not(.p-disabled):hover {
+            background: var(--popupmenubutton-item-hover-background);
+            
+            .p-menuitem-text {
+                color: var(--popupmenubutton-item-hover-text-color);
+            }
+        }
+
+        .p-menuitem-text{
+            color: var(--text-color);
         }
     }
 

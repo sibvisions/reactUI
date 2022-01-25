@@ -126,3 +126,11 @@
     }
 }
 
+.p-button.p-button-link:enabled:focus {
+    box-shadow: unset;
+    border-color: transparent;
+
+    .p-button-label {
+        text-decoration: underline;
+    }
+}

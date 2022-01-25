@@ -346,6 +346,9 @@ body {
   .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
     color: var(--popupmenubutton-item-hover-text-color); }
 
+.p-menu .p-menuitem-link .p-menuitem-text {
+  color: var(--text-color); }
+
 .p-menu .p-menuitem-text {
   color: var(--text-color); }
 
