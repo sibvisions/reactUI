@@ -21,7 +21,7 @@ export interface ICustomComponentWrapper extends BaseComponent {
  */
 const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Reference for the custom-component-wrapper element*/
-    const wrapperRef = useRef(null);
+    const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ICustomComponentWrapper>(baseProps);
@@ -32,6 +32,12 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (wrapperRef.current) {
+            const ref = wrapperRef.current
+            ref.style.removeProperty("top");
+            ref.style.removeProperty("left");
+            ref.style.removeProperty("width");
+            ref.style.removeProperty("height");
+            console.log(ref.offsetWidth, ref.offsetHeight, id)
             sendOnLoadCallback(id, props.className, undefined, {width: 0x80000000, height: 0x80000000}, {width: 0, height: 0}, wrapperRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);

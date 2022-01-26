@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomStartupProps, ScreenWrapperOptions } from "./customTypes";
 import { getMetaData, Timer } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
