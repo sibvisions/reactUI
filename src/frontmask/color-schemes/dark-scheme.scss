@@ -795,6 +795,12 @@ body {
         border-radius: var(--editor-border-radius);
     }
 
+    &.required-field {
+        .p-inputtext {
+            color: var(--table-required-color);
+        }
+    }
+
     input {
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
@@ -851,6 +857,12 @@ body {
 .rc-editor-linked {
     &:focus-within {
         box-shadow: var(--focus-box-shadow);
+    }
+
+    &.required-field {
+        .p-inputtext {
+            color: var(--table-required-color);
+        }
     }
 
     input {

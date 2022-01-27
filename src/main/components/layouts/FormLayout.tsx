@@ -20,7 +20,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     /** Current state of the calculatedStyle by the FormLayout */
     const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext)
+    const context = useContext(appContext);
 
     /** Extract variables from baseprops */
     const {

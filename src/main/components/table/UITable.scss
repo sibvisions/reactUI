@@ -3,6 +3,10 @@
     height: 100%;
     border-collapse: collapse;
 
+    .p-datatable-table {
+        position: relative;
+    }
+
     &.no-auto-resize {
         .p-datatable-scrollable-body {
             max-width: 100%;

@@ -7,6 +7,7 @@ import _ from "underscore";
 /** Other imports */
 import { appContext } from "../../AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
+import BaseComponent from "../BaseComponent";
 import { Dimension } from "../util";
 
 export type ComponentSizes = {
@@ -23,8 +24,11 @@ export type ComponentSizes = {
 const useComponents = (id: string, className:string): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    const componentsChildren = useRef<Map<string, Array<string>>>(new Map<string, Array<string>>());
     
     const compLoadedCache = useRef<Array<string>>(new Array<string>());
     
@@ -36,16 +40,16 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
             tempSizes = new Map([...preferredSizes]);
-            tempSizes.forEach((val, key) => {
-                if (!children.has(key)) {
-                    tempSizes.delete(key)
-                    componentsChanged = true;
-                }
-            });
+            // tempSizes.forEach((val, key) => {
+            //     if (!children.has(key)) {
+            //         tempSizes.delete(key)
+            //         componentsChanged = true;
+            //     }
+            // });
 
-            if (componentsChanged) {
-                setPreferredSizes(new Map(tempSizes));
-            }
+            // if (componentsChanged) {
+            //     setPreferredSizes(new Map(tempSizes));
+            // }
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
@@ -66,24 +70,56 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
             return true;
         }
 
+        const childrenChanged = (compId:string) => {
+            const arraysEqual = (a:string[], b:string[]) => {
+                let aClone = [...a];
+                let bClone = [...b];
+                if (aClone === bClone) return true;
+                if (aClone === null || bClone === null) return false;
+                if (aClone.length !== bClone.length) return false;
+                
+                aClone.sort();
+                bClone.sort();
+              
+                for (var i = 0; i < aClone.length; ++i) {
+                  if (aClone[i] !== bClone[i]) return false;
+                }
+                return true;
+              }
+
+            if (componentsChildren.current.has(compId)) {
+                return !arraysEqual(componentsChildren.current.get(compId) as string[], Array.from(context.contentStore.getChildren(compId).keys()));
+            }
+            else {
+                return true;
+            }
+        }
+
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
-            const preferredComp = tempSizes.get(compId)
+            tempSizes.forEach((val, key) => {
+                if (!children.has(key)) {
+                    tempSizes.delete(key)
+                }
+            });
+            const preferredComp = tempSizes.get(compId);
             tempSizes.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if((tempSizes.size === children.size || id.includes('TP')) && sizesChanged(preferredComp, prefSize, minSize, maxSize)) {
+            if((tempSizes.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
                 setPreferredSizes(new Map(tempSizes));
             }
                 
             //Set Preferred Sizes of changed Components
             if(preferredSizes && preferredSizes.has(compId)){
                 const preferredComp = preferredSizes.get(compId);
-                if(preferredComp && sizesChanged(preferredComp, prefSize, minSize, maxSize)){
+                if(preferredComp && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
                     preferredComp.preferredSize = prefSize;
                     preferredComp.minimumSize = minSize;
                     preferredComp.maximumSize = maxSize
                     setPreferredSizes(new Map(preferredSizes));
                 }
             }
+            componentsChildren.current.set(compId, Array.from(context.contentStore.getChildren(compId).keys()));
         }
 
         /** If there are no children set an empty map */

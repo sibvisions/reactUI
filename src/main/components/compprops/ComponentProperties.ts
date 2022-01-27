@@ -51,6 +51,10 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
         let iconSize:Dimension = {width: 14, height: 14};
         let iconColor:string|undefined = tinycolor(foreground).toString() || undefined;
 
+        if (iconData.includes(";mapping=true")) {
+            iconData = iconData.replace(";mapping=true", "");
+        }
+
         if (iconData.includes("FontAwesome")) {
             splittedIconData = iconData.slice(iconData.indexOf('.') + 1).split(',');
             iconName = convertIcon(splittedIconData[0])

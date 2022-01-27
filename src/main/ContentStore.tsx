@@ -622,14 +622,16 @@ export default class ContentStore{
      * @param parentId - the id of the parent
      * @returns all visible children of a parent, if tabsetpanel also return invisible
      */
-    getChildren(parentId: string, className: string): Map<string, BaseComponent> {
+    getChildren(parentId: string, className?: string): Map<string, BaseComponent> {
         const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
 
-        if (mergedContent.has(parentId) && className && className.includes("ToolBarHelper")) {
-            parentId = mergedContent.get(parentId)!.parent as string
+        if (className) {
+            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+                parentId = mergedContent.get(parentId)!.parent as string
+            }
         }
 
         while (!entry.done) {
@@ -643,17 +645,17 @@ export default class ContentStore{
             }
             entry = componentEntries.next();
         }
-
-        if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-            children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+        if (className) {
+            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                children = new Map([...children].filter(entry => entry[1]["~additional"]));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
         }
-        else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
-            children = new Map([...children].filter(entry => entry[1]["~additional"]));
-        }
-        else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
-            children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
-        }
-
         return children;
     }
 

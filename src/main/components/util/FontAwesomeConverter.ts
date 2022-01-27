@@ -51,7 +51,7 @@ export function convertIcon(icon:string) {
         case 'search-plus':
         return "fas fa-search-plus"
     
-        case 'searchMinus':
+        case 'search-minus':
         return "fas fa-search-minus"
     
         case 'power-off':
@@ -268,7 +268,7 @@ export function convertIcon(icon:string) {
         return "fas fa-plus-circle"
     
         case 'minus-circle':
-        return "minus-circle"
+        return "fas fa-minus-circle"
     
         case 'times-circle':
         return "fas fa-times-circle"

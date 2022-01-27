@@ -37,7 +37,6 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
             ref.style.removeProperty("left");
             ref.style.removeProperty("width");
             ref.style.removeProperty("height");
-            console.log(ref.offsetWidth, ref.offsetHeight, id)
             sendOnLoadCallback(id, props.className, undefined, {width: 0x80000000, height: 0x80000000}, {width: 0, height: 0}, wrapperRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
