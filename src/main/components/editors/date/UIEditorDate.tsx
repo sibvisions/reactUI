@@ -351,6 +351,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 tooltip={props.toolTipText}
                 viewDate={viewDate}
                 onViewDateChange={(e) => setViewDate(e.value)}
+                placeholder={props.cellEditor_placeholder_}
             />
         </span>
 

@@ -225,6 +225,8 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     }}
                     disabled={!props.cellEditor_editable_}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
+                    tooltip={props.toolTipText}
+                    placeholder={props.cellEditor_placeholder_}
                 />
             </span>
             :
@@ -246,6 +248,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
+                placeholder={props.cellEditor_placeholder_}
             />
     )
 }

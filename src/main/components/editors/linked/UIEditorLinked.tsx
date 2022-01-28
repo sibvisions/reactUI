@@ -415,6 +415,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
                 } : {})}
+                placeholder={props.cellEditor_placeholder_}
             />
         </span>
 

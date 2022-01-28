@@ -20,6 +20,7 @@ export interface IEditor extends BaseComponent{
     cellEditor_horizontalAlignment_?: 0 | 1 | 2| 3,
     cellEditor_verticalAlignment_?: 0 | 1 | 2| 3,
     cellEditor_background_?:string,
+    cellEditor_placeholder_?:string
     enabled: boolean,
     columnName: string,
     dataRow: string,

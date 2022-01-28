@@ -432,7 +432,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
-            tooltip: props.toolTipText
+            tooltip: props.toolTipText,
+            placeholder: props.cellEditor_placeholder_
         }
     }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, disabled, 
@@ -488,7 +489,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                     <InputText
                         {...primeProps}
                         {...popupMenu}
-                        size={15} />
+                        size={15}
+                        placeholder={props.cellEditor_placeholder_} />
     )
 }
 export default UIEditorText

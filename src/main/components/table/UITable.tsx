@@ -1210,7 +1210,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                         return cn
                     }}
                     tabIndex={props.tabIndex}
-                    emptyMessage={""} >
+                    emptyMessage={""}
+                    breakpoint="0px" >
                     {columns}
                 </DataTable>
             </div>
