@@ -88,14 +88,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     }
                 }}
                 tooltip="Home"
-                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />
+                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
             }
             {props.showButtons && (!props.visibleButtons || props.visibleButtons.save) && <Button
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
-                tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} />}
+                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!props.visibleButtons || (props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
                 <Button
                     icon={!props.visibleButtons ? "fas fa-sync" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fas fa-sync" : "pi pi-undo"}
@@ -109,7 +109,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                         }
                     }}
                     tooltip={translations.get(!props.visibleButtons ? "Reload" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "Reload" : "Rollback")}
-                    tooltipOptions={{ style: { opacity: "0.85" }, position: "bottom" }} /> }
+                    tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
             <div className="profile-menu">
                 <Menubar
                     style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
