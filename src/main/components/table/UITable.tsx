@@ -31,6 +31,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import { CellEditor } from "./CellEditor";
+import { RequestQueueMode } from "src/main/Server";
 
 
 /** Interface for Table */
@@ -226,9 +227,24 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     useFetchMissingData(props.parent as string, compId, props.dataBook);
 
+    const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
-    //@ts-ignore
-    useMouseListener(props.name, tableRef.current ? (virtualEnabled ? tableRef.current.el : tableRef.current.table) : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(
+        props.name, 
+        tableRef.current ? (virtualEnabled ? (tableRef.current as any).el : (tableRef.current as any).table) : undefined, 
+        props.eventMouseClicked, 
+        props.eventMousePressed, 
+        props.eventMouseReleased,
+        (type, release) => {
+            heldMouseEvents.current.add(release);
+            if (type === "clicked" || type === "cancelled") {
+                setTimeout(() => {
+                    heldMouseEvents.current.forEach(release => release())
+                    heldMouseEvents.current.clear()
+                }, 1)
+            }
+        }
+    );
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
@@ -241,7 +257,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.componentId = props.name;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true), topbar);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
     }, [props.dataBook, props.name, context.server])
 
     /**

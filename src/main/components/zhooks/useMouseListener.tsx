@@ -22,7 +22,14 @@ const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
     }
 }
 
-const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClicked?:boolean, eventMousePressed?:boolean, eventMouseReleased?:boolean) => {
+const useMouseListener = (
+    compName:string, 
+    element?:HTMLElement, 
+    eventMouseClicked?:boolean, 
+    eventMousePressed?:boolean, 
+    eventMouseReleased?:boolean,
+    hold?: (type: "pressed" | "released" | "clicked" | "cancelled", release: () => void) => void
+) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** topbar context to show progress */
@@ -49,7 +56,9 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             pressReq.button = getMouseButton(event.button);
             pressReq.x = event.x;
             pressReq.y = event.y;
-            setTimeout(() => showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar), 75);
+            console.log('pressed', hold);
+            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+            hold ? hold("pressed", release) : release();
         }
     }
 
@@ -64,7 +73,8 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             releaseReq.button = getMouseButton(event.button);
             releaseReq.x = event.x;
             releaseReq.y = event.y;
-            setTimeout(() => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar), 77);
+            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+            hold ? hold("released", release) : release();
         }
 
         pressedElement.current = false;
@@ -76,7 +86,10 @@ const useMouseListener = (compName:string, element?:HTMLElement, eventMouseClick
             clickReq.x = event.x;
             clickReq.y = event.y;
             clickReq.clickCount = event.detail;
-            setTimeout(() => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar), 76);
+            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar);
+            hold ? hold("clicked", release) : release();
+        } else if (hold) {
+            hold("cancelled", () => {});
         }
     }
 
