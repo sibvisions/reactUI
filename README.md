@@ -37,6 +37,8 @@ run `npm run devbundle` to create a development bundle. URL configuration is pos
             "logoBig": "[path to logo in public directory]",
             "logoSmall": "[path to logo in public directory]",
             "logoLogin": "[path to logo in public directory]"
+            "theme": "[theme here]",
+            "colorScheme": "[color-scheme here]"
         }
         ```
 
