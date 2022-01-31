@@ -1,3 +1,9 @@
+#toast-error {
+    .p-toast-message .p-toast-message-content .p-toast-message-text {
+        margin: 0 0 0 2rem;
+    }
+}
+
 #toast-info {
     opacity: 1;
     width: unset;

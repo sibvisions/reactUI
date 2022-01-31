@@ -67,7 +67,7 @@ const UIToast: FC = () => {
     useEffect(() => {
         if (toastInfoRef.current && toastErrRef.current && toastIndex.current !== null && toastProps) {
             if (toastProps.severity) {
-                const toast: ToastMessage = { severity: toastProps.severity, summary: toastProps.dialog.message }
+                const toast: ToastMessage = { severity: toastProps.severity, summary: toastProps.dialog.message, closable: false }
                 toastErrRef.current.show(toast);
                 toastIndex.current++;
             }
