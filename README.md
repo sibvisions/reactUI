@@ -11,16 +11,16 @@ The JVx ReactUI Client is a web application for JVx applications. It is used to 
 There are two options to use bundling with webpack.
 
     1. Production Bundle
-        run ```npm run bundle``` to create a production bundle. URL configuration is then required in your app where reactUI is used as lib. Does not accept config.json!
+        run `npm run bundle` to create a production bundle. URL configuration is then required in your app where reactUI is used as lib. Does not accept config.json!
     2. Development Bundle
-        run ```npm run devbundle``` to create a development bundle. URL configuration is possible but config.json is also allowed.
+        run `npm run devbundle` to create a development bundle. URL configuration is possible but config.json is also allowed.
 
 # Getting Started
 - Clone the git repository, open it in your development environment of choice and run ```npm install``` to download the dependencies.
 - Run the command ```npm start``` to start reactUI. A new tab will open in your browser.
 - If the web application can not connect to the server there are different approaches to fix this issue, Depending on whether you want to connect to the server by a config.json file or URL
 
-    1. Config.JSON File
+    1. config.json File
     
         Add a file called config.json in your public folder of your project. This file will be used to send the required data to the server during the startup-request. 
         
@@ -33,7 +33,7 @@ There are two options to use bundling with webpack.
             "username": "[username here]",
             "password": "[password here]",
             "deviceMode": "[deviceMode]",
-            "language": "[language (en, de)]",
+            "langCode": "[language (en, de)]",
             "logoBig": "[path to logo in public directory]",
             "logoSmall": "[path to logo in public directory]",
             "logoLogin": "[path to logo in public directory]"
