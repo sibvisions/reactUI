@@ -66,18 +66,6 @@ const useMouseListener = (
             event.stopPropagation();
         }
 
-        if (eventMouseReleased && pressedElement.current) {
-            const releaseReq = createMouseRequest();
-            releaseReq.componentId = compName;
-            releaseReq.button = getMouseButton(event.button);
-            releaseReq.x = event.x;
-            releaseReq.y = event.y;
-            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
-            hold ? hold("released", release) : release();
-        }
-
-        pressedElement.current = false;
-
         if (eventMouseClicked && pressedX.current === event.x && pressedY.current === event.y) {
             const clickReq = createMouseClickedRequest();
             clickReq.componentId = compName;
@@ -90,6 +78,18 @@ const useMouseListener = (
         } else if (hold) {
             hold("cancelled", () => {});
         }
+
+        if (eventMouseReleased && pressedElement.current) {
+            const releaseReq = createMouseRequest();
+            releaseReq.componentId = compName;
+            releaseReq.button = getMouseButton(event.button);
+            releaseReq.x = event.x;
+            releaseReq.y = event.y;
+            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+            hold ? hold("released", release) : release();
+        }
+
+        pressedElement.current = false;
     }
 
     useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent));
