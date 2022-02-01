@@ -36,7 +36,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         className
     } = baseProps
 
-
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -123,9 +122,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     centerUsed = true
                     vCompCount++;
                     hCompCount++;
-                }
-                    
+                }  
             });
+
+            let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0;
+            let addHGap = hCompCount > 0 ? (hCompCount - 1) * gaps.horizontalGap : 0;
 
             // Build SizeMap
 
@@ -260,8 +261,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 height: prefConstraintSizes.south.height,
             }
 
-            let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0;
-            let addHGap = hCompCount > 0 ? (hCompCount - 1) * gaps.horizontalGap : 0;
             /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
             children.forEach(component => {
                 if (component.constraints === "North") {
@@ -281,17 +280,22 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 }
             });
             const preferredWidth = Math.max(...[
-                Math.max(...[northCSS.width as number, southCSS.width as number]),
-                ((centerCSS.width as number) + (eastCSS.width as number) + (westCSS.width as number))])
-                + margins.marginLeft + margins.marginRight + addHGap;
-            const preferredHeight = Math.max(...[
-                Math.max(...[(westCSS.height as number), (eastCSS.height as number)]), (centerCSS.height as number)
-            ]) + (northCSS.height as number) + (southCSS.height as number) + margins.marginTop + margins.marginBottom + addVGap;
+                prefConstraintSizes.north.width,
+                prefConstraintSizes.center.width + prefConstraintSizes.east.width + prefConstraintSizes.west.width,
+                prefConstraintSizes.south.width
+            ]) + margins.marginLeft + margins.marginRight + addHGap;
+
+            const preferredHeight = prefConstraintSizes.north.height + prefConstraintSizes.south.height + Math.max(...[
+                prefConstraintSizes.east.height,
+                prefConstraintSizes.west.height,
+                prefConstraintSizes.center.height
+            ]) + margins.marginTop + margins.marginBottom + addVGap;
 
             const minimumWidth = Math.max(...[
                 Math.max(...[minConstraintSizes.north.width, minConstraintSizes.south.width]),
                 minConstraintSizes.center.width + minConstraintSizes.east.width, minConstraintSizes.west.width
             ]) + margins.marginLeft + margins.marginRight + addHGap;
+
             const minimumHeight = Math.max(...[
                 Math.max(...[minConstraintSizes.west.height, minConstraintSizes.east.height]), minConstraintSizes.center.height
             ]) + minConstraintSizes.north.height + minConstraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
