@@ -1,7 +1,6 @@
 :root {
   --login-mask-background: rgb(245, 245, 245, 0.93);
   --login-logo-background: #ffffff;
-  --login-placeholder-color: #bcc0c4;
   --login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
   --screen-background: #ffffff;
   --text-color: #495057;
@@ -36,6 +35,7 @@
   --button-background: #2196F3;
   --input-background: #ffffff;
   --input-border: 1px solid #ced4da;
+  --input-placeholder-color: #6c757d;
   --checkbox-background: #ffffff;
   --checkbox-border: 1px solid #ced4da;
   --checkbox-selected-background: #2196f3;
@@ -122,7 +122,7 @@
   --linked-border-radius: 3px;
   --table-border-radius: 0px;
   --tab-border-radius: 0px;
-  --dialog-border-radius: 0px;
+  --dialog-border-radius: 3px;
   --toolbar-border-radius: 0px;
   --topbar-colors: #2196F3, #2196F3; }
 
@@ -133,8 +133,6 @@ body {
 .login-form {
   background: var(--login-mask-background);
   border-radius: var(--login-border-radius); }
-  .login-form .p-float-label label {
-    color: var(--login-placeholder-color); }
 
 .login-logo-wrapper {
   background: var(--login-logo-background); }
@@ -369,6 +367,11 @@ body {
     border-color: var(--border-color-hover); }
   .p-inputtext:enabled:hover {
     border-color: var(--border-color-hover); }
+  .p-inputtext::placeholder {
+    color: var(--input-placeholder-color); }
+
+.p-float-label > label {
+  color: var(--input-placeholder-color); }
 
 .p-calendar:focus-within {
   outline: 0 none;
@@ -646,7 +649,8 @@ body {
 
 .rc-message-dialog .p-dialog-header {
   border-top-left-radius: var(--dialog-border-radius);
-  border-top-right-radius: var(--dialog-border-radius); }
+  border-top-right-radius: var(--dialog-border-radius);
+  background: var(--dialog-header-background); }
 
 .rc-message-dialog.info .p-dialog-header {
   background: var(--message-info-header-background);
@@ -705,7 +709,13 @@ body {
         background: var(--message-info-header-close-hover); }
 
 .rc-error-dialog {
-  background: var(--error-dialog-background); }
+  background: var(--error-dialog-background);
+  color: var(--text-color); }
+
+.tag-panel {
+  color: #495057; }
+  .tag-panel .rc-button.mouse-border {
+    color: #495057; }
 
 .rc-panel-group-caption {
   border-bottom: var(--input-border); }

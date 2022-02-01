@@ -7,10 +7,16 @@
   background-repeat: no-repeat;
 }
 
-.login-form .p-fluid .lost-password-button {
+.login-form .p-fluid {
+  .lost-password-button {
     width: unset;
     padding: 0.5rem;
-}
+  }
+
+  .p-float-label label {
+    line-height: unset;
+  }
+} 
 
 .login-logo-wrapper {
   border-top-left-radius: inherit;
@@ -23,9 +29,6 @@
 }
 
 .p-float-label {
-  label {
-    line-height: unset;
-  }
   /// Position and Size of floatlabel placeholder
   input:focus ~label, input.p-filled ~label, 
   textarea:focus ~label, textarea.p-filled ~label,

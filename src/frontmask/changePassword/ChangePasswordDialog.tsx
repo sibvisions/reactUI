@@ -135,8 +135,8 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             id="change-password"
                             type="password"
                             autoComplete="change-password"
-                            onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value})) : undefined}
-                            disabled={!isReset} />
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value}))}
+                            disabled={!isReset && !props.loggedIn} />
                         <label className="change-password-label" htmlFor="change-password">
                             {isReset ? translations.get("One-time password") : translations.get("Password")}
                         </label>
@@ -151,7 +151,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, newPassword: event.target.value}))} />
                         <label className="change-password-label" htmlFor="change-password-new">{translations.get("New Password")} </label>
                     </div>
-                    <div className="p-field p-float-label p-input-icon-left">
+                    <div className="p-field p-float-label p-input-icon-left change-password-confirm">
                         <i className="pi pi-check" />
                         <InputText
                             value={changePWData.confirmPassword}
