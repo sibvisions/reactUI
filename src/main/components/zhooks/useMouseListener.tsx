@@ -56,7 +56,6 @@ const useMouseListener = (
             pressReq.button = getMouseButton(event.button);
             pressReq.x = event.x;
             pressReq.y = event.y;
-            console.log('pressed', hold);
             const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
             hold ? hold("pressed", release) : release();
         }

@@ -173,9 +173,6 @@ class Server {
         waitForOpenRequests?: boolean,
         queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
     ) {
-
-        console.log("sending", request, endpoint, queueMode);
-
         let promise = new Promise<any>((resolve, reject) => {
             if (
                 request.componentId 
@@ -219,7 +216,6 @@ class Server {
                             return results;
                         })
                         .then(results => {
-                            console.log('done!');
                             resolve(results)
                         }, (err) => Promise.reject(err))
                         .catch(error => {
@@ -244,7 +240,6 @@ class Server {
                         waitForOpenRequests,
                         RequestQueueMode.IMMEDIATE
                     ).then(results => {
-                        console.log('q done!');
                         resolve(results)
                     }))
                     this.advanceRequestQueue();
@@ -266,11 +261,9 @@ class Server {
     }
 
     advanceRequestQueue() {
-        console.log('advance');
         const request = this.requestQueue.shift();
         if (request) {
             request().finally(() => {
-                console.log('done and nnext');
                 this.advanceRequestQueue();
             });
         }
