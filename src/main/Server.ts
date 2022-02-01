@@ -42,6 +42,11 @@ import AppSettings from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 
+export enum RequestQueueMode {
+    QUEUE = "queue",
+    IMMEDIATE = "immediate"
+}
+
 /** Server class sends requests and handles responses */
 class Server {
 
@@ -77,6 +82,8 @@ class Server {
     history?:History<any>;
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
+    /** the request queue */
+    requestQueue: Function[] = [];
     /** embedded options, null if not defined */
     embedOptions:{ [key:string]:any }|null = null;
 
@@ -145,71 +152,128 @@ class Server {
     }
 
     /** ----------SENDING-REQUESTS---------- */
- 
+
     /**
      * Sends a request to the server and handles its response, if there are jobs in the
      * SubscriptionManagers JobQueue, call them after the response handling is complete
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
+     * @param fn - a function called after the request is completed
+     * @param job - if false or not set job queue is cleared
+     * @param waitForOpenRequests - if true the request result waits until all currently open immediate requests are finished as well
+     * @param queueMode - controls how the request is dispatched
+     *  - RequestQueueMode.QUEUE: default, requests are sent one after another
+     *  - RequestQueueMode.IMMEDIATE: request is sent immediately
      */
-    sendRequest(request: any, endpoint: string, fn?: Function[], job?: boolean, waitForOpenRequests?: boolean) {
-        let promise = new Promise<any>((resolve, reject) => {
-            if (request.componentId && endpoint !== REQUEST_ENDPOINTS.OPEN_SCREEN && endpoint !== REQUEST_ENDPOINTS.CLOSE_FRAME && !this.componentExists(request.componentId)) {
-                reject("Component doesn't exist");
-            }
-            else {
-                this.timeoutRequest(fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 10000, () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests))
-                    .then((response: any) => response.json())
-                    .then(result => {
-                        if (this.appSettings.applicationMetaData.aliveInterval) {
-                            this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
-                        }
-                        
-                        if (result.code) {
-                            if (400 >= result.code && result.code <= 599) {
-                                return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
-                            }
-                        }
-                        return result;
-                    })
-                    .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
-                    .then(results => {
-                        if (fn) {
-                            fn.forEach(func => func.apply(undefined, []))
-                        }
+    sendRequest(
+        request: any, 
+        endpoint: string, 
+        fn?: Function[], 
+        job?: boolean, 
+        waitForOpenRequests?: boolean,
+        queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
+    ) {
 
-                        if (!job) {
-                            for (let [, value] of this.subManager.jobQueue.entries()) {
-                                value();
+        console.log("sending", request, endpoint, queueMode);
+
+        let promise = new Promise<any>((resolve, reject) => {
+            if (
+                request.componentId 
+                && endpoint !== REQUEST_ENDPOINTS.OPEN_SCREEN 
+                && endpoint !== REQUEST_ENDPOINTS.CLOSE_FRAME 
+                && !this.componentExists(request.componentId)
+            ) {
+                reject("Component doesn't exist");
+            } else {
+                if (queueMode == RequestQueueMode.IMMEDIATE) {
+                    this.timeoutRequest(
+                        fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 
+                        10000, 
+                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
+                    )
+                        .then((response: any) => response.json())
+                        .then(result => {
+                            if (this.appSettings.applicationMetaData.aliveInterval) {
+                                this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
                             }
-                            this.subManager.jobQueue.clear()
-                        }
-                        return results;
-                    }).then(results => resolve(results), (err) => Promise.reject(err))
-                    .catch(error => {
-                        if (typeof error === "string") {
-                            const splitErr = error.split(".");
-                            this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
-                        }
-                        else {
-                            this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
-                        }
-                        this.subManager.emitErrorDialogVisible(true);
-                        console.error(error)
-                    }).finally(() => {
-                        this.openRequests.delete(request);
-                    });
+                            
+                            if (result.code) {
+                                if (400 >= result.code && result.code <= 599) {
+                                    return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
+                                }
+                            }
+                            return result;
+                        })
+                        .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
+                        .then(results => {
+                            if (fn) {
+                                fn.forEach(func => func.apply(undefined, []))
+                            }
+    
+                            if (!job) {
+                                for (let [, value] of this.subManager.jobQueue.entries()) {
+                                    value();
+                                }
+                                this.subManager.jobQueue.clear()
+                            }
+                            return results;
+                        })
+                        .then(results => {
+                            console.log('done!');
+                            resolve(results)
+                        }, (err) => Promise.reject(err))
+                        .catch(error => {
+                            if (typeof error === "string") {
+                                const splitErr = error.split(".");
+                                this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                            }
+                            else {
+                                this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                            }
+                            this.subManager.emitErrorDialogVisible(true);
+                            console.error(error)
+                        }).finally(() => {
+                            this.openRequests.delete(request);
+                        });
+                } else {
+                    this.requestQueue.push(() => this.sendRequest(
+                        request, 
+                        endpoint,
+                        fn,
+                        job,
+                        waitForOpenRequests,
+                        RequestQueueMode.IMMEDIATE
+                    ).then(results => {
+                        console.log('q done!');
+                        resolve(results)
+                    }))
+                    this.advanceRequestQueue();
+                }
             }
         })
 
-        if (waitForOpenRequests && this.openRequests.size) {
-            const singlePromise = promise;
-            promise = Promise.all(this.openRequests.values()).then(() => singlePromise);
-            this.openRequests.set(request, promise);
-        } else {
-            this.openRequests.set(request, promise);
+        if (queueMode == RequestQueueMode.IMMEDIATE) {
+            if (waitForOpenRequests && this.openRequests.size) {
+                const singlePromise = promise;
+                promise = Promise.all(this.openRequests.values()).then(() => singlePromise);
+                this.openRequests.set(request, promise);
+            } else {
+                this.openRequests.set(request, promise);
+            }
         }
+
         return promise;
+    }
+
+    advanceRequestQueue() {
+        console.log('advance');
+        const request = this.requestQueue.shift();
+        if (request) {
+            request().finally(() => {
+                console.log('done and nnext');
+                this.advanceRequestQueue();
+            });
+        }
     }
 
     /**
