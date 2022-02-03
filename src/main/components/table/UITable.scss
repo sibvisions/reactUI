@@ -164,10 +164,9 @@
     }
 }
 
-/*.p-datatable-wrapper, .p-datatable-scrollable-wrapper {
-    height: 100%;
-    max-width: 100%;
-}*/
+.p-datatable-wrapper {
+    height: calc(100% + 2px);
+}
 
 /*.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
     height: 100%

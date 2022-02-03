@@ -923,8 +923,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const container = table.el;
 
             container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
-
-            if (props.autoResize !== false) {
+            if (props.autoResize === false) {
                 //reverse prime fit sizing
                 let newColumnWidth = e.element.offsetWidth - e.delta;
                 let nextColumn = e.element.nextElementSibling;
@@ -1104,7 +1103,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         if (tableRef.current) {
             const table = tableRef.current as any;
             //resize columns
-            if(props.autoResize !== false) {
+            if(props.autoResize === false) {
                 let widths:number[] = [];
                 let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
                 headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
