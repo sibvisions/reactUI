@@ -128,7 +128,7 @@ export class SubscriptionManager {
     /** An array of functions to update the active-screen subscriber */
     activeScreenSubscriber = new Array<Function>();
 
-    restartSubscriber:Function = () => {};
+    restartSubscriber = new Array<Function>();
 
     appNameSubscriber = new Array<Function>();
 
@@ -401,7 +401,7 @@ export class SubscriptionManager {
     }
 
     subscribeToRestart(fn:Function) {
-        this.restartSubscriber = fn;
+        this.restartSubscriber.push(fn);
     }
 
     subscribeToAppName(fn: Function) {
@@ -606,8 +606,8 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.splice(this.activeScreenSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
-    unsubscribeFromRestart() {
-        this.restartSubscriber = () => {};
+    unsubscribeFromRestart(fn:Function) {
+        this.restartSubscriber.splice(this.restartSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     unsubscribeFromAppName(fn:Function) {
@@ -769,7 +769,7 @@ export class SubscriptionManager {
     }
 
     emitRestart() {
-        this.restartSubscriber.apply(undefined, [])
+        this.restartSubscriber.forEach((subFunc) => subFunc.apply(undefined, []));
     }
 
     /** Tell UIToast that there is a new message */

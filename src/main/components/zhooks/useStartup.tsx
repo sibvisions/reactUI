@@ -46,7 +46,7 @@ const useStartup = (props:ICustomContent):boolean => {
 
         return () => {
             context.subscriptions.unsubscribeFromAppReady();
-            context.subscriptions.unsubscribeFromRestart();
+            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
         }
     },[context.subscriptions]);
 
@@ -276,7 +276,7 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (schemeToSet) {
                     context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
-                    addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "scheme");
+                    addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", context.appSettings);
                 }
 
                 if (convertedOptions.has("theme")) {
@@ -290,7 +290,7 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (themeToSet) {
                     context.appSettings.setApplicationThemeByURL(themeToSet);
-                    addCSSDynamically('themes/' + themeToSet + '.css', "theme");
+                    addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", context.appSettings);
                     context.subscriptions.emitThemeChanged(themeToSet);
                 }
 

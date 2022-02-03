@@ -760,6 +760,7 @@ class Server {
         .then(value => parseString(value, (err, result) => { 
             if (result) {
                 result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                this.appSettings.setAppReadyParam("translation");
                 this.subManager.emitTranslation();
             }
         }));
@@ -839,7 +840,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    this.subManager.emitAppReady(true);
+                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
@@ -886,7 +887,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
-                    this.subManager.emitAppReady(true);
+                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
             //    else if (response.name === "settings") {

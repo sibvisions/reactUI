@@ -41,13 +41,16 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
     const [cssVersion, setCssVersion] = useState<string>("");
 
+    /** Flag to retrigger Startup if session expires */
+    const [restart, setRestart] = useState<boolean>(false);
+
     useLayoutEffect(() => {
         let path = 'application.css'
         if (cssVersion) {
             path = path + "?version=" + cssVersion;
         }
-        addCSSDynamically(path, "app")
-    }, [cssVersion]);
+        addCSSDynamically(path, "appCSS", context.appSettings)
+    }, [cssVersion, restart]);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -62,11 +65,14 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
         context.subscriptions.subscribeToCssVersion((version:string) => setCssVersion(version));
 
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+
         return () => {
             context.subscriptions.unsubscribeFromDialog("server");
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setDialogVisible(show));
             context.subscriptions.unsubscribeFromAppName((newAppName:string) => setAppName(newAppName));
             context.subscriptions.unsubscribeFromCssVersion();
+            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
         }
     },[context.subscriptions]);
 

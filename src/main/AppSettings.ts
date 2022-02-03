@@ -32,6 +32,14 @@ export type MenuVisibility = {
     menuBar:boolean
 }
 
+type AppReadyType = {
+    appCSSLoaded: boolean
+    schemeCSSLoaded: boolean
+    themeCSSLoaded: boolean
+    userOrLoginLoaded: boolean
+    translationLoaded: boolean
+}
+
 /** The AppSettings stores settings and flags for the application */
 export default class AppSettings {
     /** Contentstore instance */
@@ -116,6 +124,14 @@ export default class AppSettings {
 
     desktopPanel:BaseComponent|undefined;
 
+    appReadyParams:AppReadyType = { 
+        appCSSLoaded: false, 
+        schemeCSSLoaded: false, 
+        themeCSSLoaded: false,
+        userOrLoginLoaded: false,
+        translationLoaded: false
+    }
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
@@ -165,20 +181,20 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
             if (appMetaData.applicationColorScheme) {
                 this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "scheme");
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", this);
             }
             else {
-                addCSSDynamically('color-schemes/default-scheme.css', "scheme");
+                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", this);
             }
         }
         
         if (!this.applicationMetaData.applicationTheme.urlSet) {
             if (appMetaData.applicationTheme) {
                 this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
-                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "theme");
+                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", this);
             }
             else {
-                addCSSDynamically('themes/basti.css', "theme");
+                addCSSDynamically('themes/basti.css', "themeCSS", this);
             }
             this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
@@ -244,5 +260,42 @@ export default class AppSettings {
         else {
             this.desktopPanel = desktopPanel;
         }
+    }
+
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"userOrLogin"|"translation") {
+        switch (param) {
+            case "appCSS":
+                this.appReadyParams.appCSSLoaded = true;
+                break;
+            case "schemeCSS":
+                this.appReadyParams.schemeCSSLoaded = true;
+                break;
+            case "themeCSS":
+                this.appReadyParams.themeCSSLoaded = true;
+                break;
+            case "userOrLogin":
+                this.appReadyParams.userOrLoginLoaded = true;
+                break;
+            case "translation":
+                this.appReadyParams.translationLoaded = true;
+                break;
+            default:
+                break;
+        }
+
+        if (this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
+            && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded) {
+            this.#subManager.emitAppReady(true);
+        }
+    }
+
+    setAppReadyParamFalse() {
+        this.appReadyParams = { 
+            appCSSLoaded: false,
+            schemeCSSLoaded: false, 
+            themeCSSLoaded: false, 
+            translationLoaded: false, 
+            userOrLoginLoaded: false 
+        };
     }
 }

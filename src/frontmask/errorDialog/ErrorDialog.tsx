@@ -28,6 +28,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      */
     const handleRestart = () => {
         history.push("/login");
+        context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();
     }
