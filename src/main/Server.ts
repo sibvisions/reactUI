@@ -84,6 +84,8 @@ class Server {
     openRequests: Map<any, Promise<any>>;
     /** the request queue */
     requestQueue: Function[] = [];
+    /** flag if a request is in progress */
+    requestInProgress = false;
     /** embedded options, null if not defined */
     embedOptions:{ [key:string]:any }|null = null;
 
@@ -261,11 +263,15 @@ class Server {
     }
 
     advanceRequestQueue() {
-        const request = this.requestQueue.shift();
-        if (request) {
-            request().finally(() => {
-                this.advanceRequestQueue();
-            });
+        if(!this.requestInProgress) {
+            const request = this.requestQueue.shift();
+            if (request) {
+                this.requestInProgress = true;
+                request().finally(() => {
+                    this.requestInProgress = false;
+                    this.advanceRequestQueue();
+                });
+            }
         }
     }
 
