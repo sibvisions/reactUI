@@ -72,7 +72,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    useFetchMissingData(props.parent as string, compId, props.dataRow);
+    useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

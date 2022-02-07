@@ -225,7 +225,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
-    useFetchMissingData(props.parent as string, compId, props.dataBook);
+    useFetchMissingData(compId, props.dataBook);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */

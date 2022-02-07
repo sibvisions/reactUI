@@ -429,11 +429,8 @@ export default class ContentStore{
                 this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
             }
 
-            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL 
-                || newCompAsPanel.className === COMPONENT_CLASSNAMES.GROUPPANEL 
-                || newCompAsPanel.className === COMPONENT_CLASSNAMES.SCROLLPANEL 
-                || newCompAsPanel.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                this.missingDataCalls.set(newCompAsPanel.id, new Map<string, Function>());
+            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL && newCompAsPanel.parent === undefined) {
+                this.missingDataCalls.set(newCompAsPanel.name, new Map<string, Function>());
             }
         });
 

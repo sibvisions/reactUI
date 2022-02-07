@@ -42,7 +42,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
-    useFetchMissingData(props.parent as string, compId, props.dataRow);
+    useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

@@ -71,13 +71,13 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     }
 
     useEffect(() => {
-        if (layoutStyle?.visibility !== "hidden") {
-            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
+        if (layoutStyle?.visibility !== "hidden" && props.parent === undefined) {
+            context.contentStore.missingDataCalls.get(props.name)?.forEach((call, key) => {
                 call.apply(undefined, []);
                 context.contentStore.missingDataCalls.delete(key);
             });
         }
-    }, [layoutStyle?.visibility]);
+    }, [layoutStyle?.visibility, props.parent]);
 
     return (
         <>

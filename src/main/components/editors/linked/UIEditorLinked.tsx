@@ -83,7 +83,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
 
-    useFetchMissingData(props.parent as string, compId, props.dataRow);
+    useFetchMissingData(compId, props.dataRow);
+
+    useFetchMissingData(compId, props.cellEditor.linkReference.referencedDataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -102,25 +104,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             autoRef.dropdownButton.tabIndex = -1;
         }
 
-        if (props.cellEditor.displayReferencedColumnName) {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
-            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
-            .then((results:FetchResponse[]) => {
-                if (results[0].records) {
-                    const tempMap = new Map<string, any[]>();
-                    tempMap.set("current", results[0].records.map(record => {
-                        const data:any = {}
-                        results[0].columnNames.forEach((columnName, index) => {
-                            data[columnName] = record[index];
-                        });
-                        return data;
-                    }))
-                    setLinkRefData(tempMap);
-                }
-            });
-        }
-
         if (props.isCellEditor && props.passedKey) {
             setText("");
         }
@@ -128,8 +111,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
     useEffect(() => {
-        if (props.cellEditor.displayReferencedColumnName && linkRefData && linkRefData.has("current")) {
-            const foundObj = linkRefData.get("current")!.find(data => data[props.cellEditor.linkReference.referencedColumnNames[0]] === selectedRow);
+        if (props.cellEditor.displayReferencedColumnName && providedData) {
+            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] === selectedRow);
             if (foundObj) {
                 setText(foundObj[props.cellEditor.displayReferencedColumnName]);
             }
@@ -141,7 +124,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             setText(selectedRow);
         }
         lastValue.current = selectedRow;
-    }, [selectedRow, linkRefData]);
+    }, [selectedRow, providedData]);
 
     const unpackValue = (value: string | string[]) => {
         if (Array.isArray(value)) {
@@ -332,7 +315,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const itemTemplate = useCallback(d => {
         if(Array.isArray(d)) {
-            console.log(d, providedData, props.dataRow)
             return d.map((d, i) => <div key={i}>{d}</div>)
         } else {
             return d;
@@ -340,7 +322,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [providedData]);
 
     const groupedItemTemplate = useCallback(d => {
-        console.log(columnMetaData, providedData)
         return (d.label as string[]).map((d, i) => <div key={i}>{columnMetaData?.label ?? d}</div>)
     }, [columnMetaData, providedData]);
 

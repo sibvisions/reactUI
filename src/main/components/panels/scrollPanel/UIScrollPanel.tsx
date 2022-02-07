@@ -95,7 +95,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
-            minSize,
+            { height: 17, width: 17 },
             props.preferredSize, 
             props.minimumSize, 
             props.maximumSize, 
@@ -106,15 +106,6 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             setLayoutSize
         )
     }
-
-    useEffect(() => {
-        if (layoutStyle?.visibility !== "hidden") {
-            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
-                call.apply(undefined, []);
-                context.contentStore.missingDataCalls.delete(key);
-            });
-        }
-    }, [layoutStyle?.visibility]);
 
     return (
         <>

@@ -44,7 +44,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
 
-    useFetchMissingData(props.parent as string, compId, props.dataRow);
+    useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

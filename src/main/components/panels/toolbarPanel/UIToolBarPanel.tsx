@@ -54,15 +54,6 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
         )
     }
 
-    useEffect(() => {
-        if (layoutStyle?.visibility !== "hidden") {
-            context.contentStore.missingDataCalls.get(id)?.forEach((call, key) => {
-                call.apply(undefined, []);
-                context.contentStore.missingDataCalls.delete(key);
-            });
-        }
-    }, [layoutStyle?.visibility]);
-
     return (
         <>
             <Tooltip target={"#" + props.name} />

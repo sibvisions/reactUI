@@ -48,7 +48,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
 
-    useFetchMissingData(props.parent as string, compId, props.dataRow);
+    useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
