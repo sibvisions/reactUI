@@ -300,13 +300,23 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 Math.max(...[minConstraintSizes.west.height, minConstraintSizes.east.height]), minConstraintSizes.center.height
             ]) + minConstraintSizes.north.height + minConstraintSizes.south.height + margins.marginTop + margins.marginBottom + addVGap;
 
+            const cssWidth = Math.max(...[
+                Math.max(...[northCSS.width as number, southCSS.width as number]),
+                ((centerCSS.width as number) + (eastCSS.width as number) + (westCSS.width as number))])
+                + margins.marginLeft + margins.marginRight + addHGap;
+
+            const cssHeight = Math.max(...[
+                Math.max(...[(westCSS.height as number), (eastCSS.height as number)]), (centerCSS.height as number)
+            ]) + (northCSS.height as number) + (southCSS.height as number) + margins.marginTop + margins.marginBottom + addVGap;
+
             if (reportSize) {
                 runAfterLayout(() => {
                     if (baseProps.preferredSize) {
                         reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
                     }
                     else {
-                        reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                        //reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                        reportSize({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                     }
                 })
             }
@@ -318,7 +328,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                 setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
             }
             else {
-                setCalculatedStyle({ height: preferredHeight, width: preferredWidth, position: 'relative' });
+                setCalculatedStyle({ height: cssHeight, width: cssWidth, position: 'relative' });
             }
             
         }
