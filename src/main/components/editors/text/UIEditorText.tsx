@@ -433,6 +433,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
             tooltip: props.toolTipText,
+            tooltipOptions:{ position: "left" },
             placeholder: props.cellEditor_placeholder_
         }
     }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 

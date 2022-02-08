@@ -70,6 +70,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 }}
                 data-pr-tooltip={props.toolTipText}
+                data-pr-position="left"
                 {...usePopupMenu(props)} >
                 <Layout
                     id={id}

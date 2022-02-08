@@ -65,7 +65,8 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
                     : { ...layoutStyle, backgroundColor: props.background }}
-                data-pr-tooltip={props.toolTipText} >
+                data-pr-tooltip={props.toolTipText}
+                data-pr-position="left" >
                 <div
                     className="rc-panel-group-caption">
                     <span>

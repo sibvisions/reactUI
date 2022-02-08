@@ -114,6 +114,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
                     onLoad={imageLoaded}
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}
                     data-pr-tooltip={props.toolTipText}
+                    data-pr-position="left"
                 {...popupMenu}
                 />}
         </span>

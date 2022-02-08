@@ -111,6 +111,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 disabled={props.enabled === false}
                 tooltip={props.toolTipText}
+                tooltipOptions={{ position: "left" }}
                 {...usePopupMenu(props)}
             />
         </span>

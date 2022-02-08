@@ -7,8 +7,9 @@
         position: relative;
     }
 
-    &.no-auto-resize {
-        .p-datatable-scrollable-body {
+    &:not(.no-auto-resize) {
+        .p-datatable-table {
+            width: 100%;
             max-width: 100%;
         }
 

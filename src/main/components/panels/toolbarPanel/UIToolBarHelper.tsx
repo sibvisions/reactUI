@@ -113,7 +113,8 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
                     display: filteredComponents.length === 0 ? "none" : ""
                 }}
-                data-pr-tooltip={props.toolTipText}>
+                data-pr-tooltip={props.toolTipText}
+                data-pr-position="left">
                 <Layout
                     id={id}
                     className={props.className}

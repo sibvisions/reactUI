@@ -208,6 +208,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 onLoad={onChoiceLoaded}
                 onError={onChoiceLoaded}
                 data-pr-tooltip={props.toolTipText}
+                data-pr-position="left"
                 {...usePopupMenu(props)}
             />
         </span>

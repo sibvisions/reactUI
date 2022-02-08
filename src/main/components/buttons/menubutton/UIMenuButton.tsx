@@ -163,7 +163,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 tabIndex={-1}
                 model={items}
                 onClick={() => buttonRef.current.show()}
-                tooltip={props.toolTipText} />
+                tooltip={props.toolTipText}
+                tooltipOptions={{ position: "left" }} />
         </span>
     )
 }

@@ -79,7 +79,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(props.image?.includes('FontAwesome'))
-                return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} />
+                return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
@@ -91,7 +91,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
-                    data-pr-tooltip={props.toolTipText} />
+                    data-pr-tooltip={props.toolTipText}
+                    data-pr-position="left" />
                 )
             } 
         }

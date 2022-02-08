@@ -605,14 +605,14 @@ class Server {
                 this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
+                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
             } 
             else if(changedProvider.reload !== undefined) {
                 const fetchReq = createFetchRequest();
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH);
+                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
             }
             else {
                 const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn;

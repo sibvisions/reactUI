@@ -91,6 +91,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                         showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
                     }}
                     tooltip={props.toolTipText}
+                    tooltipOptions={{ position: "left" }}
                 />
                 <label 
                     ref={labelRef} 

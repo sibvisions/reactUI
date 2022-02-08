@@ -51,6 +51,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
+            tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15} />
     )

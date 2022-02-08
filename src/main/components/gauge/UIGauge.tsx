@@ -158,7 +158,15 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     return (
         <>
             <Tooltip target={"#" + props.name} />
-            <span id={props.name} {...usePopupMenu(props)} ref={wrapperRef} className="ui-gauge" style={layoutStyle} data-pr-tooltip={props.toolTipText}></span>
+            <span 
+                id={props.name} 
+                {...usePopupMenu(props)} 
+                ref={wrapperRef} 
+                className="ui-gauge" 
+                style={layoutStyle} 
+                data-pr-tooltip={props.toolTipText} 
+                data-pr-position="left">
+            </span>
         </>
     )
 }

@@ -390,6 +390,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
                 onSelect={(event) => handleInput(event.value)}
                 tooltip={props.toolTipText}
+                tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}
                 {...(tableOptions ? {
                     optionGroupLabel: "label",

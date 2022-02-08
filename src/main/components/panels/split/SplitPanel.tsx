@@ -150,6 +150,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                 ref={props.forwardedRef}
                 style={props.style}
                 data-pr-tooltip={props.toolTipText}
+                data-pr-position="left"
                 {...props.popupMenu} >
                 <div
                     ref={firstRef}

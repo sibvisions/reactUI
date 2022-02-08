@@ -52,6 +52,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 data-pr-tooltip={props.toolTipText}
+                data-pr-position="left"
                 {...usePopupMenu(props)}
             />
         </span>

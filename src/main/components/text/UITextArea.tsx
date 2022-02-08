@@ -54,6 +54,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tooltip={props.toolTipText}
+            tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
             rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5} />

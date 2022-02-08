@@ -70,7 +70,12 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 ...lblFont,
                 ...layoutStyle
             }}>
-            <span id={props.name + "-text"} ref={labelRef} dangerouslySetInnerHTML={{ __html: props.text as string }} data-pr-tooltip={props.toolTipText} />
+            <span 
+                id={props.name + "-text"} 
+                ref={labelRef} 
+                dangerouslySetInnerHTML={{ __html: props.text as string }} 
+                data-pr-tooltip={props.toolTipText} 
+                data-pr-position="left" />
         </span>
         </>
     )
