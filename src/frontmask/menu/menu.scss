@@ -71,7 +71,7 @@
     align-items: center;
 }
 
-.p-button.p-button-icon-only.menu-topbar-buttons {
+.menu-topbar-buttons.p-button.p-button-icon-only {
     flex: 1;
     border: 0;
     margin-right: 0.5rem;
@@ -112,22 +112,24 @@
     }
 }
 
-.p-menubar {
-    /// Removes default primereact menubar style
-    padding: 0;
-    border: none;
-
-    .p-menubar-root-list {
-        >.p-menuitem, >.p-menuitem.p-menuitem-active {
-            /// Sets menubar style on hover and active for text, subicon color and background
-            > .p-menuitem-link:not(.p-disabled) {
-                margin-left: 4px;
+.menu-topbar, .corp-menu-profile {
+    .p-menubar {
+        /// Removes default primereact menubar style
+        padding: 0;
+        border: none;
+    
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active {
+                /// Sets menubar style on hover and active for text, subicon color and background
+                > .p-menuitem-link:not(.p-disabled) {
+                    margin-left: 4px;
+                }
             }
         }
-    }
-
-    .p-submenu-list {
-        z-index: 10;
+    
+        .p-submenu-list {
+            z-index: 10;
+        }
     }
 }
 
@@ -161,6 +163,38 @@
     z-index: 10;
     height: 100%;
     overflow-x: hidden;
+
+    /// Panelmenu styling, nesting needed because primereact nesting
+    .p-panelmenu {
+        .p-panelmenu-header {
+            > a {
+                padding: 1rem 1rem 1rem 10px;
+
+                //Positioning of menu-arrow
+                .p-panelmenu-icon {
+                    position: absolute;
+                    margin-right: 0;
+                }
+            }
+            .p-panelmenu-header-link {
+                border: none;
+                /// When text is longer don't break
+                .p-menuitem-text {
+                    white-space: nowrap;
+                }
+            }
+        }
+        .p-panelmenu-content {
+            border: none;
+
+            .p-menuitem {
+                /// Menu sub points little more to the right
+                .p-menuitem-link:not(.p-disabled) {
+                    padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+                }
+            }
+        }
+    }
 }
 
 /// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
@@ -192,78 +226,50 @@
     animation: fadein 1s;
 }
 
-/// Panelmenu styling, nesting needed because primereact nesting
-.p-panelmenu {
-    .p-panelmenu-header {
-        > a {
-            padding: 1rem 1rem 1rem 10px;
-
-            //Positioning of menu-arrow
-            .p-panelmenu-icon {
-                position: absolute;
-                margin-right: 0;
-            }
-        }
-        .p-panelmenu-header-link {
-            border: none;
-            /// When text is longer don't break
-            .p-menuitem-text {
-                white-space: nowrap;
-            }
-        }
-    }
-    .p-panelmenu-content {
-        border: none;
-
-        .p-menuitem {
-            /// Menu sub points little more to the right
-            .p-menuitem-link:not(.p-disabled) {
-                padding: 0.75rem 0.75rem 0.75rem 1.5rem;
-            }
-        }
-    }
-}
 
 @media screen and (max-width: 960px) {
     .menu-topbar-right, .corp-menu-profile {
         margin-right: 4px;
     }
 
-    .p-menubar {
-        /// Primereact wants to show a button instead of the menu we don't want that
-        .p-menubar-button {
-            display: none;
-        }
-        /// Initial to undo Primereact changes
-        .p-menubar-root-list {
-            position:initial;
-            display: inline-block;
-            -webkit-box-shadow: initial;
-            box-shadow: initial;
-            padding: initial;
-
-            >.p-menuitem {
-                width: initial;
+    .menu-topbar, .corp-menu-profile {
+        .p-menubar {
+            /// Primereact wants to show a button instead of the menu we don't want that
+            .p-menubar-button {
+                display: none;
             }
-
-            >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
-                margin-left: 0.5rem;
-                font-size: 1rem;
-            }
-
-            /// Submenu styling needed because primereact button menu looks different we have to redesign
-            .p-submenu-list {
-                position: fixed;
-                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-                width: 12.5rem;
-                li {
-                    a {
-                        padding: 0.75rem;
+            /// Initial to undo Primereact changes
+            .p-menubar-root-list {
+                position:initial;
+                display: inline-block;
+                -webkit-box-shadow: initial;
+                box-shadow: initial;
+                padding: initial;
+    
+                >.p-menuitem {
+                    width: initial;
+                }
+    
+                >.p-menuitem > .p-menuitem-link > .p-submenu-icon {
+                    margin-left: 0.5rem;
+                    font-size: 1rem;
+                }
+    
+                /// Submenu styling needed because primereact button menu looks different we have to redesign
+                .p-submenu-list {
+                    position: fixed;
+                    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+                    width: 12.5rem;
+                    li {
+                        a {
+                            padding: 0.75rem;
+                        }
                     }
                 }
             }
         }
     }
+
 
     .profile-menu {
         margin-right: 0;
@@ -325,7 +331,7 @@
         }
     }
 
-    .p-button.p-button-icon-only.menu-topbar-buttons {
+    .menu-topbar-buttons.p-button.p-button-icon-only {
         width: 40px;
         height: 40px;
     }

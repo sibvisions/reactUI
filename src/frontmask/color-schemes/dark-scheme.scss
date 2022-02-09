@@ -481,7 +481,7 @@ body {
 
 .p-panelmenu {
     .p-panelmenu-header {
-        .p-panelmenu-header-link {
+        > a {
             background: var(--std-menu-background);
             border-color: var(--std-menu-background);
             color: var(--std-menu-text-color);
@@ -784,10 +784,6 @@ body {
 
 .p-float-label > label {
     color: var(--input-placeholder-color);
-}
-
-.readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
-    background-color: var(--input-background) !important;
 }
 
 /// DateCellEditor

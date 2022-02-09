@@ -1,9 +1,6 @@
-.p-calendar {
+.rc-editor-date.p-calendar {
     width: inherit;
     height: inherit;
-    .p-inputtext {
-        background: var(--dateBackground);
-    }
 
     .p-inputtext, .p-button {
         &:focus {
@@ -13,7 +10,7 @@
     }
 }
 
-.p-datepicker {
+.rc-editor-date-panel.p-datepicker {
     min-width: 0 !important;
     padding-bottom: 0;
 

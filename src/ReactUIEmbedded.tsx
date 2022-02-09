@@ -35,7 +35,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     },[]);
 
     return (
-        <AppWrapper embedOptions={props.embedOptions} theme={props.theme} colorScheme={props.colorScheme}>
+        <AppWrapper embedOptions={props.embedOptions}>
             {appReady ?
                 <>
                     <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>

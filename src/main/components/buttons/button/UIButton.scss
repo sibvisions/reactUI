@@ -31,18 +31,29 @@
     @include btnHover
 }
 
-.p-button.p-button-icon-only {
+.rc-button.p-button.p-button-icon-only {
     width: unset;
-    //height: inherit;
-    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-        padding: 0px 0.5rem;
-    }
     padding: var(--btnPadding, 0.5rem 0.5rem);
+
     .rc-button-icon {
         align-self: center;
     }
+
     &.rc-toolbar-button {
         padding: 0;
+    }
+}
+
+.rc-editor-linked .p-button.p-button-icon-only, .rc-editor-date .p-button.p-button-icon-only {
+    width: unset;
+    padding: var(--btnPadding, 0.5rem 0.5rem);
+
+    &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+        padding: 0px 0.5rem;
+    }
+
+    .rc-button-icon {
+        align-self: center;
     }
 }
 
@@ -68,8 +79,10 @@
     border-color: transparent !important;
 }
 
-.p-button-label {
-    flex: unset;
+.reactUI {
+    .p-button-label {
+        flex: unset;
+    }
 }
 
 .reactUI:not(.basti_mobile) {
@@ -126,11 +139,13 @@
     }
 }
 
-.p-button.p-button-link:enabled:focus {
-    box-shadow: unset;
-    border-color: transparent;
-
-    .p-button-label {
-        text-decoration: underline;
+.reactUI {
+    .p-button.p-button-link:enabled:focus {
+        box-shadow: unset;
+        border-color: transparent;
+    
+        .p-button-label {
+            text-decoration: underline;
+        }
     }
 }

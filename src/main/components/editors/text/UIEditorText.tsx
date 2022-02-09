@@ -25,13 +25,6 @@ import { sendSetValues,
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
-export function isReadOnlyStandardColor(isReadOnly:boolean, background?:string) {
-    if (isReadOnly && background === "#EFEFEF") {
-        return true;
-    }
-    return false;
-}
-
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
     cellEditor: ICellEditor
@@ -412,7 +405,6 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             className: concatClassnames(
                 getClassName(fieldType), 
                 columnMetaData?.nullable === false ? "required-field" : "",
-                isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
                 props.isCellEditor ? "open-cell-editor" : undefined
             ),
             style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },

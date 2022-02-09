@@ -31,7 +31,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import { CellEditor } from "./CellEditor";
-import { RequestQueueMode } from "src/main/Server";
+import { RequestQueueMode } from "../../Server";
 
 
 /** Interface for Table */

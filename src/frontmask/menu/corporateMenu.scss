@@ -54,18 +54,18 @@
             }
         }
     }
-}
 
-.p-speeddial {
-    z-index: auto;
-    position: relative;
-    .p-speeddial-button.p-button.p-button-icon-only {
-        padding: 0;
-    }
-
-    &.p-speeddial-opened {
-        .p-speeddial-list {
-            z-index: 10;
+    .p-speeddial {
+        z-index: auto;
+        position: relative;
+        .p-speeddial-button.p-button.p-button-icon-only {
+            padding: 0;
+        }
+    
+        &.p-speeddial-opened {
+            .p-speeddial-list {
+                z-index: 10;
+            }
         }
     }
 }

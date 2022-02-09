@@ -1,7 +1,6 @@
 .rc-editor-linked {
     .p-inputtext {
         text-align: left;
-        background: var(--linkedBackground);
     }
     /// When either of the children is focused, display a blue shadow to show the button is focused
     &:focus-within {
@@ -17,7 +16,7 @@
 }
 
 /// Lazyloading loading animation
-.p-autocomplete-panel {
+.rc-editor-linked-dropdown.p-autocomplete-panel {
     &.linked-min-width {
         min-width: 120px !important;
     }

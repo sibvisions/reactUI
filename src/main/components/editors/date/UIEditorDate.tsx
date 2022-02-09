@@ -24,7 +24,6 @@ import { sendSetValues,
 import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -276,8 +275,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             {...usePopupMenu(props)} 
             aria-expanded={visible} 
             style={{
-                ...layoutStyle, 
-                '--dateBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--input-background')
+                ...layoutStyle
             } as CSSProperties}>
             <CustomCalendar
                 ref={calendar}
@@ -287,9 +285,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     "rc-editor-text",
                     "rc-editor-date",
                     columnMetaData?.nullable === false ? "required-field" : "",
-                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined
                 )}
+                panelClassName="rc-editor-date-panel"
                 style={{
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()

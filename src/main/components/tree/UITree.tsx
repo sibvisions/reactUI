@@ -500,6 +500,7 @@ const UITree: FC<ITree> = (baseProps) => {
         >
             <Tree
                 id={props.name}
+                className="rc-tree"
                 value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}

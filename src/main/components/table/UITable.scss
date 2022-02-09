@@ -1,4 +1,4 @@
-.rc-table {
+.rc-table.p-datatable {
     width: 100%;
     height: 100%;
     border-collapse: collapse;
@@ -163,15 +163,19 @@
     .p-inputtext {
         padding: 3px 7px;
     }
-}
 
-.p-datatable-wrapper {
-    height: calc(100% + 2px);
-}
+    .p-datatable-wrapper {
+        height: calc(100% + 2px);
+    }
 
-/*.p-datatable-scrollable-wrapper .p-datatable-scrollable-view {
-    height: 100%
-}*/
+    .p-column-title {
+        user-select: none;
+    }
+
+    .p-datatable-emptymessage {
+        display: none;
+    }
+}
 
 .loading-text {
     display: block;
@@ -182,17 +186,9 @@
     overflow: hidden;
 }
 
-.p-column-title {
-    user-select: none;
-}
-
 .cell-editor-arrow {
     font-size: 10px;
     line-height: 14px;
-}
-
-.p-datatable-emptymessage {
-    display: none;
 }
 
 @keyframes pulse {

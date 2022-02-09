@@ -22,8 +22,6 @@ export type IServerFailMessage = {
 
 interface IAppWrapper {
     embedOptions?: { [key:string]:any }
-    theme?:string
-    colorScheme?:string
 }
 
 const AppWrapper:FC<IAppWrapper> = (props) => {

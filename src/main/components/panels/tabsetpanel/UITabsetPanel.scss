@@ -1,54 +1,55 @@
-.p-tabview {
-
-    .p-tabview-panels {
-        height: calc(100% - 48px);
-        padding: 0;
-        background: unset;
-        color: unset;
-        border: none;
-        border-bottom-right-radius: unset;
-        border-bottom-left-radius: unset;
-        .p-tabview-panel {
-            height: 100%;
-            width: 100%;
+.rc-tabset {
+    .p-tabview {
+        .p-tabview-panels {
+            height: calc(100% - 48px);
+            padding: 0;
+            background: unset;
+            color: unset;
+            border: none;
+            border-bottom-right-radius: unset;
+            border-bottom-left-radius: unset;
+            .p-tabview-panel {
+                height: 100%;
+                width: 100%;
+            }
         }
-    }
-
-    .p-tabview-nav {
-        li {
-            .p-tabview-nav-link {
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0px 16px;
-                height: 48px;
-                min-width: 48px;
-                position: relative;
-                overflow: hidden;
-            }
-            .rc-tabset-tabicon {
-                display: inline-block;
-                margin-right: 4px;
-            }
-
-            .p-tabview-nav-link:not(.p-disabled):focus {
-                box-shadow: none !important;
-                -webkit-box-shadow: none !important;
-            }
-
-            &.p-highlight {
+    
+        .p-tabview-nav {
+            li {
                 .p-tabview-nav-link {
-                    background: transparent;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0px 16px;
+                    height: 48px;
+                    min-width: 48px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .rc-tabset-tabicon {
+                    display: inline-block;
+                    margin-right: 4px;
+                }
+    
+                .p-tabview-nav-link:not(.p-disabled):focus {
+                    box-shadow: none !important;
+                    -webkit-box-shadow: none !important;
+                }
+    
+                &.p-highlight {
+                    .p-tabview-nav-link {
+                        background: transparent;
+                    }
                 }
             }
         }
+    }
+
+    .p-tabview-title {
+        position: relative;
     }
 }
 
 .black .p-ink {
     background: rgba(0,0,0,.2);
-}
-
-.p-tabview-title {
-    position: relative;
 }

@@ -25,49 +25,47 @@
         outline-style: none;
     }
     @include btnHover;
-}
 
-.p-splitbutton-defaultbutton, .p-splitbutton-menubutton {
-    background: inherit;
-    border-color: inherit;
-    color: inherit;
+    .p-splitbutton {
+        --menuBtnJustify: center;
+        --menuBtnAlign: center;
+    }
 
-    @include btnHover;
-}
+    .p-splitbutton-defaultbutton {
+        justify-content: var(--menuBtnJustify);
+        align-items: var(--menuBtnAlign);
+        padding: var(--menuBtnPadding, 0.5rem 0rem 0.5rem 1rem);
+    }
 
+    .p-splitbutton-defaultbutton, .p-splitbutton-menubutton {
+        background: inherit;
+        border-color: inherit;
+        color: inherit;
+    
+        @include btnHover;
+    }
 
+    .p-button.p-splitbutton-menubutton, .p-button.p-splitbutton-defaultbutton {
+        box-shadow: none;
+    }
 
-.p-splitbutton {
-    --menuBtnJustify: center;
-    --menuBtnAlign: center;
-}
+    /// Fixed width for menubutton part of splitbutton
+    .p-button.p-splitbutton-menubutton {
+        width: var(--menuBtnSplitWidth);
+        padding: 0.5rem 0.5rem 0.5rem 0px;
+    }
 
-.p-splitbutton-defaultbutton {
-    justify-content: var(--menuBtnJustify);
-    align-items: var(--menuBtnAlign);
-    padding: var(--menuBtnPadding, 0.5rem 0rem 0.5rem 1rem);
-}
-
-.p-button.p-splitbutton-menubutton, .p-button.p-splitbutton-defaultbutton {
-    box-shadow: none;
-}
-
-/// Fixed width for menubutton part of splitbutton
-.p-button.p-splitbutton-menubutton {
-    width: var(--menuBtnSplitWidth);
-    padding: 0.5rem 0.5rem 0.5rem 0px;
+    .p-menu {
+        .p-menuitem-text {
+            line-height: unset;
+        }
+    
+        .fa, .pi {
+            font-size: 14px;
+        }
+    }
 }
 
 .rc-popupmenubutton-custom-icon {
     margin-right: 4px;
 }
-
-.p-menu {
-    .p-menuitem-text {
-        line-height: unset;
-    }
-
-    .fa, .pi {
-        font-size: 14px;
-    }
-} 

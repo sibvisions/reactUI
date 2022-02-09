@@ -16,8 +16,6 @@ import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { FetchResponse } from "../../../response";
-import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -330,8 +328,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             style={{
-                ...layoutStyle, 
-                '--linkedBackground': props.cellEditor_background_ ? props.cellEditor_background_ : window.getComputedStyle(document.documentElement).getPropertyValue('--input-background')
+                ...layoutStyle
             } as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
@@ -348,10 +345,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 className={concatClassnames(
                     "rc-editor-linked", 
                     columnMetaData?.nullable === false ? "required-field" : "",
-                    isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined
                 )}
                 panelClassName={concatClassnames(
+                    "rc-editor-linked-dropdown",
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
                     tableOptions ? "dropdown-table" : "",
                     linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""

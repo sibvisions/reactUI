@@ -198,7 +198,7 @@ body {
     .menu-panelmenu-wrapper::-webkit-scrollbar-thumb:hover {
       background: #252a2e; }
 
-.p-panelmenu .p-panelmenu-header .p-panelmenu-header-link {
+.p-panelmenu .p-panelmenu-header > a {
   background: var(--std-menu-background);
   border-color: var(--std-menu-background);
   color: var(--std-menu-text-color); }
@@ -372,9 +372,6 @@ body {
 
 .p-float-label > label {
   color: var(--input-placeholder-color); }
-
-.readonly-standard-background.p-inputtext, .readonly-standard-background .p-inputtext {
-  background-color: var(--input-background) !important; }
 
 .p-calendar:focus-within {
   outline: 0 none;

@@ -25,7 +25,6 @@ import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
-import { isReadOnlyStandardColor } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -79,14 +78,10 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     const popupMenu = usePopupMenu(props);
 
-    /** If the CellEditor is read-only */
-    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
-
     const numberClassNames = useMemo(() => {
         return concatClassnames(
             "rc-editor-number",
             columnMetaData?.nullable === false ? "required-field" : "",
-            isReadOnlyStandardColor(isReadOnly, props.cellEditor_background_) ? "readonly-standard-background" : "",
             props.isCellEditor ? "open-cell-editor" : undefined
         )
     }, [columnMetaData?.nullable]);
