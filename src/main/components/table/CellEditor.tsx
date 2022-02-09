@@ -233,7 +233,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                             }
                         }}>
                         {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
-                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
+                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
                     </div>
                 ) : (!edit ?
                     <div
@@ -244,7 +244,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                             {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                         </div>
                         {showDropDownArrow() &&
-                            <div style={{ marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
+                            <div style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
                                 <i className="pi pi-chevron-down cell-editor-arrow" />
                             </div>}
                     </div>
@@ -256,7 +256,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
                 {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ marginLeft: "auto" }} />}
+                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
             </div>
     )
 }
