@@ -214,9 +214,9 @@ body {
 
 .p-panelmenu .p-panelmenu-content {
   background: var(--std-menu-background); }
-  .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
+  .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link {
     background: var(--std-menu-background); }
-    .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) .p-menuitem-text {
+    .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-text {
       color: var(--std-menu-text-color); }
     .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover {
       background: var(--std-menu-item-hover-background); }
@@ -322,7 +322,7 @@ body {
 .p-radiobutton .p-radiobutton-box.p-highlight {
   background: var(--radiobutton-selected-outer-background);
   border-color: var(--radiobutton-selected-outer-background); }
-  .p-radiobutton .p-radiobutton-box.p-highlight.p-highlight:hover {
+  .p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
     background: var(--radiobutton-selected-outer-hover-background);
     border-color: var(--radiobutton-selected-outer-hover-background); }
 
@@ -558,44 +558,41 @@ body {
       .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc .p-sortable-column-icon, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des .p-sortable-column-icon {
         color: var(--table-sort-color); }
   .rc-table .p-datatable-tbody > tr {
-    background: var(--table-row-odd-background);
+    background: var(--table-row-even-background);
     color: var(--text-color); }
     .rc-table .p-datatable-tbody > tr > td {
       border: var(--table-row-border); }
       .rc-table .p-datatable-tbody > tr > td.p-highlight {
         color: var(--text-color); }
-      .rc-table .p-datatable-tbody > tr > td.cell-required {
-        background: var(--table-required-odd-background);
-        color: var(--table-required-color); }
-      .rc-table .p-datatable-tbody > tr > td.cell-readonly {
-        background: var(--table-readonly-odd-background); }
       .rc-table .p-datatable-tbody > tr > td:hover {
         color: var(--table-cell-hover-color); }
+      .rc-table .p-datatable-tbody > tr > td.cell-required {
+        background: var(--table-required-even-background); }
+      .rc-table .p-datatable-tbody > tr > td.cell-readonly {
+        background: var(--table-readonly-even-background); }
     .rc-table .p-datatable-tbody > tr.p-highlight {
       color: var(--text-color);
       background: var(--table-selected-row-background) !important; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td.cell-required {
-        background: var(--table-required-odd-background);
-        opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td.cell-readonly {
-        background: var(--table-readonly-odd-background);
-        opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td .open-cell-editor {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor {
         color: var(--text-color); }
-    .rc-table .p-datatable-tbody > tr:nth-child(even) {
-      background: var(--table-row-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight {
-        background: var(--table-selected-row-background);
-        color: var(--text-color); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even) > td.cell-required {
-        background: var(--table-required-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even) > td.cell-readonly {
-        background: var(--table-readonly-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight > td.cell-required {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-required {
         background: var(--table-required-even-background);
         opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight > td.cell-readonly {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-readonly {
         background: var(--table-readonly-even-background);
+        opacity: 0.8; }
+    .rc-table .p-datatable-tbody > tr.p-row-odd {
+      background: var(--table-row-odd-background); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd > td.cell-required {
+        background: var(--table-required-odd-background);
+        color: var(--table-required-color); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd > td.cell-readonly {
+        background: var(--table-readonly-odd-background); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd.p-highlight td.cell-required {
+        background: var(--table-required-odd-background);
+        opacity: 0.8; }
+      .rc-table .p-datatable-tbody > tr.p-row-odd.p-highlight td.cell-readonly {
+        background: var(--table-readonly-odd-background);
         opacity: 0.8; }
   .rc-table.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
     background: var(--table-row-hover-background);

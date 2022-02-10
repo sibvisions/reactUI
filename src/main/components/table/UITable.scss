@@ -148,7 +148,6 @@
                 &.p-highlight {
                     outline: 2px solid #7f7f7f;
                     outline-offset: -2px;
-                    color: var(--default-text-color);
                     &:not(.cell-readonly):not(.cell-required) {
                         background: unset;
                     }

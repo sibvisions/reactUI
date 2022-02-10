@@ -1,6 +1,6 @@
 import AppSettings from "../../AppSettings";
 
-export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS", appSettings:AppSettings) {
+export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appSettings:AppSettings) {
     for (let link of document.head.getElementsByTagName('link')) {
         if (link.href.includes("application.css") && type === "appCSS") {
             document.head.removeChild(link);
@@ -9,6 +9,9 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
             document.head.removeChild(link);
         }
         else if (link.href.includes("themes") && type === "themeCSS") {
+            document.head.removeChild(link);
+        }
+        else if (link.href.includes("design") && type === "designCSS") {
             document.head.removeChild(link);
         }
     }

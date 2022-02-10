@@ -15,6 +15,7 @@ type ApplicationMetaData = {
     applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
     applicationColorScheme: { value: string, urlSet: boolean },
     applicationTheme: { value: string, urlSet: boolean },
+    applicationDesign: string,
     applicationName: string,
     aliveInterval?: number
 }
@@ -38,6 +39,7 @@ type AppReadyType = {
     themeCSSLoaded: boolean
     userOrLoginLoaded: boolean
     translationLoaded: boolean
+    designCSSLoaded: boolean
 }
 
 /** The AppSettings stores settings and flags for the application */
@@ -96,6 +98,7 @@ export default class AppSettings {
         applicationLayout: { layout: "standard", urlSet: false },
         applicationTheme: { value: "basti", urlSet: false },
         applicationColorScheme: { value: "default", urlSet: false },
+        applicationDesign: "",
         applicationName: ""
     };
 
@@ -129,8 +132,13 @@ export default class AppSettings {
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
         userOrLoginLoaded: false,
-        translationLoaded: false
+        translationLoaded: false,
+        designCSSLoaded: false
     }
+    
+    appReady:boolean = false;
+
+    cssToAddWhenReady:Array<any> = [];
 
     /**
      * Sets the menu-mode
@@ -198,6 +206,14 @@ export default class AppSettings {
             }
             this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
+
+        if (!this.applicationMetaData.applicationDesign && appMetaData.applicationDesign) {
+            this.applicationMetaData.applicationDesign = appMetaData.applicationDesign;
+            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", this)
+        }
+        else if (!this.applicationMetaData.applicationDesign) {
+            this.appReadyParams.designCSSLoaded = true;
+        }
     }
 
     setApplicationThemeByURL(pTheme:string) {
@@ -210,6 +226,10 @@ export default class AppSettings {
 
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {
         this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true };
+    }
+
+    setApplicationDesign(pDesign:string) {
+        this.applicationMetaData.applicationDesign = pDesign;
     }
 
     /**
@@ -262,7 +282,7 @@ export default class AppSettings {
         }
     }
 
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"userOrLogin"|"translation") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"userOrLogin"|"translation"|"designCSS") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -279,23 +299,29 @@ export default class AppSettings {
             case "translation":
                 this.appReadyParams.translationLoaded = true;
                 break;
+            case "designCSS":
+                this.appReadyParams.designCSSLoaded = true;
+                break;
             default:
                 break;
         }
-
-        if (this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-            && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded) {
+        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
+            && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+            this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+            this.appReady = true;
             this.#subManager.emitAppReady(true);
         }
     }
 
     setAppReadyParamFalse() {
+        this.appReady = false;
         this.appReadyParams = { 
             appCSSLoaded: false,
             schemeCSSLoaded: false, 
             themeCSSLoaded: false, 
             translationLoaded: false, 
-            userOrLoginLoaded: false 
+            userOrLoginLoaded: false,
+            designCSSLoaded: false
         };
     }
 }

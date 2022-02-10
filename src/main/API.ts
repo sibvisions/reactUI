@@ -346,5 +346,47 @@ class API {
     addGlobalComponent(name:string, comp:ReactElement) {
         this.#contentStore.globalComponents.set(name, (props:any) => React.cloneElement(comp, props));
     }
+
+    addCSSToHeadBefore(path:string) {
+        let before = undefined
+        for (let link of document.head.getElementsByTagName('link')) {
+            if (link.href.includes("application.css")) {
+                before = link;
+            }
+            else if (!before && link.href.includes("color-schemes")) {
+                before = link;
+            }
+            else if (!before && link.href.includes("themes")) {
+                before = link
+            }
+            else if (!before && link.href.includes("design")) {
+                before = link;
+            }
+        }
+        const link:HTMLLinkElement = document.createElement('link');
+        link.rel = 'stylesheet'; 
+        link.type = 'text/css';
+        link.href = path;
+        
+        if (before) {
+            document.head.insertBefore(link, before);
+        }
+        else {
+            document.head.appendChild(link);
+        }
+    }
+
+    addCSSToHeadAfter(path:string) {
+        const link:HTMLLinkElement = document.createElement('link');
+        link.rel = 'stylesheet'; 
+        link.type = 'text/css';
+        link.href = path;
+        if (this.#appSettings.appReady) {
+            document.head.appendChild(link);
+        }
+        else {
+            this.#appSettings.cssToAddWhenReady.push(link);
+        }
+    }
 }
 export default API

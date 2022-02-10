@@ -32,7 +32,7 @@
   --corp-menu-speeddial-background: #ffffff;
   --corp-menu-speeddial-color: #495057;
   --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-  --button-background: #2196F3;
+  --primary-color: #2196F3;
   --input-background: #ffffff;
   --input-border: 1px solid #ced4da;
   --input-placeholder-color: #6c757d;
@@ -92,7 +92,7 @@
   --html-toolbar-button-hover-background: #000000;
   --html-picker-expanded-background: #ffffff;
   --html-picker-item-hover-background: #e9ecef;
-  --message-info-header-background: var(--button-background);
+  --message-info-header-background: var(--primary-color);
   --message-info-header-close-hover: #276b96;
   --message-info-header-color: #ffffff;
   --message-warning-header-background: #ffcf40;
@@ -214,9 +214,9 @@ body {
 
 .p-panelmenu .p-panelmenu-content {
   background: var(--std-menu-background); }
-  .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
+  .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link {
     background: var(--std-menu-background); }
-    .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) .p-menuitem-text {
+    .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-text {
       color: var(--std-menu-text-color); }
     .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover {
       background: var(--std-menu-item-hover-background); }
@@ -264,15 +264,15 @@ body {
           color: var(--corp-menu-item-hover-text-color); }
 
 .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-autocomplete-dropdown, .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-datepicker-trigger {
-  border-color: var(--button-background);
-  color: var(--button-background); }
+  border-color: var(--primary-color);
+  color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-datepicker-trigger, .reactUI.basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-datepicker-trigger {
-  border-color: var(--button-background);
-  color: var(--button-background); }
+  border-color: var(--primary-color);
+  color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked:hover .p-inputtext, .reactUI.basti_mobile .rc-editor-date:hover .p-inputtext {
-  border-color: var(--button-background); }
+  border-color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked .p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-linked .p-datepicker-trigger, .reactUI.basti_mobile .rc-editor-date .p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-date .p-datepicker-trigger {
   color: var(--text-color); }
@@ -289,7 +289,7 @@ body {
 .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
   color: var(--text-color); }
 
-.p-checkbox .p-checkbox-box:not(.p-highlight), .p-radiobutton .p-radiobutton-box:not(.p-highlight) {
+.p-checkbox .p-checkbox-box, .p-radiobutton .p-radiobutton-box {
   background: var(--input-background);
   border: var(--input-border); }
 
@@ -330,8 +330,8 @@ body {
   background: var(--radiobutton-inner-color); }
 
 .rc-popupmenubutton {
-  background: var(--button-background);
-  border-color: var(--button-background);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   border-radius: var(--button-border-radius); }
   .rc-popupmenubutton:focus-within {
     box-shadow: var(--focus-box-shadow); }
@@ -558,44 +558,41 @@ body {
       .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc .p-sortable-column-icon, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des .p-sortable-column-icon {
         color: var(--table-sort-color); }
   .rc-table .p-datatable-tbody > tr {
-    background: var(--table-row-odd-background);
+    background: var(--table-row-even-background);
     color: var(--text-color); }
     .rc-table .p-datatable-tbody > tr > td {
       border: var(--table-row-border); }
       .rc-table .p-datatable-tbody > tr > td.p-highlight {
         color: var(--text-color); }
-      .rc-table .p-datatable-tbody > tr > td.cell-required {
-        background: var(--table-required-odd-background);
-        color: var(--table-required-color); }
-      .rc-table .p-datatable-tbody > tr > td.cell-readonly {
-        background: var(--table-readonly-odd-background); }
       .rc-table .p-datatable-tbody > tr > td:hover {
         color: var(--table-cell-hover-color); }
+      .rc-table .p-datatable-tbody > tr > td.cell-required {
+        background: var(--table-required-even-background); }
+      .rc-table .p-datatable-tbody > tr > td.cell-readonly {
+        background: var(--table-readonly-even-background); }
     .rc-table .p-datatable-tbody > tr.p-highlight {
       color: var(--text-color);
       background: var(--table-selected-row-background) !important; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td.cell-required {
-        background: var(--table-required-odd-background);
-        opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td.cell-readonly {
-        background: var(--table-readonly-odd-background);
-        opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr.p-highlight td .open-cell-editor {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor {
         color: var(--text-color); }
-    .rc-table .p-datatable-tbody > tr:nth-child(even) {
-      background: var(--table-row-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight {
-        background: var(--table-selected-row-background);
-        color: var(--text-color); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even) > td.cell-required {
-        background: var(--table-required-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even) > td.cell-readonly {
-        background: var(--table-readonly-even-background); }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight > td.cell-required {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-required {
         background: var(--table-required-even-background);
         opacity: 0.8; }
-      .rc-table .p-datatable-tbody > tr:nth-child(even).p-highlight > td.cell-readonly {
+      .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-readonly {
         background: var(--table-readonly-even-background);
+        opacity: 0.8; }
+    .rc-table .p-datatable-tbody > tr.p-row-odd {
+      background: var(--table-row-odd-background); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd > td.cell-required {
+        background: var(--table-required-odd-background);
+        color: var(--table-required-color); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd > td.cell-readonly {
+        background: var(--table-readonly-odd-background); }
+      .rc-table .p-datatable-tbody > tr.p-row-odd.p-highlight td.cell-required {
+        background: var(--table-required-odd-background);
+        opacity: 0.8; }
+      .rc-table .p-datatable-tbody > tr.p-row-odd.p-highlight td.cell-readonly {
+        background: var(--table-readonly-odd-background);
         opacity: 0.8; }
   .rc-table.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
     background: var(--table-row-hover-background);

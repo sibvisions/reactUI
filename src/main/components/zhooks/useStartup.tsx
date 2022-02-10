@@ -102,6 +102,7 @@ const useStartup = (props:ICustomContent):boolean => {
         const authKey = localStorage.getItem("authKey");
         let themeToSet = "";
         let schemeToSet = "";
+        let designToSet = "";
 
         if (props.onStartup) {
             props.onStartup();
@@ -286,6 +287,16 @@ const useStartup = (props:ICustomContent):boolean => {
                     context.subscriptions.emitThemeChanged(themeToSet);
                 }
 
+                if (convertedOptions.has("design")) {
+                    designToSet = convertedOptions.get("design");
+                    convertedOptions.delete("design");
+                }
+
+                if (designToSet) {
+                    context.appSettings.setApplicationDesign(designToSet);
+                    addCSSDynamically('design/' + designToSet + ".css", "designCSS", context.appSettings);
+                }
+
                 convertedOptions.forEach((v, k) => {
                     startupReq[k] = v;
                 });
@@ -375,11 +386,15 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
 
                 if (data.colorScheme) {
-                    schemeToSet = data.colorScheme
+                    schemeToSet = data.colorScheme;
                 }
 
                 if (data.theme) {
-                    themeToSet = data.theme
+                    themeToSet = data.theme;
+                }
+
+                if (data.design) {
+                    designToSet = data.design;
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

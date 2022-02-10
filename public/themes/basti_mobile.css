@@ -198,19 +198,19 @@ body {
     box-shadow: none;
     -webkit-box-shadow: none; }
     .basti_mobile .p-inputtext:enabled:focus + .p-autocomplete-dropdown, .basti_mobile .p-inputtext:enabled:focus + .p-datepicker-trigger {
-      border-color: var(--button-background);
-      color: var(--button-background); }
+      border-color: var(--primary-color);
+      color: var(--primary-color); }
 
 .basti_mobile .rc-editor-linked:focus-within, .basti_mobile .rc-editor-date:focus-within {
   box-shadow: none;
   -webkit-box-shadow: none; }
 
 .basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-datepicker-trigger, .basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-datepicker-trigger {
-  border-color: var(--button-background);
-  color: var(--button-background); }
+  border-color: var(--primary-color);
+  color: var(--primary-color); }
 
 .basti_mobile .rc-editor-linked:hover .p-inputtext, .basti_mobile .rc-editor-date:hover .p-inputtext {
-  border-color: var(--button-background); }
+  border-color: var(--primary-color); }
 
 .basti_mobile .rc-editor-linked .p-autocomplete-dropdown, .basti_mobile .rc-editor-linked .p-datepicker-trigger, .basti_mobile .rc-editor-date .p-autocomplete-dropdown, .basti_mobile .rc-editor-date .p-datepicker-trigger {
   color: var(--text-color); }

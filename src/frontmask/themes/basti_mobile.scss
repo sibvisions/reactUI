@@ -371,8 +371,8 @@ body {
             -webkit-box-shadow: none;
 
             & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-                border-color: var(--button-background);
-                color: var(--button-background);
+                border-color: var(--primary-color);
+                color: var(--primary-color);
             }
         }
     }
@@ -386,13 +386,13 @@ body {
         &:hover {
             .p-button.p-button-icon-only {
                 &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                    border-color: var(--button-background);
-                    color: var(--button-background);
+                    border-color: var(--primary-color);
+                    color: var(--primary-color);
                 }
             }
 
             .p-inputtext {
-                border-color: var(--button-background);
+                border-color: var(--primary-color);
             }
         }
 

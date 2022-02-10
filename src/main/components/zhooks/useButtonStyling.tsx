@@ -57,7 +57,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTM
         }
         else {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
+                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
             }
 
             if (!btnJustify) {

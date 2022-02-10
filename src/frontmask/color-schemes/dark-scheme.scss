@@ -102,7 +102,7 @@
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Darkmode button color
-    --button-background: #205e8f;
+    --primary-color: #205e8f;
 
     /// Darkmode component background
     --input-background: #2a323d;
@@ -282,7 +282,7 @@
     --html-picker-item-hover-background: #303a48;
 
     /// Darkmode Message info background
-    --message-info-header-background: var(--button-background);
+    --message-info-header-background: var(--primary-color);
 
     /// Darkmode Message info hover background of closing element
     --message-info-header-close-hover: #276b96;
@@ -505,13 +505,13 @@ body {
         background: var(--std-menu-background);
 
         .p-menuitem {
-            .p-menuitem-link:not(.p-disabled) {
-                background: var(--std-menu-background);
+            .p-menuitem-link {
+                //background: var(--std-menu-background);
                 .p-menuitem-icon, .p-menuitem-text {
                     color: var(--std-menu-text-color);
                 }
 
-                &:hover {
+                &:not(.p-disabled):hover {
                     background: var(--std-menu-item-hover-background);
                     .p-menuitem-icon, .p-menuitem-text {
                         color: var(--std-menu-item-hover-text-color);
@@ -600,8 +600,8 @@ body {
 .reactUI.basti_mobile {
     .p-inputtext:enabled:focus {
         & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-            border-color: var(--button-background);
-            color: var(--button-background);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
     }
 
@@ -609,13 +609,13 @@ body {
         &:hover {
             .p-button.p-button-icon-only {
                 &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                    border-color: var(--button-background);
-                    color: var(--button-background);
+                    border-color: var(--primary-color);
+                    color: var(--primary-color);
                 }
             }
 
             .p-inputtext {
-                border-color: var(--button-background);
+                border-color: var(--primary-color);
             }
         }
 
@@ -713,8 +713,8 @@ body {
 
 /// PopupMenuButton
 .rc-popupmenubutton {
-    background: var(--button-background);
-    border-color: var(--button-background);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     border-radius: var(--button-border-radius);
 
     &:focus-within {
@@ -1135,8 +1135,9 @@ body {
     }
 
     .p-datatable-tbody > tr {
-        background: var(--table-row-odd-background);
+        background: var(--table-row-even-background);
         color: var(--text-color);
+
         > td {
             border: var(--table-row-border);
 
@@ -1144,17 +1145,16 @@ body {
                 color: var(--text-color);
             }
 
+            &:hover {
+                color: var(--table-cell-hover-color);
+            }
+
             &.cell-required {
-                background: var(--table-required-odd-background);
-                color: var(--table-required-color);
+                background: var(--table-required-even-background);
             }
 
             &.cell-readonly {
-                background: var(--table-readonly-odd-background);
-            }
-
-            &:hover {
-                color: var(--table-cell-hover-color);
+                background: var(--table-readonly-even-background);
             }
         }
 
@@ -1162,50 +1162,48 @@ body {
             color: var(--text-color);
             background: var(--table-selected-row-background) !important;
 
-            td {
+            > td {
+                .open-cell-editor {
+                    color: var(--text-color);
+                }
+
                 &.cell-required {
-                    background: var(--table-required-odd-background);
+                    background: var(--table-required-even-background);
                     opacity: 0.8;
                 }
 
                 &.cell-readonly {
-                    background: var(--table-readonly-odd-background);
+                    background: var(--table-readonly-even-background);
                     opacity: 0.8;
-                }
-
-                .open-cell-editor {
-                    color: var(--text-color);
                 }
             }
         }
 
-        &:nth-child(even) {
-            background: var(--table-row-even-background);
-
-            &.p-highlight {
-                background: var(--table-selected-row-background);
-                color: var(--text-color);
-            }
+        &.p-row-odd {
+            background: var(--table-row-odd-background);
 
             > td {
                 &.cell-required {
-                    background: var(--table-required-even-background);
+                    background: var(--table-required-odd-background);
+                    color: var(--table-required-color);
                 }
 
                 &.cell-readonly {
-                    background: var(--table-readonly-even-background);
+                    background: var(--table-readonly-odd-background);
                 }
             }
 
-            &.p-highlight > td {
-                &.cell-required {
-                    background: var(--table-required-even-background);
-                    opacity: 0.8;
-                }
-
-                &.cell-readonly {
-                    background: var(--table-readonly-even-background);
-                    opacity: 0.8;
+            &.p-highlight {
+                td {
+                    &.cell-required {
+                        background: var(--table-required-odd-background);
+                        opacity: 0.8;
+                    }
+    
+                    &.cell-readonly {
+                        background: var(--table-readonly-odd-background);
+                        opacity: 0.8;
+                    }
                 }
             }
         }

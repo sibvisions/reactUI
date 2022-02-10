@@ -13,6 +13,7 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationName: string
     applicationTheme: string
     applicationColorScheme: string
+    applicationDesign?:string
     aliveInterval?: number
 }
 export default ApplicationMetaDataResponse;

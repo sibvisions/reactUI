@@ -74,7 +74,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 }
 
                 const getButtonBackground = ():string => {
-                    return window.getComputedStyle(document.documentElement).getPropertyValue('--button-background');
+                    return window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
                 }
     
                 if (buttonType === 4 || buttonType === 5) {
