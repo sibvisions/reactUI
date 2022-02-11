@@ -271,6 +271,10 @@ const useStartup = (props:ICustomContent):boolean => {
                     convertedOptions.delete("colorScheme");
                 }
 
+                if (props.colorScheme) {
+                    schemeToSet = props.colorScheme;
+                }
+
                 if (schemeToSet) {
                     context.appSettings.setApplicationColorSchemeByURL(schemeToSet);
                     addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", context.appSettings);
@@ -279,6 +283,10 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (convertedOptions.has("theme")) {
                     themeToSet = convertedOptions.get("theme");
                     convertedOptions.delete("theme");
+                }
+
+                if (props.theme) {
+                    themeToSet = props.theme;
                 }
 
                 if (themeToSet) {
@@ -290,6 +298,10 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (convertedOptions.has("design")) {
                     designToSet = convertedOptions.get("design");
                     convertedOptions.delete("design");
+                }
+
+                if (props.design) {
+                    designToSet = props.design;
                 }
 
                 if (designToSet) {

@@ -23,6 +23,7 @@ export interface ICustomContent {
     embedOptions?:{ [key:string]:any }
     theme?: string
     colorScheme?: string
+    design?:string
 }
 
 export const EmbeddedContext = createContext<boolean>(false)
