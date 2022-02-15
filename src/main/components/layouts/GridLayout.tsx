@@ -46,7 +46,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         const children = context.contentStore.getChildren(id, className)
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if (compSizes && children.size === compSizes.size) {
+        if (compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /** The widest single grid of all components */
             let widest = 0;
             /** The tallest single grid of all components */

@@ -565,7 +565,8 @@ body {
       .rc-table .p-datatable-tbody > tr > td:hover {
         color: var(--table-cell-hover-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-required {
-        background: var(--table-required-even-background); }
+        background: var(--table-required-even-background);
+        color: var(--table-required-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-readonly {
         background: var(--table-readonly-even-background); }
     .rc-table .p-datatable-tbody > tr.p-highlight {

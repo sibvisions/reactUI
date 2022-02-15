@@ -706,7 +706,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 
          */
-        if(compSizes && compSizes.size === children.size){
+        if(compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false){
             calculateLayout(
                 compSizes,
                 children,

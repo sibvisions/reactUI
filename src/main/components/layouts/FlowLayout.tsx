@@ -89,7 +89,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         }
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if(compSizes && childrenSorted.size === compSizes.size) {
+        if(compSizes && childrenSorted.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /**
 	         * Gets the factor for an alignment value. The factor will be used
 	         * to align the components in the layout.

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useCallback, useEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
@@ -40,7 +40,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
+     const reportSize = useCallback((prefSize:Dimension, minSize?:Dimension) => {
         panelReportSize(
             id, 
             "P", 
@@ -52,7 +52,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }
+    }, [onLoadCallback])
 
     return (
         <>

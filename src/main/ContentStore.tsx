@@ -253,7 +253,6 @@ export default class ContentStore{
                         }
                     }
                 }
-
                 if (existingComponent) {
                     addToNotifyList(existingComponent);
                 }

@@ -1151,6 +1151,7 @@ body {
 
             &.cell-required {
                 background: var(--table-required-even-background);
+                color: var(--table-required-color);
             }
 
             &.cell-readonly {

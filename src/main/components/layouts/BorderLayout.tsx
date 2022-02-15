@@ -68,8 +68,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         let hCompCount = 0;
         let vCompCount = 0;
 
+        //console.log(style.height, style.width, compSizes, id, context.contentStore.getComponentById(id))
+
         /** If compSizes is set (every component in this layout reported its sizes) */
-        if(compSizes && children.size === compSizes.size) {
+        if(compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /** Preferred Sizes for BorderLayout areas */
             const prefConstraintSizes: BorderLayoutComponents = {
                 center: {height: 0, width: 0},
@@ -90,39 +92,41 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
-                const preferredSize = getPreferredSize(component, compSizes) || {height: 0, width: 0};
-                const minimumSize = getMinimumSize(component, compSizes);
-                if(component.constraints === "North") {
-                    prefConstraintSizes.north = preferredSize;
-                    minConstraintSizes.north = minimumSize;
-                    northUsed = true;
-                    vCompCount++;
+                if (component.visible !== false) {
+                    const preferredSize = getPreferredSize(component, compSizes) || {height: 0, width: 0};
+                    const minimumSize = getMinimumSize(component, compSizes);
+                    if(component.constraints === "North") {
+                        prefConstraintSizes.north = preferredSize;
+                        minConstraintSizes.north = minimumSize;
+                        northUsed = true;
+                        vCompCount++;
+                    }
+                    else if(component.constraints === "South") {
+                        prefConstraintSizes.south = preferredSize;
+                        minConstraintSizes.south = minimumSize;
+                        southUsed = true;
+                        vCompCount++
+                    }
+                    else if(component.constraints === "East") {
+                        prefConstraintSizes.east = preferredSize;
+                        minConstraintSizes.east = minimumSize;
+                        eastUsed = true;
+                        hCompCount++;
+                    }
+                    else if(component.constraints === "West") {
+                        prefConstraintSizes.west = preferredSize;
+                        minConstraintSizes.west = minimumSize;
+                        westUsed = true;
+                        hCompCount++;
+                    }   
+                    else if(component.constraints === "Center") {
+                        prefConstraintSizes.center = preferredSize;
+                        minConstraintSizes.center = minimumSize;
+                        centerUsed = true
+                        vCompCount++;
+                        hCompCount++;
+                    }
                 }
-                else if(component.constraints === "South") {
-                    prefConstraintSizes.south = preferredSize;
-                    minConstraintSizes.south = minimumSize;
-                    southUsed = true;
-                    vCompCount++
-                }
-                else if(component.constraints === "East") {
-                    prefConstraintSizes.east = preferredSize;
-                    minConstraintSizes.east = minimumSize;
-                    eastUsed = true;
-                    hCompCount++;
-                }
-                else if(component.constraints === "West") {
-                    prefConstraintSizes.west = preferredSize;
-                    minConstraintSizes.west = minimumSize;
-                    westUsed = true;
-                    hCompCount++;
-                }   
-                else if(component.constraints === "Center") {
-                    prefConstraintSizes.center = preferredSize;
-                    minConstraintSizes.center = minimumSize;
-                    centerUsed = true
-                    vCompCount++;
-                    hCompCount++;
-                }  
             });
 
             let addVGap = vCompCount > 0 ? (vCompCount - 1) * gaps.verticalGap : 0;
@@ -263,20 +267,22 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
             /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
             children.forEach(component => {
-                if (component.constraints === "North") {
-                    sizeMap.set(component.id, northCSS);
-                }
-                else if (component.constraints === "South") {
-                    sizeMap.set(component.id, southCSS);
-                }
-                else if (component.constraints === "Center") {
-                    sizeMap.set(component.id, centerCSS);
-                }
-                else if (component.constraints === "West") {
-                    sizeMap.set(component.id, westCSS);
-                }
-                else if (component.constraints === "East") {
-                    sizeMap.set(component.id, eastCSS);
+                if (component.visible !== false) {
+                    if (component.constraints === "North") {
+                        sizeMap.set(component.id, northCSS);
+                    }
+                    else if (component.constraints === "South") {
+                        sizeMap.set(component.id, southCSS);
+                    }
+                    else if (component.constraints === "Center") {
+                        sizeMap.set(component.id, centerCSS);
+                    }
+                    else if (component.constraints === "West") {
+                        sizeMap.set(component.id, westCSS);
+                    }
+                    else if (component.constraints === "East") {
+                        sizeMap.set(component.id, eastCSS);
+                    }
                 }
             });
             const preferredWidth = Math.max(...[

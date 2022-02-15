@@ -25,6 +25,8 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
+    const tempSizes = useRef<Map<string, ComponentSizes>>(preferredSizes ? new Map([...preferredSizes]) : new Map<string, ComponentSizes>())
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -34,22 +36,27 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
-        let tempSizes = new Map<string, ComponentSizes>();
+        //let tempSizes = new Map<string, ComponentSizes>();
         let componentsChanged = false
         const children = context.contentStore.getChildren(id, className);
         /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
         if (preferredSizes) {
-            tempSizes = new Map([...preferredSizes]);
-            // tempSizes.forEach((val, key) => {
-            //     if (!children.has(key)) {
-            //         tempSizes.delete(key)
-            //         componentsChanged = true;
-            //     }
-            // });
+            //tempSizes = new Map([...preferredSizes]);
+        }
 
-            // if (componentsChanged) {
-            //     setPreferredSizes(new Map(tempSizes));
-            // }
+        console.log(tempSizes.current)
+
+        tempSizes.current.forEach((val, key) => {
+            if (!children.has(key)) {
+                console.log(key, context.contentStore.getComponentById(key), id)
+                tempSizes.current.delete(key)
+                componentsChanged = true;
+            }
+        });
+
+        if (componentsChanged) {
+            //console.log('setting pref compchanged')
+            setPreferredSizes(new Map(tempSizes.current));
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
@@ -96,17 +103,21 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         }
 
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
-            tempSizes.forEach((val, key) => {
+            //console.log(compId, context.contentStore.getComponentById(compId), id)
+            let compChange = false;
+            tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
-                    tempSizes.delete(key)
+                    tempSizes.current.delete(key);
+                    compChange = true;
                 }
             });
-            const preferredComp = tempSizes.get(compId);
-            tempSizes.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            const preferredComp = tempSizes.current.get(compId);
+            tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
             
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if((tempSizes.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
-                setPreferredSizes(new Map(tempSizes));
+            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
+                console.log("parent", context.contentStore.getComponentById(id), "comp", context.contentStore.getComponentById(compId))
+                setPreferredSizes(new Map(tempSizes.current));
             }
                 
             //Set Preferred Sizes of changed Components
@@ -127,27 +138,17 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
             setPreferredSizes(new Map<string, ComponentSizes>());
         }
 
-        if (tempSizes.size > children.size) {
-            tempSizes.forEach((value, key) => {
-                if(!children.has(key)) {
-                    tempSizes.delete(key)
-                }       
-            });
-            if (tempSizes.size === children.size) {
-                setPreferredSizes(new Map(tempSizes))
-            }
-        }
-
         /** Create the reactchildren */
         children.forEach(child => {
             let reactChild;
-            if (!compLoadedCache.current.includes(child.name)) {
-                child.onLoadCallback = componentHasLoaded;
-                compLoadedCache.current.push(child.name)
-            }
+            // if (!compLoadedCache.current.includes(child.name)) {
+            //     child.onLoadCallback = componentHasLoaded;
+            //     compLoadedCache.current.push(child.name)
+            // }
             if (!context.contentStore.customComponents.has(child.name)) {
                 //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
                 //gets a componentHasLoaded. When not using this it could be that some components aren't shown...
+                console.log(child, id, child.onLoadCallback)
                 child.onLoadCallback = componentHasLoaded;
                 reactChild = componentHandler(child, context.contentStore);
             }
@@ -162,7 +163,8 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
             }
         });
         return reactChildrenArray;
-    },[context.contentStore, id, preferredSizes]);
+        
+    },[context.contentStore, id, preferredSizes, className, tempSizes.current]);
     
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());

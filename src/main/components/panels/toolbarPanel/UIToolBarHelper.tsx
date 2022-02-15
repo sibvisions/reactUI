@@ -78,7 +78,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-     const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
+     const reportSize = useCallback((prefSize:Dimension, minSize?:Dimension) => {
         panelReportSize(
             id, 
             "P", 
@@ -90,7 +90,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }  
+    }, [onLoadCallback])  
     
     return (
         <>

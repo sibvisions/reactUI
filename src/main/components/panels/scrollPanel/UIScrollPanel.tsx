@@ -1,5 +1,5 @@
 /** React imports */
-import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
@@ -89,7 +89,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
-    const reportSize = (prefSize:Dimension, minSize?:Dimension) => {
+    const reportSize = useCallback((prefSize:Dimension, minSize?:Dimension) => {
         panelReportSize(
             id, 
             "P", 
@@ -105,7 +105,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             layoutSize,
             setLayoutSize
         )
-    }
+    }, [onLoadCallback])
 
     return (
         <>

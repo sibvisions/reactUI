@@ -37,7 +37,7 @@ const NullLayout: FC<ILayout> = (baseProps) => {
         const children = context.contentStore.getChildren(id, className);
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if (compSizes && children.size === compSizes.size) {
+        if (compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /** horizontal position of the component most to the right*/
             let furthest = 0;
             /** vertical position of the component most to the bottom */
