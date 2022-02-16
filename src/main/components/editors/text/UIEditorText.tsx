@@ -438,8 +438,6 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
-    console.log(parseBackgroundString(props.cellEditor_background_))
-
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
         fieldType === FieldTypes.HTML ?
