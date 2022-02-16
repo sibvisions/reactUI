@@ -376,6 +376,17 @@
 
     /// Orange Topbar colors
     --topbar-colors: #f78500, #f78500;
+
+    ///System Colors
+
+    /// Orange mandatory background
+    --mandatory-background: rgb(255, 244, 210);
+
+    /// Orange read-only background
+    --readonly-background: rgb(239, 239, 239);
+
+    /// Orange invalid editor background
+    --invalid-background: rgb(209, 51, 51);
 }
 
 body {
@@ -764,6 +775,18 @@ body {
 
     &:not(.required-field) {
         color: var(--text-color);
+    }
+
+    &.mandatorybackground {
+        background: var(--mandatory-background);
+    }
+
+    &.readonlybackground {
+        background: var(--readonly-background);
+    }
+
+    &.invalideditorbackground {
+        background: var(--invalid-background);
     }
 
     &:enabled {

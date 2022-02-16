@@ -124,7 +124,10 @@
   --tab-border-radius: 0px;
   --dialog-border-radius: 4px;
   --toolbar-border-radius: 0px;
-  --topbar-colors: #f78500, #f78500; }
+  --topbar-colors: #f78500, #f78500;
+  --mandatory-background: rgb(255, 244, 210);
+  --readonly-background: rgb(239, 239, 239);
+  --invalid-background: rgb(209, 51, 51); }
 
 body {
   background: var(--screen-background);
@@ -362,6 +365,12 @@ body {
   border-radius: var(--editor-border-radius); }
   .p-inputtext:not(.required-field) {
     color: var(--text-color); }
+  .p-inputtext.mandatorybackground {
+    background: var(--mandatory-background); }
+  .p-inputtext.readonlybackground {
+    background: var(--readonly-background); }
+  .p-inputtext.invalideditorbackground {
+    background: var(--invalid-background); }
   .p-inputtext:enabled:focus {
     box-shadow: var(--focus-box-shadow);
     border-color: var(--border-color-hover); }

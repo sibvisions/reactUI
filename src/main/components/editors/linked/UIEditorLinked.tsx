@@ -16,6 +16,7 @@ import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -74,8 +75,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
-    const [linkRefData, setLinkRefData] = useState<Map<string, any[]>|undefined>(context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook)?.data);
+    /** Editor background */
+    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
+    /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     /** If the CellEditor is read-only */
@@ -354,7 +357,12 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
                 scrollHeight={tableOptions ? ((providedData.length + 1) * 38) > 200 ? "200px" : `${(providedData.length + 1) * 38}px` : (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`}
-                inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
+                inputStyle={{
+                    ...textAlignment, 
+                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined,
+                    borderRight: "none" 
+                }}
+                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 disabled={!props.cellEditor_editable_}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}

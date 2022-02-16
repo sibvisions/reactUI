@@ -25,7 +25,7 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
-    const tempSizes = useRef<Map<string, ComponentSizes>>(preferredSizes ? new Map([...preferredSizes]) : new Map<string, ComponentSizes>())
+    const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>())
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

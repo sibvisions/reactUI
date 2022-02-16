@@ -24,6 +24,7 @@ import { sendSetValues,
          concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -215,8 +216,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const popupMenu = usePopupMenu(props);
 
-    /** If the CellEditor is read-only */
-    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
+    /** Editor background */
+    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -405,9 +406,14 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             className: concatClassnames(
                 getClassName(fieldType), 
                 columnMetaData?.nullable === false ? "required-field" : "",
-                props.isCellEditor ? "open-cell-editor" : undefined
+                props.isCellEditor ? "open-cell-editor" : undefined,
+                isSysColor(editorBackground) ? editorBackground.name : undefined
             ),
-            style: { ...layoutStyle, ...textAlign, background: props.cellEditor_background_ },
+            style: { 
+                ...layoutStyle, 
+                ...textAlign, 
+                background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+            },
             maxLength: length,
             disabled,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
@@ -431,6 +437,8 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
+
+    console.log(parseBackgroundString(props.cellEditor_background_))
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (

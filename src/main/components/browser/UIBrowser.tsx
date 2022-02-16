@@ -1,14 +1,13 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect, useRef } from "react";
 
 /** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
 
 /** Hook imports */
-import { useProperties, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
+import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
-import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
 import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";

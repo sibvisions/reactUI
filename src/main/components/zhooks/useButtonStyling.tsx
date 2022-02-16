@@ -4,6 +4,7 @@ import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { getAlignments, getFont, getMargins, IconProps, parseIconData } from "../compprops";
+import { parseBackgroundString } from "../compprops/ComponentProperties";
 
 interface IButtonStyle {
     style: CSSProperties,
@@ -38,7 +39,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTM
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
-        let btnBackground = props.background ? tinycolor(props.background).toString() : undefined;
+        let btnBackground = props.background ? tinycolor(parseBackgroundString(props.background).background).toString() : undefined;
         let btnJustify = props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va;
         let btnAlign = props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha;
 

@@ -13,6 +13,7 @@ import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMa
 import { getAlignments } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -101,7 +102,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                     :
                     {
                         ...layoutStyle,
-                        backgroundColor: props.cellEditor_background_,
+                        background: parseBackgroundString(props.cellEditor_background_).background,
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}

@@ -81,3 +81,25 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
         return {icon: undefined, size: undefined, color: undefined};
     }
 }
+
+export function parseBackgroundString(background?:string):{ background?:string, name?:string } {
+    let backgroundObj:{ background?:string, name?:string } = { background: undefined, name: undefined }
+    if (background) {
+        if (background.includes(";")) {
+            const splitString = background.split(";");
+            backgroundObj.background = splitString[0];
+            backgroundObj.name = splitString[1].substring(splitString[1].indexOf("_") + 1);
+        }
+        else {
+            backgroundObj.background = background;
+        }
+    }
+    return backgroundObj;
+}
+
+export function isSysColor(backgroundObj: { background?:string, name?:string }): boolean {
+    if (backgroundObj.background && ["mandatorybackground", "readonlybackground", "invalideditorbackground"]) {
+        return true;
+    }
+    return false;
+}

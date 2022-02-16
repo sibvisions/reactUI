@@ -24,6 +24,7 @@ import { sendSetValues,
 import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { parseBackgroundString, isSysColor } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -126,11 +127,11 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
+    /** Editor background */
+    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
+
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
 
     setDateLocale(context.appSettings.locale);
 
@@ -303,7 +304,12 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
                 showIcon
                 showOnFocus={false}
-                inputStyle={{ ...textAlignment, background: props.cellEditor_background_, borderRight: "none" }}
+                inputStyle={{ 
+                    ...textAlignment, 
+                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined,
+                    borderRight: "none" 
+                }}
+                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
                 onChange={event => {

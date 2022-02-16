@@ -376,6 +376,17 @@
 
     /// Darkmode Topbar color
     --topbar-colors: #2196F3, #2196F3;
+
+    ///System Colors
+
+    /// Darkmode mandatory background
+    --mandatory-background: rgb(255, 244, 210);
+
+    /// Darkmode read-only background
+    --readonly-background: #2a323d;
+
+    /// Darkmode invalid editor background
+    --invalid-background: rgb(209, 51, 51);
 }
 
 body {
@@ -764,6 +775,18 @@ body {
 
     &:not(.required-field) {
         color: var(--text-color);
+    }
+
+    &.mandatorybackground {
+        background: var(--mandatory-background);
+    }
+
+    &.readonlybackground {
+        background: var(--readonly-background);
+    }
+
+    &.invalideditorbackground {
+        background: var(--invalid-background);
     }
 
     &:enabled {

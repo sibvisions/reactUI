@@ -78,7 +78,7 @@ export function getMinimumSize(component:BaseComponent, componentSizes:Map<strin
             minimumSize = { height: 0, width: 0 };
         }
         else {
-            minimumSize = componentSizes.get(component.id)!.preferredSize;
+            minimumSize = Object.assign({}, componentSizes.get(component.id)!.preferredSize);
             if (component.className === COMPONENT_CLASSNAMES.LABEL && minimumSize.width > 50 && component.text) {
                 minimumSize.width = 50;
             }

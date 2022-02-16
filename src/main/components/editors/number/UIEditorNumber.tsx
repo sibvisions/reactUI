@@ -25,6 +25,7 @@ import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
+import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -70,6 +71,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
+
+    /** Editor background */
+    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -209,7 +213,11 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     tabIndex={props.tabIndex}
                     value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                     style={{ width: '100%', height: "100%" }}
-                    inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
+                    inputStyle={{ 
+                        ...textAlignment, 
+                        background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+                    }}
+                    inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                     onChange={event => setValue(event.value) }
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                     onBlur={() => {
@@ -238,7 +246,11 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 maxFractionDigits={scaleDigits.maxScale}
                 value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                 style={layoutStyle}
-                inputStyle={{ ...textAlignment, background: props.cellEditor_background_ }}
+                inputStyle={{ 
+                    ...textAlignment, 
+                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+                }}
+                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
                 onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
                 disabled={!props.cellEditor_editable_}
