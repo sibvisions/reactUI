@@ -68,8 +68,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         let hCompCount = 0;
         let vCompCount = 0;
 
-        //console.log(style.height, style.width, compSizes, id, context.contentStore.getComponentById(id))
-
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /** Preferred Sizes for BorderLayout areas */

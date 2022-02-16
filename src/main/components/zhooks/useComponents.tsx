@@ -39,23 +39,15 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         //let tempSizes = new Map<string, ComponentSizes>();
         let componentsChanged = false
         const children = context.contentStore.getChildren(id, className);
-        /** If the preferredSizes get updated and components have been removed, remove it from tempSizes */
-        if (preferredSizes) {
-            //tempSizes = new Map([...preferredSizes]);
-        }
-
-        console.log(tempSizes.current)
 
         tempSizes.current.forEach((val, key) => {
             if (!children.has(key)) {
-                console.log(key, context.contentStore.getComponentById(key), id)
                 tempSizes.current.delete(key)
                 componentsChanged = true;
             }
         });
 
         if (componentsChanged) {
-            //console.log('setting pref compchanged')
             setPreferredSizes(new Map(tempSizes.current));
         }
         
@@ -103,12 +95,9 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         }
 
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
-            //console.log(compId, context.contentStore.getComponentById(compId), id)
-            let compChange = false;
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
                     tempSizes.current.delete(key);
-                    compChange = true;
                 }
             });
             const preferredComp = tempSizes.current.get(compId);
@@ -116,7 +105,6 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
             
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
             if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
-                console.log("parent", context.contentStore.getComponentById(id), "comp", context.contentStore.getComponentById(compId))
                 setPreferredSizes(new Map(tempSizes.current));
             }
                 
@@ -148,7 +136,6 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
             if (!context.contentStore.customComponents.has(child.name)) {
                 //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
                 //gets a componentHasLoaded. When not using this it could be that some components aren't shown...
-                console.log(child, id, child.onLoadCallback)
                 child.onLoadCallback = componentHasLoaded;
                 reactChild = componentHandler(child, context.contentStore);
             }
