@@ -8,7 +8,7 @@ import { Password } from "primereact/password";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
@@ -21,7 +21,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text);
@@ -43,10 +43,10 @@ const UIPassword: FC<ITextField> = (baseProps) => {
         <Password
             inputRef={passwordRef}
             id={props.name}
-            className="rc-password"
+            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
             value={pwValue||""} 
             feedback={false} 
-            style={layoutStyle} 
+            style={{...layoutStyle, ...compStyle}} 
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

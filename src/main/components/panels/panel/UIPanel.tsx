@@ -35,7 +35,7 @@ export interface IPanel extends BaseComponent {
  */
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -85,7 +85,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             <div
                 className={concatClassnames(
                     "rc-panel",
-                    props.style === "tagpanel" ? "tag-panel" : ""
+                    props.style === "tagpanel" ? "tag-panel" : "",
+                    compStyleClassNames.bgdClassName,
+                    compStyleClassNames.fgdClassName
                 )}
                 ref={panelRef}
                 id={props.name}
@@ -95,7 +97,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 } : {
                     ...layoutStyle,
-                    backgroundColor: props.background,
+                    ...compStyle,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 }}
                 data-pr-tooltip={props.toolTipText}

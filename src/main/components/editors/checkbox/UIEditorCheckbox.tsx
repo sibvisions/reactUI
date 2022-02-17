@@ -13,7 +13,6 @@ import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMa
 import { getAlignments } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -35,7 +34,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -94,7 +93,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
             aria-label={props.ariaLabel}
             className={concatClassnames(
                 "rc-editor-checkbox",
-                columnMetaData?.nullable === false ? "required-field" : ""
+                columnMetaData?.nullable === false ? "required-field" : "",
+                cellStyleClassNames.bgdClassName,
+                cellStyleClassNames.fgdClassName
             )}
             style={
                 baseProps.isCellEditor ?
@@ -102,7 +103,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                     :
                     {
                         ...layoutStyle,
-                        background: parseBackgroundString(props.cellEditor_background_).background,
+                        background: cellStyle.background,
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}
@@ -155,7 +156,14 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                         "rc-editor-checkbox-label",
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                     )}
-                    style={{ caretColor: "transparent" }}
+                    style={{ 
+                        caretColor: "transparent", 
+                        color: cellStyle.color,
+                        fontFamily: cellStyle.fontFamily,
+                        fontWeight: cellStyle.fontWeight,
+                        fontStyle: cellStyle.fontStyle,
+                        fontSize: cellStyle.fontSize
+                    }}
                     htmlFor={id}>
                     {props.cellEditor?.text}
                 </label>

@@ -10,7 +10,7 @@ import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
 
 
 /**
@@ -19,7 +19,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, 
  */
 const UIGroupPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -59,16 +59,17 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                className="rc-panel-group"
+                className={concatClassnames("rc-panel-group", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
                 id={props.name}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
-                    : { ...layoutStyle, backgroundColor: props.background }}
+                    : { ...layoutStyle, background: compStyle.background }}
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left" >
                 <div
-                    className="rc-panel-group-caption">
+                    className="rc-panel-group-caption"
+                    style={{ fontFamily: compStyle.fontFamily, fontWeight: compStyle.fontWeight, fontStyle: compStyle.fontStyle, fontSize: compStyle.fontSize }}>
                     <span>
                         {props.text}
                     </span>

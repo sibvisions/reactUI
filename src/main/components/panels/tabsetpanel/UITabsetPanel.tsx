@@ -13,7 +13,7 @@ import { parseIconData, IconProps } from "../../compprops";
 import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 
 /** Interface for TabsetPanel */
@@ -30,7 +30,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const panelRef = useRef<any>();
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
@@ -153,11 +153,13 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     return (
         <LayoutContext.Provider value={componentSizes}>
-            <div className="rc-tabset" style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, backgroundColor: props.background }}>
+            <div 
+                className={concatClassnames("rc-tabset", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)} 
+                style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle }}>
                 <TabView
                     ref={panelRef}
                     id={props.name}
-                    
+                    style={{"--nav-background": compStyle.background}}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => {
                         if (event.index !== props.selectedIndex)

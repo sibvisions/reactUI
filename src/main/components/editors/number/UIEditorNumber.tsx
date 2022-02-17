@@ -25,7 +25,7 @@ import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
-import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
+//import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -58,7 +58,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [value, setValue] = useState<number|string|null>(selectedRow);
@@ -71,9 +71,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
-
-    /** Editor background */
-    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -215,9 +212,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
-                        background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+                        ...cellStyle
                     }}
-                    inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
+                    inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                     onChange={event => setValue(event.value) }
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                     onBlur={() => {
@@ -248,9 +245,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 style={layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
-                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+                    //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
                 }}
-                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
+                //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
                 onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
                 disabled={!props.cellEditor_editable_}

@@ -24,7 +24,6 @@ import { sendSetValues,
 import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { parseBackgroundString, isSysColor } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor{
@@ -87,7 +86,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
 
@@ -126,9 +125,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
 
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
-
-    /** Editor background */
-    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
@@ -306,10 +302,10 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 showOnFocus={false}
                 inputStyle={{ 
                     ...textAlignment, 
-                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined,
+                    ...cellStyle,
                     borderRight: "none" 
                 }}
-                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
+                inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
                 onChange={event => {

@@ -22,7 +22,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<BaseComponent>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -31,9 +31,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     const lblAlignments = getAlignments(props);
 
     const lblTextAlignment = translateTextAlign(props.horizontalAlignment);
-
-    /** Font for label */
-    const lblFont = getFont(props.font);
 
     const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
 
@@ -58,17 +55,17 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
-                props.eventMousePressed ? "mouse-pressed-event" : ""
+                props.eventMousePressed ? "mouse-pressed-event" : "",
+                compStyleClassNames.bgdClassName,
+                compStyleClassNames.fgdClassName
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped
                 justifyContent: !isHTML ? lblAlignments.ha : lblAlignments.va,
                 alignItems: !isHTML ? lblAlignments.va : lblAlignments.ha,
-                backgroundColor: props.background,
-                color: props.foreground,
                 ...lblTextAlignment,
-                ...lblFont,
-                ...layoutStyle
+                ...layoutStyle,
+                ...compStyle
             }}>
             <span 
                 id={props.name + "-text"} 

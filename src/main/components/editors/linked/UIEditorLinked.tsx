@@ -16,7 +16,7 @@ import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
+//import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -52,7 +52,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
 
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
@@ -75,14 +75,8 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
-    /** Editor background */
-    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
-
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_;
 
     useFetchMissingData(compId, props.dataRow);
 
@@ -348,7 +342,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 className={concatClassnames(
                     "rc-editor-linked", 
                     columnMetaData?.nullable === false ? "required-field" : "",
-                    props.isCellEditor ? "open-cell-editor" : undefined
+                    props.isCellEditor ? "open-cell-editor" : undefined,
                 )}
                 panelClassName={concatClassnames(
                     "rc-editor-linked-dropdown",
@@ -359,10 +353,10 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 scrollHeight={tableOptions ? ((providedData.length + 1) * 38) > 200 ? "200px" : `${(providedData.length + 1) * 38}px` : (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`}
                 inputStyle={{
                     ...textAlignment, 
-                    background: !isSysColor(editorBackground) ? editorBackground.background : undefined,
+                    ...cellStyle,
                     borderRight: "none" 
                 }}
-                inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
+                inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                 disabled={!props.cellEditor_editable_}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}

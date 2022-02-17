@@ -7,7 +7,7 @@ import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } 
 /** Other imports */
 import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
 import { Tooltip } from "primereact/tooltip";
 
 /**
@@ -19,7 +19,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<BaseComponent>(baseProps);
 
     const [preferredSize, setPreferredSize] = useState<Dimension>();
 
@@ -106,8 +106,13 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
-            className={"rc-icon" + (props.name === "Validator" ? " rc-validator" : "")} 
-            style={{...layoutStyle, overflow: "hidden"}}
+            className={concatClassnames(
+                "rc-icon",
+                props.name === "Validator" ? " rc-validator" : "",
+                compStyleClassNames.bgdClassName,
+                compStyleClassNames.fgdClassName
+            )} 
+            style={{...layoutStyle, ...compStyle, overflow: "hidden"}}
         >
             <Tooltip target={"#" + props.name} />
             {iconOrImage(iconProps.icon)}

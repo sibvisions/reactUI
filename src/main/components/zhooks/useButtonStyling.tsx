@@ -4,7 +4,6 @@ import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { getAlignments, getFont, getMargins, IconProps, parseIconData } from "../compprops";
-import { parseBackgroundString } from "../compprops/ComponentProperties";
 
 interface IButtonStyle {
     style: CSSProperties,
@@ -27,19 +26,16 @@ interface IButtonStyle {
  * @param ref2 - an extra element reference to center button content, needed for checkbox and radiobutton
  * @returns style properties used by all button components
  */
-const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
+const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 
-    /** The font of a button */
-    const font = useMemo(() => getFont(props.font), [props.font]);
-
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
-        let btnBackground = props.background ? tinycolor(parseBackgroundString(props.background).background).toString() : undefined;
+        let btnBackground = compStyle?.background ? compStyle.background as string : undefined;
         let btnJustify = props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va;
         let btnAlign = props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha;
 
@@ -71,22 +67,18 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTM
         }
 
         return {
+            ...compStyle,
             background: btnBackground,
             borderColor: btnBackground,
-            color: props.foreground ? tinycolor(props.foreground).toString() : undefined,
             flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
             justifyContent: btnJustify,
             alignItems: btnAlign,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,
-            fontFamily: font ? font.fontFamily : undefined,
-            fontWeight: font ? font.fontWeight : undefined,
-            fontStyle: font ? font.fontStyle : undefined,
-            fontSize: font ? font.fontSize : undefined
         }
-    }, [props.background, props.foreground, props.horizontalTextPosition, margins, font]);
+    }, [compStyle, props.horizontalTextPosition, margins]);
 
     /** The image property parsed as usable icon props */
-    const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
+    const iconProps = useMemo(() => parseIconData(compStyle?.color as string, props.image), [compStyle?.color, props.image]);
 
     /** The position of the icon */
     const iconPos = useMemo(() => {
@@ -148,10 +140,10 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, ref?: HTM
     const tabIndex = useMemo(() => props.focusable !== false ? (props.tabIndex ? props.tabIndex : 0) : -1, [props.focusable, props.tabIndex]);
 
     /** The parsed icon properties of the icon which is displayed when pressing the button */
-    const pressedIconData = useMemo(() => parseIconData(props.foreground, props.mousePressedImage), [props.foreground, props.mousePressedImage]);
+    const pressedIconData = useMemo(() => parseIconData(compStyle?.color as string, props.mousePressedImage), [compStyle?.color, props.mousePressedImage]);
 
     /** The parsed icon properties of the icon which is displayed when hovering the mouse over the button */
-    const mouseOverIconData = useMemo(() => parseIconData(props.foreground, props.mouseOverImage), [props.foreground, props.mouseOverImage]);
+    const mouseOverIconData = useMemo(() => parseIconData(compStyle?.color as string, props.mouseOverImage), [compStyle?.color, props.mouseOverImage]);
 
     return {
         style: buttonStyle,

@@ -8,7 +8,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames } from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
@@ -26,7 +26,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITextArea>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextArea>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text);
@@ -47,8 +47,9 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     return (
         <InputTextarea 
             ref={inputRef} 
-            id={props.name} 
-            value={text||""} 
+            id={props.name}
+            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
+            value={text||""}
             style={{...layoutStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}

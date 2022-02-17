@@ -28,10 +28,10 @@ const UIButton: FC<IButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, styleClassName] = useComponentConstants<IButton>(baseProps);
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, buttonRef.current)
+    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
 
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
@@ -72,7 +72,9 @@ const UIButton: FC<IButton> = (baseProps) => {
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
-                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : ""
+                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                    styleClassName.bgdClassName,
+                    styleClassName.fgdClassName
                 )}
                 style={{
                     ...btnStyle.style,

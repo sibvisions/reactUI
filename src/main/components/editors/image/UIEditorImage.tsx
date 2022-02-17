@@ -33,7 +33,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorImage>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellstyleClassName] = useEditorConstants<IEditorImage>(baseProps, baseProps.editorStyle);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props
@@ -93,9 +93,11 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-image",
-                columnMetaData?.nullable === false ? "required-field" : ""
+                columnMetaData?.nullable === false ? "required-field" : "",
+                cellstyleClassName.bgdClassName,
+                cellstyleClassName.fgdClassName
             )}
-            style={{ ...layoutStyle, overflow: "hidden", caretColor: "transparent" }}
+            style={{ ...layoutStyle, ...cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

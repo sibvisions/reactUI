@@ -9,7 +9,7 @@ import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
@@ -25,7 +25,7 @@ const UIText: FC<ITextField> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
@@ -46,9 +46,10 @@ const UIText: FC<ITextField> = (baseProps) => {
     return (
         <InputText 
             ref={inputRef} 
-            id={props.name} 
+            id={props.name}
+            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
             value={text||""} 
-            style={layoutStyle} 
+            style={{...layoutStyle, ...compStyle}} 
             onChange={event => setText(event.currentTarget.value)}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

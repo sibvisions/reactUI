@@ -150,7 +150,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<TableProps>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<TableProps>(baseProps);
 
     /** ComponentId of the screen */
     const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
@@ -1139,8 +1139,10 @@ const UITable: FC<TableProps> = (baseProps) => {
             <div
                 ref={wrapRef}
                 id={props.name + "-wrapper"}
+                className={concatClassnames(compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
                 style={{
                     ...layoutStyle,
+                    ...compStyle,
                     outline: "none",
                     caretColor: "transparent"
                 } as any}

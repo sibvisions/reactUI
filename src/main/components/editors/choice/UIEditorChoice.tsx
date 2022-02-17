@@ -37,7 +37,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
 
     const wrapRef = useRef<HTMLSpanElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorChoice>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassName] = useEditorConstants<IEditorChoice>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -160,14 +160,21 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-choice",
-                columnMetaData?.nullable === false ? "required-field" : ""
+                columnMetaData?.nullable === false ? "required-field" : "",
+                cellStyleClassName.bgdClassName,
+                cellStyleClassName.fgdClassName
             )}
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
             style={props.isCellEditor ?
                 { justifyContent: alignments.ha, alignItems: alignments.va }
                 :
-                { ...layoutStyle, justifyContent: alignments.ha, alignItems: alignments.va }
+                { 
+                    ...layoutStyle, 
+                    ...cellStyle,
+                    justifyContent: alignments.ha, 
+                    alignItems: alignments.va,
+                }
             }
             onKeyDown={(event) => {
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);

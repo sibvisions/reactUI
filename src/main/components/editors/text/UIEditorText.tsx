@@ -24,7 +24,6 @@ import { sendSetValues,
          concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IEditor {
@@ -190,7 +189,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow]] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);
@@ -215,9 +214,6 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     useFetchMissingData(compId, props.dataRow);
 
     const popupMenu = usePopupMenu(props);
-
-    /** Editor background */
-    const editorBackground = useMemo(() => parseBackgroundString(props.cellEditor_background_), [props.cellEditor_background_]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -407,12 +403,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 getClassName(fieldType), 
                 columnMetaData?.nullable === false ? "required-field" : "",
                 props.isCellEditor ? "open-cell-editor" : undefined,
-                isSysColor(editorBackground) ? editorBackground.name : undefined
+                cellStyleClassNames.bgdClassName, 
+                cellStyleClassNames.fgdClassName
             ),
             style: { 
                 ...layoutStyle, 
                 ...textAlign, 
-                background: !isSysColor(editorBackground) ? editorBackground.background : undefined
+                ...cellStyle
             },
             maxLength: length,
             disabled,

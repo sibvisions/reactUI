@@ -10,7 +10,7 @@ import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks
 /** Other imports */
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
-import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { concatClassnames, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 
 export interface IBrowser extends BaseComponent {
     url: string;
@@ -25,7 +25,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
     const browserRef = useRef<any>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IBrowser>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle, styleClassName] = useComponentConstants<IBrowser>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -46,7 +46,8 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <iframe
                 id={props.name} 
-                className="rc-mobile-browser"
+                className={concatClassnames("rc-mobile-browser", styleClassName.bgdClassName, styleClassName.fgdClassName)}
+                style={{...compStyle}}
                 src={props.url}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

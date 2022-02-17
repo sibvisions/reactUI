@@ -11,7 +11,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -19,7 +19,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, 
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -113,7 +113,11 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             <div
                 ref={panelRef}
                 id={props.name}
-                className="rc-scrollpanel"
+                className={concatClassnames(
+                    "rc-scrollpanel",
+                    compStyleClassNames.bgdClassName,
+                    compStyleClassNames.fgdClassName
+                )}
                 style={props.screen_modal_ || props.content_modal_
                     ? {
                         height: (prefSize?.height as number),
@@ -123,6 +127,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                     }
                     : {
                         ...layoutStyle,
+                        ...compStyle,
                         overflow: 'auto',
                         ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }

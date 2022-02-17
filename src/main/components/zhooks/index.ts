@@ -34,3 +34,5 @@ export { default as useScreenTitle } from './useScreenTitle';
 export { default as useComponentConstants } from './useComponentConstants';
 export { default as useButtonStyling } from './useButtonStyling';
 export { default as useEditorConstants } from './useEditorConstants';
+export { default as useComponentStyle } from './useComponentStyle';
+export { default as useCellEditorStyle } from './useCellEditorStyle';
