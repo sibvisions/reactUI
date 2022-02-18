@@ -365,12 +365,6 @@ body {
   border-radius: var(--input-border-radius); }
   .p-inputtext:not(.required-field) {
     color: var(--text-color); }
-  .p-inputtext.mandatorybackground {
-    background: var(--mandatory-background); }
-  .p-inputtext.readonlybackground {
-    background: var(--readonly-background); }
-  .p-inputtext.invalideditorbackground {
-    background: var(--invalid-background); }
   .p-inputtext:enabled:focus {
     box-shadow: var(--focus-box-shadow);
     border-color: var(--border-color-hover); }

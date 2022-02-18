@@ -777,18 +777,6 @@ body {
         color: var(--text-color);
     }
 
-    &.mandatorybackground {
-        background: var(--mandatory-background);
-    }
-
-    &.readonlybackground {
-        background: var(--readonly-background);
-    }
-
-    &.invalideditorbackground {
-        background: var(--invalid-background);
-    }
-
     &:enabled {
         &:focus {
             box-shadow: var(--focus-box-shadow);

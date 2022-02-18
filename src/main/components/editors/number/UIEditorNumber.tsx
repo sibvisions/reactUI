@@ -58,7 +58,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [value, setValue] = useState<number|string|null>(selectedRow);
@@ -214,7 +214,6 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                         ...textAlignment, 
                         ...cellStyle
                     }}
-                    inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                     onChange={event => setValue(event.value) }
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                     onBlur={() => {

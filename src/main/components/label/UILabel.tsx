@@ -22,7 +22,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<BaseComponent>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -55,9 +55,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
-                props.eventMousePressed ? "mouse-pressed-event" : "",
-                compStyleClassNames.bgdClassName,
-                compStyleClassNames.fgdClassName
+                props.eventMousePressed ? "mouse-pressed-event" : ""
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped

@@ -189,7 +189,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
 
     /** Current state value of input element */
     const [text, setText] = useState(selectedRow);
@@ -402,9 +402,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             className: concatClassnames(
                 getClassName(fieldType), 
                 columnMetaData?.nullable === false ? "required-field" : "",
-                props.isCellEditor ? "open-cell-editor" : undefined,
-                cellStyleClassNames.bgdClassName, 
-                cellStyleClassNames.fgdClassName
+                props.isCellEditor ? "open-cell-editor" : undefined
             ),
             style: { 
                 ...layoutStyle, 

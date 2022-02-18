@@ -1,34 +1,39 @@
-import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import BaseComponent from "../BaseComponent";
 
-export type StyleClassNames = {
-    bgdClassName: string,
-    fgdClassName: string
+const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "invalid-background"]])
+
+export function isSysColor(className:string):string {
+    if (["mandatorybackground", "readonlybackground", "invalideditorbackground"].indexOf(className) !== -1) {
+        return className
+    }
+    return "";
 }
 
-export function isSysColor(className:string):boolean {
-    return ["mandatorybackground", "readonlybackground", "invalideditorbackground"].indexOf(className) !== -1;
-}
-
-export function getColorProperties(color: string|undefined, isBackground: boolean):{style: CSSProperties, className: string} {
+export function getColorProperties(color: string|undefined, isBackground: boolean):CSSProperties {
     const colorProperties: CSSProperties = {};
     let classNameObj:string = "";
     if (color) {
         if (color.includes(";")) {
             const splitColor = color.split(";");
+            const className = splitColor[1].substring(splitColor[1].indexOf("_") + 1);
 
-            if (isBackground) {
-                if (!isSysColor) {
-                    colorProperties.background = splitColor[0];
-                }
+            let setColor;
+            
+            if (isSysColor(className)) {
+                setColor = window.getComputedStyle(document.documentElement).getPropertyValue(sysColorMap.get(className) as string);
             }
             else {
-                if (!isSysColor) {
-                    colorProperties.color = splitColor[0];
-                }
+                setColor = splitColor[0];
+            }
+
+            if (isBackground) {
+                colorProperties.background = setColor;
+            }
+            else {
+                colorProperties.color = setColor;
             }
             
-
             classNameObj = splitColor[1].substring(splitColor[1].indexOf("_") + 1);
         }
         else {
@@ -41,7 +46,7 @@ export function getColorProperties(color: string|undefined, isBackground: boolea
         }
     }
 
-    return { style: colorProperties, className: classNameObj};
+    return colorProperties;
 }
 
 export function getFontProperties(font?:string) {
@@ -74,22 +79,19 @@ export function getFontProperties(font?:string) {
     return fontProperties;
 };
 
-const useComponentStyle = (props: BaseComponent):[CSSProperties, StyleClassNames, boolean] => {
+const useComponentStyle = (props: BaseComponent):[CSSProperties, boolean] => {
     const [componentStyle, setComponentStyle] = useState<CSSProperties>({});
-
-    const [styleClassNames, setStyleClassNames] = useState<StyleClassNames>({ bgdClassName: "", fgdClassName: "" });
 
     /** An initial flag optimization so when initial is true we set everything at once and not setState multiple times */
     const [initial, setInitial] = useState<boolean>(true);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (initial) {
             const fontProps = getFontProperties(props.font);
             const bgdProps = getColorProperties(props.background, true);
             const fgdProps = getColorProperties(props.foreground, false);
 
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps.style, ...fgdProps.style }));
-            setStyleClassNames({ bgdClassName: bgdProps.className, fgdClassName: fgdProps.className });
+            setComponentStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps, ...fgdProps }));
             setInitial(false);
         }
     },[])
@@ -104,8 +106,7 @@ const useComponentStyle = (props: BaseComponent):[CSSProperties, StyleClassNames
         if (props.background && !initial) {
             const bgdProps = getColorProperties(props.background, true);
 
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...bgdProps.style }));
-            setStyleClassNames(prevState => ({ ...prevState, bgdClassName: bgdProps.className }));
+            setComponentStyle(prevStyle => ({ ...prevStyle, ...bgdProps }));
         }
     }, [props.background]);
 
@@ -113,11 +114,10 @@ const useComponentStyle = (props: BaseComponent):[CSSProperties, StyleClassNames
         if (props.foreground && !initial) {
             const fgdProps = getColorProperties(props.foreground, false);
 
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...fgdProps.style }));
-            setStyleClassNames(prevState => ({ ...prevState, fgdClassName: fgdProps.className }));
+            setComponentStyle(prevStyle => ({ ...prevStyle, ...fgdProps }));
         }
     }, [props.foreground]);
 
-    return [componentStyle, styleClassNames, initial]
+    return [componentStyle, initial]
 }
 export default useComponentStyle

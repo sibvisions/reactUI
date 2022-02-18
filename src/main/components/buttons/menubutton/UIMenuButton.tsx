@@ -36,7 +36,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, styleClassName] = useComponentConstants<IMenuButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IMenuButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle);
@@ -137,9 +137,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
-                    `gap-${btnStyle.iconGapPos}`,
-                    styleClassName.bgdClassName,
-                    styleClassName.fgdClassName
+                    `gap-${btnStyle.iconGapPos}`
                 )}
                 style={{
                     ...btnStyle.style,

@@ -52,7 +52,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
 
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
@@ -356,7 +356,6 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     ...cellStyle,
                     borderRight: "none" 
                 }}
-                inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                 disabled={!props.cellEditor_editable_}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}

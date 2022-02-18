@@ -30,7 +30,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const panelRef = useRef<any>();
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
@@ -154,8 +154,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     return (
         <LayoutContext.Provider value={componentSizes}>
             <div 
-                className={concatClassnames("rc-tabset", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)} 
-                style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle }}>
+                className="rc-tabset"
+                style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, ...compStyle }}>
                 <TabView
                     ref={panelRef}
                     id={props.name}

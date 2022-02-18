@@ -3,7 +3,7 @@ import tinycolor from "tinycolor2";
 import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { getAlignments, getFont, getMargins, IconProps, parseIconData } from "../compprops";
+import { getAlignments, getMargins, IconProps, parseIconData } from "../compprops";
 
 interface IButtonStyle {
     style: CSSProperties,

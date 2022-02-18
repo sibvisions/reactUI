@@ -21,7 +21,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text);
@@ -43,7 +43,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
         <Password
             inputRef={passwordRef}
             id={props.name}
-            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
+            className="rc-input"
             value={pwValue||""} 
             feedback={false} 
             style={{...layoutStyle, ...compStyle}} 

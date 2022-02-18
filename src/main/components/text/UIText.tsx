@@ -25,7 +25,7 @@ const UIText: FC<ITextField> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text);
@@ -47,7 +47,7 @@ const UIText: FC<ITextField> = (baseProps) => {
         <InputText 
             ref={inputRef} 
             id={props.name}
-            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
+            className="rc-input"
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setText(event.currentTarget.value)}

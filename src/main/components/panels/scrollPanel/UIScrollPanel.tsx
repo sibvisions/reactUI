@@ -19,7 +19,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, 
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -114,9 +114,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 ref={panelRef}
                 id={props.name}
                 className={concatClassnames(
-                    "rc-scrollpanel",
-                    compStyleClassNames.bgdClassName,
-                    compStyleClassNames.fgdClassName
+                    "rc-scrollpanel"
                 )}
                 style={props.screen_modal_ || props.content_modal_
                     ? {

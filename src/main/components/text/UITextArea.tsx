@@ -26,7 +26,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<ITextArea>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextArea>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text);
@@ -48,7 +48,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
         <InputTextarea 
             ref={inputRef} 
             id={props.name}
-            className={concatClassnames("rc-password", compStyleClassNames.bgdClassName, compStyleClassNames.fgdClassName)}
+            className="rc-input"
             value={text||""}
             style={{...layoutStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 

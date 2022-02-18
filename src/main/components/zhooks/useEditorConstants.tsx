@@ -4,29 +4,27 @@ import { AppContextType } from "../../AppProvider";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import { CELLEDITOR_CLASSNAMES, IEditor } from "../editors";
 import { TopBarContextType } from "../topbar/TopBar";
-import { StyleClassNames } from "./useComponentStyle";
 
 /**
  * This hook returns constants for cell-editors
  * @param baseProps - the properties of the editor
  * @returns 
  */
-const useEditorConstants = <T extends IEditor> (baseProps:T, fb?:CSSProperties): [
-    AppContextType, 
-    TopBarContextType, 
-    [T], 
-    CSSProperties|undefined, 
+const useEditorConstants = <T extends IEditor>(baseProps: T, fb?: CSSProperties): [
+    AppContextType,
+    TopBarContextType,
+    [T],
+    CSSProperties | undefined,
     Map<string, string>,
     string,
-    NumericColumnDescription|LengthBasedColumnDescription|undefined,
+    NumericColumnDescription | LengthBasedColumnDescription | undefined,
     any,
-    CSSProperties,
-    StyleClassNames
+    CSSProperties
 ] => {
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translations, compStyle, styleClassNames] = useComponentConstants<T>(baseProps, fb);
+    const [context, topbar, [props], layoutStyle, translations, compStyle] = useComponentConstants<T>(baseProps, fb);
 
-    const [cellStyle, cellStyleClassNames] = useCellEditorStyle(props, compStyle, styleClassNames);
+    const cellStyle = useCellEditorStyle(props, compStyle);
 
     /** The component id of the screen */
     const compId = useMemo(() => baseProps.isCellEditor ? baseProps.cellCompId as string : context.contentStore.getComponentId(props.id) as string, [props.id, baseProps.isCellEditor, baseProps.cellCompId])
@@ -40,6 +38,6 @@ const useEditorConstants = <T extends IEditor> (baseProps:T, fb?:CSSProperties):
     /** The currently selected row */
     const [selectedRow] = useRowSelect(compId, props.dataRow, props.columnName, isCheckOrChoice ? true : undefined, props.isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
-    return [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames]
+    return [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle]
 }
 export default useEditorConstants

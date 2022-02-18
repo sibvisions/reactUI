@@ -1,12 +1,10 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useComponentStyle } from ".";
 import { IEditor } from "../editors";
-import { getColorProperties, getFontProperties, StyleClassNames } from "./useComponentStyle";
+import { getColorProperties, getFontProperties } from "./useComponentStyle";
 
-const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties, baseClassName:StyleClassNames):[CSSProperties, StyleClassNames] => {
+const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties):CSSProperties => {
     const [cellEditorStyle, setCellEditorStyle] = useState<CSSProperties>(baseStyle);
-
-    const [cellEditorClassNames, setCellEditorClassNames] = useState<StyleClassNames>(baseClassName);
 
     /** An initial flag optimization so when initial is true we set everything at once and not setState multiple times */
     const initial = useRef<boolean>(true);
@@ -17,17 +15,7 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties, baseClassNam
             const bgdProps = getColorProperties(props.cellEditor_background_, true);
             const fgdProps = getColorProperties(props.cellEditor_foreground_, false);
 
-            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps.style, ...fgdProps.style }));
-
-            if (props.cellEditor_background_ && props.cellEditor_foreground_) {
-                setCellEditorClassNames({ bgdClassName: bgdProps.className, fgdClassName: fgdProps.className });
-            }
-            else if (props.cellEditor_background_ && !props.cellEditor_foreground_) {
-                setCellEditorClassNames(prevState => ({...prevState, bgdClassName: bgdProps.className}));
-            }
-            else if (!props.cellEditor_background_ && props.cellEditor_foreground_) {
-                setCellEditorClassNames(prevState => ({...prevState, fgdClassName: fgdProps.className}));
-            }
+            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps, ...fgdProps }));
             
             initial.current = false;
         }
@@ -51,12 +39,10 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties, baseClassNam
     useEffect(() => {
         if (props.cellEditor_background_ !== null && !initial.current) {
             const bgdProps = getColorProperties(props.cellEditor_background_, true);
-            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...bgdProps.style }));
-            setCellEditorClassNames(prevState => ({ ...prevState, bgdClassName: bgdProps.className }));
+            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...bgdProps }));
         }
         else if (!initial.current) {
             setCellEditorStyle(prevStyle => ({ ...prevStyle, background: baseStyle.background }));
-            setCellEditorClassNames(prevState => ({ ...prevState, bgdClassName: baseClassName.bgdClassName }));
         }
     }, [props.cellEditor_background_]);
 
@@ -64,15 +50,13 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties, baseClassNam
     useEffect(() => {
         if (props.cellEditor_foreground_ !== null && !initial.current) {
             const fgdProps = getColorProperties(props.cellEditor_foreground_, false);
-            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...fgdProps.style }));
-            setCellEditorClassNames(prevState => ({ ...prevState, bgdClassName: fgdProps.className }));
+            setCellEditorStyle(prevStyle => ({ ...prevStyle, ...fgdProps }));
         }
         else if (!initial.current) {
             setCellEditorStyle(prevStyle => ({ ...prevStyle, background: baseStyle.color }));
-            setCellEditorClassNames(prevState => ({ ...prevState, fgdClassName: baseClassName.fgdClassName }));
         }
     }, [props.cellEditor_foreground_]);
 
-    return [cellEditorStyle, cellEditorClassNames]
+    return cellEditorStyle
 }
 export default useCellEditorStyle;

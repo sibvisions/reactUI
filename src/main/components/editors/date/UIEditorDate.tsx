@@ -86,7 +86,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
 
     const [dateValue, setDateValue] = useState<any>(selectedRow);
 
@@ -305,7 +305,6 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     ...cellStyle,
                     borderRight: "none" 
                 }}
-                inputClassName={concatClassnames(cellStyleClassNames.bgdClassName, cellStyleClassNames.fgdClassName)}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
                 onChange={event => {

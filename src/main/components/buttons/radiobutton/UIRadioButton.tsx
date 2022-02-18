@@ -31,7 +31,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current);
@@ -60,8 +60,6 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
                     props.style?.includes("actiongroup") ? "radio-action-group" : "",
-                    styleClassNames.bgdClassName,
-                    styleClassNames.fgdClassName
                     )}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

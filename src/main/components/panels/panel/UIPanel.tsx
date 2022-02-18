@@ -35,7 +35,7 @@ export interface IPanel extends BaseComponent {
  */
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -85,9 +85,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             <div
                 className={concatClassnames(
                     "rc-panel",
-                    props.style === "tagpanel" ? "tag-panel" : "",
-                    compStyleClassNames.bgdClassName,
-                    compStyleClassNames.fgdClassName
+                    props.style === "tagpanel" ? "tag-panel" : ""
                 )}
                 ref={panelRef}
                 id={props.name}

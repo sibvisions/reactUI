@@ -19,7 +19,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, compStyleClassNames] = useComponentConstants<BaseComponent>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
 
     const [preferredSize, setPreferredSize] = useState<Dimension>();
 
@@ -108,9 +108,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             ref={iconRef} 
             className={concatClassnames(
                 "rc-icon",
-                props.name === "Validator" ? " rc-validator" : "",
-                compStyleClassNames.bgdClassName,
-                compStyleClassNames.fgdClassName
+                props.name === "Validator" ? " rc-validator" : ""
             )} 
             style={{...layoutStyle, ...compStyle, overflow: "hidden"}}
         >

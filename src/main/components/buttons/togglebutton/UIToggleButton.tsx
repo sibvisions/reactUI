@@ -28,7 +28,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translation, compStyle, styleClassName] = useComponentConstants<IButtonSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current ? buttonRef.current.container : undefined)
@@ -74,9 +74,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
-                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
-                    styleClassName.bgdClassName,
-                    styleClassName.fgdClassName
+                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : ""
                 )}
                 style={{
                     ...btnStyle.style,

@@ -34,7 +34,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle, cellStyleClassNames] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -94,8 +94,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
             className={concatClassnames(
                 "rc-editor-checkbox",
                 columnMetaData?.nullable === false ? "required-field" : "",
-                cellStyleClassNames.bgdClassName,
-                cellStyleClassNames.fgdClassName
             )}
             style={
                 baseProps.isCellEditor ?
