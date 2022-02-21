@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { InputNumber } from "primereact/inputnumber";
@@ -51,17 +51,15 @@ export interface ScaleType {
  * when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
+const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
 
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorNumber>(baseProps, baseProps.editorStyle);
-
     /** Current state value of input element */
-    const [value, setValue] = useState<number|string|null>(selectedRow);
+    const [value, setValue] = useState<number|string|null>(props.selectedRow);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -72,7 +70,7 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -82,19 +80,19 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
     const numberClassNames = useMemo(() => {
         return concatClassnames(
             "rc-editor-number",
-            columnMetaData?.nullable === false ? "required-field" : "",
+            props.columnMetaData?.nullable === false ? "required-field" : "",
             props.isCellEditor ? "open-cell-editor" : undefined
         )
-    }, [columnMetaData?.nullable]);
+    }, [props.columnMetaData?.nullable]);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const scaleDigits:ScaleType = useMemo(() => columnMetaData 
-        ? getScaleDigits(props.cellEditor.numberFormat, (columnMetaData as NumericColumnDescription).scale) 
+    const scaleDigits:ScaleType = useMemo(() => props.columnMetaData 
+        ? getScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
-    [columnMetaData, props.cellEditor.numberFormat]);
+    [props.columnMetaData, props.cellEditor.numberFormat]);
 
     /** Wether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
@@ -104,14 +102,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, selectedRow),
-    [props.cellEditor.numberFormat, selectedRow]);
+    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, props.selectedRow),
+    [props.cellEditor.numberFormat, props.selectedRow]);
 
     /**
      * Returns the maximal length before the deciaml separator
      * @returns the maximal length before the deciaml separator
      */
-    const decimalLength = useMemo(() => columnMetaData ? getDecimalLength((columnMetaData as NumericColumnDescription).precision, (columnMetaData as NumericColumnDescription).scale) : undefined, [columnMetaData]);
+    const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
 
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
@@ -132,11 +130,11 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setValue(selectedRow)
-        lastValue.current = selectedRow;
-    },[selectedRow]);
+        setValue(props.selectedRow)
+        lastValue.current = props.selectedRow;
+    },[props.selectedRow]);
 
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
@@ -146,9 +144,9 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
         }
 
         return () => {
-            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && props.isCellEditor && numberInput.current) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.compId) !== -1 && props.isCellEditor && numberInput.current) {
                 numberInput.current.blur();
-                //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar))
+                //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), topbar))
             }
         }
     }, [])
@@ -196,14 +194,14 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
 
     return (
         (!props.isCellEditor) ?
-            <span aria-label={props.ariaLabel} {...popupMenu} style={layoutStyle}>
+            <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
                     id={props.name}
                     inputRef={numberInput}
                     className={numberClassNames}
                     useGrouping={useGrouping}
-                    locale={context.appSettings.locale}
+                    locale={props.context.appSettings.locale}
                     prefix={prefixLength}
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
@@ -212,15 +210,15 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
-                        ...cellStyle
+                        ...props.cellStyle
                     }}
                     onChange={event => setValue(event.value) }
-                    onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                    onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                     onBlur={() => {
                         if (props.eventFocusLost) {
-                            onFocusLost(props.name, context.server);
+                            onFocusLost(props.name, props.context.server);
                         }
-                        onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar));
+                        onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), props.topbar));
                     }}
                     disabled={!props.cellEditor_editable_}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
@@ -235,20 +233,20 @@ const UIEditorNumber: FC<IEditorNumber> = (baseProps) => {
                 inputRef={numberInput}
                 className={numberClassNames}
                 useGrouping={useGrouping}
-                locale={context.appSettings.locale}
+                locale={props.context.appSettings.locale}
                 prefix={prefixLength}
                 tabIndex={-1}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
                 value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
-                style={layoutStyle}
+                style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
                     //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
-                onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, context.server), topbar)) }
+                onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), props.topbar)) }
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}

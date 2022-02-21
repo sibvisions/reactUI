@@ -5,7 +5,7 @@ import React from "react"
 import { format, formatISO, isValid } from 'date-fns'
 
 /** Other imports */
-import { CELLEDITOR_CLASSNAMES, ICellEditorDate, 
+import { CellEditorWrapper, CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { createEditor } from "../../factories/UIFactory";
@@ -21,7 +21,8 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
 export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any, stopCellEditing:Function, passedValues:string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
-        editor = createEditor({
+        editor = <CellEditorWrapper
+        {...{
             ...metaData,
             name: props.name,
             dataRow: props.dataProvider,
@@ -33,8 +34,21 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             stopCellEditing: stopCellEditing,
             passedKey: passedValues,
             isCellEditor: true,
-            cellCompId: props.dataProvider.split("/")[1]
-        }) || editor;
+            cellCompId: props.dataProvider.split("/")[1]}} />
+        // editor = createEditor({
+        //     ...metaData,
+        //     name: props.name,
+        //     dataRow: props.dataProvider,
+        //     columnName: props.colName,
+        //     id: "",
+        //     cellEditor_editable_: true,
+        //     editorStyle: {width: "100%", height: "100%"},
+        //     autoFocus: true,
+        //     stopCellEditing: stopCellEditing,
+        //     passedKey: passedValues,
+        //     isCellEditor: true,
+        //     cellCompId: props.dataProvider.split("/")[1]
+        // }) || editor;
     }
     return editor
 }

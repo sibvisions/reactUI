@@ -79,16 +79,14 @@ const parseMultiple = (
  * which opens a datepicker to choose a date and change the value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate> = (baseProps) => {
+const UIEditorDate: FC<IEditorDate> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorDate>(baseProps, baseProps.editorStyle);
-
-    const [dateValue, setDateValue] = useState<any>(selectedRow);
+    const [dateValue, setDateValue] = useState<any>(props.selectedRow);
 
     /** Mounted state used because useEventHandler ref is null when cell-editor is opened -> not added */
     const [mounted, setMounted] = useState<boolean>(false)
@@ -97,7 +95,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** The month/year which is currently displayed */
-    const [viewDate, setViewDate] = useState<any>(selectedRow ? new Date(selectedRow) : new Date());
+    const [viewDate, setViewDate] = useState<any>(props.selectedRow ? new Date(props.selectedRow) : new Date());
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -129,9 +127,9 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
-    setDateLocale(context.appSettings.locale);
+    setDateLocale(props.context.appSettings.locale);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
     const isValidDate = (inputDate:any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());
@@ -169,17 +167,17 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
         },0);
 
         return () => {
-            if (context.contentStore.activeScreens.map(screen => screen.name).indexOf(compId) !== -1 && props.isCellEditor) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.compId) !== -1 && props.isCellEditor) {
                 handleDateInput();
             }
         }
     },[])
 
     useEffect(() => {
-        setDateValue(selectedRow ? new Date(selectedRow) : undefined);
-        lastValue.current = selectedRow;
-        setViewDate(selectedRow ? new Date(selectedRow) : new Date());
-    },[selectedRow])
+        setDateValue(props.selectedRow ? new Date(props.selectedRow) : undefined);
+        lastValue.current = props.selectedRow;
+        setViewDate(props.selectedRow ? new Date(props.selectedRow) : new Date());
+    },[props.selectedRow])
 
     /**
      * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call onBlurCallback
@@ -224,8 +222,8 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     props.name, 
                     props.columnName, 
                     inputDate.getTime(), 
-                    context.server
-                ), topbar)
+                    props.context.server
+                ), props.topbar)
         );
     }
 
@@ -241,7 +239,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 setVisible(false);
                 if ((event.target as HTMLElement).tagName === "BUTTON") {
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server);
+                        onFocusLost(props.name, props.context.server);
                     }
                 }
             }
@@ -256,7 +254,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 setVisible(false);
                 if ((event.target as HTMLElement).tagName === "BUTTON") {
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server);
+                        onFocusLost(props.name, props.context.server);
                     }
                 }
             }
@@ -272,7 +270,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
             {...usePopupMenu(props)} 
             aria-expanded={visible} 
             style={{
-                ...layoutStyle
+                ...props.layoutStyle
             } as CSSProperties}>
             <CustomCalendar
                 ref={calendar}
@@ -281,7 +279,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 className={concatClassnames(
                     "rc-editor-text",
                     "rc-editor-date",
-                    columnMetaData?.nullable === false ? "required-field" : "",
+                    props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined
                 )}
                 panelClassName="rc-editor-date-panel"
@@ -302,7 +300,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 showOnFocus={false}
                 inputStyle={{ 
                     ...textAlignment, 
-                    ...cellStyle,
+                    ...props.cellStyle,
                     borderRight: "none" 
                 }}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
@@ -316,7 +314,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                 onFocus={() => {
                     if (!focused.current) {
                         if (props.eventFocusGained) {
-                            onFocusGained(props.name, context.server);
+                            onFocusGained(props.name, props.context.server);
                         }
                         focused.current = true;
                     }
@@ -325,7 +323,7 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     //@ts-ignore
                     if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
-                            onFocusLost(props.name, context.server);
+                            onFocusLost(props.name, props.context.server);
                         }
                         focused.current = false;
                     }
@@ -336,13 +334,13 @@ const UIEditorDate: FC<IEditorDate> = (baseProps) => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
                         if (props.eventFocusGained) {
-                            onFocusGained(props.name, context.server);
+                            onFocusGained(props.name, props.context.server);
                         }
                         focused.current = true;
                     }
                     if (event.type === 'outside') {
                         if (props.eventFocusLost) {
-                            onFocusLost(props.name, context.server);
+                            onFocusLost(props.name, props.context.server);
                         }
                         focused.current = false;
                     }

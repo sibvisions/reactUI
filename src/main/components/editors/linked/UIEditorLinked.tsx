@@ -45,23 +45,21 @@ export interface IEditorLinked extends IEditor{
  * when text is entered into the inputfield, the dropdownlist gets filtered
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
+const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorLinked>(baseProps, baseProps.editorStyle);
-
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(compId, props.cellEditor.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(props.compId, props.cellEditor.linkReference.referencedDataBook||"");
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
     /** Current state of text value of input element */
-    const [text, setText] = useState(selectedRow);
+    const [text, setText] = useState(props.selectedRow);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -78,9 +76,9 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
-    useFetchMissingData(compId, props.cellEditor.linkReference.referencedDataBook);
+    useFetchMissingData(props.compId, props.cellEditor.linkReference.referencedDataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -104,22 +102,22 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         }
     }, []);
 
-    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
         if (props.cellEditor.displayReferencedColumnName && providedData) {
-            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] === selectedRow);
+            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] === props.selectedRow);
             if (foundObj) {
                 setText(foundObj[props.cellEditor.displayReferencedColumnName]);
             }
             else {
-                setText(selectedRow);
+                setText(props.selectedRow);
             }
         }
         else {
-            setText(selectedRow);
+            setText(props.selectedRow);
         }
-        lastValue.current = selectedRow;
-    }, [selectedRow, providedData]);
+        lastValue.current = props.selectedRow;
+    }, [props.selectedRow, providedData]);
 
     const unpackValue = (value: string | string[]) => {
         if (Array.isArray(value)) {
@@ -136,7 +134,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
      * @param event - Event that gets fired on inputchange
      */
     const sendFilter = useCallback(async (value:any) => {
-        context.contentStore.clearDataFromProvider(compId, props.cellEditor.linkReference.referencedDataBook||"")
+        props.context.contentStore.clearDataFromProvider(props.compId, props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest();
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
@@ -145,12 +143,12 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
-        await context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER).then(() => {
+        await props.context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);
             }
         });
-    }, [context.contentStore, context.server, props.cellEditor, props.name])
+    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name])
 
     useEffect(() => {
         setTimeout(() => {
@@ -165,7 +163,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
             //setTimeout 0ms so the transition is playing
-            setTimeout(() => onFocusGained(props.name, context.server), 0);
+            setTimeout(() => onFocusGained(props.name, props.context.server), 0);
         }
     }, [initialFilter])
 
@@ -225,7 +223,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
 
         /** If the text is empty, send null to the server */
         if (!inputVal) {
-            onBlurCallback(props, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, context.server), topbar));
+            onBlurCallback(props, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server), props.topbar));
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -241,15 +239,15 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    onBlurCallback(props, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, context.server), topbar));
+                    onBlurCallback(props, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server), props.topbar));
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
                     if (props.cellEditor.displayReferencedColumnName) {
-                        onBlurCallback(props, foundData[0][linkReference.referencedColumnNames[0]], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], context.server), topbar));
+                        onBlurCallback(props, foundData[0][linkReference.referencedColumnNames[0]], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server), props.topbar));
                     }
                     else {
-                        onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, context.server), topbar));
+                        onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server), props.topbar));
                     }
                 }
                     
@@ -299,12 +297,12 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }
 
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !context.contentStore.getDataBook(compId, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
+        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.compId, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
             fetchReq.rowCount = 400;
-            showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
+            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), props.topbar)
         }
     }
 
@@ -317,15 +315,15 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
     }, [providedData]);
 
     const groupedItemTemplate = useCallback(d => {
-        return (d.label as string[]).map((d, i) => <div key={i}>{columnMetaData?.label ?? d}</div>)
-    }, [columnMetaData, providedData]);
+        return (d.label as string[]).map((d, i) => <div key={i}>{props.columnMetaData?.label ?? d}</div>)
+    }, [props.columnMetaData, providedData]);
 
     return (
         <span 
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             style={{
-                ...layoutStyle
+                ...props.layoutStyle
             } as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
@@ -341,7 +339,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 appendTo={document.body}
                 className={concatClassnames(
                     "rc-editor-linked", 
-                    columnMetaData?.nullable === false ? "required-field" : "",
+                    props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined,
                 )}
                 panelClassName={concatClassnames(
@@ -353,7 +351,7 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                 scrollHeight={tableOptions ? ((providedData.length + 1) * 38) > 200 ? "200px" : `${(providedData.length + 1) * 38}px` : (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`}
                 inputStyle={{
                     ...textAlignment, 
-                    ...cellStyle,
+                    ...props.cellStyle,
                     borderRight: "none" 
                 }}
                 disabled={!props.cellEditor_editable_}
@@ -373,14 +371,14 @@ const UIEditorLinked: FC<IEditorLinked> = (baseProps) => {
                     if (dropDownElem) {
                         if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
                             if (props.eventFocusLost) {
-                                onFocusLost(props.name, context.server);
+                                onFocusLost(props.name, props.context.server);
                             }
                             focused.current = false
                         }
                     }
                     else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
-                            onFocusLost(props.name, context.server);
+                            onFocusLost(props.name, props.context.server);
                         }
                         focused.current = false
                     }

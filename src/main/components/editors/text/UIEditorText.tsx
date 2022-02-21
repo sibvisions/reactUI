@@ -185,14 +185,12 @@ function transformHTMLToQuill(html: string = ''):string {
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText> = (baseProps) => {
+const UIEditorText: FC<IEditorText> = (props) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
-
     /** Current state value of input element */
-    const [text, setText] = useState(selectedRow);
+    const [text, setText] = useState(props.selectedRow);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -201,7 +199,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** Returns the maximum length for the TextCellEditor */
-    const length = useMemo(() => columnMetaData?.length, [columnMetaData]);
+    const length = useMemo(() => props.columnMetaData?.length, [props.columnMetaData]);
 
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
@@ -211,7 +209,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
 
     const [showSource, setShowSource] = useState<boolean>(false);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
     const popupMenu = usePopupMenu(props);
 
@@ -258,11 +256,11 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setText(selectedRow);
-        lastValue.current = selectedRow;
-    },[selectedRow]);
+        setText(props.selectedRow);
+        lastValue.current = props.selectedRow;
+    },[props.selectedRow]);
 
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
@@ -306,7 +304,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
+                onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, props.context.server), props.topbar));
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -314,7 +312,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 stopCellEditing(event);
             }
         }
-    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, context.server]);
+    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
 
     const disabled = !props.cellEditor_editable_;
 
@@ -401,13 +399,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             id: props.isCellEditor ? undefined : props.name,
             className: concatClassnames(
                 getClassName(fieldType), 
-                columnMetaData?.nullable === false ? "required-field" : "",
+                props.columnMetaData?.nullable === false ? "required-field" : "",
                 props.isCellEditor ? "open-cell-editor" : undefined
             ),
             style: { 
-                ...layoutStyle, 
+                ...props.layoutStyle, 
                 ...textAlign, 
-                ...cellStyle
+                ...props.cellStyle
             },
             maxLength: length,
             disabled,
@@ -415,13 +413,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             value: text || "",
             "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined,
+            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
             onBlur: () => {
                 if (!escapePressed.current) {
-                    onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                    onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server), props.topbar))
                 }
                 if (props.eventFocusLost) {
-                    showTopBar(onFocusLost(props.name, context.server), topbar)
+                    showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
@@ -429,7 +427,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             tooltipOptions:{ position: "left" },
             placeholder: props.cellEditor_placeholder_
         }
-    }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+    }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, disabled, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
@@ -438,7 +436,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         fieldType === FieldTypes.HTML ?
             <div 
                 ref={textRef} 
-                style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
+                style={{ ...props.layoutStyle, background: props.cellEditor_background_ }} 
                 id={props.isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}
                 className={[
@@ -446,13 +444,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                     disabled ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
                     if (!escapePressed.current) {
-                        onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                        onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server), props.topbar))
                     }
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server)
+                        onFocusLost(props.name, props.context.server)
                     }
                 }}
                 {...popupMenu}

@@ -31,13 +31,11 @@ export interface IEditorChoice extends IEditor{
  * being clicked different images then will be displayed and the value in the databook will be changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
+const UIEditorChoice: FC<IEditorChoice> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
     const wrapRef = useRef<HTMLSpanElement>(null);
-
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorChoice>(baseProps, baseProps.editorStyle);
 
     /** If the CellEditor is read-only */
     const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
@@ -48,7 +46,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -85,19 +83,19 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
     }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
 
     /**
-     * Returns the current image value based on the selectedRow if there is no row selected check for a defaultimage else invalid
-     * @returns current image based on selectedRow
+     * Returns the current image value based on the props.selectedRow if there is no row selected check for a defaultimage else invalid
+     * @returns current image based on props.selectedRow
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(selectedRow !== undefined && props.cellEditor.allowedValues.includes(selectedRow.data)) {
-            validImage = selectedRow.data
+        if(props.selectedRow !== undefined && props.cellEditor.allowedValues.includes(props.selectedRow.data)) {
+            validImage = props.selectedRow.data
         }
         else if (props.cellEditor.defaultImageName !== undefined) {
             validImage = props.cellEditor.defaultImageName;
         }
         return validImage;
-    }, [selectedRow, validImages, props.cellEditor.defaultImageName, props.cellEditor.allowedValues])
+    }, [props.selectedRow, validImages, props.cellEditor.defaultImageName, props.cellEditor.allowedValues])
 
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
@@ -148,10 +146,10 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 setValReq.values = [props.cellEditor.allowedValues[0]];
             }
     
-            if (props.rowIndex !== undefined && props.filter && selectedRow.index !== undefined && props.rowIndex() !== selectedRow.index) {
+            if (props.rowIndex !== undefined && props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
                 setValReq.filter = props.filter()
             }
-            showTopBar(context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES), topbar);
+            showTopBar(props.context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES), props.topbar);
         }
     }
     
@@ -160,7 +158,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-choice",
-                columnMetaData?.nullable === false ? "required-field" : ""
+                props.columnMetaData?.nullable === false ? "required-field" : ""
             )}
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
@@ -168,8 +166,8 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 { justifyContent: alignments.ha, alignItems: alignments.va }
                 :
                 { 
-                    ...layoutStyle, 
-                    ...cellStyle,
+                    ...props.layoutStyle, 
+                    ...props.cellStyle,
                     justifyContent: alignments.ha, 
                     alignItems: alignments.va,
                 }
@@ -185,7 +183,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
             }}
             onFocus={(event) => {
                 if (props.eventFocusGained) {
-                    onFocusGained(props.name, context.server);
+                    onFocusGained(props.name, props.context.server);
                 }
                 else {
                     if (props.isCellEditor) {
@@ -193,7 +191,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                     }
                 }
             }}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
              >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
@@ -204,7 +202,7 @@ const UIEditorChoice: FC<IEditorChoice> = (baseProps) => {
                 alt=""
                 onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?
-                    context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
+                    props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
                         currentImageValue
                         :
                         validImages[currentImageValue])

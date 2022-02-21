@@ -1,6 +1,9 @@
 import { CSSProperties } from "react";
+import { AppContextType } from "../../AppProvider";
 import { SelectFilter } from "../../request";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import BaseComponent from "../BaseComponent";
+import { TopBarContextType } from "../topbar/TopBar";
 
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
@@ -38,5 +41,13 @@ export interface IEditor extends BaseComponent{
     rowIndex?: Function,
     filter?: Function
     isCellEditor: boolean,
-    cellCompId: string
+    cellCompId: string,
+    context: AppContextType,
+    topbar: TopBarContextType,
+    layoutStyle?: CSSProperties,
+    translation?: Map<string, string>
+    compId:string,
+    columnMetaData: NumericColumnDescription|LengthBasedColumnDescription|undefined,
+    selectedRow?: any,
+    cellStyle?: CSSProperties
 }

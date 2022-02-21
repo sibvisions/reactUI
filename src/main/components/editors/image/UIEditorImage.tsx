@@ -26,14 +26,12 @@ export interface IEditorImage extends IEditor{
  *  This component displays an image
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorImage: FC<IEditorImage> = (baseProps) => {
-    /** Use context to gain access for contentstore and server methods */
-    //const context = useContext(appContext);
+const UIEditorImage: FC<IEditorImage> = (props) => {
+    /** Use props.context to gain access for contentstore and server methods */
+    //const props.context = useprops.context(appprops.context);
 
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
-
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorImage>(baseProps, baseProps.editorStyle);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props
@@ -44,7 +42,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
 
-    useFetchMissingData(compId, props.dataRow);
+    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -52,7 +50,7 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
     const popupMenu = usePopupMenu(props);
 
     useEffect(() => {
-        if (!props.cellEditor.defaultImageName || !selectedRow) {
+        if (!props.cellEditor.defaultImageName || !props.selectedRow) {
             const prefSize:Dimension = {width: 0, height: 0}
             if (props.preferredSize) {
                 const parsedSize = parsePrefSize(props.preferredSize) as Dimension
@@ -93,23 +91,23 @@ const UIEditorImage: FC<IEditorImage> = (baseProps) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-image",
-                columnMetaData?.nullable === false ? "required-field" : ""
+                props.columnMetaData?.nullable === false ? "required-field" : ""
             )}
-            style={{ ...layoutStyle, ...cellStyle, overflow: "hidden", caretColor: "transparent" }}
+            style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-            tabIndex={selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
+            tabIndex={props.selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
-            {(selectedRow || props.cellEditor.defaultImageName) &&
+            {(props.selectedRow || props.cellEditor.defaultImageName) &&
                 <img
                     id={!props.isCellEditor ? props.name : undefined}
                     className={imageStyle}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}
-                    src={selectedRow ? "data:image/jpeg;base64," + selectedRow : context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                    src={props.selectedRow ? "data:image/jpeg;base64," + props.selectedRow : props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                     alt="could not be loaded"
                     onLoad={imageLoaded}
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}
