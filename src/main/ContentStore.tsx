@@ -119,6 +119,8 @@ export default class ContentStore{
 
     timer:Timer|undefined;
 
+    mobileLauncher:ActiveScreen[] = [];
+
     constructor(history?:History<any>) {
         this.history = history;
     }

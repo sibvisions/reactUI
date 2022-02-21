@@ -1,0 +1,1 @@
+export { default as REQUEST_ENDPOINTS_V2 } from './REQUEST_ENDPOINTS_V2';

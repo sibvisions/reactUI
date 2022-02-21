@@ -6,7 +6,7 @@ import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
-const useMenuItems = () => {
+const useMenuItems = (menuId?:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** topbar context to show progress */

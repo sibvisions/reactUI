@@ -17,6 +17,7 @@ import { useStartup } from './main/components/zhooks';
 /** Other imports */
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
+import UIManagerV2 from './frontmask/UIManagerV2';
 
 
 /**
@@ -35,10 +36,10 @@ const ReactUI: FC<ICustomContent> = (props) => {
             {appReady ?
                 <>
                     <Switch>
-                        <Route exact path={"/login"} render={() => <Login />} />
-                        <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                        {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
-                        <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                        {/* <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                        <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} /> */}
+                        <Route exact path={"/home/:componentId"} render={() => <UIManagerV2 customAppWrapper={props.customAppWrapper} />} />
+                        <Route path={"/home"} render={() => <UIManagerV2 customAppWrapper={props.customAppWrapper} />} />
                     </Switch>
                 </>
                 :

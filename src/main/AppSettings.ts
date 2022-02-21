@@ -305,12 +305,19 @@ export default class AppSettings {
             default:
                 break;
         }
-        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-            && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+        //V2!
+        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded) {
             this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
             this.appReady = true;
             this.#subManager.emitAppReady(true);
         }
+        
+        // if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
+        //     && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+        //         this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+        //         this.appReady = true;
+        //         this.#subManager.emitAppReady(true);
+        // }
     }
 
     setAppReadyParamFalse() {

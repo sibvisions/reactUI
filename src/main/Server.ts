@@ -41,6 +41,8 @@ import TreePath from "./model/TreePath";
 import AppSettings from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import { RESPONSE_NAMES_V2, UIResponse } from "./response/v2";
+import COMPONENT_CLASSNAMES_V2 from "./components/COMPONENT_CLASSNAMES_V2";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -329,7 +331,9 @@ class Server {
         .set(RESPONSE_NAMES.DIALOG, this.showMessageDialog.bind(this))
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
-        .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this));
+        .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
+        //V2!
+        .set(RESPONSE_NAMES_V2.UI, this.handleUIResponse.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -905,6 +909,18 @@ class Server {
         if (routeTo) {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
+        }
+    }
+
+    /** ----------V2---------- */
+    handleUIResponse(uiData:UIResponse) {
+        let firstComp:IPanel|undefined
+        if(uiData.changedComponents && uiData.changedComponents.length) {
+            this.contentStore.updateContent(uiData.changedComponents, false);
+            firstComp = uiData.changedComponents[0] as IPanel;
+            if (firstComp.className === COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER) {
+                this.contentStore.setActiveScreen({ name: firstComp.name, className: firstComp.className });
+            }
         }
     }
 }

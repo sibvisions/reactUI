@@ -13,6 +13,7 @@ import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { addCSSDynamically, Timer } from "../util";
+import { REQUEST_ENDPOINTS_V2 } from "../../request/v2";
 
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
@@ -191,7 +192,8 @@ const useStartup = (props:ICustomContent):boolean => {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
-            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+            //context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS_V2.STARTUP)
             .then(result => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
