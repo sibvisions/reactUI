@@ -72,8 +72,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             /** If there is a size set by parent layout use that */
             if (style.width && style.height) {
-                totalWidth = style.width as number - margins.marginLeft - margins.marginRight;
-                totalHeight = style.height as number - margins.marginTop - margins.marginBottom;
+                totalWidth = style.width as number;
+                totalHeight = style.height as number;
             }
             /** Or take the tallest/widest single grid times the rows/columns minus margins */
             else {
