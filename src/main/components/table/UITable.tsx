@@ -26,7 +26,7 @@ import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimensio
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
@@ -798,7 +798,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 body={(rowData: any, tableInfo: any) => {
                     if (!rowData) { return <div></div> }
                     if (columnMetaData?.cellEditor.directCellEditor) {
-                        return createEditor({
+                        return <CellEditorWrapper
+                        {...{
                             id: "",
                             ...columnMetaData,
                             name: props.name,
@@ -818,7 +819,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                             readonly: columnMetaData?.readonly,
                             isCellEditor: true,
                             cellCompId: props.dataBook.split("/")[1]
-                        })
+                        }} 
+                        />
                     }
                     else {
                         return <CellEditor
