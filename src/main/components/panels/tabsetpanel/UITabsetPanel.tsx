@@ -36,7 +36,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, compSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, compSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

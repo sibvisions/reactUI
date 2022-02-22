@@ -29,7 +29,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
     const screenTitle = useScreenTitle();
 
     /** get menu items */
-    const menuItems = useMenuItems();
+    //const menuItems = useMenuItems();
 
     const handleNewToolbarItems = useCallback((toolbarItems: Array<MenuItem>) => {
         const tbItems = new Array<MenuItem>();
@@ -84,7 +84,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                                         <SpeedDial model={toolbarItems} direction="down" />
                                     </div>
                                 }
-                                <Menubar model={menuItems} />
+                                {/* <Menubar model={menuItems} /> */}
                             </div>
                         }
                     </div>

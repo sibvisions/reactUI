@@ -157,7 +157,7 @@ const Menu: FC<IMenu> = (props) => {
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
     /** get menu items */
-    const menuItems = useMenuItems()
+    //const menuItems = useMenuItems()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -201,27 +201,27 @@ const Menu: FC<IMenu> = (props) => {
         }
     }, [context.contentStore, context.subscriptions, deviceStatus])
 
-    useEffect(() => {
-        if (props.menuVisibility.menuBar) {
-            if (menuItems) {
-                let foundMenuItem:MenuItem = {}
-                menuItems.forEach(m => {
-                    if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
-                        foundMenuItem = m
-                    }
-                });
+    // useEffect(() => {
+    //     if (props.menuVisibility.menuBar) {
+    //         if (menuItems) {
+    //             let foundMenuItem:MenuItem = {}
+    //             menuItems.forEach(m => {
+    //                 if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+    //                     foundMenuItem = m
+    //                 }
+    //             });
     
-                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
-                }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
-                }
-                setActiveItemChanged(prev => !prev)
-            }
-        }
+    //             if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+    //                 panelMenu.current?.setState({ activeItem: foundMenuItem });
+    //             }
+    //             else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+    //                 panelMenu.current?.setState({ activeItem: foundMenuItem });
+    //             }
+    //             setActiveItemChanged(prev => !prev)
+    //         }
+    //     }
 
-    }, [selectedMenuItem, menuItems])
+    // }, [selectedMenuItem, menuItems])
 
     useEffect(() => {
         if (props.menuVisibility.menuBar) {
@@ -340,7 +340,7 @@ const Menu: FC<IMenu> = (props) => {
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                                 <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                             </div>
-                            <PanelMenu model={menuItems} ref={panelMenu} />
+                            {/* <PanelMenu model={menuItems} ref={panelMenu} /> */}
                             {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                         </div>
                     }

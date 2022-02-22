@@ -1,8 +1,8 @@
 /** React imports */
-import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useRef, useState } from "react";
 
 /** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import SplitPanel from "./SplitPanel";
@@ -26,10 +26,8 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
 
-    /** The Childcomponents of this SplitPanel */
-    const children = useMemo(() => {
-        return context.contentStore.getChildren(props.id, props.className);
-    }, [context.contentStore, props.id])
+    /** Current state of all Childcomponents as react children */
+    const [children, components] = useComponents(props.id, props.className);
 
     /**
      * Returns the child based on its constraint
@@ -38,16 +36,15 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
      */
     const getChildByConstraint = (constraint: string): ReactElement | undefined => {
         return components.find((component) => {
-            const compProp = children.get(component.props.id);
-            if(compProp)
+            const compProp = children.find(comp => comp.id === component.props.id);
+            if(compProp) {
                 return compProp.constraints === constraint;
-
+            }
             return false;
         });
     }
 
-    /** Current state of all Childcomponents as react children */
-    const [components] = useComponents(props.id, props.className);
+
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());

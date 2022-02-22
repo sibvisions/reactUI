@@ -846,7 +846,7 @@ class Server {
         let highestPriority = 0;
 
         responses.forEach(response => {
-            if (response.name === RESPONSE_NAMES.USER_DATA) {
+            if (response.name === RESPONSE_NAMES.USER_DATA || response.name === RESPONSE_NAMES_V2.UI) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";

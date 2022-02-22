@@ -1,5 +1,5 @@
 /** React imports */
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import _ from "underscore";
@@ -21,7 +21,7 @@ export type ComponentSizes = {
  * @param id - the id of the component
  * @returns a layouts rendered Childcomponents and their preferred size
  */
-const useComponents = (id: string, className:string): [Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
+const useComponents = (id: string, className:string): [Array<BaseComponent>, Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
@@ -156,6 +156,8 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
 
+    const children = useMemo(() => Array.from(context.contentStore.getChildren(id).values()), [components]);
+
     /**
      * Subscribes the parent to childcomponent changes
      * @returns unsubscribes from childcomponent changes
@@ -187,6 +189,6 @@ const useComponents = (id: string, className:string): [Array<ReactElement>, Map<
         }
     }, [context.subscriptions, id, components, buildComponents, context.contentStore.customComponents]);
 
-    return [components, preferredSizes];
+    return [children, components, preferredSizes];
 }
 export default useComponents;

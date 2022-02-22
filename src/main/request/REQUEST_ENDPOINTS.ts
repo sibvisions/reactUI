@@ -1,7 +1,6 @@
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
-    //STARTUP = "/api/v4/startup",
-    STARTUP = "/v2/api/startup",
+    STARTUP = "/api/v4/startup",
     LOGIN = "/api/v2/login",
     LOGOUT = "/api/logout",
     CLOSE_SCREEN = "/api/closeScreen",

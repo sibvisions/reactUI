@@ -17,7 +17,6 @@ const WorkScreen: FC = () => {
 
     /** Returns the built windows */
     const buildWindow = useCallback((screens:ActiveScreen[]):Array<ReactElement> => {
-        console.log(activeScreens)
         let tempArray: Array<ReactElement> = [];
         // if (compId === "settings") {
         //     tempArray.push(<Settings/>)
