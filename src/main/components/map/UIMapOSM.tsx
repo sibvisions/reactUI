@@ -22,7 +22,8 @@ import { getMarkerIcon,
          sendMapFetchRequests, 
          sortGroupDataOSM, 
          sendSaveRequest, 
-         MapLocation} from "../util";
+         MapLocation,
+         checkComponentName} from "../util";
 import BaseComponent from "../BaseComponent";
 import { IconProps } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
@@ -91,7 +92,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     if (layoutStyle) {
         return (
             <div ref={mapRef} {...popupMenu} style={layoutStyle}>
-                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+                <MapContainer id={checkComponentName(props.name)} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>
             </div>

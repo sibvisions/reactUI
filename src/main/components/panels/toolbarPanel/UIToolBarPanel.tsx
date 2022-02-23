@@ -9,7 +9,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
 import { IPanel } from "..";
 
 /** Interface for ToolbarPanels */
@@ -59,7 +59,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,

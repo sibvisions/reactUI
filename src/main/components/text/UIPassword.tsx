@@ -8,7 +8,7 @@ import { Password } from "primereact/password";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
@@ -42,7 +42,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     return (
         <Password
             inputRef={passwordRef}
-            id={props.name}
+            id={checkComponentName(props.name)}
             className="rc-input"
             value={pwValue||""} 
             feedback={false} 

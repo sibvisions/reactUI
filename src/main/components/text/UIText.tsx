@@ -9,7 +9,7 @@ import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
@@ -46,7 +46,7 @@ const UIText: FC<ITextField> = (baseProps) => {
     return (
         <InputText 
             ref={inputRef} 
-            id={props.name}
+            id={checkComponentName(props.name)}
             className="rc-input"
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 

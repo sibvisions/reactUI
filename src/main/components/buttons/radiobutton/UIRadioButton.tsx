@@ -12,7 +12,7 @@ import { useButtonStyling, useComponentConstants, useMouseListener } from "../..
 import { IButtonSelectable } from "..";
 import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize} from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -53,7 +53,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <span
-                id={props.name}
+                id={checkComponentName(props.name)}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-radiobutton",

@@ -10,7 +10,7 @@ import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks
 /** Other imports */
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
-import { concatClassnames, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { checkComponentName, concatClassnames, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 
 export interface IBrowser extends BaseComponent {
     url: string;
@@ -45,7 +45,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
         <span ref={browserRef} style={layoutStyle}>
             <Tooltip target={"#" + props.name} />
             <iframe
-                id={props.name} 
+                id={checkComponentName(props.name)} 
                 className="rc-mobile-browser"
                 style={{...compStyle}}
                 src={props.url}

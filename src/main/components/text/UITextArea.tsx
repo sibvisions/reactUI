@@ -8,7 +8,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName } from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
@@ -47,7 +47,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     return (
         <InputTextarea 
             ref={inputRef} 
-            id={props.name}
+            id={checkComponentName(props.name)}
             className="rc-input"
             value={text||""}
             style={{...layoutStyle, resize: 'none'}} 

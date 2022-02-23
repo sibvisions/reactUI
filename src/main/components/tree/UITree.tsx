@@ -12,7 +12,7 @@ import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue,
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
-import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback} from "../util";
+import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
@@ -499,7 +499,7 @@ const UITree: FC<ITree> = (baseProps) => {
             {...usePopupMenu(props)}
         >
             <Tree
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className="rc-tree"
                 value={nodes}
                 selectionMode="single"

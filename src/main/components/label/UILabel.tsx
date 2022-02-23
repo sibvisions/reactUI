@@ -10,7 +10,7 @@ import { useComponentConstants, useMouseListener } from "../zhooks";
 /** Other imports */
 import BaseComponent from "../BaseComponent";
 import {getFont, getAlignments, translateTextAlign} from "../compprops";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
 import usePopupMenu from "../zhooks/usePopupMenu";
 
 /**
@@ -51,7 +51,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
         <Tooltip target={"#" + props.name + "-text"} />
         <span
             {...usePopupMenu(props)}
-            id={props.name}
+            id={checkComponentName(props.name)}
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",

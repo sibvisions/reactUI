@@ -9,7 +9,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 
@@ -88,7 +88,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                     props.style === "tagpanel" ? "tag-panel" : ""
                 )}
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,

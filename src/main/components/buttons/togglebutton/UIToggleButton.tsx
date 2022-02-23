@@ -12,7 +12,7 @@ import { useButtonMouseImages, useMouseListener, useComponentConstants, useButto
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -66,7 +66,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         >
             <ToggleButton
                 ref={buttonRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',

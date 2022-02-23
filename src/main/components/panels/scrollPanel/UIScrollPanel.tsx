@@ -11,7 +11,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -112,7 +112,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className={concatClassnames(
                     "rc-scrollpanel"
                 )}

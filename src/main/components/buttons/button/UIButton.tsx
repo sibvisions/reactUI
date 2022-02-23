@@ -12,7 +12,7 @@ import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConst
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -61,7 +61,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
-                id={props.name}
+                id={checkComponentName(props.name)}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",

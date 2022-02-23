@@ -13,7 +13,7 @@ import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListene
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
+import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../util";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 
 /** Interface for Chartproperties sent by server */
@@ -572,7 +572,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     return (
         <span ref={chartRef} style={layoutStyle}>
             <Chart
-                id={props.name}
+                id={checkComponentName(props.name)}
                 type={chartType}
                 data={chartData}
                 options={options}
