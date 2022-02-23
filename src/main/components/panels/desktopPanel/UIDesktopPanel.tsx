@@ -1,13 +1,14 @@
 /** React imports */
-import React, { FC, useRef } from "react";
+import React, { FC, useCallback, useRef } from "react";
 
 /** Hook imports */
 import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
+import id from "date-fns/esm/locale/id/index.js";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -20,12 +21,35 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
+    /** Extracting onLoadCallback and id from baseProps */
+    const {onLoadCallback, id} = baseProps;
+
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     const panelRef = useRef<any>(null);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    /** 
+     * The component reports its preferred-, minimum-, maximum and measured-size to the layout
+     * In panels, this method will be passed to the layouts
+     */
+    const reportSize = useCallback((prefSize: Dimension, minSize?: Dimension) => {
+        console.log(prefSize, minSize)
+        panelReportSize(
+            id,
+            "P",
+            prefSize,
+            props.className,
+            minSize,
+            props.preferredSize,
+            props.minimumSize,
+            props.maximumSize,
+            props.onLoadCallback
+        )
+    }, [onLoadCallback])
 
     return (
         <div
@@ -44,7 +68,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 compSizes={componentSizes}
                 components={components}
                 style={panelGetStyle(false, layoutStyle)}
-                reportSize={() => {}}
+                reportSize={reportSize}
                 panelType="DesktopPanel"
                 parent={props.parent} />
         </div>

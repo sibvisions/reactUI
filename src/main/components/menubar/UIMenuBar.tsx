@@ -1,3 +1,4 @@
+import { Menubar } from "primereact/menubar";
 import React, { FC, useMemo } from "react";
 import COMPONENT_CLASSNAMES_V2 from "../COMPONENT_CLASSNAMES_V2";
 import { useComponents, useConstants, useMenuItems, useProperties } from "../zhooks";
@@ -13,10 +14,8 @@ const UIMenuBar: FC<any> = (baseProps) => {
 
     const menuItems = useMenuItems(menuChildren);
 
-    console.log(menuChildren)
-
     return (
-        <div>test</div>
+        <Menubar model={menuItems} />
     )
 }
 export default UIMenuBar

@@ -165,7 +165,10 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
             return <Comp {...baseComponent} key={baseComponent.id} />;
         }
     } 
-    else {
+    else if (baseComponent.className !== COMPONENT_CLASSNAMES_V2.MENUBAR) {
         return <Dummy {...baseComponent} key={baseComponent.id} />
+    }
+    else {
+        return <></>;
     }
 }

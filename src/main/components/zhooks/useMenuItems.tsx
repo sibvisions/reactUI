@@ -11,7 +11,7 @@ const useMenuItems = (menus:string[]) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
     /** Current state of menu items */
-    const [menuItems, setMenuItems] = useState<Array<MenuItem>>();
+    const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
 
     /** 
      * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems
@@ -20,7 +20,7 @@ const useMenuItems = (menus:string[]) => {
     useEffect(() => {
         const receiveNewMenuItems = (menuId:string) => {
             //TODO: Rausfinden ob Gruppe im State existiert, wenn ja löschen und zum State mit prevState hinzufügen.
-            const primeMenu = new Array<MenuItem>();
+            let primeMenu:MenuItem = {};
 
             const getSubItems = (arr: BaseComponent[]) => {
                 return arr.map(menuItem => {
@@ -39,26 +39,34 @@ const useMenuItems = (menus:string[]) => {
                 if (menuGroup) {
                     const menuItems = Array.from(context.contentStore.getChildren(menuId).values()).filter(item => item.visible !== false);
                     const iconData = parseIconData(undefined, menuGroup.image)
-                    const newMenuGroup = {
+                    primeMenu = {
                         label: menuGroup.text,
                         icon: iconData.icon,
                         items: menuItems.length ? getSubItems(menuItems) : []
                     }
-                    primeMenu.push(newMenuGroup);
                 }
-            console.log(primeMenu);
-            setMenuItems(primeMenu);
+                return primeMenu
         }
+        const tempMenuItems:MenuItem[] = []
+        menus.forEach((menu, i) => {
+            tempMenuItems.push(receiveNewMenuItems(menu));
+        });
+        setMenuItems(tempMenuItems);
 
         menus.forEach(menu => {
-            receiveNewMenuItems(menu);
+            context.subscriptions.subscribeToParentChange(menu, () => setMenuItems(prevState => {
+                const menuCopy = prevState
+                const newMenu = receiveNewMenuItems(menu);
+                const foundIndex = prevState.findIndex(oldMenu => oldMenu.label === newMenu.label);
+                if (foundIndex !== -1) {
+                    menuCopy[foundIndex] = newMenu
+                }
+                else {
+                    menuCopy.push(newMenu);
+                }
+                return menuCopy;
+            }))   
         });
-
-        menus.forEach(menu => {
-            context.subscriptions.subscribeToParentChange(menu, () => receiveNewMenuItems(menu))   
-        });
-
-        //context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);
 
         return () => {
             menus.forEach(menu => {

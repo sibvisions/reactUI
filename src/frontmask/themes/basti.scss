@@ -171,6 +171,10 @@ body {
 }
 
 .basti {
+    .p-menubar {
+        padding: 0;
+    }
+
     .std-menu {
         &.menu-collapsed {
             .menu-logo-wrapper {

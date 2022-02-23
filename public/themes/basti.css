@@ -62,6 +62,9 @@ body {
 .login-form .login-logo-wrapper {
   padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
 
+.basti .p-menubar {
+  padding: 0; }
+
 .basti .std-menu.menu-collapsed .menu-logo-wrapper {
   width: var(--std-menu-collapsed-width); }
   .basti .std-menu.menu-collapsed .menu-logo-wrapper .menu-logo {

@@ -58,7 +58,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
 
-        const children = context.contentStore.getChildren(id, className);
+        const children = context.contentStore.getConstraintChildren(id, className);
 
         let northUsed = false;
         let westUsed = false;

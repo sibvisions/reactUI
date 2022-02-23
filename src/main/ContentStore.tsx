@@ -707,13 +707,50 @@ export default class ContentStore{
         }
 
         while (!entry.done) {
-            if (id.includes("TP")) {
-                if (entry.value[1].parent === id && !this.removedCustomComponents.has(entry.value[1].name)) {
+            if (entry.value[1].parent === id && !this.removedCustomComponents.has(entry.value[1].name)) {
+                if (id.includes("TP")) {
+                    children.set(entry.value[1].id, entry.value[1]);
+                }
+                else if (entry.value[1].visible !== false) {
                     children.set(entry.value[1].id, entry.value[1]);
                 }
             }
-            else if (entry.value[1].parent === id && entry.value[1].visible !== false && !this.removedCustomComponents.has(entry.value[1].name)) {
-                children.set(entry.value[1].id, entry.value[1]);
+            entry = componentEntries.next();
+        }
+        if (className) {
+            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                children = new Map([...children].filter(entry => entry[1]["~additional"]));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
+        }
+        return children;
+    }
+
+    getConstraintChildren(id:string, className?: string) {
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+        const componentEntries = mergedContent.entries();
+        let children = new Map<string, BaseComponent>();
+        let entry = componentEntries.next();
+
+        if (className) {
+            if (mergedContent.has(id) && className.includes("ToolBarHelper")) {
+                id = mergedContent.get(id)!.parent as string
+            }
+        }
+
+        while (!entry.done) {
+            if (entry.value[1].parent === id && !this.removedCustomComponents.has(entry.value[1].name)) {
+                if (id.includes("TP")) {
+                    children.set(entry.value[1].id, entry.value[1]);
+                }
+                else if (entry.value[1].visible !== false && entry.value[1].constraints) {
+                    children.set(entry.value[1].id, entry.value[1]);
+                }
             }
             entry = componentEntries.next();
         }
