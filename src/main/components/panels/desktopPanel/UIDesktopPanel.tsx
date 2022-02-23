@@ -6,7 +6,7 @@ import { useComponents, useMouseListener, useComponentConstants } from "../../zh
 
 /** Other imports */
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName } from "../../util";
 import BaseComponent from "../../BaseComponent";
 
 export interface IDesktopPanel extends BaseComponent {
@@ -31,7 +31,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
         <div
             className="rc-desktop-panel"
             ref={panelRef}
-            id={props.name}
+            id={checkComponentName(props.name)}
             style={{...layoutStyle, backgroundColor: props.background}} >
             <Layout
                 id={props.id}

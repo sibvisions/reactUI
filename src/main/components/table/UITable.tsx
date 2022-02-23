@@ -22,7 +22,7 @@ import BaseComponent from "../BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName } from "../util";
 import { createEditor } from "../../factories/UIFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
@@ -1189,7 +1189,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             >
                 <DataTable
                     key="table"
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",

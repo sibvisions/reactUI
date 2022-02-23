@@ -19,7 +19,8 @@ import { getMarkerIcon,
          sendOnLoadCallback, 
          sendSetValues, 
          sortGroupDataGoogle, 
-         sendSaveRequest } from "../util";
+         sendSaveRequest, 
+         checkComponentName} from "../util";
 import { IMap } from ".";
 import { IconProps } from "../compprops";
 import { showTopBar } from "../topbar/TopBar";
@@ -250,9 +251,9 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
+        return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle}>
+        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle}>
             <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

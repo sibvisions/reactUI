@@ -9,7 +9,7 @@ import SplitPanel from "./SplitPanel";
 import { appContext } from "../../../AppProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
-import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension} from "../../util";
+import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../util";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{
@@ -106,7 +106,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={layoutStyle}
                 forwardedRef={splitRef}
                 trigger={layoutStyle}

@@ -10,7 +10,7 @@ import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } 
 /** Other imports */
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
 
 
 /**
@@ -60,7 +60,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             <div
                 ref={panelRef}
                 className="rc-panel-group"
-                id={props.name}
+                id={checkComponentName(props.name)}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }

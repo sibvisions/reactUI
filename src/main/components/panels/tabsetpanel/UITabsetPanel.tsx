@@ -13,7 +13,7 @@ import { parseIconData, IconProps } from "../../compprops";
 import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 
 /** Interface for TabsetPanel */
@@ -158,7 +158,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...layoutStyle, ...compStyle }}>
                 <TabView
                     ref={panelRef}
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     style={{"--nav-background": compStyle.background}}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => {

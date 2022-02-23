@@ -12,7 +12,7 @@ import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConst
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -44,11 +44,10 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
+        if (buttonRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
 
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
@@ -61,7 +60,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
-                id={props.name}
+                id={checkComponentName(props.name)}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",

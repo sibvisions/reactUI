@@ -17,6 +17,7 @@ import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { SelectedCellContext } from "./UITable";
+import { checkComponentName } from "../util";
 
 export interface CellFormatting {
     foreground?: string;
@@ -203,7 +204,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                 return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
             else {
                 return <img
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     alt="icon"
                     src={context.server.RESOURCE_URL + cellIcon.icon}
                     style={{width: `${cellIcon.size?.width}px`, height: `${cellIcon.size?.height}px` }}

@@ -89,6 +89,7 @@ const ResizeHandler:FC = (props) => {
                     sizeMap.set(childWithProps.props.id, { width: width, height: height });
                 }
             });
+            sizeMap.set("root", { width: width, height: height });
             if (context.appSettings.desktopPanel) {
                 let desktopHeight = getDesktopHeight(resizeContext.login);
                 if ((resizeContext.login && sizeRef.current.classList.contains("login-container-with-desktop")) || sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {

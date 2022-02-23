@@ -20,7 +20,8 @@ import { getDecimalLength,
          parseMinSize, 
          parseMaxSize,
          handleEnterKey,
-         concatClassnames} from "../../util";
+         concatClassnames,
+         checkComponentName} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -197,7 +198,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     inputRef={numberInput}
                     className={numberClassNames}
                     useGrouping={useGrouping}

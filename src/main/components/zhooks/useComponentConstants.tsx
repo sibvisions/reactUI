@@ -10,7 +10,7 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
 
     const [props] = useProperties<T>(baseProps.id, baseProps);
 
-    const layoutStyle = useLayoutValue(props.id, fb);
+    const layoutStyle = useLayoutValue(props.parent ? props.id : "root", fb);
 
     const [compStyle] = useComponentStyle(props);
 

@@ -7,7 +7,7 @@ import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } 
 /** Other imports */
 import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName } from "../util";
 import { Tooltip } from "primereact/tooltip";
 
 /**
@@ -79,11 +79,11 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(props.image?.includes('FontAwesome'))
-                return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
+                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     {...popupMenu}
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
