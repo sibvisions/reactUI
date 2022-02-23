@@ -6,7 +6,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useDataProviderData, useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants} from "../../zhooks"
+import { useDataProviderData, useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -105,7 +105,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
         if (props.cellEditor.displayReferencedColumnName && providedData) {
-            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] === props.selectedRow);
+            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] == props.selectedRow);
             if (foundObj) {
                 setText(foundObj[props.cellEditor.displayReferencedColumnName]);
             }
