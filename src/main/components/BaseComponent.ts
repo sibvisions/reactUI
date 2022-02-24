@@ -9,6 +9,7 @@ interface BaseComponent {
     id: string,
     parent?: string,
     name: string,
+    eventAction?: boolean,
     className: string,
     "~remove"?: boolean,
     "~destroy"?: boolean,

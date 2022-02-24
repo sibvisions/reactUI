@@ -4,6 +4,8 @@ import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import BaseComponent from "../BaseComponent";
+import { createDispatchActionRequest } from "../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS_V2 } from "../../request/v2";
 
 const useMenuItems = (menus:string[]) => {
     /** Use context to gain access for contentstore and server methods */
@@ -24,12 +26,16 @@ const useMenuItems = (menus:string[]) => {
 
             const getSubItems = (arr: BaseComponent[]) => {
                 return arr.map(menuItem => {
-                    const iconData = parseIconData(undefined, menuItem.image)
-                    const subMenuItem = {
-                        //command: () => showTopBar(menuItems.action(), topbar),
-                        command: () => console.log('clicked', menuItem.text),
+                    const iconData = parseIconData(undefined, menuItem.image);
+                    const subMenuItem:MenuItem = {
+                        command: menuItem.eventAction ? () => {
+                            const req = createDispatchActionRequest();
+                            req.componentId = menuItem.name;
+                            showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION), topbar);
+                        }  : undefined,
                         label: menuItem.text,
-                        icon: iconData.icon
+                        icon: iconData.icon,
+                        separator: menuItem.className === "Separator" ? true : false
                     }
                     return subMenuItem
                 })
@@ -38,7 +44,7 @@ const useMenuItems = (menus:string[]) => {
                 const menuGroup = context.contentStore.getComponentById(menuId);
                 if (menuGroup) {
                     const menuItems = Array.from(context.contentStore.getChildren(menuId).values()).filter(item => item.visible !== false);
-                    const iconData = parseIconData(undefined, menuGroup.image)
+                    const iconData = parseIconData(undefined, menuGroup.image);
                     primeMenu = {
                         label: menuGroup.text,
                         icon: iconData.icon,

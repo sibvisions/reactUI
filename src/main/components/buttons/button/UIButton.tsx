@@ -9,12 +9,12 @@ import tinycolor from 'tinycolor2';
 import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConstants, useButtonStyling } from "../../zhooks";
 
 /** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { REQUEST_ENDPOINTS_V2 } from "../../../request/v2";
 
 /**
  * This component displays a basic button
@@ -52,9 +52,11 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = () => {
-        const req = createPressButtonRequest();
-        req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+        if (props.eventAction) {
+            const req = createDispatchActionRequest();
+            req.componentId = props.name;
+            showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION), topbar);
+        }
     }
 
     return (

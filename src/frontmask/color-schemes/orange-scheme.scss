@@ -20,6 +20,8 @@
     /// Orange background for topbar
     --topbar-background: #f78500;
 
+    --frame-toolbar-border: 1px solid #ca6c00;
+
     /// Orange menu color
     --topbar-text-color: #ffffff;
 
@@ -422,6 +424,11 @@ body {
     &:hover {
         background: var(--topbar-button-hover-background);
     }
+}
+
+.rc-frame-toolbar {
+    background: var(--topbar-background);
+    border-top: var(--frame-toolbar-border);
 }
 
 /// *----------Profile-Menu----------*

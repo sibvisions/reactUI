@@ -102,7 +102,6 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             });
             const preferredComp = tempSizes.current.get(compId);
             tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
-            
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
             if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
                 setPreferredSizes(new Map(tempSizes.current));

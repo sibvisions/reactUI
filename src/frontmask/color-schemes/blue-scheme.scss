@@ -20,6 +20,8 @@
     /// Blue background for topbar
     --topbar-background: #2196F3;
 
+    --frame-toolbar-border: 1px solid #0f7bd3;
+
     /// Blue menu color
     --topbar-text-color: #ffffff;
 
@@ -422,6 +424,11 @@ body {
     &:hover {
         background: var(--topbar-button-hover-background);
     }
+}
+
+.rc-frame-toolbar {
+    background: var(--topbar-background);
+    border-top: var(--frame-toolbar-border);
 }
 
 /// *----------Profile-Menu----------*

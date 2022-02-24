@@ -5,6 +5,7 @@
   --screen-background: #ffffff;
   --text-color: #495057;
   --topbar-background: #f78500;
+  --frame-toolbar-border: 1px solid #ca6c00;
   --topbar-text-color: #ffffff;
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
@@ -153,6 +154,10 @@ body {
   border-radius: var(--button-border-radius); }
   .p-button.p-button-icon-only.menu-topbar-buttons:hover {
     background: var(--topbar-button-hover-background); }
+
+.rc-frame-toolbar {
+  background: var(--topbar-background);
+  border-top: var(--frame-toolbar-border); }
 
 .profile-menu {
   border-left: var(--profile-separator); }

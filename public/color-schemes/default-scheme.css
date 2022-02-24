@@ -5,6 +5,7 @@
   --screen-background: #ffffff;
   --text-color: #495057;
   --topbar-background: #7a7f85;
+  --frame-toolbar-border: 1px solid #f8f9fa;
   --topbar-text-color: #ffffff;
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
@@ -156,6 +157,10 @@ body {
 
 .menu-screen-title {
   color: var(--topbar-text-color); }
+
+.rc-frame-toolbar {
+  background: var(--topbar-background);
+  border-top: var(--frame-toolbar-border); }
 
 .profile-menu {
   border-left: var(--profile-separator); }

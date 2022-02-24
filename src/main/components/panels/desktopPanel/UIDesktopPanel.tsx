@@ -28,7 +28,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     const panelRef = useRef<any>(null);
-
+    
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -37,7 +37,6 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
      * In panels, this method will be passed to the layouts
      */
     const reportSize = useCallback((prefSize: Dimension, minSize?: Dimension) => {
-        console.log(prefSize, minSize)
         panelReportSize(
             id,
             "P",

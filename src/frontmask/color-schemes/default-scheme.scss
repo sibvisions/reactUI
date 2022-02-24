@@ -20,6 +20,8 @@
     /// Default background for topbar
     --topbar-background: #7a7f85;
 
+    --frame-toolbar-border: 1px solid #f8f9fa;
+
     /// Default menu color
     --topbar-text-color: #ffffff;
 
@@ -426,6 +428,11 @@ body {
 
 .menu-screen-title {
     color: var(--topbar-text-color);
+}
+
+.rc-frame-toolbar {
+    background: var(--topbar-background);
+    border-top: var(--frame-toolbar-border);
 }
 
 /// *----------Profile-Menu----------*

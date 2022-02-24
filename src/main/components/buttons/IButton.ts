@@ -4,7 +4,6 @@ import BaseComponent from "../BaseComponent";
 /** Interface for Buttons contains properties which are sent by the server */
 export interface IButton extends BaseComponent {
     accelerator: string,
-    eventAction: boolean,
     horizontalTextPosition?:number,
     verticalTextPosition?:number,
     borderPainted?: boolean,

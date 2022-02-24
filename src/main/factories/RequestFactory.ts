@@ -33,6 +33,7 @@ import { StartupRequest,
          FocusLostRequest,
          CloseFrameRequest,
          CloseContentRequest} from "../request";
+import { DispatchActionRequest } from "../request/v2";
 
 /**
  * Returns the ClientId from the local storage
@@ -130,6 +131,14 @@ export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
  */
 export const createPressButtonRequest = (values?: PressButtonRequest): PressButtonRequest => {
     const req: PressButtonRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
+export const createDispatchActionRequest = (values?:DispatchActionRequest): DispatchActionRequest => {
+    const req: DispatchActionRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
     }

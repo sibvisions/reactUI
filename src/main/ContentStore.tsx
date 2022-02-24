@@ -16,6 +16,7 @@ import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import COMPONENT_CLASSNAMES_V2 from "./components/COMPONENT_CLASSNAMES_V2";
 
 export type ActiveScreen = {
     name: string,
@@ -699,20 +700,26 @@ export default class ContentStore{
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
+        let parentId = id;
 
         if (className) {
-            if (mergedContent.has(id) && className.includes("ToolBarHelper")) {
-                id = mergedContent.get(id)!.parent as string
+            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+                parentId = mergedContent.get(parentId)!.parent as string
             }
         }
 
         while (!entry.done) {
-            if (entry.value[1].parent === id && !this.removedCustomComponents.has(entry.value[1].name)) {
-                if (id.includes("TP")) {
-                    children.set(entry.value[1].id, entry.value[1]);
+            const value = entry.value[1];
+
+            if (parentId && parentId.includes("-frame-tb")) {
+                parentId = parentId.substring(0, parentId.indexOf("-"));
+            }
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES_V2.MENUBAR) {
+                if (parentId.includes("TP")) {
+                    children.set(value.id, value);
                 }
-                else if (entry.value[1].visible !== false) {
-                    children.set(entry.value[1].id, entry.value[1]);
+                else if (value.visible !== false) {
+                    children.set(value.id, value);
                 }
             }
             entry = componentEntries.next();
@@ -731,42 +738,14 @@ export default class ContentStore{
         return children;
     }
 
-    getConstraintChildren(id:string, className?: string) {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
-        const componentEntries = mergedContent.entries();
-        let children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
-
-        if (className) {
-            if (mergedContent.has(id) && className.includes("ToolBarHelper")) {
-                id = mergedContent.get(id)!.parent as string
-            }
+    getMenuBar(id:string) {
+        const mergedContent = [...this.flatContent, ...this.replacedContent, ...this.desktopContent];
+        const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES_V2.MENUBAR);
+        if (foundMenu) {
+            return foundMenu[1];
         }
-
-        while (!entry.done) {
-            if (entry.value[1].parent === id && !this.removedCustomComponents.has(entry.value[1].name)) {
-                if (id.includes("TP")) {
-                    children.set(entry.value[1].id, entry.value[1]);
-                }
-                else if (entry.value[1].visible !== false && entry.value[1].constraints) {
-                    children.set(entry.value[1].id, entry.value[1]);
-                }
-            }
-            entry = componentEntries.next();
-        }
-        if (className) {
-            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
-            }
-            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
-                children = new Map([...children].filter(entry => entry[1]["~additional"]));
-            }
-            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
-                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
-            }
-        }
-        return children;
-    }
+        return undefined;
+    } 
 
     /**
      * Returns the component id of a screen for a component
