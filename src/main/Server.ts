@@ -482,13 +482,23 @@ class Server {
     }
 
     //Dal
+
+    getCompId(dataProvider:string) {
+        if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
+            return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        }
+        else {
+            return dataProvider.split("/")[1];
+        }
+    }
+
     /**
      * Sets the selectedRow, if selectedRowIndex === -1 clear selectedRow and trigger selectedRow update
      * @param selectedRowIndex - the index of the selectedRow
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const compId = this.getCompId(dataProvider);
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
@@ -559,7 +569,7 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const compId = this.getCompId(fetchData.dataProvider);
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
                 
@@ -592,7 +602,7 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const compId = this.getCompId(changedProvider.dataProvider);
 
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
@@ -626,7 +636,7 @@ class Server {
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const compId = this.getCompId(metaData.dataProvider);
         const compPanel = this.contentStore.getComponentByName(compId) as IPanel;
         const existingMap = this.contentStore.getScreenDataproviderMap(compId);
         if (existingMap) {
