@@ -42,6 +42,7 @@ import ContentStore from "../ContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import COMPONENT_CLASSNAMES_V2 from "../components/COMPONENT_CLASSNAMES_V2";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
+import UIInternalFrame from "../components/frame/UIInternalFrame";
 
 
 /**
@@ -142,7 +143,8 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
-    .set(COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />);
+    .set(COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
+    .set(COMPONENT_CLASSNAMES_V2.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
 
 /**
  * Returns the JSXElement for the given base component

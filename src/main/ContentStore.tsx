@@ -206,6 +206,11 @@ export default class ContentStore{
             for (let newPropName in newComp) {
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
+
+                if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && existingComp.parent?.includes("ML") && newComp.parent?.includes("ML")) {
+                    existingComp[newPropName] = newComp[newPropName] + "-frame-toolbar";
+                }
+
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
                 }
@@ -435,6 +440,9 @@ export default class ContentStore{
                         this.desktopContent.set(newComponent.id, newComponent);
                     }
                     else {
+                        if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && newComponent.parent?.includes("ML")) {
+                            newComponent.parent = newComponent.parent + "-frame-toolbar";
+                        }
                         this.flatContent.set(newComponent.id, newComponent);
                     }
                 }
@@ -453,23 +461,6 @@ export default class ContentStore{
                     this.replacedContent.set(newComponent.id, newComp)
                 }
             }
-
-            // if (existingComponent && newComponent["~remove"]) {
-            //     if (!isCustom) {
-            //         if (desktop) {
-            //             this.desktopContent.delete(newComponent.id);
-            //             this.removedDesktopContent.set(newComponent.id, existingComponent);
-            //         }
-            //         else {
-            //             this.flatContent.delete(newComponent.id);
-            //             this.removedContent.set(newComponent.id, existingComponent);
-            //         }
-            //     }
-            //     else {
-            //         this.replacedContent.delete(newComponent.id);
-            //         this.removedCustomComponents.set(newComponent.id, existingComponent);
-            //     }
-            // }
             
             /** Cast newComponent as Panel */
             const newCompAsPanel = (newComponent as IPanel);
@@ -733,6 +724,9 @@ export default class ContentStore{
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"]));
             }
         }
         return children;

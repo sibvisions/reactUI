@@ -3,16 +3,16 @@ import BaseComponent from "../BaseComponent";
 import UIFrame from "../frame/UIFrame";
 import { useComponentConstants, useMouseListener } from "../zhooks";
 
-interface IMobileLauncher extends BaseComponent {
+export interface IWindow extends BaseComponent {
     layout:string,
     layoutData:string,
     menuBar:string,
     title:string
 }
 
-const UIMobileLauncher: FC<IMobileLauncher> = (baseProps) => {
+const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IMobileLauncher>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
 
     /** Reference for the panel element */
     const panelRef = useRef<any>(null);
@@ -22,7 +22,7 @@ const UIMobileLauncher: FC<IMobileLauncher> = (baseProps) => {
 
     return (
         <div id={props.name} ref={panelRef} className="rc-mobile-launcher" style={{...layoutStyle, ...compStyle}}>
-            <UIFrame {...props} layoutStyle={layoutStyle} />
+            <UIFrame {...props} frameStyle={layoutStyle} />
         </div>
 
     )

@@ -1,13 +1,18 @@
-import React, { FC, useCallback, useContext, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState } from "react";
 import { appContext } from "../../AppProvider";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import COMPONENT_CLASSNAMES_V2 from "../COMPONENT_CLASSNAMES_V2";
+import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
+import UIToolbar from "../toolbar/UIToolbar";
 import { Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
 import { useComponents } from "../zhooks";
 
-const UIFrame: FC<any> = (props) => {
+export interface IFrame extends IWindow {
+    frameStyle?: CSSProperties
+}
+
+const UIFrame: FC<IFrame> = (props) => {
     const context = useContext(appContext);
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
@@ -27,15 +32,18 @@ const UIFrame: FC<any> = (props) => {
     }, [toolBarSize]);
 
     const adjustedStyle = useMemo(() => {
-        const styleCopy = {...props.layoutStyle};
-        styleCopy.height = (props.layoutStyle.height as number) - menuBarSize.height - toolBarSize.height;
+        const styleCopy:CSSProperties = {...props.frameStyle};
+        if (props.frameStyle) {
+            styleCopy.height = (props.frameStyle.height as number) - menuBarSize.height - toolBarSize.height;
+        }
         return styleCopy;
-    }, [menuBarSize, toolBarSize, props.layoutStyle]);
+    }, [menuBarSize, toolBarSize, props.frameStyle]);
 
     return (
         <div style={{ visibility: componentSizes ? undefined : "hidden" }}>
             <UIMenuBar {...menuBarBaseProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />
-            <div className="rc-frame-toolbar">
+            <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />
+            {/* <div className="rc-frame-toolbar">
                 <Layout
                     id={props.id + "-frame-tb"}
                     className="Frame-Toolbar"
@@ -47,7 +55,7 @@ const UIFrame: FC<any> = (props) => {
                     reportSize={toolBarSizeCallback}
                     panelType="Frame-Toolbar"
                     parent={props.id} />
-            </div>
+            </div> */}
             <Layout
                 id={props.id}
                 className={props.className}
@@ -56,8 +64,8 @@ const UIFrame: FC<any> = (props) => {
                 preferredSize={parsePrefSize(props.preferredSize)}
                 minimumSize={parseMinSize(props.minimumSize)}
                 maximumSize={parseMaxSize(props.maximumSize)}
-                compSizes={componentSizes}
-                components={components}
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
+                components={components.filter(comp => comp.props["~additional"] !== true)}
                 style={panelGetStyle(false, adjustedStyle)}
                 reportSize={() => { }}
                 parent={props.parent} />
