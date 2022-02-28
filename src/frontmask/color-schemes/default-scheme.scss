@@ -22,6 +22,10 @@
 
     --frame-toolbar-border: 1px solid #f8f9fa;
 
+    --frame-header-button-hover-background: #fafafa;
+
+    --frame-header-button-hover-color: #1e1f20;
+
     /// Default menu color
     --topbar-text-color: #ffffff;
 
@@ -434,6 +438,26 @@ body {
     background: var(--topbar-background);
     border-top: var(--frame-toolbar-border);
 }
+
+.rc-frame-header {
+    background-color: var(--dialog-header-background);
+    color: var(--dialog-header-text-color);
+    border: var(--dialog-header-border);
+
+    .rc-frame-header-close-button {
+        color: var(--text-color);
+        background: transparent;
+        font-size: 14px;
+    
+        &:hover {
+            background: var(--frame-header-button-hover-background);
+            font-weight: bold;
+            color: var(--frame-header-button-hover-color);
+        }
+    }
+}
+
+
 
 /// *----------Profile-Menu----------*
 .profile-menu {

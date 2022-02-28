@@ -1,0 +1,23 @@
+.rc-frame-header {
+    font-size: 18px;
+    display: flex;
+    cursor: move;
+
+    .rc-frame-header-title {
+        margin-left: 4px;
+    }
+
+    .rc-frame-header-close-button {
+        border-radius: 50%;
+        border: none;
+        padding: 4px;
+
+        margin-left: auto;
+        margin-right: 4px;
+        
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+    }
+}
+

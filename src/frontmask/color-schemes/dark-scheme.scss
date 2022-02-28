@@ -22,6 +22,10 @@
 
     --frame-toolbar-border: 1px solid #303a48;
 
+    --frame-header-button-hover-background: #e3f2fd;
+
+    --frame-header-button-hover-color: #495057;
+
     /// Darkmode menu color
     --topbar-text-color: #ffffff;
 
@@ -435,6 +439,24 @@ body {
 .rc-frame-toolbar {
     background: var(--topbar-background);
     border-top: var(--frame-toolbar-border);
+}
+
+.rc-frame-header {
+    background-color: var(--dialog-header-background);
+    color: var(--dialog-header-text-color);
+    border: var(--dialog-header-border);
+
+    .rc-frame-header-close-button {
+        color: var(--text-color);
+        background: transparent;
+        font-size: 14px;
+    
+        &:hover {
+            background: var(--frame-header-button-hover-background);
+            font-weight: bold;
+            color: var(--frame-header-button-hover-color);
+        }
+    }
 }
 
 /// *----------Profile-Menu----------*

@@ -1,23 +1,28 @@
-import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState } from "react";
-import { appContext } from "../../AppProvider";
-import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
+import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
+import { createDispatchActionRequest } from "../../factories/RequestFactory";
+import { REQUEST_ENDPOINTS_V2 } from "../../request/v2";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
+import { showTopBar } from "../topbar/TopBar";
 import { Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
-import { useComponents } from "../zhooks";
+import { useComponents, useConstants } from "../zhooks";
 
 export interface IFrame extends IWindow {
-    frameStyle?: CSSProperties
+    frameStyle?: CSSProperties,
+    internal?: boolean
+    sizeCallback?:Function
 }
 
 const UIFrame: FC<IFrame> = (props) => {
-    const context = useContext(appContext);
+    const [context, topbar] = useConstants();
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
 
-    const menuBarBaseProps = useMemo(() => context.contentStore.getMenuBar(props.id), [children]);
+    const menuBarProps = useMemo(() => context.contentStore.getMenuBar(props.id), [children]);
+
+    const hasToolBars = useMemo(() => context.contentStore.hasToolBars(props.id), [children]);
 
     const [menuBarSize, setMenuBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
@@ -41,21 +46,21 @@ const UIFrame: FC<IFrame> = (props) => {
 
     return (
         <div style={{ visibility: componentSizes ? undefined : "hidden" }}>
-            <UIMenuBar {...menuBarBaseProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />
-            <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />
-            {/* <div className="rc-frame-toolbar">
-                <Layout
-                    id={props.id + "-frame-tb"}
-                    className="Frame-Toolbar"
-                    layoutData={""}
-                    layout={"FlowLayout,0,0,0,0,0,0,0,0,0,3,true"}
-                    compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.className === COMPONENT_CLASSNAMES.TOOLBAR)) : undefined}
-                    components={components.filter(comp => comp.props.className === COMPONENT_CLASSNAMES.TOOLBAR)}
-                    style={{}}
-                    reportSize={toolBarSizeCallback}
-                    panelType="Frame-Toolbar"
-                    parent={props.id} />
-            </div> */}
+            {props.internal &&
+                <div className="rc-frame-header">
+                    <span className="rc-frame-header-title">{props.title}</span>
+                    <button
+                        className="rc-frame-header-close-button pi pi-times"
+                        onClick={() => {
+                            const dispatchReq = createDispatchActionRequest();
+                            dispatchReq.componentId = props.name;
+                            showTopBar(context.server.sendRequest(dispatchReq, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION), topbar);
+                        }}
+                    />
+                </div>
+            }
+            {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}
+            {hasToolBars && <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />}
             <Layout
                 id={props.id}
                 className={props.className}
@@ -67,7 +72,7 @@ const UIFrame: FC<IFrame> = (props) => {
                 compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
                 components={components.filter(comp => comp.props["~additional"] !== true)}
                 style={panelGetStyle(false, adjustedStyle)}
-                reportSize={() => { }}
+                reportSize={props.sizeCallback ? props.sizeCallback : () => {}}
                 parent={props.parent} />
         </div>
     )

@@ -33,7 +33,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         id,
         layout,
-        className
+        className,
+        panelType
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -280,6 +281,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     else if (component.constraints === "East") {
                         sizeMap.set(component.id, eastCSS);
                     }
+                    else if (panelType === "DesktopPanel") {
+                        sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
+                    }
                 }
             });
             const preferredWidth = Math.max(...[
@@ -336,7 +340,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             
         }
         return sizeMap;
-    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop, components]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

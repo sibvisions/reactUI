@@ -1,7 +1,7 @@
-import React, { FC, useCallback } from "react";
+import React, { FC } from "react";
 import { Layout } from "../layouts";
-import { Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
-import { useComponents, useProperties } from "../zhooks";
+import { Dimension } from "../util";
+import { useComponents } from "../zhooks";
 
 /**
  * This component displays a menubar for a frame
@@ -26,7 +26,8 @@ const UIToolbar: FC<any> = (props) => {
                 components={components}
                 style={{}}
                 reportSize={reportSize}
-                parent={props.id.substring(0, props.id.indexOf("-"))} />
+                parent={props.id.substring(0, props.id.indexOf("-"))}
+                panelType="Frame-Toolbar" />
         </div>
     )
 }

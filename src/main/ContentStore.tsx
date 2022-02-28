@@ -732,6 +732,22 @@ export default class ContentStore{
         return children;
     }
 
+    /**
+     * Returns true if the frame has toolbars
+     * @param id - the id of the frame
+     */
+    hasToolBars(id:string) {
+        const toolbars = this.getChildren(id + "-frame-toolbar");
+        if (toolbars.size > 0) {
+            return true;
+        } 
+        return false;
+    }
+
+    /**
+     * Returns the menubar if there is one
+     * @param id - the id of the frame
+     */
     getMenuBar(id:string) {
         const mergedContent = [...this.flatContent, ...this.replacedContent, ...this.desktopContent];
         const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES_V2.MENUBAR);

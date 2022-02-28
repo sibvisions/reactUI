@@ -8,7 +8,6 @@ import { useComponents, useMouseListener, useComponentConstants } from "../../zh
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
-import id from "date-fns/esm/locale/id/index.js";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -55,7 +54,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
             className="rc-desktop-panel"
             ref={panelRef}
             id={checkComponentName(props.name)}
-            style={{...layoutStyle, backgroundColor: props.background}} >
+            style={{ ...layoutStyle, backgroundColor: props.background }} >
             <Layout
                 id={props.id}
                 className={props.className}
