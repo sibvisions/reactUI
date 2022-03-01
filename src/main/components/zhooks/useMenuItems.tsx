@@ -5,6 +5,8 @@ import { ServerMenuButtons } from "../../../main/response";
 import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { isFAIcon } from "./useButtonMouseImages";
+import { concatClassnames } from "../util";
 
 const useMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
@@ -31,7 +33,13 @@ const useMenuItems = () => {
                         componentId: menuItems.componentId,
                         screenClassName: menuItems.componentId.split(':')[0],
                         icon: iconData.icon,
-                        className: menuItems.componentId.split(':')[0]
+                        style: {...(!isFAIcon(iconData.icon) ? {
+                            '--iconWidth': `${iconData.size?.width}px`,
+                            '--iconHeight': `${iconData.size?.height}px`,
+                            '--iconColor': iconData.color,
+                            '--iconImage': `url(${context.server.RESOURCE_URL + iconData.icon})`,
+                        } : {})},
+                        className: concatClassnames(menuItems.componentId.split(':')[0], !isFAIcon(iconData.icon) ? "custom-menu-icon" : "")
                     }
                     return subMenuItem
                 })

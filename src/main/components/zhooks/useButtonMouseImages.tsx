@@ -9,7 +9,7 @@ import { appContext } from "../../AppProvider";
 import { IconProps } from "../compprops";
 
 
-const isFAIcon = (iconName?:string) => {
+export const isFAIcon = (iconName?:string) => {
     return (iconName?.includes('fas fa-') || iconName?.includes('far fa-') || iconName?.includes('fab fa-'));
 }
 

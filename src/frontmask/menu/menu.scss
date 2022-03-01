@@ -131,6 +131,15 @@
             z-index: 10;
         }
     }
+
+    .custom-menu-icon {
+        .p-menuitem-icon {
+            width: var(--iconWidth);
+            height: var(--iconHeight);
+            display: inline-block;
+            background-image: var(--iconImage);
+        }
+    }
 }
 
 /// Profile-image styling
