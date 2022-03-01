@@ -74,6 +74,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
+                    props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : ""
                 )}
                 style={{

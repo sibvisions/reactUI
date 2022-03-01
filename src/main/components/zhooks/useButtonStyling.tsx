@@ -1,5 +1,4 @@
 import { CSSProperties, useContext, useMemo } from "react";
-import tinycolor from "tinycolor2";
 import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";

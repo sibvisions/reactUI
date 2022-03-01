@@ -31,16 +31,18 @@
     @include btnHover
 }
 
-.rc-button.p-button.p-button-icon-only {
-    width: unset;
-    padding: var(--btnPadding, 0.5rem 0.5rem);
-
-    .rc-button-icon {
-        align-self: center;
-    }
-
-    &.rc-toolbar-button {
-        padding: 0;
+.rc-button, .rc-togglebutton {
+    &.p-button.p-button-icon-only {
+        width: unset;
+        padding: var(--btnPadding, 0.5rem 0.5rem);
+    
+        .rc-button-icon {
+            align-self: center;
+        }
+    
+        &.rc-toolbar-button {
+            padding: 0;
+        }
     }
 }
 

@@ -18,5 +18,10 @@
         margin-left: 0;
     }
 
+    &.mouse-border {
+        background: transparent;
+        border-color: transparent;
+    }
+
     @include toggleBtnHover;
 }
