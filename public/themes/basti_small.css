@@ -48,7 +48,8 @@
   --tab-padding: 0rem 0.5rem;
   --table-header-padding: 0.3rem 0.5rem;
   --table-data-height: 18px;
-  --label-padding: 2.25px; }
+  --label-padding: 2.25px;
+  --menubar-height: 40px; }
 
 body {
   font-size: var(--font-size);
@@ -61,6 +62,9 @@ body {
 
 .login-form .login-logo-wrapper {
   padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
+
+.basti_small .p-menubar {
+  height: var(--menubar-height); }
 
 .basti_small .std-menu.menu-collapsed .menu-logo-wrapper {
   width: var(--std-menu-collapsed-width); }

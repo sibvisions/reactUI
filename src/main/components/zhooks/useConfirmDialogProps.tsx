@@ -7,7 +7,7 @@ import { appContext } from "../../AppProvider";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { useTranslation } from ".";
 import { DialogResponse } from "../../response";
-import { createCloseFrameRequest, createPressButtonRequest } from "../../factories/RequestFactory";
+import { createCloseFrameRequest, createDispatchActionRequest, createPressButtonRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { concatClassnames } from "../util";
 import tinycolor from "tinycolor2";
@@ -67,9 +67,9 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const footerContent = (buttonType: 4 | 5 | 6 | 7 | 8 | -1, okCompId?: string, cancelCompId?: string, notOkCompId?: string) => {
                 const sendPressButton = (compId?:string) => {
                     if (compId) {
-                        const pressBtnReq = createPressButtonRequest();
+                        const pressBtnReq = createDispatchActionRequest();
                         pressBtnReq.componentId = compId;
-                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
                     }
                 }
 

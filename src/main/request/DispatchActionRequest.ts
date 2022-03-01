@@ -1,4 +1,4 @@
-import { ComponentRequest } from "../..";
+import { ComponentRequest } from ".";
 
 /** Interface for PressButtonRequest */
 interface DispatchActionRequest extends ComponentRequest{

@@ -1,6 +1,6 @@
 import { Menubar } from "primereact/menubar";
 import React, { FC, useEffect, useMemo, useRef } from "react";
-import COMPONENT_CLASSNAMES_V2 from "../COMPONENT_CLASSNAMES_V2";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { useComponents, useMenuItems, useProperties } from "../zhooks";
 
 /**
@@ -14,7 +14,7 @@ const UIMenuBar: FC<any> = (baseProps) => {
 
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const menuChildren = useMemo(() => children.filter(component => component.className === COMPONENT_CLASSNAMES_V2.MENU).map(menu => menu.id), [children]);
+    const menuChildren = useMemo(() => children.filter(component => component.className === COMPONENT_CLASSNAMES.MENU).map(menu => menu.id), [children]);
 
     const menuItems = useMenuItems(menuChildren);
 

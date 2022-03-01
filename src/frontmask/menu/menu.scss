@@ -112,26 +112,24 @@
     }
 }
 
-.menu-topbar, .corp-menu-profile {
     .p-menubar {
         /// Removes default primereact menubar style
         padding: 0;
         border: none;
     
-        .p-menubar-root-list {
-            >.p-menuitem, >.p-menuitem.p-menuitem-active {
-                /// Sets menubar style on hover and active for text, subicon color and background
-                > .p-menuitem-link:not(.p-disabled) {
-                    margin-left: 4px;
-                }
-            }
-        }
-    
         .p-submenu-list {
             z-index: 10;
         }
+
+        .custom-menu-icon {
+            .p-menuitem-icon {
+                width: var(--iconWidth);
+                height: var(--iconHeight);
+                display: inline-block;
+                background-image: var(--iconImage);
+            }
+        }
     }
-}
 
 /// Profile-image styling
 .profile-image, .profile-image-null {
@@ -232,7 +230,6 @@
         margin-right: 4px;
     }
 
-    .menu-topbar, .corp-menu-profile {
         .p-menubar {
             /// Primereact wants to show a button instead of the menu we don't want that
             .p-menubar-button {
@@ -259,7 +256,7 @@
                 .p-submenu-list {
                     position: fixed;
                     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-                    width: 12.5rem;
+                    width: 10rem;
                     li {
                         a {
                             padding: 0.75rem;
@@ -268,7 +265,6 @@
                 }
             }
         }
-    }
 
 
     .profile-menu {

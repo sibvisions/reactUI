@@ -41,8 +41,7 @@ import TreePath from "./model/TreePath";
 import AppSettings from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import { RESPONSE_NAMES_V2, UIResponse } from "./response/v2";
-import COMPONENT_CLASSNAMES_V2 from "./components/COMPONENT_CLASSNAMES_V2";
+import UIResponse from "./response/UIResponse";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -332,8 +331,7 @@ class Server {
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
         .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
-        //V2!
-        .set(RESPONSE_NAMES_V2.UI, this.handleUIResponse.bind(this));
+        .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -488,12 +486,7 @@ class Server {
     //Dal
 
     getCompId(dataProvider:string) {
-        if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
-            return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
-        }
-        else {
-            return dataProvider.split("/")[1];
-        }
+        return dataProvider.split("/")[1];
     }
 
     /**
@@ -856,7 +849,7 @@ class Server {
         let highestPriority = 0;
 
         responses.forEach(response => {
-            if (response.name === RESPONSE_NAMES.USER_DATA || response.name === RESPONSE_NAMES_V2.UI) {
+            if (response.name === RESPONSE_NAMES.USER_DATA || response.name === RESPONSE_NAMES.UI) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
@@ -922,13 +915,12 @@ class Server {
         }
     }
 
-    /** ----------V2---------- */
     handleUIResponse(uiData:UIResponse) {
         let firstComp:IPanel|undefined
         if(uiData.changedComponents && uiData.changedComponents.length) {
             this.contentStore.updateContent(uiData.changedComponents, false);
             firstComp = uiData.changedComponents[0] as IPanel;
-            if (firstComp.className === COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER) {
+            if (firstComp.className === COMPONENT_CLASSNAMES.MOBILELAUNCHER) {
                 this.contentStore.setActiveScreen({ name: firstComp.name, className: firstComp.className });
             }
         }

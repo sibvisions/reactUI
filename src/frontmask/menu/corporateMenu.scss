@@ -19,15 +19,11 @@
     align-items: center;
 }
 
-.corp-menu-menubar {
-    padding-left: 10px;
-    .p-menubar {
-        border-radius: 0;
-        .p-submenu-list {
-            max-height: 600px;
-            overflow: auto;
-            margin-left: 4px;
-        }
+.p-menubar {
+    border-radius: 0;
+    .p-submenu-list {
+        max-height: 600px;
+        overflow: auto;
     }
 }
 
@@ -37,35 +33,30 @@
     transition: max-width 0.5s ease-out;
 }
 
-.corp-menu-menubar {
-    display: flex;
-    align-items: center;
+.p-menubar {
+    .p-menubar-root-list {
+        @include styledScrollbarCorp();
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: inherit;
 
-    .p-menubar {
-        .p-menubar-root-list {
-            @include styledScrollbarCorp();
-            overflow-y: auto;
-            overflow-x: hidden;
-            height: inherit;
-
-            >.p-menuitem {
-                float: left;
-                position: unset;
-            }
+        >.p-menuitem {
+            float: left;
+            position: unset;
         }
     }
+}
 
-    .p-speeddial {
-        z-index: auto;
-        position: relative;
-        .p-speeddial-button.p-button.p-button-icon-only {
-            padding: 0;
-        }
-    
-        &.p-speeddial-opened {
-            .p-speeddial-list {
-                z-index: 10;
-            }
+.p-speeddial {
+    z-index: auto;
+    position: relative;
+    .p-speeddial-button.p-button.p-button-icon-only {
+        padding: 0;
+    }
+
+    &.p-speeddial-opened {
+        .p-speeddial-list {
+            z-index: 10;
         }
     }
 }

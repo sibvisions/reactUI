@@ -32,8 +32,8 @@ import { StartupRequest,
          FocusGainedRequest,
          FocusLostRequest,
          CloseFrameRequest,
-         CloseContentRequest} from "../request";
-import { DispatchActionRequest } from "../request/v2";
+         CloseContentRequest,
+         DispatchActionRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage

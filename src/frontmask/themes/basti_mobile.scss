@@ -154,6 +154,8 @@
 
     /// Fixed Padding for Labels
     --label-padding: 9px;
+
+    --menubar-height: 40px;
 }
 
 body {
@@ -176,6 +178,10 @@ body {
 }
 
 .basti_mobile {
+    .p-menubar {
+        height: var(--menubar-height);
+    }
+
     .std-menu {
         &.menu-collapsed {
             .menu-logo-wrapper {

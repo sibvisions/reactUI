@@ -40,7 +40,6 @@ import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
 import ContentStore from "../ContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
-import COMPONENT_CLASSNAMES_V2 from "../components/COMPONENT_CLASSNAMES_V2";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
 
@@ -143,8 +142,8 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
-    .set(COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
-    .set(COMPONENT_CLASSNAMES_V2.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
+    .set(COMPONENT_CLASSNAMES.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
+    .set(COMPONENT_CLASSNAMES.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
 
 /**
  * Returns the JSXElement for the given base component
@@ -167,7 +166,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
             return <Comp {...baseComponent} key={baseComponent.id} />;
         }
     } 
-    else if (baseComponent.className !== COMPONENT_CLASSNAMES_V2.MENUBAR) {
+    else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
         return <Dummy {...baseComponent} key={baseComponent.id} />
     }
     else {

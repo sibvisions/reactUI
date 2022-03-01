@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS_V2 } from "../../request/v2";
+import { REQUEST_ENDPOINTS } from "../../request";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
@@ -54,7 +54,7 @@ const UIFrame: FC<IFrame> = (props) => {
                         onClick={() => {
                             const dispatchReq = createDispatchActionRequest();
                             dispatchReq.componentId = props.name;
-                            showTopBar(context.server.sendRequest(dispatchReq, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION), topbar);
+                            showTopBar(context.server.sendRequest(dispatchReq, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
                         }}
                     />
                 </div>

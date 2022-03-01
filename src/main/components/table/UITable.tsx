@@ -23,7 +23,6 @@ import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, 
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName } from "../util";
-import { createEditor } from "../../factories/UIFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";

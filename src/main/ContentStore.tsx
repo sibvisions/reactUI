@@ -16,7 +16,6 @@ import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import COMPONENT_CLASSNAMES_V2 from "./components/COMPONENT_CLASSNAMES_V2";
 
 export type ActiveScreen = {
     name: string,
@@ -487,7 +486,7 @@ export default class ContentStore{
             }
 
             // Adds the panels to a Map so the missing data calls are made when the panel gets visible
-            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL && newCompAsPanel.parent === undefined) {
+            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL && newCompAsPanel.parent?.includes("IF")) {
                 this.missingDataCalls.set(newCompAsPanel.name, new Map<string, Function>());
             }
         });
@@ -705,7 +704,7 @@ export default class ContentStore{
             if (parentId && parentId.includes("-frame-tb")) {
                 parentId = parentId.substring(0, parentId.indexOf("-"));
             }
-            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES_V2.MENUBAR) {
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
                 if (parentId.includes("TP")) {
                     children.set(value.id, value);
                 }
@@ -725,7 +724,7 @@ export default class ContentStore{
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
-            else if (className === COMPONENT_CLASSNAMES_V2.MOBILELAUNCHER) {
+            else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"]));
             }
         }
@@ -750,7 +749,7 @@ export default class ContentStore{
      */
     getMenuBar(id:string) {
         const mergedContent = [...this.flatContent, ...this.replacedContent, ...this.desktopContent];
-        const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES_V2.MENUBAR);
+        const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES.MENUBAR);
         if (foundMenu) {
             return foundMenu[1];
         }
@@ -770,6 +769,9 @@ export default class ContentStore{
                     break;
                 }
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+                if (comp?.parent?.includes("IF")) {
+                    break;
+                }
             }
         }
         return comp?.name

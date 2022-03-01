@@ -9,7 +9,7 @@ import tinycolor from 'tinycolor2';
 import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../zhooks";
 
 /** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
+import { createDispatchActionRequest, createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
@@ -52,9 +52,9 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = () => {
-        const req = createPressButtonRequest();
+        const req = createDispatchActionRequest();
         req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
     }
 
     return (

@@ -149,6 +149,8 @@
 
     /// Fixed Padding for Labels
     --label-padding: 9px;
+
+    --menubar-height: 40px;
 }
 
 body {
@@ -173,6 +175,7 @@ body {
 .basti {
     .p-menubar {
         padding: 0;
+        height: var(--menubar-height);
     }
 
     .std-menu {

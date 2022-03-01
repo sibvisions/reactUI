@@ -305,7 +305,6 @@ export default class AppSettings {
             default:
                 break;
         }
-        //V2!
         if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded) {
             this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
             this.appReady = true;

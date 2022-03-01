@@ -9,7 +9,7 @@ import tinycolor from 'tinycolor2';
 import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
 
 /** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
+import { createDispatchActionRequest, createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
 import { parseIconData } from "../../compprops";
@@ -89,9 +89,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: () => {
-                        const req = createPressButtonRequest();
+                        const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
                     }
                 });
             });

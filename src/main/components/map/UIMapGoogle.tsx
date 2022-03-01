@@ -26,7 +26,6 @@ import { IconProps } from "../compprops";
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
-import { FetchResponse } from "../../response";
 
 /**
  * This component displays a map view with Google Maps

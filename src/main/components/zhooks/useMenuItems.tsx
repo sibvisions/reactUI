@@ -5,7 +5,8 @@ import { parseIconData } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import BaseComponent from "../BaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS_V2 } from "../../request/v2";
+import { isFAIcon } from "./useButtonMouseImages";
+import { REQUEST_ENDPOINTS } from "../../request";
 
 const useMenuItems = (menus:string[]) => {
     /** Use context to gain access for contentstore and server methods */
@@ -31,11 +32,18 @@ const useMenuItems = (menus:string[]) => {
                         command: menuItem.eventAction ? () => {
                             const req = createDispatchActionRequest();
                             req.componentId = menuItem.name;
-                            showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION), topbar);
+                            showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
                         }  : undefined,
                         label: menuItem.text,
                         icon: iconData.icon,
-                        separator: menuItem.className === "Separator" ? true : false
+                        separator: menuItem.className === "Separator" ? true : false,
+                        style: {...(!isFAIcon(iconData.icon) ? {
+                            '--iconWidth': `${iconData.size?.width}px`,
+                            '--iconHeight': `${iconData.size?.height}px`,
+                            '--iconColor': iconData.color,
+                            '--iconImage': `url(${context.server.RESOURCE_URL + iconData.icon})`,
+                        } : {})},
+                        className: !isFAIcon(iconData.icon) ? "custom-menu-icon" : ""
                     }
                     return subMenuItem
                 })

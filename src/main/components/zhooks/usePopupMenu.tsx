@@ -4,6 +4,7 @@ import { appContext, createComponentRequest, createPressButtonRequest, getClient
 import BaseComponent from "../BaseComponent";
 import { MenuItem } from "primereact/menuitem";
 import { parseIconData } from "../compprops";
+import { createDispatchActionRequest } from "../../factories/RequestFactory";
 
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;
@@ -38,9 +39,9 @@ function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context
                         },
                         color: iconProps.color,
                         command: () => {
-                            const req = createPressButtonRequest();
+                            const req = createDispatchActionRequest();
                             req.componentId = item.name;
-                            context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON);
+                            context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION);
                         },
                         ...(items.length ? { items } : {})
                     }
