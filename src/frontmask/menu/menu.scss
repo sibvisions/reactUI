@@ -112,7 +112,7 @@
     }
 }
 
-.menu-topbar, .corp-menu-profile {
+.menu-topbar, .corp-menu-topbar, .corp-menu-profile {
     .p-menubar {
         /// Removes default primereact menubar style
         padding: 0;
@@ -232,7 +232,7 @@
         margin-right: 4px;
     }
 
-    .menu-topbar, .corp-menu-profile {
+    .menu-topbar, .corp-menu-topbar, .corp-menu-profile {
         .p-menubar {
             /// Primereact wants to show a button instead of the menu we don't want that
             .p-menubar-button {
