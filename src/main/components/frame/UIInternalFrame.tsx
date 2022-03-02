@@ -46,7 +46,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     const style = {
         border: "solid 1px #ddd",
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 1
     };
 
     return (
