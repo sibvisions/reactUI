@@ -74,7 +74,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes])
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes])
 
     const sendLoadCallback = () => {
         const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
