@@ -23,7 +23,6 @@ import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, 
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName } from "../util";
-import { createEditor } from "../../factories/UIFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
@@ -153,7 +152,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<TableProps>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
+    const compId = useMemo(() => context.contentStore.getComponentId(props.id, props.dataBook) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
     const metaData = useMetaData(compId, props.dataBook, undefined);
@@ -1134,7 +1133,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;              
             }
         }
-    }, [layoutStyle?.width])
+    }, [layoutStyle?.width]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

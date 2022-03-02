@@ -18,6 +18,7 @@ import { getFont, IconProps, parseIconData } from "../compprops";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { SelectedCellContext } from "./UITable";
 import { checkComponentName } from "../util";
+import { MetaDataResponse } from "../../response";
 
 export interface CellFormatting {
     foreground?: string;
@@ -73,7 +74,9 @@ export const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = useMetaData(props.compId, props.dataProvider, props.colName)
+    const columnMetaData = useMetaData(props.compId, props.dataProvider, props.colName);
+
+    const metaData = useMetaData(props.compId, props.dataProvider) as MetaDataResponse|undefined;
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -215,9 +218,16 @@ export const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
+    const isEditable = () => {
+        if (metaData && !props.readonly && !metaData.readOnly && metaData.updateEnabled && props.tableEnabled !== false) {
+            return true;
+        }
+        return false;
+    }
+
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        (!props.readonly && props.tableEnabled !== false) ?
+        (isEditable()) ?
             (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
                     <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>

@@ -27,7 +27,7 @@ const useEditorConstants = <T extends IEditor>(baseProps: T, fb?: CSSProperties)
     const cellStyle = useCellEditorStyle(props, compStyle);
 
     /** The component id of the screen */
-    const compId = useMemo(() => baseProps.isCellEditor ? baseProps.cellCompId as string : context.contentStore.getComponentId(props.id) as string, [props.id, baseProps.isCellEditor, baseProps.cellCompId])
+    const compId = useMemo(() => baseProps.isCellEditor ? baseProps.cellCompId as string : context.contentStore.getComponentId(props.id, props.dataRow) as string, [props.id, baseProps.isCellEditor, baseProps.cellCompId])
 
     /** True, if the editor is a checkbox or a choice editor */
     const isCheckOrChoice = useMemo(() => (props.cellEditor?.className === CELLEDITOR_CLASSNAMES.CHOICE || props.cellEditor?.className === CELLEDITOR_CLASSNAMES.CHECKBOX), [props.cellEditor?.className]);
