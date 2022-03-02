@@ -62,7 +62,7 @@ const useMenuItems = (menus:string[]) => {
                 return primeMenu
         }
         const tempMenuItems:MenuItem[] = []
-        menus.forEach((menu, i) => {
+        menus.forEach((menu) => {
             tempMenuItems.push(receiveNewMenuItems(menu));
         });
         setMenuItems(tempMenuItems);
@@ -87,7 +87,7 @@ const useMenuItems = (menus:string[]) => {
                 context.subscriptions.unsubscribeFromParentChange(menu);
             });
         }
-    }, [context.subscriptions]);
+    }, [context.subscriptions, menus]);
 
     return menuItems;
 }

@@ -27,7 +27,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children */
-    const [children, components] = useComponents(props.id, props.className);
+    const [children, components, compSizes] = useComponents(props.id, props.className);
 
     /**
      * Returns the child based on its constraint
@@ -67,11 +67,11 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (splitRef.current) {
-            if(onLoadCallback) {
+            if(onLoadCallback && compSizes && compSizes.size) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes])
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes])
 
     const sendLoadCallback = () => {
         const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }

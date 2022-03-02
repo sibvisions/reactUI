@@ -50,6 +50,10 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         zIndex: 1
     };
 
+    const test = (size:any) => {
+        console.log(size)
+    }
+
     return (
         <Rnd
             ref={rndRef}
@@ -64,7 +68,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             }}
             dragHandleClassName="rc-frame-header"
         >
-            <UIFrame {...props} internal frameStyle={frameStyle} />
+            <UIFrame {...props} internal frameStyle={frameStyle} sizeCallback={test} />
         </Rnd>
     )
 }
