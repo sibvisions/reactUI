@@ -538,7 +538,7 @@ export default class ContentStore{
             this.subManager.emitSelectedMenuItem("");
         }
         const window = this.getComponentByName(windowName);
-        if(window && !closeContent){
+        if(window && !closeContent) {
             this.cleanUp(window.id, window.name, window.className);
         }
     }
@@ -761,12 +761,15 @@ export default class ContentStore{
      * @param id - the id of the component
      * @returns the component id of a screen for a component
      */
-    getComponentId(id: string) {
+    getComponentId(id: string, dataProvider:string) {
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
-                if ((comp as IPanel).content_modal_ || (comp as IPanel).screen_modal_) {
+                if ((comp as IPanel).screen_modal_) {
                     break;
+                }
+                else if ((comp as IPanel).content_modal_) {
+                    return dataProvider ? dataProvider.split("/")[1] : comp.name;
                 }
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
                 if (comp?.parent?.includes("IF")) {

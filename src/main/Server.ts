@@ -819,15 +819,20 @@ class Server {
     }
 
     content(contentData:ContentResponse) {
+        let workScreen:IPanel|undefined
         if (contentData.changedComponents && contentData.changedComponents.length) {
             this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
-            let workScreen:IPanel|undefined
+            
             if(contentData.changedComponents && contentData.changedComponents.length) {
                 workScreen = contentData.changedComponents[0] as IPanel
                 this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
+        }
+        else {
+            workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
+            this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
         }
     }
 

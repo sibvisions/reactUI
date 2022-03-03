@@ -167,7 +167,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = context.contentStore.getComponentId(props.id, props.dataBook) as string;
 
     /** The data provided by the databook */
     const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);

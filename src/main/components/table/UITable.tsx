@@ -152,7 +152,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<TableProps>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
+    const compId = useMemo(() => context.contentStore.getComponentId(props.id, props.dataBook) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
     const metaData = useMetaData(compId, props.dataBook, undefined);
@@ -1133,7 +1133,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;              
             }
         }
-    }, [layoutStyle?.width])
+    }, [layoutStyle?.width]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

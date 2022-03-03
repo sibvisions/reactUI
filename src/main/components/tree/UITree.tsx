@@ -38,7 +38,7 @@ const UITree: FC<ITree> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = context.contentStore.getComponentId(props.id, props.dataBooks[0]) as string;
 
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(compId, props.dataBooks);

@@ -90,6 +90,7 @@
                 border-width: 0px 0px 1px 0px !important;
                 user-select: none;
                 outline: none;
+                caret-color: auto;
 
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
                     .cell-data.cancel-padding {

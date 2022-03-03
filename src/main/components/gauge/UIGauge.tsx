@@ -66,7 +66,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = context.contentStore.getComponentId(props.id, props.dataBook) as string;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;

@@ -125,7 +125,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const topbar = useContext(TopBarContext);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = context.contentStore.getComponentId(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);

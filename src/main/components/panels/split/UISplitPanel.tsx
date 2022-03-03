@@ -44,8 +44,6 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
         });
     }
 
-
-
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
 

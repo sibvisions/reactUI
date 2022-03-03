@@ -54,7 +54,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const compId = context.contentStore.getComponentId(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
