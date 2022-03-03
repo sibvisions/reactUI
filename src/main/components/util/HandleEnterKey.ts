@@ -5,7 +5,7 @@ import { getFocusComponent } from "./GetFocusComponent";
  * @param event - keyboardevent
  * @param sendSetValues - function to send values to the server
  */
-export function handleEnterKey(event:any, elem:any, id:string, stopEditing?:Function) {
+export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Function) {
     if (event.key === "Enter") {
         elem.blur();
         if (stopEditing) {
@@ -13,10 +13,10 @@ export function handleEnterKey(event:any, elem:any, id:string, stopEditing?:Func
         }
         else {
             if (event.shiftKey) {
-                getFocusComponent(id, false);
+                getFocusComponent(name, false);
             }
             else {
-                getFocusComponent(id, true)
+                getFocusComponent(name, true)
             }
         }
     }

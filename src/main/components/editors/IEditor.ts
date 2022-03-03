@@ -30,7 +30,6 @@ export interface IEditor extends BaseComponent{
     columnName: string,
     dataRow: string,
     text:string,
-    onSubmit?: Function,
     editorStyle?: CSSProperties,
     autoFocus?: boolean,
     nullable?: boolean,

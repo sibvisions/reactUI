@@ -9,8 +9,9 @@ import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks
 
 /** Other imports */
 import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { showTopBar } from "../topbar/TopBar";
 
 export interface ITextField extends BaseComponent {
     columns?:number
@@ -28,7 +29,10 @@ const UIText: FC<ITextField> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of the text value */
-    const [text, setText] = useState(props.text);
+    const [text, setText] = useState(props.text || "");
+
+    /** Reference to last value so that sendSetValue only sends when value actually changed */
+    const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -52,11 +56,19 @@ const UIText: FC<ITextField> = (baseProps) => {
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setText(event.currentTarget.value)}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={() => {
+                sendSetValue(props.name, text, context.server, lastValue.current, topbar);
+                lastValue.current = text;
+
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }}
             tooltip={props.toolTipText}
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
+            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
         />
     )
 }

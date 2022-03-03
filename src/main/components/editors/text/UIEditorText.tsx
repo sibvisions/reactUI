@@ -9,14 +9,13 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks"
+import { useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { getTextAlignment } from "../../compprops";
 import { sendSetValues, 
          handleEnterKey, 
-         onBlurCallback, 
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
@@ -304,7 +303,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, props.context.server), props.topbar));
+                sendSetValues(dataRow, name, columnName, text, props.context.server, lastValue.current, props.topbar);
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -416,7 +415,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
             onBlur: () => {
                 if (!escapePressed.current) {
-                    onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server), props.topbar))
+                    sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
                 }
                 if (props.eventFocusLost) {
                     showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
@@ -447,7 +446,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
                     if (!escapePressed.current) {
-                        onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server), props.topbar))
+                        sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
                     }
                     if (props.eventFocusLost) {
                         onFocusLost(props.name, props.context.server)

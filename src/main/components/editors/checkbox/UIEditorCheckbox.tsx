@@ -5,7 +5,7 @@ import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -63,7 +63,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     }, [props.selectedRow]);
 
     const handleOnChange = () => {
-        showTopBar(sendSetValues(
+        sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
@@ -78,10 +78,12 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 : 
                     false,
             props.context.server,
+            undefined,
+            props.topbar,
             props.rowIndex ? props.rowIndex() : undefined,
             props.selectedRow.index,
             props.filter ? props.filter() : undefined
-        ), props.topbar);
+        );
     }
 
     return (
