@@ -9,6 +9,7 @@ import { parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName } from "../util";
 import { Tooltip } from "primereact/tooltip";
+import { isFAIcon } from "../zhooks/useButtonMouseImages";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
@@ -78,7 +79,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     */
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
-            if(props.image?.includes('FontAwesome'))
+            if(isFAIcon(iconProps.icon))
                 return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (

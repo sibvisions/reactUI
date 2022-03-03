@@ -1,18 +1,21 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
+import { parseIconData } from "../compprops";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
 import { showTopBar } from "../topbar/TopBar";
-import { Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
+import { concatClassnames, Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
 import { useComponents, useConstants } from "../zhooks";
+import { isFAIcon } from "../zhooks/useButtonMouseImages";
 
 export interface IFrame extends IWindow {
     frameStyle?: CSSProperties,
     internal?: boolean
-    sizeCallback?:Function
+    sizeCallback?:Function,
+    iconImage?:string
 }
 
 const UIFrame: FC<IFrame> = (props) => {
@@ -36,6 +39,8 @@ const UIFrame: FC<IFrame> = (props) => {
         }
     }, [toolBarSize]);
 
+    const iconProps = useMemo(() => parseIconData(undefined, props.iconImage), [props.iconImage]);
+
     const adjustedStyle = useMemo(() => {
         const styleCopy:CSSProperties = {...props.frameStyle};
         if (props.frameStyle) {
@@ -48,6 +53,13 @@ const UIFrame: FC<IFrame> = (props) => {
         <div style={{ visibility: componentSizes ? undefined : "hidden" }}>
             {props.internal &&
                 <div className="rc-frame-header">
+                    {props.iconImage && 
+                        isFAIcon(iconProps.icon) 
+                        ?
+                            <i className={concatClassnames(iconProps.icon, "rc-frame-header-icon")} style={{ fontSize: iconProps.size?.height, color: iconProps.color }} />
+                        :
+                            <img src={context.server.RESOURCE_URL + iconProps.icon} className="rc-frame-header-icon" style={{ height: iconProps.size?.height, width: iconProps.size?.width }} />
+                    }
                     <span className="rc-frame-header-title">{props.title}</span>
                     <button
                         className="rc-frame-header-close-button pi pi-times"

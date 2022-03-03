@@ -8,6 +8,7 @@
   --frame-toolbar-border: 1px solid #f8f9fa;
   --frame-header-button-hover-background: #fafafa;
   --frame-header-button-hover-color: #1e1f20;
+  --frame-border: 2px solid rgba(0, 0, 0, 0.15);
   --topbar-text-color: #ffffff;
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
@@ -163,19 +164,26 @@ body {
 .rc-frame-toolbar {
   background: var(--topbar-background);
   border-top: var(--frame-toolbar-border); }
+  .rc-frame-toolbar .rc-button.mouse-border {
+    color: var(--topbar-text-color); }
+    .rc-frame-toolbar .rc-button.mouse-border:not(a):not(.p-disabled):not(.border-notpainted):hover {
+      background: var(--topbar-button-hover-background);
+      border-color: var(--topbar-button-hover-background); }
 
-.rc-frame-header {
-  background-color: var(--dialog-header-background);
-  color: var(--dialog-header-text-color);
-  border: var(--dialog-header-border); }
-  .rc-frame-header .rc-frame-header-close-button {
-    color: var(--text-color);
-    background: transparent;
-    font-size: 14px; }
-    .rc-frame-header .rc-frame-header-close-button:hover {
-      background: var(--frame-header-button-hover-background);
-      font-weight: bold;
-      color: var(--frame-header-button-hover-color); }
+.rc-frame {
+  border: var(--frame-border); }
+  .rc-frame .rc-frame-header {
+    background: var(--topbar-background);
+    color: var(--topbar-text-color);
+    border: var(--dialog-header-border); }
+    .rc-frame .rc-frame-header .rc-frame-header-close-button {
+      color: var(--text-color);
+      background: transparent;
+      font-size: 14px; }
+      .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
+        background: var(--frame-header-button-hover-background);
+        font-weight: bold;
+        color: var(--frame-header-button-hover-color); }
 
 .profile-menu {
   border-left: var(--profile-separator); }

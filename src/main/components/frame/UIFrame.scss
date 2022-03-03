@@ -1,9 +1,10 @@
 .rc-frame-header {
     font-size: 18px;
     display: flex;
+    align-items: center;
     cursor: move;
 
-    .rc-frame-header-title {
+    .rc-frame-header-title, .rc-frame-header-icon {
         margin-left: 4px;
     }
 

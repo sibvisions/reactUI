@@ -26,6 +26,8 @@
 
     --frame-header-button-hover-color: #1e1f20;
 
+    --frame-border: 2px solid rgba(0, 0, 0, 0.15);
+
     /// Blue menu color
     --topbar-text-color: #ffffff;
 
@@ -430,25 +432,42 @@ body {
     }
 }
 
+.menu-screen-title {
+    color: var(--topbar-text-color);
+}
+
 .rc-frame-toolbar {
     background: var(--topbar-background);
     border-top: var(--frame-toolbar-border);
+
+    .rc-button.mouse-border {
+        color: var(--topbar-text-color);
+
+        &:not(a):not(.p-disabled):not(.border-notpainted):hover {
+            background: var(--topbar-button-hover-background);
+            border-color: var(--topbar-button-hover-background);
+        }
+    }
 }
 
-.rc-frame-header {
-    background-color: var(--dialog-header-background);
-    color: var(--dialog-header-text-color);
-    border: var(--dialog-header-border);
+.rc-frame {
+    border: var(--frame-border);
 
-    .rc-frame-header-close-button {
-        color: var(--text-color);
-        background: transparent;
-        font-size: 14px;
+    .rc-frame-header {
+        background: var(--topbar-background);
+        color: var(--topbar-text-color);
+        border: var(--dialog-header-border);
     
-        &:hover {
-            background: var(--frame-header-button-hover-background);
-            font-weight: bold;
-            color: var(--frame-header-button-hover-color);
+        .rc-frame-header-close-button {
+            color: var(--text-color);
+            background: transparent;
+            font-size: 14px;
+        
+            &:hover {
+                background: var(--frame-header-button-hover-background);
+                font-weight: bold;
+                color: var(--frame-header-button-hover-color);
+            }
         }
     }
 }
