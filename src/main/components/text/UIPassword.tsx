@@ -8,9 +8,10 @@ import { Password } from "primereact/password";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 
 /** Other imports */
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
+import { showTopBar } from "../topbar/TopBar";
 
 /**
  * This component displays an input field of password type not linked to a databook
@@ -24,7 +25,10 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of password value */
-    const [pwValue, setPwValue] = useState(props.text);
+    const [pwValue, setPwValue] = useState(props.text || "");
+
+    /** Reference to last value so that sendSetValue only sends when value actually changed */
+    const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -49,11 +53,19 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={() => {
+                sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
+                lastValue.current = pwValue;
+
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }}
             tooltip={props.toolTipText}
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
-            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15} />
+            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
+            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)} />
     )
 }
 export default UIPassword

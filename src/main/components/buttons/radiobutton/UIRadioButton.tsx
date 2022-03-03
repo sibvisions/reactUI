@@ -12,7 +12,7 @@ import { useButtonStyling, useComponentConstants, useMouseListener } from "../..
 import { IButtonSelectable } from "..";
 import { createSetValueRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName} from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -83,13 +83,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
-                    onChange={() => {
-                        let checked = props.selected === undefined ? true : !props.selected;
-                        const req = createSetValueRequest();
-                        req.componentId = props.name;
-                        req.value = checked;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
-                    }}
+                    onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                 />

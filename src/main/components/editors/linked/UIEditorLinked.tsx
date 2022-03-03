@@ -13,7 +13,7 @@ import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, onBlurCallback, handleEnterKey, concatClassnames} from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -222,7 +222,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
         /** If the text is empty, send null to the server */
         if (!inputVal) {
-            onBlurCallback(props, null, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server), props.topbar));
+            sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar);
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {                
@@ -238,15 +238,15 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    onBlurCallback(props, newVal[props.columnName], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server), props.topbar));
+                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar);
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
                     if (props.cellEditor.displayReferencedColumnName) {
-                        onBlurCallback(props, foundData[0][linkReference.referencedColumnNames[0]], lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server), props.topbar));
+                        sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar);
                     }
                     else {
-                        onBlurCallback(props, inputVal, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server), props.topbar));
+                        sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar);
                     }
                 }
                     

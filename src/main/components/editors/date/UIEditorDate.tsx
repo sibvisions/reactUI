@@ -7,12 +7,11 @@ import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
+import { useFetchMissingData, useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
-import { sendSetValues, 
-         onBlurCallback, 
+import { sendSetValues,
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
@@ -180,7 +179,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     },[props.selectedRow])
 
     /**
-     * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call onBlurCallback
+     * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call sendSetValues
      * to send the date to the server and remove PrimeReact time if necassary
      */
     const handleDateInput = () => {
@@ -212,19 +211,14 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         else {
             setDateValue(isValidDate(lastValue.current) ? new Date(lastValue.current) : null);
         }
-        
-        onBlurCallback(
-            props, 
-            isValidDate(inputDate) ? inputDate.getTime() : (emptyValue ? null : lastValue.current), 
-            lastValue.current, 
-            () => showTopBar(sendSetValues(
-                    props.dataRow, 
-                    props.name, 
-                    props.columnName, 
-                    inputDate.getTime(), 
-                    props.context.server
-                ), props.topbar)
-        );
+        sendSetValues(
+            props.dataRow,
+            props.name,
+            props.columnName,
+            inputDate.getTime(),
+            props.context.server, 
+            lastValue.current,
+            props.topbar)
     }
 
     useMultipleEventHandler(calendar.current && calendarInput.current ? 

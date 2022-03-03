@@ -14,7 +14,6 @@ import { getDecimalLength,
          getPrimePrefix, 
          getScaleDigits, 
          sendSetValues, 
-         onBlurCallback, 
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
@@ -147,7 +146,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.compId) !== -1 && props.isCellEditor && numberInput.current) {
                 numberInput.current.blur();
-                //onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), topbar))
             }
         }
     }, [])
@@ -219,7 +217,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server);
                         }
-                        onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), props.topbar));
+                        sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar);
                     }}
                     disabled={!props.cellEditor_editable_}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
@@ -247,7 +245,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
-                onBlur={() => onBlurCallback(props, value, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server), props.topbar)) }
+                onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar)}
                 disabled={!props.cellEditor_editable_}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}

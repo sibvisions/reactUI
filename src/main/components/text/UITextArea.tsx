@@ -8,10 +8,11 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
 
 /** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, sendSetValue, handleEnterKey } from "../util";
 import { appContext } from "../../AppProvider";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
+import { showTopBar } from "../topbar/TopBar";
 
 interface ITextArea extends ITextField {
     rows?:number
@@ -29,7 +30,10 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextArea>(baseProps);
 
     /** Current state of the textarea value */
-    const [text, setText] = useState(props.text);
+    const [text, setText] = useState(props.text || "");
+    
+    /** Reference to last value so that sendSetValue only sends when value actually changed */
+    const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -50,15 +54,27 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
             id={checkComponentName(props.name)}
             className="rc-input"
             value={text||""}
-            style={{...layoutStyle, resize: 'none'}} 
+            style={{...layoutStyle, ...compStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={() => {
+                sendSetValue(props.name, text, context.server, lastValue.current, topbar);
+                lastValue.current = text;
+
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }}
             tooltip={props.toolTipText}
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
-            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5} />
+            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" && e.shiftKey) {
+                    handleEnterKey(e, e.target, props.name);
+                }
+            }} />
     )
 }
 export default UITextArea
