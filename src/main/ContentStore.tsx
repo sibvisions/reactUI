@@ -529,6 +529,18 @@ export default class ContentStore{
      * @param windowName - the name of the window to close
      */
     closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
+        let window = this.getComponentByName(windowName);
+
+        if (window) {
+            if (window.parent && window.parent.includes("IF")) {
+                window = this.getComponentById(window.parent);
+            }
+
+            if (window && !closeContent) {
+                this.cleanUp(window.id, window.name, window.className);
+            }
+        }
+
         this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
         this.subManager.emitActiveScreens();
         if (this.activeScreens.length) {
@@ -537,10 +549,8 @@ export default class ContentStore{
         else if (!opensAnother) {
             this.subManager.emitSelectedMenuItem("");
         }
-        const window = this.getComponentByName(windowName);
-        if(window && !closeContent) {
-            this.cleanUp(window.id, window.name, window.className);
-        }
+        
+
     }
 
     /**

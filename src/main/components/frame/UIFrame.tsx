@@ -1,6 +1,7 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
-import { createDispatchActionRequest } from "../../factories/RequestFactory";
+import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
+import BaseComponent from "../BaseComponent";
 import { parseIconData } from "../compprops";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
@@ -8,24 +9,25 @@ import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
 import { showTopBar } from "../topbar/TopBar";
 import { concatClassnames, Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
-import { useComponents, useConstants } from "../zhooks";
+import { ComponentSizes, useComponents, useConstants } from "../zhooks";
 import { isFAIcon } from "../zhooks/useButtonMouseImages";
 
 export interface IFrame extends IWindow {
     frameStyle?: CSSProperties,
     internal?: boolean
     sizeCallback?:Function,
-    iconImage?:string
+    iconImage?:string,
+    children?: BaseComponent[],
+    components?: any,
+    compSizes?: Map<string, ComponentSizes>
 }
 
 const UIFrame: FC<IFrame> = (props) => {
     const [context, topbar] = useConstants();
-    /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(props.id, props.className);
 
-    const menuBarProps = useMemo(() => context.contentStore.getMenuBar(props.id), [children]);
+    const menuBarProps = useMemo(() => context.contentStore.getMenuBar(props.id), [props.children]);
 
-    const hasToolBars = useMemo(() => context.contentStore.hasToolBars(props.id), [children]);
+    const hasToolBars = useMemo(() => context.contentStore.hasToolBars(props.id), [props.children]);
 
     const [menuBarSize, setMenuBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
@@ -50,7 +52,7 @@ const UIFrame: FC<IFrame> = (props) => {
     }, [menuBarSize, toolBarSize, props.frameStyle]);
 
     return (
-        <div style={{ visibility: componentSizes ? undefined : "hidden" }}>
+        <div style={{ visibility: props.compSizes ? undefined : "hidden" }}>
             {props.internal &&
                 <div className="rc-frame-header">
                     {props.iconImage && 
@@ -64,9 +66,9 @@ const UIFrame: FC<IFrame> = (props) => {
                     <button
                         className="rc-frame-header-close-button pi pi-times"
                         onClick={() => {
-                            const dispatchReq = createDispatchActionRequest();
-                            dispatchReq.componentId = props.name;
-                            showTopBar(context.server.sendRequest(dispatchReq, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
+                            const closeReq = createCloseFrameRequest();
+                            closeReq.componentId = props.name;
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
                         }}
                     />
                 </div>
@@ -81,8 +83,8 @@ const UIFrame: FC<IFrame> = (props) => {
                 preferredSize={parsePrefSize(props.preferredSize)}
                 minimumSize={parseMinSize(props.minimumSize)}
                 maximumSize={parseMaxSize(props.maximumSize)}
-                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
-                components={components.filter(comp => comp.props["~additional"] !== true)}
+                compSizes={props.compSizes}
+                components={props.components}
                 style={panelGetStyle(false, adjustedStyle)}
                 reportSize={props.sizeCallback ? props.sizeCallback : () => {}}
                 parent={props.parent} />

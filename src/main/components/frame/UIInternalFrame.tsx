@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
-import { useComponentConstants } from "../zhooks";
+import { useComponentConstants, useComponents } from "../zhooks";
 import UIFrame from "./UIFrame";
 
 interface IInternalFrame extends IWindow {
@@ -21,6 +21,9 @@ interface IInternalFrame extends IWindow {
 const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
+
+    /** Current state of all Childcomponents as react children and their preferred sizes */
+    const [children, components, componentSizes] = useComponents(props.id, props.className);
 
     /** From the layoutstyle adjusted frame style, when measuring frame removes header from height */
     const [frameStyle, setFrameStyle] = useState<CSSProperties>();
@@ -75,7 +78,9 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         if (packSize && packSize?.height !== size.height + 24 && packSize?.width !== size.width) {
             setPackSize({ height: size.height + 24, width: size.width });
         }
-    }, [packSize])
+    }, [packSize]);
+
+    console.log(children, components, componentSizes)
 
     return (
         <Rnd
@@ -98,7 +103,10 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                 internal 
                 frameStyle={!props.pack ? frameStyle : packSize} 
                 sizeCallback={getPreferredFrameSize}
-                iconImage={props.iconImage} />
+                iconImage={props.iconImage}
+                children={children} 
+                components={components.filter(comp => comp.props["~additional"] !== true)} 
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
         </Rnd>
     )
 }
