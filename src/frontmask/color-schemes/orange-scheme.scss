@@ -454,14 +454,17 @@ body {
     border: var(--frame-border);
 
     .rc-frame-header {
-        background: var(--topbar-background);
-        color: var(--topbar-text-color);
-        border: var(--dialog-header-border);
+        //background: var(--topbar-background);
+        //color: var(--topbar-text-color);
+        //border: var(--dialog-header-border);
+        background: #dddcdf;
+        color: #6c6c6c;
+        border-bottom: 1px solid #b1b1b1;
     
         .rc-frame-header-close-button {
             color: var(--text-color);
             background: transparent;
-            font-size: 14px;
+            font-size: 12px;
         
             &:hover {
                 background: var(--frame-header-button-hover-background);

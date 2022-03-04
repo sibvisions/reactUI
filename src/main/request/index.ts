@@ -38,3 +38,4 @@ export type { default as RecordFormat } from './RecordFormat';
 export type { default as CloseFrameRequest } from './CloseFrameRequest';
 export type { default as CloseContentRequest } from './CloseContentRequest';
 export type { default as DispatchActionRequest } from './DispatchActionRequest';
+export type { default as BoundsRequest } from './BoundsRequest';

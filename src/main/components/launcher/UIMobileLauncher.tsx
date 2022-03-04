@@ -8,6 +8,12 @@ export interface IWindow extends BaseComponent {
     layoutData:string,
     menuBar:string,
     title:string
+    pack?: boolean
+    iconifiable?: boolean
+    maximizable?:boolean
+    iconImage?: string
+    resizable?: boolean
+    closable?: boolean
 }
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {

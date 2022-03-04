@@ -39,6 +39,7 @@ enum REQUEST_ENDPOINTS {
     CLOSE_FRAME = "/api/closeFrame",
     CLOSE_CONTENT = "/api/closeContent",
     REOPEN_SCREEN = "/api/reopenScreen",
-    EXIT = "/v2/api/exit"
+    EXIT = "/v2/api/exit",
+    BOUNDS = "/v2/api/comp/bounds"
 }
 export default REQUEST_ENDPOINTS

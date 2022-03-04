@@ -63,14 +63,14 @@ const UIFrame: FC<IFrame> = (props) => {
                             <img src={context.server.RESOURCE_URL + iconProps.icon} className="rc-frame-header-icon" style={{ height: iconProps.size?.height, width: iconProps.size?.width }} />
                     }
                     <span className="rc-frame-header-title">{props.title}</span>
-                    <button
+                    {props.closable !== false && <button
                         className="rc-frame-header-close-button pi pi-times"
                         onClick={() => {
                             const closeReq = createCloseFrameRequest();
                             closeReq.componentId = props.name;
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
                         }}
-                    />
+                    />}
                 </div>
             }
             {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}

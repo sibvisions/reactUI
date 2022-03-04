@@ -1,7 +1,13 @@
+.rc-frame {
+    box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.56);
+    border-radius: 9px;
+}
+
 .rc-frame-header {
     font-size: 18px;
     display: flex;
     align-items: center;
+    padding: 0.25rem;
     cursor: move;
 
     .rc-frame-header-title, .rc-frame-header-icon {
@@ -21,4 +27,3 @@
         z-index: 1;
     }
 }
-
