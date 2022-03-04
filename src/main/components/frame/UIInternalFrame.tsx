@@ -53,7 +53,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 rndRef.current.updateSize({ width: layoutStyle.width, height: layoutStyle.height + 31 });
                 sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
             }
-            else if (packSize && packSize.width && packSize.height) {
+            else if (packSize) {
                 //@ts-ignore
                 rndRef.current.updateSize({ width: packSize.width, height: packSize.height + 31 });
                 sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
@@ -82,7 +82,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     const getPreferredFrameSize = useCallback((size:Dimension) => {
-        if (packSize && packSize?.height !== size.height + 31 && packSize?.width !== size.width) {
+        if (packSize?.height !== size.height + 31 && packSize?.width !== size.width) {
             setPackSize({ height: size.height + 31, width: size.width });
         }
     }, [packSize]);
