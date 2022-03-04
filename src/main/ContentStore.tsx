@@ -560,6 +560,7 @@ export default class ContentStore{
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
         });
+        this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
     }
 
     /**
