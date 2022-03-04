@@ -40,7 +40,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
 
         if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
             if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--screen-background');
+                btnBackground = "transparent"
             }
 
             if (!btnJustify) {
