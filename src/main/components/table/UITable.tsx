@@ -170,10 +170,11 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** The virtual rows filled with data */
     const [virtualRows, setVirtualRows] = useState<any[]>((() => { 
-        const out = Array.from({ length: providerData.length }); 
-        out.splice(0, rows, ...providerData.slice(0, rows + 1)); 
+        const out = Array.from({ length: providerData.length });
+        out.splice(0, rows, ...providerData.slice(0, rows)); 
         return out;
     })());
+
 
     /** the list row height */
     const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
@@ -482,7 +483,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     useLayoutEffect(() => {
         setVirtualRows((() => { 
             const out = Array.from({ length: providerData.length });
-            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows + 1));
+            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows));
             return out;
         })());
     }, [providerData]);
@@ -905,9 +906,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                     setListLoading(false);
                 });
             } else {
-                const slicedProviderData = providerData.slice(first, last + 1);
+                const slicedProviderData = providerData.slice(first, last);
                 const data = [...virtualRows];
                 data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                console.log(data.length)
                 setVirtualRows(data);
                 setListLoading(false);
             }
