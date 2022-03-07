@@ -555,15 +555,16 @@ export default class ContentStore{
 
     /**
      * Deletes all children of a parent from flatContent, a child with children also deletes their children from flatContent
-     * @param parentId - the id of the parent
+     * @param id - the id of the parent
      */
-    deleteChildren(parentId:string, className: string) {
-        const children = this.getChildren(parentId, className);
-        children.forEach(child => {
+    deleteChildren(id:string, className: string) {
+        const children = Array.from(this.getChildren(id, className).values());
+        children.forEach((child, i) => {
             this.deleteChildren(child.id, child.className);
-            this.flatContent.delete(child.id);
+            this.flatContent.delete(child.id);   
         });
-        this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
+
+        this.subManager.parentSubscriber.get(id)?.apply(undefined, []);
     }
 
     /**
@@ -573,8 +574,12 @@ export default class ContentStore{
      */
     cleanUp(id:string, name:string|undefined, className: string) {
         if (name) {
+            const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
+            if (parentId) {
+                this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
+            }
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {

@@ -29,6 +29,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
 
+    const initial = useRef<boolean>(true);
+
     const rndRef = useRef(null);
 
     useLayoutEffect(() => {
@@ -47,27 +49,31 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     }, [context.server, topbar])
 
     useEffect(() => {
-        if (rndRef.current) {
-            if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                //@ts-ignore +31 because of header
-                rndRef.current.updateSize({ width: layoutStyle.width, height: layoutStyle.height + 31 });
-                sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
+        if (initial.current) {
+            if (rndRef.current) {
+                if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
+                    //@ts-ignore height + 39 because of header + border + padding, width + 12 because of padding + border 
+                    rndRef.current.updateSize({ width: layoutStyle.width + 12, height: layoutStyle.height + 39 });
+                    sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
+                    initial.current = false;
+                }
+                else if (packSize) {
+                    //@ts-ignore
+                    rndRef.current.updateSize({ width: packSize.width + 12, height: packSize.height + 39 });
+                    sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
+                    initial.current = false;
+                }
             }
-            else if (packSize) {
-                //@ts-ignore
-                rndRef.current.updateSize({ width: packSize.width, height: packSize.height + 31 });
-                sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
-            }
+    
+            setFrameStyle(layoutStyle);
         }
-
-        setFrameStyle(layoutStyle);
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
 
     const doResize = useCallback((e, dir, ref) => {
         const styleCopy:CSSProperties = {...frameStyle};
-
-        styleCopy.height = ref.offsetHeight - 31;
-        styleCopy.width = ref.offsetWidth;
+        //height - 39 because of header + border + padding, width - 12 because of padding + border. Minus because insets have to be taken away for layout
+        styleCopy.height = ref.offsetHeight - 39;
+        styleCopy.width = ref.offsetWidth - 12;
 
         sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number });
         setFrameStyle(styleCopy);
@@ -82,8 +88,9 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     const getPreferredFrameSize = useCallback((size:Dimension) => {
-        if (packSize?.height !== size.height + 31 && packSize?.width !== size.width) {
-            setPackSize({ height: size.height + 31, width: size.width });
+        //height + 39 because of header + border + padding, width + 12 because of padding + border 
+        if (packSize?.height !== size.height + 39 && packSize?.width !== size.width + 12) {
+            setPackSize({ height: size.height + 39, width: size.width + 12 });
         }
     }, [packSize]);
 

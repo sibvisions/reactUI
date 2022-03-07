@@ -47,7 +47,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
             props.maximumSize,
             props.onLoadCallback
         )
-    }, [onLoadCallback])
+    }, [onLoadCallback]);
 
     return (
         <div

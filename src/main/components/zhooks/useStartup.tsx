@@ -191,7 +191,6 @@ const useStartup = (props:ICustomContent):boolean => {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
-            //context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
             .then(result => {
                 if (!preserve) {
