@@ -909,7 +909,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 const slicedProviderData = providerData.slice(first, last);
                 const data = [...virtualRows];
                 data.splice(first, slicedProviderData.length, ...slicedProviderData);
-                console.log(data.length)
                 setVirtualRows(data);
                 setListLoading(false);
             }

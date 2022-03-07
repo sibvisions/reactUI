@@ -243,7 +243,7 @@
     --tab-navbar-background: #3f4b5b;
 
     /// Darkmode TabSet navbar border
-    --tab-navbar-border: 1px solid #3f4b5b;
+    --tab-navbar-border-color: #3f4b5b;
 
     /// Darkmode border and color of a selected tab
     --tab-selected-color: #2196fe;
@@ -1431,7 +1431,7 @@ body {
 .p-tabview .p-tabview-nav {
     background: var(--tab-navbar-background);
     color: var(--text-color);
-    border: var(--tab-navbar-border);
+    border-color: var(--tab-navbar-border-color);
     border-radius: var(--tab-border-radius);
     padding: 0 var(--tab-border-radius);
 
