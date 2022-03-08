@@ -172,7 +172,6 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                     style={{"--nav-background": compStyle.background}}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => {
-                        console.log(event, closing.current)
                         if (event.index !== props.selectedIndex && !closing.current) {
                             handleSelect(event.index)
                         }
