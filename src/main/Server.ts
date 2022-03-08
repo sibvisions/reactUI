@@ -191,7 +191,7 @@ class Server {
                         10000, 
                         () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
                     )
-                        .then((response: any) => response.json())
+                        .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
                             if (this.appSettings.applicationMetaData.aliveInterval) {
                                 this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
@@ -203,7 +203,7 @@ class Server {
                                 }
                             }
                             return result;
-                        })
+                        }, (err) => Promise.reject(err))
                         .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
                         .then(results => {
                             if (fn) {
@@ -229,8 +229,10 @@ class Server {
                             else {
                                 this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                             }
-                            this.subManager.emitErrorDialogVisible(true);
-                            console.error(error)
+                            if (error !== "no valid json") {
+                                this.subManager.emitErrorDialogVisible(true);
+                            }
+                            console.error(error);
                         }).finally(() => {
                             this.openRequests.delete(request);
                         });

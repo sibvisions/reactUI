@@ -112,11 +112,11 @@ const maybePopup = (element: JSX.Element) =>
  * Map to get the correct function to build a component for className
  */
 const componentsMap = new Map<string, React.ComponentType<any>>()
-    .set(COMPONENT_CLASSNAMES.PANEL, props => maybePopup(<UIPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => maybePopup(<UIDesktopPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => maybePopup(<UIGroupPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => maybePopup(<UIScrollPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => maybePopup(<UIToolBarPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
     .set(COMPONENT_CLASSNAMES.TOGGLEBUTTON, props => <UIToggleButton {...props} />)
@@ -130,7 +130,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set(COMPONENT_CLASSNAMES.TEXTFIELD, props => <UIText {...props} />)
     .set(COMPONENT_CLASSNAMES.TEXTAREA, props => <UITextArea {...props} />)
     .set(COMPONENT_CLASSNAMES.PASSWORD, props => <UIPassword {...props} />)
-    .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => maybePopup(<UITabsetPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => <UITabsetPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.CHART, props => <UIChart {...props} />)
     .set(COMPONENT_CLASSNAMES.MAP, props => props.tileProvider === "google"
         ? <UIMapGoogle {...props} />
