@@ -1,12 +1,13 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { IWindow } from "../launcher/UIMobileLauncher";
+import { FocusFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
 import { showTopBar } from "../topbar/TopBar";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
-import { useComponentConstants, useComponents } from "../zhooks";
+import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
 
 /**
@@ -15,10 +16,12 @@ import UIFrame from "./UIFrame";
  */
 const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
+    
+    const frameContext = useContext(FocusFrameContext);
 
     /** From the layoutstyle adjusted frame style, when measuring frame removes header from height */
     const [frameStyle, setFrameStyle] = useState<CSSProperties>();
@@ -39,6 +42,24 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), rndRef.current.resizableElement.current, onLoadCallback)
         }
     }, [onLoadCallback]);
+
+    //@ts-ignore
+    useEventHandler(rndRef.current ? rndRef.current.resizableElement.current : undefined, "click", () => frameContext.callback(props.name));
+
+    useEffect(() => {
+        if (rndRef.current) {
+            //@ts-ignore
+            const rndFrame:HTMLElement = rndRef.current.resizableElement.current;
+
+            const rndStyle:CSSStyleDeclaration = rndFrame.style;
+            if (rndStyle.zIndex === "5" && frameContext.name !== props.name) {
+                rndFrame.style.setProperty("z-index", props.modal ? "1001" : "1");
+            }
+            else if (rndStyle.zIndex !== "5" && frameContext.name === props.name) {
+                rndFrame.style.setProperty("z-index", props.modal ? "1005" : "5");
+            }
+        }
+    }, [frameContext])
 
     const sendBoundsRequest = useCallback((size:Dimension) => {
         const boundsReq = createBoundsRequest();
@@ -64,7 +85,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                     initial.current = false;
                 }
             }
-    
+            frameContext.callback(props.name);
             setFrameStyle(layoutStyle);
         }
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
@@ -84,7 +105,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     const style = {
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
         overflow: "hidden",
-        zIndex: 1
+        zIndex: props.modal ? 1001 : 1
     };
 
     const getPreferredFrameSize = useCallback((size:Dimension) => {
@@ -96,11 +117,12 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
 
     return (
         <>
+            {props.modal && <div className="rc-glasspane" />}
             {children.length && <Rnd
                 ref={rndRef}
                 style={style}
                 onResize={handleResize}
-                bounds="parent"
+                bounds={props.modal ? "window" : "parent"}
                 default={{
                     x: 0,
                     y: 0,

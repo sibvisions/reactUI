@@ -75,7 +75,7 @@ const UIFrame: FC<IFrame> = (props) => {
             }
             {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}
             {hasToolBars && <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />}
-            <div className="rc-frame-content">
+            <div className={props.internal ? "rc-frame-content" : ""}>
                 <Layout
                     id={props.id}
                     className={props.className}

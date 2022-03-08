@@ -184,6 +184,8 @@ body {
         background: var(--frame-header-button-hover-background);
         font-weight: bold;
         color: var(--frame-header-button-hover-color); }
+  .rc-frame .rc-frame-content {
+    border-color: #dddcdf; }
 
 .profile-menu {
   border-left: var(--profile-separator); }
