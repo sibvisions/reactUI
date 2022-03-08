@@ -38,7 +38,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
     const wrapRef = useRef<HTMLSpanElement>(null);
 
     /** If the CellEditor is read-only */
-    const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);

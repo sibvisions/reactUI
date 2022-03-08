@@ -21,7 +21,6 @@ import { sendSetValues,
          handleEnterKey,
          concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
-import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of DateCellEditor */
@@ -125,6 +124,9 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     setDateLocale(props.context.appSettings.locale);
 
@@ -323,7 +325,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                     !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
-                disabled={!props.cellEditor_editable_}
+                disabled={isReadOnly}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {

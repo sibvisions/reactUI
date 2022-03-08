@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** 3rd Party imports */
 import { Checkbox } from 'primereact/checkbox';
@@ -35,7 +35,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     const wrapRef = useRef<any>(null);
 
     /** If the CellEditor is read-only */
-    const isReadOnly = (props.isCellEditor && props.readonly) || !props.cellEditor_editable_
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
