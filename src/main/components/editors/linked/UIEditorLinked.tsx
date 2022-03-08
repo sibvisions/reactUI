@@ -75,6 +75,9 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
+    /** If the CellEditor is read-only */
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
+
     useFetchMissingData(props.compId, props.dataRow);
 
     useFetchMissingData(props.compId, props.cellEditor.linkReference.referencedDataBook);
@@ -353,7 +356,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     ...props.cellStyle,
                     borderRight: "none" 
                 }}
-                disabled={!props.cellEditor_editable_}
+                disabled={isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}

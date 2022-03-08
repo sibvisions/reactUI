@@ -43,7 +43,6 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
-    enabled?: boolean,
     startEditing?:boolean
 }
 

@@ -212,6 +212,9 @@ const UIEditorText: FC<IEditorText> = (props) => {
 
     const popupMenu = usePopupMenu(props);
 
+    /** If the CellEditor is read-only */
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -313,8 +316,6 @@ const UIEditorText: FC<IEditorText> = (props) => {
         }
     }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
 
-    const disabled = !props.cellEditor_editable_;
-
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
@@ -322,7 +323,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                     sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
                 }
             },
-            onTextChange: showSource || disabled ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
+            onTextChange: showSource || isReadOnly ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
             value: transformHTMLToQuill(text) || "",
             formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script", "divider"],
             modules: {
@@ -407,7 +408,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 ...props.cellStyle
             },
             maxLength: length,
-            disabled,
+            disabled: isReadOnly,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
             value: text || "",
             "aria-label": props.ariaLabel,
@@ -427,7 +428,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
             placeholder: props.cellEditor_placeholder_
         }
     }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
-        length, props.autoFocus, props.cellEditor_background_, disabled, 
+        length, props.autoFocus, props.cellEditor_background_, isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
@@ -440,7 +441,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 aria-label={props.ariaLabel}
                 className={[
                     getClassName(fieldType), 
-                    disabled ? 'rc-editor-html--disabled' : null
+                    isReadOnly ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
                 tabIndex={props.tabIndex ? props.tabIndex : 0}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}

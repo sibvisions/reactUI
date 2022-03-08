@@ -85,6 +85,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
+                    disabled={props.enabled === false}
                 />
                 <label 
                     ref={labelRef} 

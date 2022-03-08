@@ -22,10 +22,8 @@ import { getDecimalLength,
          concatClassnames,
          checkComponentName} from "../../util";
 import { getTextAlignment } from "../../compprops";
-import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
-//import { isSysColor, parseBackgroundString } from "../../compprops/ComponentProperties";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -69,6 +67,9 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
+
+    /** If the CellEditor is read-only */
+    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     useFetchMissingData(props.compId, props.dataRow);
 
@@ -219,7 +220,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                         }
                         sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar);
                     }}
-                    disabled={!props.cellEditor_editable_}
+                    disabled={isReadOnly}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                     tooltip={props.toolTipText}
                     tooltipOptions={{position: "left"}}
@@ -246,7 +247,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
                 onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar)}
-                disabled={!props.cellEditor_editable_}
+                disabled={isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
                 tooltipOptions={{position: "left"}}

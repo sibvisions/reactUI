@@ -65,7 +65,8 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
-            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)} />
+            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
+            disabled={props.enabled === false} />
     )
 }
 export default UIPassword
