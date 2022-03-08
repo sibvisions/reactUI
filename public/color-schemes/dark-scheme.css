@@ -83,7 +83,7 @@
   --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
   --dialog-content-background: #20262e;
   --tab-navbar-background: #3f4b5b;
-  --tab-navbar-border: 1px solid #3f4b5b;
+  --tab-navbar-border-color: #3f4b5b;
   --tab-selected-color: #2196fe;
   --tab-hover-background: #20262e;
   --tab-border-color: var(--text-color);
@@ -750,7 +750,7 @@ body {
 .p-tabview .p-tabview-nav {
   background: var(--tab-navbar-background);
   color: var(--text-color);
-  border: var(--tab-navbar-border);
+  border-color: var(--tab-navbar-border-color);
   border-radius: var(--tab-border-radius);
   padding: 0 var(--tab-border-radius); }
   .p-tabview .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link {

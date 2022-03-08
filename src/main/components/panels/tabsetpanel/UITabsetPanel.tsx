@@ -15,10 +15,29 @@ import { createTabRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
+import { isFAIcon } from "../../zhooks/useButtonMouseImages";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {
     selectedIndex?: number;
+}
+
+type TabProperties = {
+    enabled: boolean
+    closable: boolean
+    text: string
+    icon?: IconProps
+}
+
+function parseTabConstraints(constraint:string, foreground?:string):TabProperties {
+    const newTab:TabProperties = { enabled: true, closable: false, text: "" };
+    const splitConstraint = constraint.split(";");
+    newTab.enabled = splitConstraint[0] === "true";
+    newTab.closable = splitConstraint[1] === "true";
+    newTab.text = splitConstraint[2];
+    newTab.icon = parseIconData(foreground, splitConstraint[3]);
+
+    return newTab;
 }
 
 /**
@@ -99,8 +118,11 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
     const handleSelect = (tabId:number) => {
-        if(!closing.current)
+        console.log('test')
+        if(!closing.current) {
+            console.log('sending select')
             showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB), topbar);
+        }
         closing.current = false;
     }
 
@@ -119,33 +141,21 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
         let builtTabs:Array<JSX.Element> = [];
         if (components) {
             components.forEach((component:any) => {
-                const componentConstraints:string = component.props.constraints;
-                let constraints:string[];
-                let icon:IconProps;
-                /** Get the iconData for the Tab */
-                if (componentConstraints.includes("FontAwesome")) {
-                    let splitConstIcon = componentConstraints.slice(0, componentConstraints.indexOf(";FontAwesome"));
-                    /** The tab constraints sent by the server split up */
-                    constraints = splitConstIcon.split(';');
-                    icon = parseIconData(props.foreground, componentConstraints.slice(componentConstraints.indexOf(';FontAwesome')+1));
-                }
-                else {
-                    /** The tab constraints sent by the server split up */
-                    constraints = componentConstraints.split(';');
-                    icon = parseIconData(props.foreground, constraints[3])
-                }
-                const isDisabled = constraints[0] === "false";
+                const tabProps = parseTabConstraints(component.props.constraints, props.foreground)
                 /** Content/styling of tabs */
                 let header = 
                 <span>
-                    {(!componentConstraints.includes("FontAwesome") && icon.icon) &&
-                    <span className="rc-tabset-tabicon" style={{backgroundImage: icon.icon ? "url('" + context.server.RESOURCE_URL + icon.icon + "')": undefined, height: icon.size?.height, width: icon.size?.width}} />}
-                    {
-                    /** Tab text */
-                    constraints[2]
-                    }
+                    {(!isFAIcon(tabProps.icon?.icon) && tabProps.icon?.icon) &&
+                    <span 
+                        className="rc-tabset-tabicon" 
+                        style={{
+                            backgroundImage: tabProps.icon?.icon ? "url('" + context.server.RESOURCE_URL + tabProps.icon?.icon + "')": undefined, 
+                            height: tabProps.icon.size?.height, 
+                            width: tabProps.icon.size?.width
+                        }} />}
+                    {tabProps.text}
                 </span>
-                builtTabs.push(<TabPanel key={component.props.id} disabled={isDisabled} closable={!isDisabled} headerClassName={"black"} header={header} leftIcon={icon ? componentConstraints.includes("FontAwesome") ? icon.icon : undefined : undefined}>{component}</TabPanel>)
+                builtTabs.push(<TabPanel key={component.props.id} disabled={!tabProps.enabled} closable={tabProps.closable} headerClassName={"black"} header={header} leftIcon={tabProps.icon ? isFAIcon(tabProps.icon.icon) ? tabProps.icon.icon : undefined : undefined}>{component}</TabPanel>)
             });
         }
         return builtTabs;
@@ -162,8 +172,9 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
                     style={{"--nav-background": compStyle.background}}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => {
-                        if (event.index !== props.selectedIndex)
+                        if (event.index !== props.selectedIndex && !closing.current) {
                             handleSelect(event.index)
+                        }
                     }}
                     onTabClose={event => handleClose(event.index)}
                     {...usePopupMenu(props)}>
