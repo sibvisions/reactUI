@@ -10,7 +10,6 @@ export interface IButton extends BaseComponent {
     borderPainted?: boolean,
     imageTextGap?: number,
     borderOnMouseEntered?: boolean,
-    enabled?: boolean
     mouseOverImage?: string,
     mousePressedImage?: string,
 }

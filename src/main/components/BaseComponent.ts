@@ -36,10 +36,11 @@ interface BaseComponent {
     eventMouseReleased?: boolean,
     eventFocusGained?: boolean,
     eventFocusLost?: boolean,
-    ariaLabel?:string,
-    ariaPressed?:boolean,
+    ariaLabel?: string,
+    ariaPressed?: boolean,
     popupMenu?: any,
-    toolTipText?:string,
-    classNameEventSourceRef?:string
+    toolTipText?: string,
+    classNameEventSourceRef?:string,
+    enabled?: boolean
 }
 export default BaseComponent

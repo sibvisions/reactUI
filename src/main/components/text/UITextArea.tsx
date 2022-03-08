@@ -74,7 +74,8 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                 if (e.key === "Enter" && e.shiftKey) {
                     handleEnterKey(e, e.target, props.name);
                 }
-            }} />
+            }}
+            disabled={props.enabled === false} />
     )
 }
 export default UITextArea
