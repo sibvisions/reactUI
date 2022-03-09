@@ -1,14 +1,18 @@
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { FocusFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
-import { showTopBar } from "../topbar/TopBar";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
+
+type Coordinates = {
+    x:number,
+    y:number
+}
 
 /**
  * This component displays an internal window which can be moved and resized (if resizable is true).
@@ -35,6 +39,21 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     const initial = useRef<boolean>(true);
 
     const rndRef = useRef(null);
+
+    const centerPosition = useMemo(():Coordinates => {
+        const pos:Coordinates = { x: 0, y: 0 }
+        if (props.centerRelativeTo) {
+            const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
+            if (relativeComp) {
+                const relativeElement = document.getElementById(relativeComp.name);
+                if (relativeElement && frameStyle) {
+                    pos.x = relativeElement.getBoundingClientRect().width / 2 - ((frameStyle.width as number + 8) / 2);
+                    pos.y = relativeElement.getBoundingClientRect().height / 2 - ((frameStyle.height as number + 35) / 2);
+                }
+            }
+        }
+        return pos;
+    }, [props.centerRelativeTo, frameStyle])
 
     useLayoutEffect(() => {
         if (rndRef.current) {
@@ -73,15 +92,15 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         if (initial.current) {
             if (rndRef.current) {
                 if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                    //@ts-ignore height + 35 because of header + border + padding, width + 12 because of padding + border 
-                    rndRef.current.updateSize({ width: layoutStyle.width + 12, height: layoutStyle.height + 35 });
+                    //@ts-ignore height + 35 because of header + border + padding, width + 8 because of padding + border 
+                    rndRef.current.updateSize({ width: layoutStyle.width + 8, height: layoutStyle.height + 35 });
                     sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
                     setFrameStyle(layoutStyle);
                     initial.current = false;
                 }
                 else if (packSize) {
                     //@ts-ignore
-                    rndRef.current.updateSize({ width: packSize.width + 12, height: packSize.height + 35 });
+                    rndRef.current.updateSize({ width: packSize.width + 8, height: packSize.height + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
                     setFrameStyle(packSize);
                     initial.current = false;
@@ -91,11 +110,18 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
 
+    useEffect(() => {
+        if (rndRef.current) {
+            //@ts-ignore
+            rndRef.current.updatePosition(centerPosition);
+        }
+    }, [centerPosition])
+
     const doResize = useCallback((e, dir, ref) => {
         const styleCopy:CSSProperties = {...frameStyle};
-        //height - 35 because of header + border + padding, width - 12 because of padding + border. Minus because insets have to be taken away for layout
+        //height - 35 because of header + border + padding, width - 8 because of padding + border. Minus because insets have to be taken away for layout
         styleCopy.height = ref.offsetHeight - 35;
-        styleCopy.width = ref.offsetWidth - 12;
+        styleCopy.width = ref.offsetWidth - 8;
 
         sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number });
         setFrameStyle(styleCopy);
@@ -110,13 +136,11 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     const getPreferredFrameSize = useCallback((size:Dimension) => {
-        //height + 35 because of header + border + padding, width + 12 because of padding + border 
-        if (packSize?.height !== size.height + 35 && packSize?.width !== size.width + 12) {
-            setPackSize({ height: size.height + 35, width: size.width + 12 });
+        //height + 35 because of header + border + padding, width + 8 because of padding + border 
+        if (packSize?.height !== size.height + 35 && packSize?.width !== size.width + 8) {
+            setPackSize({ height: size.height + 35, width: size.width + 8 });
         }
     }, [packSize]);
-
-    console.log(packSize, frameStyle)
 
     return (
         <>
@@ -127,8 +151,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 onResize={handleResize}
                 bounds={props.modal ? "window" : "parent"}
                 default={{
-                    x: 0,
-                    y: 0,
+                    x: centerPosition.x,
+                    y: centerPosition.y,
                     width: 200,
                     height: 200
                 }}

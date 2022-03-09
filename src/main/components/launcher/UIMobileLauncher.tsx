@@ -15,6 +15,7 @@ export interface IWindow extends BaseComponent {
     resizable?: boolean
     closable?: boolean
     modal: boolean
+    centerRelativeTo?: string
 }
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {
