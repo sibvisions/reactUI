@@ -9,6 +9,7 @@ export type SelectFilter = {
 /** Interface for SelectRowRequest */
 interface SelectRowRequest extends ComponentRequest, DataProviderRequest {
     filter: SelectFilter | undefined,
-    selectedColumn?: string
+    selectedColumn?: string,
+    rowNumber?:number
 }
 export default SelectRowRequest

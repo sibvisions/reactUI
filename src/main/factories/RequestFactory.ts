@@ -188,7 +188,8 @@ export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequ
         componentId: values?.componentId,
         dataProvider: values?.dataProvider,
         filter: values?.filter,
-        selectedColumn: values?.selectedColumn
+        selectedColumn: values?.selectedColumn,
+        rowNumber: values?.rowNumber
     }
     return req
 }

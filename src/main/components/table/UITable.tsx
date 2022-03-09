@@ -250,10 +250,11 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param selectedColumn - the selected column
      * @param filter - if a new row is selected, the filter to send to the server
      */
-    const sendSelectRequest = useCallback(async (selectedColumn?:string, filter?:SelectFilter) => {
+    const sendSelectRequest = useCallback(async (selectedColumn:string|undefined, filter:SelectFilter|undefined, rowIndex:number) => {
         const selectReq = createSelectRowRequest();
         selectReq.dataProvider = props.dataBook;
         selectReq.componentId = props.name;
+        selectReq.rowNumber = rowIndex;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
         await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
@@ -331,7 +332,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 return newCell
             }
             else {
-                sendSelectRequest(columnOrder[0]);
+                sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
         return undefined
@@ -545,7 +546,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -565,7 +566,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -588,7 +589,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -611,7 +612,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, prevSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -632,14 +633,14 @@ const UITable: FC<TableProps> = (baseProps) => {
             const nextSelectedRowIndex = selectedRow.index + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (nextSelectedRowIndex < providerData.length) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[0], filter);
+                await sendSelectRequest(columnOrder[0], filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -660,14 +661,14 @@ const UITable: FC<TableProps> = (baseProps) => {
             const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[prevSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (prevSelectedRowIndex >= 0) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
+                await sendSelectRequest(columnOrder[columnOrder.length - 1], filter, prevSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -694,7 +695,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -718,7 +719,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -880,7 +881,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     values: primaryKeys.map(pk => event.value.rowData[pk])
                 }
             }
-            await sendSelectRequest(event.value.field, filter)
+            await sendSelectRequest(event.value.field, filter, event.value.rowIndex)
         }
     }
 
@@ -1163,10 +1164,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
                                 if (relatedTarget === getFocusComponent(props.name + "-wrapper", false)) {
-                                    sendSelectRequest(columnOrder[0]);
+                                    sendSelectRequest(columnOrder[0], undefined, selectedRow.index || 0);
                                 }
                                 else if (relatedTarget === getFocusComponent(props.name + "-wrapper", true)) {
-                                    sendSelectRequest(columnOrder[columnOrder.length - 1])
+                                    sendSelectRequest(columnOrder[columnOrder.length - 1], undefined, selectedRow.index || providerData.length - 1)
                                 }
                             }
                             focusIsClicked.current = false;
