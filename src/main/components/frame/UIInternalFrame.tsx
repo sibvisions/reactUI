@@ -66,34 +66,35 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         boundsReq.componentId = props.name;
         boundsReq.width = size.width;
         boundsReq.height = size.height;
-        showTopBar(context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS), topbar);
+        context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS);
     }, [context.server, topbar])
 
     useEffect(() => {
         if (initial.current) {
             if (rndRef.current) {
                 if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                    //@ts-ignore height + 39 because of header + border + padding, width + 12 because of padding + border 
-                    rndRef.current.updateSize({ width: layoutStyle.width + 12, height: layoutStyle.height + 39 });
+                    //@ts-ignore height + 35 because of header + border + padding, width + 12 because of padding + border 
+                    rndRef.current.updateSize({ width: layoutStyle.width + 12, height: layoutStyle.height + 35 });
                     sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
+                    setFrameStyle(layoutStyle);
                     initial.current = false;
                 }
                 else if (packSize) {
                     //@ts-ignore
-                    rndRef.current.updateSize({ width: packSize.width + 12, height: packSize.height + 39 });
+                    rndRef.current.updateSize({ width: packSize.width + 12, height: packSize.height + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
+                    setFrameStyle(packSize);
                     initial.current = false;
                 }
             }
             frameContext.callback(props.name);
-            setFrameStyle(layoutStyle);
         }
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
 
     const doResize = useCallback((e, dir, ref) => {
         const styleCopy:CSSProperties = {...frameStyle};
-        //height - 39 because of header + border + padding, width - 12 because of padding + border. Minus because insets have to be taken away for layout
-        styleCopy.height = ref.offsetHeight - 39;
+        //height - 35 because of header + border + padding, width - 12 because of padding + border. Minus because insets have to be taken away for layout
+        styleCopy.height = ref.offsetHeight - 35;
         styleCopy.width = ref.offsetWidth - 12;
 
         sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number });
@@ -109,11 +110,13 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     const getPreferredFrameSize = useCallback((size:Dimension) => {
-        //height + 39 because of header + border + padding, width + 12 because of padding + border 
-        if (packSize?.height !== size.height + 39 && packSize?.width !== size.width + 12) {
-            setPackSize({ height: size.height + 39, width: size.width + 12 });
+        //height + 35 because of header + border + padding, width + 12 because of padding + border 
+        if (packSize?.height !== size.height + 35 && packSize?.width !== size.width + 12) {
+            setPackSize({ height: size.height + 35, width: size.width + 12 });
         }
     }, [packSize]);
+
+    console.log(packSize, frameStyle)
 
     return (
         <>
@@ -136,7 +139,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 <UIFrame
                     {...props}
                     internal
-                    frameStyle={!props.pack ? frameStyle : packSize}
+                    frameStyle={frameStyle}
                     sizeCallback={getPreferredFrameSize}
                     iconImage={props.iconImage}
                     children={children}

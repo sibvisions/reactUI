@@ -5,14 +5,16 @@
   --screen-background: #ffffff;
   --text-color: #495057;
   --topbar-background: #f78500;
-  --frame-toolbar-border: 1px solid #ca6c00;
-  --frame-header-button-hover-background: #fafafa;
-  --frame-header-button-hover-color: #1e1f20;
-  --frame-border: 2px solid rgba(0, 0, 0, 0.15);
   --topbar-text-color: #ffffff;
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #d67b13;
+  --frame-toolbar-separator-color: #ca6c00;
+  --frame-header-background: var(--topbar-background);
+  --frame-header-color: var(--topbar-text-color);
+  --frame-header-border: 1px solid #be6600;
+  --frame-header-button-hover-background: var(--topbar-button-hover-background);
+  --frame-header-button-hover-color: #1e1f20;
   --profile-background: #f78500;
   --profile-hover-background: #d67b13;
   --profile-text-color: #ffffff;
@@ -52,6 +54,7 @@
   --radiobutton-inner-color: #ffffff;
   --toolbar-background: #f8f9fa;
   --toolbar-border-color: #dee2e6;
+  --toolbar-separator-color: #bbbbbb;
   --table-header-background: #ffffff;
   --table-header-border: 1px solid #e9ecef;
   --table-header-hover-background: #e9ecef;
@@ -163,29 +166,29 @@ body {
 
 .rc-frame-toolbar {
   background: var(--topbar-background);
-  border-top: var(--frame-toolbar-border); }
+  border-top: 1px solid;
+  border-color: var(--frame-toolbar-separator-color); }
   .rc-frame-toolbar .rc-button.mouse-border {
     color: var(--topbar-text-color); }
     .rc-frame-toolbar .rc-button.mouse-border:not(a):not(.p-disabled):not(.border-notpainted):hover {
       background: var(--topbar-button-hover-background);
       border-color: var(--topbar-button-hover-background); }
 
-.rc-frame {
-  border: var(--frame-border); }
-  .rc-frame .rc-frame-header {
-    background: #dddcdf;
-    color: #6c6c6c;
-    border-bottom: 1px solid #b1b1b1; }
-    .rc-frame .rc-frame-header .rc-frame-header-close-button {
-      color: var(--text-color);
-      background: transparent;
-      font-size: 12px; }
-      .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
-        background: var(--frame-header-button-hover-background);
-        font-weight: bold;
-        color: var(--frame-header-button-hover-color); }
-  .rc-frame .rc-frame-content {
-    border-color: #dddcdf; }
+.rc-frame .rc-frame-header {
+  background: var(--frame-header-background);
+  color: var(--frame-header-color);
+  border-bottom: var(--frame-header-border); }
+  .rc-frame .rc-frame-header .rc-frame-header-close-button {
+    color: var(--text-color);
+    background: transparent;
+    font-size: 12px; }
+    .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
+      background: var(--frame-header-button-hover-background);
+      font-weight: bold;
+      color: var(--frame-header-button-hover-color); }
+
+.rc-frame .rc-frame-content {
+  border-color: var(--frame-header-background); }
 
 .profile-menu {
   border-left: var(--profile-separator); }

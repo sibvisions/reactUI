@@ -20,14 +20,6 @@
     /// Orange background for topbar
     --topbar-background: #f78500;
 
-    --frame-toolbar-border: 1px solid #ca6c00;
-
-    --frame-header-button-hover-background: #fafafa;
-
-    --frame-header-button-hover-color: #1e1f20;
-
-    --frame-border: 2px solid rgba(0, 0, 0, 0.15);
-
     /// Orange menu color
     --topbar-text-color: #ffffff;
 
@@ -39,6 +31,24 @@
 
     // Orange topbar buttons hover background
     --topbar-button-hover-background: #d67b13;
+
+    /// The separator color of frame toolbars
+    --frame-toolbar-separator-color: #ca6c00;
+
+    /// The background color for frame headers
+    --frame-header-background: var(--topbar-background);
+
+    /// The text-color for frame headers
+    --frame-header-color: var(--topbar-text-color);
+
+    /// The border for frame headers
+    --frame-header-border: 1px solid #be6600;
+
+    /// The hover background color of the frame close button
+    --frame-header-button-hover-background: var(--topbar-button-hover-background);
+
+    /// The hover text color of the frame close button
+    --frame-header-button-hover-color: #1e1f20;
 
     /// Profile-menu background
     --profile-background: #f78500;
@@ -156,6 +166,8 @@
 
     /// Orange toolbar border
     --toolbar-border-color: #dee2e6;
+
+    --toolbar-separator-color: #bbbbbb;
 
     /// Orange table-header background
     --table-header-background: #ffffff;
@@ -438,7 +450,8 @@ body {
 
 .rc-frame-toolbar {
     background: var(--topbar-background);
-    border-top: var(--frame-toolbar-border);
+    border-top: 1px solid;
+    border-color: var(--frame-toolbar-separator-color);
 
     .rc-button.mouse-border {
         color: var(--topbar-text-color);
@@ -451,15 +464,10 @@ body {
 }
 
 .rc-frame {
-    border: var(--frame-border);
-
     .rc-frame-header {
-        //background: var(--topbar-background);
-        //color: var(--topbar-text-color);
-        //border: var(--dialog-header-border);
-        background: #dddcdf;
-        color: #6c6c6c;
-        border-bottom: 1px solid #b1b1b1;
+        background: var(--frame-header-background);
+        color: var(--frame-header-color);
+        border-bottom: var(--frame-header-border);
     
         .rc-frame-header-close-button {
             color: var(--text-color);
@@ -475,7 +483,7 @@ body {
     }
 
     .rc-frame-content {
-        border-color: #dddcdf;
+        border-color: var(--frame-header-background);
     }
 }
 

@@ -5,14 +5,16 @@
   --screen-background: #20262e;
   --text-color: rgba(255, 255, 255, 0.87);
   --topbar-background: #3f4b5b;
-  --frame-toolbar-border: 1px solid #303a48;
-  --frame-header-button-hover-background: #e3f2fd;
-  --frame-header-button-hover-color: #495057;
-  --frame-border: 2px solid rgba(0, 0, 0, 0.15);
   --topbar-text-color: #ffffff;
   --topbar-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #2a323d;
+  --frame-toolbar-separator-color:#303a48;
+  --frame-header-background: var(--topbar-background);
+  --frame-header-color: var(--topbar-text-color);
+  --frame-header-border: 1px solid #616161;
+  --frame-header-button-hover-background: #e3f2fd;
+  --frame-header-button-hover-color: #495057;
   --profile-background: #3f4b5b;
   --profile-hover-background: #2a323d;
   --profile-text-color: #ffffff;
@@ -52,6 +54,7 @@
   --radiobutton-inner-color: #151515;
   --toolbar-background: #303a48;
   --toolbar-border-color:#3f4b5b;
+  --toolbar-separator-color: #bbbbbb;
   --table-header-background: #20262e;
   --table-header-border: 1px solid #3f4b5b;
   --table-header-hover-background: #1c283a;
@@ -163,29 +166,29 @@ body {
 
 .rc-frame-toolbar {
   background: var(--topbar-background);
-  border-top: var(--frame-toolbar-border); }
+  border-top: 1px solid;
+  border-color: var(--frame-toolbar-separator-color); }
   .rc-frame-toolbar .rc-button.mouse-border {
     color: var(--topbar-text-color); }
     .rc-frame-toolbar .rc-button.mouse-border:not(a):not(.p-disabled):not(.border-notpainted):hover {
       background: var(--topbar-button-hover-background);
       border-color: var(--topbar-button-hover-background); }
 
-.rc-frame {
-  border: var(--frame-border); }
-  .rc-frame .rc-frame-header {
-    background: #dddcdf;
-    color: #6c6c6c;
-    border-bottom: 1px solid #b1b1b1; }
-    .rc-frame .rc-frame-header .rc-frame-header-close-button {
-      color: var(--text-color);
-      background: transparent;
-      font-size: 12px; }
-      .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
-        background: var(--frame-header-button-hover-background);
-        font-weight: bold;
-        color: var(--frame-header-button-hover-color); }
-  .rc-frame .rc-frame-content {
-    border-color: #dddcdf; }
+.rc-frame .rc-frame-header {
+  background: var(--frame-header-background);
+  color: var(--frame-header-color);
+  border-bottom: var(--frame-header-border); }
+  .rc-frame .rc-frame-header .rc-frame-header-close-button {
+    color: var(--text-color);
+    background: transparent;
+    font-size: 12px; }
+    .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
+      background: var(--frame-header-button-hover-background);
+      font-weight: bold;
+      color: var(--frame-header-button-hover-color); }
+
+.rc-frame .rc-frame-content {
+  border-color: var(--frame-header-background); }
 
 .profile-menu {
   border-left: var(--profile-separator); }

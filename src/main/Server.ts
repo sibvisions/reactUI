@@ -232,7 +232,8 @@ class Server {
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorDialogVisible(true);
                             }
-                            console.error(error);
+                            reject(error)
+                            //console.error(error);
                         }).finally(() => {
                             this.openRequests.delete(request);
                         });
@@ -246,7 +247,7 @@ class Server {
                         RequestQueueMode.IMMEDIATE
                     ).then(results => {
                         resolve(results)
-                    }))
+                    }, (err) => reject(err)))
                     this.advanceRequestQueue();
                 }
             }

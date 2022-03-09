@@ -276,7 +276,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
                                 position: "absolute",
-                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) ? "1px solid #bbb" : ""
+                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(component.parent?.includes("ML") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
                         else {
@@ -286,7 +290,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) ? "1px solid #bbb" : ""
+                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(component.parent?.includes("ML") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
 
@@ -309,7 +317,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) ? "1px solid #bbb" : ""
+                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(component.parent?.includes("ML") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
                         else {
@@ -319,7 +331,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) ? "1px solid #bbb" : ""
+                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(component.parent?.includes("ML") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
 
