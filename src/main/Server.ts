@@ -584,6 +584,7 @@ class Server {
             fetchData.treePath,
             detailMapKey,
             fetchData.recordFormat,
+            fetchData.clear
         );
 
         if (this.contentStore.getDataBook(compId, fetchData.dataProvider)) {

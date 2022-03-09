@@ -796,6 +796,7 @@ export default class ContentStore{
         treePath?:number[], 
         referenceKey?:string,
         recordFormat?: RecordFormat,
+        clear?:boolean
     ) {
         const compPanel = this.getComponentByName(compId) as IPanel;
         
@@ -817,6 +818,10 @@ export default class ContentStore{
                     this.dataBooks.set(compId, mapScreen);
                 }
             }
+        }
+
+        if (clear) {
+            this.clearDataFromProvider(compId, dataProvider);
         }
 
         const existingMap = this.getScreenDataproviderMap(compId);
