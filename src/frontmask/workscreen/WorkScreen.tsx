@@ -2,9 +2,9 @@
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import { appContext } from "../../main/AppProvider";
 import { ActiveScreen } from "../../main/ContentStore";
+import LoadingScreen from "../loading/loadingscreen";
 
 /**Other imports */
-import { DesktopPanelHandler } from "../login/login";
 import ResizeHandler from "../ResizeHandler";
 
 /** This component defines where the workscreen should be displayed */
@@ -47,7 +47,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : <DesktopPanelHandler />}
+            renderedScreens : <LoadingScreen />}
         </ResizeHandler>
 
     )
