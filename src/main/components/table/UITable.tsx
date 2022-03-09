@@ -851,7 +851,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     }
                 }
                 }
-                style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
+                style={{ whiteSpace: 'nowrap' }}
                 bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
