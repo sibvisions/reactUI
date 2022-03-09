@@ -81,8 +81,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     useFetchMissingData(props.compId, props.dataRow);
 
-    useFetchMissingData(props.compId, props.cellEditor.linkReference.referencedDataBook);
-
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
