@@ -3,6 +3,7 @@ import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { FocusFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
@@ -36,19 +37,29 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
 
-    const initial = useRef<boolean>(true);
+    const initFrame = useRef<boolean>(true);
 
-    const rndRef = useRef(null);
+    const initCenter = useRef<boolean>(true);
+
+    const rndRef = useRef<Rnd>(null);
 
     const centerPosition = useMemo(():Coordinates => {
-        const pos:Coordinates = { x: 0, y: 0 }
+        const pos:Coordinates = {...centerPosition}
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                const relativeElement = document.getElementById(relativeComp.name);
+                const relativeElement = relativeComp.className === COMPONENT_CLASSNAMES.DESKTOPPANEL 
+                ? 
+                    document.getElementById(relativeComp.name) 
+                :
+                    document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement;
+
                 if (relativeElement && frameStyle) {
-                    pos.x = relativeElement.getBoundingClientRect().width / 2 - ((frameStyle.width as number + 8) / 2);
-                    pos.y = relativeElement.getBoundingClientRect().height / 2 - ((frameStyle.height as number + 35) / 2);
+                    var style = window.getComputedStyle(relativeElement);
+                    // gets the left and top value out of the style property 'transform'. 'm41' = left, 'm42' = top
+                    var matrix = new WebKitCSSMatrix(style.transform);
+                    pos.x = (relativeElement.getBoundingClientRect().width / 2 + matrix.m41) - ((frameStyle.width as number + 8) / 2);
+                    pos.y = (relativeElement.getBoundingClientRect().height / 2 + matrix.m42) - ((frameStyle.height as number + 35) / 2);
                 }
             }
         }
@@ -57,17 +68,14 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
 
     useLayoutEffect(() => {
         if (rndRef.current) {
-            //@ts-ignore
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), rndRef.current.resizableElement.current, onLoadCallback)
         }
     }, [onLoadCallback]);
 
-    //@ts-ignore
-    useEventHandler(rndRef.current ? rndRef.current.resizableElement.current : undefined, "click", () => frameContext.callback(props.name));
+    useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "click", () => frameContext.callback(props.name));
 
     useEffect(() => {
-        if (rndRef.current) {
-            //@ts-ignore
+        if (rndRef.current?.resizableElement.current) {
             const rndFrame:HTMLElement = rndRef.current.resizableElement.current;
 
             const rndStyle:CSSStyleDeclaration = rndFrame.style;
@@ -89,21 +97,20 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     }, [context.server, topbar])
 
     useEffect(() => {
-        if (initial.current) {
+        if (initFrame.current) {
             if (rndRef.current) {
                 if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                    //@ts-ignore height + 35 because of header + border + padding, width + 8 because of padding + border 
-                    rndRef.current.updateSize({ width: layoutStyle.width + 8, height: layoutStyle.height + 35 });
+                    //height + 35 because of header + border + padding, width + 8 because of padding + border 
+                    rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
                     sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
                     setFrameStyle(layoutStyle);
-                    initial.current = false;
+                    initFrame.current = false;
                 }
                 else if (packSize) {
-                    //@ts-ignore
-                    rndRef.current.updateSize({ width: packSize.width + 8, height: packSize.height + 35 });
+                    rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
                     setFrameStyle(packSize);
-                    initial.current = false;
+                    initFrame.current = false;
                 }
             }
             frameContext.callback(props.name);
@@ -111,9 +118,9 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
 
     useEffect(() => {
-        if (rndRef.current) {
-            //@ts-ignore
+        if (rndRef.current && initCenter.current && (centerPosition.x !== undefined && centerPosition.y !== undefined)) {
             rndRef.current.updatePosition(centerPosition);
+            initCenter.current = false;
         }
     }, [centerPosition])
 
@@ -147,7 +154,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             {props.modal && <div className="rc-glasspane" />}
             {children.length && <Rnd
                 ref={rndRef}
-                style={style}
+                style={style as CSSProperties}
                 onResize={handleResize}
                 bounds={props.modal ? "window" : "parent"}
                 default={{
