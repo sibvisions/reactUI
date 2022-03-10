@@ -36,6 +36,7 @@ const useMenuItems = (menus:string[]) => {
                         }  : undefined,
                         label: menuItem.text,
                         icon: iconData.icon,
+                        disabled: menuItem.enabled === false,
                         separator: menuItem.className === "Separator" ? true : false,
                         style: {...(!isFAIcon(iconData.icon) ? {
                             '--iconWidth': `${iconData.size?.width}px`,
