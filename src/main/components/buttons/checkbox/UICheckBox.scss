@@ -15,25 +15,42 @@
         //height: 20px;
         justify-content: center;
         align-items: center;
-    
-        .gap-top & {
-            margin-top: var(--iconTextGap);
-        }
-        .gap-left & {
-            margin-left: var(--iconTextGap);
-        }
-        .gap-right & {
-            margin-right: var(--iconTextGap);
-        }
-        .gap-bottom & {
-            margin-bottom: var(--iconTextGap);
-        }
-        .icon-center-left & {
-            margin-left: var(--iconCenterGap)
-        }
-        .icon-center-right & {
-            margin-right: var(--iconCenterGap)
-        }
+    }
+}
+
+.gap-top {
+    .p-checkbox {
+        margin-top: var(--iconTextGap);
+    }
+}
+
+.gap-left {
+    .p-checkbox {
+        margin-left: var(--iconTextGap);
+    }
+}
+
+.gap-right {
+    .p-checkbox {
+        margin-right: var(--iconTextGap);
+    }
+}
+
+.gap-bottom {
+    .p-checkbox {
+        margin-bottom: var(--iconTextGap);
+    }
+}
+
+.icon-center-left {
+    .p-checkbox {
+        margin-left: var(--iconCenterGap);
+    }
+}
+
+.icon-center-right {
+    .p-checkbox {
+        margin-right: var(--iconCenterGap);
     }
 }
 

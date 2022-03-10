@@ -118,9 +118,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
     const handleSelect = (tabId:number) => {
-        console.log('test')
         if(!closing.current) {
-            console.log('sending select')
             showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB), topbar);
         }
         closing.current = false;

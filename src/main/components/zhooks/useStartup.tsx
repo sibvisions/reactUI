@@ -130,6 +130,7 @@ const useStartup = (props:ICustomContent):boolean => {
                         else if (jscmd.command === "api/reopenScreen") {
                             const openReq = createOpenScreenRequest();
                             openReq.className = jscmd.arguments.className;
+                            context.server.lastOpenedScreen = jscmd.arguments.className;
                             showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.REOPEN_SCREEN), topbar);
                         }
                         else if (jscmd.command === "reloadCss") {

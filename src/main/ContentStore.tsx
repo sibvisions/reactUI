@@ -86,6 +86,9 @@ export default class ContentStore{
     /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
     navigationNames = new Map<string, string>();
 
+    /** A Map which stores a workscreens nav-name as key and the componentId of the menu as value to open screens when navigating */
+    navOpenScreenMap = new Map<string, string>();
+
     /** A Map which stores the translation values, the key is the original text and the value is the translated text */
     translation = new Map<string, string>();
 
@@ -470,21 +473,6 @@ export default class ContentStore{
             
             /** Cast newComponent as Panel */
             const newCompAsPanel = (newComponent as IPanel);
-
-            /** 
-             * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
-             * to the navigation-name, if not, don't add anything, and call setNavigationName
-             */
-            if (newCompAsPanel.screen_navigationName_) {
-                let increment:number|string = 0;
-                for (let value of this.navigationNames.values()) {
-                    if (value.replace(/\s\d+$/, '') === newCompAsPanel.screen_navigationName_)
-                        increment++
-                }
-                if (increment === 0 || (increment === 1 && this.navigationNames.has(newCompAsPanel.name)))
-                    increment = ''
-                this.setNavigationName(newCompAsPanel.name, newCompAsPanel.screen_navigationName_ + increment.toString())
-            }
 
             // Set a new selected menuitem to display the menuitem-text in a different color
             if (newCompAsPanel.screen_className_) {

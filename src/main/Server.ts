@@ -89,6 +89,8 @@ class Server {
     /** embedded options, null if not defined */
     embedOptions:{ [key:string]:any }|null = null;
 
+    lastOpenedScreen = "";
+
     api:API;
 
     onMenuFunction:Function = () => {};
@@ -98,8 +100,6 @@ class Server {
     onLoginFunction:Function = () => {};
 
     lastClosedWasPopUp = false;
-
-    
 
     setAPI(api:API) {
         this.api = api;
@@ -426,10 +426,31 @@ class Server {
         if (!genericData.update) {
             let workScreen:IPanel|undefined
             if(genericData.changedComponents && genericData.changedComponents.length) {
-                workScreen = genericData.changedComponents[0] as IPanel;
-                this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
-                if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
-                    this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
+                    workScreen = genericData.changedComponents[0] as IPanel;
+
+                    /** 
+                     * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
+                     * to the navigation-name, if not, don't add anything, and call setNavigationName
+                     */
+                    if (workScreen.screen_navigationName_) {
+                        let increment: number | string = 0;
+                        for (let value of this.contentStore.navigationNames.values()) {
+                            if (value.replace(/\s\d+$/, '') === workScreen.screen_navigationName_)
+                                increment++
+                        }
+                        if (increment === 0 || (increment === 1 && this.contentStore.navigationNames.has(workScreen.name))) {
+                            increment = '';
+                        }
+                        this.contentStore.navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
+                        this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
+                    }
+
+                    this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+
+                    if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
+                        this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                    }
                 }
             }
             this.onOpenScreenFunction();

@@ -1,11 +1,11 @@
 /** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /** Hook imports */
 import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 
 /** Other imports */
-import { parseIconData } from "../compprops";
+import { getAlignments, parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName } from "../util";
 import { Tooltip } from "primereact/tooltip";
@@ -38,6 +38,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
 
     const popupMenu = usePopupMenu(props);
+
+    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment])
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -79,7 +81,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(props.image?.includes('FontAwesome'))
-                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
+                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
@@ -106,11 +108,8 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
-            className={concatClassnames(
-                "rc-icon",
-                props.name === "Validator" ? " rc-validator" : ""
-            )} 
-            style={{...layoutStyle, ...compStyle, overflow: "hidden"}}
+            className="rc-icon"
+            style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
         >
             <Tooltip target={"#" + props.name} />
             {iconOrImage(iconProps.icon)}

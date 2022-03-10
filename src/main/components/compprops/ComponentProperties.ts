@@ -63,9 +63,20 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
             /** If there is a semicolon the icondata string has to be split and sliced differently */
             if (iconData.includes(';')) {
                 let splittedColorIconData = iconData.slice(iconData.indexOf('.') + 1).split(';');
-                splittedColorIconData.forEach((prop:string) => {
-                    if (prop.includes("color"))
-                        iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString();
+                splittedColorIconData.forEach((prop:string, i) => {
+                    switch (i) {
+                        case 0:
+                            iconName = convertIcon(splittedColorIconData[0]);
+                            break;
+                        case 1:
+                            iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString();
+                            break;
+                        case 2: case 3:
+                            iconSize = {width: parseInt(prop ?? 16), height: parseInt(prop ?? 16)};
+                            break;
+                        default:
+                            break;
+                    }
                 });
             }
             return {icon: iconName, size: iconSize, color: iconColor}
