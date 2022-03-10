@@ -829,7 +829,6 @@ class Server {
             this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
-            
             if(contentData.changedComponents && contentData.changedComponents.length) {
                 workScreen = contentData.changedComponents[0] as IPanel
                 this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
@@ -837,7 +836,9 @@ class Server {
         }
         else {
             workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
-            this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+            if (workScreen.content_modal_) {
+                this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+            }
         }
     }
 
