@@ -599,15 +599,15 @@ export default class ContentStore{
 
     /**
      * Sets or updates the navigation-name for a screen
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param navName - the navigation name of a screen
      */
-    setNavigationName(compId:string, navName:string) {
-        let existingMap = this.navigationNames.get(compId);
+    setNavigationName(screenName:string, navName:string) {
+        let existingMap = this.navigationNames.get(screenName);
         if (existingMap)
             existingMap = navName;
         else
-            this.navigationNames.set(compId, navName);
+            this.navigationNames.set(screenName, navName);
     }
 
     /**
@@ -765,7 +765,7 @@ export default class ContentStore{
      * @param id - the id of the component
      * @returns the component id of a screen for a component
      */
-    getComponentId(id: string, dataProvider:string) {
+    getScreenName(id: string, dataProvider:string) {
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
@@ -781,6 +781,27 @@ export default class ContentStore{
                     break;
                 }
 
+                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+            }
+        }
+        return comp?.name
+    }
+
+    /**
+     * Returns the component id of a screen for a component
+     * @param id - the id of the component
+     * @returns the component id of a screen for a component
+     */
+     getRootPanel(id: string) {
+        let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+        if (comp) {
+            while (comp?.parent) {
+                if ((comp as IPanel).screen_modal_) {
+                    break;
+                }
+                else if ((comp as IPanel).content_modal_) {
+                    return comp.name;
+                }
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }
@@ -815,7 +836,7 @@ export default class ContentStore{
      * for the data of its master and the value is the data. Additionally there is a key "current" which holds data of the
      * current selected row of the master.
      * If there is no master-reference, it saves the data in a Map with one entry key: "current" value: data 
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param newDataSet - the new data
      * @param to - to which row will be set/updated
@@ -824,7 +845,7 @@ export default class ContentStore{
      * @param selectedRow - the currently selected row of the master-reference
      */
     updateDataProviderData(
-        compId:string, 
+        screenName:string, 
         dataProvider:string, 
         newDataSet: Array<any>, 
         to:number, 
@@ -834,9 +855,7 @@ export default class ContentStore{
         recordFormat?: RecordFormat,
         clear?:boolean
     ) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-
-        console.log(compId, dataProvider)
+        const compPanel = this.getComponentByName(screenName) as IPanel;
         
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
@@ -853,18 +872,18 @@ export default class ContentStore{
                 }
                 
                 if (addDPD) {
-                    this.dataBooks.set(compId, mapScreen);
+                    this.dataBooks.set(screenName, mapScreen);
                 }
             }
         }
 
         if (clear) {
-            this.clearDataFromProvider(compId, dataProvider);
+            this.clearDataFromProvider(screenName, dataProvider);
         }
 
-        const existingMap = this.getScreenDataproviderMap(compId);
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
@@ -875,7 +894,7 @@ export default class ContentStore{
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
                             if (newDataSet[newDataSetIndex].recordStatus === "I") {
-                                this.insertDataProviderData(compId, dataProvider)
+                                this.insertDataProviderData(screenName, dataProvider)
                             }
                             existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
@@ -906,8 +925,8 @@ export default class ContentStore{
                 fillDataMap(providerMap, dataMap, true);
             }
         }
-        this.subManager.notifyDataChange(compId, dataProvider);
-        this.subManager.notifyScreenDataChange(compId);
+        this.subManager.notifyDataChange(screenName, dataProvider);
+        this.subManager.notifyScreenDataChange(screenName);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
             this.subManager.notifyScreenDataChange(dataProvider.split('/')[1]);
@@ -917,18 +936,18 @@ export default class ContentStore{
     /**
      * Inserts a new datarow into an existing dataset. Always inserts the datarow into the next row of the selected-row.
      * If there is no row selected, the row is inserted at index 0.
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider 
      * @param referenceKey - the primary key value of the master-reference
      */
-    insertDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
-        const existingMap = this.getScreenDataproviderMap(compId);
+    insertDataProviderData(screenName:string, dataProvider:string, referenceKey?:string) {
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
-                    const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
+                    const selectedRow = this.getDataBook(screenName, dataProvider)?.selectedRow;
                     if (selectedRow) {
                         existingData.splice(selectedRow.index + 1, 0, {});
                     }
@@ -942,14 +961,14 @@ export default class ContentStore{
 
     /**
      * Deletes a datarow from an existing dataset. Deletes the selected-row
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider 
      * @param referenceKey - the primary key value of the master-reference
      */
-    deleteDataProviderData(compId:string, dataProvider:string, index?:number, referenceKey?:string) {
-        const existingMap = this.getScreenDataproviderMap(compId);
+    deleteDataProviderData(screenName:string, dataProvider:string, index?:number, referenceKey?:string) {
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
@@ -957,7 +976,7 @@ export default class ContentStore{
                         existingData.splice(index, 1);
                     }
                     else {
-                        const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
+                        const selectedRow = this.getDataBook(screenName, dataProvider)?.selectedRow;
                         if (selectedRow) {
                             existingData.splice(selectedRow.index, 1);
                         }
@@ -969,14 +988,14 @@ export default class ContentStore{
 
     /**
      * Returns either a part of the data of a dataprovider specified by "from" and "to" or all data
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param from - from which row to return
      * @param to - to which row to return
      * @returns either a part of the data of a dataprovider specified by "from" and "to" or all data
      */
-    getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
-        let dataArray:any = this.getDataBook(compId, dataProvider)?.data;
+    getData(screenName:string, dataProvider: string, from?: number, to?: number): Array<any>{
+        let dataArray:any = this.getDataBook(screenName, dataProvider)?.data;
         if (dataArray) {
             dataArray = dataArray.get("current")
             if(from !== undefined && to !== undefined) {
@@ -988,13 +1007,13 @@ export default class ContentStore{
 
     /**
      * Returns either the dataRow of a dataprovider with the given index or undefined if row has not been found
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param indexOfRow - the index of the row to get
      * @returns either the dataRow of a dataprovider with the given index or undefined if row has not been found
      */
-    getDataRow(compId:string, dataProvider: string, indexOfRow: number) : any{
-        const data = this.getData(compId, dataProvider);
+    getDataRow(screenName:string, dataProvider: string, indexOfRow: number) : any{
+        const data = this.getData(screenName, dataProvider);
         const dataRow = data[indexOfRow];
         if(dataRow)
             return dataRow;
@@ -1004,13 +1023,13 @@ export default class ContentStore{
 
     /**
      * Sets or updates the currently selectedRow of a dataprovider
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param dataRow - the selectedDataRow
      */
-    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        const existingMap = this.getScreenDataproviderMap(compId);
+    setSelectedRow(screenName:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
                 (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
@@ -1036,9 +1055,9 @@ export default class ContentStore{
             else {
                 tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
             }
-            this.dataBooks.set(compId, tempMapRow);
+            this.dataBooks.set(screenName, tempMapRow);
         }
-        this.subManager.emitRowSelect(compId, dataProvider);
+        this.subManager.emitRowSelect(screenName, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }
@@ -1046,27 +1065,32 @@ export default class ContentStore{
 
     /**
      * Clears the selectedRow of a dataProvider
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      */
-    clearSelectedRow(compId:string, dataProvider: string) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        if (this.getDataBook(compId, dataProvider)) {
-            this.getDataBook(compId, dataProvider)!.selectedRow = undefined;
-            this.subManager.emitRowSelect(compId, dataProvider);
+    clearSelectedRow(screenName:string, dataProvider: string) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        if (this.getDataBook(screenName, dataProvider)) {
+            this.getDataBook(screenName, dataProvider)!.selectedRow = undefined;
+            this.subManager.emitRowSelect(screenName, dataProvider);
             if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
                 this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
             }
         }
     }
 
-    clearDataFromSubPage(compId:string, detailReferences?:MetaDataReference[]) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
+    /**
+     * Clears the data from every subpage of a dataprovider
+     * @param screenName - the name of the screen 
+     * @param detailReferences - the detail references of a master reference
+     */
+    clearDataFromSubPage(screenName:string, detailReferences?:MetaDataReference[]) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
         if (detailReferences !== undefined) {
             detailReferences.forEach(reference => {
                 const referencedDataBook = reference.referencedDataBook;
-                const metaData = getMetaData(compId, referencedDataBook, this, undefined);
-                const dataBookData = this.getDataBook(compId, referencedDataBook)?.data;
+                const metaData = getMetaData(screenName, referencedDataBook, this, undefined);
+                const dataBookData = this.getDataBook(screenName, referencedDataBook)?.data;
                 if (dataBookData) {
                     for (let [key] of dataBookData) {
                         if (key !== "current") {
@@ -1075,10 +1099,10 @@ export default class ContentStore{
                     }
                 }
                 if (metaData && metaData.detailReferences) {
-                    this.clearDataFromSubPage(compId, metaData.detailReferences);
+                    this.clearDataFromSubPage(screenName, metaData.detailReferences);
                 }
-                this.subManager.notifyDataChange(compId, referencedDataBook);
-                this.subManager.notifyScreenDataChange(compId);
+                this.subManager.notifyDataChange(screenName, referencedDataBook);
+                this.subManager.notifyScreenDataChange(screenName);
                 if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(referencedDataBook.split('/')[1])) {
                     this.subManager.notifyDataChange(referencedDataBook.split('/')[1], referencedDataBook);
                     this.subManager.notifyScreenDataChange(referencedDataBook.split('/')[1]);
@@ -1089,31 +1113,31 @@ export default class ContentStore{
 
     /**
      * Clears the data of a dataProvider
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      */
-    clearDataFromProvider(compId:string, dataProvider: string) {
-        const data = this.getDataBook(compId, dataProvider)?.data;
-        const metaData = getMetaData(compId, dataProvider, this, undefined);
+    clearDataFromProvider(screenName:string, dataProvider: string) {
+        const data = this.getDataBook(screenName, dataProvider)?.data;
+        const metaData = getMetaData(screenName, dataProvider, this, undefined);
         if (data) {
             data.delete("current");
         }
         
         if (metaData && metaData.masterReference === undefined) {
-            this.clearDataFromSubPage(compId, metaData.detailReferences);
+            this.clearDataFromSubPage(screenName, metaData.detailReferences);
         }
     }
 
     /**
      * Sets or updates the sort-definitions of a dataprovider in a map and then notifies the
      * components which use the useSortDefinitions hook to update their state.
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param sortDefinitions - the sort-definitions
      */
-    setSortDefinition(compId: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        const existingMap = this.getScreenDataproviderMap(compId);
+    setSortDefinition(screenName: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(screenName);
 
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
@@ -1130,7 +1154,7 @@ export default class ContentStore{
                 }
             }
         }
-        this.subManager.notifySortDefinitionChange(compId, dataProvider);
+        this.subManager.notifySortDefinitionChange(screenName, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifySortDefinitionChange(dataProvider.split('/')[1], dataProvider);
         }

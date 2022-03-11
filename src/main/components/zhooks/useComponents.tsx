@@ -56,8 +56,9 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
          * set the preferredSizes, if the components change update the current preferredSizes.
          * @param compId - the component id
-         * @param height - the preferred height of the component
-         * @param width - the preferred width of the component
+         * @param newPref - the preferred size of the component
+         * @param newMin - the minimum size of the component
+         * @param newMax - the maximum size of the component
          */
 
         const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {

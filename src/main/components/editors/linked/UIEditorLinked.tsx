@@ -6,7 +6,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useDataProviderData, useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu} from "../../zhooks"
+import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -52,7 +52,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     const linkedInput = useRef<any>(null);
 
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(props.compId, props.cellEditor.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"");
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -77,8 +77,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** If the CellEditor is read-only */
     const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -134,7 +132,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      * @param event - Event that gets fired on inputchange
      */
     const sendFilter = useCallback(async (value:any) => {
-        props.context.contentStore.clearDataFromProvider(props.compId, props.cellEditor.linkReference.referencedDataBook||"")
+        props.context.contentStore.clearDataFromProvider(props.screenName, props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest();
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
@@ -297,7 +295,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }
 
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.compId, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
+        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;

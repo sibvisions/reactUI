@@ -150,14 +150,17 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<TableProps>(baseProps);
 
-    /** ComponentId of the screen */
-    const compId = useMemo(() => context.contentStore.getComponentId(props.id, props.dataBook) as string, [context.contentStore, props.id]);
+    /** Name of the screen */
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
+
+    /** Root panel name of the screen */
+    const rootPanel = useMemo(() => context.contentStore.getRootPanel(props.id) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
-    const metaData = useMetaData(compId, props.dataBook, undefined);
+    const metaData = useMetaData(screenName, props.dataBook, undefined);
 
     /** The data provided by the databook */
-    const [providerData] = useDataProviderData(compId, props.dataBook);
+    const [providerData] = useDataProviderData(screenName, props.dataBook);
 
     /** The amount of virtual rows loaded */
     const rows = 40;
@@ -182,13 +185,13 @@ const UITable: FC<TableProps> = (baseProps) => {
     const firstRowIndex = useRef(0);
 
     /** The current sort-definitions */
-    const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
+    const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
 
     /** The current order of the columns */
     const [columnOrder, setColumnOrder] = useState<string[]|undefined>(metaData?.columnView_table_);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
+    const [selectedRow] = useRowSelect(screenName, props.dataBook, undefined, true);
 
     /** Reference if the page up/down key was pressed */
     const pageKeyPressed = useRef<boolean>(false);
@@ -224,7 +227,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
-    useFetchMissingData(compId, props.dataBook);
+    useFetchMissingData(screenName, rootPanel, props.dataBook);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
@@ -818,14 +821,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                             },
                             readonly: columnMetaData?.readonly,
                             isCellEditor: true,
-                            cellCompId: props.dataBook.split("/")[1]
+                            cellScreenName: props.dataBook.split("/")[1]
                         }} 
                         />
                     }
                     else {
                         return <CellEditor
                             pk={_.pick(rowData, primaryKeys)}
-                            compId={compId}
+                            screenName={screenName}
                             name={props.name as string}
                             colName={colName}
                             dataProvider={props.dataBook}
@@ -865,7 +868,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     }, [
         props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
-        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
+        context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, 
         props.startEditing
     ])
@@ -897,7 +900,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const length = last - first + 1;
             setListLoading(true);
             firstRowIndex.current = first;
-            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(compId, props.dataBook)?.allFetched) {
+            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
@@ -1044,7 +1047,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "Insert":
                 if (metaData?.insertEnabled) {
-                    context.contentStore.insertDataProviderData(compId, props.dataBook);
+                    context.contentStore.insertDataProviderData(screenName, props.dataBook);
                     const insertReq = createInsertRecordRequest();
                     insertReq.dataProvider = props.dataBook;
                     showTopBar(context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD), topbar);
@@ -1052,7 +1055,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "Delete":
                 if (metaData?.deleteEnabled) {
-                    context.contentStore.deleteDataProviderData(compId, props.dataBook);
+                    context.contentStore.deleteDataProviderData(screenName, props.dataBook);
                     const selectReq = createSelectRowRequest();
                     selectReq.dataProvider = props.dataBook;
                     selectReq.componentId = props.name;

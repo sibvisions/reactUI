@@ -9,7 +9,7 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 
 /** Hook imports */
-import { useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks"
+import { useMouseListener, usePopupMenu } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -207,8 +207,6 @@ const UIEditorText: FC<IEditorText> = (props) => {
     const escapePressed = useRef<boolean>(false)
 
     const [showSource, setShowSource] = useState<boolean>(false);
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     const popupMenu = usePopupMenu(props);
 

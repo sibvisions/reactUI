@@ -30,7 +30,7 @@ export interface CellFormatting {
 /** Type for CellEditor */
 type CellEditor = {
     pk: any,
-    compId: string,
+    screenName: string,
     name: string,
     cellData: any,
     dataProvider: string,
@@ -74,9 +74,9 @@ export const CellEditor: FC<CellEditor> = (props) => {
     const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
-    const columnMetaData = useMetaData(props.compId, props.dataProvider, props.colName);
+    const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
-    const metaData = useMetaData(props.compId, props.dataProvider) as MetaDataResponse|undefined;
+    const metaData = useMetaData(props.screenName, props.dataProvider) as MetaDataResponse|undefined;
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -244,7 +244,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                             }
                         }}>
                         {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => { setWaiting(true); setEdit(true) })}
-                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
+                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
                     </div>
                 ) : (!edit ?
                     <div
@@ -255,7 +255,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                             {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale, () => setEdit(true))}
                         </div>
                         {showDropDownArrow() &&
-                            <div style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
+                            <div style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={() => { setWaiting(true); setEdit(true) }} >
                                 <i className="pi pi-chevron-down cell-editor-arrow" />
                             </div>}
                     </div>
@@ -267,7 +267,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
                 {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.compId)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
+                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
             </div>
     )
 }

@@ -1,7 +1,7 @@
 /** React imports */
 import { FC } from "react";
 import { createEditor } from "../../factories/UIFactory";
-import { useEditorConstants } from "../zhooks";
+import { useEditorConstants, useFetchMissingData } from "../zhooks";
 
 /**
  * A Wrapper Component for CellEditors
@@ -9,7 +9,9 @@ import { useEditorConstants } from "../zhooks";
  */
 const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, screenName, rootPanel, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+
+    useFetchMissingData(props.screenName, rootPanel, props.dataRow);
 
     return createEditor(
         {
@@ -18,7 +20,7 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             topbar: topbar,
             layoutStyle: layoutStyle,
             translations: translations,
-            compId: compId,
+            screenName: screenName,
             columnMetaData: columnMetaData,
             selectedRow: selectedRow,
             cellStyle: cellStyle

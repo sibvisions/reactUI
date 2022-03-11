@@ -12,23 +12,23 @@ export type FullOrColumn<T extends string|undefined, U extends "numeric"|undefin
 
 /**
  * This hook returns either the full metadata of a dataprovider or only the metadata of a column if the column parameter is set.
- * @param compId - the component id of the screen
+ * @param screenName - the name of the screen
  * @param dataProvider - the dataprovider which metadata is needed
  * @param column - the column which should be extracted out of the metadata
  * @param numeric - if the column-metadata is numeric or length based
  * @returns metadata
  */
-const useMetaData = <T extends string|undefined, U extends "numeric"|undefined>(compId:string, dataProvider:string, column?:T, numeric?:U):FullOrColumn<T, U>|undefined => {
+const useMetaData = <T extends string|undefined, U extends "numeric"|undefined>(screenName:string, dataProvider:string, column?:T, numeric?:U):FullOrColumn<T, U>|undefined => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** Current state of the data received by the dataprovider */
-    const [metaData, setMetaData] = useState<FullOrColumn<T, U>|undefined>(getMetaData(compId, dataProvider, context.contentStore, column));
+    const [metaData, setMetaData] = useState<FullOrColumn<T, U>|undefined>(getMetaData(screenName, dataProvider, context.contentStore, column));
 
     useEffect(() => {
-        context.subscriptions.subscribeToMetaData(compId, dataProvider, () => setMetaData(getMetaData(compId, dataProvider, context.contentStore, column)));
-        return () => context.subscriptions.unsubscribeFromMetaData(compId, dataProvider, () => setMetaData(getMetaData(compId, dataProvider, context.contentStore, column)));
-    }, [context.subscriptions, compId, dataProvider, context.contentStore]);
+        context.subscriptions.subscribeToMetaData(screenName, dataProvider, () => setMetaData(getMetaData(screenName, dataProvider, context.contentStore, column)));
+        return () => context.subscriptions.unsubscribeFromMetaData(screenName, dataProvider, () => setMetaData(getMetaData(screenName, dataProvider, context.contentStore, column)));
+    }, [context.subscriptions, screenName, dataProvider, context.contentStore]);
 
     return metaData;
 }

@@ -2,7 +2,7 @@
 import React, { FC, useCallback, useMemo, useRef } from "react";
 
 /** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -45,8 +45,6 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

@@ -7,11 +7,11 @@ import { appContext } from "../../AppProvider";
 /**
  * This hook returns the current state of either the entire selectedRow or the value of the column of the selectedRow 
  * of the databook sent by the server for the given component
- * @param compId - the component id
+ * @param screenName - the name of the screen
  * @param dataProvider - the dataprovider
  * @param column - the column
  */
-const useRowSelect = (compId:string, dataProvider: string, column?: string, showIndex?:boolean, rowIndex?:number) => {
+const useRowSelect = (screenName:string, dataProvider: string, column?: string, showIndex?:boolean, rowIndex?:number) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -20,7 +20,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
      * @returns either the value of the column of the currently selectedRow or the entire selectedRow
      */
     const currentlySelectedRow = useMemo(() => {
-        const sr = context.contentStore.getDataBook(compId, dataProvider)?.selectedRow;
+        const sr = context.contentStore.getDataBook(screenName, dataProvider)?.selectedRow;
         if (sr) {
             if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === sr.index)) {
                 if (column && sr.dataRow) {
@@ -31,7 +31,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 }
             }
             else {
-                const data = context.contentStore.getDataBook(compId, dataProvider)?.data?.get("current")[rowIndex]
+                const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex]
                 if (data) {
                     if (column) {
                         const dataCol = data[column]
@@ -43,7 +43,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 }                
             }
         }
-    }, [context.contentStore, dataProvider, column, compId, rowIndex]);
+    }, [context.contentStore, dataProvider, column, screenName, rowIndex]);
 
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
@@ -65,7 +65,7 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                     }
                 }
                 else {
-                    const data = context.contentStore.getDataBook(compId, dataProvider)?.data?.get("current")[rowIndex]
+                    const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex]
                     if (data) {
                         if (column) {
                             const dataCol = data[column];
@@ -84,12 +84,12 @@ const useRowSelect = (compId:string, dataProvider: string, column?: string, show
                 setSelectedRow(undefined)
             }
         }
-        context.subscriptions.subscribeToRowSelection(compId, dataProvider, onRowSelection);
+        context.subscriptions.subscribeToRowSelection(screenName, dataProvider, onRowSelection);
 
         return () => {
-            context.subscriptions.unsubscribeFromRowSelection(compId, dataProvider, onRowSelection);
+            context.subscriptions.unsubscribeFromRowSelection(screenName, dataProvider, onRowSelection);
         }
-    }, [context.subscriptions, dataProvider, column, compId, rowIndex])
+    }, [context.subscriptions, dataProvider, column, screenName, rowIndex])
 
     return [selectedRow];
 }

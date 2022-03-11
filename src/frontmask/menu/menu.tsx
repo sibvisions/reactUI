@@ -69,14 +69,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     if (context.contentStore.activeScreens.length) {
                         context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
-                            const compId = context.contentStore.activeScreens[0].name;
+                            const screenName = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
-                            closeReq.componentId = compId;
+                            closeReq.componentId = screenName;
                             context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     context.server.lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(compId, context.appSettings.welcomeScreen ? true : false);
+                                    context.contentStore.closeScreen(screenName, context.appSettings.welcomeScreen ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
                             });

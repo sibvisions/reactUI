@@ -167,13 +167,15 @@ const UIChart: FC<IChart> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id, props.dataBook) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
+
+    const rootPanel = context.contentStore.getRootPanel(props.id) as string;
 
     /** The data provided by the databook */
-    const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);
+    const [providerData]:any[][] = useDataProviderData(screenName, props.dataBook);
 
     /** get the currently selected row */
-    const [selectedRow] = useRowSelect(compId, props.dataBook);
+    const [selectedRow] = useRowSelect(screenName, props.dataBook);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -552,7 +554,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }, [props.chartStyle, providerData]);
 
-    useFetchMissingData(compId, props.dataBook);
+    useFetchMissingData(screenName, rootPanel, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

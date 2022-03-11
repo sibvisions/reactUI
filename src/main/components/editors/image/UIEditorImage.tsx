@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useRef } from "react";
 
 /** Hook imports */
-import { useImageStyle, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants } from "../../zhooks";
+import { useImageStyle, useMouseListener, usePopupMenu, useEditorConstants } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -41,8 +41,6 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
 
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

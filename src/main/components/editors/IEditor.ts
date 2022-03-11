@@ -39,12 +39,12 @@ export interface IEditor extends BaseComponent{
     rowIndex?: Function,
     filter?: Function
     isCellEditor: boolean,
-    cellCompId: string,
+    cellScreenName: string,
     context: AppContextType,
     topbar: TopBarContextType,
     layoutStyle?: CSSProperties,
     translation?: Map<string, string>
-    compId:string,
+    screenName:string,
     columnMetaData: NumericColumnDescription|LengthBasedColumnDescription|undefined,
     selectedRow?: any,
     cellStyle?: CSSProperties
