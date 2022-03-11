@@ -198,7 +198,7 @@ class Server {
                             }
                             
                             if (result.code) {
-                                if (400 >= result.code && result.code <= 599) {
+                                if (400 <= result.code && result.code <= 599) {
                                     return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
                                 }
                             }
@@ -224,10 +224,16 @@ class Server {
                         .catch(error => {
                             if (typeof error === "string") {
                                 const splitErr = error.split(".");
-                                this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                const code = error.substring(0, 3);
+                                if (code === "410") {
+                                    this.subManager.emitDialog("server", false, true, splitErr[0], splitErr[1] + ". <u>Click here!</u> or press Escape to retry!");
+                                }
+                                else {
+                                    this.subManager.emitDialog("server", false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                }
                             }
                             else {
-                                this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitDialog("server", false, false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                             }
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorDialogVisible(true);
@@ -271,7 +277,7 @@ class Server {
             const request = this.requestQueue.shift();
             if (request) {
                 this.requestInProgress = true;
-                request().finally(() => {
+                request().catch(() => {}).finally(() => {
                     this.requestInProgress = false;
                     this.advanceRequestQueue();
                 });
@@ -287,7 +293,7 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here to retry!</u> or press Escape to retry!", retry);
+                this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here!</u> or press Escape to retry!", retry);
                 this.subManager.emitErrorDialogVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
@@ -296,7 +302,7 @@ class Server {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
+                    this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
                     this.subManager.emitErrorDialogVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
@@ -740,7 +746,7 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        this.subManager.emitDialog("server", true, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
+        this.subManager.emitDialog("server", true, false, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
         this.subManager.emitErrorDialogVisible(true);
         this.contentStore.reset();
         sessionStorage.clear();

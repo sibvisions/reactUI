@@ -769,7 +769,6 @@ export default class ContentStore{
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
-                console.log(comp, id)
                 if ((comp as IPanel).screen_modal_) {
                     break;
                 }

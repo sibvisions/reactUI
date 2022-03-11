@@ -487,10 +487,6 @@ body {
     }
 }
 
-
-
-
-
 /// *----------Profile-Menu----------*
 .profile-menu {
     border-left: var(--profile-separator);
@@ -1474,6 +1470,10 @@ body {
 .rc-error-dialog {
     background: var(--error-dialog-background);
     color: var(--text-color);
+
+    &.app-gone {
+        background: var(--message-warning-header-background);
+    }
 }
 
 /// TagPanel

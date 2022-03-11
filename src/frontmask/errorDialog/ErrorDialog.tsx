@@ -27,7 +27,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        history.push("/login");
+        //history.push("/login");
         context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();
@@ -36,9 +36,9 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     /**
      * Either starts the session restart or retries the last failed request
      */
-    useEventHandler(props.sessionExpired || props.retry ? document.body : undefined, "keydown", (event) => {
+    useEventHandler(props.sessionExpired ||props.gone || props.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
-            if (props.sessionExpired) {
+            if (props.sessionExpired || props.gone) {
                 if (!alreadySent.current) {
                     alreadySent.current = true;
                     handleRestart();
@@ -49,13 +49,13 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
             }
         }
     });
-
+    
     return (
         <>
             <div className="rc-glasspane" />
-            <div className="rc-error-dialog" tabIndex={0} onClick={() => {
-                if (props.sessionExpired || props.retry) {
-                    if (props.sessionExpired) {
+            <div className={concatClassnames("rc-error-dialog", props.gone ? "app-gone" : "")} tabIndex={0} onClick={() => {
+                if (props.sessionExpired || props.gone || props.retry) {
+                    if (props.sessionExpired || props.gone) {
                         if (!alreadySent.current) {
                             alreadySent.current = true;
                             handleRestart();

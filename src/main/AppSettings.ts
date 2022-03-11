@@ -159,7 +159,7 @@ export default class AppSettings {
      setLoginMode(mode:LoginModeType) {
         this.loginMode = mode;
         if (mode === "changePassword" || mode === "changeOneTimePassword") {
-            this.#subManager.emitDialog("change-password", false);
+            this.#subManager.emitDialog("change-password", false, false);
         }
     }
 
