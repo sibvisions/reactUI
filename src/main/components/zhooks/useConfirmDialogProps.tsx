@@ -32,7 +32,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     useEffect(() => {
         context.subscriptions.subscribeToDialog("message-dialog", (dialog:DialogResponse) => setMessageProps(dialog));
-        context.subscriptions.subscribeToCloseFrame((compId:string) => setClosingFrame(prevState => { return { name: compId, flag:!prevState.flag } }));
+        context.subscriptions.subscribeToCloseFrame((screenName:string) => setClosingFrame(prevState => { return { name: screenName, flag:!prevState.flag } }));
 
         return () => {
             context.subscriptions.unsubscribeFromDialog("message-dialog");

@@ -66,14 +66,16 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id, props.dataBook) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
+
+    const rootPanel = context.contentStore.getRootPanel(props.id) as string;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
     const gauge = useRef<any>(null);
 
-    useFetchMissingData(compId, props.dataBook);
+    useFetchMissingData(screenName, rootPanel, props.dataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

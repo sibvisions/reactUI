@@ -125,13 +125,13 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const topbar = useContext(TopBarContext);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id, props.pointsDataBook || props.groupDataBook) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(screenName, props.groupDataBook);
 
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
 
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<any>();

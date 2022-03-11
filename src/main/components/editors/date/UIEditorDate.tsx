@@ -7,7 +7,7 @@ import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
 
 /** Hook imports */
-import { useFetchMissingData, useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
+import { useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -130,8 +130,6 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     setDateLocale(props.context.appSettings.locale);
 
-    useFetchMissingData(props.compId, props.dataRow);
-
     const isValidDate = (inputDate:any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());
     }
@@ -168,7 +166,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         },0);
 
         return () => {
-            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.compId) !== -1 && props.isCellEditor) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor) {
                 handleDateInput();
             }
         }

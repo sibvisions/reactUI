@@ -4,7 +4,7 @@ import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
-const useFetchMissingData = (compId:string, dataProvider:string) => {
+const useFetchMissingData = (screenName:string, panelName:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -12,14 +12,14 @@ const useFetchMissingData = (compId:string, dataProvider:string) => {
     const topbar = useContext(TopBarContext);
 
     useLayoutEffect(() => {
-        if (dataProvider && !context.contentStore.getDataBook(compId, dataProvider)?.data) {
+        if (dataProvider && !context.contentStore.getDataBook(screenName, dataProvider)?.data) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = dataProvider;
-            if (!context.contentStore.getDataBook(compId, dataProvider)?.metaData) {
+            if (!context.contentStore.getDataBook(screenName, dataProvider)?.metaData) {
                 fetchReq.includeMetaData = true;
             }
-            if (context.contentStore.missingDataCalls.has(compId)) {
-                context.contentStore.missingDataCalls.get(compId)!.set(dataProvider, () => showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar));
+            if (context.contentStore.missingDataCalls.has(panelName)) {
+                context.contentStore.missingDataCalls.get(panelName)!.set(dataProvider, () => showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar));
             }
         }
     }, []);

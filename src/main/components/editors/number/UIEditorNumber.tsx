@@ -5,7 +5,7 @@ import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { InputNumber } from "primereact/inputnumber";
 
 /** Hook imports */
-import { useEventHandler, useFetchMissingData, useMouseListener, usePopupMenu, useEditorConstants } from "../../zhooks"
+import { useEventHandler, useMouseListener, usePopupMenu } from "../../zhooks"
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
@@ -70,8 +70,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     /** If the CellEditor is read-only */
     const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -145,7 +143,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         }
 
         return () => {
-            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.compId) !== -1 && props.isCellEditor && numberInput.current) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor && numberInput.current) {
                 numberInput.current.blur();
             }
         }

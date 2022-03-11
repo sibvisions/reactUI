@@ -38,13 +38,13 @@ const UITree: FC<ITree> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id, props.dataBooks[0]) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBooks[0]) as string;
 
     /** The data provided by the databooks */
-    const providedData = useAllDataProviderData(compId, props.dataBooks);
+    const providedData = useAllDataProviderData(screenName, props.dataBooks);
 
     /** The selected rows of each databook */
-    const selectedRows = useAllRowSelect(compId, props.dataBooks);
+    const selectedRows = useAllRowSelect(screenName, props.dataBooks);
 
     /** State flag which gets switched, if the Tree is supposed to rebuild itself from scratch */
     const [rebuildTree, setRebuildTree] = useState<boolean>(false);
@@ -105,12 +105,12 @@ const UITree: FC<ITree> = (baseProps) => {
      * @returns true if the given databook is self-joined false if it isn't
      */
     const isSelfJoined = useCallback((dataBook:string) => {
-        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined);
         if (metaData?.masterReference)
             return metaData.masterReference.referencedDataBook === dataBook;
         else
             return false;
-    }, [context.contentStore, compId])
+    }, [context.contentStore, screenName])
 
     /**
      * Returns the name of the databook of given level, if the level is too high,
@@ -139,7 +139,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
         const dataBook = getDataBook(path.length() - 1);
-        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined)
+        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined)
         const dataPage = providedData.get(dataBook);
         if (dataPage) {
             if (path.length() === 1) {
@@ -169,7 +169,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(nodeReference.key))
         const fetchDataPage = getDataBook(parentPath.length());
-        const metaData = getMetaData(compId, fetchDataPage, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, fetchDataPage, context.contentStore, undefined);
 
         /**
          * Adds the child nodes to the referenced Node, if they are't already added
@@ -227,7 +227,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 reject()
             }
         })
-    }, [context.contentStore, context.server, compId, getDataBook, props.dataBooks.length, providedData])
+    }, [context.contentStore, context.server, screenName, getDataBook, props.dataBooks.length, providedData])
 
     /**
      * This event is called when a node is expanded, it calls the function to send fetches and sets the treedata
@@ -268,7 +268,7 @@ const UITree: FC<ITree> = (baseProps) => {
             while (path.length() !== 0) {
                 const dataBook = getDataBook(path.length()-1)
                 const dataRow = getDataRow(path, treeData.get(path.getParentPath().toString()));
-                const primaryKeys = getMetaData(compId, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
+                const primaryKeys = getMetaData(screenName, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
                 selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => dataRow[pk])
@@ -357,7 +357,7 @@ const UITree: FC<ITree> = (baseProps) => {
         //If the last databook is self-joined, some additional fetches need to be performed
         if (isSelfJoined(lastDatabook)) {
             const responseValue = sortedSR.get(lastDatabook);
-            const metaData = getMetaData(compId, lastDatabook, context.contentStore, undefined);
+            const metaData = getMetaData(screenName, lastDatabook, context.contentStore, undefined);
             const selfJoinedPath = responseValue.treePath.getChildPath(responseValue.index);
             //init the previous row with the root reference
             let prevRow = getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames);
@@ -398,7 +398,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     useEffect(() => {
         const firstLvlDataBook = props.dataBooks[0];
-        const metaData = getMetaData(compId, firstLvlDataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;

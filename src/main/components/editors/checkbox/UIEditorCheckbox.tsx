@@ -5,13 +5,12 @@ import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { Checkbox } from 'primereact/checkbox';
 
 /** Hook imports */
-import { useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useMouseListener, usePopupMenu } from "../../zhooks";
 
 /** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent } from "../../util";
 import { getAlignments } from "../../compprops";
-import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
@@ -39,8 +38,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
-
-    useFetchMissingData(props.compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

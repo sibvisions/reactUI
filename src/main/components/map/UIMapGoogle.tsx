@@ -55,13 +55,13 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id, props.pointsDataBook || props.groupDataBook) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(screenName, props.groupDataBook);
 
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
 
     const markerArray = useRef<Array<google.maps.Marker>>(new Array<google.maps.Marker>());
 

@@ -34,7 +34,7 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             stopCellEditing: stopCellEditing,
             passedKey: passedValues,
             isCellEditor: true,
-            cellCompId: props.dataProvider.split("/")[1]}} />
+            cellScreenName: props.dataProvider.split("/")[1]}} />
         // editor = createEditor({
         //     ...metaData,
         //     name: props.name,
@@ -47,7 +47,7 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
         //     stopCellEditing: stopCellEditing,
         //     passedKey: passedValues,
         //     isCellEditor: true,
-        //     cellCompId: props.dataProvider.split("/")[1]
+        //     cellScreenName: props.dataProvider.split("/")[1]
         // }) || editor;
     }
     return editor

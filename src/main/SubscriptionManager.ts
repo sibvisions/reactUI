@@ -14,41 +14,41 @@ export class SubscriptionManager {
 
     /** 
      * A Map which stores components which want to subscribe to their properties, 
-     * the key is the component id and the value is a function to update the state of the properties 
+     * the key is the screen name and the value is a function to update the state of the properties 
      */
     propertiesSubscriber = new Map<string, Function>();
 
     /**
      * A Map which stores a function to update the state of a parents childcomponents, components which use the 
-     * useComponents hook subscribe to the parentSubscriber the key is the component id and the 
+     * useComponents hook subscribe to the parentSubscriber the key is the screen name and the 
      * value is a function to update the state of a parents childcomponents
      */
     parentSubscriber = new Map<string, Function>();
 
     /**
      * A Map which stores an Array of functions to update the state of a screens dataProviders, components which use
-     * the useDataProviders hook subscribe to a screens dataProvider, the key is a screen component id and the
+     * the useDataProviders hook subscribe to a screens dataProvider, the key is a screen screen name and the
      * value is an Array of functions to update the subscribers dataProviders state
      */
     dataProvidersSubscriber = new Map<string, Array<Function>>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the 
-     * useRowSelect hook, subscribe to the changes of a screens dataproviders selectedRow, the key is the screens component id and the
+     * useRowSelect hook, subscribe to the changes of a screens dataproviders selectedRow, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers selectedRow state
      */
     rowSelectionSubscriber = new Map<string, Map<string, Array<Function>>>();
 
     /**
-     * A Map which stores a function to update a components state of all dataproviders selected-row, key is the screens component id
+     * A Map which stores a function to update a components state of all dataproviders selected-row, key is the screens screen name
      * and value is the function to update the state
      */
     screenRowSelectionSubscriber = new Map<string, Function>();
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens component id and the
+     * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers data state
      */
@@ -56,14 +56,14 @@ export class SubscriptionManager {
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useMetadata hook, subscribe to the changes of a screens dataproviders metadata, the key is the screens component id and the
+     * useMetadata hook, subscribe to the changes of a screens dataproviders metadata, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers metadata state
      */
     metaDataSubscriber = new Map<string, Map<string, Array<Function>>>();
 
     /**
-     * A Map which stores a function to update a components state of all dataproviders data, key is the screens component id
+     * A Map which stores a function to update a components state of all dataproviders data, key is the screens screen name
      * value is the function to update the state
      */
     screenDataChangeSubscriber = new Map<string, Function>();
@@ -110,7 +110,7 @@ export class SubscriptionManager {
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useSortDefinitions hook, subscribe to the changes of a screens sort-definitions, the key is the screens component id and the
+     * useSortDefinitions hook, subscribe to the changes of a screens sort-definitions, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers sort-definition state
      */
@@ -155,9 +155,9 @@ export class SubscriptionManager {
         this.appSettings = appSettings
     }
 
-    handleCompIdDataProviderSubscriptions(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
+    handleScreenDataProviderSubscriptions(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
         /** Checks if there is already a Map for the dataChangeSubscriber */
-        const existingMap = subs.get(compId);
+        const existingMap = subs.get(screenName);
         if (existingMap) {
             /** Checks if there already is a function array of other components, if yes add the new function if not add the dataprovider with an array */
             const subscriber = existingMap.get(dataProvider);
@@ -171,19 +171,19 @@ export class SubscriptionManager {
         else {
             const tempMap:Map<string, Array<Function>> = new Map();
             tempMap.set(dataProvider, new Array<Function>(fn));
-            subs.set(compId, tempMap);
+            subs.set(screenName, tempMap);
         }
     }
 
-    handleCompIdDataProviderUnsubs(compId:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
-        const subscriber = subs.get(compId)?.get(dataProvider)
+    handleScreenDataProviderUnsubs(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
+        const subscriber = subs.get(screenName)?.get(dataProvider)
         if(subscriber)
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
     /**
      * Subscribes the component which uses the useProperties hook, with the id to property changes
-     * @param id - the component id
+     * @param id - the screen name
      * @param fn - the function to update the component's properties state
      */
     subscribeToPropChange(id: string, fn: Function){
@@ -192,7 +192,7 @@ export class SubscriptionManager {
 
     /**
      * Subscribes parents which use the useComponents hook, to change their childcomponent state
-     * @param id - the component id
+     * @param id - the screen name
      * @param fn - the function to update a parents childcomponent state
      */
     subscribeToParentChange(id: string, fn: Function){
@@ -201,64 +201,64 @@ export class SubscriptionManager {
 
     /**
      * Subscribes components which use the useDataProviders hook, to change their dataProviders state
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param fn - the function to update the dataProviders state
      */
-    subscribeToDataProviders(compId:string, fn:Function) {
+    subscribeToDataProviders(screenName:string, fn:Function) {
         /** Check if there is already a function array for this screen */
-        const subscriber = this.dataProvidersSubscriber.get(compId);
+        const subscriber = this.dataProvidersSubscriber.get(screenName);
         if (subscriber)
             subscriber.push(fn)
         else
-            this.dataProvidersSubscriber.set(compId, new Array<Function>(fn));
+            this.dataProvidersSubscriber.set(screenName, new Array<Function>(fn));
     }
 
     /**
      * Subscribes components which use the useRowSelect hook, to change their selectedRow state
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the selectedRow state
      */
-    subscribeToRowSelection(compId:string, dataProvider: string, fn: Function) {
-        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.rowSelectionSubscriber);
+    subscribeToRowSelection(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.rowSelectionSubscriber);
     }
 
     /**
      * Subscribes components which use the useDataProviderData hook, to change their data state
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    subscribeToDataChange(compId:string, dataProvider: string, fn: Function) {
-        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.dataChangeSubscriber);
+    subscribeToDataChange(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.dataChangeSubscriber);
     }
 
     /**
      * Subscribes components which use the useMetadata hook, to change their metadata state
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    subscribeToMetaData(compId:string, dataProvider:string, fn: Function) {
-        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.metaDataSubscriber);
+    subscribeToMetaData(screenName:string, dataProvider:string, fn: Function) {
+        this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.metaDataSubscriber);
     }
 
     /**
      * Subscribes a component to its screen-data (every dataprovider data)
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param fn - the function to update the state
      */
-    subscribeToScreenDataChange(compId:string, fn:Function) {
-        this.screenDataChangeSubscriber.set(compId, fn)
+    subscribeToScreenDataChange(screenName:string, fn:Function) {
+        this.screenDataChangeSubscriber.set(screenName, fn)
     }
 
     /**
      * Subscribes a component to its dataproviders selected-rows
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param fn - the function to update the state
      */
-    subscribeToScreenRowChange(compId:string, fn:Function) {
-        this.screenRowSelectionSubscriber.set(compId, fn);
+    subscribeToScreenRowChange(screenName:string, fn:Function) {
+        this.screenRowSelectionSubscriber.set(screenName, fn);
     }
 
     /**
@@ -279,7 +279,7 @@ export class SubscriptionManager {
 
     /**
      * Subscribes components to menuChanges (menu-collapsed), to change their menu-collapsed state
-     * @param id - the component id
+     * @param id - the screen name
      * @param fn - the function to update the menu-collapsed state
      */
     subscribeToMenuCollapse(id:string, fn: Function) {
@@ -317,12 +317,12 @@ export class SubscriptionManager {
 
     /**
      * Subscribes components to sort-definition, to change their sort-definition state
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the state
      */
-    subscribeToSortDefinitions(compId:string, dataProvider:string, fn:Function) {
-        this.handleCompIdDataProviderSubscriptions(compId, dataProvider, fn, this.sortDefinitionSubscriber);
+    subscribeToSortDefinitions(screenName:string, dataProvider:string, fn:Function) {
+        this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.sortDefinitionSubscriber);
     }
 
     /**
@@ -434,64 +434,64 @@ export class SubscriptionManager {
 
     /**
     * Unsubscribes components from dataProviders
-    * @param compId - the component id of the screen
+    * @param screenName - the screen name of the screen
     * @param fn - the function to update the dataProvider state
     */
-    unsubscribeFromDataProviders(compId:string, fn: Function) {
-        const subscriber = this.dataProvidersSubscriber.get(compId);
+    unsubscribeFromDataProviders(screenName:string, fn: Function) {
+        const subscriber = this.dataProvidersSubscriber.get(screenName);
         if (subscriber)
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn), 1)
     }
 
     /**
      * Unsubscibes components from dataChange
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-    unsubscribeFromDataChange(compId:string, dataProvider: string, fn: Function) {
-        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.dataChangeSubscriber);
+    unsubscribeFromDataChange(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.dataChangeSubscriber);
     }
 
     /**
      * Unsubscibes components from dataChange
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
      */
-     unsubscribeFromMetaData(compId:string, dataProvider: string, fn: Function) {
-        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.metaDataSubscriber);
+     unsubscribeFromMetaData(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.metaDataSubscriber);
     }
 
     /**
      * Unsubscribes a component from its screen-data (every dataprovider data)
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      */
-    unsubscribeFromScreenDataChange(compId:string) {
-        this.screenDataChangeSubscriber.delete(compId);
+    unsubscribeFromScreenDataChange(screenName:string) {
+        this.screenDataChangeSubscriber.delete(screenName);
     }
 
     /**
      * Unsubscribes a component from its dataproviders selected-rows
-     * @param compId 
+     * @param screenName 
      */
-    unsubscribeFromScreenRowChange(compId:string) {
-        this.screenRowSelectionSubscriber.delete(compId);
+    unsubscribeFromScreenRowChange(screenName:string) {
+        this.screenRowSelectionSubscriber.delete(screenName);
     }
 
     /**
      * Unsubscribes a component from rowSelection
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the selectedRow state
      */
-    unsubscribeFromRowSelection(compId:string, dataProvider: string, fn: Function){
-        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.rowSelectionSubscriber);
+    unsubscribeFromRowSelection(screenName:string, dataProvider: string, fn: Function){
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.rowSelectionSubscriber);
     }
 
     /**
      * Unsubscribes a component from parentChanges
-     * @param id - the component id
+     * @param id - the screen name
      */
     unsubscribeFromParentChange(id: string){
         this.parentSubscriber.delete(id);
@@ -499,7 +499,7 @@ export class SubscriptionManager {
 
     /**
      * Unsubscribes a component from property changes
-     * @param id - the component id
+     * @param id - the screen name
      */
     unsubscribeFromPropChange(id: string){
         this.propertiesSubscriber.delete(id);
@@ -507,7 +507,7 @@ export class SubscriptionManager {
 
     /**
      * Unsubscribes a component from screen-name changes
-     * @param id - the component id
+     * @param id - the screen name
      */
     unsubscribeFromScreenTitle() {
         this.screenTitleSubscriber = () => {}
@@ -515,7 +515,7 @@ export class SubscriptionManager {
 
     /**
      * Unsubscribes a component from menu-collapse
-     * @param id - the component id
+     * @param id - the screen name
      */
     unsubscribeFromMenuCollapse(id:string) {
         this.menuCollapseSubscriber.delete(id);
@@ -568,12 +568,12 @@ export class SubscriptionManager {
 
     /**
      * Unsubscribes a component from sort-definition
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update sort-definition
      */
-    unsubscribeFromSortDefinitions(compId:string, dataProvider:string, fn: Function) {
-        this.handleCompIdDataProviderUnsubs(compId, dataProvider, fn, this.sortDefinitionSubscriber);
+    unsubscribeFromSortDefinitions(screenName:string, dataProvider:string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.sortDefinitionSubscriber);
     }
     
     /**
@@ -624,36 +624,36 @@ export class SubscriptionManager {
 
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
-     * @param compId 
+     * @param screenName 
      */
-    notifyDataProviderChange(compId:string) {
-        this.dataProvidersSubscriber.get(compId)?.forEach(subFunction => subFunction.apply(undefined, []));
+    notifyDataProviderChange(screenName:string) {
+        this.dataProvidersSubscriber.get(screenName)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
      * Notifies the components which use the useDataProviderData hook that their data changed
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      */
-    notifyDataChange(compId:string, dataProvider: string) {
-        this.dataChangeSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+    notifyDataChange(screenName:string, dataProvider: string) {
+        this.dataChangeSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
      * Notifies the components which use the useMetadata hook that their metadata changed
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      */
-     notifyMetaDataChange(compId:string, dataProvider: string) {
-        this.metaDataSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+     notifyMetaDataChange(screenName:string, dataProvider: string) {
+        this.metaDataSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
      * Notifies the components which use the useAllDataProviderData hook that the data of their screen changed
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      */
-    notifyScreenDataChange(compId:string) {
-        this.screenDataChangeSubscriber.get(compId)?.apply(undefined, []);
+    notifyScreenDataChange(screenName:string) {
+        this.screenDataChangeSubscriber.get(screenName)?.apply(undefined, []);
     }
 
     /**
@@ -677,25 +677,25 @@ export class SubscriptionManager {
     }
 
     /**
-     * Notifies every subscribed component of given compId and dataProvider
-     * @param compId 
+     * Notifies every subscribed component of given screenName and dataProvider
+     * @param screenName 
      * @param dataProvider 
      */
-    notifySortDefinitionChange(compId:string, dataProvider:string) {
-        this.sortDefinitionSubscriber.get(compId)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+    notifySortDefinitionChange(screenName:string, dataProvider:string) {
+        this.sortDefinitionSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
      * When a new row is selected add the row selection to the jobQueue to avoid multiple state updates
-     * @param compId - the component id of the screen
+     * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      */
-     emitRowSelect(compId:string, dataProvider: string) {
-        const rowSubscriber = this.rowSelectionSubscriber.get(compId)?.get(dataProvider);
-        const screenRowSubs = this.screenRowSelectionSubscriber.get(compId);
-        const selectedRow = this.contentStore.getDataBook(compId, dataProvider)?.selectedRow;
+     emitRowSelect(screenName:string, dataProvider: string) {
+        const rowSubscriber = this.rowSelectionSubscriber.get(screenName)?.get(dataProvider);
+        const screenRowSubs = this.screenRowSelectionSubscriber.get(screenName);
+        const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow;
         if(rowSubscriber) {
-            //this.jobQueue.set("rowSelect_" + dataProvider + "_" + compId, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
+            //this.jobQueue.set("rowSelect_" + dataProvider + "_" + screenName, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
             /// Removed JobQueue because upload didn't work anymore, JobQueue is possibly not needed anymore or when problems with multiple rowSelections occur we need it back
             rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
         }
@@ -777,8 +777,8 @@ export class SubscriptionManager {
         this.messageSubscriber.apply(undefined, [messageResponse, err]);
     }
 
-    emitCloseFrame(compId:string) {
-        this.closeFrameSubscriber.apply(undefined, [compId]);
+    emitCloseFrame(screenName:string) {
+        this.closeFrameSubscriber.apply(undefined, [screenName]);
     }
 
     emitActiveScreens() {

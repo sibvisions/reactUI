@@ -504,7 +504,11 @@ class Server {
 
     //Dal
 
-    getCompId(dataProvider:string) {
+    /**
+     * Returns the screen name
+     * @param dataProvider - the dataprovider
+     */
+    getScreenName(dataProvider:string) {
         const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
         if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
             return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
@@ -520,27 +524,27 @@ class Server {
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string) {
-        const compId = this.getCompId(dataProvider);
+        const screenName = this.getScreenName(dataProvider);
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
-            const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
+            const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
+            this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
         } 
         else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
-                const selectedRow = this.contentStore.getDataRow(compId, dataProvider, treePath.getLast());
-                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
+                const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, treePath.getLast());
+                this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
             }
             else {
-                //this.contentStore.clearSelectedRow(compId, dataProvider);
-                this.contentStore.setSelectedRow(compId, dataProvider, {}, -1, undefined, selectedColumn)
+                //this.contentStore.clearSelectedRow(screenName, dataProvider);
+                this.contentStore.setSelectedRow(screenName, dataProvider, {}, -1, undefined, selectedColumn)
             }
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
-            if(this.contentStore.getDataBook(compId, dataProvider)?.selectedRow) {
-                const selectedRow = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.dataRow;
-                const idx = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.index;
-                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
+            if(this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow) {
+                const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)!.selectedRow!.dataRow;
+                const idx = this.contentStore.getDataBook(screenName, dataProvider)!.selectedRow!.index;
+                this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, idx, treePath, selectedColumn);
             }
         }
     }
@@ -591,13 +595,13 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
-        const compId = this.getCompId(fetchData.dataProvider);
+        const screenName = this.getScreenName(fetchData.dataProvider);
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
                 
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
-            compId, 
+            screenName, 
             fetchData.dataProvider, 
             builtData, 
             fetchData.to, 
@@ -608,13 +612,13 @@ class Server {
             fetchData.clear
         );
 
-        if (this.contentStore.getDataBook(compId, fetchData.dataProvider)) {
-            this.contentStore.getDataBook(compId, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
+        if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
+            this.contentStore.getDataBook(screenName, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
         }
         
-        this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
+        this.contentStore.setSortDefinition(screenName, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
-        const selectedColumn = this.contentStore.getDataBook(compId, fetchData.dataProvider)?.selectedRow?.selectedColumn;
+        const selectedColumn = this.contentStore.getDataBook(screenName, fetchData.dataProvider)?.selectedRow?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
     }
 
@@ -625,17 +629,17 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = this.getCompId(changedProvider.dataProvider);
+        const screenName = this.getScreenName(changedProvider.dataProvider);
 
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
-            this.contentStore.updateDataProviderData(compId, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
-            const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn
+            this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
+            const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
         else {
             if(changedProvider.reload === -1) {
-                this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
+                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
                 await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
@@ -648,20 +652,20 @@ class Server {
                 await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
             }
             else {
-                const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
+                const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
                 this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
             }
         }
     }
 
     /**
-     * Checks if some metaData already exists for this compId and either sets new/updated metaData in existing map or creates new map for metadata
+     * Checks if some metaData already exists for this screenName and either sets new/updated metaData in existing map or creates new map for metadata
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = this.getCompId(metaData.dataProvider);
-        const compPanel = this.contentStore.getComponentByName(compId) as IPanel;
-        const existingMap = this.contentStore.getScreenDataproviderMap(compId);
+        const screenName = this.getScreenName(metaData.dataProvider);
+        const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
+        const existingMap = this.contentStore.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {
                 (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
@@ -673,9 +677,9 @@ class Server {
         else {
             const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
             tempMap.set(metaData.dataProvider, {metaData: metaData})
-            this.contentStore.dataBooks.set(compId, tempMap);
+            this.contentStore.dataBooks.set(screenName, tempMap);
         }
-        this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
+        this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
         if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
             this.subManager.notifyMetaDataChange(metaData.dataProvider.split('/')[1], metaData.dataProvider);
         }
