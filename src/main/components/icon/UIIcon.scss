@@ -1,9 +1,6 @@
-/// Validator needs extra alignment
-.rc-validator {
+.rc-icon {
     display: flex;
     align-items: center;
-}
-
-.rc-icon {
+    justify-content: center;
     pointer-events: none;
 }

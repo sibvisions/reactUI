@@ -34,7 +34,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current);
+    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -48,7 +48,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>

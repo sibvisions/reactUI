@@ -92,7 +92,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const reportSize = useCallback((prefSize:Dimension, minSize?:Dimension) => {
         panelReportSize(
             id, 
-            "S", 
+            "P", 
             prefSize,
             props.className,
             { height: 17, width: 17 },

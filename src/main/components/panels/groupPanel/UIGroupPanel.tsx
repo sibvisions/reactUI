@@ -52,7 +52,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }, [onLoadCallback])
+    }, [onLoadCallback]);
 
     return (
         <>
@@ -69,7 +69,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 data-pr-position="left" >
                 <div
                     className="rc-panel-group-caption"
-                    style={{ fontFamily: compStyle.fontFamily, fontWeight: compStyle.fontWeight, fontStyle: compStyle.fontStyle, fontSize: compStyle.fontSize }}>
+                    style={{ ...compStyle }}>
                     <span>
                         {props.text}
                     </span>

@@ -52,12 +52,18 @@ class API {
         if (parameter) {
             openReq.parameter = parameter;
         }
+
+        this.#server.lastOpenedScreen = id;
+
         return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
     }
 
     sendOpenScreenIntern(id:string) {
         const openReq = createOpenScreenRequest();
         openReq.componentId = id;
+
+        this.#server.lastOpenedScreen = id;
+
         return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
     }
 

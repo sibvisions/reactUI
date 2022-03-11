@@ -21,25 +21,33 @@ function translateAlignments(pha:number|undefined, pva:number|undefined):Alignme
     let ha:string|undefined;
     let va:string|undefined;
 
-    if (pha === HORIZONTAL_ALIGNMENT.LEFT)
+    if (pha === HORIZONTAL_ALIGNMENT.LEFT) {
         ha = "flex-start";
-    else if (pha === HORIZONTAL_ALIGNMENT.CENTER)
+    }
+    else if (pha === HORIZONTAL_ALIGNMENT.CENTER) {
         ha = "center";
-    else if (pha === HORIZONTAL_ALIGNMENT.RIGHT)
+    }
+    else if (pha === HORIZONTAL_ALIGNMENT.RIGHT) {
         ha = "flex-end";
-    else if (pha === HORIZONTAL_ALIGNMENT.STRETCH)
+    }
+    else if (pha === HORIZONTAL_ALIGNMENT.STRETCH) {
         ha = "stretch";
-
-    if (pva === VERTICAL_ALIGNMENT.TOP)
+    }
+        
+    if (pva === VERTICAL_ALIGNMENT.TOP) {
         va = "flex-start";
-    else if (pva === VERTICAL_ALIGNMENT.CENTER)
+    }
+    else if (pva === VERTICAL_ALIGNMENT.CENTER) {
         va = "center";
-    else if (pva === VERTICAL_ALIGNMENT.BOTTOM)
+    }
+    else if (pva === VERTICAL_ALIGNMENT.BOTTOM) {
         va = "flex-end";
-    else if (pva === VERTICAL_ALIGNMENT.STRETCH)
+    }
+    else if (pva === VERTICAL_ALIGNMENT.STRETCH) {
         va = "stretch";
-    
-    return {ha, va}
+    }
+
+    return {ha, va};
 }
 
 function isEditor(props:IEditor|BaseComponent): props is IEditor {
