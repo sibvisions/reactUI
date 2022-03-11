@@ -769,16 +769,19 @@ export default class ContentStore{
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
+                console.log(comp, id)
                 if ((comp as IPanel).screen_modal_) {
                     break;
                 }
                 else if ((comp as IPanel).content_modal_) {
                     return dataProvider ? dataProvider.split("/")[1] : comp.name;
                 }
-                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+
                 if (comp?.parent?.includes("IF")) {
                     break;
                 }
+
+                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }
         return comp?.name
@@ -832,6 +835,8 @@ export default class ContentStore{
         clear?:boolean
     ) {
         const compPanel = this.getComponentByName(compId) as IPanel;
+
+        console.log(compId, dataProvider)
         
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
