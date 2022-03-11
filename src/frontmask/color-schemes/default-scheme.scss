@@ -407,6 +407,8 @@
 
     /// Default invalid editor background
     --invalid-background: rgb(209, 51, 51);
+
+    --gone-background: #ffcf40dd;
 }
 
 body {
@@ -1472,7 +1474,7 @@ body {
     color: var(--text-color);
 
     &.app-gone {
-        background: var(--message-warning-header-background);
+        background: var(--gone-background);
     }
 }
 

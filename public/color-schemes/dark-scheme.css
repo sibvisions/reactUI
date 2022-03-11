@@ -134,7 +134,8 @@
   --topbar-colors: #2196F3, #2196F3;
   --mandatory-background: rgb(255, 244, 210);
   --readonly-background: #2a323d;
-  --invalid-background: rgb(209, 51, 51); }
+  --invalid-background: rgb(209, 51, 51);
+  --gone-background: #b69425dd; }
 
 body {
   background: var(--screen-background);
@@ -744,7 +745,7 @@ body {
   background: var(--error-dialog-background);
   color: var(--text-color); }
   .rc-error-dialog.app-gone {
-    background: var(--message-warning-header-background); }
+    background: var(--gone-background); }
 
 .tag-panel {
   color: #495057; }
