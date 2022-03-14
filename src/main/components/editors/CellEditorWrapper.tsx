@@ -1,4 +1,3 @@
-/** React imports */
 import { FC } from "react";
 import { createEditor } from "../../factories/UIFactory";
 import { useEditorConstants, useFetchMissingData } from "../zhooks";
@@ -11,6 +10,7 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
     const [context, topbar, [props], layoutStyle, translations, screenName, rootPanel, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
 
+    // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(props.screenName, rootPanel, props.dataRow);
 
     return createEditor(

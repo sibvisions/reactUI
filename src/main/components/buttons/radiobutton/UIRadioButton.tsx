@@ -1,19 +1,9 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { RadioButton } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
-
-/** Other imports */
 import { IButtonSelectable } from "..";
-import { createSetValueRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue} from "../../util";
-import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**

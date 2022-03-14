@@ -1,3 +1,7 @@
+/**
+ * Returns the mapped className of an icon based on the received icon-name
+ * @param icon  
+ */
 export function convertIcon(icon:string) {
     switch (icon) {
         case 'glass':

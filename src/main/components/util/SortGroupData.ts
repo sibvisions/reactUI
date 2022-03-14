@@ -1,4 +1,3 @@
-/** 3rd Party imports */
 import { LatLngExpression } from "leaflet";
 
 /**

@@ -1,17 +1,9 @@
-/** React imports */
-import React, { CSSProperties, FC, useCallback, useEffect, useRef } from "react";
-
-/** 3rd Party imports */
+import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
 import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
-
 
 /**
  * This component is a panel with a header, useful to group components

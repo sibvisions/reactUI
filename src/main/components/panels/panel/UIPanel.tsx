@@ -1,13 +1,6 @@
-/** React imports */
 import React, { FC, useCallback, useEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
 import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
 import BaseComponent from "../../BaseComponent";
@@ -70,6 +63,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback])
 
+    /** When the panel is visible call each missing data call (useFetchMissingData) */
     useEffect(() => {
         if (layoutStyle?.visibility !== "hidden" && props.parent === undefined) {
             context.contentStore.missingDataCalls.get(props.name)?.forEach((call, key) => {

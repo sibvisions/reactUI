@@ -10,6 +10,10 @@ type ScreenAPIType = {
     removeComponent: (name:string) => void
 }
 
+/**
+ * Returns functions of the api class for screens without being forced to enter the screen-name everytime
+ * @param screenName - the screen name
+ */
 const useScreen = (screenName: string): ScreenAPIType => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

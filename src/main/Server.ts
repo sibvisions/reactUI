@@ -845,7 +845,7 @@ class Server {
     }
 
     closeFrame(closeFrameData:CloseFrameResponse) {
-        this.subManager.emitCloseFrame(closeFrameData.componentId);
+        this.subManager.emitCloseFrame();
     }
 
     content(contentData:ContentResponse) {

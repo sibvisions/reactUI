@@ -1,15 +1,8 @@
 /** React imports */
 import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-
-/** 3rd Party imports */
 import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
-
-/** Hook imports */
 import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
 import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../util";

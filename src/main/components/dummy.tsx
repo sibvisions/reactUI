@@ -1,7 +1,4 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** Other imports */
 import BaseComponent from "./BaseComponent";
 import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "./util";
 import { useLayoutValue } from "./zhooks";
@@ -18,6 +15,7 @@ const Dummy: FC<BaseComponent> = (props) => {
     /** Reference for the dummy */
     const ref = useRef<HTMLSpanElement>(null);
 
+    // Logs the missing components properties
     useLayoutEffect(() => {
         console.log(props.id, props)
     },[])

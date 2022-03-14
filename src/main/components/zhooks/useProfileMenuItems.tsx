@@ -8,6 +8,9 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
 import { version } from "../../../../package.json";
 
+/**
+ * Returns the profile-menu-options and handles the actions of each option.
+ */
 const useProfileMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -38,13 +41,6 @@ const useProfileMenuItems = () => {
         const currUser = context.contentStore.currentUser;
         const profileMenuItems = changePwEnabled ? 
             [
-                // {
-                //     label: "Settings",
-                //     icon: "pi pi-cog",
-                //     command: () => {
-                //         context.server.routingDecider([{ name: "settings" }])
-                //     }
-                // },
                 {
                     label: translations.get("Change password"),
                     icon: "pi pi-lock-open",
@@ -68,13 +64,6 @@ const useProfileMenuItems = () => {
                 }
             ] :
             [
-                // {
-                //     label: "Settings",
-                //     icon: "pi pi-cog",
-                //     command: () => {
-                //         context.server.routingDecider([{ name: "settings" }])
-                //     }
-                // },
                 {
                     label: translations.get("Logout"),
                     icon: "pi pi-power-off",

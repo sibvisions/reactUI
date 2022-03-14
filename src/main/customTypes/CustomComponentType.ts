@@ -1,4 +1,3 @@
-/** React imports */
 import { ReactElement } from "react";
 
 /** Interface for CustomComponents */

@@ -1,16 +1,9 @@
-/** React imports */
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../zhooks";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { getMarkerIcon, 
          parseMapLocation, 
@@ -58,6 +51,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
 
+    /** The positioning and size of the component */
     const layoutStyle = useLayoutValue(baseProps.id);
 
     /** Current state of the properties for the component sent by the server */
@@ -75,6 +69,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** The popup-menu of the map */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */

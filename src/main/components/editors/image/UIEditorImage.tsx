@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, useEffect, useRef } from "react";
-
-/** Hook imports */
-import { useImageStyle, useMouseListener, usePopupMenu, useEditorConstants } from "../../zhooks";
-
-/** Other imports */
+import { useImageStyle, useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -27,9 +22,6 @@ export interface IEditorImage extends IEditor{
  * @param props - Initial properties sent by the server for this component
  */
 const UIEditorImage: FC<IEditorImage> = (props) => {
-    /** Use props.context to gain access for contentstore and server methods */
-    //const props.context = useprops.context(appprops.context);
-
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
@@ -45,8 +37,10 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (!props.cellEditor.defaultImageName || !props.selectedRow) {
             const prefSize:Dimension = {width: 0, height: 0}

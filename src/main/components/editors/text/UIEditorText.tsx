@@ -1,17 +1,10 @@
-/** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
-
-/** Hook imports */
 import { useMouseListener, usePopupMenu } from "../../zhooks"
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { getTextAlignment } from "../../compprops";
 import { sendSetValues, 
@@ -206,8 +199,10 @@ const UIEditorText: FC<IEditorText> = (props) => {
     /** Reference if escape has been pressed */
     const escapePressed = useRef<boolean>(false)
 
+    /** True, if HTML-Editor should display source */
     const [showSource, setShowSource] = useState<boolean>(false);
 
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
     /** If the CellEditor is read-only */
@@ -216,6 +211,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Returns the field-type of the TextCellEditor */
     const getFieldType = useCallback(() => {
         const contentType = props.cellEditor.contentType
         if (contentType?.includes("multiline")) {
@@ -232,8 +228,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
         }
     }, [props.cellEditor.contentType])
 
+    //FieldType value of the TextCellEditor
     const fieldType = useMemo(() => getFieldType(), [getFieldType]) 
 
+    /**
+     * Returns the className of the field-type
+     * @param fieldType - the field-type of the TextCellEditor
+     */
     const getClassName = (fieldType:FieldTypes) => {
         if (fieldType === FieldTypes.TEXTAREA) {
             return "rc-editor-textarea";
@@ -262,12 +263,14 @@ const UIEditorText: FC<IEditorText> = (props) => {
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
 
+    // If the CellEditor is in a table and a button was pressed to open it, set "" as value
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
             setText("");
         }
     }, [])
 
+    // Textfield onkeydown handling, Saving on "enter" and "tab" not saving on "esc"
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         handleEnterKey(event, event.target, name, stopCellEditing);
@@ -283,6 +286,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         }
     }, [name, stopCellEditing, props.isCellEditor]);
 
+    // TextArea onkeydown handling, Saving on "enter + shift" and "tab" not saving on "esc". Normal enter is next line
     const taOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (event.key === "Enter" && event.shiftKey) {
@@ -300,6 +304,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         }
     },[name, stopCellEditing, props.isCellEditor])
 
+    // Similar to tfOnKeyDown but blurring doesn't work like in textfield
     const pwOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
@@ -314,6 +319,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         }
     }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
 
+    // Returns PrimeReact properties for each fieldtypes have in common.
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {

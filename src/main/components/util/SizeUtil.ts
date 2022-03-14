@@ -1,4 +1,3 @@
-/** Other imports */
 import { MapLocation, Dimension } from ".";
 import BaseComponent from "../BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
@@ -6,7 +5,7 @@ import { ComponentSizes } from "../zhooks";
 
 /**
  * Splits up the given size and returns it as a Size object
- * @param size - the size for the component
+ * @param prefSize - the size for the component
  * @returns split up size as object 
  */
 export function parsePrefSize(prefSize:string|undefined):Dimension|undefined {
@@ -18,6 +17,10 @@ export function parsePrefSize(prefSize:string|undefined):Dimension|undefined {
         return undefined;
 }
 
+/**
+ * Returns the minimum-size string into a Dimension object.
+ * @param minSize - the minimum-size string sent by the server
+ */
 export function parseMinSize(minSize:string|undefined):Dimension|undefined {
     if (minSize) {
         const sizeSplitted = minSize.split(',');
@@ -28,6 +31,10 @@ export function parseMinSize(minSize:string|undefined):Dimension|undefined {
     }
 }
 
+/**
+ * Returns the maximum-size string into a Dimension object.
+ * @param maxSize - the minimum-size string sent by the server
+ */
 export function parseMaxSize(maxSize:string|undefined):Dimension|undefined {
     if (maxSize) {
         const sizeSplitted = maxSize.split(',');
@@ -66,6 +73,12 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
     return undefined;
 }
 
+/**
+ * Returns the minimum-size of a component and handles special cases
+ * @param component - the component whose minimum-size is wanted
+ * @param componentSizes - a panels/layouts compSizes map in which the minimumSizes are saved
+ * @returns 
+ */
 export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
     if (componentSizes.has(component.id)) {

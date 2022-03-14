@@ -1,4 +1,3 @@
-/** Other imports */
 import { parseIconData, IconProps } from "../compprops";
 
 /**

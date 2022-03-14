@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC } from "react"
-
-/** Other imports */
 import BaseComponent from "../components/BaseComponent";
-
-/** UI and Interface Imports */
 import { UIGroupPanel,
         UIPanel,
         UIPopupWrapper,

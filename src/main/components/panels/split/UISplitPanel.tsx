@@ -1,12 +1,6 @@
-/** React imports */
-import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
+import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
 import SplitPanel from "./SplitPanel";
-import { appContext } from "../../../AppProvider";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../BaseComponent";
 import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../util";
@@ -76,6 +70,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes])
 
+    // Callback which is passed to splitpanel and called initially
     const sendLoadCallback = () => {
         const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
         if (onLoadCallback) {

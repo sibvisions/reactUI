@@ -1,11 +1,9 @@
-/** React imports */
 import { CSSProperties } from "react";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { IEditor } from "../editors";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
 
+// Alignment interface with horizontal und vertical alignment
 export interface Alignments {
     ha?: string,
     va?: string
@@ -85,6 +83,10 @@ export function getAlignments(props: IEditor|BaseComponent):Alignments {
     }
 }
 
+/**
+ * Returns the translated text-alignment of a component
+ * @param pha - the horizontal alignment of a component
+ */
 export function translateTextAlign(pha:number|undefined): CSSProperties {
     if (pha === HORIZONTAL_ALIGNMENT.LEFT)
         return {textAlign: "left"};
@@ -96,6 +98,10 @@ export function translateTextAlign(pha:number|undefined): CSSProperties {
         return {}
 }
 
+/**
+ * Checks the horizontal alignment of a component and then calls the translateTextAlign function to get the correct text-alignment.
+ * @param props - properties of an editor 
+ */
 export function getTextAlignment(props: IEditor) {
     if (props.cellEditor) {
         if (props.cellEditor_horizontalAlignment_ !== undefined) 
@@ -106,4 +112,3 @@ export function getTextAlignment(props: IEditor) {
             return translateTextAlign(undefined);
     }
 }
-

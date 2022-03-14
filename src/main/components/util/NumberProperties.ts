@@ -1,4 +1,3 @@
-/** Other imports */
 import { ScaleType } from "../editors";
 
 /**

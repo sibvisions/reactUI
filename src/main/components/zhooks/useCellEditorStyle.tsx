@@ -1,14 +1,20 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { useComponentStyle } from ".";
 import { IEditor } from "../editors";
 import { getColorProperties, getFontProperties } from "./useComponentStyle";
 
+/**
+ * Returns the style of a CellEditor
+ * @param props - the properties of the CellEditor
+ * @param baseStyle - the basestyle set
+ */
 const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties):CSSProperties => {
+    /** CellEditor Style state */
     const [cellEditorStyle, setCellEditorStyle] = useState<CSSProperties>(baseStyle);
 
     /** An initial flag optimization so when initial is true we set everything at once and not setState multiple times */
     const initial = useRef<boolean>(true);
 
+    // Initially set CellEditor style
     useEffect(() => {
         if (initial.current) {
             const fontProps = getFontProperties(props.cellEditor_font_);
@@ -21,6 +27,7 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties):CSSPropertie
         }
     },[]);
 
+    // When font property changes update the style state
     useEffect(() => {
         if (props.cellEditor_font_ !== null && !initial.current) {
             setCellEditorStyle(prevStyle => ({ ...prevStyle, ...getFontProperties(props.cellEditor_font_) }));
@@ -36,6 +43,7 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties):CSSPropertie
         }
     }, [props.cellEditor_font_]);
 
+    // When background property changes update the style state
     useEffect(() => {
         if (props.cellEditor_background_ !== null && !initial.current) {
             const bgdProps = getColorProperties(props.cellEditor_background_, true);
@@ -46,7 +54,7 @@ const useCellEditorStyle = (props:IEditor, baseStyle:CSSProperties):CSSPropertie
         }
     }, [props.cellEditor_background_]);
 
-
+    // When foreground property changes update the style state
     useEffect(() => {
         if (props.cellEditor_foreground_ !== null && !initial.current) {
             const fgdProps = getColorProperties(props.cellEditor_foreground_, false);

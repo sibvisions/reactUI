@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, useCallback, useMemo, useRef } from "react";
-
-/** Hook imports */
 import { useMouseListener, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
@@ -35,6 +30,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
+    /** Reference for the wrapper element */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
     /** If the CellEditor is read-only */
@@ -57,7 +53,6 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
-     * @returns an object of the allowed values as key and the corresponding image as value
      */
     const validImages = useMemo(() => {
         let mergedValImg:any
@@ -82,7 +77,6 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /**
      * Returns the current image value based on the props.selectedRow if there is no row selected check for a defaultimage else invalid
-     * @returns current image based on props.selectedRow
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";

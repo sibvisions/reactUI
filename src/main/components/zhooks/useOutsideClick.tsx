@@ -1,8 +1,4 @@
-/** React imports */
 import { useEffect } from "react"
-
-
-/** Other imports */
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
 /**

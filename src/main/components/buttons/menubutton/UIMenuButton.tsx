@@ -1,14 +1,7 @@
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
-
-/** Other imports */
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
@@ -102,6 +95,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
     }, [context.contentStore, context.server, props]);
 
+    // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonRef.current ? buttonRef.current.defaultButton : undefined, "blur", (e) => {

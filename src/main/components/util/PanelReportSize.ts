@@ -1,5 +1,21 @@
 import { Dimension, LoadCallBack, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from ".";
 
+/**
+ * Reports the size of a panel to its parent. Handles special cases of the pansels
+ * @param id - the id of the panel
+ * @param type - the type of the panel "P" = Panel, "G" = GroupPanel, "S" = ScrollPanel
+ * @param calcPref - the calcualted preferred-size
+ * @param className - the classname of the component
+ * @param calcMin - the calculated minimum-size
+ * @param propPref - the preferred-size received from the server
+ * @param propMin - the minimum-size received from the server
+ * @param propMax - the maximum-size received from the server
+ * @param onLoadCallback - the function to report the size to the parent
+ * @param minusHeight - True, if the panel has to adjust its height to the scrollbar (only for ScrollPanels)
+ * @param minusWidth - True, if the panel has to adjust its width to the scrollbar (only for ScrollPanels)
+ * @param scrollSize - The layout size of a ScrollPanel
+ * @param scrollCallback - The callback for a ScrollPanel
+ */
 export function panelReportSize(id:string, 
                                 type:"P"|"S"|"G" , 
                                 calcPref: Dimension,

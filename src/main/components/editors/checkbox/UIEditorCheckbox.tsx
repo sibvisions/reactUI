@@ -1,13 +1,6 @@
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { Checkbox } from 'primereact/checkbox';
-
-/** Hook imports */
 import { useMouseListener, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent } from "../../util";
 import { getAlignments } from "../../compprops";
@@ -55,22 +48,25 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // Sets the checked value based on the selectedRow data
     useEffect(() => {
         setChecked(props.selectedRow ? props.selectedRow.data : undefined)
     }, [props.selectedRow]);
 
+    // Sends a setValues Request to the server when the checkbox is clicked
     const handleOnChange = () => {
         sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
-            checked !== props.cellEditor.selectedValue ? 
-                props.cellEditor.selectedValue ? 
+            // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
+            (checked !== props.cellEditor.selectedValue || !checked) ? 
+                props.cellEditor.selectedValue !== undefined ? 
                     props.cellEditor.selectedValue 
                 : 
                     true
             : 
-                props.cellEditor.deselectedValue ? 
+                props.cellEditor.deselectedValue !== undefined ? 
                     props.cellEditor.deselectedValue 
                 : 
                     false,

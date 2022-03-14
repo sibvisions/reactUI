@@ -1,6 +1,5 @@
 import { CSSProperties } from "react";
 import { AppContextType } from "../../AppProvider";
-import { SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import BaseComponent from "../BaseComponent";
 import { TopBarContextType } from "../topbar/TopBar";

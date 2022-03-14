@@ -1,14 +1,6 @@
-/** React imports */
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
 import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
-
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";

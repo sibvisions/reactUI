@@ -1,5 +1,3 @@
-/** Other imports */
-import { UIFont } from "./compprops";
 import { Margins } from "./layouts";
 import { LoadCallBack } from "./util";
 

@@ -1,14 +1,8 @@
-/** React imports */
 import React from "react"
-
-/** 3rd Party imports */
 import { format, formatISO, isValid } from 'date-fns'
-
-/** Other imports */
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
-import { createEditor } from "../../factories/UIFactory";
 import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
@@ -35,20 +29,6 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             passedKey: passedValues,
             isCellEditor: true,
             cellScreenName: props.dataProvider.split("/")[1]}} />
-        // editor = createEditor({
-        //     ...metaData,
-        //     name: props.name,
-        //     dataRow: props.dataProvider,
-        //     columnName: props.colName,
-        //     id: "",
-        //     cellEditor_editable_: true,
-        //     editorStyle: {width: "100%", height: "100%"},
-        //     autoFocus: true,
-        //     stopCellEditing: stopCellEditing,
-        //     passedKey: passedValues,
-        //     isCellEditor: true,
-        //     cellScreenName: props.dataProvider.split("/")[1]
-        // }) || editor;
     }
     return editor
 }

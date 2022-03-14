@@ -1,7 +1,4 @@
-/** React import */
 import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party import */
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
 import { Dimension } from "../../util";

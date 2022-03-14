@@ -1,13 +1,6 @@
-/** React imports */
-import React, { FC, useCallback, useEffect, useRef } from "react";
-
-/** 3rd Party imports */
+import React, { FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
 import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
 import { IPanel } from "..";
@@ -18,6 +11,10 @@ export interface IToolBarPanel extends IPanel {
     toolBarVisible?:boolean
 }
 
+/**
+ * Renders a ToolbarPanel which contains two helpers, main is the toolbar which has the toolbar components and center is the content/layout of the toolbarpanel
+ * @param baseProps - the baseprops sent by the server
+ */
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
@@ -31,6 +28,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
 
+    /** The reference element for the toolbarpanel */
     const panelRef = useRef<any>(null);
 
     /** Hook for MouseListener */

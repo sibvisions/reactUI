@@ -1,16 +1,8 @@
 /* global google */
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../zhooks";
-
-/** Other imports */
-import { appContext } from "../../AppProvider";
 import { getMarkerIcon, 
          parseMapLocation, 
          parsePrefSize, 
@@ -90,6 +82,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
     }
 
+    /** The popup-menu of the Map */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -106,6 +99,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }, props.apiKey as string);
     },[props.apiKey]);
 
+    // Fetches the point and the group databook
     useEffect(() => {
         const fetchP = createFetchRequest();
         fetchP.dataProvider = props.pointsDataBook;
@@ -146,6 +140,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, [providedPointData, mapReady]);
 
+    // Creates google maps polygons based on the groupdatas
     useEffect(() => {
         if (mapInnerRef.current && providedGroupData) {
             //@ts-ignore
@@ -186,6 +181,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, []);
 
+    // pans to the centerposition, initially or when the centerposition changes
     useEffect(() => {
         if (centerPosition && mapInnerRef.current) {
             //@ts-ignore

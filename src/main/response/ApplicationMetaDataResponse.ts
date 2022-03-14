@@ -1,4 +1,3 @@
-/** Other imports */
 import { BaseResponse } from ".";
 
 /** Interface for ApplicationMetaDataResponse */

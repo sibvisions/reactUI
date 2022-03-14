@@ -1,15 +1,8 @@
-/** React imports */
-import React, { CSSProperties, FC, FormEvent, useContext, useEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { CSSProperties, FC, FormEvent, useContext, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
-
-/** Hook imports */
 import { useConstants } from "../../main/components/zhooks";
-
-/** Other imports */
 import { appContext } from "../../main/AppProvider";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
@@ -20,6 +13,7 @@ import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";
 import { ResizeContext } from "../UIManager";
 import tinycolor from "tinycolor2";
+import BaseComponent from "../../main/components/BaseComponent";
 
 /** 
  * Properties which the dialog will receive when it's rendered
@@ -29,19 +23,22 @@ export interface ILoginCredentials {
     password: string
 }
 
+// Interface for the loginmask data
 interface ILoginMaskType extends ILoginCredentials {
     rememberMe: boolean,
     showResetMask: boolean,
     email: string
 }
 
+/**
+ * Renders the DesktopPanel, casted as BaseComponent because we check in other components if the DesktopPanel exists.
+ */
 export const DesktopPanelHandler:FC = () => {
     const context = useContext(appContext);
-    return (context.appSettings.desktopPanel ?
-         componentHandler(context.appSettings.desktopPanel, context.contentStore) :
-         <div>Could not load DesktopPanel</div>)
+    return componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore);
 }
 
+// Returns the login-mask and handles its functionalities (login, reset password).
 export const LoginForm:FC = () => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
@@ -49,6 +46,7 @@ export const LoginForm:FC = () => {
     /** State for login-data */
     const [loginData, setLoginData] = useState<ILoginMaskType>({ username: "", password: "", email: "", rememberMe: false, showResetMask: false });
 
+    /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     /**
@@ -65,6 +63,9 @@ export const LoginForm:FC = () => {
         context.subscriptions.emitMenuUpdate();
     }
 
+    /**
+     * Sends a reset-password-request to the server, if a email is entered.
+     */
     const sendResetPassword = () => {
         if (!loginData.email) {
             context.subscriptions.emitMessage({ message: translations.get("The email is required"), name: "" });
@@ -194,6 +195,7 @@ const Login: FC = () => {
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
     
+    // If there is a desktop-panel, render it and the login mask "above" it, if not, just display the login mask
     return (
         (context.appSettings.desktopPanel) ?
             <ResizeContext.Provider value={{ login: true }}>

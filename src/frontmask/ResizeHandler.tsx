@@ -1,10 +1,6 @@
 /** React imports */
 import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import _ from "underscore";
-
-/** Other imports */
 import { appContext } from "../main/AppProvider";
 import { ChildWithProps } from "../main/components/util";
 import { useEventHandler } from "../main/components/zhooks";
@@ -30,11 +26,13 @@ const ResizeHandler:FC = (props) => {
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** The currently active app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
+    /** Subscribes the resize-handler to the theme */
     useEffect(() => {
         context.subscriptions.subscribeToTheme("resizeHandler", (theme:string) => setAppTheme(theme));
 
@@ -48,6 +46,10 @@ const ResizeHandler:FC = (props) => {
      * setting this size will recalculate the layouts
      */
     const doResize = useCallback(() => {
+        /**
+         * Returns the height of the desktop-panel
+         * @param login - True, if the app is currently on login 
+         */
         const getDesktopHeight = (login?:boolean) => {
             let height = 0;
             if (sizeRef.current) {
@@ -70,6 +72,7 @@ const ResizeHandler:FC = (props) => {
             return height;
         }
 
+        /** When the window width is 530px or smaller and the applayout is corp, change the applayout to standard, while the window width is <= 530px */
         if (appLayout === "corporation" && resizeContext.setMobileStandard) {
             if (resizeContext.mobileStandard === false && window.innerWidth <= 530) {
                 resizeContext.setMobileStandard(true);

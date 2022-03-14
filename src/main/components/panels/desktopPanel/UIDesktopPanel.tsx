@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, useRef } from "react";
-
-/** Hook imports */
 import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName } from "../../util";
 import BaseComponent from "../../BaseComponent";
@@ -16,6 +11,10 @@ export interface IDesktopPanel extends BaseComponent {
     layoutData: string,
 }
 
+/**
+ * This component generally is displayed when no other screen is opened, it is also rendered on login if available.
+ * @param baseProps - the base propertie sent by the server
+ */
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
@@ -23,7 +22,9 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [components, componentSizes] = useComponents(baseProps.id, props.className);
 
+    /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 

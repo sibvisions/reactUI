@@ -1,17 +1,13 @@
-/** React imports */
 import React, { FC, useRef } from "react";
-
-/** 3rd Party imports */
 import { useHistory } from "react-router";
-
-/** Other imports */
 import { IServerFailMessage } from "../../AppWrapper";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/components/util";
 import { useConstants, useEventHandler } from "../../moduleIndex";
 
 /**
- * This component displays an error-message
+ * This component displays an error-message as a bar "above" the application.
+ * The application is not usable behind the error because of a glass-pane
  * @param props - contains the error message and if the session is expired or server error
  */
 const ErrorDialog:FC<IServerFailMessage> = (props) => {
@@ -21,6 +17,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     /** History of react-router-dom */
     const history = useHistory();
 
+    /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
     /**
@@ -34,19 +31,27 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     }
 
     /**
-     * Either starts the session restart or retries the last failed request
+     * Restarts the app if session-expired or retries the last request which resulted in an error.
+     */
+    const handleRetry = () => {
+        if (!alreadySent.current) {
+            if (props.sessionExpired) {
+                alreadySent.current = true;
+                handleRestart();
+            }
+            else {
+                alreadySent.current = true;
+                showTopBar(props.retry(), topbar);
+            }
+        }
+    }
+
+    /**
+     * Either starts the session restart or retries the last failed request, when pressing "esc" or "space"
      */
     useEventHandler(props.sessionExpired || props.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
-            if (props.sessionExpired) {
-                if (!alreadySent.current) {
-                    alreadySent.current = true;
-                    handleRestart();
-                }
-            }
-            else {
-                showTopBar(props.retry(), topbar);
-            }
+            handleRetry();
         }
     });
 
@@ -55,15 +60,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
             <div className="rc-glasspane" />
             <div className="rc-error-dialog" tabIndex={0} onClick={() => {
                 if (props.sessionExpired || props.retry) {
-                    if (props.sessionExpired) {
-                        if (!alreadySent.current) {
-                            alreadySent.current = true;
-                            handleRestart();
-                        }
-                    }
-                    else {
-                        showTopBar(props.retry(), topbar)
-                    }
+                    handleRetry();
                 }
             }}>
                 <div className="rc-error-dialog-header">

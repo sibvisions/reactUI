@@ -1,12 +1,7 @@
-/** React imports */
 import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-
-/** 3rd Party imports */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import _ from "underscore";
-
-/** Hook imports */
 import { useDataProviderData, 
          useRowSelect, 
          useMultipleEventHandler, 
@@ -16,8 +11,6 @@ import { useDataProviderData,
          useMetaData,
          usePopupMenu,
          useComponentConstants} from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
@@ -67,6 +60,7 @@ interface ISelectedCell {
 /** A Context which contains the currently selected cell */
 export const SelectedCellContext = createContext<ISelectedCell>({});
 
+/** Returns the columnMetaData */
 export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
     return metaData?.columns.find(column => column.name === colName);
 }
@@ -201,6 +195,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const focusIsClicked = useRef<boolean>(false);
 
+    /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
     /** The primary keys of a table */
@@ -227,6 +222,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
+    // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, rootPanel, props.dataBook);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
@@ -353,6 +349,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
 
+    //Returns navtable classname
     const getNavTableClassName = (parent?:string) => {
         if (parent) {
             const parentProps = context.contentStore.getComponentById(parent);
@@ -463,6 +460,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         }
     }, []);
 
+    // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore

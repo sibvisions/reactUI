@@ -740,7 +740,7 @@ export default class ContentStore{
     }
 
     /**
-     * Returns the component id of a screen for a component
+     * Returns furthest up panel name of a component
      * @param id - the id of the component
      * @returns the component id of a screen for a component
      */

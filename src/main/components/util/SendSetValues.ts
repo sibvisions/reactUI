@@ -1,4 +1,3 @@
-/** Other imports */
 import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
 import Server from "../../Server";
 import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
@@ -49,6 +48,14 @@ export async function sendSetValues(
     }
 }
 
+/**
+ * Sends a set-value-request to the server but only if the last-value has changed
+ * @param name - the name of the component
+ * @param value - the value to send to the server
+ * @param server - the server-class
+ * @param lastValue - the last-value to compare to the current
+ * @param topbar - the topbar to show loading
+ */
 export async function sendSetValue(
     name: string,
     value: string | number | boolean | Array<any> | null,

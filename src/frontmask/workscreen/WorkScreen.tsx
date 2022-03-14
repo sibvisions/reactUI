@@ -1,9 +1,6 @@
-/** React imports */
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useState} from "react";
 import { appContext } from "../../main/AppProvider";
 import { ActiveScreen } from "../../main/ContentStore";
-
-/**Other imports */
 import { DesktopPanelHandler } from "../login/login";
 import ResizeHandler from "../ResizeHandler";
 
@@ -29,6 +26,7 @@ const WorkScreen: FC = () => {
     /** The screens which need to be rendered */
     const [renderedScreens, setRenderedScreens] = useState<Array<ReactElement>>(buildWindow(activeScreens))
 
+    // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
     useEffect(() => {
         context.subscriptions.subscribeToActiveScreens((activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
@@ -37,6 +35,7 @@ const WorkScreen: FC = () => {
         }
     },[context.subscriptions])
 
+    // When the active-screens change, build the windows and set them set the rendered screens state
     useEffect(() => {
         setRenderedScreens([...buildWindow(activeScreens)]);
     }, [activeScreens]);
@@ -44,7 +43,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : <DesktopPanelHandler />}
+            renderedScreens : context.appSettings.desktopPanel ? <DesktopPanelHandler /> : <></>}
         </ResizeHandler>
 
     )

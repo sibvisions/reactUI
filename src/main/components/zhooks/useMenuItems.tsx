@@ -8,6 +8,9 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { isFAIcon } from "./useButtonMouseImages";
 import { concatClassnames } from "../util";
 
+/**
+ * Returns the menu-items the server sends
+ */
 const useMenuItems = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

@@ -1,10 +1,5 @@
-/** React imports */
 import { useContext, useEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { useHistory } from "react-router";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, StartupRequest, UIRefreshRequest } from "../../request";
@@ -14,6 +9,9 @@ import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { addCSSDynamically, Timer } from "../util";
 
+/**
+ * Sends and handles the startup of the application
+ */
 const useStartup = (props:ICustomContent):boolean => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

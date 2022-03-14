@@ -1,7 +1,4 @@
-/** React imports */
 import { useContext, useEffect, useState } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 
 /**
@@ -16,6 +13,7 @@ const useDataProviders = (screenName:string) => {
     /** Current state of all dataprovider of a screen */
     const [dataProviders, setDataProviders] = useState<Array<string>>(Array.from(context.contentStore.getScreenDataproviderMap(screenName) ? context.contentStore.getScreenDataproviderMap(screenName)!.keys() as IterableIterator<string> : []));
 
+    // Subscribes to the dataproviders of a screen
     useEffect(() => {
         const onDataProviderChange = () => {
             if (context.contentStore.getScreenDataproviderMap(screenName)) {

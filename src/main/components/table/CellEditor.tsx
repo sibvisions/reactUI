@@ -228,7 +228,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
         (isEditable()) ?
-            (columnMetaData?.cellEditor?.directCellEditor || columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
+            (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
                     <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
@@ -238,7 +238,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
                         onClick={() => {
-                            if (columnMetaData?.cellEditor?.className !== "ImageViewer" && !columnMetaData?.cellEditor?.directCellEditor) {
+                            if (columnMetaData?.cellEditor?.className !== "ImageViewer") {
                                 setWaiting(true);
                                 setEdit(true);
                             }

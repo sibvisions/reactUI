@@ -1,4 +1,3 @@
-/** Other imports */
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 

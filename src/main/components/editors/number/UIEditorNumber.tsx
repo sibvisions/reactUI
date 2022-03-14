@@ -1,13 +1,6 @@
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { InputNumber } from "primereact/inputnumber";
-
-/** Hook imports */
 import { useEventHandler, useMouseListener, usePopupMenu } from "../../zhooks"
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { getDecimalLength, 
          getGrouping,
@@ -74,8 +67,10 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    /** The classnames for the number-cell-editor */
     const numberClassNames = useMemo(() => {
         return concatClassnames(
             "rc-editor-number",
@@ -135,6 +130,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
 
+    // When the cell-editor is in a table and the passed-key is not a number set null as value. On unmount of the in-table cell-editor blur.
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
             if (/^[0-9]$/i.test(props.passedKey)) {
@@ -165,10 +161,13 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         }
     }
 
+    // Add paste eventHandler
     useEventHandler(numberInput.current ? numberInput.current : undefined, 'paste', (event:any) => handlePaste(event));
 
+    // Add keydown eventHandler
     useEventHandler(numberInput.current ? numberInput.current : undefined, 'keydown', (event:any) => {
-        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(event.key) >= 0) {
+        // Don't allow value change on up and down arrow. Save and blur if "enter" or "tab" pressed. closed and not saved when "esc" is pressed
+        if (['ArrowUp', 'ArrowDown'].indexOf(event.key) >= 0) {
             event.stopPropagation();
         }
         else if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
@@ -182,6 +181,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     props.stopCellEditing(event);
                 }
             }
+            // Checks if the decimal length limit is hit and when it is don't allow more inputs
             if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
                 event.preventDefault();
                 return false;

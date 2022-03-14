@@ -1,13 +1,6 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
-
-/** Hook imports */
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";

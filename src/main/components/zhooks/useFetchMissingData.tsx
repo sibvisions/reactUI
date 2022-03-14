@@ -4,6 +4,12 @@ import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
+/**
+ * Fetches the missing dataprovider if it isn't in the contentstore
+ * @param screenName - the name of the screen
+ * @param panelName - the name of the root panel
+ * @param dataProvider - the dataprovider to fetch
+ */
 const useFetchMissingData = (screenName:string, panelName:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

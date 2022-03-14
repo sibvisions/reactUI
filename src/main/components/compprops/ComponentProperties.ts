@@ -1,7 +1,4 @@
-/** 3rd Party imports */
 import tinycolor from 'tinycolor2';
-
-/** Other imports */
 import { Margins } from '../layouts';
 import { convertIcon, Dimension } from '../util';
 import { UIFont, IconProps } from '.';
@@ -41,8 +38,6 @@ export function getFont(font:string|UIFont|undefined) {
  * Returns split up and modified icondata to properly display an icon. Can either display FontAwesome icons or Images sent by the server.
  * @param foreground - foreground color of component
  * @param iconData - icondata of component
- * @returns split up and modified icondata to properly display an icon as obj: icon - name of FontAwesome icon or URL to server image
- * size - size of icon color - foreground color of icon
  */
 export function parseIconData(foreground:string|undefined, iconData:string|undefined): IconProps {
     if (iconData) {

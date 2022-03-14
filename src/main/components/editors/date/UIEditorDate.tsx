@@ -1,15 +1,8 @@
-/** React imports */
 import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
-
-/** Hook imports */
 import { useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { sendSetValues,
          sendOnLoadCallback, 
@@ -39,6 +32,7 @@ export interface IEditorDate extends IEditor{
     cellEditor: ICellEditorDate
 }
 
+// Supported date-time formats
 const dateTimeFormats = [
     "dd.MM.yyyy HH:mm", 
     "dd-MM-yyyy HH:mm", 
@@ -48,6 +42,8 @@ const dateTimeFormats = [
     "dd/MMMM/yyyyy HH:mm", 
 ]
 
+
+// Supported date formats
 const dateFormats = [
     "dd.MM.yyyy", 
     "dd-MM-yyyy", 
@@ -84,10 +80,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
+    /** The current datevalue */
     const [dateValue, setDateValue] = useState<any>(props.selectedRow);
-
-    /** Mounted state used because useEventHandler ref is null when cell-editor is opened -> not added */
-    const [mounted, setMounted] = useState<boolean>(false)
 
     /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
@@ -122,7 +116,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
-    /** Button background */
+    /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     /** If the CellEditor is read-only */
@@ -130,6 +124,10 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     setDateLocale(props.context.appSettings.locale);
 
+    /**
+     * Returns true, if the given date is a valid date
+     * @param inputDate - the date to be checked
+     */
     const isValidDate = (inputDate:any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());
     }
@@ -154,7 +152,6 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     useEffect(() => {
-        setMounted(true)
         setTimeout(() => {
             if (calendarInput.current && props.isCellEditor) {
                 calendarInput.current?.focus()
@@ -172,6 +169,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         }
     },[])
 
+    // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
         setDateValue(props.selectedRow ? new Date(props.selectedRow) : undefined);
         lastValue.current = props.selectedRow;
@@ -221,6 +219,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
             props.topbar)
     }
 
+    // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
     useMultipleEventHandler(calendar.current && calendarInput.current ? 
         //@ts-ignore
         [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
@@ -314,6 +313,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                 }}
                 onBlur={event => {
+                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
                     //@ts-ignore
                     if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
