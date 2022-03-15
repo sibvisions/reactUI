@@ -10,11 +10,6 @@ import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallbac
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
 
-type Coordinates = {
-    x:number,
-    y:number
-}
-
 /**
  * This component displays an internal window which can be moved and resized (if resizable is true).
  * @param baseProps - the base properties of this component sent by the server.
@@ -26,6 +21,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
     
+    /** Context which Frame is currently in front */
     const frameContext = useContext(FocusFrameContext);
 
     /** From the layoutstyle adjusted frame style, when measuring frame removes header from height */
@@ -37,43 +33,42 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
 
+    /** Flag, true, if framestyle needs to be initially set */
     const initFrame = useRef<boolean>(true);
 
-    const initCenter = useRef<boolean>(true);
-
-    const rndRef = useRef<Rnd>(null);
-
-    const centerPosition = useMemo(():Coordinates => {
-        const pos:Coordinates = {...centerPosition}
+    /** Returns the Element which this InternalFrame is centered to, or undefined if it wasn't found */
+    const getCenterRelativeElem = useCallback(() => {
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                const relativeElement = relativeComp.className === COMPONENT_CLASSNAMES.DESKTOPPANEL 
-                ? 
-                    document.getElementById(relativeComp.name) 
-                :
-                    document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement;
-
-                if (relativeElement && frameStyle) {
-                    var style = window.getComputedStyle(relativeElement);
-                    // gets the left and top value out of the style property 'transform'. 'm41' = left, 'm42' = top
-                    var matrix = new WebKitCSSMatrix(style.transform);
-                    pos.x = (relativeElement.getBoundingClientRect().width / 2 + matrix.m41) - ((frameStyle.width as number + 8) / 2);
-                    pos.y = (relativeElement.getBoundingClientRect().height / 2 + matrix.m42) - ((frameStyle.height as number + 35) / 2);
+                if (relativeComp.className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
+                    return document.getElementById(relativeComp.name);
+                }
+                else {
+                    return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
                 }
             }
         }
-        return pos;
-    }, [props.centerRelativeTo, frameStyle])
+        return undefined;
+    }, [props.centerRelativeTo])
 
+    /** Flag, true, if the InternalFrame still needs to be centered */
+    const [centerFlag, setCenterFlag] = useState<boolean>(true);
+
+    /** Reference for the Rnd element */
+    const rndRef = useRef<Rnd>(null);
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (rndRef.current) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), rndRef.current.resizableElement.current, onLoadCallback)
         }
     }, [onLoadCallback]);
 
-    useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "click", () => frameContext.callback(props.name));
+    /** Adds eventHandler to call the frameContext callback on mouse-down to tell the DesktopPanel that this frame is at front */
+    useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "mousedown", () => frameContext.callback(props.name));
 
+    /** Handles the zIndex of frames */
     useEffect(() => {
         if (rndRef.current?.resizableElement.current) {
             const rndFrame:HTMLElement = rndRef.current.resizableElement.current;
@@ -88,6 +83,15 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [frameContext])
 
+    /** When the centerRelativeTo property changes, center again */
+    useEffect(() => {
+        setCenterFlag(true);
+    }, [props.centerRelativeTo])
+
+    /**
+     * Sends a bounds-request to the server
+     * @param size - the size of the InternalFrame
+     */
     const sendBoundsRequest = useCallback((size:Dimension) => {
         const boundsReq = createBoundsRequest();
         boundsReq.componentId = props.name;
@@ -96,6 +100,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS);
     }, [context.server, topbar])
 
+    // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
         if (initFrame.current) {
             if (rndRef.current) {
@@ -117,13 +122,39 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
 
+    // Centers the frame to its relative component
     useEffect(() => {
-        if (rndRef.current && initCenter.current && (centerPosition.x !== undefined && centerPosition.y !== undefined)) {
-            rndRef.current.updatePosition(centerPosition);
-            initCenter.current = false;
-        }
-    }, [centerPosition])
+        if (rndRef.current && centerFlag) {
+            if (props.centerRelativeTo) {
+                const relativeElem = getCenterRelativeElem();
+                const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
+                const relativeCompParent = context.contentStore.getComponentById(relativeComp?.parent);
+                let parentElem;
 
+                if (relativeCompParent) {
+                    parentElem = document.getElementById(relativeCompParent.name);
+                    // The centerRelative Component only has the right size when its parent no longer has visibility hidden
+                    if (relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
+                        var style = window.getComputedStyle(relativeElem);
+                        // gets the left and top value out of the style property 'transform'. 'm41' = left, 'm42' = top
+                        var matrix = new WebKitCSSMatrix(style.transform);
+                        let centerX = (relativeElem.getBoundingClientRect().width / 2 + matrix.m41) - ((frameStyle.width as number + 8) / 2);
+                        let centerY = (relativeElem.getBoundingClientRect().height / 2 + matrix.m42) - ((frameStyle.height as number + 35) / 2);
+                        rndRef.current.updatePosition({ x: centerX, y: centerY });
+                        setCenterFlag(false);
+                        return
+                    }
+                }
+            }
+            else {
+                rndRef.current.updatePosition({ x: 0, y: 0 });
+                setCenterFlag(false);
+                return
+            }
+        }
+    }, [layoutStyle?.width, layoutStyle?.height, frameStyle, centerFlag]);
+
+    // Called on resize, sends a bounds-request to the server and sets the new framestyle
     const doResize = useCallback((e, dir, ref) => {
         const styleCopy:CSSProperties = {...frameStyle};
         //height - 35 because of header + border + padding, width - 8 because of padding + border. Minus because insets have to be taken away for layout
@@ -134,14 +165,17 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         setFrameStyle(styleCopy);
     }, [frameStyle]);
 
+    //Resizing-throttle for performance
     const handleResize = useCallback(_.throttle(doResize, 23),[doResize]);
 
+    // init style for InternalFrame
     const style = {
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
         overflow: "hidden",
         zIndex: props.modal ? 1001 : 1
     };
 
+    // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
     const getPreferredFrameSize = useCallback((size:Dimension) => {
         //height + 35 because of header + border + padding, width + 8 because of padding + border 
         if (packSize?.height !== size.height + 35 && packSize?.width !== size.width + 8) {
@@ -158,8 +192,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 onResize={handleResize}
                 bounds={props.modal ? "window" : "parent"}
                 default={{
-                    x: centerPosition.x,
-                    y: centerPosition.y,
+                    x: 0,
+                    y: 0,
                     width: 200,
                     height: 200
                 }}

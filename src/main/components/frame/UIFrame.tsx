@@ -55,12 +55,12 @@ const UIFrame: FC<IFrame> = (props) => {
         <div style={{ visibility: props.compSizes ? undefined : "hidden" }}>
             {props.internal &&
                 <div className="rc-frame-header">
-                    {props.iconImage &&
-                        isFAIcon(iconProps.icon)
-                        ?
+                    {props.iconImage !== undefined &&
+                        (isFAIcon(iconProps.icon)
+                            ?
                             <i className={concatClassnames(iconProps.icon, "rc-frame-header-icon")} style={{ fontSize: iconProps.size?.height, color: iconProps.color }} />
-                        :
-                            <img src={context.server.RESOURCE_URL + iconProps.icon} className="rc-frame-header-icon" style={{ height: iconProps.size?.height, width: iconProps.size?.width }} />
+                            :
+                            <img src={context.server.RESOURCE_URL + iconProps.icon} className="rc-frame-header-icon" style={{ height: iconProps.size?.height, width: iconProps.size?.width }} />)
                     }
                     <span className="rc-frame-header-title">{props.title}</span>
                     {props.closable !== false && <button
