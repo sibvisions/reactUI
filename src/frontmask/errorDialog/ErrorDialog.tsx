@@ -34,19 +34,27 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     }
 
     /**
+     * Restarts the app if session-expired or retries the last request which resulted in an error.
+     */
+    const handleRetry = () => {
+        if (!alreadySent.current) {
+            if (props.sessionExpired || props.gone) {
+                alreadySent.current = true;
+                handleRestart();
+            }
+            else {
+                alreadySent.current = true;
+                showTopBar(props.retry(), topbar);
+            }
+        }
+    }
+
+    /**
      * Either starts the session restart or retries the last failed request
      */
     useEventHandler(props.sessionExpired ||props.gone || props.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
-            if (props.sessionExpired || props.gone) {
-                if (!alreadySent.current) {
-                    alreadySent.current = true;
-                    handleRestart();
-                }
-            }
-            else {
-                showTopBar(props.retry(), topbar);
-            }
+            handleRestart()
         }
     });
     
@@ -55,15 +63,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
             <div className="rc-glasspane" />
             <div className={concatClassnames("rc-error-dialog", props.gone ? "app-gone" : "")} tabIndex={0} onClick={() => {
                 if (props.sessionExpired || props.gone || props.retry) {
-                    if (props.sessionExpired || props.gone) {
-                        if (!alreadySent.current) {
-                            alreadySent.current = true;
-                            handleRestart();
-                        }
-                    }
-                    else {
-                        showTopBar(props.retry(), topbar)
-                    }
+                    handleRetry()
                 }
             }}>
                 <div className="rc-error-dialog-header">
