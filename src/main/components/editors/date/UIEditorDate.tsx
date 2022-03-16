@@ -15,9 +15,11 @@ import { sendSetValues,
          concatClassnames} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { IRCCellEditor } from "../CellEditorWrapper";
+import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of DateCellEditor */
-export interface ICellEditorDate extends ICellEditor{
+export interface ICellEditorDate extends ICellEditor {
     dateFormat?: string,
     isAmPmEditor: boolean,
     isDateEditor: boolean,
@@ -28,7 +30,7 @@ export interface ICellEditorDate extends ICellEditor{
 }
 
 /** Interface for DateCellEditor */
-export interface IEditorDate extends IEditor{
+export interface IEditorDate extends IRCCellEditor {
     cellEditor: ICellEditorDate
 }
 
@@ -118,9 +120,6 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     setDateLocale(props.context.appSettings.locale);
 
@@ -323,7 +322,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                     !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
-                disabled={isReadOnly}
+                disabled={props.isReadOnly}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {

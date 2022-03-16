@@ -2,7 +2,8 @@ import { CSSProperties, useMemo } from "react";
 import { useCellEditorStyle, useComponentConstants, useMetaData, useRowSelect } from ".";
 import { AppContextType } from "../../AppProvider";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
-import { CELLEDITOR_CLASSNAMES, IEditor } from "../editors";
+import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { IRCCellEditor } from "../editors/CellEditorWrapper";
 import { TopBarContextType } from "../topbar/TopBar";
 
 /**
@@ -10,7 +11,7 @@ import { TopBarContextType } from "../topbar/TopBar";
  * @param baseProps - the properties of the editor
  * @returns 
  */
-const useEditorConstants = <T extends IEditor>(baseProps: T, fb?: CSSProperties): [
+const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSProperties): [
     AppContextType,
     TopBarContextType,
     [T],

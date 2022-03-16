@@ -1,10 +1,19 @@
-import React from "react"
+import React, { CSSProperties } from "react"
 import { format, formatISO, isValid } from 'date-fns'
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
 import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
+
+/** An interface which contains properties used for CellEditors in tables */
+export interface IInTableEditor {
+    stopCellEditing?: Function
+    passedKey?: string,
+    isCellEditor: boolean,
+    cellScreenName: string,
+    editorStyle?: CSSProperties
+}
 
 /** 
  * Returns an in-cell editor for the column 

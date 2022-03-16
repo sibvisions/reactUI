@@ -17,6 +17,8 @@ import { getDecimalLength,
 import { getTextAlignment } from "../../compprops";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
+import { IRCCellEditor } from "../CellEditorWrapper";
+import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{
@@ -24,7 +26,7 @@ export interface ICellEditorNumber extends ICellEditor{
 }
 
 /** Interface for NumberCellEditor */
-export interface IEditorNumber extends IEditor {
+export interface IEditorNumber extends IRCCellEditor {
     cellEditor: ICellEditorNumber,
     length: number,
     precision: number,
@@ -60,9 +62,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -218,7 +217,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                         }
                         sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar);
                     }}
-                    disabled={isReadOnly}
+                    disabled={props.isReadOnly}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                     tooltip={props.toolTipText}
                     tooltipOptions={{position: "left"}}
@@ -245,7 +244,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
                 onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar)}
-                disabled={isReadOnly}
+                disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
                 tooltipOptions={{position: "left"}}

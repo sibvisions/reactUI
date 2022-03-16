@@ -8,16 +8,18 @@ import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallbac
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
+import { isCellEditorReadOnly } from "../text/UIEditorText";
+import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
-export interface ICellEditorChoice extends ICellEditor{
+export interface ICellEditorChoice extends ICellEditor {
     allowedValues: Array<string|boolean>,
     defaultImageName?: string
     imageNames: Array<string>,
 }
 
 /** Interface for ChoiceCellEditor */
-export interface IEditorChoice extends IEditor{
+export interface IEditorChoice extends IRCCellEditor {
     cellEditor: ICellEditorChoice
 }
 
@@ -32,9 +34,6 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /** Reference for the wrapper element */
     const wrapRef = useRef<HTMLSpanElement>(null);
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
@@ -119,7 +118,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
      * Send a sendValues request with the next value to the server
      */
     const setNextValue = () => {
-        if (!isReadOnly) {
+        if (!props.isReadOnly) {
             const setValReq = createSetValuesRequest();
             setValReq.componentId = props.name;
             setValReq.columnNames = [props.columnName];
@@ -190,7 +189,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             <img
                 ref={imgRef}
                 id={!props.isCellEditor ? props.name : undefined}
-                className={concatClassnames("rc-editor-choice-img", isReadOnly ? "choice-read-only" : "")}
+                className={concatClassnames("rc-editor-choice-img", props.isReadOnly ? "choice-read-only" : "")}
                 alt=""
                 onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?

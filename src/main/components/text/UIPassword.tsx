@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { Password } from "primereact/password";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
@@ -58,7 +58,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            disabled={props.enabled === false} />
+            disabled={isCompDisabled(props)} />
     )
 }
 export default UIPassword

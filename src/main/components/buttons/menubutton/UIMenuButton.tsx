@@ -6,7 +6,7 @@ import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
 import { parseIconData } from "../../compprops";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
@@ -153,7 +153,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 }}
                 label={props.text}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
-                disabled={props.enabled === false}
+                disabled={isCompDisabled(props)}
                 tabIndex={-1}
                 model={items}
                 onClick={() => buttonRef.current.show()}

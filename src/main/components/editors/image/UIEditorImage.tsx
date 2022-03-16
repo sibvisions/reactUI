@@ -4,6 +4,7 @@ import { ICellEditor, IEditor } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
+import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor{
@@ -12,7 +13,7 @@ export interface ICellEditorImage extends ICellEditor{
 }
 
 /** Interface for ImageViewer */
-export interface IEditorImage extends IEditor{
+export interface IEditorImage extends IRCCellEditor {
     cellEditor: ICellEditorImage
     placeholderVisible: boolean,
 }

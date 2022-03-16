@@ -9,6 +9,8 @@ import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { IRCCellEditor } from "../CellEditorWrapper";
+import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -28,7 +30,7 @@ export interface ICellEditorLinked extends ICellEditor{
 }
 
 /** Interface for LinkedCellEditor */
-export interface IEditorLinked extends IEditor{
+export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
@@ -69,9 +71,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -351,7 +350,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     ...props.cellStyle,
                     borderRight: "none" 
                 }}
-                disabled={isReadOnly}
+                disabled={props.isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}

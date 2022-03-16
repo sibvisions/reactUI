@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled } from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
@@ -66,7 +66,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                     handleEnterKey(e, e.target, props.name);
                 }
             }}
-            disabled={props.enabled === false} />
+            disabled={isCompDisabled(props)} />
     )
 }
 export default UITextArea

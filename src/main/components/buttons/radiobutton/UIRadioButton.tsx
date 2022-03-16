@@ -3,7 +3,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
 import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue} from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled} from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
@@ -76,7 +76,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
-                    disabled={props.enabled === false}
+                    disabled={isCompDisabled(props)}
                 />
                 <label 
                     ref={labelRef} 

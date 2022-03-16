@@ -5,7 +5,7 @@ import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConst
 import { createPressButtonRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
@@ -101,7 +101,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     }
                 }}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-                disabled={props.enabled === false}
+                disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 {...usePopupMenu(props)}

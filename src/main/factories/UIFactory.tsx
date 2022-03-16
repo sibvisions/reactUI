@@ -35,6 +35,7 @@ import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
 import ContentStore from "../ContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
+import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 
 
 /**
@@ -86,7 +87,7 @@ const Editor = (props: any) => {
  * Decides which CellEditor should be used
  * @param props - properties sent by the server
  */
-export function createEditor(props: any) {
+export function createEditor(props: IRCCellEditor) {
     return <Editor {...props} />
 }
 

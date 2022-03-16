@@ -1,8 +1,5 @@
 import { CSSProperties } from "react";
-import { AppContextType } from "../../AppProvider";
-import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import BaseComponent from "../BaseComponent";
-import { TopBarContextType } from "../topbar/TopBar";
 
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
@@ -28,23 +25,7 @@ export interface IEditor extends BaseComponent{
     columnName: string,
     dataRow: string,
     text:string,
-    editorStyle?: CSSProperties,
     autoFocus?: boolean,
     nullable?: boolean,
     readonly?: boolean,
-    stopCellEditing?: Function,
-    clicked?: boolean,
-    passedKey?: string,
-    rowIndex?: Function,
-    filter?: Function
-    isCellEditor: boolean,
-    cellScreenName: string,
-    context: AppContextType,
-    topbar: TopBarContextType,
-    layoutStyle?: CSSProperties,
-    translation?: Map<string, string>
-    screenName:string,
-    columnMetaData: NumericColumnDescription|LengthBasedColumnDescription|undefined,
-    selectedRow?: any,
-    cellStyle?: CSSProperties
 }
