@@ -1,7 +1,4 @@
-/** React imports */
 import { useContext, useEffect, useState } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { getScreenSelectedRows } from "../util";
 
@@ -9,7 +6,6 @@ import { getScreenSelectedRows } from "../util";
  * This hook returns every currently selected Row of all dataproviders of a component as Map
  * @param screenName - the name of the screen
  * @param dataBooks - the databooks of the component
- * @param column - the column
  * @returns  every currently selected Row of all dataproviders of a component as Map
  */
 const useAllRowSelect = (screenName:string, dataBooks:string[]) => {
@@ -19,6 +15,7 @@ const useAllRowSelect = (screenName:string, dataBooks:string[]) => {
     /** Current state of dataMap */
     const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(screenName), dataBooks));
 
+    // Subscribes to ScreenRowChange
     useEffect(() => {
         const onScreenSelectedRowChange = () => {
             const a = getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(screenName), dataBooks);

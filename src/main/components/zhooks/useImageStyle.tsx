@@ -1,7 +1,4 @@
-/** React imports */
 import { useMemo } from "react";
-
-/** Other imports */
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
 
 /**

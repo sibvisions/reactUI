@@ -1,14 +1,7 @@
-/** React imports */
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
-
-/** Hook imports */
 import { useTranslation } from '../zhooks';
-
-/** 3rd Party imports */
 import { Toast, ToastMessage } from 'primereact/toast';
 import { Button } from 'primereact/button';
-
-/** Other imports */
 import { appContext } from '../../AppProvider';
 import { ErrorResponse, MessageResponse } from '../../response';
 import { concatClassnames } from '../util';

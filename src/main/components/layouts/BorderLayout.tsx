@@ -1,7 +1,4 @@
-/** React imports */
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-
-/** Other imports */
 import { LayoutContext } from "../../LayoutContext"
 import { appContext } from "../../AppProvider";
 import { ILayout } from "./Layout";

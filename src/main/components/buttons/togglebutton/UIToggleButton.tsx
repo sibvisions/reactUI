@@ -1,15 +1,8 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../zhooks";
-
-/** Other imports */
-import { createDispatchActionRequest, createPressButtonRequest } from "../../../factories/RequestFactory";
+import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";

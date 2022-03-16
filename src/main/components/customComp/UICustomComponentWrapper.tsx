@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, ReactElement, useLayoutEffect, useRef } from "react";
-
-/** Hook imports */
 import { useComponentConstants } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback } from "../util";
 
@@ -29,7 +24,10 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
-    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    /** 
+     * The component reports its preferred-, minimum-, maximum and measured-size to the layout.
+     * Remove the positioning and size properties before, so the custom-component reports its own size and not the component sent by the server.
+     */
     useLayoutEffect(() => {
         if (wrapperRef.current) {
             const ref = wrapperRef.current

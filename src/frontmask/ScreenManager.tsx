@@ -1,10 +1,5 @@
-/** React imports */
 import React, { createContext, FC, ReactElement, useContext } from "react";
-
-/** 3rd Party imports */
 import { useParams } from "react-router";
-
-/** Other imports */
 import { appContext } from "../main/AppProvider";
 import WorkScreen from "./workscreen/WorkScreen";
 import { getScreenIdFromNavigation } from "../main/components/util";

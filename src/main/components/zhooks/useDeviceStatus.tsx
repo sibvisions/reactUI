@@ -5,6 +5,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { appContext } from "../../AppProvider";
 import { DeviceStatus } from "../../response/DeviceStatusResponse";
 
+/**
+ * Returns the current devicestatus of the application
+ */
 const useDeviceStatus = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

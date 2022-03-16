@@ -1,10 +1,5 @@
-/** React imports */
 import React, { createContext, FC, useCallback, useRef, useState } from "react";
-
-/** Hook imports */
 import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
@@ -36,6 +31,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
 
     const [focusedFrame, setFocusedFrame] = useState<string>(children.find(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)?.name || "");
 
+    /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);
     
     /** Hook for MouseListener */

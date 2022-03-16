@@ -1,7 +1,4 @@
-/** React imports */
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-
-/** Other imports */
 import {appContext} from "../../AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import { ILayout, Gaps, CellConstraints, Margins, GridSize } from ".";
@@ -26,6 +23,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
     /** Current state of the calculatedStyle by the GridLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
+    
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 

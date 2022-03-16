@@ -1,10 +1,13 @@
-/** React imports */
 import { useContext, useState, useEffect } from "react"
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { SortDefinition } from "../../request";
 
+/**
+ * Returns the sort-definitions for the dataprovider of a screen
+ * @param screenName - the name of a screen
+ * @param dataProvider - the dataprovider
+ * @returns 
+ */
 const useSortDefinitions = (screenName:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

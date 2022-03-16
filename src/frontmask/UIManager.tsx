@@ -1,16 +1,7 @@
-/** React imports */
 import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import * as _ from 'underscore'
-
-/** UI imports */
 import Menu from "./menu/menu";
-
-/** Hook imports */
 import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../main/components/zhooks";
-
-/** Other imports */
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
 import { appContext } from "../main/AppProvider";
 import ScreenManager from "./ScreenManager";
@@ -20,10 +11,12 @@ import { MenuVisibility, VisibleButtons } from "../main/AppSettings";
 import { ApplicationSettingsResponse } from "../main/response";
 import { useParams } from "react-router";
 
+// Interface for UIManager
 export interface IUIManagerProps {
     customAppWrapper?: React.ComponentType,
 }
 
+/** Interface for the ResizeContext. Contains information for the Resizehandler to calculate the screen-sizes */
 export interface IResizeContext {
     menuSize?:number,
     menuRef?: any,
@@ -35,6 +28,11 @@ export interface IResizeContext {
 
 export const ResizeContext = createContext<IResizeContext>({});
 
+/**
+ * Returns true, if the applayout is corporation, when window-width <= 530 and theme is basti mobile, it returns false because standard menu is displayed instead.
+ * @param appLayout - the current layout sent by the server
+ * @param theme - the current theme sent by the server
+ */
 export function isCorporation(appLayout:string, theme:string) {
     if (appLayout === "corporation") {
         if (theme === "basti_mobile" && window.innerWidth <= 530) {
@@ -62,9 +60,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
-    /** State of button-visibility */
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
-
     /** True, if the session is expired */
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
@@ -83,6 +78,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
+    /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /**
@@ -105,17 +101,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
+    // Subscribes to the menu-visibility, error-dialog and theme
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
             setMenuVisibility({
                 menuBar: appSettings.menuBar,
                 toolBar: appSettings.toolBar
-            });
-
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
             });
         });
 
@@ -128,12 +119,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 setMenuVisibility({
                     menuBar: appSettings.menuBar,
                     toolBar: appSettings.toolBar
-                });
-
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
                 });
             });
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));
@@ -181,14 +166,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
                 {isCorporation(appLayout, appTheme) ?
                     <CorporateMenu
-                        menuVisibility={menuVisibility}
-                        visibleButtons={visibleButtons} />
+                        menuVisibility={menuVisibility} />
                     :
                     <Menu
                         forwardedRef={menuRef}
                         showMenuMini={menuMini}
-                        menuVisibility={menuVisibility}
-                        visibleButtons={visibleButtons} />}
+                        menuVisibility={menuVisibility} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
                     isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",

@@ -777,8 +777,8 @@ export class SubscriptionManager {
         this.messageSubscriber.apply(undefined, [messageResponse, err]);
     }
 
-    emitCloseFrame(screenName:string) {
-        this.closeFrameSubscriber.apply(undefined, [screenName]);
+    emitCloseFrame() {
+        this.closeFrameSubscriber.apply(undefined, []);
     }
 
     emitActiveScreens() {

@@ -1,14 +1,7 @@
-/** React imports */
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
-
-/** Hook imports */
 import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../zhooks"
-
-/** Other imports */
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
@@ -16,6 +9,7 @@ import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -35,7 +29,7 @@ export interface ICellEditorLinked extends ICellEditor{
 }
 
 /** Interface for LinkedCellEditor */
-export interface IEditorLinked extends IEditor{
+export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
@@ -66,17 +60,16 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
+    /** True, if the dropdown should be displayed as table */
     const tableOptions = props.cellEditor.columnView?.columnCount > 1;
 
+    /** True, if the CellEditor is currently focused */
     const focused = useRef<boolean>(false);
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false, [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -148,15 +141,16 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         });
     }, [props.context.contentStore, props.context.server, props.cellEditor, props.name])
 
+    // If autoOpenPopup is true and preferredEditorMode is 1 (singleclick) and it is a table-cell-editor, open the overlay directly and send an empty filter
     useEffect(() => {
         setTimeout(() => {
-            if(linkedRef.current && props.cellEditor.autoOpenPopup && ((props.cellEditor.preferredEditorMode === 1 || props.cellEditor.directCellEditor) && props.isCellEditor)) {
+            if(linkedRef.current && props.cellEditor.autoOpenPopup && (props.cellEditor.preferredEditorMode === 1 && props.isCellEditor)) {
                 sendFilter("");
                 (linkedRef.current as any).showOverlay();
             }
         }, 33)
 
-    }, [props.cellEditor.autoOpenPopup, props.cellEditor.directCellEditor, props.cellEditor.preferredEditorMode, props.isCellEditor, sendFilter]);
+    }, [props.cellEditor.autoOpenPopup, props.cellEditor.preferredEditorMode, props.isCellEditor, sendFilter]);
 
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
@@ -294,6 +288,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     }
 
+    // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
     const handleLazyLoad = (event:any) => {
         if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
@@ -304,6 +299,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     }
 
+    // Creates an item-template when linked-overlay is displayed as table
     const itemTemplate = useCallback(d => {
         if(Array.isArray(d)) {
             return d.map((d, i) => <div key={i}>{d}</div>)
@@ -312,6 +308,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     }, [providedData]);
 
+    // Creates a header for the table when linked-overlay is in table-mode
     const groupedItemTemplate = useCallback(d => {
         return (d.label as string[]).map((d, i) => <div key={i}>{props.columnMetaData?.label ?? d}</div>)
     }, [props.columnMetaData, providedData]);
@@ -352,7 +349,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     ...props.cellStyle,
                     borderRight: "none" 
                 }}
-                disabled={isReadOnly}
+                disabled={props.isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}
@@ -366,6 +363,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 onBlur={event => {
                     handleInput();
                     const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
+                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
                     if (dropDownElem) {
                         if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
                             if (props.eventFocusLost) {

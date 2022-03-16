@@ -1,4 +1,3 @@
-/** React imports */
 import { useState, useEffect, useRef, MutableRefObject, useMemo } from "react"
 
 /**
@@ -11,8 +10,6 @@ import { useState, useEffect, useRef, MutableRefObject, useMemo } from "react"
 const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:number[], menuCollapsed:boolean) => {
     /** Current value of the size of the ref */
     const [breakSize, setBreakSize] = useState(breakPoints[0]);
-    /** The last value of the menuCollapsed */
-    const lastMenuValue = useRef(menuCollapsed);
 
     const observer = useMemo(() => {
         /** Returns the nearest break point */

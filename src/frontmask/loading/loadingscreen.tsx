@@ -1,7 +1,4 @@
-/** React imports */
 import React, { FC } from "react";
-
-/**3rd Party imports */
 import { ProgressSpinner } from 'primereact/progressspinner';
 
 /**

@@ -1,17 +1,10 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConstants, useButtonStyling } from "../../zhooks";
-
-/** Other imports */
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { REQUEST_ENDPOINTS } from "../../../request";
@@ -110,7 +103,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     }
                 }}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-                disabled={props.enabled === false}
+                disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 {...usePopupMenu(props)}

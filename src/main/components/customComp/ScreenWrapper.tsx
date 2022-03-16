@@ -1,7 +1,4 @@
-/** React imports */
 import React, { FC, ReactElement, useEffect } from "react";
-
-/** Other imports */
 import { ScreenContext } from "../../../frontmask/ScreenManager";
 import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
 

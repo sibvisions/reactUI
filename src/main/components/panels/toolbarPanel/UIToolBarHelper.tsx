@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
-
-/** Hook imports */
-import { useProperties, useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../zhooks";
-
-/** Other imports */
+import { useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../zhooks";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
 import { appContext } from "../../../AppProvider";
@@ -39,10 +34,16 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Filters the components to only have the additional components when toolbarhelper is main, and not additional when toolbarhelper is center */
     const filteredComponents = useMemo(() => {
         return props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
     }, [props.className, components]);
 
+    /**
+     * Returns the className of a ToolbarPanel
+     * @param constraint - the constraint of the toolbar
+     * @param isNavTable - true, if the toolbar is a navtable
+     */
     const getTBPosClassName = useCallback((constraint:string, isNavTable:boolean) => {
         if (isNavTable) {
             switch(constraint) {
@@ -144,6 +145,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
 
+    /** Reports itself to the layout */
     useLayoutEffect(() => {
         const reportFunc = () => panelReportSize(
             props.id,

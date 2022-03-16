@@ -1,18 +1,9 @@
-/** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
-
-/** Hook imports */
-import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
-
-/** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, sendSetValue, handleEnterKey } from "../util";
-import { appContext } from "../../AppProvider";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled } from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
-import { showTopBar } from "../topbar/TopBar";
 
 interface ITextArea extends ITextField {
     rows?:number
@@ -75,7 +66,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                     handleEnterKey(e, e.target, props.name);
                 }
             }}
-            disabled={props.enabled === false} />
+            disabled={isCompDisabled(props)} />
     )
 }
 export default UITextArea

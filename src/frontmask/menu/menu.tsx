@@ -1,17 +1,10 @@
-/** React imports */
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
 import { Button } from "primereact/button";
 import { MenuItem } from "primereact/menuitem";
-
-/** Hook imports */
-import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useTranslation, useDeviceStatus, useScreenTitle, useConstants } from '../../main/components/zhooks'
-
-/** Other imports */
+import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useDeviceStatus, useScreenTitle, useConstants } from '../../main/components/zhooks'
 import { appContext } from "../../main/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 import { concatClassnames } from "../../main/components/util";
@@ -20,6 +13,7 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { EmbeddedContext } from "../../MiddleMan";
+import { ApplicationSettingsResponse } from "../../main/response";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -32,7 +26,6 @@ export interface MenuItemCustom extends MenuItem {
 export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
     menuVisibility:MenuVisibility,
-    visibleButtons:VisibleButtons
 }
 
 /** Interface for profile-menu */
@@ -41,14 +34,43 @@ interface IProfileMenu {
     visibleButtons?: VisibleButtons
 }
 
+/**
+ * Renders the profile-menu and also the buttons (home, save, reload) next to the profile-menu.
+ * @param props - properties, if the buttons are visible
+ */
 export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
 
-    const slideOptions = useProfileMenuItems();
+    /** The profile-menu options */
+    const profileMenu = useProfileMenuItems();
+
+    /** State of button-visibility */
+    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     /** History of react-router-dom */
     const history = useHistory();
+
+    // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
+    useEffect(() => {
+        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+            setVisibleButtons({
+                reload: appSettings.reload,
+                rollback: appSettings.rollback,
+                save: appSettings.save
+            });
+        });
+
+        return () => {
+            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+                setVisibleButtons({
+                    reload: appSettings.reload,
+                    rollback: appSettings.rollback,
+                    save: appSettings.save
+                });
+            });
+        }
+    }, [context.subscriptions])
     
     return (
         <>
@@ -56,6 +78,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
+                    //Either opens the basic "home" or a welcome screen if there is one.
                     const openWelcomeOrHome = () => {
                         if (context.appSettings.welcomeScreen) {
                             return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen);
@@ -66,6 +89,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                         }
                     }
 
+                    // If a screen is opened, close it, and redirect to home or welcome-screen
                     if (context.contentStore.activeScreens.length) {
                         context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
@@ -90,43 +114,44 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 tooltip="Home"
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
             }
-            {props.showButtons && (!props.visibleButtons || props.visibleButtons.save) && <Button
+            {props.showButtons && (!visibleButtons || visibleButtons.save) && <Button
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
-            {(!props.visibleButtons || (props.visibleButtons.reload || props.visibleButtons.rollback) && props.showButtons) &&
+            {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
                 <Button
-                    icon={!props.visibleButtons ? "fas fa-sync" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "fas fa-sync" : "pi pi-undo"}
+                    icon={!visibleButtons ? "fas fa-sync" : visibleButtons.reload && !visibleButtons.rollback ? "fas fa-sync" : "pi pi-undo"}
                     className="menu-topbar-buttons"
                     onClick={() => {
-                        if (!props.visibleButtons || (props.visibleButtons.reload && !props.visibleButtons.rollback)) {
+                        if (!visibleButtons || (visibleButtons.reload && !visibleButtons.rollback)) {
                             showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
                         }
                         else {
                             showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
                         }
                     }}
-                    tooltip={translations.get(!props.visibleButtons ? "Reload" : props.visibleButtons.reload && !props.visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
             <div className="profile-menu">
                 <Menubar
                     style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
-                    model={slideOptions} />
+                    model={profileMenu} />
             </div>
         </>
     )
 }
 
 /**
- * Manu component builds and displays the menu for reactUI, consists of a topbar with a profile-menu and a sidebar with panel-menu.
- * @param forwardedRef - receives a reference so the reference can be used in other components
+ * Menu component builds and displays the menu for reactUI, consists of a topbar with a profile-menu and a sidebar with panel-menu.
+ * @param props - the properties the menu receives from the UIManager.
  */
 const Menu: FC<IMenu> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Flag if the manu is collpased or expanded */
@@ -223,6 +248,7 @@ const Menu: FC<IMenu> = (props) => {
 
     // }, [selectedMenuItem, menuItems])
 
+    //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
         if (props.menuVisibility.menuBar) {
             Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
@@ -231,7 +257,7 @@ const Menu: FC<IMenu> = (props) => {
                 menuElem.classList.add("p-menuitem--active");
             } 
         }
-    },[activeItemChanged])
+    },[selectedMenuItem])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,
@@ -331,7 +357,7 @@ const Menu: FC<IMenu> = (props) => {
                                 <span className="menu-screen-title">{screenTitle}</span>
                             </div>
                             <div className="menu-topbar-right">
-                                <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
+                                <ProfileMenu showButtons />
                             </div>
                         </div>
                     </div>

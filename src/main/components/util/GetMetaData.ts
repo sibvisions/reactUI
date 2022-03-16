@@ -1,6 +1,4 @@
-/** Other imports */
 import ContentStore from "../../ContentStore";
-import { ColumnDescription, MetaDataResponse } from "../../response";
 import { FullOrColumn } from "../zhooks/useMetaData";
 
 /**

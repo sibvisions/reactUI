@@ -1,17 +1,9 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { Password } from "primereact/password";
-
-/** Hook imports */
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
-import { showTopBar } from "../topbar/TopBar";
 
 /**
  * This component displays an input field of password type not linked to a databook
@@ -66,7 +58,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            disabled={props.enabled === false} />
+            disabled={isCompDisabled(props)} />
     )
 }
 export default UIPassword

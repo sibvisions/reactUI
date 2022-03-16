@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** Hook imports */
 import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName } from "../util";
 import BaseComponent from "../BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
@@ -68,13 +63,16 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
+    /** This components root panel */
     const rootPanel = context.contentStore.getRootPanel(props.id) as string;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
+    /** Reference for the gauge */
     const gauge = useRef<any>(null);
 
+    // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, rootPanel, props.dataBook);
 
     /** Hook for MouseListener */
@@ -95,6 +93,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
+    // Sets the gauge properties on render
     useLayoutEffect(() => {
         if(wrapperRef.current && !gauge.current) {
             switch(gaugeStyle) {

@@ -1,7 +1,5 @@
-/** React imports */
 import { useContext } from "react"
 import { useTranslation } from ".";
-/** Other imports */
 import { appContext, AppContextType } from "../../AppProvider"
 import { TopBarContext, TopBarContextType } from "../topbar/TopBar";
 

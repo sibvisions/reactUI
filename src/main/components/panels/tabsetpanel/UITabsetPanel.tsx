@@ -1,13 +1,6 @@
-/** React imports */
 import React, { CSSProperties, FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
-
-/** 3rd Party imports */
 import { TabView, TabPanel } from 'primereact/tabview';
-
-/** Hook imports */
 import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
 import { LayoutContext } from "../../../LayoutContext";
 import { parseIconData, IconProps } from "../../compprops";
 import { IPanel } from "..";
@@ -22,6 +15,7 @@ export interface ITabsetPanel extends IPanel {
     selectedIndex?: number;
 }
 
+// Type for a tabs properties
 type TabProperties = {
     enabled: boolean
     closable: boolean
@@ -29,6 +23,11 @@ type TabProperties = {
     icon?: IconProps
 }
 
+/**
+ * Returns a tabs properties
+ * @param constraint - the constraints of a tab
+ * @param foreground - the foreground color of a tab
+ */
 function parseTabConstraints(constraint:string, foreground?:string):TabProperties {
     const newTab:TabProperties = { enabled: true, closable: false, text: "" };
     const splitConstraint = constraint.split(";");
@@ -71,7 +70,7 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel
-     * minus 31 for the TabsetPanel navigationbar
+     * minus 48 for the TabsetPanel navigationbar
      */
     useLayoutEffect(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */

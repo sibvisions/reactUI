@@ -1,17 +1,10 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
 // https://github.com/chartjs/Chart.js/issues/5224
 
-/** React imports */
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
-
-/** 3rd Party imports */
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
-
-/** Hook imports */
 import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../util";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";

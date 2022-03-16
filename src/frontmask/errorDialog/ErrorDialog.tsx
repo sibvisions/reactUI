@@ -1,17 +1,13 @@
-/** React imports */
 import React, { FC, useRef } from "react";
-
-/** 3rd Party imports */
 import { useHistory } from "react-router";
-
-/** Other imports */
 import { IServerFailMessage } from "../../AppWrapper";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/components/util";
 import { useConstants, useEventHandler } from "../../moduleIndex";
 
 /**
- * This component displays an error-message
+ * This component displays an error-message as a bar "above" the application.
+ * The application is not usable behind the error because of a glass-pane
  * @param props - contains the error message and if the session is expired or server error
  */
 const ErrorDialog:FC<IServerFailMessage> = (props) => {
@@ -21,6 +17,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
     /** History of react-router-dom */
     const history = useHistory();
 
+    /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
     /**

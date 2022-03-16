@@ -1,19 +1,9 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
 import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
-
-/** Other imports */
 import { IButtonSelectable } from "..";
-import { createSetValueRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue } from "../../util";
-import { showTopBar } from "../../topbar/TopBar";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 
 /**
@@ -85,7 +75,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
-                    disabled={props.enabled === false}
+                    disabled={isCompDisabled(props)}
                 />
                 <label 
                     ref={labelRef} 

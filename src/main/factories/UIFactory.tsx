@@ -1,10 +1,5 @@
-/** React imports */
 import React, { FC } from "react"
-
-/** Other imports */
 import BaseComponent from "../components/BaseComponent";
-
-/** UI and Interface Imports */
 import { UIGroupPanel,
         UIPanel,
         UIPopupWrapper,
@@ -42,6 +37,7 @@ import ContentStore from "../ContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
+import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 
 
 /**
@@ -93,7 +89,7 @@ const Editor = (props: any) => {
  * Decides which CellEditor should be used
  * @param props - properties sent by the server
  */
-export function createEditor(props: any) {
+export function createEditor(props: IRCCellEditor) {
     return <Editor {...props} />
 }
 

@@ -1,4 +1,3 @@
-/** Other imports */
 import { Dimension } from ".";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
@@ -34,6 +33,11 @@ function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxSize:Dim
     return sizeToSend
 }
 
+/**
+ * Returns the maximum of a refs offsetWidth, scrollWidth, or boundingClientRect.width of a ref
+ * @param ref - the element of a component
+ * @param className - the classname of a component
+ */
 function measurePrefWidth(ref:any, className:string) {
     const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT] as string[]
     if (arrString.indexOf(className) !== -1) {

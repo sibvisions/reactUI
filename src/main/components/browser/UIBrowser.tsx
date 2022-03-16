@@ -1,23 +1,17 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
-
-/** Hook imports */
 import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
-import { checkComponentName, concatClassnames, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { checkComponentName, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 
+// Interface for the browser component
 export interface IBrowser extends BaseComponent {
     url: string;
 }
 
 /**
- * This component displays an iframe
+ * This component displays an iframe which displays an url
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIBrowser: FC<IBrowser> = (baseProps) => {

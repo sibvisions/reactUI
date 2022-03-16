@@ -1,7 +1,4 @@
-/** React imports */
 import { useContext, useEffect, useState } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { getMetaData } from "../util";

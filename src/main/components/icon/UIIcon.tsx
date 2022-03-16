@@ -1,10 +1,5 @@
-/** React imports */
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** Hook imports */
+import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
 import { getAlignments, parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName } from "../util";
@@ -22,8 +17,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
 
-    const [preferredSize, setPreferredSize] = useState<Dimension>();
-
     /** Properties for icon */
     const iconProps = parseIconData(props.foreground, props.image);
 
@@ -36,10 +29,13 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** True, if the icon is loaded */
     const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
 
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    /** The alignment of the component */
     const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment])
     
     /**
@@ -53,7 +49,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             const parsedSize = parsePrefSize(props.preferredSize) as Dimension
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
-            setPreferredSize(prefSize)
         } 
         else {
             prefSize.height = event.currentTarget.height;
@@ -91,7 +86,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
-                    //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText}

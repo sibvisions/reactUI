@@ -1,13 +1,10 @@
-/** React imports */
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { Anchor, Constraints, Gaps, Margins, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ILayout } from ".";
 import { ComponentSizes } from "../zhooks";
 import BaseComponent from "../BaseComponent";
-import { Dimension, parseMinSize } from "../util";
+import { Dimension } from "../util";
 import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
 
 /**

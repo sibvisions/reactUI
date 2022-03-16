@@ -1,21 +1,15 @@
-/** React imports */
-import React, { FC, FormEvent, useContext, useEffect, useState } from "react";
-
-/** 3rd Party imports */
+import React, { FC, FormEvent, useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
-
-/** Hook imports */
 import { useConstants } from "../../main/components/zhooks";
-
-/** Other imports */
 import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
 import { ILoginCredentials } from "../login/login";
 
+// Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
     loggedIn: boolean,
     username: string,
@@ -45,19 +39,12 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     /** True, if the password is resetting and not changing */
     const isReset = context.appSettings.loginMode === "changeOneTimePassword";
 
+    // Subscribes to the dialog state, sets visible true when called
     useEffect(() => {
         context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true));
     
         return () => context.subscriptions.unsubscribeFromDialog("change-password");
     }, [context.subscriptions]);
-
-    useEffect(() => {
-        setChangePWData(prevState => ({...prevState, username: props.username}));
-    }, [props.username])
-
-    useEffect(() => {
-        setChangePWData(prevState => ({...prevState, password: props.password || ""}));
-    }, [props.password])
 
     /**
      * Sends a login request to change the password of a user.

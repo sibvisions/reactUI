@@ -1,14 +1,11 @@
-/** React imports */
 import { useContext, useEffect, useState } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { getScreensData } from "../util";
 
 /**
  * This hook returns the current data of all dataproviders of a component as Map
  * @param screenName - the name of the screen
- * @param databooks - the databooks of the component
+ * @param dataBooks - the databooks of the component
  * @returns the current data of all dataproviders of a component as Map
  */
 const useAllDataProviderData = (screenName:string, dataBooks:string[]): Map<string, any> => {

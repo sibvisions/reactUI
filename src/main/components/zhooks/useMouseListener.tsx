@@ -1,15 +1,11 @@
-/** React imports */
 import { useContext, useRef } from "react";
-
-/** Hook imports */
 import { useEventHandler } from ".";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
+/** Returns which mouse-button was pressed */
 const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
     if (button === 0) {
         return "Left";
@@ -22,6 +18,15 @@ const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
     }
 }
 
+/**
+ * Adds mouse-listeners for the components
+ * @param compName - the name of the component
+ * @param element - the element which the handler is added to
+ * @param eventMouseClicked - true if mouse clicked should be added
+ * @param eventMousePressed - true if mouse pressed should be added
+ * @param eventMouseReleased - true if mouse released should be added
+ * @param hold - function on hold
+ */
 const useMouseListener = (
     compName:string, 
     element?:HTMLElement, 

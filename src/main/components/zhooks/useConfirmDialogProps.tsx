@@ -1,8 +1,6 @@
 import React, { CSSProperties, useContext, useEffect, useState } from "react";
-
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
-
 import { appContext } from "../../AppProvider";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { useTranslation } from ".";
@@ -12,17 +10,22 @@ import { REQUEST_ENDPOINTS } from "../../request";
 import { concatClassnames } from "../util";
 import tinycolor from "tinycolor2";
 
+/** Returns the ConfirmDialog properties and if the ConfirmDialog is visible */
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** The properties of the message */
     const [messageProps, setMessageProps] = useState<DialogResponse>();
 
+    /** True, if the ConfirmDialog is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
+    /** The properties ConfirmDialog */
     const [confirmProps, setConfirmProps] = useState<ConfirmDialogProps>({});
 
-    const [closingFrame, setClosingFrame] = useState<{name:string, flag:boolean}>({name: "", flag:false});
+    /** State which frame is closing */
+    const [closingFrame, setClosingFrame] = useState<boolean>(false);
 
     /** The topbar component */
     const topbar = useContext(TopBarContext);
@@ -30,9 +33,10 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     /** The translation */
     const translation = useTranslation();
 
+    // Subscribes the message dialog to its props and to closing-frame
     useEffect(() => {
         context.subscriptions.subscribeToDialog("message-dialog", (dialog:DialogResponse) => setMessageProps(dialog));
-        context.subscriptions.subscribeToCloseFrame((screenName:string) => setClosingFrame(prevState => { return { name: screenName, flag:!prevState.flag } }));
+        context.subscriptions.subscribeToCloseFrame((screenName:string) => setClosingFrame(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromDialog("message-dialog");
@@ -40,10 +44,12 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
         }
     },[context.subscriptions]);
 
+    // When the frame closes, set visible false
     useEffect(() => {
         setVisible(false);
     }, [closingFrame]);
 
+    // Renders the correct message layout based on the ButtonType
     useEffect(() => {
         if (messageProps) {
             const headerContent = (iconType: 0 | 1 | 2 | 3 | 9 | -1): { icon: string, text: string } => {

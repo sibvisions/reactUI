@@ -1,10 +1,5 @@
-/** React imports */
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import _ from "underscore";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
 import BaseComponent from "../BaseComponent";
@@ -25,21 +20,22 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
+    /** A cache for componentsizes before preferredSizes is being set */
     const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>())
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** A reference map of which components have already been added */
     const componentsChildren = useRef<Map<string, Array<string>>>(new Map<string, Array<string>>());
-    
-    const compLoadedCache = useRef<Array<string>>(new Array<string>());
+
     
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
-        //let tempSizes = new Map<string, ComponentSizes>();
         let componentsChanged = false
         const children = context.contentStore.getChildren(id, className);
 
+        // Deletes the components out of tempSizes if they are no longer visible/available
         tempSizes.current.forEach((val, key) => {
             if (!children.has(key)) {
                 tempSizes.current.delete(key)
@@ -52,15 +48,15 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
+
         /**
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
          * set the preferredSizes, if the components change update the current preferredSizes.
-         * @param compId - the component id
+         * @param compSizes - the old compSizes
          * @param newPref - the preferred size of the component
          * @param newMin - the minimum size of the component
          * @param newMax - the maximum size of the component
          */
-
         const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
             if (compSizes) {
                 if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
@@ -70,6 +66,7 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             return true;
         }
 
+        // Returns true, if the children have changed from before 
         const childrenChanged = (compId:string) => {
             const arraysEqual = (a:string[], b:string[]) => {
                 let aClone = [...a];
@@ -95,6 +92,7 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             }
         }
 
+        /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
@@ -129,10 +127,6 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
         /** Create the reactchildren */
         children.forEach(child => {
             let reactChild;
-            // if (!compLoadedCache.current.includes(child.name)) {
-            //     child.onLoadCallback = componentHasLoaded;
-            //     compLoadedCache.current.push(child.name)
-            // }
             if (!context.contentStore.customComponents.has(child.name)) {
                 //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
                 //gets a componentHasLoaded. When not using this it could be that some components aren't shown...

@@ -1,14 +1,8 @@
-/** React imports */
 import React, { createContext, FC, useState } from "react";
-
-/** 3rd Party imports */
 import { useHistory } from "react-router";
-
-/** Other imports */
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
-import { ToastMessageType } from "primereact/toast";
 import API from "./API";
 import AppSettings from "./AppSettings";
 

@@ -1,7 +1,4 @@
-/** React imports */
 import { useContext } from "react";
-
-/** Other imports */
 import { appContext } from "../../AppProvider";
 
 /**

@@ -1,4 +1,3 @@
-/** Other import */
 import BaseComponent from "../BaseComponent";
 
 /** Interface for Buttons contains properties which are sent by the server */

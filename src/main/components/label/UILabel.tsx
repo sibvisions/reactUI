@@ -1,15 +1,8 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
-
-/** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
-
-/** Hook imports */
 import { useComponentConstants, useMouseListener } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
-import {getFont, getAlignments, translateTextAlign} from "../compprops";
+import {getAlignments, translateTextAlign} from "../compprops";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
 import usePopupMenu from "../zhooks/usePopupMenu";
 
@@ -30,8 +23,10 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
 
+    /** The text-alignment of the label */
     const lblTextAlignment = translateTextAlign(props.horizontalAlignment);
 
+    /** True, if the label contains html */
     const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
 
     /** Hook for MouseListener */

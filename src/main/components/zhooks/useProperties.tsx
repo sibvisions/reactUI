@@ -1,7 +1,4 @@
-/** React imports */
 import { useContext, useEffect, useState } from "react";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
 import { appContext } from "../../AppProvider";
 

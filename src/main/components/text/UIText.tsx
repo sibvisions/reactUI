@@ -1,19 +1,13 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
-
-/** Hook imports */
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
 import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
     columns?:number
+    editable?:boolean
 }
 
 /**
@@ -68,7 +62,7 @@ const UIText: FC<ITextField> = (baseProps) => {
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            disabled={props.enabled === false}
+            disabled={isCompDisabled(props)}
         />
     )
 }

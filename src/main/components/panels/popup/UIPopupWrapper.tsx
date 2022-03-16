@@ -1,13 +1,7 @@
-/** React imports */
 import React, { FC, ReactElement, useContext } from "react";
-
-/** 3rd Party imports */
 import { Dialog } from 'primereact/dialog';
-
-/** Other imports */
 import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
-import { useScreen } from "../../zhooks";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 

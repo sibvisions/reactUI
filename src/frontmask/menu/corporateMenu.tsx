@@ -1,28 +1,24 @@
-/** React imports */
 import React, { FC, useCallback, useContext, useEffect, useState } from "react";
-
-/** 3rd Party imports */
 import { Menubar } from 'primereact/menubar';
 import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
 import { MenuItem } from "primereact/menuitem";
-
-/** Hook imports */
 import { useConstants, useMenuItems, useScreenTitle } from "../../main/components/zhooks";
-
-/** Other imports */
 import { IMenu, ProfileMenu } from "./menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/compprops";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { EmbeddedContext } from "../../MiddleMan";
 
-
-
+/**
+ * Renders the menu as a topbar and a menubar below, when the application-layout is corporation
+ * @param props - the properties the menu receives from the UIManager.
+ */
 const CorporateMenu:FC<IMenu> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
+    /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Current state of screen title, displays the screen title */
@@ -31,6 +27,11 @@ const CorporateMenu:FC<IMenu> = (props) => {
     /** get menu items */
     //const menuItems = useMenuItems();
 
+    /** 
+     * Returns an array of created toolbar-items based on the toolbar-item-data sent by the server.
+     * Is called when the server sends toolbar-data
+     * @param toolbarItems - An array of toolbar-items sent by the server.
+     */
     const handleNewToolbarItems = useCallback((toolbarItems: Array<MenuItem>) => {
         const tbItems = new Array<MenuItem>();
         toolbarItems.forEach(item => {
@@ -73,7 +74,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                             </div>
                             <span className="menu-screen-title">{screenTitle}</span>
                             <div className="corp-menu-profile">
-                                <ProfileMenu showButtons visibleButtons={props.visibleButtons} />
+                                <ProfileMenu showButtons />
                             </div>
                         </div>
                         {props.menuVisibility.menuBar &&
