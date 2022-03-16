@@ -5,7 +5,7 @@ import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
-import { FocusFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
+import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
@@ -22,7 +22,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     const [children, components, componentSizes] = useComponents(props.id, props.className);
     
     /** Context which Frame is currently in front */
-    const frameContext = useContext(FocusFrameContext);
+    const frameContext = useContext(OpenFrameContext);
 
     /** From the layoutstyle adjusted frame style, when measuring frame removes header from height */
     const [frameStyle, setFrameStyle] = useState<CSSProperties>();
@@ -66,7 +66,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     }, [onLoadCallback]);
 
     /** Adds eventHandler to call the frameContext callback on mouse-down to tell the DesktopPanel that this frame is at front */
-    useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "mousedown", () => frameContext.callback(props.name));
+    useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "mousedown", () => frameContext.openFramesCallback(props.name, true));
 
     /** Handles the zIndex of frames */
     useEffect(() => {
@@ -74,11 +74,29 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             const rndFrame:HTMLElement = rndRef.current.resizableElement.current;
 
             const rndStyle:CSSStyleDeclaration = rndFrame.style;
-            if (rndStyle.zIndex === "5" && frameContext.name !== props.name) {
-                rndFrame.style.setProperty("z-index", props.modal ? "1001" : "1");
+            if (frameContext.openFrames[0] === props.name) {
+                if (props.modal) {
+                    if (rndStyle.zIndex !== "1005") {
+                        rndFrame.style.setProperty("z-index", "1005");
+                    }
+                }
+                else {
+                    if (rndStyle.zIndex !== "5") {
+                        rndFrame.style.setProperty("z-index", "5");
+                    }
+                }
             }
-            else if (rndStyle.zIndex !== "5" && frameContext.name === props.name) {
-                rndFrame.style.setProperty("z-index", props.modal ? "1005" : "5");
+            else {
+                if (props.modal) {
+                    if (rndStyle.zIndex === "1005") {
+                        rndFrame.style.setProperty("z-index", "1001");
+                    }
+                }
+                else {
+                    if (rndStyle.zIndex === "5") {
+                        rndFrame.style.setProperty("z-index", "1");
+                    }
+                }
             }
         }
     }, [frameContext])
@@ -118,18 +136,32 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                     initFrame.current = false;
                 }
             }
-            frameContext.callback(props.name);
+            frameContext.openFramesCallback(props.name, true);
         }
     }, [layoutStyle, packSize]);
 
-    // useEffect(() => {
-    //     if (!initFrame.current && rndRef.current && props.pack && packSize) {
-    //         rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
-    //         sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
-    //         setFrameStyle(packSize);
-    //         frameContext.callback(props.name);
-    //     }
-    // }, [props.pack]);
+    // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
+    useEffect(() => {
+        if (!initFrame.current && rndRef.current && props.pack && packSize) {
+            rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
+            sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
+            setFrameStyle(packSize);
+        }
+    }, [props.pack]);
+
+    // When the toFront property changes to true, put the frame into front
+    useEffect(() => {
+        if (props.toFront) {
+            frameContext.openFramesCallback(props.name, true);
+        }
+    }, [props.toFront])
+
+    // When the toBack property changes to true, put the frame into the back
+    useEffect(() => {
+        if (props.toBack) {
+            frameContext.openFramesCallback(props.name, false);
+        }
+    }, [props.toBack])
 
     // Centers the frame to its relative component
     useEffect(() => {

@@ -12,12 +12,12 @@ export interface IDesktopPanel extends BaseComponent {
     layoutData: string,
 }
 
-interface IFocusFrameContext {
-    name: string,
-    callback: Function
+interface IOpenedFrameContext {
+    openFrames: string[],
+    openFramesCallback: Function
 }
 
-export const FocusFrameContext = createContext<IFocusFrameContext>({ name: "", callback: () => {} });
+export const OpenFrameContext = createContext<IOpenedFrameContext>({ openFrames: [], openFramesCallback: () => {} });
 
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
@@ -29,7 +29,15 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
-    const [focusedFrame, setFocusedFrame] = useState<string>(children.find(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)?.name || "");
+    const [openFrames, setOpenedFrames] = useState<string[]>(() => {
+        const foundIF = children.filter(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME).map(frame => frame.name);
+        if (foundIF) {
+            return foundIF
+        }
+        else {
+            return [""];
+        }
+    });
 
     /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);
@@ -55,12 +63,23 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
         )
     }, [onLoadCallback]);
 
-    const focusedFrameCallback = (name:string) => {
-        setFocusedFrame(name);
-    }
+    /**
+     * Either adds a frame-name at the start or the end of openFrames depending on the toFront parameter
+     * @param name - the name of the InternalFrame
+     * @param toFront - true, if the frame should be added to the front, false if added to the back
+     */
+    const openFramesCallback = useCallback((name:string, toFront: boolean) => {
+        const arrCopy = [...openFrames];
+        const foundIndex = arrCopy.findIndex(openName => openName === name);
+        if (foundIndex >= 0) {
+            arrCopy.splice(foundIndex, 1);
+        }
+        toFront ? arrCopy.unshift(name) : arrCopy.push(name);
+        setOpenedFrames(arrCopy);
+    }, [openFrames])
 
     return (
-        <FocusFrameContext.Provider value={{ name: focusedFrame, callback: focusedFrameCallback }}>
+        <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback }}>
             <div
                 className="rc-desktop-panel"
                 ref={panelRef}
@@ -81,7 +100,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                     panelType="DesktopPanel"
                     parent={props.parent} />
             </div>
-        </FocusFrameContext.Provider>
+        </OpenFrameContext.Provider>
     )
 }
 export default UIDesktopPanel
