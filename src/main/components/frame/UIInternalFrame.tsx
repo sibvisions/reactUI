@@ -41,7 +41,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                if (relativeComp.className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
+                if (relativeComp.className !== COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
                     return document.getElementById(relativeComp.name);
                 }
                 else {
@@ -120,7 +120,16 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             }
             frameContext.callback(props.name);
         }
-    }, [layoutStyle?.width, layoutStyle?.height, packSize?.width, packSize?.height]);
+    }, [layoutStyle, packSize]);
+
+    // useEffect(() => {
+    //     if (!initFrame.current && rndRef.current && props.pack && packSize) {
+    //         rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
+    //         sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
+    //         setFrameStyle(packSize);
+    //         frameContext.callback(props.name);
+    //     }
+    // }, [props.pack]);
 
     // Centers the frame to its relative component
     useEffect(() => {
@@ -172,7 +181,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     const style = {
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
         overflow: "hidden",
-        zIndex: props.modal ? 1001 : 1
+        zIndex: props.modal ? 1001 : 1,
+        visibility: centerFlag ? "hidden" : undefined
     };
 
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
