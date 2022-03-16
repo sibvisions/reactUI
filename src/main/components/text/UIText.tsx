@@ -40,8 +40,6 @@ const UIText: FC<ITextField> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
 
-    console.log(isCompDisabled(props))
-
     return (
         <InputText 
             ref={inputRef} 
