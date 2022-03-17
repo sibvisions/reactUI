@@ -801,6 +801,11 @@ export default class ContentStore{
                 else if ((comp as IPanel).content_modal_) {
                     return comp.name;
                 }
+
+                if (comp?.parent?.includes("IF")) {
+                    break;
+                }
+
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }

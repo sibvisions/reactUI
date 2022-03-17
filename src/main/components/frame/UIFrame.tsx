@@ -2,6 +2,7 @@ import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react"
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../request";
 import BaseComponent from "../BaseComponent";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { parseIconData } from "../compprops";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
@@ -73,8 +74,15 @@ const UIFrame: FC<IFrame> = (props) => {
                     />}
                 </div>
             }
-            {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}
-            {hasToolBars && <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />}
+            <div
+                className={concatClassnames(
+                    "rc-frame-menu",
+                    props.className === COMPONENT_CLASSNAMES.MOBILELAUNCHER ? "mobile-launcher-menu" : ""
+                )}
+                style={{ display: !menuBarProps && !hasToolBars ? "none" : undefined }} >
+                {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}
+                {hasToolBars && <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />}
+            </div>
             <div className={props.internal ? "rc-frame-content" : ""}>
                 <Layout
                     id={props.id}

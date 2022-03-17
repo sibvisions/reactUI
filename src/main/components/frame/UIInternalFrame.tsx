@@ -41,11 +41,11 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                if (relativeComp.className !== COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
-                    return document.getElementById(relativeComp.name);
+                if (relativeComp.parent?.includes("IF") || relativeComp.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                    return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
                 }
                 else {
-                    return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
+                    return document.getElementById(relativeComp.name);
                 }
             }
         }
@@ -163,24 +163,37 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [props.toBack])
 
+    // When the server sends a dispose, call closeScreen
+    useEffect(() => {
+        if (props.dispose) {
+            context.contentStore.closeScreen(props.name)
+        }   
+    }, [props.dispose])
+
     // Centers the frame to its relative component
     useEffect(() => {
         if (rndRef.current && centerFlag) {
             if (props.centerRelativeTo) {
                 const relativeElem = getCenterRelativeElem();
                 const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
-                const relativeCompParent = context.contentStore.getComponentById(relativeComp?.parent);
+                const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getRootPanel(relativeComp.id) as string) : undefined;
+                
                 let parentElem;
 
                 if (relativeCompParent) {
                     parentElem = document.getElementById(relativeCompParent.name);
+                    const launcherMenuHeight = document.getElementsByClassName("mobile-launcher-menu").length 
+                    ? 
+                        (document.getElementsByClassName("mobile-launcher-menu")[0] as HTMLElement).offsetHeight 
+                    : 
+                        0;
                     // The centerRelative Component only has the right size when its parent no longer has visibility hidden
                     if (relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
-                        var style = window.getComputedStyle(relativeElem);
-                        // gets the left and top value out of the style property 'transform'. 'm41' = left, 'm42' = top
-                        var matrix = new WebKitCSSMatrix(style.transform);
-                        let centerX = (relativeElem.getBoundingClientRect().width / 2 + matrix.m41) - ((frameStyle.width as number + 8) / 2);
-                        let centerY = (relativeElem.getBoundingClientRect().height / 2 + matrix.m42) - ((frameStyle.height as number + 35) / 2);
+                        const boundingRect = relativeElem.getBoundingClientRect();
+                        // Calculate the center position of the frame and then add left respectively top of the relative component. 
+                        // Take away the launcher menu height because top takes entire window 
+                        let centerX = boundingRect.left + boundingRect.width / 2 - (frameStyle.width as number + 8) / 2;
+                        let centerY = (boundingRect.top - launcherMenuHeight) + boundingRect.height / 2 - (frameStyle.height as number + 35) / 2;
                         rndRef.current.updatePosition({ x: centerX, y: centerY });
                         setCenterFlag(false);
                         return
@@ -188,6 +201,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 }
             }
             else {
+                console.log(props.name)
                 rndRef.current.updatePosition({ x: 0, y: 0 });
                 setCenterFlag(false);
                 return
@@ -220,8 +234,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
     const getPreferredFrameSize = useCallback((size:Dimension) => {
         //height + 35 because of header + border + padding, width + 8 because of padding + border 
-        if (packSize?.height !== size.height + 35 && packSize?.width !== size.width + 8) {
-            setPackSize({ height: size.height + 35, width: size.width + 8 });
+        if (packSize?.height !== size.height && packSize?.width !== size.width) {
+            setPackSize({ height: size.height, width: size.width });
         }
     }, [packSize]);
 
