@@ -404,11 +404,17 @@ export default class ContentStore{
                         }
                         else {
                             if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
-                                const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && (comp as IPanel).screen_navigationName_ !== undefined);
-                                if (foundWorkScreen) {
-                                    this.flatContent.delete(newComponent.id);
-                                    this.closeScreen(foundWorkScreen.name);
-                                }   
+                                if ((existingComponent as IPanel).screen_navigationName_ || (existingComponent as IPanel).content_className_ ) {
+                                    this.closeScreen(existingComponent.name);
+                                }
+                                else {
+                                    const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && 
+                                        ((comp as IPanel).screen_navigationName_ !== undefined || (comp as IPanel).content_className_ !== undefined));
+                                    if (foundWorkScreen) {
+                                        this.flatContent.delete(newComponent.id);
+                                        this.closeScreen(foundWorkScreen.name);
+                                    }   
+                                }
                             }
                             else {
                                 this.flatContent.delete(newComponent.id);

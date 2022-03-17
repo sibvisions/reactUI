@@ -7,6 +7,7 @@ import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { checkSizes } from "../util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
 
@@ -74,29 +75,12 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             const rndFrame:HTMLElement = rndRef.current.resizableElement.current;
 
             const rndStyle:CSSStyleDeclaration = rndFrame.style;
-            if (frameContext.openFrames[0] === props.name) {
-                if (props.modal) {
-                    if (rndStyle.zIndex !== "1005") {
-                        rndFrame.style.setProperty("z-index", "1005");
-                    }
-                }
-                else {
-                    if (rndStyle.zIndex !== "5") {
-                        rndFrame.style.setProperty("z-index", "5");
-                    }
-                }
+
+            if (props.modal) {
+                rndStyle.setProperty("z-index", (1000 + frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString())
             }
             else {
-                if (props.modal) {
-                    if (rndStyle.zIndex === "1005") {
-                        rndFrame.style.setProperty("z-index", "1001");
-                    }
-                }
-                else {
-                    if (rndStyle.zIndex === "5") {
-                        rndFrame.style.setProperty("z-index", "1");
-                    }
-                }
+                rndStyle.setProperty("z-index", (frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString());
             }
         }
     }, [frameContext.openFrames])
@@ -231,8 +215,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
-    const getPreferredFrameSize = useCallback((size:Dimension) => {
-        //height + 35 because of header + border + padding, width + 8 because of padding + border 
+    const getPreferredFrameSize = useCallback((pSize:Dimension) => {
+        const size = checkSizes(pSize, parseMinSize(props.minimumSize), parseMaxSize(props.maximumSize))
         if (packSize?.height !== size.height && packSize?.width !== size.width) {
             setPackSize({ height: size.height, width: size.width });
         }

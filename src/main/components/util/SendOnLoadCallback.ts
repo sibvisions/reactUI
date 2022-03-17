@@ -9,7 +9,7 @@ import { CELLEDITOR_CLASSNAMES } from "../editors";
  * @param maxSize - the maximum size
  * @returns the preferred size adjusted to minimum/maximum size if necessary
  */
-function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxSize:Dimension|undefined):Dimension {
+export function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxSize:Dimension|undefined):Dimension {
     let sizeToSend:Dimension = prefSize;
     if (minSize) {
         if (prefSize.width < minSize.width) {
