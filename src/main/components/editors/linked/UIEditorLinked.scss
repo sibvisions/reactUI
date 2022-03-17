@@ -15,6 +15,15 @@
     }
 }
 
+.p-virtualscroller {
+    contain: unset;
+}
+
+.p-virtualscroller-content {
+    position: relative;
+}
+
+
 /// Lazyloading loading animation
 .rc-editor-linked-dropdown.p-autocomplete-panel {
     &.linked-min-width {
