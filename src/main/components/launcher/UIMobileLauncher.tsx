@@ -1,9 +1,9 @@
 import React, { FC, useRef } from "react";
-import BaseComponent from "../BaseComponent";
 import UIFrame from "../frame/UIFrame";
+import { IPanel } from "../panels";
 import { useComponentConstants, useComponents, useMouseListener } from "../zhooks";
 
-export interface IWindow extends BaseComponent {
+export interface IWindow extends IPanel {
     layout:string,
     layoutData:string,
     menuBar:string,

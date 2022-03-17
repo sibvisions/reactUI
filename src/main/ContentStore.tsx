@@ -367,8 +367,10 @@ export default class ContentStore{
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
             }
-            
 
+            /** Cast newComponent as Panel */
+            const newCompAsPanel = (newComponent as IPanel);
+            
             if (existingComponent) {
                 if (newComponent["~remove"] !== true) {
                     /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
@@ -401,8 +403,17 @@ export default class ContentStore{
                             this.removedDesktopContent.set(newComponent.id, existingComponent);
                         }
                         else {
-                            this.flatContent.delete(newComponent.id);
-                            this.removedContent.set(newComponent.id, existingComponent);
+                            if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                                const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && (comp as IPanel).screen_navigationName_ !== undefined);
+                                if (foundWorkScreen) {
+                                    this.flatContent.delete(newComponent.id);
+                                    this.closeScreen(foundWorkScreen.name);
+                                }   
+                            }
+                            else {
+                                this.flatContent.delete(newComponent.id);
+                                this.removedContent.set(newComponent.id, existingComponent);
+                            }
                         }
                     }
                     else {
@@ -464,8 +475,7 @@ export default class ContentStore{
                 }
             }
             
-            /** Cast newComponent as Panel */
-            const newCompAsPanel = (newComponent as IPanel);
+
 
             // Set a new selected menuitem to display the menuitem-text in a different color
             if (newCompAsPanel.screen_className_) {
@@ -520,10 +530,6 @@ export default class ContentStore{
         let window = this.getComponentByName(windowName);
 
         if (window) {
-            if (window.parent && window.parent.includes("IF")) {
-                window = this.getComponentById(window.parent);
-            }
-
             if (window && !closeContent) {
                 this.cleanUp(window.id, window.name, window.className);
             }

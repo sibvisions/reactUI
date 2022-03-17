@@ -76,7 +76,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
         }
         toFront ? arrCopy.unshift(name) : arrCopy.push(name);
         setOpenedFrames(arrCopy);
-    }, [openFrames])
+    }, [openFrames]);
 
     return (
         <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback }}>

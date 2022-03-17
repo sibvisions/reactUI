@@ -99,7 +99,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 }
             }
         }
-    }, [frameContext])
+    }, [frameContext.openFrames])
 
     /** When the centerRelativeTo property changes, center again */
     useEffect(() => {
@@ -166,7 +166,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     // When the server sends a dispose, call closeScreen
     useEffect(() => {
         if (props.dispose) {
-            context.contentStore.closeScreen(props.name)
+            context.contentStore.closeScreen(props.name, undefined, props.content_className_ ? true : false)
         }   
     }, [props.dispose])
 
@@ -201,8 +201,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                 }
             }
             else {
-                console.log(props.name)
-                rndRef.current.updatePosition({ x: 0, y: 0 });
+                rndRef.current.updatePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) });
                 setCenterFlag(false);
                 return
             }
