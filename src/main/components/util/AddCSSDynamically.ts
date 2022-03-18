@@ -34,7 +34,7 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
     link.href = path;
     link.addEventListener("load", () => appSettings.setAppReadyParam(type));
 
-    if (before) {
+    if (before && type !== "appCSS") {
         document.head.insertBefore(link, before);
     }
     else {
