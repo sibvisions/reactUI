@@ -102,6 +102,8 @@ class Server {
 
     lastClosedWasPopUp = false;
 
+    missingDataFetches:string[] = []
+
     setAPI(api:API) {
         this.api = api;
     }
@@ -621,6 +623,10 @@ class Server {
 
         const selectedColumn = this.contentStore.getDataBook(screenName, fetchData.dataProvider)?.selectedRow?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
+
+        if (this.missingDataFetches.includes(fetchData.dataProvider)) {
+            this.missingDataFetches.splice(this.missingDataFetches.indexOf(fetchData.dataProvider), 1);
+        }
     }
 
     /**

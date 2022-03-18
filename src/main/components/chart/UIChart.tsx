@@ -162,8 +162,6 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
-    const rootPanel = context.contentStore.getRootPanel(props.id) as string;
-
     /** The data provided by the databook */
     const [providerData]:any[][] = useDataProviderData(screenName, props.dataBook);
 
@@ -547,7 +545,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }, [props.chartStyle, providerData]);
 
-    useFetchMissingData(screenName, rootPanel, props.dataBook);
+    useFetchMissingData(screenName, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

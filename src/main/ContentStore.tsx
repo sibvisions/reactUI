@@ -116,8 +116,6 @@ export default class ContentStore{
 
     dialogButtons:Array<string> = new Array<string>();
 
-    missingDataCalls: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
-
     ws:WebSocket|undefined;
 
     timer:Timer|undefined;
@@ -488,11 +486,6 @@ export default class ContentStore{
                 this.selectedMenuItem = newCompAsPanel.screen_className_
                 this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
             }
-
-            // Adds the panels to a Map so the missing data calls are made when the panel gets visible
-            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL && newCompAsPanel.parent?.includes("IF")) {
-                this.missingDataCalls.set(newCompAsPanel.name, new Map<string, Function>());
-            }
         });
 
         /** If the component already exists and it is subscribed to properties update the state */
@@ -786,32 +779,6 @@ export default class ContentStore{
                 }
                 else if ((comp as IPanel).content_modal_) {
                     return dataProvider ? dataProvider.split("/")[1] : comp.name;
-                }
-
-                if (comp?.parent?.includes("IF")) {
-                    break;
-                }
-
-                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
-            }
-        }
-        return comp?.name
-    }
-
-    /**
-     * Returns furthest up panel name of a component
-     * @param id - the id of the component
-     * @returns the component id of a screen for a component
-     */
-     getRootPanel(id: string) {
-        let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
-        if (comp) {
-            while (comp?.parent) {
-                if ((comp as IPanel).screen_modal_) {
-                    break;
-                }
-                else if ((comp as IPanel).content_modal_) {
-                    return comp.name;
                 }
 
                 if (comp?.parent?.includes("IF")) {

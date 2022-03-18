@@ -147,9 +147,6 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Name of the screen */
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
 
-    /** Root panel name of the screen */
-    const rootPanel = useMemo(() => context.contentStore.getRootPanel(props.id) as string, [context.contentStore, props.id]);
-
     /** Metadata of the databook */
     const metaData = useMetaData(screenName, props.dataBook, undefined);
 
@@ -223,7 +220,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
     // Fetches Data if dataprovider has not been fetched yet
-    useFetchMissingData(screenName, rootPanel, props.dataBook);
+    useFetchMissingData(screenName, props.dataBook);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */

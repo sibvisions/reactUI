@@ -34,10 +34,10 @@ export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTabl
  */
 const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, translations, screenName, rootPanel, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, translations, screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
 
     // Fetches Data if dataprovider has not been fetched yet
-    useFetchMissingData(screenName, rootPanel, props.dataRow);
+    useFetchMissingData(screenName, props.dataRow);
 
     /** If the CellEditor is read-only */
     const isReadOnly = useMemo(() => isCellEditorReadOnly(props), [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);

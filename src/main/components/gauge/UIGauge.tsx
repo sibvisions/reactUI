@@ -63,9 +63,6 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
-    /** This components root panel */
-    const rootPanel = context.contentStore.getRootPanel(props.id) as string;
-
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
@@ -73,7 +70,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const gauge = useRef<any>(null);
 
     // Fetches Data if dataprovider has not been fetched yet
-    useFetchMissingData(screenName, rootPanel, props.dataBook);
+    useFetchMissingData(screenName, props.dataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
