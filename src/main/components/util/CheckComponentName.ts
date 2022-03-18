@@ -10,7 +10,7 @@ export function checkComponentName(name:string) {
     }
 
     if (name.includes(".")) {
-        checkedName = name.replace(".", "");
+        checkedName = name.replaceAll(".", "");
     }
 
     return checkedName;
