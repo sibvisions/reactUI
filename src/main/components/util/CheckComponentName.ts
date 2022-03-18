@@ -7,5 +7,10 @@ export function checkComponentName(name:string) {
     if (name.match(/^\d/)) {
         return "_" + name;
     }
+
+    if (name.includes(".")) {
+        return name.replace(".", "");
+    }
+
     return name;
 }

@@ -101,7 +101,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
                 id={checkComponentName(props.name)}

@@ -48,7 +48,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
                 className="rc-panel-group"

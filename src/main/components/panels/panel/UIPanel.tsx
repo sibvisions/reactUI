@@ -73,9 +73,11 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         }
     }, [layoutStyle?.visibility, props.parent]);
 
+    console.log(props.name)
+
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 className={concatClassnames(
                     "rc-panel",

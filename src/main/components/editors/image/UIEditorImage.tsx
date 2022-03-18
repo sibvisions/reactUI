@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef } from "react";
 import { useImageStyle, useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -92,10 +92,10 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
         >
-            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
             {(props.selectedRow || props.cellEditor.defaultImageName) &&
                 <img
-                    id={!props.isCellEditor ? props.name : undefined}
+                    id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
                     className={imageStyle}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}

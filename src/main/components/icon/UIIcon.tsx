@@ -106,7 +106,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             className="rc-icon"
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
         >
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             {iconOrImage(iconProps.icon)}
         </span>
     )

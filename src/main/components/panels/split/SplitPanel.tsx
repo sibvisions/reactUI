@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
-import { Dimension } from "../../util";
+import { checkComponentName, Dimension } from "../../util";
 import { Tooltip } from "primereact/tooltip";
 
 /** Type for ResizeEvent */
@@ -140,7 +140,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.id}  />
+            <Tooltip target={"#" + checkComponentName(props.id)}  />
             <div
                 id={props.id}
                 className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")}
