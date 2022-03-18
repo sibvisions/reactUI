@@ -160,7 +160,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             if (props.centerRelativeTo) {
                 const relativeElem = getCenterRelativeElem();
                 const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
-                const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getRootPanel(relativeComp.id) as string) : undefined;
+                const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
                 
                 let parentElem;
 

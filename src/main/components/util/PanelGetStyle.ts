@@ -13,18 +13,18 @@ import { Dimension, parsePrefSize } from ".";
 export function panelGetStyle(group:boolean, layoutStyle?:CSSProperties, prefSize?:Dimension, modal?:boolean, modalSize?:string) {
     let s:CSSProperties = {};
     /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-    if (modal) {
-        const screenSize = parsePrefSize(modalSize);
-        if (screenSize) {
-            s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-        }
-        else if (prefSize) {
-            s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-        }
-    }
-    else {
+    // if (modal) {
+    //     const screenSize = parsePrefSize(modalSize);
+    //     if (screenSize) {
+    //         s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
+    //     }
+    //     else if (prefSize) {
+    //         s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
+    //     }
+    // }
+    //else {
         s = {...layoutStyle}
-    }
+    //}
 
     if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
         s.top = undefined;

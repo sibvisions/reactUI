@@ -770,7 +770,7 @@ export default class ContentStore{
      * @param id - the id of the component
      * @returns the component id of a screen for a component
      */
-    getScreenName(id: string, dataProvider:string) {
+    getScreenName(id: string, dataProvider?:string) {
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
