@@ -63,16 +63,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback])
 
-    /** When the panel is visible call each missing data call (useFetchMissingData) */
-    useEffect(() => {
-        if (layoutStyle?.visibility !== "hidden" && props.parent === undefined) {
-            context.contentStore.missingDataCalls.get(props.name)?.forEach((call, key) => {
-                call.apply(undefined, []);
-                context.contentStore.missingDataCalls.delete(key);
-            });
-        }
-    }, [layoutStyle?.visibility, props.parent]);
-
     return (
         <>
             <Tooltip target={"#" + checkComponentName(props.name)} />

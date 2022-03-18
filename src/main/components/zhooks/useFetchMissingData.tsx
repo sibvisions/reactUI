@@ -7,10 +7,9 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 /**
  * Fetches the missing dataprovider if it isn't in the contentstore
  * @param screenName - the name of the screen
- * @param panelName - the name of the root panel
  * @param dataProvider - the dataprovider to fetch
  */
-const useFetchMissingData = (screenName:string, panelName:string, dataProvider:string) => {
+const useFetchMissingData = (screenName:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -24,8 +23,10 @@ const useFetchMissingData = (screenName:string, panelName:string, dataProvider:s
             if (!context.contentStore.getDataBook(screenName, dataProvider)?.metaData) {
                 fetchReq.includeMetaData = true;
             }
-            if (context.contentStore.missingDataCalls.has(panelName)) {
-                context.contentStore.missingDataCalls.get(panelName)!.set(dataProvider, () => showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar));
+
+            if (!context.server.missingDataFetches.includes(dataProvider)) {
+                context.server.missingDataFetches.push(dataProvider);
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
             }
         }
     }, []);
