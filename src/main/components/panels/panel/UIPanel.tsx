@@ -73,8 +73,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         }
     }, [layoutStyle?.visibility, props.parent]);
 
-    console.log(props.name)
-
     return (
         <>
             <Tooltip target={"#" + checkComponentName(props.name)} />
