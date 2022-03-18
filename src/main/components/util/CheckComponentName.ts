@@ -4,8 +4,14 @@
  * @param name - the name of the component
  */
 export function checkComponentName(name:string) {
+    let checkedName = name;
     if (name.match(/^\d/)) {
-        return "_" + name;
+        checkedName = "_" + name;
     }
-    return name;
+
+    if (name.includes(".")) {
+        checkedName = name.replace(".", "");
+    }
+
+    return checkedName;
 }

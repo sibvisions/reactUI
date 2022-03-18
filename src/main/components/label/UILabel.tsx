@@ -42,7 +42,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <>
-        <Tooltip target={"#" + props.name + "-text"} />
+        <Tooltip target={"#" + checkComponentName(props.name) + "-text"} />
         <span
             {...usePopupMenu(props)}
             id={checkComponentName(props.name)}

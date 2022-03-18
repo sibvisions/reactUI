@@ -37,7 +37,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
 
     return (
         <span ref={browserRef} style={layoutStyle}>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <iframe
                 id={checkComponentName(props.name)} 
                 className="rc-mobile-browser"

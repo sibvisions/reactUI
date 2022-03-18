@@ -158,7 +158,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <span 
                 id={checkComponentName(props.name)} 
                 {...usePopupMenu(props)} 

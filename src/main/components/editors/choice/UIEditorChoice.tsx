@@ -4,7 +4,7 @@ import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
@@ -185,10 +185,10 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
              >
-            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
             <img
                 ref={imgRef}
-                id={!props.isCellEditor ? props.name : undefined}
+                id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
                 className={concatClassnames("rc-editor-choice-img", props.isReadOnly ? "choice-read-only" : "")}
                 alt=""
                 onClick={setNextValue}

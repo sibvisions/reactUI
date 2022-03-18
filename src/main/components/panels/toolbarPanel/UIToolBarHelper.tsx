@@ -95,7 +95,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 className={concatClassnames(
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",

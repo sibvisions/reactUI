@@ -75,7 +75,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 className={concatClassnames(
                     "rc-panel",
