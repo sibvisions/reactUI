@@ -37,8 +37,7 @@ type AppReadyType = {
     appCSSLoaded: boolean
     schemeCSSLoaded: boolean
     themeCSSLoaded: boolean
-    userOrLoginLoaded: boolean
-    translationLoaded: boolean
+    appMetaData: boolean
     designCSSLoaded: boolean
 }
 
@@ -131,8 +130,7 @@ export default class AppSettings {
         appCSSLoaded: false, 
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
-        userOrLoginLoaded: false,
-        translationLoaded: false,
+        appMetaData: false,
         designCSSLoaded: false
     }
     
@@ -214,6 +212,8 @@ export default class AppSettings {
         else if (!this.applicationMetaData.applicationDesign) {
             this.appReadyParams.designCSSLoaded = true;
         }
+
+        this.setAppReadyParam("appMetaData");
     }
 
     setApplicationThemeByURL(pTheme:string) {
@@ -282,7 +282,7 @@ export default class AppSettings {
         }
     }
 
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"userOrLogin"|"translation"|"designCSS") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"appMetaData"|"designCSS") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -293,11 +293,8 @@ export default class AppSettings {
             case "themeCSS":
                 this.appReadyParams.themeCSSLoaded = true;
                 break;
-            case "userOrLogin":
-                this.appReadyParams.userOrLoginLoaded = true;
-                break;
-            case "translation":
-                this.appReadyParams.translationLoaded = true;
+            case "appMetaData":
+                this.appReadyParams.appMetaData = true;
                 break;
             case "designCSS":
                 this.appReadyParams.designCSSLoaded = true;
@@ -305,7 +302,7 @@ export default class AppSettings {
             default:
                 break;
         }
-        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded) {
+        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
             this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
             this.appReady = true;
             this.#subManager.emitAppReady(true);
@@ -324,9 +321,8 @@ export default class AppSettings {
         this.appReadyParams = { 
             appCSSLoaded: false,
             schemeCSSLoaded: false, 
-            themeCSSLoaded: false, 
-            translationLoaded: false, 
-            userOrLoginLoaded: false,
+            themeCSSLoaded: false,
+            appMetaData: false,
             designCSSLoaded: false
         };
     }

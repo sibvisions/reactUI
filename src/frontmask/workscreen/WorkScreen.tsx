@@ -43,7 +43,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : <LoadingScreen />}
+            renderedScreens : <></>}
         </ResizeHandler>
 
     )

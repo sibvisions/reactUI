@@ -10,7 +10,7 @@ import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
 import { CustomStartupProps, ScreenWrapperOptions } from "./customTypes";
-import { getMetaData, Timer } from "./components/util";
+import { getMetaData, isWorkScreen, Timer } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
@@ -402,12 +402,14 @@ export default class ContentStore{
                         }
                         else {
                             if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
-                                if ((existingComponent as IPanel).screen_navigationName_ || (existingComponent as IPanel).content_className_ ) {
+                                // Close screen when InternalFrame is a workscreen
+                                if (isWorkScreen(existingComponent as IPanel)) {
                                     this.closeScreen(existingComponent.name);
                                 }
                                 else {
+                                    // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
                                     const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && 
-                                        ((comp as IPanel).screen_navigationName_ !== undefined || (comp as IPanel).content_className_ !== undefined));
+                                        (isWorkScreen(comp as IPanel) || comp.classNameEventSourceRef === "Login"));
                                     if (foundWorkScreen) {
                                         this.flatContent.delete(newComponent.id);
                                         this.closeScreen(foundWorkScreen.name);

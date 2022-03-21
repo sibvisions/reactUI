@@ -240,7 +240,7 @@ class Server {
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorDialogVisible(true);
                             }
-                            reject(error)
+                            reject(error);
                             //console.error(error);
                         }).finally(() => {
                             this.openRequests.delete(request);
@@ -810,7 +810,7 @@ class Server {
         .then(value => parseString(value, (err, result) => { 
             if (result) {
                 result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-                this.appSettings.setAppReadyParam("translation");
+                //this.appSettings.setAppReadyParam("translation");
                 this.subManager.emitTranslation();
             }
         }));
@@ -896,7 +896,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    this.appSettings.setAppReadyParam("userOrLogin");
+                    //this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
@@ -943,7 +943,7 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
-                    this.appSettings.setAppReadyParam("userOrLogin");
+                    //this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
             //    else if (response.name === "settings") {

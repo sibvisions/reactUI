@@ -71,6 +71,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
 
     // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
     useEffect(() => {
+        console.log(initFrame.current, props.pack, packSize)
         if (!initFrame.current && rndRef.current && props.pack && packSize) {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
             sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
@@ -135,6 +136,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                     rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
                     setFrameStyle(packSize);
+                    props.pack = false;
                     initFrame.current = false;
                 }
             }

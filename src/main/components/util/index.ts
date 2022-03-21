@@ -30,3 +30,4 @@ export { default as Timer } from './Timer';
 export { convertIcon } from './FontAwesomeConverter';
 export { checkComponentName } from './CheckComponentName';
 export { isCompDisabled } from './IsCompDisabled';
+export { isWorkScreen } from './IsWorkScreen'

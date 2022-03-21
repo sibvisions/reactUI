@@ -135,7 +135,7 @@
   --mandatory-background: rgb(255, 244, 210);
   --readonly-background: rgb(239, 239, 239);
   --invalid-background: rgb(209, 51, 51);
-  --gone-background: #ffcf40dd; }
+  --gone-background: #ffcf40bb; }
 
 body {
   background: var(--screen-background);
