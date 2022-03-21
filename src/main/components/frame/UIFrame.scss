@@ -14,6 +14,12 @@
         margin-left: 4px;
     }
 
+    .rc-frame-header-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .rc-frame-header-close-button {
         border-radius: 50%;
         border: none;
@@ -31,4 +37,5 @@
 .rc-frame-content {
     border: 1px solid;
     border-width: 0px 4px 4px 4px;
+    overflow: hidden;
 }
