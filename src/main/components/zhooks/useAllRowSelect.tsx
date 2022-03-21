@@ -1,5 +1,6 @@
 /** React imports */
 import { useContext, useEffect, useState } from "react";
+import { ISelectedRow } from "src/main/ContentStore";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -17,7 +18,7 @@ const useAllRowSelect = (compId:string, dataBooks:string[]) => {
     const context = useContext(appContext);
 
     /** Current state of dataMap */
-    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(compId), dataBooks));
+    const [selectedRowMap, setSelectedRowMap] = useState(getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(compId), dataBooks));
 
     useEffect(() => {
         const onScreenSelectedRowChange = () => {
