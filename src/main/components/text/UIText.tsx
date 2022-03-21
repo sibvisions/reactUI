@@ -44,7 +44,11 @@ const UIText: FC<ITextField> = (baseProps) => {
         <InputText 
             ref={inputRef} 
             id={checkComponentName(props.name)}
-            className={concatClassnames("rc-input", props.focusable === false ? "no-focus-rect" : "")}
+            className={concatClassnames(
+                "rc-input", 
+                props.focusable === false ? "no-focus-rect" : "",
+                isCompDisabled(props) ? "rc-input-readonly" : ""
+            )}
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setText(event.currentTarget.value)}
@@ -62,7 +66,7 @@ const UIText: FC<ITextField> = (baseProps) => {
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            disabled={isCompDisabled(props)}
+            readOnly={isCompDisabled(props)}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         />
     )

@@ -412,7 +412,8 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 getClassName(fieldType), 
                 props.columnMetaData?.nullable === false ? "required-field" : "",
                 props.isCellEditor ? "open-cell-editor" : undefined,
-                props.focusable === false ? "no-focus-rect" : ""
+                props.focusable === false ? "no-focus-rect" : "",
+                props.isReadOnly ? "rc-input-readonly" : ""
             ),
             style: { 
                 ...props.layoutStyle, 
@@ -420,7 +421,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 ...props.cellStyle
             },
             maxLength: length,
-            disabled: props.isReadOnly,
+            readOnly: props.isReadOnly,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
             value: text || "",
             "aria-label": props.ariaLabel,
