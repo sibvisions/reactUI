@@ -3,7 +3,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
-import { checkComponentName, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { checkComponentName, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 
 // Interface for the browser component
 export interface IBrowser extends BaseComponent {
@@ -48,6 +48,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left"
                 {...usePopupMenu(props)}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
             />
         </span>
     )

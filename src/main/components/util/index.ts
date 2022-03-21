@@ -31,3 +31,4 @@ export { convertIcon } from './FontAwesomeConverter';
 export { checkComponentName } from './CheckComponentName';
 export { isCompDisabled } from './IsCompDisabled';
 export { isWorkScreen } from './IsWorkScreen'
+export { getTabIndex } from './GetTabIndex';

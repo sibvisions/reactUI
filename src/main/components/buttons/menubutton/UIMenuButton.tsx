@@ -107,7 +107,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
 
     return (
         <span
-            className="rc-popupmenubutton-wrapper"
+            className={concatClassnames("rc-popupmenubutton-wrapper", props.focusable === false ? "no-focus-rect" : "")}
             id={props.name + "-wrapper"}
             ref={buttonWrapperRef}
             style={{ position: 'absolute', ...layoutStyle }}

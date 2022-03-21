@@ -12,7 +12,8 @@ import { getMarkerIcon,
          sendSetValues, 
          sortGroupDataGoogle, 
          sendSaveRequest, 
-         checkComponentName} from "../util";
+         checkComponentName,
+         getTabIndex} from "../util";
 import { IMap } from ".";
 import { IconProps } from "../compprops";
 import { showTopBar } from "../topbar/TopBar";
@@ -248,7 +249,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     if (mapReady === false)
         return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle}>
+        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

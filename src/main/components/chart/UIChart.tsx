@@ -6,7 +6,7 @@ import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../util";
+import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, getTabIndex } from "../util";
 import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
 
 /** Interface for Chartproperties sent by server */
@@ -563,7 +563,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={chartRef} style={layoutStyle}>
+        <span ref={chartRef} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={checkComponentName(props.name)}
                 type={chartType}

@@ -67,6 +67,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     btnStyle.iconDirection,
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                    props.focusable === false ? "no-focus-rect" : ""
                 )}
                 style={{
                     ...btnStyle.style,
@@ -90,7 +91,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 aria-label={props.ariaLabel}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
-                tabIndex={props.focusable === false ? -1 : btnStyle.tabIndex}
+                tabIndex={btnStyle.tabIndex}
                 onClick={onButtonPress}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {

@@ -1,6 +1,6 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex } from "../util";
 import BaseComponent from "../BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
@@ -163,7 +163,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 className="ui-gauge" 
                 style={layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
-                data-pr-position="left">
+                data-pr-position="left"
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             </span>
         </>
     )

@@ -13,7 +13,8 @@ import { getDecimalLength,
          parseMaxSize,
          handleEnterKey,
          concatClassnames,
-         checkComponentName} from "../../util";
+         checkComponentName,
+         getTabIndex} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
@@ -74,7 +75,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         return concatClassnames(
             "rc-editor-number",
             props.columnMetaData?.nullable === false ? "required-field" : "",
-            props.isCellEditor ? "open-cell-editor" : undefined
+            props.isCellEditor ? "open-cell-editor" : undefined,
+            props.focusable === false ? "no-focus-rect" : ""
         )
     }, [props.columnMetaData?.nullable]);
 
@@ -189,6 +191,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
 
     });
 
+    // TODO: It should be possible to remove this double inputnumber implementation
     return (
         (!props.isCellEditor) ?
             <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
@@ -202,7 +205,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                     prefix={prefixLength}
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
-                    tabIndex={props.tabIndex}
+                    tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                     value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
@@ -232,7 +235,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 useGrouping={useGrouping}
                 locale={props.context.appSettings.locale}
                 prefix={prefixLength}
-                tabIndex={-1}
+                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
                 value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}

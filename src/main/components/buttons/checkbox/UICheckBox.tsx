@@ -76,6 +76,8 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                     disabled={isCompDisabled(props)}
+                    tabIndex={btnStyle.tabIndex}
+                    className={props.focusable === false ? "no-focus-rect" : ""}
                 />
                 <label 
                     ref={labelRef} 

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef } from "react";
 import { useImageStyle, useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -84,13 +84,14 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-image",
-                props.columnMetaData?.nullable === false ? "required-field" : ""
+                props.columnMetaData?.nullable === false ? "required-field" : "",
+                props.focusable === false ? "no-focus-rect" : ""
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
-            tabIndex={props.selectedRow || props.cellEditor.defaultImageName ? (props.tabIndex ? props.tabIndex : 0) : undefined}
+            tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
             {(props.selectedRow || props.cellEditor.defaultImageName) &&

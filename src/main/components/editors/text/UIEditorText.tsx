@@ -13,7 +13,8 @@ import { sendSetValues,
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize, 
-         concatClassnames} from "../../util";
+         concatClassnames,
+         getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -410,7 +411,8 @@ const UIEditorText: FC<IEditorText> = (props) => {
             className: concatClassnames(
                 getClassName(fieldType), 
                 props.columnMetaData?.nullable === false ? "required-field" : "",
-                props.isCellEditor ? "open-cell-editor" : undefined
+                props.isCellEditor ? "open-cell-editor" : undefined,
+                props.focusable === false ? "no-focus-rect" : ""
             ),
             style: { 
                 ...props.layoutStyle, 
@@ -435,7 +437,8 @@ const UIEditorText: FC<IEditorText> = (props) => {
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
             tooltip: props.toolTipText,
             tooltipOptions:{ position: "left" },
-            placeholder: props.cellEditor_placeholder_
+            placeholder: props.cellEditor_placeholder_,
+            tabIndex: props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)
         }
     }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
@@ -453,7 +456,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
                     getClassName(fieldType), 
                     props.isReadOnly ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
-                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
                     if (!escapePressed.current) {
