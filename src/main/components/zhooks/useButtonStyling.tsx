@@ -3,6 +3,7 @@ import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { getAlignments, getMargins, IconProps, parseIconData } from "../compprops";
+import { getTabIndex } from "../util";
 
 interface IButtonStyle {
     style: CSSProperties,
@@ -11,7 +12,7 @@ interface IButtonStyle {
     iconCenterGap: number,
     iconGapPos: "left" | "right" | "top" | "bottom",
     borderPainted: boolean,
-    tabIndex: number,
+    tabIndex: number|undefined,
     iconDirection: "icon-center-left" | "icon-center-right" | "",
     pressedIconProps: IconProps | undefined,
     mouseOverIconProps: IconProps | undefined
@@ -135,9 +136,6 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
     /** True, if the border is painted */
     const borderPainted = useMemo(() => props.borderPainted !== false ? true : false, [props.borderPainted]);
 
-    /** Tabindex value of the button */
-    const tabIndex = useMemo(() => props.focusable !== false ? (props.tabIndex ? props.tabIndex : 0) : -1, [props.focusable, props.tabIndex]);
-
     /** The parsed icon properties of the icon which is displayed when pressing the button */
     const pressedIconData = useMemo(() => parseIconData(compStyle?.color as string, props.mousePressedImage), [compStyle?.color, props.mousePressedImage]);
 
@@ -152,7 +150,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
         iconGapPos: iconGapPos,
         iconDirection: iconDirection,
         borderPainted: borderPainted,
-        tabIndex: tabIndex,
+        tabIndex: getTabIndex(props.focusable, props.tabIndex),
         pressedIconProps: pressedIconData,
         mouseOverIconProps: mouseOverIconData
     }

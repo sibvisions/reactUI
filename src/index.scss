@@ -168,3 +168,7 @@ body {
 .p-tooltip {
     pointer-events: none;
 }
+
+.no-focus-rect {
+    box-shadow: none !important;
+}

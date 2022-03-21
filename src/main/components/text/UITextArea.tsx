@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled, getTabIndex, concatClassnames } from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
@@ -43,7 +43,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
         <InputTextarea 
             ref={inputRef} 
             id={checkComponentName(props.name)}
-            className="rc-input"
+            className={concatClassnames("rc-input", props.focusable === false ? "no-focus-rect" : "")}
             value={text||""}
             style={{...layoutStyle, ...compStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
@@ -66,7 +66,8 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                     handleEnterKey(e, e.target, props.name);
                 }
             }}
-            disabled={isCompDisabled(props)} />
+            disabled={isCompDisabled(props)}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
     )
 }
 export default UITextArea

@@ -2,7 +2,7 @@ import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 import { getAlignments, parseIconData } from "../compprops";
 import BaseComponent from "../BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName, getTabIndex } from "../util";
 import { Tooltip } from "primereact/tooltip";
 
 /**
@@ -102,8 +102,9 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
-            className="rc-icon"
+            className={concatClassnames("rc-icon", props.focusable === false ? "no-focus-rect" : "")}
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={"#" + checkComponentName(props.name)} />
             {iconOrImage(iconProps.icon)}

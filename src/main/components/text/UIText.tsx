@@ -2,7 +2,7 @@ import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex, concatClassnames} from "../util";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
@@ -44,7 +44,7 @@ const UIText: FC<ITextField> = (baseProps) => {
         <InputText 
             ref={inputRef} 
             id={checkComponentName(props.name)}
-            className="rc-input"
+            className={concatClassnames("rc-input", props.focusable === false ? "no-focus-rect" : "")}
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setText(event.currentTarget.value)}
@@ -63,6 +63,7 @@ const UIText: FC<ITextField> = (baseProps) => {
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
             disabled={isCompDisabled(props)}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         />
     )
 }

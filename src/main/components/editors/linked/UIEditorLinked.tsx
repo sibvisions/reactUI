@@ -6,7 +6,7 @@ import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames} from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -337,6 +337,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     "rc-editor-linked", 
                     props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined,
+                    props.focusable === false ? "no-focus-rect" : ""
                 )}
                 panelClassName={concatClassnames(
                     "rc-editor-linked-dropdown",
@@ -391,6 +392,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     optionGroupTemplate: groupedItemTemplate
                 } : {})}
                 placeholder={props.cellEditor_placeholder_}
+                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
             />
         </span>
 

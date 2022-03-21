@@ -4,7 +4,7 @@ import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS } from "../../../request";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
@@ -149,7 +149,8 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-choice",
-                props.columnMetaData?.nullable === false ? "required-field" : ""
+                props.columnMetaData?.nullable === false ? "required-field" : "",
+                props.focusable === false ? "no-focus-rect" : ""
             )}
             aria-label={props.ariaLabel}
             aria-pressed={viableAriaPressed ? ['y', 'yes', 'true'].indexOf(getValAsString(currentImageValue)) !== -1 : undefined}
@@ -183,7 +184,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 }
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
-            tabIndex={props.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+            tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
              >
             <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
             <img

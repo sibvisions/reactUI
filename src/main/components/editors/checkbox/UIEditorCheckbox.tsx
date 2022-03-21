@@ -2,7 +2,7 @@ import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { Checkbox } from 'primereact/checkbox';
 import { useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
-import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent } from "../../util";
+import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent, getTabIndex } from "../../util";
 import { getAlignments } from "../../compprops";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { isCellEditorReadOnly } from "../text/UIEditorText";
@@ -136,9 +136,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 checked={checked}
                 onChange={() => handleOnChange()}
                 disabled={props.isReadOnly}
-                tabIndex={props.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
+                className={props.focusable === false ? "no-focus-rect" : ""}
             />
             {!props.isCellEditor &&
                 <label

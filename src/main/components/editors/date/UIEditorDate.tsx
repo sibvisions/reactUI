@@ -12,7 +12,8 @@ import { sendSetValues,
          getDateLocale,
          setDateLocale,
          handleEnterKey,
-         concatClassnames} from "../../util";
+         concatClassnames,
+         getTabIndex} from "../../util";
 import { getTextAlignment } from "../../compprops";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -272,7 +273,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     "rc-editor-text",
                     "rc-editor-date",
                     props.columnMetaData?.nullable === false ? "required-field" : "",
-                    props.isCellEditor ? "open-cell-editor" : undefined
+                    props.isCellEditor ? "open-cell-editor" : undefined,
+                    props.focusable === false ? "no-focus-rect" : ""
                 )}
                 panelClassName="rc-editor-date-panel"
                 style={{
@@ -322,6 +324,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                     !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
+                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 disabled={props.isReadOnly}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);

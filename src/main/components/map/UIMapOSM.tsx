@@ -16,7 +16,8 @@ import { getMarkerIcon,
          sortGroupDataOSM, 
          sendSaveRequest, 
          MapLocation,
-         checkComponentName} from "../util";
+         checkComponentName,
+         getTabIndex} from "../util";
 import BaseComponent from "../BaseComponent";
 import { IconProps } from "../compprops";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
@@ -86,7 +87,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
      */
     if (layoutStyle) {
         return (
-            <div ref={mapRef} {...popupMenu} style={layoutStyle}>
+            <div ref={mapRef} {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
                 <MapContainer id={checkComponentName(props.name)} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>

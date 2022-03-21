@@ -3,7 +3,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { useComponentConstants, useMouseListener } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {getAlignments, translateTextAlign} from "../compprops";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName} from "../util";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex} from "../util";
 import usePopupMenu from "../zhooks/usePopupMenu";
 
 /**
@@ -49,7 +49,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
-                props.eventMousePressed ? "mouse-pressed-event" : ""
+                props.eventMousePressed ? "mouse-pressed-event" : "",
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped
@@ -58,7 +58,8 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 ...lblTextAlignment,
                 ...layoutStyle,
                 ...compStyle
-            }}>
+            }}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <span 
                 id={props.name + "-text"} 
                 ref={labelRef} 

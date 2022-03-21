@@ -15,7 +15,7 @@ import BaseComponent from "../BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
 import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName } from "../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../util";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
@@ -1145,7 +1145,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     outline: "none",
                     caretColor: "transparent"
                 } as any}
-                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
                 onClick={() => { 
                     if (!focused.current) {
                         focusIsClicked.current = true 
@@ -1225,7 +1225,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                         return cn
                     }}
-                    tabIndex={props.tabIndex}
                     emptyMessage={""}
                     breakpoint="0px" >
                     {columns}
