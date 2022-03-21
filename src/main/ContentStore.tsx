@@ -776,15 +776,11 @@ export default class ContentStore{
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
-                if ((comp as IPanel).screen_modal_) {
+                if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
                     break;
                 }
-                else if ((comp as IPanel).content_modal_) {
+                else if ((comp as IPanel).content_className_) {
                     return dataProvider ? dataProvider.split("/")[1] : comp.name;
-                }
-
-                if (comp?.parent?.includes("IF")) {
-                    break;
                 }
 
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);

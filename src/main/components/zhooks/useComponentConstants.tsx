@@ -15,7 +15,7 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
     const [context, topbar, translations] = useConstants();
 
     /** Up to date properties for the component */
-    const [props] = useProperties<T>(baseProps.id, baseProps);
+    const [props] = useProperties<T>(baseProps.id, {...baseProps});
 
     /** get the layout style value */
     const layoutStyle = useLayoutValue(props.parent ? props.id : "root", fb);

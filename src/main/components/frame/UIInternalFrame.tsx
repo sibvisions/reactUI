@@ -69,15 +69,35 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** Adds eventHandler to call the frameContext callback on mouse-down to tell the DesktopPanel that this frame is at front */
     useEventHandler(rndRef.current?.resizableElement.current ? rndRef.current.resizableElement.current : undefined, "mousedown", () => frameContext.openFramesCallback(props.name, true));
 
+    /**
+     * Sends a bounds-request to the server
+     * @param size - the size of the InternalFrame
+     */
+     const sendBoundsRequest = useCallback((size:Dimension) => {
+        const boundsReq = createBoundsRequest();
+        boundsReq.componentId = props.name;
+        boundsReq.width = size.width;
+        boundsReq.height = size.height;
+        context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS);
+    }, [context.server, topbar])
+
+    // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
+    const getPreferredFrameSize = (pSize:Dimension) => {
+        const size = checkSizes(pSize, parseMinSize(props.minimumSize), parseMaxSize(props.maximumSize))
+        if (packSize?.height !== size.height || packSize?.width !== size.width) {
+            setPackSize({ height: size.height, width: size.width });
+        }
+    }
+
     // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
     useEffect(() => {
-        console.log(initFrame.current, props.pack, packSize)
         if (!initFrame.current && rndRef.current && props.pack && packSize) {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
             sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
             setFrameStyle(packSize);
+            (context.contentStore.getComponentById(props.id) as IWindow).pack = false;
         }
-    }, [props.pack]);
+    }, [props.pack, packSize]);
 
     // When the toFront property changes to true, put the frame into front
     useEffect(() => {
@@ -109,17 +129,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [frameContext.openFrames]);
 
-    /**
-     * Sends a bounds-request to the server
-     * @param size - the size of the InternalFrame
-     */
-    const sendBoundsRequest = useCallback((size:Dimension) => {
-        const boundsReq = createBoundsRequest();
-        boundsReq.componentId = props.name;
-        boundsReq.width = size.width;
-        boundsReq.height = size.height;
-        context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS);
-    }, [context.server, topbar])
+
 
     // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
@@ -136,7 +146,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                     rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
                     setFrameStyle(packSize);
-                    props.pack = false;
+                    (context.contentStore.getComponentById(props.id) as IWindow).pack = false;
                     initFrame.current = false;
                 }
             }
@@ -215,14 +225,6 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         zIndex: props.modal ? 1001 : 1,
         visibility: centerFlag ? "hidden" : undefined
     };
-
-    // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
-    const getPreferredFrameSize = useCallback((pSize:Dimension) => {
-        const size = checkSizes(pSize, parseMinSize(props.minimumSize), parseMaxSize(props.maximumSize))
-        if (packSize?.height !== size.height && packSize?.width !== size.width) {
-            setPackSize({ height: size.height, width: size.width });
-        }
-    }, [packSize, props.minimumSize, props.maximumSize]);
 
     return (
         <>
