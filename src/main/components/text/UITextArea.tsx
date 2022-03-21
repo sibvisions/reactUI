@@ -43,7 +43,12 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
         <InputTextarea 
             ref={inputRef} 
             id={checkComponentName(props.name)}
-            className={concatClassnames("rc-input", props.focusable === false ? "no-focus-rect" : "")}
+            className={concatClassnames(
+                "rc-input", 
+                props.focusable === false ? 
+                "no-focus-rect" : "",
+                isCompDisabled(props) ? "rc-input-readonly" : ""
+            )}
             value={text||""}
             style={{...layoutStyle, ...compStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
@@ -66,7 +71,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                     handleEnterKey(e, e.target, props.name);
                 }
             }}
-            disabled={isCompDisabled(props)}
+            readOnly={isCompDisabled(props)}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
     )
 }
