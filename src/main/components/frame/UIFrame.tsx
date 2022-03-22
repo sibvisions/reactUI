@@ -52,8 +52,6 @@ const UIFrame: FC<IFrame> = (props) => {
         return styleCopy;
     }, [menuBarSize, toolBarSize, props.frameStyle]);
 
-    console.log(hasToolBars, props.id)
-
     return (
         <div style={{ visibility: props.compSizes ? undefined : "hidden" }}>
             {props.internal &&
