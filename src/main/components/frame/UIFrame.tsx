@@ -10,7 +10,7 @@ import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
 import { showTopBar } from "../topbar/TopBar";
 import { concatClassnames, Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
-import { ComponentSizes, useComponents, useConstants } from "../zhooks";
+import { ComponentSizes, useConstants } from "../zhooks";
 import { isFAIcon } from "../zhooks/useButtonMouseImages";
 
 export interface IFrame extends IWindow {
@@ -51,6 +51,8 @@ const UIFrame: FC<IFrame> = (props) => {
         }
         return styleCopy;
     }, [menuBarSize, toolBarSize, props.frameStyle]);
+
+    console.log(hasToolBars, props.id)
 
     return (
         <div style={{ visibility: props.compSizes ? undefined : "hidden" }}>

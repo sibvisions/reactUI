@@ -207,7 +207,7 @@ export default class ContentStore{
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
 
-                if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && existingComp.parent?.includes("ML") && newComp.parent?.includes("ML")) {
+                if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && !(existingComp.parent?.includes("TBP") || newComp.parent?.includes("TBP"))) {
                     existingComp[newPropName] = newComp[newPropName] + "-frame-toolbar";
                 }
 
@@ -459,7 +459,7 @@ export default class ContentStore{
                         this.desktopContent.set(newComponent.id, newComponent);
                     }
                     else {
-                        if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && newComponent.parent?.includes("ML")) {
+                        if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
                             newComponent.parent = newComponent.parent + "-frame-toolbar";
                         }
                         this.flatContent.set(newComponent.id, newComponent);
@@ -735,7 +735,7 @@ export default class ContentStore{
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
-            else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER) {
+            else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER || className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"]));
             }
         }

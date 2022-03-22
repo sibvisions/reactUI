@@ -32,32 +32,14 @@
     /// Default topbar buttons hover background
     --topbar-button-hover-background: #454b52;
 
-    /// The separator color of frame toolbars
-    --frame-toolbar-separator-color: #f8f9fa;
-
-    /// The background color for frame headers
-    --frame-header-background: #dddcdf;
-
-    /// The text-color for frame headers
-    --frame-header-color: #6c6c6c;
-
-    /// The border for frame headers
-    --frame-header-border: 1px solid #b1b1b1;
-
-    /// The hover background color of the frame close button
-    --frame-header-button-hover-background: #fafafa;
-
-    /// The hover text color of the frame close button
-    --frame-header-button-hover-color: #1e1f20;
-
     /// profile-menu background
-    --profile-background: #7a7f85;
+    --profile-background: var(--topbar-background);
 
     /// profile-menu hover background-color
-    --profile-hover-background: #454b52;
+    --profile-hover-background: var(--topbar-button-hover-background);
 
     /// profile-menu text-color
-    --profile-text-color: #ffffff;
+    --profile-text-color: var(--topbar-text-color);
 
     /// profile-menu separator
     --profile-separator: 2px solid #5b6067;
@@ -92,23 +74,23 @@
     /// Default fadeout background
     --std-menu-fadeout-background: linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
 
-    /// corporation menubar background
-    --corp-menu-background: #7a7f85;
+    /// menubar background
+    --menubar-background: var(--topbar-background);
 
-    /// corporation menubar hover background
-    --corp-menu-hover-background: #454b52;
+    /// menubar hover background
+    --menubar-hover-background: var(--topbar-button-hover-background);
 
-    /// corporation menubar text-color
-    --corp-menu-text-color: #ffffff;
+    /// menubar text-color
+    --menubar-text-color: var(--topbar-text-color);
 
-    /// corporation menubar submenu background
-    --corp-menu-submenu-background: #ffffff;
+    /// menubar submenu background
+    --menubar-submenu-background: #ffffff;
 
-    /// corporation items hover background
-    --corp-menu-item-hover-background: #e9ecef;
+    /// menubar items hover background
+    --menubar-item-hover-background: #e9ecef;
 
-    /// corporation items hover text-color
-    --corp-menu-item-hover-text-color: #000000;
+    /// menubar items hover text-color
+    --menubar-item-hover-text-color: #000000;
 
     /// Default background for corporation menu speeddial
     --corp-menu-speeddial-background: #ffffff;
@@ -409,6 +391,80 @@
     --invalid-background: rgb(209, 51, 51);
 
     --gone-background: #ffcf40bb;
+
+    /// V2 Variables
+
+    /// The background color of the launcher toolbar
+    --launcher-toolbar-background: var(--topbar-background);
+
+    /// The separator color of launcher toolbars
+    --launcher-toolbar-separator-color: #f8f9fa;
+
+    /// The text-color of buttons of the launcher
+    --launcher-toolbar-button-text-color: var(--topbar-text-color);
+
+    /// The background color when hovering toolbar buttons of the launcher
+    --launcher-toolbar-button-hover-background: var(--topbar-button-hover-background);
+
+    /// The text-color when hovering toolbar buttons of the launcher
+    --launcher-toolbar-button-hover-text-color: var(--topbar-text-color);
+
+    /// frame menubar background
+    --frame-menubar-background: var(--topbar-background);
+
+    /// frame menubar hover background
+    --frame-menubar-hover-background: var(--topbar-button-hover-background);
+
+    /// frame menubar text-color
+    --frame-menubar-text-color: var(--topbar-text-color);
+
+    /// frame menubar submenu background
+    --frame-menubar-submenu-background: #ffffff;
+
+    /// frame menubar items hover background
+    --frame-menubar-item-hover-background: #e9ecef;
+
+    /// frame menubar items hover text-color
+    --frame-menubar-item-hover-text-color: #000000;
+
+    /// The background color of the frame toolbar
+    --frame-toolbar-background: var(--topbar-background);
+
+    /// The separator color of frame toolbars
+    --frame-toolbar-separator-color: #f8f9fa;
+
+    /// The text-color of buttons of the frame
+    --frame-toolbar-button-text-color: var(--topbar-text-color);
+
+    /// The background color when hovering toolbar buttons of the launcher
+    --frame-toolbar-button-hover-background: var(--topbar-button-hover-background);
+
+    /// The text-color when hovering toolbar buttons of the launcher
+    --frame-toolbar-button-hover-text-color: var(--topbar-text-color);
+
+    /// The background color for frame headers
+    --frame-header-background: #dddcdf;
+
+    /// The text-color for frame headers
+    --frame-header-color: #6c6c6c;
+
+    /// The border for frame headers
+    --frame-header-border: 1px solid #b1b1b1;
+
+    /// The hover background color of the frame close button
+    --frame-header-button-hover-background: #fafafa;
+
+    /// The hover text color of the frame close button
+    --frame-header-button-hover-color: #1e1f20;
+
+    /// Border radius of the frame
+    --frame-border-radius: 9px;
+
+    /// Box shadow of the frame
+    --frame-shadow: 0 22px 70px 4px rgb(0 0 0 / 56%);
+
+    /// Frame border-width on the sides
+    --frame-border-width: 4px;
 }
 
 body {
@@ -448,45 +504,6 @@ body {
 
 .menu-screen-title {
     color: var(--topbar-text-color);
-}
-
-.rc-frame-toolbar {
-    background: var(--topbar-background);
-    border-top: 1px solid;
-    border-color: var(--frame-toolbar-separator-color);
-
-    .rc-button.mouse-border {
-        color: var(--topbar-text-color);
-
-        &:not(a):not(.p-disabled):not(.border-notpainted):hover {
-            background: var(--topbar-button-hover-background);
-            border-color: var(--topbar-button-hover-background);
-        }
-    }
-}
-
-.rc-frame {
-    .rc-frame-header {
-        background: var(--frame-header-background);
-        color: var(--frame-header-color);
-        border-bottom: var(--frame-header-border);
-    
-        .rc-frame-header-close-button {
-            color: var(--text-color);
-            background: transparent;
-            font-size: 12px;
-        
-            &:hover {
-                background: var(--frame-header-button-hover-background);
-                font-weight: bold;
-                color: var(--frame-header-button-hover-color);
-            }
-        }
-    }
-
-    .rc-frame-content {
-        border-color: var(--frame-header-background);
-    }
 }
 
 /// *----------Profile-Menu----------*
@@ -623,42 +640,42 @@ body {
 }
 
 .p-menubar {
-    background: var(--corp-menu-background);
+    background: var(--menubar-background);
     
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active  {
             > .p-menuitem-link:not(.p-disabled) {
-                background: var(--corp-menu-background);
-                color: var(--corp-menu-text-color);
+                background: var(--menubar-background);
+                color: var(--menubar-text-color);
 
                 .p-menuitem-text, .p-submenu-icon {
-                    color: var(--corp-menu-text-color);
+                    color: var(--menubar-text-color);
                 }
 
                 &:hover {
-                    background: var(--corp-menu-hover-background);
-                    color: var(--corp-menu-text-color);
+                    background: var(--menubar-hover-background);
+                    color: var(--menubar-text-color);
                     .p-menuitem-text, .p-submenu-icon {
-                        color: var(--corp-menu-text-color);
+                        color: var(--menubar-text-color);
                     }
                 }
             }
 
             > .p-submenu-list {
-                background: var(--corp-menu-submenu-background);
+                background: var(--menubar-submenu-background);
 
                 .p-menuitem .p-menuitem-link {
-                    background: var(--corp-menu-submenu-background);
+                    background: var(--menubar-submenu-background);
 
                     .p-menuitem-text, .p-menuitem-icon {
                         color: var(--text-color);
                     }
 
                     &:hover {
-                        background: var(--corp-menu-item-hover-background);
+                        background: var(--menubar-item-hover-background);
 
                         .p-menuitem-text, .p-menuitem-icon {
-                            color: var(--corp-menu-item-hover-text-color);
+                            color: var(--menubar-item-hover-text-color);
                         }
                     }
                 }
@@ -1594,5 +1611,121 @@ body {
     80%,
     90% {
         stroke: var(--loading-spinner-color-4);
+    }
+}
+
+/// V2
+
+.mobile-launcher-menu {
+    .rc-frame-toolbar {
+        background: var(--launcher-toolbar-background);
+        border-top: 1px solid;
+        border-color: var(--launcher-toolbar-separator-color);
+    
+        .rc-button.mouse-border {
+            color: var(--launcher-toolbar-button-text-color);
+    
+            &:not(a):not(.p-disabled):not(.border-notpainted):hover {
+                background: var(--launcher-toolbar-button-hover-background);
+                border-color: var(--launcher-toolbar-button-hover-background);
+                color: var(--launcher-toolbar-button-hover-text-color);
+            }
+        }
+    }
+}
+
+.rc-frame {
+    box-shadow: var(--frame-shadow);
+    border-radius: var(--frame-border-radius);
+
+    .rc-frame-header {
+        background: var(--frame-header-background);
+        color: var(--frame-header-color);
+        border-bottom: var(--frame-header-border);
+    
+        .rc-frame-header-close-button {
+            color: var(--text-color);
+            background: transparent;
+            font-size: 12px;
+        
+            &:hover {
+                background: var(--frame-header-button-hover-background);
+                font-weight: bold;
+                color: var(--frame-header-button-hover-color);
+            }
+        }
+    }
+
+    .p-menubar {
+        background: var(--frame-menubar-background);
+
+        .p-menubar-root-list {
+            >.p-menuitem, >.p-menuitem.p-menuitem-active  {
+                > .p-menuitem-link:not(.p-disabled) {
+                    background: var(--frame-menubar-background);
+                    color: var(--frame-menubar-text-color);
+    
+                    .p-menuitem-text, .p-submenu-icon {
+                        color: var(--frame-menubar-text-color);
+                    }
+    
+                    &:hover {
+                        background: var(--frame-menubar-hover-background);
+                        color: var(--frame-menubar-text-color);
+                        .p-menuitem-text, .p-submenu-icon {
+                            color: var(--frame-menubar-text-color);
+                        }
+                    }
+                }
+    
+                > .p-submenu-list {
+                    background: var(--frame-menubar-submenu-background);
+    
+                    .p-menuitem .p-menuitem-link {
+                        background: var(--frame-menubar-submenu-background);
+    
+                        .p-menuitem-text, .p-menuitem-icon {
+                            color: var(--text-color);
+                        }
+    
+                        &:hover {
+                            background: var(--frame-menubar-item-hover-background);
+    
+                            .p-menuitem-text, .p-menuitem-icon {
+                                color: var(--frame-menubar-item-hover-text-color);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .rc-frame-toolbar {
+        background: var(--frame-toolbar-background);
+        border-top: 1px solid;
+        border-color: var(--frame-toolbar-separator-color);
+    
+        .rc-button.mouse-border {
+            color: var(--frame-toolbar-button-text-color);
+    
+            &:not(a):not(.p-disabled):not(.border-notpainted):hover {
+                background: var(--frame-toolbar-button-hover-background);
+                border-color: var(--frame-toolbar-button-hover-background);
+                color: var(--frame-toolbar-button-hover-text-color);
+            }
+        }
+    }
+
+    .rc-frame-menu {
+        border-width: 0 var(--frame-border-width) 0 var(--frame-border-width);
+    }
+
+    .rc-frame-content {
+        border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width);
+    }
+
+    .rc-frame-content, .rc-frame-menu {
+        border-color: var(--frame-header-background);
     }
 }

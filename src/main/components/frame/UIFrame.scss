@@ -1,8 +1,3 @@
-.rc-frame {
-    box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.56);
-    border-radius: 9px;
-}
-
 .rc-frame-header {
     font-size: 18px;
     display: flex;
@@ -34,8 +29,7 @@
     }
 }
 
-.rc-frame-content {
+.rc-frame-content, .rc-frame-menu {
     border: 1px solid;
-    border-width: 0px 4px 4px 4px;
     overflow: hidden;
 }

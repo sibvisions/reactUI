@@ -51,7 +51,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             }
         }
         return undefined;
-    }, [props.centerRelativeTo])
+    }, [props.centerRelativeTo]);
 
     /** Flag, true, if the InternalFrame still needs to be centered */
     const [centerFlag, setCenterFlag] = useState<boolean>(true);
@@ -129,8 +129,6 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         }
     }, [frameContext.openFrames]);
 
-
-
     // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
         if (initFrame.current) {
@@ -164,7 +162,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     /** When the centerRelativeTo property changes, center again */
     useEffect(() => {
         setCenterFlag(true);
-    }, [props.centerRelativeTo])
+    }, [props.centerRelativeTo]);
 
     // Centers the frame to its relative component
     useEffect(() => {
