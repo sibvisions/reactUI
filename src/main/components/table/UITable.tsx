@@ -1194,7 +1194,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent)
                     )}
-                    value={virtualRows}
+                    value={virtualEnabled ? virtualRows : providerData}
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
