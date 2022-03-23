@@ -1,9 +1,18 @@
-import React, { createContext, FC, useCallback, useRef, useState } from "react";
-import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
+import React, { createContext, CSSProperties, FC, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../zhooks";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
+import { parseIconData } from "../../compprops";
+import { isFAIcon } from "../../zhooks/useButtonMouseImages";
+import { TabPanel } from "primereact/tabview";
+import { appContext } from "../../../AppProvider";
+import UITabsetPanel from "../tabsetpanel/UITabsetPanel";
+import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
+import { createCloseFrameRequest, createTabRequest } from "../../../factories/RequestFactory";
+import { showTopBar } from "../../topbar/TopBar";
+import { REQUEST_ENDPOINTS } from "../../../request";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -14,14 +23,46 @@ export interface IDesktopPanel extends BaseComponent {
 
 interface IOpenedFrameContext {
     openFrames: string[],
-    openFramesCallback: Function
+    openFramesCallback: Function,
+    tabMode: boolean
 }
 
-export const OpenFrameContext = createContext<IOpenedFrameContext>({ openFrames: [], openFramesCallback: () => {} });
+export const OpenFrameContext = createContext<IOpenedFrameContext>({ openFrames: [], openFramesCallback: () => {}, tabMode: false });
+
+interface IDesktopTabPanel extends IDesktopPanel {
+    components: React.ReactElement<any, string | React.JSXElementConstructor<any>>[]
+    compSizes: Map<string, ComponentSizes> | undefined
+    compStyle: CSSProperties
+    layoutStyle: CSSProperties|undefined
+}
+
+const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
+    /** Returns utility variables */
+    const [context, topbar] = useConstants()
+
+    /** Handles the state of the current selected index */
+    const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+    return (
+        <TabsetPanelImpl 
+            {...props} 
+            components={props.components}
+            compSizes={props.compSizes}
+            compStyle={props.compStyle}
+            layoutStyle={props.layoutStyle}
+            selectedIndex={selectedIndex}
+            onTabChange={(i:number) => setSelectedIndex(i)}
+            onTabClose={(i:number) => {
+                const closeReq = createCloseFrameRequest();
+                closeReq.componentId = props.components[i].props.name;
+                showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+            }} />
+    )
+}
 
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -38,6 +79,8 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
             return [""];
         }
     });
+
+    const displayTabMode = useMemo(() => props.tabMode && children.find(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) !== undefined, [props.tabMode, children]);
 
     /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);
@@ -79,26 +122,35 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     }, [openFrames]);
 
     return (
-        <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback }}>
+        <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback, tabMode: props.tabMode === true }}>
             <div
                 className="rc-desktop-panel"
                 ref={panelRef}
                 id={checkComponentName(props.name)}
                 style={{ ...layoutStyle, backgroundColor: props.background }} >
-                <Layout
-                    id={props.id}
-                    className={props.className}
-                    layoutData={props.layoutData}
-                    layout={props.layout}
-                    preferredSize={parsePrefSize(props.preferredSize)}
-                    minimumSize={parseMinSize(props.minimumSize)}
-                    maximumSize={parseMaxSize(props.maximumSize)}
-                    compSizes={componentSizes}
-                    components={components}
-                    style={panelGetStyle(false, layoutStyle)}
-                    reportSize={reportSize}
-                    panelType="DesktopPanel"
-                    parent={props.parent} />
+                {displayTabMode ? 
+                        <DesktopTabPanel 
+                            {...props} 
+                            components={components.filter(comp => comp.props.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)}
+                            compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) : undefined}
+                            compStyle={compStyle}
+                            layoutStyle={layoutStyle} /> 
+                    : 
+                        <Layout
+                            id={props.id}
+                            className={props.className}
+                            layoutData={props.layoutData}
+                            layout={props.layout}
+                            preferredSize={parsePrefSize(props.preferredSize)}
+                            minimumSize={parseMinSize(props.minimumSize)}
+                            maximumSize={parseMaxSize(props.maximumSize)}
+                            compSizes={componentSizes}
+                            components={components}
+                            style={panelGetStyle(false, layoutStyle)}
+                            reportSize={reportSize}
+                            panelType="DesktopPanel"
+                            parent={props.parent} />}
+
             </div>
         </OpenFrameContext.Provider>
     )

@@ -4,7 +4,6 @@ import { REQUEST_ENDPOINTS } from "../../request";
 import BaseComponent from "../BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { parseIconData } from "../compprops";
-import { IWindow } from "../launcher/UIMobileLauncher";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
@@ -12,8 +11,9 @@ import { showTopBar } from "../topbar/TopBar";
 import { concatClassnames, Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
 import { ComponentSizes, useConstants } from "../zhooks";
 import { isFAIcon } from "../zhooks/useButtonMouseImages";
+import { IInternalFrame } from "./UIInternalFrame";
 
-export interface IFrame extends IWindow {
+export interface IFrame extends IInternalFrame {
     frameStyle?: CSSProperties,
     internal?: boolean
     sizeCallback?:Function,

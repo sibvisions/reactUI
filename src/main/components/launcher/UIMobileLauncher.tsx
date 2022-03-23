@@ -4,21 +4,12 @@ import { IPanel } from "../panels";
 import { useComponentConstants, useComponents, useMouseListener } from "../zhooks";
 
 export interface IWindow extends IPanel {
+    title:string
     layout:string,
     layoutData:string,
     menuBar:string,
-    title:string
-    pack?: boolean
-    iconifiable?: boolean
-    maximizable?:boolean
     iconImage?: string
-    resizable?: boolean
-    closable?: boolean
     modal: boolean
-    centerRelativeTo?: string
-    toFront?: boolean
-    toBack?: boolean
-    dispose?: boolean
 }
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {

@@ -11,13 +11,25 @@ import { checkSizes } from "../util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
 
+export interface IInternalFrame extends IWindow {
+    iconifiable?: boolean
+    maximizable?:boolean
+    closable?: boolean
+    pack?: boolean
+    resizable?: boolean
+    centerRelativeTo?: string
+    toFront?: boolean
+    toBack?: boolean
+    dispose?: boolean
+}
+
 /**
  * This component displays an internal window which can be moved and resized (if resizable is true).
  * @param baseProps - the base properties of this component sent by the server.
  */
-const UIInternalFrame: FC<IWindow> = (baseProps) => {
+const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
@@ -97,7 +109,7 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
             sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
             setFrameStyle(packSize);
-            (context.contentStore.getComponentById(props.id) as IWindow).pack = false;
+            (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
         }
     }, [props.pack, packSize]);
 
@@ -146,13 +158,13 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
                     rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
                     sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
                     setFrameStyle(packSize);
-                    (context.contentStore.getComponentById(props.id) as IWindow).pack = false;
+                    (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
                     initFrame.current = false;
                 }
             }
             frameContext.openFramesCallback(props.name, true);
         }
-    }, [layoutStyle, packSize]);
+    }, [layoutStyle?.width, layoutStyle?.height, packSize]);
 
     // When the server sends a dispose, call closeScreen
     useEffect(() => {
@@ -228,34 +240,44 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
     };
 
     return (
-        <>
-            {props.modal && <div className="rc-glasspane" />}
-            {children.length && <Rnd
-                ref={rndRef}
-                style={style as CSSProperties}
-                onResize={handleResize}
-                bounds={props.modal ? "window" : "parent"}
-                default={{
-                    x: 0,
-                    y: 0,
-                    width: 200,
-                    height: 200
-                }}
-                dragHandleClassName="rc-frame-header"
-                className="rc-frame"
-                enableResizing={props.resizable !== false}
-            >
-                <UIFrame
-                    {...props}
-                    internal
-                    frameStyle={frameStyle}
-                    sizeCallback={getPreferredFrameSize}
-                    iconImage={props.iconImage}
-                    children={children}
-                    components={components.filter(comp => comp.props["~additional"] !== true)}
-                    compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
-            </Rnd>}
-        </>
+        (!frameContext.tabMode) ?
+            <>
+                {props.modal && <div className="rc-glasspane" />}
+                {children.length && <Rnd
+                    ref={rndRef}
+                    style={style as CSSProperties}
+                    onResize={handleResize}
+                    bounds={props.modal ? "window" : "parent"}
+                    default={{
+                        x: 0,
+                        y: 0,
+                        width: 200,
+                        height: 200
+                    }}
+                    dragHandleClassName="rc-frame-header"
+                    className="rc-frame"
+                    enableResizing={props.resizable !== false}
+                >
+                    <UIFrame
+                        {...props}
+                        internal
+                        frameStyle={frameStyle}
+                        sizeCallback={getPreferredFrameSize}
+                        iconImage={props.iconImage}
+                        children={children}
+                        components={components.filter(comp => comp.props["~additional"] !== true)}
+                        compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
+                </Rnd>}
+            </>
+            :
+            <UIFrame
+                {...props}
+                frameStyle={layoutStyle}
+                sizeCallback={getPreferredFrameSize}
+                iconImage={props.iconImage}
+                children={children}
+                components={components.filter(comp => comp.props["~additional"] !== true)}
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
     )
 }
 export default UIInternalFrame
