@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
@@ -58,6 +58,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
 
     /** Reference for the Rnd element */
     const rndRef = useRef<Rnd>(null);
+
+    const boundsTimer = useRef<any>(null);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -209,7 +211,8 @@ const UIInternalFrame: FC<IWindow> = (baseProps) => {
         styleCopy.height = ref.offsetHeight - 35;
         styleCopy.width = ref.offsetWidth - 8;
 
-        sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number });
+        clearTimeout(boundsTimer.current);
+        boundsTimer.current = setTimeout(() => sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number }), 1500);
         setFrameStyle(styleCopy);
     }, [frameStyle]);
 
