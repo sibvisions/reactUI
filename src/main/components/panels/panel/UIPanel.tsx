@@ -5,6 +5,7 @@ import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
+import { appVersion } from "../../../AppSettings";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent {
@@ -103,7 +104,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        context.appSettings.version
+                        appVersion.version
                     )}
                     isToolBar={props.className === COMPONENT_CLASSNAMES.TOOLBAR}
                     parent={props.parent} />

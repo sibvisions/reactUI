@@ -4,6 +4,7 @@ import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } 
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
+import { appVersion } from "../../../AppSettings";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -87,7 +88,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                             prefSize,
                             props.screen_modal_ || props.content_modal_,
                             props.screen_size_,
-                            context.appSettings.version
+                            appVersion.version
                         )}
                         parent={props.parent} />
                 </div>

@@ -4,6 +4,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
+import { appVersion } from "../../../AppSettings";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -38,7 +39,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.appSettings.version);
+        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, appVersion.version);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {

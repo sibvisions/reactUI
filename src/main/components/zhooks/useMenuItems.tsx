@@ -25,7 +25,6 @@ const useMenuItems = (menus?:string[]) => {
      */
     useEffect(() => {
         const getMenuItem = (item: ServerMenuButtons|BaseComponent):MenuItemCustom|MenuItem => {
-            console.log(item)
             const isBaseComp = (item:ServerMenuButtons|BaseComponent): item is BaseComponent => {
                 return (item as BaseComponent).id !== undefined
             }

@@ -1,6 +1,7 @@
 import React, { FC, useRef } from "react";
 import { useHistory } from "react-router";
 import { IServerFailMessage } from "../../AppWrapper";
+import { appVersion } from "../../main/AppSettings";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/components/util";
 import { useConstants, useEventHandler } from "../../moduleIndex";
@@ -24,7 +25,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        if (context.appSettings.version !== 2) {
+        if (appVersion.version !== 2) {
             history.push("/login");
         }
         context.appSettings.setAppReadyParamFalse();

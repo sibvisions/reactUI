@@ -312,6 +312,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (convertedOptions.has("version")) {
                     context.appSettings.version = parseInt(convertedOptions.get("version"));
                     context.server.endpointMap = context.server.setEndPointMap(parseInt(convertedOptions.get("version")));
+                    appVersion.version = parseInt(convertedOptions.get("version"));
                 }
 
                 convertedOptions.forEach((v, k) => {

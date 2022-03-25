@@ -4,6 +4,7 @@ import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } 
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
 import { IPanel } from "..";
+import { appVersion } from "../../../AppSettings";
 
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {
@@ -88,7 +89,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        context.appSettings.version
+                        appVersion.version
                     )}
                     parent={props.parent}
                 />

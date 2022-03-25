@@ -5,6 +5,8 @@ import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 
+export const appVersion = { version: 1 }
+
 type ApplicationMetaData = {
     version: string,
     clientId: string,

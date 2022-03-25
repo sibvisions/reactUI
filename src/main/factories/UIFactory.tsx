@@ -39,6 +39,7 @@ import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
 import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
+import { appVersion } from "../AppSettings";
 
 
 /**
@@ -105,15 +106,12 @@ const maybePopup = (element: JSX.Element) =>
         : element
 
 
-/**
- * Map to get the correct function to build a component for className
- */
 const componentsMap = new Map<string, React.ComponentType<any>>()
-    .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelV2 {...props} />)
-    .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.PANEL, props => maybePopup(<UIPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => maybePopup(<UIDesktopPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => maybePopup(<UIGroupPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => maybePopup(<UIScrollPanel {...props} />))
+    .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => maybePopup(<UIToolBarPanel {...props} />))
     .set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
     .set(COMPONENT_CLASSNAMES.TOGGLEBUTTON, props => <UIToggleButton {...props} />)
@@ -127,7 +125,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     .set(COMPONENT_CLASSNAMES.TEXTFIELD, props => <UIText {...props} />)
     .set(COMPONENT_CLASSNAMES.TEXTAREA, props => <UITextArea {...props} />)
     .set(COMPONENT_CLASSNAMES.PASSWORD, props => <UIPassword {...props} />)
-    .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => <UITabsetPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => maybePopup(<UITabsetPanel {...props} />))
     .set(COMPONENT_CLASSNAMES.CHART, props => <UIChart {...props} />)
     .set(COMPONENT_CLASSNAMES.MAP, props => props.tileProvider === "google"
         ? <UIMapGoogle {...props} />
@@ -138,9 +136,41 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
     //.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
-    .set(COMPONENT_CLASSNAMES.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
-    .set(COMPONENT_CLASSNAMES.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
+    .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />);
+
+const componentsMapV2 = new Map<string, React.ComponentType<any>>()
+.set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelV2 {...props} />)
+.set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
+.set(COMPONENT_CLASSNAMES.TOGGLEBUTTON, props => <UIToggleButton {...props} />)
+.set(COMPONENT_CLASSNAMES.POPUPMENUBUTTON, props => <UIMenuButton {...props} />)
+.set(COMPONENT_CLASSNAMES.RADIOBUTTON, props => <UIRadioButton {...props} />)
+.set(COMPONENT_CLASSNAMES.CHECKBOX, props => <UICheckBox {...props} />)
+.set(COMPONENT_CLASSNAMES.LABEL, props => <UILabel {...props} />)
+.set(COMPONENT_CLASSNAMES.EDITOR, props => <CellEditorWrapper {...props} />)
+.set(COMPONENT_CLASSNAMES.TABLE, props => <UITable {...props} />)
+.set(COMPONENT_CLASSNAMES.ICON, props => <UIIcon {...props} />)
+.set(COMPONENT_CLASSNAMES.TEXTFIELD, props => <UIText {...props} />)
+.set(COMPONENT_CLASSNAMES.TEXTAREA, props => <UITextArea {...props} />)
+.set(COMPONENT_CLASSNAMES.PASSWORD, props => <UIPassword {...props} />)
+.set(COMPONENT_CLASSNAMES.TABSETPANEL, props => <UITabsetPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.CHART, props => <UIChart {...props} />)
+.set(COMPONENT_CLASSNAMES.MAP, props => props.tileProvider === "google"
+    ? <UIMapGoogle {...props} />
+    : <UIMapOSM {...props} />
+)
+.set(COMPONENT_CLASSNAMES.TREE, props => <UITree {...props} />)
+.set(COMPONENT_CLASSNAMES.GAUGE, props => <UIGauge {...props} />)
+//.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
+.set(COMPONENT_CLASSNAMES.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
+.set(COMPONENT_CLASSNAMES.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
 
 /**
  * Returns the JSXElement for the given base component
@@ -149,7 +179,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>()
  */
 export const componentHandler = (baseComponent: BaseComponent, contentStore:ContentStore) => {
     const Comp = contentStore.globalComponents.has(baseComponent.className) ?
-    contentStore.globalComponents.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+    contentStore.globalComponents.get(baseComponent.className) : appVersion.version === 2 ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
 
     if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
         baseComponent.name = baseComponent.name.substring(1);
