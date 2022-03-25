@@ -139,8 +139,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const CustomWrapper = props.customAppWrapper;
 
-    console.log('test')
-
     return (
         (CustomWrapper) ?
             <div
