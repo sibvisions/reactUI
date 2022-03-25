@@ -5,7 +5,7 @@ import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
-import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
+import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 import { checkSizes } from "../util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";

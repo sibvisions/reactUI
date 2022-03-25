@@ -16,6 +16,7 @@ import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import AppSettings from "./AppSettings";
 
 export type ActiveScreen = {
     name: string,
@@ -121,6 +122,8 @@ export default class ContentStore{
     timer:Timer|undefined;
 
     mobileLauncher:ActiveScreen[] = [];
+
+    version:number = 1;
 
     constructor(history?:History<any>) {
         this.history = history;

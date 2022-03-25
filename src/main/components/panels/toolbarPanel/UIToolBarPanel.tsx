@@ -87,7 +87,8 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                         layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
-                        props.screen_size_
+                        props.screen_size_,
+                        context.appSettings.version
                     )}
                     parent={props.parent}
                 />

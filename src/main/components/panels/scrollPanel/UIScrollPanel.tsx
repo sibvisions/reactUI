@@ -38,7 +38,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_);
+        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.appSettings.version);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {

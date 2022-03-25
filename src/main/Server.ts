@@ -216,6 +216,8 @@ class Server {
 
     missingDataFetches:string[] = [];
 
+    timeoutMs = 10000
+
     setAPI(api:API) {
         this.api = api;
     }
@@ -380,10 +382,11 @@ class Server {
                 reject("Component doesn't exist");
             } else {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
+                    console.log(this.timeoutMs)
                     let finalEndpoint = this.endpointMap.get(endpoint)
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
-                        10000, 
+                        this.timeoutMs, 
                         () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))

@@ -178,9 +178,6 @@ const Menu: FC<IMenu> = (props) => {
     /** The currently selected-menuitem */
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>(context.contentStore.selectedMenuItem);
 
-    /** A flag which changes when the active item changes */
-    const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
-
     /** get menu items */
     const menuItems = useMenuItems()
 
@@ -242,7 +239,6 @@ const Menu: FC<IMenu> = (props) => {
                 else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
                     panelMenu.current?.setState({ activeItem: foundMenuItem });
                 }
-                setActiveItemChanged(prev => !prev)
             }
         }
 

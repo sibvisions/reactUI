@@ -99,13 +99,16 @@ body {
   width: var(--std-topbar-buttons);
   height: var(--std-topbar-buttons); }
 
-.basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-  height: var(--std-profile-height);
-  padding: var(--std-profile-padding); }
-
-.basti_mobile .std-menu .profile-menu .p-menubar .p-submenu-list {
-  width: calc(100% - var(--std-profile-separator-margin));
-  margin-left: var(--std-profile-separator-margin); }
+.basti_mobile .std-menu .profile-menu {
+  height: var(--std-profile-height); }
+  .basti_mobile .std-menu .profile-menu .p-menubar {
+    height: 100%; }
+    .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+      height: var(--std-profile-height);
+      padding: var(--std-profile-padding); }
+    .basti_mobile .std-menu .profile-menu .p-menubar .p-submenu-list {
+      width: calc(100% - var(--std-profile-separator-margin));
+      margin-left: var(--std-profile-separator-margin); }
 
 .basti_mobile .std-menu .profile-image, .basti_mobile .std-menu .profile-image-null {
   width: var(--std-profile-pic);

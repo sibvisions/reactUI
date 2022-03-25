@@ -102,7 +102,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
-                        props.screen_size_
+                        props.screen_size_,
+                        context.appSettings.version
                     )}
                     isToolBar={props.className === COMPONENT_CLASSNAMES.TOOLBAR}
                     parent={props.parent} />

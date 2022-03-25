@@ -38,6 +38,7 @@ import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
 import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
+import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
 
 
 /**
@@ -109,7 +110,7 @@ const maybePopup = (element: JSX.Element) =>
  */
 const componentsMap = new Map<string, React.ComponentType<any>>()
     .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanel {...props} />)
+    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelV2 {...props} />)
     .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
     .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
