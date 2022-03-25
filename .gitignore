@@ -27,3 +27,5 @@ yarn-error.log*
 debug.log
 config.json
 altConfig.json
+app.json
+app_version.json

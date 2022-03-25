@@ -362,13 +362,31 @@ const useStartup = (props:ICustomContent):boolean => {
         }
 
         const fetchAppConfig = () => {
-            fetch('assets/config/app.json').then((r) => r.json()).then((data) => {
-                if (data.timeout) {
-                    context.server.timeoutMs = parseInt(data.timeout)
-                }
-            })
-            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
-            .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            return new Promise<any>((resolve, reject) => {
+                fetch('assets/config/app.json').then((r) => r.json())
+                .then((data) => {
+                    if (data.timeout) {
+                        context.server.timeoutMs = parseInt(data.timeout)
+                    }
+                    resolve({});
+                })
+                .catch(() => reject("app.json not found"))
+            });
+        }
+
+        const fetchVersionConfig = () => {
+            return new Promise<any>((resolve, reject) => {
+                fetch('assets/version/app_version.json').then((r) => r.json())
+                .then((data) => {
+                    if (data.version) {
+                        context.appSettings.version = parseInt(data.version);
+                        context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
+                        appVersion.version = parseInt(data.version)
+                    }
+                    resolve({});
+                })
+                .catch(() => reject("app_version.json not found"));
+            });
         }
 
         const startUpRequest = createStartupRequest();
@@ -425,21 +443,30 @@ const useStartup = (props:ICustomContent):boolean => {
                     designToSet = data.design;
                 }
 
-                if (data.version) {
-                    context.appSettings.version = parseInt(data.version);
-                    context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
-                    appVersion.version = parseInt(data.version)
-                }
+                // if (data.version) {
+                //     context.appSettings.version = parseInt(data.version);
+                //     context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
+                //     appVersion.version = parseInt(data.version)
+                // }
 
                 //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             }).then(() => {
-                fetchAppConfig();
+                Promise.all([fetchAppConfig(), fetchVersionConfig()])
+                .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+                .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
+                //fetchAppConfig();
             }).catch(() => {
-                fetchAppConfig();
+                Promise.all([fetchAppConfig(), fetchVersionConfig()])
+                .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+                .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
+                //fetchAppConfig();
             });
         }
         else {
-            fetchAppConfig();
+            console.log("test")
+            Promise.all([fetchAppConfig(), fetchVersionConfig()])
+            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
         }
 
         return () => {
