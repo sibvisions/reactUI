@@ -408,13 +408,27 @@ const useStartup = (props:ICustomContent):boolean => {
                     designToSet = data.design;
                 }
 
-                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+                //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+            }).then(() => {
+                fetch('devconfig.json').then((r) => r.json()).then((data) => {
+                    if (data.timeout) {
+                        context.server.timeoutMs = parseInt(data.timeout)
+                    }
+                })
+                .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+                .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
             }).catch(() => {
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             });
         }
         else {
-            setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+            fetch('devconfig.json').then((r) => r.json()).then((data) => {
+                if (data.timeout) {
+                    context.server.timeoutMs = parseInt(data.timeout)
+                }
+            })
+            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
         }
 
         return () => {

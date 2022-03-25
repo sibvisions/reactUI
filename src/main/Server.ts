@@ -101,7 +101,9 @@ class Server {
 
     lastClosedWasPopUp = false;
 
-    missingDataFetches:string[] = []
+    missingDataFetches:string[] = [];
+
+    timeoutMs = 10000
 
     setAPI(api:API) {
         this.api = api;
@@ -189,7 +191,7 @@ class Server {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
                     this.timeoutRequest(
                         fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 
-                        10000, 
+                        this.timeoutMs, 
                         () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
                     )
                         .then((response: any) => response.json())
