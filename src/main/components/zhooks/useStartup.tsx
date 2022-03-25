@@ -361,6 +361,16 @@ const useStartup = (props:ICustomContent):boolean => {
             }
         }
 
+        const fetchAppConfig = () => {
+            fetch('assets/config/app.json').then((r) => r.json()).then((data) => {
+                if (data.timeout) {
+                    context.server.timeoutMs = parseInt(data.timeout)
+                }
+            })
+            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+        }
+
         const startUpRequest = createStartupRequest();
         if (process.env.NODE_ENV === "development") {
             fetch('config.json')
@@ -423,25 +433,13 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             }).then(() => {
-                fetch('devconfig.json').then((r) => r.json()).then((data) => {
-                    if (data.timeout) {
-                        context.server.timeoutMs = parseInt(data.timeout)
-                    }
-                })
-                .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
-                .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+                fetchAppConfig();
             }).catch(() => {
-                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+                fetchAppConfig();
             });
         }
         else {
-            fetch('devconfig.json').then((r) => r.json()).then((data) => {
-                if (data.timeout) {
-                    context.server.timeoutMs = parseInt(data.timeout)
-                }
-            })
-            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
-            .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            fetchAppConfig();
         }
 
         return () => {
