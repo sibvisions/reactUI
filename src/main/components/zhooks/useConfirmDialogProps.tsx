@@ -5,8 +5,8 @@ import { appContext } from "../../AppProvider";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { useTranslation } from ".";
 import { DialogResponse } from "../../response";
-import { createCloseFrameRequest, createDispatchActionRequest, createPressButtonRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { createCloseFrameRequest, createDispatchActionRequest } from "../../factories/RequestFactory";
+import { REQUEST_KEYWORDS } from "../../request";
 import { concatClassnames } from "../util";
 import tinycolor from "tinycolor2";
 
@@ -75,7 +75,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     if (compId) {
                         const pressBtnReq = createDispatchActionRequest();
                         pressBtnReq.componentId = compId;
-                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
+                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
                     }
                 }
 
@@ -220,7 +220,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const handleOnHide = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;
-                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar).then(() => setVisible(false));
+                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar).then(() => setVisible(false));
             }
 
             setVisible(true);

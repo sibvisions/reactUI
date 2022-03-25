@@ -24,7 +24,9 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        //history.push("/login");
+        if (context.appSettings.version !== 2) {
+            history.push("/login");
+        }
         context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();

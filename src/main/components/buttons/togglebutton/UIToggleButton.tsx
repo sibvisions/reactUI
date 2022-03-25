@@ -3,11 +3,11 @@ import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebut
 import tinycolor from 'tinycolor2';
 import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../zhooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -47,7 +47,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const handleOnChange = () => {
         const req = createDispatchActionRequest();
         req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
+        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
     }
 
     return (

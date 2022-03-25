@@ -4,12 +4,12 @@ import tinycolor from "tinycolor2";
 import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../zhooks"
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { getTextAlignment } from "../../compprops";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -134,7 +134,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
-        await props.context.server.sendRequest(filterReq, REQUEST_ENDPOINTS.FILTER).then(() => {
+        await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);
             }
@@ -295,7 +295,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
             fetchReq.rowCount = 400;
-            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), props.topbar)
+            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar)
         }
     }
 

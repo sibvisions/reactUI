@@ -3,9 +3,9 @@ import { useComponents, useComponentConstants } from "../../zhooks";
 import { IconProps } from "../../compprops";
 import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { showTopBar } from "../../topbar/TopBar";
 import TabsetPanelImpl from "./TabsetPanelImpl";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {
@@ -45,14 +45,14 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
     const handleSelect = (tabId:number) => {
         if(!closing.current) {
-            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.SELECT_TAB), topbar);
+            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), topbar);
         }
         closing.current = false;
     }
 
     /** When a tab is closed send a tabCloseRequest to the server */
     const handleClose = (tabId:number) => {
-        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_ENDPOINTS.CLOSE_TAB), topbar);
+        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), topbar);
         closing.current = true
     }
 

@@ -4,15 +4,10 @@ import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { parseIconData } from "../../compprops";
-import { isFAIcon } from "../../zhooks/useButtonMouseImages";
-import { TabPanel } from "primereact/tabview";
-import { appContext } from "../../../AppProvider";
-import UITabsetPanel from "../tabsetpanel/UITabsetPanel";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest, createTabRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -55,7 +50,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
             onTabClose={(i:number) => {
                 const closeReq = createCloseFrameRequest();
                 closeReq.componentId = props.components[i].props.name;
-                showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+                showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
             }} />
     )
 }

@@ -3,7 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -23,7 +23,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
         if (baseProps.screen_modal_) {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = baseProps.name;
-            context.server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).then(res => {
+            context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
                     context.server.lastClosedWasPopUp = true;
                     context.contentStore.closeScreen(baseProps.name);
@@ -33,7 +33,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
         else if (baseProps.content_modal_) {
             const ccRequest = createCloseContentRequest();
             ccRequest.componentId = baseProps.name;
-            context.server.sendRequest(ccRequest, REQUEST_ENDPOINTS.CLOSE_CONTENT).then(res => {
+            context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
                     context.server.lastClosedWasPopUp = true;
                     context.contentStore.closeScreen(baseProps.name, undefined, true);

@@ -4,7 +4,6 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { useConstants } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
-import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
@@ -14,6 +13,7 @@ import ResizeHandler from "../ResizeHandler";
 import { ResizeContext } from "../UIManager";
 import tinycolor from "tinycolor2";
 import BaseComponent from "../../main/components/BaseComponent";
+import { REQUEST_KEYWORDS } from "../../main/request";
 
 /** 
  * Properties which the dialog will receive when it's rendered
@@ -59,7 +59,7 @@ export const LoginForm:FC = () => {
         loginReq.password = loginData.password;
         loginReq.mode = "manual";
         loginReq.createAuthKey = loginData.rememberMe;
-        showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar)
+        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
         context.subscriptions.emitMenuUpdate();
     }
 
@@ -73,7 +73,7 @@ export const LoginForm:FC = () => {
         else {
             const resetReq = createResetPasswordRequest();
             resetReq.identifier = loginData.email;
-            showTopBar(context.server.sendRequest(resetReq, REQUEST_ENDPOINTS.RESET_PASSWORD), topbar)
+            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), topbar)
         }
     }
 

@@ -7,7 +7,7 @@ import { IButton } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /**
  * This component displays a basic button
@@ -48,7 +48,7 @@ const UIButton: FC<IButton> = (baseProps) => {
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
-            showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
+            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
         }
     }
 

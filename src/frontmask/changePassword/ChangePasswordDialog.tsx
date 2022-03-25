@@ -3,11 +3,11 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
 import { useConstants } from "../../main/components/zhooks";
-import { REQUEST_ENDPOINTS } from "../../main/request";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
 import { ILoginCredentials } from "../login/login";
+import { REQUEST_KEYWORDS } from "../../main/request";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -67,7 +67,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 const changeReq = createChangePasswordRequest();
                 changeReq.password = changePWData.password;
                 changeReq.newPassword = changePWData.newPassword;
-                showTopBar(context.server.sendRequest(changeReq, REQUEST_ENDPOINTS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
+                showTopBar(context.server.sendRequest(changeReq, REQUEST_KEYWORDS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
                     results.forEach(result => {
                         if (result.name === RESPONSE_NAMES.DIALOG) {
                             setDialogVisible(false);
@@ -83,7 +83,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.newPassword = changePWData.newPassword;
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
-                showTopBar(context.server.sendRequest(loginReq, REQUEST_ENDPOINTS.LOGIN), topbar);
+                showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar);
                 setChangePWData(prevState => ({...prevState, password: props.password || "", newPassword: "", confirmPassword: ""}));
                 context.subscriptions.emitMenuUpdate();
             }

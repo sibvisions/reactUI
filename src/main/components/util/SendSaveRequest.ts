@@ -1,5 +1,5 @@
 import { createDALSaveRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 import Server from "../../Server";
 
 /**
@@ -12,5 +12,5 @@ export function sendSaveRequest(dataProvider:string, onlySelected:boolean, serve
     const req = createDALSaveRequest();
     req.dataProvider = dataProvider;
     req.onlySelected = onlySelected;
-    return server.sendRequest(req, REQUEST_ENDPOINTS.DAL_SAVE);
+    return server.sendRequest(req, REQUEST_KEYWORDS.DAL_SAVE);
 }

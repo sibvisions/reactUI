@@ -3,13 +3,12 @@ import { useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../compprops";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
-import { isCellEditorReadOnly } from "../text/UIEditorText";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -140,7 +139,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             if (props.rowIndex !== undefined && props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
                 setValReq.filter = props.filter()
             }
-            showTopBar(props.context.server.sendRequest(setValReq, REQUEST_ENDPOINTS.SET_VALUES), props.topbar);
+            showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }
     }
     

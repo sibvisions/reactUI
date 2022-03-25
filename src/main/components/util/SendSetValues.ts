@@ -1,4 +1,4 @@
-import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
+import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import Server from "../../Server";
 import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContextType } from "../topbar/TopBar";
@@ -40,11 +40,11 @@ export async function sendSetValues(
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];
     if (lastValue !== undefined) {
         if (value !== lastValue) {
-            await showTopBar(server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUES), topbar);
+            await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
         }
     }
     else {
-        await showTopBar(server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUES), topbar);
+        await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
     }
 }
 
@@ -67,10 +67,10 @@ export async function sendSetValue(
         req.value = value;
         if (lastValue !== undefined) {
             if (value !== lastValue) {
-                await showTopBar(server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
+                await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
             }
         }
         else {
-            await showTopBar(server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
+            await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
         }
 }

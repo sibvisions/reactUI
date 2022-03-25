@@ -45,7 +45,6 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                            {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                             <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                         </Switch>
                     </div>

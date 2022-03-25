@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { appContext } from "../../AppProvider";
 import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, StartupRequest, UIRefreshRequest } from "../../request";
+import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "../../request";
 import { ICustomContent } from "../../../MiddleMan";
 import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
@@ -129,7 +129,7 @@ const useStartup = (props:ICustomContent):boolean => {
                             const openReq = createOpenScreenRequest();
                             openReq.className = jscmd.arguments.className;
                             context.server.lastOpenedScreen = jscmd.arguments.className;
-                            showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.REOPEN_SCREEN), topbar);
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                         }
                         else if (jscmd.command === "reloadCss") {
                             context.subscriptions.emitCssVersion(jscmd.arguments.version);
@@ -139,7 +139,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 }
                 else {
                     if (e.data === "api/changes") {
-                        context.server.sendRequest(createChangesRequest(), REQUEST_ENDPOINTS.CHANGES);
+                        context.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
                     }
                 }
             }
@@ -190,7 +190,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
-            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_ENDPOINTS.UI_REFRESH : REQUEST_ENDPOINTS.STARTUP)
+            context.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
@@ -308,6 +308,11 @@ const useStartup = (props:ICustomContent):boolean => {
                     addCSSDynamically('design/' + designToSet + ".css", "designCSS", context.appSettings);
                 }
 
+                if (convertedOptions.has("version")) {
+                    context.appSettings.version = parseInt(convertedOptions.get("version"));
+                    context.server.endpointMap = context.server.setEndPointMap(parseInt(convertedOptions.get("version")));
+                }
+
                 convertedOptions.forEach((v, k) => {
                     startupReq[k] = v;
                 });
@@ -406,6 +411,11 @@ const useStartup = (props:ICustomContent):boolean => {
 
                 if (data.design) {
                     designToSet = data.design;
+                }
+
+                if (data.version) {
+                    context.appSettings.version = parseInt(data.version);
+                    context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
                 }
 
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);

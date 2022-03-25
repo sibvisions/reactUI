@@ -2,7 +2,7 @@ import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../../main/AppProvider";
 import { createLogoutRequest } from "../../../main/factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../main/request";
+import { REQUEST_KEYWORDS } from "../../../main/request";
 import { useTranslation } from "../zhooks";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
@@ -28,7 +28,7 @@ const useProfileMenuItems = () => {
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
         context.contentStore.reset();
-        showTopBar(context.server.sendRequest(logoutRequest, REQUEST_ENDPOINTS.LOGOUT), topbar)
+        showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
 
     useEffect(() => {

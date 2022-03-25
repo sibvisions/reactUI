@@ -7,13 +7,15 @@ import { Helmet } from "react-helmet";
 /** Other imports */
 import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import UIToast from './main/components/toast/UIToast';
-import { appContext, createOpenScreenRequest, IPanel, REQUEST_ENDPOINTS, useConfirmDialogProps } from "./moduleIndex";
+import { createOpenScreenRequest, IPanel, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
 import ErrorDialog from "./frontmask/errorDialog/ErrorDialog";
 import { addCSSDynamically } from "./main/components/util";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
+import { REQUEST_KEYWORDS } from "./main/request";
+import { appContext } from "./main/AppProvider";
 
 export type IServerFailMessage = {
     headerMessage:string,
@@ -114,7 +116,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
                         context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
 
-                        showTopBar(context.server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN), topbar);
+                        showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
 
                         currentlyOpening = true;
                         openedWithHistory.current = true;

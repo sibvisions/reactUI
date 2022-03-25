@@ -3,7 +3,6 @@ import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
 import { IButton } from "..";
 import { parseIconData } from "../../compprops";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../util";
@@ -11,6 +10,7 @@ import BaseComponent from "../../BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -84,7 +84,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     command: () => {
                         const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION), topbar);
+                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
                     }
                 });
             });

@@ -25,7 +25,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
     const screenTitle = useScreenTitle();
 
     /** get menu items */
-    //const menuItems = useMenuItems();
+    const menuItems = useMenuItems();
 
     /** 
      * Returns an array of created toolbar-items based on the toolbar-item-data sent by the server.
@@ -85,7 +85,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                                         <SpeedDial model={toolbarItems} direction="down" />
                                     </div>
                                 }
-                                {/* <Menubar model={menuItems} /> */}
+                                <Menubar model={menuItems} />
                             </div>
                         }
                     </div>

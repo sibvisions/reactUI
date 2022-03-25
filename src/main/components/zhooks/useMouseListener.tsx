@@ -2,7 +2,7 @@ import { useContext, useRef } from "react";
 import { useEventHandler } from ".";
 import { appContext } from "../../AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /** Returns which mouse-button was pressed */
@@ -61,7 +61,7 @@ const useMouseListener = (
             pressReq.button = getMouseButton(event.button);
             pressReq.x = event.x;
             pressReq.y = event.y;
-            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_ENDPOINTS.MOUSE_PRESSED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), topbar);
             hold ? hold("pressed", release) : release();
         }
     }
@@ -78,7 +78,7 @@ const useMouseListener = (
             clickReq.x = event.x;
             clickReq.y = event.y;
             clickReq.clickCount = event.detail;
-            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_ENDPOINTS.MOUSE_CLICKED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), topbar);
             hold ? hold("clicked", release) : release();
         } else if (hold) {
             hold("cancelled", () => {});
@@ -90,7 +90,7 @@ const useMouseListener = (
             releaseReq.button = getMouseButton(event.button);
             releaseReq.x = event.x;
             releaseReq.y = event.y;
-            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_ENDPOINTS.MOUSE_RELEASED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), topbar);
             hold ? hold("released", release) : release();
         }
 

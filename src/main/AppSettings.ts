@@ -39,6 +39,8 @@ type AppReadyType = {
     themeCSSLoaded: boolean
     appMetaData: boolean
     designCSSLoaded: boolean
+    userOrLoginLoaded: boolean
+    translationLoaded: boolean
 }
 
 /** The AppSettings stores settings and flags for the application */
@@ -131,12 +133,16 @@ export default class AppSettings {
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
         appMetaData: false,
-        designCSSLoaded: false
+        designCSSLoaded: false,
+        userOrLoginLoaded: false,
+        translationLoaded: false
     }
     
     appReady:boolean = false;
 
     cssToAddWhenReady:Array<any> = [];
+
+    version:number = 1;
 
     /**
      * Sets the menu-mode
@@ -282,7 +288,7 @@ export default class AppSettings {
         }
     }
 
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"appMetaData"|"designCSS") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"appMetaData"|"designCSS"|"userOrLogin"|"translation") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -299,21 +305,31 @@ export default class AppSettings {
             case "designCSS":
                 this.appReadyParams.designCSSLoaded = true;
                 break;
+            case "userOrLogin":
+                this.appReadyParams.userOrLoginLoaded = true;
+                break;
+            case "translation":
+                this.appReadyParams.translationLoaded = true;
+                break;
             default:
                 break;
         }
-        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
-            this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
-            this.appReady = true;
-            this.#subManager.emitAppReady(true);
+
+        if (this.version === 2) {
+            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
+                this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+                this.appReady = true;
+                this.#subManager.emitAppReady(true);
+            }
         }
-        
-        // if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-        //     && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
-        //         this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
-        //         this.appReady = true;
-        //         this.#subManager.emitAppReady(true);
-        // }
+        else {
+            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
+                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+                    this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+                    this.appReady = true;
+                    this.#subManager.emitAppReady(true);
+            }
+        }
     }
 
     setAppReadyParamFalse() {
@@ -323,7 +339,9 @@ export default class AppSettings {
             schemeCSSLoaded: false, 
             themeCSSLoaded: false,
             appMetaData: false,
-            designCSSLoaded: false
+            designCSSLoaded: false,
+            userOrLoginLoaded: false,
+            translationLoaded: false
         };
     }
 }

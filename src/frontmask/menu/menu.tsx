@@ -10,10 +10,10 @@ import { IForwardRef } from "../../main/IForwardRef";
 import { concatClassnames } from "../../main/components/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { REQUEST_ENDPOINTS } from "../../main/request";
 import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { EmbeddedContext } from "../../MiddleMan";
 import { ApplicationSettingsResponse } from "../../main/response";
+import { REQUEST_KEYWORDS } from "../../main/request";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -97,7 +97,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
                             context.contentStore.setActiveScreen();
-                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_SCREEN), topbar).then((res) => {
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     context.server.lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(screenName, context.appSettings.welcomeScreen ? true : false);
@@ -117,7 +117,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
             {props.showButtons && (!visibleButtons || visibleButtons.save) && <Button
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
-                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_ENDPOINTS.SAVE), topbar)}
+                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), topbar)}
                 tooltip={translations.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
@@ -126,10 +126,10 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     className="menu-topbar-buttons"
                     onClick={() => {
                         if (!visibleButtons || (visibleButtons.reload && !visibleButtons.rollback)) {
-                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_ENDPOINTS.RELOAD), topbar)
+                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_KEYWORDS.RELOAD), topbar)
                         }
                         else {
-                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_ENDPOINTS.ROLLBACK), topbar)
+                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_KEYWORDS.ROLLBACK), topbar)
                         }
                     }}
                     tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
@@ -182,7 +182,7 @@ const Menu: FC<IMenu> = (props) => {
     const [activeItemChanged, setActiveItemChanged] = useState<boolean>(false);
 
     /** get menu items */
-    //const menuItems = useMenuItems()
+    const menuItems = useMenuItems()
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -226,27 +226,27 @@ const Menu: FC<IMenu> = (props) => {
         }
     }, [context.contentStore, context.subscriptions, deviceStatus])
 
-    // useEffect(() => {
-    //     if (props.menuVisibility.menuBar) {
-    //         if (menuItems) {
-    //             let foundMenuItem:MenuItem = {}
-    //             menuItems.forEach(m => {
-    //                 if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
-    //                     foundMenuItem = m
-    //                 }
-    //             });
+    useEffect(() => {
+        if (props.menuVisibility.menuBar) {
+            if (menuItems) {
+                let foundMenuItem:MenuItem = {}
+                menuItems.forEach(m => {
+                    if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+                        foundMenuItem = m
+                    }
+                });
     
-    //             if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-    //                 panelMenu.current?.setState({ activeItem: foundMenuItem });
-    //             }
-    //             else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
-    //                 panelMenu.current?.setState({ activeItem: foundMenuItem });
-    //             }
-    //             setActiveItemChanged(prev => !prev)
-    //         }
-    //     }
+                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                }
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                }
+                setActiveItemChanged(prev => !prev)
+            }
+        }
 
-    // }, [selectedMenuItem, menuItems])
+    }, [selectedMenuItem, menuItems])
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
@@ -366,7 +366,7 @@ const Menu: FC<IMenu> = (props) => {
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                                 <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                             </div>
-                            {/* <PanelMenu model={menuItems} ref={panelMenu} /> */}
+                            <PanelMenu model={menuItems} ref={panelMenu} />
                             {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                         </div>
                     }

@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC } from 'react';
+import React, { FC, useContext, useLayoutEffect } from 'react';
 
 /** 3rd Party imports */
 import PrimeReact from 'primereact/api';
@@ -18,6 +18,8 @@ import { useStartup } from './main/components/zhooks';
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
 import UIManagerV2 from './frontmask/UIManagerV2';
+import { appContext } from './main/AppProvider';
+import Server from './main/Server';
 
 
 /**
@@ -25,10 +27,14 @@ import UIManagerV2 from './frontmask/UIManagerV2';
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
  */
 const ReactUI: FC<ICustomContent> = (props) => {
+    const context = useContext(appContext);
+
     const appReady = useStartup(props);
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
+
+    console.log(context.appSettings.version, appReady)
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     return (
@@ -36,10 +42,22 @@ const ReactUI: FC<ICustomContent> = (props) => {
             {appReady ?
                 <>
                     <Switch>
-                        {/* <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                        <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} /> */}
-                        <Route exact path={"/home/:componentId"} render={() => <UIManagerV2 customAppWrapper={props.customAppWrapper} />} />
-                        <Route path={"/home"} render={() => <UIManagerV2 customAppWrapper={props.customAppWrapper} />} />
+                        {context.appSettings.version !== 2 && <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />}
+                        <Route 
+                            exact 
+                            path={"/home/:componentId"} 
+                            render={() => context.appSettings.version === 2 
+                                ? 
+                                    <UIManagerV2 /> 
+                                : 
+                                    <UIManager customAppWrapper={props.customAppWrapper} />} />
+                        <Route 
+                            path={"/home"} 
+                            render={() => context.appSettings.version === 2 
+                                ? 
+                                    <UIManagerV2 /> 
+                                : 
+                                    <UIManager customAppWrapper={props.customAppWrapper} />} />
                     </Switch>
                 </>
                 :

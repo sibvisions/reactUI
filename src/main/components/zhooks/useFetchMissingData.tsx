@@ -1,7 +1,7 @@
 import { useContext, useLayoutEffect } from "react";
 import { appContext } from "../../AppProvider";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /**
@@ -26,7 +26,7 @@ const useFetchMissingData = (screenName:string, dataProvider:string) => {
 
             if (!context.server.missingDataFetches.includes(dataProvider)) {
                 context.server.missingDataFetches.push(dataProvider);
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar)
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar)
             }
         }
     }, []);

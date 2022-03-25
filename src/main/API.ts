@@ -2,7 +2,6 @@
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "./request";
 import { ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
 import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
@@ -10,6 +9,7 @@ import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./components/BaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { REQUEST_KEYWORDS } from "./request";
 
 /** Contains the API functions */
 class API {
@@ -55,7 +55,7 @@ class API {
 
         this.#server.lastOpenedScreen = id;
 
-        return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+        return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 
     sendOpenScreenIntern(id:string) {
@@ -64,7 +64,7 @@ class API {
 
         this.#server.lastOpenedScreen = id;
 
-        return this.#server.sendRequest(openReq, REQUEST_ENDPOINTS.OPEN_SCREEN);
+        return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 
     /**
@@ -76,7 +76,7 @@ class API {
         const parameterReq = createSetScreenParameterRequest();
         parameterReq.componentId = screenName;
         parameterReq.parameter = parameter;
-        this.#server.sendRequest(parameterReq, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER);
+        this.#server.sendRequest(parameterReq, REQUEST_KEYWORDS.SET_SCREEN_PARAMETER);
     }
 
     /**
@@ -90,7 +90,7 @@ class API {
             csRequest.parameter = parameter;
         }
         //TODO topbar
-        this.#server.sendRequest(csRequest, REQUEST_ENDPOINTS.CLOSE_SCREEN).then(res => {
+        this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
             if (res[0] === undefined || res[0].name !== "message.error") {
                 if (popup) {
                     this.#server.lastClosedWasPopUp = true;
@@ -113,7 +113,7 @@ class API {
         this.#contentStore.insertDataProviderData(id, dataProvider);
         const insertReq = createInsertRecordRequest();
         insertReq.dataProvider = dataProvider;
-        this.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD);
+        this.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD);
     }
 
     /**
@@ -127,7 +127,7 @@ class API {
         const deleteReq = createSelectRowRequest();
         deleteReq.dataProvider = dataProvider;
         deleteReq.componentId = name;
-        this.sendRequest(deleteReq, REQUEST_ENDPOINTS.DELETE_RECORD);
+        this.sendRequest(deleteReq, REQUEST_KEYWORDS.DELETE_RECORD);
     }
 
     /**

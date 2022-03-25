@@ -1,13 +1,12 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
-import { useProperties, useAllDataProviderData, useAllRowSelect, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
+import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
 import BaseComponent from "../BaseComponent";
-import { appContext } from "../../AppProvider";
 import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
+import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
@@ -199,7 +198,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         values: Object.values(pkObj)
                     }
                     //TODO: try sendRequest with optional parameter
-                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
+                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_KEYWORDS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
                     .then((response:any) => response.json())
                     .then((fetchResponse:FetchResponse[]) => {
                         const builtData = context.server.buildDatasets(fetchResponse[0]);
@@ -282,7 +281,7 @@ const UITree: FC<ITree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = props.dataBooks
             selectReq.filter = selectedFilters;
-            showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_TREE), topbar);
+            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), topbar);
         }
     }
 
@@ -408,7 +407,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 columnNames: metaData!.masterReference!.referencedColumnNames,
                 values: [null]
             }
-            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 10000), topbar)
+            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_KEYWORDS.FETCH, context.server.buildReqOpts(fetchReq)), 10000), topbar)
             const fetchResponse = await response.json();
             context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
             const builtData = context.server.buildDatasets(fetchResponse[0])

@@ -7,7 +7,7 @@ import { appContext } from "../main/AppProvider";
 import ScreenManager from "./ScreenManager";
 import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
 import CorporateMenu from "./menu/corporateMenu";
-import { MenuVisibility, VisibleButtons } from "../main/AppSettings";
+import { MenuVisibility } from "../main/AppSettings";
 import { ApplicationSettingsResponse } from "../main/response";
 import { useParams } from "react-router";
 
@@ -138,6 +138,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     }, [props.children, context.subscriptions]);
 
     const CustomWrapper = props.customAppWrapper;
+
+    console.log('test')
 
     return (
         (CustomWrapper) ?

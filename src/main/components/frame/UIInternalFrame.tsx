@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayout
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanel";
@@ -92,7 +92,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         boundsReq.componentId = props.name;
         boundsReq.width = size.width;
         boundsReq.height = size.height;
-        context.server.sendRequest(boundsReq, REQUEST_ENDPOINTS.BOUNDS);
+        context.server.sendRequest(boundsReq, REQUEST_KEYWORDS.BOUNDS);
     }, [context.server, topbar])
 
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout

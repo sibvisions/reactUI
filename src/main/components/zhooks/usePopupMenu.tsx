@@ -1,10 +1,12 @@
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
-import { appContext, createComponentRequest, createPressButtonRequest, getClientId, REQUEST_ENDPOINTS } from "../../../moduleIndex";
+import { createComponentRequest, getClientId } from "../../../moduleIndex";
 import BaseComponent from "../BaseComponent";
 import { MenuItem } from "primereact/menuitem";
 import { parseIconData } from "../compprops";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
+import { REQUEST_KEYWORDS } from "../../request";
+import { appContext } from "../../AppProvider";
 
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;
@@ -41,7 +43,7 @@ function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context
                         command: () => {
                             const req = createDispatchActionRequest();
                             req.componentId = item.name;
-                            context.server.sendRequest(req, REQUEST_ENDPOINTS.DISPATCH_ACTION);
+                            context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON);
                         },
                         ...(items.length ? { items } : {})
                     }
@@ -79,7 +81,7 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
             context.server.sendRequest(createComponentRequest({
                 componentId: context.contentStore.flatContent.get(popup.current)?.name, 
                 clientId: getClientId()
-            }), REQUEST_ENDPOINTS.CLOSE_POPUP_MENU);
+            }), REQUEST_KEYWORDS.CLOSE_POPUP_MENU);
             popup.current = undefined;
             lastEvent.current = undefined;
         }

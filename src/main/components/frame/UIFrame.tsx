@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 import BaseComponent from "../BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { parseIconData } from "../compprops";
@@ -78,7 +78,7 @@ const UIFrame: FC<IFrame> = (props) => {
                         onClick={() => {
                             const closeReq = createCloseFrameRequest();
                             closeReq.componentId = props.name;
-                            showTopBar(context.server.sendRequest(closeReq, REQUEST_ENDPOINTS.CLOSE_FRAME), topbar);
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
                         }}
                     />}
                 </div>

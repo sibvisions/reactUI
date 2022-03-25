@@ -33,7 +33,6 @@ import { ApplicationMetaDataResponse,
          ContentResponse,
          CloseContentResponse} from "./response";
 import { createFetchRequest } from "./factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
@@ -42,10 +41,122 @@ import AppSettings from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import UIResponse from "./response/UIResponse";
+import { REQUEST_KEYWORDS } from "./request";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
     IMMEDIATE = "immediate"
+}
+
+
+/** Enum for server request endpoints */
+enum REQUEST_ENDPOINTS {
+    //application/UI
+    STARTUP = "/api/v4/startup",
+    UI_REFRESH = "/api/uiRefresh",
+    DEVICE_STATUS = "/api/deviceStatus",
+    CLOSE_FRAME = "/api/closeFrame",
+    OPEN_SCREEN = "/api/v2/openScreen",
+    CLOSE_SCREEN = "/api/closeScreen",
+    CLOSE_CONTENT = "/api/closeContent",
+    REOPEN_SCREEN = "/api/reopenScreen",
+
+    //login/account-management
+    LOGIN = "/api/v2/login",
+    LOGOUT = "/api/logout",
+    CHANGE_PASSWORD = "/api/changePassword",
+    RESET_PASSWORD = "/api/resetPassword",
+
+    //events
+    PRESS_BUTTON = "/api/v2/pressButton",
+    MOUSE_CLICKED = "/api/mouseClicked",
+    MOUSE_PRESSED = "/api/mousePressed",
+    MOUSE_RELEASED = "/api/mouseReleased",
+    FOCUS_GAINED = "/api/focusGained",
+    FOCUS_LOST = "/api/focusLost",
+    
+    //upload
+    UPLOAD = "/upload",
+
+    //data
+    METADATA = "/api/dal/metaData",
+    FETCH = "/api/dal/fetch",
+    SELECT_ROW = "/api/dal/selectRecord",
+    SELECT_TREE = "/api/dal/selectRecordTree",
+    SELECT_COLUMN = "/api/dal/selectColumn",
+    DELETE_RECORD = "/api/dal/deleteRecord",
+    INSERT_RECORD = "/api/dal/insertRecord",
+    SET_VALUES = "/api/dal/setValues",
+    FILTER = "/api/dal/filter",
+    DAL_SAVE = "/api/dal/save",
+    SORT = "/api/dal/sort",
+
+    //comp
+    SET_VALUE = "/api/comp/setValue",
+    SELECT_TAB = "/api/comp/selectTab",
+    CLOSE_TAB = "/api/comp/closeTab",
+    CLOSE_POPUP_MENU = "/api/comp/closePopupMenu ",
+    
+    //other
+    SAVE = "/api/save",
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    RELOAD = "/api/reload",
+    ROLLBACK = "/api/rollback",
+    CHANGES = "/api/changes",
+}
+
+/** Enum for server request endpoints version 2 */
+enum REQUEST_ENDPOINTS_V2 {
+    //application/UI
+    STARTUP = "/v2/api/startup",
+    EXIT = "/v2/api/exit",
+    DEVICE_STATUS="/v2/api/deviceStatus",
+    UI_REFRESH = "/v2/api/uiRefresh",
+    CLOSE_FRAME = "/v2/api/closeFrame",
+
+    //events
+    DISPATCH_ACTION = "/v2/api/dispatchAction",
+    MOUSE_CLICKED = "/v2/api/mouseClicked",
+    MOUSE_PRESSED = "/v2/api/mousePressed",
+    MOUSE_RELEASED = "/v2/api/mouseReleased",
+    FOCUS_GAINED = "/v2/api/focusGained",
+    FOCUS_LOST = "/v2/api/focusLost",
+
+    //data
+    METADATA="/v2/api/dal/metaData",
+    FETCH="/v2/api/dal/fetch",
+    SELECT_ROW = "/v2/api/dal/selectRecord",
+    SELECT_TREE = "/v2/api/dal/selectRecordTree",
+    SELECT_COLUMN = "/v2/api/dal/selectColumn",
+    DELETE_RECORD = "/v2/api/dal/deleteRecord",
+    INSERT_RECORD = "/v2/api/dal/insertRecord",
+    SET_VALUES = "/v2/api/dal/setValues",
+    FILTER = "/v2/api/dal/filter",
+    DAL_SAVE = "/v2/api/dal/save",
+    SORT = "/v2/api/dal/sort",
+
+    //comp
+    SET_VALUE = "/v2/api/comp/setValue",
+    SELECT_TAB = "/v2/api/comp/selectTab",
+    CLOSE_TAB = "/v2/api/comp/closeTab",
+    CLOSE_POPUP_MENU = "/v2/api/comp/closePopupMenu ",
+    BOUNDS = "/v2/api/comp/bounds",
+
+    //remaining v1
+    LOGIN = "/api/v2/login",
+    LOGOUT = "/api/logout",
+    CLOSE_SCREEN = "/api/closeScreen",
+    OPEN_SCREEN = "/api/v2/openScreen",
+    UPLOAD = "/upload",
+    CHANGE_PASSWORD = "/api/changePassword",
+    RESET_PASSWORD = "/api/resetPassword",
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    RELOAD = "/api/reload",
+    ROLLBACK = "/api/rollback",
+    CHANGES = "/api/changes",
+    CLOSE_CONTENT = "/api/closeContent",
+    REOPEN_SCREEN = "/api/reopenScreen",
+    SAVE = "/api/save"
 }
 
 /** Server class sends requests and handles responses */
@@ -79,6 +190,7 @@ class Server {
     subManager:SubscriptionManager;
     /** AppSettings instance */
     appSettings:AppSettings;
+
     /** the react routers history object */
     history?:History<any>;
     /** a map of still open requests */
@@ -102,7 +214,7 @@ class Server {
 
     lastClosedWasPopUp = false;
 
-    missingDataFetches:string[] = []
+    missingDataFetches:string[] = [];
 
     setAPI(api:API) {
         this.api = api;
@@ -158,6 +270,86 @@ class Server {
 
     /** ----------SENDING-REQUESTS---------- */
 
+    setEndPointMap(v= 1) {
+        const map = new Map<string, string>()
+        .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
+        .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
+        .set(REQUEST_KEYWORDS.CLOSE_CONTENT, REQUEST_ENDPOINTS.CLOSE_CONTENT)
+        .set(REQUEST_KEYWORDS.REOPEN_SCREEN, REQUEST_ENDPOINTS.REOPEN_SCREEN)
+        .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS_V2.EXIT)
+        .set(REQUEST_KEYWORDS.LOGIN, REQUEST_ENDPOINTS.LOGIN)
+        .set(REQUEST_KEYWORDS.LOGOUT, REQUEST_ENDPOINTS.LOGOUT)
+        .set(REQUEST_KEYWORDS.CHANGE_PASSWORD, REQUEST_ENDPOINTS.CHANGE_PASSWORD)
+        .set(REQUEST_KEYWORDS.RESET_PASSWORD, REQUEST_ENDPOINTS.RESET_PASSWORD)
+        .set(REQUEST_KEYWORDS.UPLOAD, REQUEST_ENDPOINTS.UPLOAD)
+        .set(REQUEST_KEYWORDS.BOUNDS, REQUEST_ENDPOINTS_V2.BOUNDS)
+        .set(REQUEST_KEYWORDS.SAVE, REQUEST_ENDPOINTS.SAVE)
+        .set(REQUEST_KEYWORDS.SET_SCREEN_PARAMETER, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER)
+        .set(REQUEST_KEYWORDS.RELOAD, REQUEST_ENDPOINTS.RELOAD)
+        .set(REQUEST_KEYWORDS.ROLLBACK, REQUEST_ENDPOINTS.ROLLBACK)
+        .set(REQUEST_KEYWORDS.CHANGES, REQUEST_ENDPOINTS.CHANGES)
+        if (v === 1) {
+            map
+            .set(REQUEST_KEYWORDS.STARTUP, REQUEST_ENDPOINTS.STARTUP)
+            .set(REQUEST_KEYWORDS.UI_REFRESH, REQUEST_ENDPOINTS.UI_REFRESH)
+            .set(REQUEST_KEYWORDS.DEVICE_STATUS, REQUEST_ENDPOINTS.DEVICE_STATUS)
+            .set(REQUEST_KEYWORDS.CLOSE_FRAME, REQUEST_ENDPOINTS.CLOSE_FRAME)
+            .set(REQUEST_KEYWORDS.PRESS_BUTTON, REQUEST_ENDPOINTS.PRESS_BUTTON)
+            .set(REQUEST_KEYWORDS.MOUSE_CLICKED, REQUEST_ENDPOINTS.MOUSE_CLICKED)
+            .set(REQUEST_KEYWORDS.MOUSE_PRESSED, REQUEST_ENDPOINTS.MOUSE_PRESSED)
+            .set(REQUEST_KEYWORDS.MOUSE_RELEASED, REQUEST_ENDPOINTS.MOUSE_RELEASED)
+            .set(REQUEST_KEYWORDS.FOCUS_GAINED, REQUEST_ENDPOINTS.FOCUS_GAINED)
+            .set(REQUEST_KEYWORDS.FOCUS_LOST, REQUEST_ENDPOINTS.FOCUS_LOST)
+            .set(REQUEST_KEYWORDS.METADATA, REQUEST_ENDPOINTS.METADATA)
+            .set(REQUEST_KEYWORDS.FETCH, REQUEST_ENDPOINTS.FETCH)
+            .set(REQUEST_KEYWORDS.SELECT_ROW, REQUEST_ENDPOINTS.SELECT_ROW)
+            .set(REQUEST_KEYWORDS.SELECT_TREE, REQUEST_ENDPOINTS.SELECT_TREE)
+            .set(REQUEST_KEYWORDS.SELECT_COLUMN, REQUEST_ENDPOINTS.SELECT_COLUMN)
+            .set(REQUEST_KEYWORDS.DELETE_RECORD, REQUEST_ENDPOINTS.DELETE_RECORD)
+            .set(REQUEST_KEYWORDS.INSERT_RECORD, REQUEST_ENDPOINTS.INSERT_RECORD)
+            .set(REQUEST_KEYWORDS.SET_VALUES, REQUEST_ENDPOINTS.SET_VALUES)
+            .set(REQUEST_KEYWORDS.FILTER, REQUEST_ENDPOINTS.FILTER)
+            .set(REQUEST_KEYWORDS.DAL_SAVE, REQUEST_ENDPOINTS.DAL_SAVE)
+            .set(REQUEST_KEYWORDS.SORT, REQUEST_ENDPOINTS.SORT)
+            .set(REQUEST_KEYWORDS.SET_VALUE, REQUEST_ENDPOINTS.SET_VALUE)
+            .set(REQUEST_KEYWORDS.SELECT_TAB, REQUEST_ENDPOINTS.SELECT_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
+        }
+        else {
+            map
+            .set(REQUEST_KEYWORDS.STARTUP, REQUEST_ENDPOINTS_V2.STARTUP)
+            .set(REQUEST_KEYWORDS.UI_REFRESH, REQUEST_ENDPOINTS_V2.UI_REFRESH)
+            .set(REQUEST_KEYWORDS.DEVICE_STATUS, REQUEST_ENDPOINTS_V2.DEVICE_STATUS)
+            .set(REQUEST_KEYWORDS.CLOSE_FRAME, REQUEST_ENDPOINTS_V2.CLOSE_FRAME)
+            .set(REQUEST_KEYWORDS.PRESS_BUTTON, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION)
+            .set(REQUEST_KEYWORDS.MOUSE_CLICKED, REQUEST_ENDPOINTS_V2.MOUSE_CLICKED)
+            .set(REQUEST_KEYWORDS.MOUSE_PRESSED, REQUEST_ENDPOINTS_V2.MOUSE_PRESSED)
+            .set(REQUEST_KEYWORDS.MOUSE_RELEASED, REQUEST_ENDPOINTS_V2.MOUSE_RELEASED)
+            .set(REQUEST_KEYWORDS.FOCUS_GAINED, REQUEST_ENDPOINTS_V2.FOCUS_GAINED)
+            .set(REQUEST_KEYWORDS.FOCUS_LOST, REQUEST_ENDPOINTS_V2.FOCUS_LOST)
+            .set(REQUEST_KEYWORDS.METADATA, REQUEST_ENDPOINTS_V2.METADATA)
+            .set(REQUEST_KEYWORDS.FETCH, REQUEST_ENDPOINTS_V2.FETCH)
+            .set(REQUEST_KEYWORDS.SELECT_ROW, REQUEST_ENDPOINTS_V2.SELECT_ROW)
+            .set(REQUEST_KEYWORDS.SELECT_TREE, REQUEST_ENDPOINTS_V2.SELECT_TREE)
+            .set(REQUEST_KEYWORDS.SELECT_COLUMN, REQUEST_ENDPOINTS_V2.SELECT_COLUMN)
+            .set(REQUEST_KEYWORDS.DELETE_RECORD, REQUEST_ENDPOINTS_V2.DELETE_RECORD)
+            .set(REQUEST_KEYWORDS.INSERT_RECORD, REQUEST_ENDPOINTS_V2.INSERT_RECORD)
+            .set(REQUEST_KEYWORDS.SET_VALUES, REQUEST_ENDPOINTS_V2.SET_VALUES)
+            .set(REQUEST_KEYWORDS.FILTER, REQUEST_ENDPOINTS_V2.FILTER)
+            .set(REQUEST_KEYWORDS.DAL_SAVE, REQUEST_ENDPOINTS_V2.DAL_SAVE)
+            .set(REQUEST_KEYWORDS.SORT, REQUEST_ENDPOINTS_V2.SORT)
+            .set(REQUEST_KEYWORDS.SET_VALUE, REQUEST_ENDPOINTS_V2.SET_VALUE)
+            .set(REQUEST_KEYWORDS.SELECT_TAB, REQUEST_ENDPOINTS_V2.SELECT_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS_V2.CLOSE_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS_V2.CLOSE_POPUP_MENU)
+        }
+        return map
+    }
+
+    endpointMap = this.setEndPointMap();
+
+
     /**
      * Sends a request to the server and handles its response, if there are jobs in the
      * SubscriptionManagers JobQueue, call them after the response handling is complete
@@ -181,15 +373,16 @@ class Server {
         let promise = new Promise<any>((resolve, reject) => {
             if (
                 request.componentId 
-                && endpoint !== REQUEST_ENDPOINTS.OPEN_SCREEN 
-                && endpoint !== REQUEST_ENDPOINTS.CLOSE_FRAME 
+                && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
+                && endpoint !== REQUEST_KEYWORDS.CLOSE_FRAME 
                 && !this.componentExists(request.componentId)
             ) {
                 reject("Component doesn't exist");
             } else {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
+                    let finalEndpoint = this.endpointMap.get(endpoint)
                     this.timeoutRequest(
-                        fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 
+                        fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         10000, 
                         () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
                     )
@@ -649,14 +842,14 @@ class Server {
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
+                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
             } 
             else if(changedProvider.reload !== undefined) {
                 const fetchReq = createFetchRequest();
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
+                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
             }
             else {
                 const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
@@ -714,7 +907,7 @@ class Server {
                 credentials:"include",
             };
 
-            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.UPLOAD, reqOpt), 10000)
+            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_KEYWORDS.UPLOAD, reqOpt), 10000)
                 .then((response: any) => response.json())
                 .then(this.responseHandler.bind(this))
                 .catch(error => console.error(error));
@@ -810,7 +1003,7 @@ class Server {
         .then(value => parseString(value, (err, result) => { 
             if (result) {
                 result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-                //this.appSettings.setAppReadyParam("translation");
+                this.appSettings.setAppReadyParam("translation");
                 this.subManager.emitTranslation();
             }
         }));
@@ -892,11 +1085,11 @@ class Server {
         let highestPriority = 0;
 
         responses.forEach(response => {
-            if (response.name === RESPONSE_NAMES.USER_DATA || response.name === RESPONSE_NAMES.UI) {
+            if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    //this.appSettings.setAppReadyParam("userOrLogin");
+                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
@@ -943,20 +1136,18 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
-                    //this.appSettings.setAppReadyParam("userOrLogin");
+                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
-            //    else if (response.name === "settings") {
-            //        routeTo = "home/settings";
-            //    }
         });
-
 
         if (routeTo) {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
         }
     }
+
+    /// V2
 
     handleUIResponse(uiData:UIResponse) {
         let firstComp:IPanel|undefined

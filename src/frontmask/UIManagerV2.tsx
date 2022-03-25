@@ -1,22 +1,18 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
-import { MenuVisibility, VisibleButtons } from "../main/AppSettings";
+import { appContext } from "../main/AppProvider";
+import { MenuVisibility } from "../main/AppSettings";
 import { concatClassnames } from "../main/components/util";
 import { ApplicationSettingsResponse } from "../main/response";
-import { appContext, useDeviceStatus } from "../moduleIndex";
 import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
 import ScreenManager from "./ScreenManager";
-import { isCorporation, IUIManagerProps, ResizeContext } from "./UIManager";
+import { isCorporation, ResizeContext } from "./UIManager";
 
-const UIManagerV2: FC<IUIManagerProps> = (props) => {
+const UIManagerV2: FC<any> = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
-
-    /** State of button-visibility */
-    const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
     /** True, if the session is expired */
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
@@ -27,12 +23,6 @@ const UIManagerV2: FC<IUIManagerProps> = (props) => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
-    /** ComponentId of Screen extracted by useParams hook */
-    const { componentId } = useParams<any>();
-
-    /** The current state of device-status */
-    const deviceStatus = useDeviceStatus();
-
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     useEffect(() => {
@@ -40,12 +30,6 @@ const UIManagerV2: FC<IUIManagerProps> = (props) => {
             setMenuVisibility({
                 menuBar: appSettings.menuBar,
                 toolBar: appSettings.toolBar
-            });
-
-            setVisibleButtons({
-                reload: appSettings.reload,
-                rollback: appSettings.rollback,
-                save: appSettings.save
             });
         });
 
@@ -58,12 +42,6 @@ const UIManagerV2: FC<IUIManagerProps> = (props) => {
                 setMenuVisibility({
                     menuBar: appSettings.menuBar,
                     toolBar: appSettings.toolBar
-                });
-
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
                 });
             });
             context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));

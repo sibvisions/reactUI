@@ -5,6 +5,8 @@ export interface BaseMenuButton {
     componentId: string,
     text: string,
     image:string,
+    enabled?: boolean,
+    className?: string
     action?: () => Promise<any>
 }
 

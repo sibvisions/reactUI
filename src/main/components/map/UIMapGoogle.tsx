@@ -18,7 +18,7 @@ import { IMap } from ".";
 import { IconProps } from "../compprops";
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 
 /**
  * This component displays a map view with Google Maps
@@ -108,11 +108,11 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         fetchG.dataProvider = props.groupDataBook;
         fetchG.fromRow = 0;
         if (props.pointsDataBook) {
-            context.server.sendRequest(fetchP, REQUEST_ENDPOINTS.FETCH);
+            context.server.sendRequest(fetchP, REQUEST_KEYWORDS.FETCH);
         }
 
         if (props.groupDataBook) {
-            context.server.sendRequest(fetchG, REQUEST_ENDPOINTS.FETCH);
+            context.server.sendRequest(fetchG, REQUEST_KEYWORDS.FETCH);
         }
     }, []);
 

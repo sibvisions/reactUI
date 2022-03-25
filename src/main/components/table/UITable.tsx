@@ -13,7 +13,7 @@ import { useDataProviderData,
          useComponentConstants} from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
+import { SortDefinition, SelectFilter, REQUEST_KEYWORDS } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../util";
 import { showTopBar } from "../topbar/TopBar";
@@ -253,7 +253,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.rowNumber = rowIndex;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
     }, [props.dataBook, props.name, context.server])
 
     /**
@@ -900,7 +900,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
                 fetchReq.rowCount = length * 4;
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar).then(() => {
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then(() => {
                     setListLoading(false);
                 });
             } else {
@@ -1045,7 +1045,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     context.contentStore.insertDataProviderData(screenName, props.dataBook);
                     const insertReq = createInsertRecordRequest();
                     insertReq.dataProvider = props.dataBook;
-                    showTopBar(context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD), topbar);
+                    showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
                 }
                 break;
             case "Delete":
@@ -1054,7 +1054,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const selectReq = createSelectRowRequest();
                     selectReq.dataProvider = props.dataBook;
                     selectReq.componentId = props.name;
-                    showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.DELETE_RECORD), topbar)
+                    showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
                 }
         }
     }
@@ -1080,7 +1080,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
         }
         sortReq.sortDefinition = sortDefToSend;
-        showTopBar(context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT), topbar);
+        showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
     }
 
     /** Column-resize handler */

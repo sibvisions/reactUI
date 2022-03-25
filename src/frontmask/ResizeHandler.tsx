@@ -6,7 +6,7 @@ import { ChildWithProps } from "../main/components/util";
 import { useEventHandler } from "../main/components/zhooks";
 import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
 import { LayoutContext } from "../main/LayoutContext";
-import { REQUEST_ENDPOINTS } from "../main/request";
+import { REQUEST_KEYWORDS } from "../main/request";
 import { isCorporation, ResizeContext } from "./UIManager";
 
 /**
@@ -112,7 +112,7 @@ const ResizeHandler:FC = (props) => {
         const deviceStatusReq = createDeviceStatusRequest();
         deviceStatusReq.screenHeight = window.innerHeight;
         deviceStatusReq.screenWidth = window.innerWidth;
-        context.server.sendRequest(deviceStatusReq, REQUEST_ENDPOINTS.DEVICE_STATUS);
+        context.server.sendRequest(deviceStatusReq, REQUEST_KEYWORDS.DEVICE_STATUS);
     },150);
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */

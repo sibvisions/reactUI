@@ -1,5 +1,5 @@
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
+import { REQUEST_KEYWORDS } from "../../request";
 
 /**
  * Sends fetch requests, for the groups and points of a map, to the server
@@ -14,7 +14,7 @@ export async function sendMapFetchRequests(groupDataProvider:string, pointDataPr
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = dataProvider;
             fetchReq.fromRow = 0;
-            server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH).then(() => resolve());
+            server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => resolve());
         })
     }
 
