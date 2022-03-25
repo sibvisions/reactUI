@@ -37,7 +37,7 @@ import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
-import AppSettings from "./AppSettings";
+import AppSettings, { appVersion } from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import UIResponse from "./response/UIResponse";
@@ -713,7 +713,18 @@ class Server {
     //Dal
 
     getScreenName(dataProvider:string) {
-        return dataProvider.split("/")[1];
+        if (appVersion.version === 2) {
+            return dataProvider.split("/")[1];
+        }
+        else {
+            const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
+            if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
+                return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+            }
+            else {
+                return dataProvider.split("/")[1];
+            }
+        }
     }
 
     /**

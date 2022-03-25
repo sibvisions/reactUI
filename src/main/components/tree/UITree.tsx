@@ -11,6 +11,7 @@ import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { appVersion } from "../../AppSettings";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -198,7 +199,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         values: Object.values(pkObj)
                     }
                     //TODO: try sendRequest with optional parameter
-                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_KEYWORDS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
+                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 5000)
                     .then((response:any) => response.json())
                     .then((fetchResponse:FetchResponse[]) => {
                         const builtData = context.server.buildDatasets(fetchResponse[0]);
@@ -407,7 +408,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 columnNames: metaData!.masterReference!.referencedColumnNames,
                 values: [null]
             }
-            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_KEYWORDS.FETCH, context.server.buildReqOpts(fetchReq)), 10000), topbar)
+            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 10000), topbar)
             const fetchResponse = await response.json();
             context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
             const builtData = context.server.buildDatasets(fetchResponse[0])

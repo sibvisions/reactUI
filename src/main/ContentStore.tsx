@@ -533,10 +533,8 @@ export default class ContentStore{
     closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
         let window = this.getComponentByName(windowName);
 
-        if (window) {
-            if (window && !closeContent) {
-                this.cleanUp(window.id, window.name, window.className);
-            }
+        if (window && !closeContent) {
+            this.cleanUp(window.id, window.name, window.className);
         }
 
         this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
@@ -556,10 +554,10 @@ export default class ContentStore{
      * @param id - the id of the parent
      */
     deleteChildren(id:string, className: string) {
-        const children = Array.from(this.getChildren(id, className).values());
-        children.forEach((child, i) => {
+        const children = this.getChildren(id, className);
+        children.forEach(child => {
             this.deleteChildren(child.id, child.className);
-            this.flatContent.delete(child.id);   
+            this.flatContent.delete(child.id);
         });
 
         this.subManager.parentSubscriber.get(id)?.apply(undefined, []);
@@ -718,6 +716,7 @@ export default class ContentStore{
             if (parentId && parentId.includes("-frame-tb")) {
                 parentId = parentId.substring(0, parentId.indexOf("-"));
             }
+
             if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
                 if (parentId.includes("TP")) {
                     children.set(value.id, value);
