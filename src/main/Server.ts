@@ -382,7 +382,6 @@ class Server {
                 reject("Component doesn't exist");
             } else {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
-                    console.log(this.timeoutMs)
                     let finalEndpoint = this.endpointMap.get(endpoint)
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 

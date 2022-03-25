@@ -8,6 +8,7 @@ import { useEventHandler } from ".";
 import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { addCSSDynamically, Timer } from "../util";
+import { appVersion } from "../../AppSettings";
 
 /**
  * Sends and handles the startup of the application
@@ -416,15 +417,30 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (data.version) {
                     context.appSettings.version = parseInt(data.version);
                     context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
+                    appVersion.version = parseInt(data.version)
                 }
 
-                setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+                //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+            }).then(() => {
+                fetch('devconfig.json').then((r) => r.json()).then((data) => {
+                    if (data.timeout) {
+                        context.server.timeoutMs = parseInt(data.timeout)
+                    }
+                })
+                .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+                .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
             }).catch(() => {
                 setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             });
         }
         else {
-            setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
+            fetch('devconfig.json').then((r) => r.json()).then((data) => {
+                if (data.timeout) {
+                    context.server.timeoutMs = parseInt(data.timeout)
+                }
+            })
+            .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
+            .catch(() => () => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
         }
 
         return () => {
