@@ -548,11 +548,21 @@ class Server {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses)) {
-            responses.forEach((response, idx) => {
-                if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
-                    responses.splice(0, 0, responses.splice(idx, 1)[0]);
+            responses.sort((a, b) => {
+                if ((a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED)
+                    || (a.name === RESPONSE_NAMES.SCREEN_GENERIC && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.SCREEN_GENERIC))) {
+                    return -1;
                 }
-                else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
+                else if ((b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED)
+                || (b.name === RESPONSE_NAMES.SCREEN_GENERIC && (a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.SCREEN_GENERIC))) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            });
+            responses.forEach((response) => {
+                if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
                     isOpen = true;
                 }
             });
@@ -569,7 +579,9 @@ class Server {
                     
                 }
             }
-            this.routingDecider(responses);
+            if (this.appSettings.version !== 2) {
+                this.routingDecider(responses);
+            }
         }
 
         return responses;
@@ -653,7 +665,6 @@ class Server {
                         this.contentStore.navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
                         this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
                     }
-
                     this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
 
                     if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {

@@ -1,4 +1,4 @@
-import React, {FC, ReactElement, useCallback, useContext, useEffect, useState} from "react";
+import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import { appContext } from "../../main/AppProvider";
 import { ActiveScreen } from "../../main/ContentStore";
 import { DesktopPanelHandler } from "../login/login";
@@ -24,21 +24,16 @@ const WorkScreen: FC = () => {
     }, [context.contentStore]);
 
     /** The screens which need to be rendered */
-    const [renderedScreens, setRenderedScreens] = useState<Array<ReactElement>>(buildWindow(activeScreens))
+    const renderedScreens = useMemo(() => buildWindow(activeScreens), [activeScreens]);
 
     // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
     useEffect(() => {
-        context.subscriptions.subscribeToActiveScreens((activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
+        context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
         return () => {
-            context.subscriptions.unsubscribeFromActiveScreens((activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
+            context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
     },[context.subscriptions])
-
-    // When the active-screens change, build the windows and set them set the rendered screens state
-    useEffect(() => {
-        setRenderedScreens([...buildWindow(activeScreens)]);
-    }, [activeScreens]);
 
     return (
         <ResizeHandler>

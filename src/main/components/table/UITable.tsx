@@ -927,7 +927,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //reverse prime fit sizing
                 let newColumnWidth = e.element.offsetWidth - e.delta;
                 let nextColumn = e.element.nextElementSibling;
-                let nextColumnWidth = nextColumn.offsetWidth + e.delta;
+                let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
 
                 if (newColumnWidth > 15 && nextColumnWidth > 15) {
                     table.resizeTableCells(newColumnWidth, nextColumnWidth);
@@ -1132,7 +1132,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;              
             }
         }
-    }, [layoutStyle?.width]);
+    }, []);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

@@ -175,6 +175,10 @@
     .p-datatable-emptymessage {
         display: none;
     }
+
+    .p-virtualscroller-content {
+        contain: unset;
+    }
 }
 
 .loading-text {

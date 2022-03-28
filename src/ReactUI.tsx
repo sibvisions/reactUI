@@ -19,7 +19,6 @@ import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
 import UIManagerV2 from './frontmask/UIManagerV2';
 import { appContext } from './main/AppProvider';
-import Server from './main/Server';
 
 
 /**
@@ -35,25 +34,34 @@ const ReactUI: FC<ICustomContent> = (props) => {
     PrimeReact.ripple = true;
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
-    return (
-        <AppWrapper>
-            {appReady ?
-                <>
+    if (context.appSettings.version === 2) {
+        return (
+            <AppWrapper>
+                {appReady ?
                     <Switch>
-                        {context.appSettings.version !== 2 &&
-                            <>
-                                <Route exact path={"/login"} render={() => <Login />} />
-                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                                <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                            </>
-                        }
-                        {context.appSettings.version === 2 && <Route path={""} render={() => <UIManagerV2 />} />}
+                        <Route path={""} render={() => <UIManagerV2 />} />
                     </Switch>
-                </>
-                :
-                <LoadingScreen />
-            }
-        </AppWrapper>
-    );
+                    :
+                    <LoadingScreen />
+                }
+            </AppWrapper>
+        )
+    }
+    else {
+        return (
+            <AppWrapper>
+                {appReady ?
+                    <Switch>
+                            <Route exact path={"/login"} render={() => <Login />} />
+                            <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                            <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                    </Switch>
+                    :
+                    <LoadingScreen />
+                }
+            </AppWrapper>
+        );
+    }
+
 }
 export default ReactUI;

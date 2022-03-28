@@ -126,7 +126,7 @@ export class SubscriptionManager {
     closeFrameSubscriber:Function = () => {};
 
     /** An array of functions to update the active-screen subscriber */
-    activeScreenSubscriber = new Array<Function>();
+    activeScreenSubscriber = new Map<string, Function>();
 
     restartSubscriber = new Array<Function>();
 
@@ -394,10 +394,11 @@ export class SubscriptionManager {
 
     /**
      * Subscribes to the active-screens, to have the active-screens
+     * @param key - key of which component gets added to the subscription
      * @param fn - the function to update the toolbar-items
      */
-     subscribeToActiveScreens(fn: Function) {
-        this.activeScreenSubscriber.push(fn);
+     subscribeToActiveScreens(key:string, fn: Function) {
+        this.activeScreenSubscriber.set(key, fn);
     }
 
     subscribeToRestart(fn:Function) {
@@ -602,8 +603,8 @@ export class SubscriptionManager {
     /**
      * Unsubscribes from active-screens
      */
-     unsubscribeFromActiveScreens(fn:Function) {
-        this.activeScreenSubscriber.splice(this.activeScreenSubscriber.findIndex(subFunction => subFunction === fn), 1);
+     unsubscribeFromActiveScreens(key:string) {
+        this.activeScreenSubscriber.delete(key);
     }
 
     unsubscribeFromRestart(fn:Function) {
