@@ -40,8 +40,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
             {appReady ?
                 <>
                     <Switch>
-                        {context.appSettings.version !== 2 && <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />}
-                        {context.appSettings.version !== 2 && <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />}
+                        {context.appSettings.version !== 2 &&
+                            <>
+                                <Route exact path={"/login"} render={() => <Login />} />
+                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                                <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                            </>
+                        }
                         {context.appSettings.version === 2 && <Route path={""} render={() => <UIManagerV2 />} />}
                     </Switch>
                 </>
