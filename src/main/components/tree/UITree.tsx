@@ -10,7 +10,7 @@ import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
 import { appVersion } from "../../AppSettings";
 
 /** Interface for Tree */

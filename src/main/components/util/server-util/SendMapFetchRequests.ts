@@ -1,5 +1,5 @@
-import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
+import { createFetchRequest } from "../../../factories/RequestFactory";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /**
  * Sends fetch requests, for the groups and points of a map, to the server

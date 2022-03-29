@@ -2,7 +2,7 @@ import React, { FC, ReactElement, useContext } from "react"
 import { useParams } from "react-router";
 import { appContext } from "../../AppProvider"
 import { getScreenIdFromNavigation } from "../util";
-import WorkScreen from "../../../application-frame/workscreen/WorkScreen";
+import WorkScreen from "../../../application-frame/screen-management/workscreen/WorkScreen";
 
 /** This component for global screen-wrapppers, decides wether the screen should display a screen-wrapper or just the workscreen */
 const ScreenWrapperManager:FC = () => {

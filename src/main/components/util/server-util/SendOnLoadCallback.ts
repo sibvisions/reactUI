@@ -1,6 +1,6 @@
-import { Dimension } from ".";
-import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { Dimension } from "..";
+import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
+import { CELLEDITOR_CLASSNAMES } from "../../editors";
 
 /**
  * Checks if the preferred size isn't to small or to big for its minimum/maximum size

@@ -6,7 +6,7 @@ import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 
 /** UI imports */
-import UIManager from "./application-frame/UIManager";
+import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
 import Login from "./application-frame/login/login";
 import LoadingScreen from './application-frame/loading/loadingscreen';
 

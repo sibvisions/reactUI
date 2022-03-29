@@ -176,7 +176,6 @@ class Server {
         this.history = history;
         this.openRequests = new Map<any, Promise<any>>();
         this.api = new API(this, store, appSettings, subManager, history);
-        console.log(appVersion.version)
     }
 
     /** Base url for requests */
@@ -437,7 +436,7 @@ class Server {
                                 this.subManager.emitErrorDialogVisible(true);
                             }
                             reject(error);
-                            //console.error(error);
+                            console.error(error);
                         }).finally(() => {
                             this.openRequests.delete(request);
                         });
@@ -550,12 +549,14 @@ class Server {
         // to prevent flickering of components.
         if (Array.isArray(responses)) {
             responses.sort((a, b) => {
-                if ((a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED)
-                    || (a.name === RESPONSE_NAMES.SCREEN_GENERIC && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.SCREEN_GENERIC))) {
+                if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN
+                    || (a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.CLOSE_SCREEN))
+                    || (a.name === RESPONSE_NAMES.SCREEN_GENERIC && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.SCREEN_GENERIC && b.name !== RESPONSE_NAMES.CLOSE_SCREEN))) {
                     return -1;
                 }
-                else if ((b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED)
-                || (b.name === RESPONSE_NAMES.SCREEN_GENERIC && (a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.SCREEN_GENERIC))) {
+                else if (b.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN
+                    || (b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.CLOSE_SCREEN)
+                    || (b.name === RESPONSE_NAMES.SCREEN_GENERIC && (a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.SCREEN_GENERIC && a.name !== RESPONSE_NAMES.CLOSE_SCREEN))) {
                     return 1;
                 }
                 else {
@@ -1165,7 +1166,6 @@ class Server {
                 }
             }
         });
-
         if (routeTo) {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);

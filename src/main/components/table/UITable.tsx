@@ -17,7 +17,7 @@ import { SortDefinition, SelectFilter, REQUEST_KEYWORDS } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../util";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";

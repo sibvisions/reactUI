@@ -1,6 +1,6 @@
-import { createDALSaveRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
-import Server from "../../Server";
+import { createDALSaveRequest } from "../../../factories/RequestFactory";
+import { REQUEST_KEYWORDS } from "../../../request";
+import Server from "../../../Server";
 
 /**
  * Sends a saveRequest to the server

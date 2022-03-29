@@ -1,6 +1,6 @@
-import { createFocusGainedRequest, createFocusLostRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
-import Server from "../../Server";
+import { createFocusGainedRequest, createFocusLostRequest } from "../../../factories/RequestFactory";
+import { REQUEST_KEYWORDS } from "../../../request";
+import Server from "../../../Server";
 
 /**
  * Sends a focus-gained-request to the server

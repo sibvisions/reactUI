@@ -7,7 +7,7 @@ import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
 import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
-import { checkSizes } from "../util/SendOnLoadCallback";
+import { checkSizes } from "../util/server-util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../zhooks";
 import UIFrame from "./UIFrame";
 

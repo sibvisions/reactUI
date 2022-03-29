@@ -2,7 +2,7 @@ import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled, getTabIndex, concatClassnames } from "../util";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
 interface ITextArea extends ITextField {

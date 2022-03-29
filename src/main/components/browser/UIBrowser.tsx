@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
 import BaseComponent from "../BaseComponent";
 import { checkComponentName, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
 

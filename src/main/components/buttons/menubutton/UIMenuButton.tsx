@@ -8,7 +8,7 @@ import { parseIconData } from "../../comp-props";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
 import { REQUEST_KEYWORDS } from "../../../request";
 

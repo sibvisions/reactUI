@@ -1,7 +1,7 @@
-import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
-import Server from "../../Server";
-import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
-import { showTopBar, TopBarContextType } from "../topbar/TopBar";
+import { REQUEST_KEYWORDS, SelectFilter } from "../../../request";
+import Server from "../../../Server";
+import { createSetValueRequest, createSetValuesRequest } from "../../../factories/RequestFactory";
+import { showTopBar, TopBarContextType } from "../../topbar/TopBar";
 
 /**
  * Builds a setValuesRequest and sends it to the server

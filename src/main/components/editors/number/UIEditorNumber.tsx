@@ -16,7 +16,7 @@ import { getDecimalLength,
          checkComponentName,
          getTabIndex} from "../../util";
 import { getTextAlignment } from "../../comp-props";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { isCellEditorReadOnly } from "../text/UIEditorText";

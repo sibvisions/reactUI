@@ -1,13 +1,13 @@
 /** React imports */
 import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
-import { appContext } from "../main/AppProvider";
-import { ChildWithProps } from "../main/components/util";
-import { useEventHandler } from "../main/components/zhooks";
-import { createDeviceStatusRequest } from "../main/factories/RequestFactory";
-import { LayoutContext } from "../main/LayoutContext";
-import { REQUEST_KEYWORDS } from "../main/request";
-import { isCorporation, ResizeContext } from "./UIManager";
+import { appContext } from "../../main/AppProvider";
+import { ChildWithProps } from "../../main/components/util";
+import { useEventHandler } from "../../main/components/zhooks";
+import { createDeviceStatusRequest } from "../../main/factories/RequestFactory";
+import { LayoutContext } from "../../main/LayoutContext";
+import { REQUEST_KEYWORDS } from "../../main/request";
+import { isCorporation, ResizeContext } from "./ui-manager/UIManager";
 
 /**
  * This component handles the screen-size it measures the first container so the panels below can be calculated

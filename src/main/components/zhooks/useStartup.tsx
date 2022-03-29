@@ -9,7 +9,6 @@ import { BaseResponse, RESPONSE_NAMES } from "../../response";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import { addCSSDynamically, Timer } from "../util";
 import { appVersion } from "../../AppSettings";
-import Server from "../../Server";
 
 /**
  * Sends and handles the startup of the application
@@ -33,6 +32,8 @@ const useStartup = (props:ICustomContent):boolean => {
     const relaunchArguments = useRef<any>(null);
 
     const ws = useRef<WebSocket|null>(null);
+
+    const ws2 = useRef<WebSocket|null>(null);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -101,8 +102,6 @@ const useStartup = (props:ICustomContent):boolean => {
         let themeToSet = "";
         let schemeToSet = "";
         let designToSet = "";
-        let baseUrlToSet = "";
-        let timeOutToSet:number|undefined = undefined
 
         if (props.onStartup) {
             props.onStartup();
@@ -178,6 +177,13 @@ const useStartup = (props:ICustomContent):boolean => {
             //         }
             //     }
             // }, 5000);
+            
+
+            // ws2.current = new WebSocket("ws://localhost:666");
+            // ws2.current.onopen = () => {
+            //     console.log('ws2 opened')
+            //     ws2.current!.send("test")
+            // };
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {
@@ -204,35 +210,16 @@ const useStartup = (props:ICustomContent):boolean => {
 
         const setStartupProperties = (startupReq:StartupRequest, options?:URLSearchParams|{ [key:string]:any }) => {
             if (options) {
-                let convertedOptions:Map<string, any> = options instanceof URLSearchParams ? new Map(options) : new Map(Object.entries(options));
+                let convertedOptions:Map<string, any>;
                 let appName;
                 let baseUrl;
 
-                if (convertedOptions.has("version")) {
-                    context.appSettings.version = parseInt(convertedOptions.get("version"));
-                    appVersion.version = parseInt(convertedOptions.get("version"));
+                if (options instanceof URLSearchParams) {
+                    convertedOptions = new Map(options);
                 }
-
-                context.server = new Server(context.contentStore, context.subscriptions, context.appSettings)
-                context.server.setAPI(context.api);
-                if (timeOutToSet) {
-                    context.server.timeoutMs = timeOutToSet;
-                }
-
-                if (props.onMenu) {
-                    context.server.setOnMenuFunction(props.onMenu);
-                }
-        
-                if (props.onOpenScreen) {
-                    context.server.setOnOpenScreenFunction(props.onOpenScreen);
-                }
-        
-                if (props.onLogin) {
-                    context.server.setOnLoginFunction(props.onLogin);
-                }
-
-                if (props.embedOptions) {
+                else {
                     context.server.embedOptions = options;
+                    convertedOptions = new Map(Object.entries(options));
                 }
 
                 if (convertedOptions.has("appName")) {
@@ -249,17 +236,17 @@ const useStartup = (props:ICustomContent):boolean => {
                     if (baseUrl.charAt(baseUrl.length - 1) === "/") {
                         baseUrl = baseUrl.substring(0, baseUrl.length - 1);
                     }
-                    baseUrlToSet = baseUrl;
+                    context.server.BASE_URL = baseUrl;
                     convertedOptions.delete("baseUrl");
                 }
                 else if (process.env.NODE_ENV === "production") {
                     const splitURLPath = window.location.pathname.split("/");
 
                     if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/services/mobile"
                     }
                     else if (splitURLPath[1]) {
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                        context.server.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
                     }
                 }
 
@@ -322,6 +309,12 @@ const useStartup = (props:ICustomContent):boolean => {
                     addCSSDynamically('design/' + designToSet + ".css", "designCSS", context.appSettings);
                 }
 
+                if (convertedOptions.has("version")) {
+                    context.appSettings.version = parseInt(convertedOptions.get("version"));
+                    context.server.endpointMap = context.server.setEndPointMap(parseInt(convertedOptions.get("version")));
+                    appVersion.version = parseInt(convertedOptions.get("version"));
+                }
+
                 convertedOptions.forEach((v, k) => {
                     startupReq[k] = v;
                 });
@@ -337,8 +330,6 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (context.contentStore.customStartUpProperties.length) {
                     context.contentStore.customStartUpProperties.map(customProp => startupReq["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
                 }
-
-                context.server.BASE_URL = baseUrlToSet;
     
                 const startupRequestHash = [
                     'startup', 
@@ -365,7 +356,6 @@ const useStartup = (props:ICustomContent):boolean => {
                     sendStartup(preserveOnReload ? createUIRefreshRequest() : startupReq, preserveOnReload, startupRequestHash);
                 } 
                 else {
-
                     sendStartup(startupReq, false, startupRequestHash, relaunchArguments.current);
                 }
             }
@@ -376,7 +366,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
                     if (data.timeout) {
-                        timeOutToSet = parseInt(data.timeout)
+                        context.server.timeoutMs = parseInt(data.timeout)
                     }
                     resolve({});
                 })
@@ -390,6 +380,7 @@ const useStartup = (props:ICustomContent):boolean => {
                 .then((data) => {
                     if (data.version) {
                         context.appSettings.version = parseInt(data.version);
+                        context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
                         appVersion.version = parseInt(data.version)
                     }
                     resolve({});
@@ -412,7 +403,7 @@ const useStartup = (props:ICustomContent):boolean => {
                         startUpRequest[k] = v;
                     }
                 });
-                baseUrlToSet = data.baseUrl;
+                context.server.BASE_URL = data.baseUrl;
     
                 if (data.logoBig) {
                     context.appSettings.LOGO_BIG = data.logoBig;
@@ -452,14 +443,23 @@ const useStartup = (props:ICustomContent):boolean => {
                     designToSet = data.design;
                 }
 
+                // if (data.version) {
+                //     context.appSettings.version = parseInt(data.version);
+                //     context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
+                //     appVersion.version = parseInt(data.version)
+                // }
+
+                //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             }).then(() => {
                 Promise.all([fetchAppConfig(), fetchVersionConfig()])
                 .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
                 .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
+                //fetchAppConfig();
             }).catch(() => {
                 Promise.all([fetchAppConfig(), fetchVersionConfig()])
                 .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
                 .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
+                //fetchAppConfig();
             });
         }
         else {
@@ -471,7 +471,22 @@ const useStartup = (props:ICustomContent):boolean => {
         return () => {
             ws.current?.close();
         }
-    }, [context.contentStore, context.subscriptions, history, restart]);
+    }, [context.server, context.contentStore, context.subscriptions, history, restart]);
+
+    /** Sets custom- or replace screens/components when reactUI is used as library based on props */
+    useEffect(() => {
+        if (props.onMenu) {
+            context.server.setOnMenuFunction(props.onMenu);
+        }
+
+        if (props.onOpenScreen) {
+            context.server.setOnOpenScreenFunction(props.onOpenScreen);
+        }
+
+        if (props.onLogin) {
+            context.server.setOnLoginFunction(props.onLogin);
+        }
+    }, [context.contentStore]);
 
     useEventHandler(document.body, "keydown", (event) => (event as any).key === "Control" ? context.ctrlPressed = true : undefined);
 

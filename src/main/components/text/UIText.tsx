@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
 import BaseComponent from "../BaseComponent";
 import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex, concatClassnames} from "../util";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
     columns?:number

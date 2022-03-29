@@ -7,7 +7,7 @@ import { createFetchRequest, createFilterRequest } from "../../../factories/Requ
 import { getTextAlignment } from "../../comp-props";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
 

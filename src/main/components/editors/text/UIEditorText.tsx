@@ -16,7 +16,7 @@ import { sendSetValues,
          concatClassnames,
          getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for TextCellEditor */

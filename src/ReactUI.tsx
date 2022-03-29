@@ -6,7 +6,7 @@ import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 
 /** UI imports */
-import UIManager from './application-frame/UIManager';
+import UIManager from './application-frame/screen-management/ui-manager/UIManager';
 import Login from "./application-frame/login/login";
 import LoadingScreen from './application-frame/loading/loadingscreen';
 
@@ -16,7 +16,7 @@ import { useStartup } from './main/components/zhooks';
 /** Other imports */
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
-import UIManagerV2 from './application-frame/UIManagerV2';
+import UIManagerV2 from './application-frame/screen-management/ui-manager/UIManagerV2';
 import { appContext } from './main/AppProvider';
 
 

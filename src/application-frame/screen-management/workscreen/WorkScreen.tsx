@@ -1,7 +1,7 @@
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
-import { appContext } from "../../main/AppProvider";
-import { ActiveScreen } from "../../main/ContentStore";
-import { DesktopPanelHandler } from "../login/login";
+import { appContext } from "../../../main/AppProvider";
+import { ActiveScreen } from "../../../main/ContentStore";
+import { DesktopPanelHandler } from "../../login/login";
 import ResizeHandler from "../ResizeHandler";
 
 /** This component defines where the workscreen should be displayed */

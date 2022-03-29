@@ -6,7 +6,7 @@ import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { REQUEST_KEYWORDS } from "../../../request";
 
 /**

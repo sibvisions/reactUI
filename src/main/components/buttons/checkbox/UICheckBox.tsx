@@ -4,7 +4,7 @@ import tinycolor from 'tinycolor2';
 import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
 import { IButtonSelectable } from "..";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../util";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 
 /**
  * This component displays a CheckBox and its label
