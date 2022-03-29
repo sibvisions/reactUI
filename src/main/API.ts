@@ -4,7 +4,7 @@ import ContentStore from "./ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
-import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./customTypes";
+import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./components/BaseComponent";
@@ -47,6 +47,7 @@ class API {
      * @param useClassName - true, if the screen is opened with the classname instead of the component id
      */
     sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }) {
+        console.log(id)
         const openReq = createOpenScreenRequest();
         openReq.className = id;
         if (parameter) {

@@ -6,7 +6,7 @@ import { Editor } from "primereact/editor";
 import Quill from "quill";
 import { useMouseListener, usePopupMenu } from "../../zhooks"
 import { ICellEditor, IEditor } from "..";
-import { getTextAlignment } from "../../compprops";
+import { getTextAlignment } from "../../comp-props";
 import { sendSetValues, 
          handleEnterKey, 
          sendOnLoadCallback, 

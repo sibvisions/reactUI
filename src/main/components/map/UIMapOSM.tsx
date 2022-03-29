@@ -19,7 +19,7 @@ import { getMarkerIcon,
          checkComponentName,
          getTabIndex} from "../util";
 import BaseComponent from "../BaseComponent";
-import { IconProps } from "../compprops";
+import { IconProps } from "../comp-props";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /** Interface for Map components */

@@ -2,7 +2,7 @@ import { CSSProperties, useContext, useMemo } from "react";
 import { appContext } from "../../AppProvider";
 import { IButton } from "../buttons";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { getAlignments, getMargins, IconProps, parseIconData } from "../compprops";
+import { getAlignments, getMargins, IconProps, parseIconData } from "../comp-props";
 import { getTabIndex } from "../util";
 
 interface IButtonStyle {

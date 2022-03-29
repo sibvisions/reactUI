@@ -377,12 +377,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) + (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number) ? 17 : 0) : 410, width: estTableWidth + 4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, layoutStyle?.width]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
@@ -415,6 +415,18 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
             setTimeout(() => {
+                function getTextWidth(text?:string) {
+                    if (text) {
+                        const canvas = document.createElement('canvas');
+                        const x = canvas.getContext('2d') as CanvasRenderingContext2D;
+                        
+                        x.font = getComputedStyle(document.body).font;
+                      
+                        return x.measureText(text).width;
+                    }
+                    return 0;
+                }
+
                 //@ts-ignore
                 const currentTable:HTMLTableElement = tableRef?.current?.table;
                 if (currentTable) {
@@ -432,7 +444,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                         else {
                             const title = theader[i].querySelector('.p-column-title');
-                            newCellWidth.width = title ? title.getBoundingClientRect().width + 34 : 0;
+                            newCellWidth.width = title ? (title.getBoundingClientRect().width + 34) : 0;
                         }
                         cellDataWidthList.push(newCellWidth);
                     }
@@ -446,7 +458,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList.forEach(cellDataWidth => {
                         tempWidth += cellDataWidth.width
                     });
-
                     /** set EstTableWidth for size reporting */
                     setEstTableWidth(tempWidth);
                 }
@@ -455,7 +466,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }, 0);
         }
-    }, []);
+    }, [metaData]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
@@ -1112,11 +1123,9 @@ const UITable: FC<TableProps> = (baseProps) => {
 
                 table.destroyStyleElement();
                 table.createStyleElement();
-
                 let innerHTML = '';
                 widths.forEach((width, index) => {
                     let colWidth = (width / totalWidth) * tableWidth;
-
                     let style = table.props.scrollable 
                         ? `flex: 0 0 ${colWidth}px !important` 
                         : `width: ${colWidth}px !important`;

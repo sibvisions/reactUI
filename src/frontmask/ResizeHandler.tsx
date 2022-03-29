@@ -105,7 +105,7 @@ const ResizeHandler:FC = (props) => {
     }, [props.children]);
 
     /** Using underscore throttle for throttling resize event */
-    const handleResize = useCallback(_.throttle(doResize, 23),[doResize, sizeRef.current]);
+    const handleResize = useCallback(_.throttle(doResize, 50),[doResize, sizeRef.current]);
 
     /** Using underscore debounce to debounce sending the current devicestatus (screen-container height and width) to the server */
     const handleDeviceStatus = _.debounce(() => {

@@ -3,7 +3,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { createComponentRequest, getClientId } from "../../../moduleIndex";
 import BaseComponent from "../BaseComponent";
 import { MenuItem } from "primereact/menuitem";
-import { parseIconData } from "../compprops";
+import { parseIconData } from "../comp-props";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import { appContext } from "../../AppProvider";

@@ -6,7 +6,7 @@ import { MenuItem } from "primereact/menuitem";
 import { useConstants, useMenuItems, useScreenTitle } from "../../main/components/zhooks";
 import { IMenu, ProfileMenu } from "./menu";
 import { BaseMenuButton } from "../../main/response";
-import { parseIconData } from "../../main/components/compprops";
+import { parseIconData } from "../../main/components/comp-props";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { EmbeddedContext } from "../../MiddleMan";
 

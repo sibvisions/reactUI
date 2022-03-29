@@ -450,7 +450,7 @@ class Server {
                         RequestQueueMode.IMMEDIATE
                     ).then(results => {
                         resolve(results)
-                    }, (err) => reject(err)))
+                    }))
                     this.advanceRequestQueue();
                 }
             }
@@ -1113,8 +1113,8 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
+                this.appSettings.setAppReadyParam("userOrLogin");
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
                 const GResponse = (response as GenericResponse);

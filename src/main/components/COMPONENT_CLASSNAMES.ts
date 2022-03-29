@@ -30,6 +30,7 @@ enum COMPONENT_CLASSNAMES {
     MOBILELAUNCHER = "MobileLauncher",
     MENUBAR = "MenuBar",
     MENU = "Menu",
-    INTERNAL_FRAME = "InternalFrame"
+    INTERNAL_FRAME = "InternalFrame",
+    CUSTOM_CONTAINER = "CustomContainer"
 }
 export default COMPONENT_CLASSNAMES;

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useRef } from "react"
 import { useComponents, useComponentConstants } from "../../zhooks";
-import { IconProps } from "../../compprops";
+import { IconProps } from "../../comp-props";
 import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";

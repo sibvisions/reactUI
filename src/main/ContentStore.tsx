@@ -9,7 +9,7 @@ import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomStartupProps, ScreenWrapperOptions } from "./customTypes";
+import { CustomStartupProps, ScreenWrapperOptions } from "./custom-types";
 import { getMetaData, isWorkScreen, Timer } from "./components/util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
@@ -17,6 +17,7 @@ import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import AppSettings from "./AppSettings";
+import SignaturePad from "./components/custom-comp/custom-container-components/SignaturePad";
 
 export type ActiveScreen = {
     name: string,
@@ -113,7 +114,7 @@ export default class ContentStore{
     /** the react routers history object */
     history?:History<any>;
 
-    globalComponents:Map<string, Function> = new Map<string, Function>();
+    globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: BaseComponent) => <SignaturePad {...props} />);
 
     dialogButtons:Array<string> = new Array<string>();
 

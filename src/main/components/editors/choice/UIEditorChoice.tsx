@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useRef } from "react";
 import { useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
-import { getAlignments } from "../../compprops";
+import { getAlignments } from "../../comp-props";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../../topbar/TopBar";

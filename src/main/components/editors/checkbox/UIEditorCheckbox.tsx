@@ -3,7 +3,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { useMouseListener, usePopupMenu } from "../../zhooks";
 import { ICellEditor, IEditor } from "..";
 import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent, getTabIndex } from "../../util";
-import { getAlignments } from "../../compprops";
+import { getAlignments } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { isCellEditorReadOnly } from "../text/UIEditorText";
 import { IRCCellEditor } from "../CellEditorWrapper";

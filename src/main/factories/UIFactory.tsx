@@ -27,7 +27,7 @@ import { UIPassword, UIText, UITextArea } from "../components/text"
 import UIChart from "../components/chart/UIChart";
 import UIGauge from "../components/gauge/UIGauge";
 import { UIMapGoogle, UIMapOSM } from "../components/map"
-import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/customComp/index'
+import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/custom-comp/index'
 import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIBrowser from "../components/browser/UIBrowser";
@@ -40,15 +40,15 @@ import UIInternalFrame from "../components/frame/UIInternalFrame";
 import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
 import { appVersion } from "../AppSettings";
+import SignaturePad from "../components/custom-comp/custom-container-components/SignaturePad";
 
 
 /**
  * Returns a CustomComponent wrapped in a Wrapper as component
  * @param props - properties sent by the server
- * @param customComp - the custom component to render
  * @returns a CustomComponent wrapped in a Wrapper as component
  */
-export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props, globalComp) => {
+export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props) => {
     return <UICustomComponentWrapper {...props} component={props.component} key={props.id}/>
 }
 
@@ -103,40 +103,39 @@ export function createEditor(props: IRCCellEditor) {
 const maybePopup = (element: JSX.Element) => 
     element.props.screen_modal_ || element.props.content_modal_
         ? <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
-        : element
-
+        : element;
 
 const componentsMap = new Map<string, React.ComponentType<any>>()
-    .set(COMPONENT_CLASSNAMES.PANEL, props => maybePopup(<UIPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => maybePopup(<UIDesktopPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => maybePopup(<UIGroupPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => maybePopup(<UIScrollPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => maybePopup(<UIToolBarPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOGGLEBUTTON, props => <UIToggleButton {...props} />)
-    .set(COMPONENT_CLASSNAMES.POPUPMENUBUTTON, props => <UIMenuButton {...props} />)
-    .set(COMPONENT_CLASSNAMES.RADIOBUTTON, props => <UIRadioButton {...props} />)
-    .set(COMPONENT_CLASSNAMES.CHECKBOX, props => <UICheckBox {...props} />)
-    .set(COMPONENT_CLASSNAMES.LABEL, props => <UILabel {...props} />)
-    .set(COMPONENT_CLASSNAMES.EDITOR, props => <CellEditorWrapper {...props} />)
-    .set(COMPONENT_CLASSNAMES.TABLE, props => <UITable {...props} />)
-    .set(COMPONENT_CLASSNAMES.ICON, props => <UIIcon {...props} />)
-    .set(COMPONENT_CLASSNAMES.TEXTFIELD, props => <UIText {...props} />)
-    .set(COMPONENT_CLASSNAMES.TEXTAREA, props => <UITextArea {...props} />)
-    .set(COMPONENT_CLASSNAMES.PASSWORD, props => <UIPassword {...props} />)
-    .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => maybePopup(<UITabsetPanel {...props} />))
-    .set(COMPONENT_CLASSNAMES.CHART, props => <UIChart {...props} />)
-    .set(COMPONENT_CLASSNAMES.MAP, props => props.tileProvider === "google"
-        ? <UIMapGoogle {...props} />
-        : <UIMapOSM {...props} />
-    )
-    .set(COMPONENT_CLASSNAMES.TREE, props => <UITree {...props} />)
-    .set(COMPONENT_CLASSNAMES.GAUGE, props => <UIGauge {...props} />)
-    //.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
-    .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />);
+.set(COMPONENT_CLASSNAMES.PANEL, props => maybePopup(<UIPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => maybePopup(<UIDesktopPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.GROUPPANEL, props => maybePopup(<UIGroupPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => maybePopup(<UIScrollPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => maybePopup(<UIToolBarPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
+.set(COMPONENT_CLASSNAMES.TOGGLEBUTTON, props => <UIToggleButton {...props} />)
+.set(COMPONENT_CLASSNAMES.POPUPMENUBUTTON, props => <UIMenuButton {...props} />)
+.set(COMPONENT_CLASSNAMES.RADIOBUTTON, props => <UIRadioButton {...props} />)
+.set(COMPONENT_CLASSNAMES.CHECKBOX, props => <UICheckBox {...props} />)
+.set(COMPONENT_CLASSNAMES.LABEL, props => <UILabel {...props} />)
+.set(COMPONENT_CLASSNAMES.EDITOR, props => <CellEditorWrapper {...props} />)
+.set(COMPONENT_CLASSNAMES.TABLE, props => <UITable {...props} />)
+.set(COMPONENT_CLASSNAMES.ICON, props => <UIIcon {...props} />)
+.set(COMPONENT_CLASSNAMES.TEXTFIELD, props => <UIText {...props} />)
+.set(COMPONENT_CLASSNAMES.TEXTAREA, props => <UITextArea {...props} />)
+.set(COMPONENT_CLASSNAMES.PASSWORD, props => <UIPassword {...props} />)
+.set(COMPONENT_CLASSNAMES.TABSETPANEL, props => maybePopup(<UITabsetPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.CHART, props => <UIChart {...props} />)
+.set(COMPONENT_CLASSNAMES.MAP, props => props.tileProvider === "google"
+    ? <UIMapGoogle {...props} />
+    : <UIMapOSM {...props} />
+)
+.set(COMPONENT_CLASSNAMES.TREE, props => <UITree {...props} />)
+.set(COMPONENT_CLASSNAMES.GAUGE, props => <UIGauge {...props} />)
+//.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
 
 const componentsMapV2 = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
@@ -170,7 +169,7 @@ const componentsMapV2 = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
 .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
 .set(COMPONENT_CLASSNAMES.MOBILELAUNCHER, props => <UIMobileLauncher {...props} />)
-.set(COMPONENT_CLASSNAMES.INTERNAL_FRAME, props => <UIInternalFrame {...props} />);
+.set(COMPONENT_CLASSNAMES.INTERNAL_FRAME, props => <UIInternalFrame {...props} />)
 
 /**
  * Returns the JSXElement for the given base component
@@ -178,25 +177,37 @@ const componentsMapV2 = new Map<string, React.ComponentType<any>>()
  * @returns the resulting JSXElement
  */
 export const componentHandler = (baseComponent: BaseComponent, contentStore:ContentStore) => {
-    const Comp = contentStore.globalComponents.has(baseComponent.className) ?
-    contentStore.globalComponents.get(baseComponent.className) : appVersion.version === 2 ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+    let Comp:Function|undefined;
 
     if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
         baseComponent.name = baseComponent.name.substring(1);
     }
 
-    if(Comp) {
-        if (contentStore.globalComponents.has(baseComponent.className)) {
-            return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
+    // If the component className is a global component (globally changed via api) or is a custom container, create a customcomponentwrapper with that component
+    // else just create the standard component
+    if (contentStore.globalComponents.has(baseComponent.className)) {
+        Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
+        return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
+    }
+    else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
+        Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
+        if (Comp) {
+            return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: false})
         }
         else {
-            return <Comp {...baseComponent} key={baseComponent.id} />;
+            return <Dummy {...baseComponent} key={baseComponent.id} />
         }
-    } 
-    else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
-        return <Dummy {...baseComponent} key={baseComponent.id} />
     }
     else {
-        return <></>;
+        Comp = appVersion.version === 2 ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+        if (Comp) {
+            return <Comp {...baseComponent} key={baseComponent.id} />;
+        }
+        else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
+            return <Dummy {...baseComponent} key={baseComponent.id} />
+        }
+        else {
+            return <></>;
+        }
     }
 }

@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../frontmask/menu/menu";
 import { ServerMenuButtons } from "../../../main/response";
 import { appContext } from "../../../main/AppProvider";
-import { parseIconData } from "../compprops";
+import { parseIconData } from "../comp-props";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import BaseComponent from "../BaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";

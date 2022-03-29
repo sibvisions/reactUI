@@ -1,4 +1,4 @@
-import { parseIconData, IconProps } from "../compprops";
+import { parseIconData, IconProps } from "../comp-props";
 
 /**
  * Returns the icon of the marker

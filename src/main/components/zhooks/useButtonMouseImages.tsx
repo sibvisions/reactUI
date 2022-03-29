@@ -1,7 +1,7 @@
 import { useContext, useCallback } from "react"
 import { useEventHandler } from ".";
 import { appContext } from "../../AppProvider";
-import { IconProps } from "../compprops";
+import { IconProps } from "../comp-props";
 
 /**
  * Returns true if the ico is a FontAwesome icon

@@ -9,7 +9,7 @@ export { UIMapGoogle, UIMapOSM } from './main/components/map';
 export * from './main/components/panels'
 export { default as UITable } from './main/components/table/UITable';
 export * from './main/components/text'
-export { ScreenWrapper } from './main/components/customComp/index';
+export { ScreenWrapper } from './main/components/custom-comp/index';
 export * from './main/components/zhooks'
 export * from './main/factories/RequestFactory';
 export { default as ReactUI } from './MiddleMan';

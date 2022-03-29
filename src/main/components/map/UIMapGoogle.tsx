@@ -15,7 +15,7 @@ import { getMarkerIcon,
          checkComponentName,
          getTabIndex} from "../util";
 import { IMap } from ".";
-import { IconProps } from "../compprops";
+import { IconProps } from "../comp-props";
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";

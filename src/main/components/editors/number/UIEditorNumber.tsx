@@ -15,7 +15,7 @@ import { getDecimalLength,
          concatClassnames,
          checkComponentName,
          getTabIndex} from "../../util";
-import { getTextAlignment } from "../../compprops";
+import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";

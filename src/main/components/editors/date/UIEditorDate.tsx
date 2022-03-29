@@ -14,7 +14,7 @@ import { sendSetValues,
          handleEnterKey,
          concatClassnames,
          getTabIndex} from "../../util";
-import { getTextAlignment } from "../../compprops";
+import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { isCellEditorReadOnly } from "../text/UIEditorText";

@@ -3,7 +3,7 @@ import React, { CSSProperties, FC, useContext, useLayoutEffect, useMemo, useRef,
 import { appContext } from "../../../AppProvider";
 import { LayoutContext } from "../../../LayoutContext";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { IconProps, parseIconData } from "../../compprops";
+import { IconProps, parseIconData } from "../../comp-props";
 import { checkComponentName, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
 import { ComponentSizes, useComponentConstants, useMouseListener, usePopupMenu } from "../../zhooks";
 import { isFAIcon } from "../../zhooks/useButtonMouseImages";

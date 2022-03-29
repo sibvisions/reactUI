@@ -50,8 +50,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
-    const [ locationKeys, setLocationKeys ] = useState<any[]>([])
-
     const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
@@ -111,15 +109,17 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                     const pathName = history.location.pathname;
                     const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
                     if (navName) {
-                        const openReq = createOpenScreenRequest();
-                        openReq.componentId = context.contentStore.navOpenScreenMap.get(navName)
-
-                        context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
-
-                        showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
-
-                        currentlyOpening = true;
-                        openedWithHistory.current = true;
+                        const openId = context.contentStore.navOpenScreenMap.get(navName)
+                        if (openId) {
+                            const openReq = createOpenScreenRequest();
+                            openReq.componentId = openId;
+    
+                            context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
+    
+                            currentlyOpening = true;
+                            openedWithHistory.current = true;
+                        }
                     }
                     else {
                         if (context.contentStore.activeScreens.length) {
@@ -130,7 +130,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                                 }
                                 
                             })
-                            
                         }
                     }
                 }

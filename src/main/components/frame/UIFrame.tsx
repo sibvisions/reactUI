@@ -3,7 +3,7 @@ import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import BaseComponent from "../BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { parseIconData } from "../compprops";
+import { parseIconData } from "../comp-props";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";

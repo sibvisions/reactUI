@@ -4,7 +4,7 @@ import tinycolor from "tinycolor2";
 import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../zhooks"
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
-import { getTextAlignment } from "../../compprops";
+import { getTextAlignment } from "../../comp-props";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";

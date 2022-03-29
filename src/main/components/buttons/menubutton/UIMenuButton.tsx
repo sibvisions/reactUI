@@ -4,7 +4,7 @@ import tinycolor from 'tinycolor2';
 import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
-import { parseIconData } from "../../compprops";
+import { parseIconData } from "../../comp-props";
 import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../util";
 import BaseComponent from "../../BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
