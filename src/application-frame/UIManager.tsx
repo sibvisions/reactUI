@@ -5,7 +5,7 @@ import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../main/components/util";
 import { appContext } from "../main/AppProvider";
 import ScreenManager from "./ScreenManager";
-import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
+import ChangePasswordDialog from "./change-password/ChangePasswordDialog";
 import CorporateMenu from "./menu/corporateMenu";
 import { MenuVisibility } from "../main/AppSettings";
 import { ApplicationSettingsResponse } from "../main/response";

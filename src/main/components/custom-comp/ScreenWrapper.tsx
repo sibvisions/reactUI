@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useEffect } from "react";
-import { ScreenContext } from "../../../frontmask/ScreenManager";
-import WorkScreen from "../../../frontmask/workscreen/WorkScreen";
+import { ScreenContext } from "../../../application-frame/ScreenManager";
+import WorkScreen from "../../../application-frame/workscreen/WorkScreen";
 
 
 /** This component is for library users to wrap their screen-wrapper */

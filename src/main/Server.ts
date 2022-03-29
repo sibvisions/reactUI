@@ -176,6 +176,7 @@ class Server {
         this.history = history;
         this.openRequests = new Map<any, Promise<any>>();
         this.api = new API(this, store, appSettings, subManager, history);
+        console.log(appVersion.version)
     }
 
     /** Base url for requests */
@@ -349,7 +350,7 @@ class Server {
         return map
     }
 
-    endpointMap = this.setEndPointMap();
+    endpointMap = this.setEndPointMap(appVersion.version);
 
 
     /**

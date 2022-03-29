@@ -3,7 +3,7 @@ import { appContext } from "../main/AppProvider";
 import { MenuVisibility } from "../main/AppSettings";
 import { concatClassnames } from "../main/components/util";
 import { ApplicationSettingsResponse } from "../main/response";
-import ChangePasswordDialog from "./changePassword/ChangePasswordDialog";
+import ChangePasswordDialog from "./change-password/ChangePasswordDialog";
 import ScreenManager from "./ScreenManager";
 import { isCorporation, ResizeContext } from "./UIManager";
 

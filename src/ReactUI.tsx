@@ -6,10 +6,9 @@ import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 
 /** UI imports */
-import UIManager from './frontmask/UIManager';
-import Login from "./frontmask/login/login";
-import LoadingScreen from './frontmask/loading/loadingscreen';
-//import Settings from "./frontmask/settings/Settings"
+import UIManager from './application-frame/UIManager';
+import Login from "./application-frame/login/login";
+import LoadingScreen from './application-frame/loading/loadingscreen';
 
 /** Hook imports */
 import { useStartup } from './main/components/zhooks';
@@ -17,7 +16,7 @@ import { useStartup } from './main/components/zhooks';
 /** Other imports */
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
-import UIManagerV2 from './frontmask/UIManagerV2';
+import UIManagerV2 from './application-frame/UIManagerV2';
 import { appContext } from './main/AppProvider';
 
 

@@ -10,7 +10,7 @@ import { HashRouter } from 'react-router-dom';
 /** Other imports */
 import ReactUI from './ReactUI';
 import AppProvider from "./main/AppProvider";
-import { IUIManagerProps } from './frontmask/UIManager';
+import { IUIManagerProps } from './application-frame/UIManager';
 import ReactUIEmbedded from './ReactUIEmbedded';
 
 export interface ICustomContent {

@@ -47,7 +47,6 @@ class API {
      * @param useClassName - true, if the screen is opened with the classname instead of the component id
      */
     sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }) {
-        console.log(id)
         const openReq = createOpenScreenRequest();
         openReq.className = id;
         if (parameter) {

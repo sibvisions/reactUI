@@ -6,7 +6,7 @@ import { useConstants } from "../../main/components/zhooks";
 import { appContext } from "../../main/AppProvider";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import ChangePasswordDialog from "../changePassword/ChangePasswordDialog";
+import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
 import { concatClassnames } from "../../main/components/util";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../ResizeHandler";

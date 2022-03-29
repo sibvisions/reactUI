@@ -1,6 +1,6 @@
 import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext } from "react";
-import { MenuItemCustom } from "../../../frontmask/menu/menu";
+import { MenuItemCustom } from "../../../application-frame/menu/menu";
 import { ServerMenuButtons } from "../../../main/response";
 import { appContext } from "../../../main/AppProvider";
 import { parseIconData } from "../comp-props";

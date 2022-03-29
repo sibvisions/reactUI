@@ -14,4 +14,4 @@ export * from './main/components/zhooks'
 export * from './main/factories/RequestFactory';
 export { default as ReactUI } from './MiddleMan';
 export { appContext } from './main/AppProvider';
-export { ProfileMenu } from './frontmask/menu/menu';
+export { ProfileMenu } from './application-frame/menu/menu';
