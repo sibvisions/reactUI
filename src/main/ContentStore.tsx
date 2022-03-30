@@ -22,6 +22,7 @@ import SignaturePad from "./components/custom-comp/custom-container-components/S
 export type ActiveScreen = {
     name: string,
     className?: string
+    popup?: boolean
 }
 
 interface ISelectedRow {
@@ -146,10 +147,17 @@ export default class ContentStore{
     setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean) {
         if (screenInfo) {
             if (popup) {
-                this.activeScreens.push(screenInfo);
+                const popupScreen:ActiveScreen = {...screenInfo};
+                popupScreen.popup = true 
+                this.activeScreens.push(popupScreen);
             }
             else {
-                this.activeScreens = [screenInfo];
+                if (this.activeScreens[0] && this.activeScreens[0].popup) {
+                    this.activeScreens.unshift(screenInfo);
+                }
+                else {
+                    this.activeScreens = [screenInfo];
+                }
             }
         }
         else {

@@ -548,21 +548,17 @@ class Server {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses)) {
-            responses.sort((a, b) => {
-                if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN
-                    || (a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.CLOSE_SCREEN))
-                    || (a.name === RESPONSE_NAMES.SCREEN_GENERIC && (b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.SCREEN_GENERIC && b.name !== RESPONSE_NAMES.CLOSE_SCREEN))) {
-                    return -1;
-                }
-                else if (b.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN
-                    || (b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.CLOSE_SCREEN)
-                    || (b.name === RESPONSE_NAMES.SCREEN_GENERIC && (a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.SCREEN_GENERIC && a.name !== RESPONSE_NAMES.CLOSE_SCREEN))) {
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
-            });
+            // responses.sort((a, b) => {
+            //     if (a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+            //         return -1;
+            //     }
+            //     else if (b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+            //         return 1;
+            //     }
+            //     else {
+            //         return 0;
+            //     }
+            // });
             responses.forEach((response) => {
                 if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
                     isOpen = true;
@@ -1024,7 +1020,7 @@ class Server {
      * @param langData - the language data
      */
     language(langData:LanguageResponse) {
-        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
+        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
         .then((response:any) => response.text())
         .then(value => parseString(value, (err, result) => { 
             if (result) {

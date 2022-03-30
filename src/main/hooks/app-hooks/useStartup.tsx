@@ -442,24 +442,14 @@ const useStartup = (props:ICustomContent):boolean => {
                 if (data.design) {
                     designToSet = data.design;
                 }
-
-                // if (data.version) {
-                //     context.appSettings.version = parseInt(data.version);
-                //     context.server.endpointMap = context.server.setEndPointMap(parseInt(data.version));
-                //     appVersion.version = parseInt(data.version)
-                // }
-
-                //setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams);
             }).then(() => {
                 Promise.all([fetchAppConfig(), fetchVersionConfig()])
                 .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
                 .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
-                //fetchAppConfig();
             }).catch(() => {
                 Promise.all([fetchAppConfig(), fetchVersionConfig()])
                 .then(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams))
                 .catch(() => setStartupProperties(startUpRequest, props.embedOptions ? props.embedOptions : urlParams));
-                //fetchAppConfig();
             });
         }
         else {
