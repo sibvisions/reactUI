@@ -199,10 +199,20 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             providedData.filter((data: any) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-                        return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                        if (data[props.cellEditor.displayReferencedColumnName]) {
+                            return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                        }
+                        else {
+                            return false;
+                        }
                     }
                     else {
-                        return data[refColNames[index]].includes(inputVal);
+                        if (data[refColNames[index]]) {
+                            return data[refColNames[index]].includes(inputVal);
+                        }
+                        else {
+                            return false;
+                        }
                     }
 
                 }
