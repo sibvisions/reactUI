@@ -11,7 +11,7 @@ import Login from "./application-frame/login/login";
 import LoadingScreen from './application-frame/loading/loadingscreen';
 
 /** Hook imports */
-import { useStartup } from './main/components/zhooks';
+import { useStartup } from './main/hooks';
 
 /** Other imports */
 import { ICustomContent } from "./MiddleMan";

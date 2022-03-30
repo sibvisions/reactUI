@@ -3,7 +3,7 @@ import { Menubar } from 'primereact/menubar';
 import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
 import { MenuItem } from "primereact/menuitem";
-import { useConstants, useMenuItems, useScreenTitle } from "../../main/components/zhooks";
+import { useConstants, useMenuItems, useScreenTitle } from "../../main/hooks";
 import { IMenu, ProfileMenu } from "./menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/comp-props";

@@ -1,12 +1,13 @@
 import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
-import { useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../zhooks";
+import { useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {

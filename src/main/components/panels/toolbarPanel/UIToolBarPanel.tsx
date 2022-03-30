@@ -1,10 +1,11 @@
 import React, { FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
 import { IPanel } from "..";
 import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {

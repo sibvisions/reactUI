@@ -1,7 +1,7 @@
 import { Menubar } from "primereact/menubar";
 import React, { FC, useEffect, useMemo, useRef } from "react";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { useComponents, useMenuItems, useProperties } from "../zhooks";
+import { useComponents, useMenuItems, useProperties } from "../../hooks";
 
 /**
  * This component displays a menubar for a frame

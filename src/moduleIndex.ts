@@ -10,7 +10,7 @@ export * from './main/components/panels'
 export { default as UITable } from './main/components/table/UITable';
 export * from './main/components/text'
 export { ScreenWrapper } from './main/components/custom-comp/index';
-export * from './main/components/zhooks'
+export * from './main/hooks'
 export * from './main/factories/RequestFactory';
 export { default as ReactUI } from './MiddleMan';
 export { appContext } from './main/AppProvider';

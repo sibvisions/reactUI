@@ -1,7 +1,7 @@
 import React, { FC, useRef } from "react";
 import UIFrame from "../frame/UIFrame";
 import { IPanel } from "../panels";
-import { useComponentConstants, useComponents, useMouseListener } from "../zhooks";
+import { useComponentConstants, useComponents, useMouseListener } from "../../hooks";
 
 export interface IWindow extends IPanel {
     title:string

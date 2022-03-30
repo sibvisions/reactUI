@@ -1,13 +1,14 @@
 import React, { createContext, CSSProperties, FC, useCallback, useContext, useMemo, useRef, useState } from "react";
-import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../zhooks";
+import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName, Dimension, panelReportSize } from "../../util";
-import BaseComponent from "../../BaseComponent";
+import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension } from "../../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../../request";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,

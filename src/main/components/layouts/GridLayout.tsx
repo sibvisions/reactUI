@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import {appContext} from "../../AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import { ILayout, Gaps, CellConstraints, Margins, GridSize } from ".";
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 
 /**
  * The GridLayout is a component that lays out a container's

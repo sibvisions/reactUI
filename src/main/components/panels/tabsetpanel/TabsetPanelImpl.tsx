@@ -4,9 +4,9 @@ import { appContext } from "../../../AppProvider";
 import { LayoutContext } from "../../../LayoutContext";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { IconProps, parseIconData } from "../../comp-props";
-import { checkComponentName, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
-import { ComponentSizes, useComponentConstants, useMouseListener, usePopupMenu } from "../../zhooks";
-import { isFAIcon } from "../../zhooks/useButtonMouseImages";
+import { checkComponentName, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../../util";
+import { ComponentSizes, useComponentConstants, useMouseListener, usePopupMenu } from "../../../hooks";
+import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import { ITabsetPanel, TabProperties } from "./UITabsetPanel";
 
 interface ITabsetImpl extends ITabsetPanel {

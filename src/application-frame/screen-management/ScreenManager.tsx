@@ -2,7 +2,7 @@ import React, { createContext, FC, ReactElement, useContext } from "react";
 import { useParams } from "react-router";
 import { appContext } from "../../main/AppProvider";
 import WorkScreen from "./workscreen/WorkScreen";
-import { getScreenIdFromNavigation } from "../../main/components/util";
+import { getScreenIdFromNavigation } from "../../main/util";
 
 export interface IScreenContext {
     screen?: ReactElement;

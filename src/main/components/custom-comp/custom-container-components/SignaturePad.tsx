@@ -1,6 +1,6 @@
 import React, { FC } from "react"
 import SignatureCanvas from 'react-signature-canvas'
-import BaseComponent from "../../BaseComponent"
+import BaseComponent from "../../../util/types/BaseComponent"
 
 const SignaturePad:FC<BaseComponent> = (props) => {
     return (

@@ -4,7 +4,7 @@ import { createEditor } from "../../factories/UIFactory";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import { IInTableEditor } from "../table/CellDisplaying";
 import { TopBarContextType } from "../topbar/TopBar";
-import { useEditorConstants, useFetchMissingData } from "../zhooks";
+import { useEditorConstants, useFetchMissingData } from "../../hooks";
 import { IEditor } from "./IEditor";
 import { isCellEditorReadOnly } from "./text/UIEditorText";
 

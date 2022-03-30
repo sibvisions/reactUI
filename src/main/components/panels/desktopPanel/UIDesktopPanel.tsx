@@ -1,8 +1,9 @@
 import React, { FC, useRef } from "react";
-import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
+import { useComponents, useMouseListener, useComponentConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle, checkComponentName } from "../../util";
-import BaseComponent from "../../BaseComponent";
+import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
+import { panelGetStyle } from "../panel/UIPanel";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,

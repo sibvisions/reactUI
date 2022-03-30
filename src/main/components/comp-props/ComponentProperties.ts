@@ -1,6 +1,6 @@
 import tinycolor from 'tinycolor2';
 import { Margins } from '../layouts';
-import { convertIcon, Dimension } from '../util';
+import { convertIcon, Dimension } from '../../util';
 import { UIFont, IconProps } from '.';
 
 /**

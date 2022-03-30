@@ -2,7 +2,7 @@ import React, { FC, FormEvent, useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
-import { useConstants } from "../../main/components/zhooks";
+import { useConstants } from "../../main/hooks";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";

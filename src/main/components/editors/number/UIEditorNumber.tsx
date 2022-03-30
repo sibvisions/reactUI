@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
-import { useEventHandler, useMouseListener, usePopupMenu } from "../../zhooks"
+import { useEventHandler, useMouseListener, usePopupMenu } from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
 import { getDecimalLength, 
          getGrouping,
@@ -14,9 +14,9 @@ import { getDecimalLength,
          handleEnterKey,
          concatClassnames,
          checkComponentName,
-         getTabIndex} from "../../util";
+         getTabIndex} from "../../../util";
 import { getTextAlignment } from "../../comp-props";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { isCellEditorReadOnly } from "../text/UIEditorText";

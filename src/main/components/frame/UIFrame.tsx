@@ -1,17 +1,18 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
-import BaseComponent from "../BaseComponent";
+import BaseComponent from "../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { parseIconData } from "../comp-props";
 import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
 import { showTopBar } from "../topbar/TopBar";
-import { concatClassnames, Dimension, panelGetStyle, parseMaxSize, parseMinSize, parsePrefSize } from "../util";
-import { ComponentSizes, useConstants } from "../zhooks";
-import { isFAIcon } from "../zhooks/useButtonMouseImages";
+import { concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize } from "../../util";
+import { ComponentSizes, useConstants } from "../../hooks";
+import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 import { IInternalFrame } from "./UIInternalFrame";
+import { panelGetStyle } from "../panels/panel/UIPanel";
 
 export interface IFrame extends IInternalFrame {
     frameStyle?: CSSProperties,

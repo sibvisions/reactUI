@@ -2,8 +2,8 @@
 import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
 import { appContext } from "../../main/AppProvider";
-import { ChildWithProps } from "../../main/components/util";
-import { useEventHandler } from "../../main/components/zhooks";
+import { ChildWithProps } from "../../main/util";
+import { useEventHandler } from "../../main/hooks";
 import { createDeviceStatusRequest } from "../../main/factories/RequestFactory";
 import { LayoutContext } from "../../main/LayoutContext";
 import { REQUEST_KEYWORDS } from "../../main/request";

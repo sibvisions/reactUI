@@ -4,13 +4,13 @@ import React, { ReactElement } from "react";
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
 import { ServerMenuButtons, MetaDataResponse, MetaDataReference, BaseMenuButton } from "./response";
-import BaseComponent from "./components/BaseComponent";
+import BaseComponent from "./util/types/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomStartupProps, ScreenWrapperOptions } from "./custom-types";
-import { getMetaData, isWorkScreen, Timer } from "./components/util";
+import { CustomStartupProps, ScreenWrapperOptions } from "./util/types/custom-types";
+import { getMetaData, isWorkScreen, Timer } from "./util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";

@@ -1,10 +1,11 @@
 import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../zhooks";
+import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../../hooks";
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
 import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /**
  * This component is a panel with a header, useful to group components

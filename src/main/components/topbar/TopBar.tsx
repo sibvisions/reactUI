@@ -1,6 +1,6 @@
 import React, { FC, useState, createContext } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
-import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
+import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
 export interface TopBarContextType {
     show: Function

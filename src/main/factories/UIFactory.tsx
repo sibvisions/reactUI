@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import BaseComponent from "../components/BaseComponent";
+import BaseComponent from "../util/types/BaseComponent";
 import { UIGroupPanel,
         UIPanel,
         UIPopupWrapper,

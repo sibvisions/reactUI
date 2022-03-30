@@ -9,9 +9,9 @@ import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopB
 import UIToast from './main/components/toast/UIToast';
 import { createOpenScreenRequest, IPanel, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
-import { PopupContextProvider } from "./main/components/zhooks/usePopupMenu";
+import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
-import { addCSSDynamically } from "./main/components/util";
+import { addCSSDynamically } from "./main/util";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { REQUEST_KEYWORDS } from "./main/request";

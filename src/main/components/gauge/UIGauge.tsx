@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
-import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex } from "../util";
-import BaseComponent from "../BaseComponent";
+import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../hooks";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex } from "../../util";
+import BaseComponent from "../../util/types/BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
 

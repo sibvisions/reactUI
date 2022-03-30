@@ -3,7 +3,7 @@ import { format, formatISO, isValid } from 'date-fns'
 import { CellEditorWrapper, CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
-import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
+import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
 
 /** An interface which contains properties used for CellEditors in tables */

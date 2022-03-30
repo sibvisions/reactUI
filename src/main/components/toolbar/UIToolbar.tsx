@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Layout } from "../layouts";
-import { Dimension } from "../util";
-import { useComponents } from "../zhooks";
+import { Dimension } from "../../util";
+import { useComponents } from "../../hooks";
 
 /**
  * This component displays a menubar for a frame

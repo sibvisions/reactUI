@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
-import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../zhooks";
+import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../../hooks";
 import { getMarkerIcon, 
          parseMapLocation, 
          parsePrefSize, 
@@ -13,7 +13,7 @@ import { getMarkerIcon,
          sortGroupDataGoogle, 
          sendSaveRequest, 
          checkComponentName,
-         getTabIndex} from "../util";
+         getTabIndex} from "../../util";
 import { IMap } from ".";
 import { IconProps } from "../comp-props";
 import { showTopBar } from "../topbar/TopBar";

@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { IServerFailMessage } from "../../AppWrapper";
 import { appVersion } from "../../main/AppSettings";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { concatClassnames } from "../../main/components/util";
+import { concatClassnames } from "../../main/util";
 import { useConstants, useEventHandler } from "../../moduleIndex";
 
 /**

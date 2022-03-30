@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import BaseComponent from "../BaseComponent";
+import BaseComponent from "../../util/types/BaseComponent";
 import { IEditor } from "../editors";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
 

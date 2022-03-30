@@ -1,7 +1,7 @@
 import React, { FC, ReactElement, useLayoutEffect, useRef } from "react";
-import { useComponentConstants } from "../zhooks";
-import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback } from "../util";
+import { useComponentConstants } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import { sendOnLoadCallback } from "../../util";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {

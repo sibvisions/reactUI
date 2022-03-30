@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "r
 import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
-import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../zhooks";
+import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../../hooks";
 import { appContext } from "../../AppProvider";
 import { getMarkerIcon, 
          parseMapLocation, 
@@ -17,8 +17,8 @@ import { getMarkerIcon,
          sendSaveRequest, 
          MapLocation,
          checkComponentName,
-         getTabIndex} from "../util";
-import BaseComponent from "../BaseComponent";
+         getTabIndex} from "../../util";
+import BaseComponent from "../../util/types/BaseComponent";
 import { IconProps } from "../comp-props";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 

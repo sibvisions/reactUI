@@ -4,10 +4,10 @@ import ContentStore from "./ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { ServerMenuButtons } from "./response";
 import AppSettings from "./AppSettings";
-import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./custom-types";
+import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./util/types/custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
-import BaseComponent from "./components/BaseComponent";
+import BaseComponent from "./util/types/BaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { REQUEST_KEYWORDS } from "./request";
 

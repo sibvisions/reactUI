@@ -3,10 +3,10 @@ import { LayoutContext } from "../../LayoutContext"
 import { appContext } from "../../AppProvider";
 import { ILayout } from "./Layout";
 import { Margins } from ".";
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 import Gaps from "./models/Gaps";
-import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
-import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
+import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
+import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import { appVersion } from "../../AppSettings";
 
 /** Type for borderLayoutComponents */

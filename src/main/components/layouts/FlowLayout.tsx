@@ -2,10 +2,10 @@ import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import {appContext} from "../../AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from ".";
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 import Margins from "./models/Margins";
-import BaseComponent from "../BaseComponent";
-import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
+import BaseComponent from "../../util/types/BaseComponent";
+import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**

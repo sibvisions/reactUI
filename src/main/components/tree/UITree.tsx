@@ -2,15 +2,15 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
-import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-import BaseComponent from "../BaseComponent";
-import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../util";
+import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { appVersion } from "../../AppSettings";
 
 /** Interface for Tree */

@@ -2,17 +2,17 @@ import React, { CSSProperties, FC, FormEvent, useContext, useRef, useState } fro
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
-import { useConstants } from "../../main/components/zhooks";
+import { useConstants } from "../../main/hooks";
 import { appContext } from "../../main/AppProvider";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
-import { concatClassnames } from "../../main/components/util";
+import { concatClassnames } from "../../main/util";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
 import { ResizeContext } from "../screen-management/ui-manager/UIManager";
 import tinycolor from "tinycolor2";
-import BaseComponent from "../../main/components/BaseComponent";
+import BaseComponent from "../../main/util/types/BaseComponent";
 import { REQUEST_KEYWORDS } from "../../main/request";
 
 /** 

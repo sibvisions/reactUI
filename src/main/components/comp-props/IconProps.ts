@@ -1,4 +1,4 @@
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 
 /** Interface for iconproperties */
 interface IconProps {

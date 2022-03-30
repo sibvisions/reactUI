@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
-import { checkComponentName, Dimension } from "../../util";
+import { checkComponentName, Dimension } from "../../../util";
 import { Tooltip } from "primereact/tooltip";
 
 /** Type for ResizeEvent */

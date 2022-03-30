@@ -1,10 +1,10 @@
 import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
+import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import { getAlignments, parseIconData } from "../comp-props";
-import BaseComponent from "../BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName, getTabIndex } from "../util";
+import BaseComponent from "../../util/types/BaseComponent";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { Tooltip } from "primereact/tooltip";
-import { isFAIcon } from "../zhooks/useButtonMouseImages";
+import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server

@@ -1,10 +1,10 @@
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
-import { useComponentConstants, useMouseListener } from "../zhooks";
-import BaseComponent from "../BaseComponent";
+import { useComponentConstants, useMouseListener } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
 import {getAlignments, translateTextAlign} from "../comp-props";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex} from "../util";
-import usePopupMenu from "../zhooks/usePopupMenu";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex} from "../../util";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
 /**
  * Displays a simple label

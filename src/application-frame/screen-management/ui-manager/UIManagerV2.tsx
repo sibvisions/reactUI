@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../main/AppProvider";
 import { MenuVisibility } from "../../../main/AppSettings";
-import { concatClassnames } from "../../../main/components/util";
+import { concatClassnames } from "../../../main/util";
 import { ApplicationSettingsResponse } from "../../../main/response";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import ScreenManager from "../ScreenManager";

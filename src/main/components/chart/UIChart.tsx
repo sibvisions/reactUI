@@ -4,10 +4,10 @@
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
-import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, getTabIndex } from "../util";
-import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
+import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, getTabIndex } from "../../util";
+import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {

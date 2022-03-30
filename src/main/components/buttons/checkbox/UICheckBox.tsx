@@ -1,10 +1,10 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
-import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
+import { useButtonStyling, useComponentConstants, useMouseListener } from "../../../hooks";
 import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../util";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../../util";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 
 /**
  * This component displays a CheckBox and its label

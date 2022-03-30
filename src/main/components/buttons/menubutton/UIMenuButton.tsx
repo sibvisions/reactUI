@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
-import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
+import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../../hooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
 import { parseIconData } from "../../comp-props";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../util";
-import BaseComponent from "../../BaseComponent";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
 import { REQUEST_KEYWORDS } from "../../../request";
 

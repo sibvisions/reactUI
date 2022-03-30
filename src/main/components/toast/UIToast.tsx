@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useTranslation } from '../zhooks';
+import { useTranslation } from '../../hooks';
 import { Toast, ToastMessage } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { appContext } from '../../AppProvider';
 import { ErrorResponse, MessageResponse } from '../../response';
-import { concatClassnames } from '../util';
+import { concatClassnames } from '../../util';
 
 type IToast = {
     dialog:MessageResponse|ErrorResponse,

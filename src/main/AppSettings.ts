@@ -1,5 +1,5 @@
-import BaseComponent from "./components/BaseComponent";
-import { addCSSDynamically } from "./components/util";
+import BaseComponent from "./util/types/BaseComponent";
+import { addCSSDynamically } from "./util";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/DeviceStatusResponse";

@@ -1,8 +1,8 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { Password } from "primereact/password";
-import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex} from "../util";
-import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../../hooks";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex} from "../../util";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
 /**

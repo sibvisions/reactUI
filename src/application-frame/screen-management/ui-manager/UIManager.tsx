@@ -1,8 +1,8 @@
 import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as _ from 'underscore'
 import Menu from "../../menu/menu";
-import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../../../main/components/zhooks";
-import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../../../main/components/util";
+import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../../../main/hooks";
+import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../../../main/util";
 import { appContext } from "../../../main/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";

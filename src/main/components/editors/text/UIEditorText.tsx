@@ -4,7 +4,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
-import { useMouseListener, usePopupMenu } from "../../zhooks"
+import { useMouseListener, usePopupMenu } from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
 import { getTextAlignment } from "../../comp-props";
 import { sendSetValues, 
@@ -14,9 +14,9 @@ import { sendSetValues,
          parseMinSize, 
          parseMaxSize, 
          concatClassnames,
-         getTabIndex} from "../../util";
+         getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for TextCellEditor */

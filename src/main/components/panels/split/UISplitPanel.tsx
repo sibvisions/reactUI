@@ -1,9 +1,9 @@
 import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import SplitPanel from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
-import BaseComponent from "../../BaseComponent";
-import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
+import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../../util";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{

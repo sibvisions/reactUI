@@ -1,9 +1,9 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
-import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-import BaseComponent from "../BaseComponent";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex, concatClassnames} from "../util";
-import { onFocusGained, onFocusLost } from "../util/server-util/SendFocusRequests";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex, concatClassnames} from "../../util";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 
 export interface ITextField extends BaseComponent {
     columns?:number

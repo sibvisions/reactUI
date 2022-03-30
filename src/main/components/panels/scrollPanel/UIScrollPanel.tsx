@@ -1,10 +1,11 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames, checkComponentName } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
 import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /**
  * This component displays a panel in which you will be able to scroll

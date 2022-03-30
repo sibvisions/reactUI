@@ -9,7 +9,7 @@ import {
     useOutsideClick, 
     useEventHandler,
     useMetaData,
-} from "../zhooks";
+} from "../../hooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
@@ -17,7 +17,7 @@ import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { getFont, IconProps, parseIconData } from "../comp-props";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { SelectedCellContext } from "./UITable";
-import { checkComponentName } from "../util";
+import { checkComponentName } from "../../util";
 import { MetaDataResponse } from "../../response";
 
 export interface CellFormatting {
