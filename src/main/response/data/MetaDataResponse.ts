@@ -1,11 +1,11 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { BaseResponse } from "..";
 import { ICellEditorCheckBox, 
          ICellEditorChoice, 
          ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorLinked, 
-         ICellEditorNumber } from "../components/editors"
+         ICellEditorNumber } from "../../components/editors"
 
 /** Type for MetaData of dataprovider referencing other dataprovider */
 export type MetaDataReference = {

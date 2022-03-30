@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { DeviceStatus } from "../../response/DeviceStatusResponse";
+import { DeviceStatus } from "../../response/event/DeviceStatusResponse";
 
 /**
  * Returns the current devicestatus of the application

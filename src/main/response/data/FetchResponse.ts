@@ -1,7 +1,7 @@
 /** Other imports */
-import { BaseResponse } from ".";
-import { SortDefinition } from "../request";
-import { RecordFormat } from "../request";
+import { BaseResponse } from "..";
+import { SortDefinition } from "../../request";
+import { RecordFormat } from "../../request";
 
 /** Interface for FetchResponse */
 interface FetchResponse extends BaseResponse{

@@ -1,5 +1,5 @@
 /** Other imports */
-import { ComponentResponse } from ".";
+import { ComponentResponse } from "..";
 
 export interface BaseMenuButton {
     componentId: string,

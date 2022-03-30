@@ -40,7 +40,7 @@ import TreePath from "./model/TreePath";
 import AppSettings, { appVersion } from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import UIResponse from "./response/UIResponse";
+import UIResponse from "./response/ui/UIResponse";
 import { REQUEST_KEYWORDS } from "./request";
 
 export enum RequestQueueMode {

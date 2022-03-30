@@ -1,4 +1,4 @@
-import { BaseResponse } from ".";
+import { BaseResponse } from "..";
 
 export type DeviceStatus = "Full"|"Small"|"Mini";
 

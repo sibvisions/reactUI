@@ -2,7 +2,7 @@ import BaseComponent from "./util/types/BaseComponent";
 import { addCSSDynamically } from "./util";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, LoginModeType } from "./response";
-import { DeviceStatus } from "./response/DeviceStatusResponse";
+import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 
 export const appVersion = { version: 1 }

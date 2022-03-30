@@ -2,7 +2,7 @@
 import AppSettings from "./AppSettings";
 import ContentStore from "./ContentStore"
 import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
-import { DeviceStatus } from "./response/DeviceStatusResponse";
+import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {

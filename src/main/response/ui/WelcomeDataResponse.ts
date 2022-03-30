@@ -1,4 +1,4 @@
-import { BaseResponse } from ".";
+import { BaseResponse } from "..";
 
 /** Interface for welcome-data */
 interface WelcomeDataResponse extends BaseResponse {

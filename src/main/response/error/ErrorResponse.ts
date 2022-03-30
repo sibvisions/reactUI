@@ -1,5 +1,5 @@
 /** Other imports */
-import { MessageResponse } from ".";
+import { MessageResponse } from "..";
 
 /** Interface for ErrorResponse */
 interface ErrorResponse extends MessageResponse {

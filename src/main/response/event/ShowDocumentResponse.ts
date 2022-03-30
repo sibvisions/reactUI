@@ -1,5 +1,5 @@
 /** Other imports */
-import { BaseResponse } from ".";
+import { BaseResponse } from "..";
 
 /** Interface for ShowDocumentResponse */
 interface ShowDocumentResponse extends BaseResponse{
