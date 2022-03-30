@@ -108,7 +108,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             setText(props.selectedRow);
         }
         lastValue.current = props.selectedRow;
-    }, [props.selectedRow, providedData]);
+    }, [props.selectedRow]);
 
     const unpackValue = (value: string | string[]) => {
         if (Array.isArray(value)) {
@@ -184,7 +184,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
     const handleInput = (value?: string | string[]) => {
-        const newVal:any = {}
+        const newVal: any = {}
         const linkReference = props.cellEditor.linkReference;
 
         let inputVal = value ? unpackValue(value) : text
@@ -192,10 +192,37 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
-    
+
         /** Returns the values, of the databook, that match the input of the user */
-        let foundData = providedData.some((data: any) => data[refColNames[index]] === inputVal) ?
-            providedData.find((data: any) => data[refColNames[index]] === inputVal) :
+        // check if providedData has an entry exact of inputVal
+        let foundData = 
+        // providedData.some((data: any) => {
+        //     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+        //         if (data[props.cellEditor.displayReferencedColumnName]) {
+        //             return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+        //         }
+        //         else {
+        //             return false;
+        //         }
+        //     }
+        //     else {
+        //         return data[refColNames[index]] === inputVal
+        //     }
+        // }) ?
+        //     // If yes get it
+        //     providedData.find((data: any) => {
+        //         if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+        //             if (data[props.cellEditor.displayReferencedColumnName]) {
+        //                 return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+        //             }
+        //             else {
+        //                 return false;
+        //             }
+        //         }
+        //         else {
+        //             return data[refColNames[index]] === inputVal
+        //         }
+        //     }) :
             providedData.filter((data: any) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
@@ -228,7 +255,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar);
         }
         /** If there is a match found send the value to the server */
-        else if (foundData.length === 1) {                
+        else if (foundData.length === 1) {
             if (props.cellEditor) {
                 if (linkReference.columnNames.length > 1) {
                     /** 
@@ -252,9 +279,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                         sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar);
                     }
                 }
-                    
+
             }
-        
         }
         /** If there is no match found set the old value */
         else {
