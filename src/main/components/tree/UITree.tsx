@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } 
 
 
 /** 3rd Party imports */
-import { Tree } from 'primereact/tree';
+import { Tree, TreeEventNodeParams, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
 import * as _ from 'underscore'
 
 /** Hook imports */
@@ -58,7 +58,7 @@ const UITree: FC<ITree> = (baseProps) => {
     const [nodes, setNodes] = useState<any[]>([]);
 
     /** State of the keys of the nodes which are expanded */
-    const [expandedKeys, setExpandedKeys] = useState<any>({});
+    const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({});
 
     /** State of the key of a single node that is selected */
     const [selectedKey, setSelectedKey] = useState<any>();
@@ -257,15 +257,16 @@ const UITree: FC<ITree> = (baseProps) => {
      * This event is called when a node is expanded, it calls the function to send fetches and sets the treedata
      * @param event - the event sent
      */
-    const onExpandLoad = (event:any) => {
-        const path = new TreePath(JSON.parse(event.node.key));
-        let tempTreeMap:Map<string, any> = new Map([...treeData]);
+    const onExpandLoad = (event:TreeEventNodeParams) => {
+        const key = event.node.key?.toString() ?? "";
+        const path = new TreePath(JSON.parse(key));
+        let tempTreeMap = new Map([...treeData]);
         if (props.detectEndNode !== false) {
             //Only fetch if there is another databook underneath
             if (getDataBook(path.length() + 1)) {
-                const dataRowChildren:any[] = providedData.get(getDataBook(path.length())).get(JSON.stringify(treeData.get(event.node.key)));
+                const dataRowChildren:any[] = providedData.get(getDataBook(path.length())).get(JSON.stringify(treeData.get(key)));
                 Promise.allSettled(dataRowChildren.map((data, i) => {
-                    return sendTreeFetch(data, event.node.children[i])
+                    return sendTreeFetch(data, (event.node.children ?? [])[i])
                         .then((res:any) => tempTreeMap = new Map([...tempTreeMap, ...res.treeMap]));
                 }))
                 .then(() => setTreeData(prevState => new Map([...prevState, ...tempTreeMap])));
@@ -283,8 +284,8 @@ const UITree: FC<ITree> = (baseProps) => {
      * This event is called when a node is selected, it builds the select tree request and sends it to the server
      * @param event 
      */
-    const handleRowSelection = (event:any) => {
-        if (event.value) {
+    const handleRowSelection = (event:TreeSelectionParams) => {
+        if (event.value && typeof event.value === "string") {
             const selectedFilters:Array<SelectFilter|null> = []
             const selectedDatabooks = props.dataBooks;
             let path = new TreePath(JSON.parse(event.value));
@@ -517,6 +518,8 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [selectedRows]);
 
     const focused = useRef<boolean>(false);
+
+    console.log('rndr', nodes, selectedKey, expandedKeys);
 
     return (
         <span 
