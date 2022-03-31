@@ -10,6 +10,8 @@ import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
+import Server from "../../../Server";
+import ContentStore from "../../../ContentStore";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -33,6 +35,22 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
+export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server, contentStore: ContentStore) {
+    const refDataBookInfo = contentStore.getDataBook(screenName, databook)
+    if (currentData
+        && displayCol
+        && !refDataBookInfo?.data
+        && !server.missingDataFetches.includes(databook)) {
+        server.missingDataFetches.push(databook);
+        const fetchReq = createFetchRequest();
+        fetchReq.dataProvider = databook
+        if (refDataBookInfo?.metaData) {
+            fetchReq.includeMetaData = true;
+        }
+        server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
+    }
+}
+
 /**
  * This component displays an input field with a button which provides a dropdownlist with values of a databook
  * when text is entered into the inputfield, the dropdownlist gets filtered
@@ -53,6 +71,18 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** Current state of text value of input element */
     const [text, setText] = useState(props.selectedRow);
+
+    /** True if the linkRef has already been fetched */
+    const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
+
+    /** A map which stores the referenced-column-values as keys and the display-values as value */
+    const displayValueMap = useMemo(() => {
+        const map = new Map<string, string>();
+        if (providedData.length && props.cellEditor.displayReferencedColumnName) {
+            providedData.forEach((data:any) => map.set(data[props.cellEditor.linkReference.referencedColumnNames[0]], data[props.cellEditor.displayReferencedColumnName as string]))
+        }
+        return map;
+    }, [providedData]);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -76,7 +106,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && linkedRef.current){
+        if(onLoadCallback && linkedRef.current) {
             sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), linkedRef.current.container, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
@@ -93,22 +123,32 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
     }, []);
 
+    /** If there is a selectedRow to display, a display-referenced-column and it hasn't been fetched yet, then fetch the reference-databook */
+    useEffect(() => {
+        fetchLinkedRefDatabook(
+            props.screenName, 
+            props.cellEditor.linkReference.referencedDataBook, 
+            props.selectedRow, 
+            props.cellEditor.displayReferencedColumnName, 
+            props.context.server, 
+            props.context.contentStore);
+    }, [props.selectedRow])
+
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
-        if (props.cellEditor.displayReferencedColumnName && providedData) {
-            const foundObj = providedData.find((data:any) => data[props.cellEditor.linkReference.referencedColumnNames[0]] == props.selectedRow);
-            if (foundObj) {
-                setText(foundObj[props.cellEditor.displayReferencedColumnName]);
+        if (props.cellEditor.displayReferencedColumnName) {
+            if (displayValueMap.has(props.selectedRow)) {
+                setText(displayValueMap.get(props.selectedRow));
             }
             else {
-                setText(props.selectedRow);
+                setText("");
             }
         }
         else {
             setText(props.selectedRow);
         }
         lastValue.current = props.selectedRow;
-    }, [props.selectedRow]);
+    }, [props.selectedRow, linkRefFetchFlag]);
 
     const unpackValue = (value: string | string[]) => {
         if (Array.isArray(value)) {

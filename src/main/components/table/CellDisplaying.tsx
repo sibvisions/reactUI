@@ -54,8 +54,7 @@ export function cellRenderer(
     metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, 
     cellData:any, 
     resource:string, 
-    locale:string, 
-    stateFunc?:Function,
+    locale:string
 ) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {

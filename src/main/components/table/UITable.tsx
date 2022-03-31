@@ -853,9 +853,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                             tableEnabled={props.enabled}
                             startEditing={props.startEditing}
                             stopEditing={() => {
-                                const test = context.contentStore.flatContent.get(id);
-                                (test as TableProps).startEditing = false;
-                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                                const table = context.contentStore.flatContent.get(id);
+                                if (table) {
+                                    (table as TableProps).startEditing = false;
+                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                                }
                             }} />
                     }
                 }
