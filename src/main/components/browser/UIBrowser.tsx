@@ -1,23 +1,17 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
+import { useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import BaseComponent from "../../util/types/BaseComponent";
+import { checkComponentName, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
 
-/** Hook imports */
-import { useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
-import BaseComponent from "../BaseComponent";
-import { concatClassnames, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
-
+// Interface for the browser component
 export interface IBrowser extends BaseComponent {
     url: string;
 }
 
 /**
- * This component displays an iframe
+ * This component displays an iframe which displays an url
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIBrowser: FC<IBrowser> = (baseProps) => {
@@ -43,9 +37,9 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
 
     return (
         <span ref={browserRef} style={layoutStyle}>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <iframe
-                id={props.name} 
+                id={checkComponentName(props.name)} 
                 className="rc-mobile-browser"
                 style={{...compStyle}}
                 src={props.url}
@@ -54,6 +48,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left"
                 {...usePopupMenu(props)}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
             />
         </span>
     )

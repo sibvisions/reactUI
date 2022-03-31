@@ -1,20 +1,13 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConstants, useButtonStyling } from "../../zhooks";
-
-/** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConstants, useButtonStyling } from "../../../hooks";
+import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /**
  * This component displays a basic button
@@ -44,24 +37,25 @@ const UIButton: FC<IButton> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
+        if (buttonRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
 
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = () => {
-        const req = createPressButtonRequest();
-        req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+        if (props.eventAction) {
+            const req = createDispatchActionRequest();
+            req.componentId = props.name;
+            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+        }
     }
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
-                id={props.name}
+                id={checkComponentName(props.name)}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",
@@ -73,6 +67,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     btnStyle.iconDirection,
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                    props.focusable === false ? "no-focus-rect" : ""
                 )}
                 style={{
                     ...btnStyle.style,
@@ -96,7 +91,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 aria-label={props.ariaLabel}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
-                tabIndex={props.focusable === false ? -1 : btnStyle.tabIndex}
+                tabIndex={btnStyle.tabIndex}
                 onClick={onButtonPress}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {
@@ -109,7 +104,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                     }
                 }}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-                disabled={props.enabled === false}
+                disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 {...usePopupMenu(props)}

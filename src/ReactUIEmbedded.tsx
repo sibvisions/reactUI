@@ -6,13 +6,12 @@ import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 
 /** UI imports */
-import UIManager from "./frontmask/UIManager";
-import Login from "./frontmask/login/login";
-import LoadingScreen from './frontmask/loading/loadingscreen';
-//import Settings from "./frontmask/settings/Settings"
+import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
+import Login from "./application-frame/login/login";
+import LoadingScreen from './application-frame/loading/loadingscreen';
 
 /** Hook imports */
-import { useStartup } from './main/components/zhooks';
+import { useStartup } from './main/hooks';
 
 /** Other imports */
 import { ICustomContent } from "./MiddleMan";
@@ -45,7 +44,6 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                            {/* <Route exact path={"/settings"} render={() => <Settings />}/> */}
                             <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                         </Switch>
                     </div>

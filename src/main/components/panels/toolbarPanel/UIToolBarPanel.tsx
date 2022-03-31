@@ -1,16 +1,11 @@
-/** React imports */
-import React, { FC, useCallback, useEffect, useRef } from "react";
-
-/** 3rd Party imports */
+import React, { FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
 import { IPanel } from "..";
+import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {
@@ -18,12 +13,16 @@ export interface IToolBarPanel extends IPanel {
     toolBarVisible?:boolean
 }
 
+/**
+ * Renders a ToolbarPanel which contains two helpers, main is the toolbar which has the toolbar components and center is the content/layout of the toolbarpanel
+ * @param baseProps - the baseprops sent by the server
+ */
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -31,6 +30,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
 
+    /** The reference element for the toolbarpanel */
     const panelRef = useRef<any>(null);
 
     /** Hook for MouseListener */
@@ -56,10 +56,10 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
@@ -89,7 +89,8 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                         layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
-                        props.screen_size_
+                        props.screen_size_,
+                        appVersion.version
                     )}
                     parent={props.parent}
                 />

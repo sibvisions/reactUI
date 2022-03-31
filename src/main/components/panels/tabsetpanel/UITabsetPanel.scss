@@ -25,6 +25,10 @@
                     min-width: 48px;
                     position: relative;
                     overflow: hidden;
+
+                    .p-tabview-close {
+                        font-size: 12px;
+                    }
                 }
                 .rc-tabset-tabicon {
                     display: inline-block;
@@ -47,6 +51,7 @@
 
     .p-tabview-title {
         position: relative;
+        line-height: unset;
     }
 }
 

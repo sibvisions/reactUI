@@ -32,7 +32,9 @@ import { StartupRequest,
          FocusGainedRequest,
          FocusLostRequest,
          CloseFrameRequest,
-         CloseContentRequest} from "../request";
+         CloseContentRequest,
+         DispatchActionRequest,
+         BoundsRequest} from "../request";
 
 /**
  * Returns the ClientId from the local storage
@@ -136,6 +138,14 @@ export const createPressButtonRequest = (values?: PressButtonRequest): PressButt
     return req;
 }
 
+export const createDispatchActionRequest = (values?:DispatchActionRequest): DispatchActionRequest => {
+    const req: DispatchActionRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId
+    }
+    return req;
+}
+
 /**
  * Returns a openScreenRequest object with either properties which can be overwritten or properties as parameters
  * @param values - properties for the openScreenRequest
@@ -188,7 +198,8 @@ export const createSelectRowRequest = (values?: SelectRowRequest): SelectRowRequ
         componentId: values?.componentId,
         dataProvider: values?.dataProvider,
         filter: values?.filter,
-        selectedColumn: values?.selectedColumn
+        selectedColumn: values?.selectedColumn,
+        rowNumber: values?.rowNumber
     }
     return req
 }
@@ -525,6 +536,23 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
     const req: CloseContentRequest = {
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId
+    }
+    return req;
+}
+
+/**
+ * Returns a mouse-clicked-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the mouse-clicked-request
+ * @returns a mouse-clicked-request object
+ */
+ export const createBoundsRequest = (values?: BoundsRequest): BoundsRequest => {
+    const req:BoundsRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        width: values?.width,
+        height: values?.height,
+        x: values?.x,
+        y: values?.y,
     }
     return req;
 }

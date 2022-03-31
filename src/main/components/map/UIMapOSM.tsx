@@ -1,16 +1,9 @@
-/** React imports */
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../zhooks";
-
-/** Other imports */
+import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../../hooks";
 import { appContext } from "../../AppProvider";
 import { getMarkerIcon, 
          parseMapLocation, 
@@ -22,9 +15,11 @@ import { getMarkerIcon,
          sendMapFetchRequests, 
          sortGroupDataOSM, 
          sendSaveRequest, 
-         MapLocation} from "../util";
-import BaseComponent from "../BaseComponent";
-import { IconProps } from "../compprops";
+         MapLocation,
+         checkComponentName,
+         getTabIndex} from "../../util";
+import BaseComponent from "../../util/types/BaseComponent";
+import { IconProps } from "../comp-props";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 
 /** Interface for Map components */
@@ -57,6 +52,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
 
+    /** The positioning and size of the component */
     const layoutStyle = useLayoutValue(baseProps.id);
 
     /** Current state of the properties for the component sent by the server */
@@ -74,6 +70,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** The popup-menu of the map */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -90,8 +87,8 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
      */
     if (layoutStyle) {
         return (
-            <div ref={mapRef} {...popupMenu} style={layoutStyle}>
-                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+            <div ref={mapRef} {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
+                <MapContainer id={checkComponentName(props.name)} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>
             </div>
@@ -124,13 +121,13 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const topbar = useContext(TopBarContext);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(screenName, props.groupDataBook);
 
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
 
     /** The marker used for the point Selection.*/
     const [selectedMarker, setSelectedMarker] = useState<any>();
@@ -205,7 +202,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
     const onMoveEnd = useCallback((e) => {
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, undefined, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
@@ -214,7 +211,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     const onClick = useCallback((e) => {
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], context.server);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], context.server, undefined, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])

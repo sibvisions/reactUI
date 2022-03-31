@@ -48,7 +48,8 @@
   --tab-padding: 0rem 1rem;
   --table-header-padding: 0.6rem 1rem;
   --table-data-height: 27px;
-  --label-padding: 9px; }
+  --label-padding: 9px;
+  --menubar-height: 40px; }
 
 body {
   font-size: var(--font-size);
@@ -61,6 +62,10 @@ body {
 
 .login-form .login-logo-wrapper {
   padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
+
+.basti .p-menubar {
+  padding: 0;
+  height: var(--menubar-height); }
 
 .basti .std-menu.menu-collapsed .menu-logo-wrapper {
   width: var(--std-menu-collapsed-width); }
@@ -93,13 +98,16 @@ body {
   width: var(--std-topbar-buttons);
   height: var(--std-topbar-buttons); }
 
-.basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-  height: var(--std-profile-height);
-  padding: var(--std-profile-padding); }
-
-.basti .std-menu .profile-menu .p-menubar .p-submenu-list {
-  width: calc(100% - var(--std-profile-separator-margin));
-  margin-left: var(--std-profile-separator-margin); }
+.basti .std-menu .profile-menu {
+  height: var(--std-profile-height); }
+  .basti .std-menu .profile-menu .p-menubar {
+    height: 100%; }
+    .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+      height: var(--std-profile-height);
+      padding: var(--std-profile-padding); }
+    .basti .std-menu .profile-menu .p-menubar .p-submenu-list {
+      width: calc(100% - var(--std-profile-separator-margin));
+      margin-left: var(--std-profile-separator-margin); }
 
 .basti .std-menu .profile-image, .basti .std-menu .profile-image-null {
   width: var(--std-profile-pic);

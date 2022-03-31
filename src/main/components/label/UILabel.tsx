@@ -1,17 +1,10 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
-
-/** 3rd Party imports */
 import { Tooltip } from 'primereact/tooltip';
-
-/** Hook imports */
-import { useComponentConstants, useMouseListener } from "../zhooks";
-
-/** Other imports */
-import BaseComponent from "../BaseComponent";
-import {getFont, getAlignments, translateTextAlign} from "../compprops";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
-import usePopupMenu from "../zhooks/usePopupMenu";
+import { useComponentConstants, useMouseListener } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import {getAlignments, translateTextAlign} from "../comp-props";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex} from "../../util";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
 /**
  * Displays a simple label
@@ -30,8 +23,10 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
 
+    /** The text-alignment of the label */
     const lblTextAlignment = translateTextAlign(props.horizontalAlignment);
 
+    /** True, if the label contains html */
     const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
 
     /** Hook for MouseListener */
@@ -40,7 +35,6 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            let minSize = parseMinSize(props.minimumSize);
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
@@ -48,14 +42,14 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <>
-        <Tooltip target={"#" + props.name + "-text"} />
+        <Tooltip target={"#" + checkComponentName(props.name) + "-text"} />
         <span
             {...usePopupMenu(props)}
-            id={props.name}
+            id={checkComponentName(props.name)}
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
-                props.eventMousePressed ? "mouse-pressed-event" : ""
+                props.eventMousePressed ? "mouse-pressed-event" : "",
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped
@@ -64,7 +58,8 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 ...lblTextAlignment,
                 ...layoutStyle,
                 ...compStyle
-            }}>
+            }}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <span 
                 id={props.name + "-text"} 
                 ref={labelRef} 

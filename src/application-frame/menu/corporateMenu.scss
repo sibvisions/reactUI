@@ -1,0 +1,75 @@
+@import '../styling/scssutil/scrollbar.scss';
+
+/// No blue borders on focus
+.corp-menu {
+    :focus {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+    }
+}
+
+.corp-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.corp-menu-profile {
+    display: flex;
+    align-items: center;
+}
+
+.p-menubar {
+    border-radius: 0;
+    .p-submenu-list {
+        max-height: 600px;
+        overflow: auto;
+    }
+}
+
+.corp-menu-logo-wrapper {
+    margin-left: 10px;
+    display: flex;
+    transition: max-width 0.5s ease-out;
+}
+
+.p-menubar {
+    .p-menubar-root-list {
+        @include styledScrollbarCorp();
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: inherit;
+
+        >.p-menuitem {
+            float: left;
+            position: unset;
+        }
+    }
+}
+
+.p-speeddial {
+    z-index: auto;
+    position: relative;
+    .p-speeddial-button.p-button.p-button-icon-only {
+        padding: 0;
+    }
+
+    &.p-speeddial-opened {
+        .p-speeddial-list {
+            z-index: 10;
+        }
+    }
+}
+
+@media screen and (max-width: 530px) {
+    .corp-menu-header {
+        justify-content: unset;
+        .corp-menu-logo-wrapper {
+            max-width: 0px !important;
+            transition: max-width 0.5s ease-out;
+        }
+        .corp-menu-profile {
+            margin-left: auto;
+        }
+    }
+}

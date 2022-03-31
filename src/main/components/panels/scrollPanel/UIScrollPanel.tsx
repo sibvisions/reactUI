@@ -1,17 +1,11 @@
-/** React imports */
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
-
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import { IPanel } from "..";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
+import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -22,7 +16,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -46,7 +40,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_);
+        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, appVersion.version);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {
@@ -109,10 +103,10 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className={concatClassnames(
                     "rc-scrollpanel"
                 )}

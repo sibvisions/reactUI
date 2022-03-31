@@ -33,18 +33,130 @@ import { ApplicationMetaDataResponse,
          ContentResponse,
          CloseContentResponse} from "./response";
 import { createFetchRequest } from "./factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "./request";
 import { IPanel } from "./components/panels"
 import { SubscriptionManager } from "./SubscriptionManager";
 import { History } from "history";
 import TreePath from "./model/TreePath";
-import AppSettings from "./AppSettings";
+import AppSettings, { appVersion } from "./AppSettings";
 import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import UIResponse from "./response/ui/UIResponse";
+import { REQUEST_KEYWORDS } from "./request";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
     IMMEDIATE = "immediate"
+}
+
+
+/** Enum for server request endpoints */
+enum REQUEST_ENDPOINTS {
+    //application/UI
+    STARTUP = "/api/v4/startup",
+    UI_REFRESH = "/api/uiRefresh",
+    DEVICE_STATUS = "/api/deviceStatus",
+    CLOSE_FRAME = "/api/closeFrame",
+    OPEN_SCREEN = "/api/v2/openScreen",
+    CLOSE_SCREEN = "/api/closeScreen",
+    CLOSE_CONTENT = "/api/closeContent",
+    REOPEN_SCREEN = "/api/reopenScreen",
+
+    //login/account-management
+    LOGIN = "/api/v2/login",
+    LOGOUT = "/api/logout",
+    CHANGE_PASSWORD = "/api/changePassword",
+    RESET_PASSWORD = "/api/resetPassword",
+
+    //events
+    PRESS_BUTTON = "/api/v2/pressButton",
+    MOUSE_CLICKED = "/api/mouseClicked",
+    MOUSE_PRESSED = "/api/mousePressed",
+    MOUSE_RELEASED = "/api/mouseReleased",
+    FOCUS_GAINED = "/api/focusGained",
+    FOCUS_LOST = "/api/focusLost",
+    
+    //upload
+    UPLOAD = "/upload",
+
+    //data
+    METADATA = "/api/dal/metaData",
+    FETCH = "/api/dal/fetch",
+    SELECT_ROW = "/api/dal/selectRecord",
+    SELECT_TREE = "/api/dal/selectRecordTree",
+    SELECT_COLUMN = "/api/dal/selectColumn",
+    DELETE_RECORD = "/api/dal/deleteRecord",
+    INSERT_RECORD = "/api/dal/insertRecord",
+    SET_VALUES = "/api/dal/setValues",
+    FILTER = "/api/dal/filter",
+    DAL_SAVE = "/api/dal/save",
+    SORT = "/api/dal/sort",
+
+    //comp
+    SET_VALUE = "/api/comp/setValue",
+    SELECT_TAB = "/api/comp/selectTab",
+    CLOSE_TAB = "/api/comp/closeTab",
+    CLOSE_POPUP_MENU = "/api/comp/closePopupMenu ",
+    
+    //other
+    SAVE = "/api/save",
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    RELOAD = "/api/reload",
+    ROLLBACK = "/api/rollback",
+    CHANGES = "/api/changes",
+}
+
+/** Enum for server request endpoints version 2 */
+enum REQUEST_ENDPOINTS_V2 {
+    //application/UI
+    STARTUP = "/v2/api/startup",
+    EXIT = "/v2/api/exit",
+    DEVICE_STATUS="/v2/api/deviceStatus",
+    UI_REFRESH = "/v2/api/uiRefresh",
+    CLOSE_FRAME = "/v2/api/closeFrame",
+
+    //events
+    DISPATCH_ACTION = "/v2/api/dispatchAction",
+    MOUSE_CLICKED = "/v2/api/mouseClicked",
+    MOUSE_PRESSED = "/v2/api/mousePressed",
+    MOUSE_RELEASED = "/v2/api/mouseReleased",
+    FOCUS_GAINED = "/v2/api/focusGained",
+    FOCUS_LOST = "/v2/api/focusLost",
+
+    //data
+    METADATA="/v2/api/dal/metaData",
+    FETCH="/v2/api/dal/fetch",
+    SELECT_ROW = "/v2/api/dal/selectRecord",
+    SELECT_TREE = "/v2/api/dal/selectRecordTree",
+    SELECT_COLUMN = "/v2/api/dal/selectColumn",
+    DELETE_RECORD = "/v2/api/dal/deleteRecord",
+    INSERT_RECORD = "/v2/api/dal/insertRecord",
+    SET_VALUES = "/v2/api/dal/setValues",
+    FILTER = "/v2/api/dal/filter",
+    DAL_SAVE = "/v2/api/dal/save",
+    SORT = "/v2/api/dal/sort",
+
+    //comp
+    SET_VALUE = "/v2/api/comp/setValue",
+    SELECT_TAB = "/v2/api/comp/selectTab",
+    CLOSE_TAB = "/v2/api/comp/closeTab",
+    CLOSE_POPUP_MENU = "/v2/api/comp/closePopupMenu ",
+    BOUNDS = "/v2/api/comp/bounds",
+
+    //remaining v1
+    LOGIN = "/api/v2/login",
+    LOGOUT = "/api/logout",
+    CLOSE_SCREEN = "/api/closeScreen",
+    OPEN_SCREEN = "/api/v2/openScreen",
+    UPLOAD = "/upload",
+    CHANGE_PASSWORD = "/api/changePassword",
+    RESET_PASSWORD = "/api/resetPassword",
+    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    RELOAD = "/api/reload",
+    ROLLBACK = "/api/rollback",
+    CHANGES = "/api/changes",
+    CLOSE_CONTENT = "/api/closeContent",
+    REOPEN_SCREEN = "/api/reopenScreen",
+    SAVE = "/api/save"
 }
 
 /** Server class sends requests and handles responses */
@@ -78,6 +190,7 @@ class Server {
     subManager:SubscriptionManager;
     /** AppSettings instance */
     appSettings:AppSettings;
+
     /** the react routers history object */
     history?:History<any>;
     /** a map of still open requests */
@@ -89,6 +202,8 @@ class Server {
     /** embedded options, null if not defined */
     embedOptions:{ [key:string]:any }|null = null;
 
+    lastOpenedScreen = "";
+
     api:API;
 
     onMenuFunction:Function = () => {};
@@ -99,7 +214,9 @@ class Server {
 
     lastClosedWasPopUp = false;
 
-    
+    missingDataFetches:string[] = [];
+
+    timeoutMs = 10000
 
     setAPI(api:API) {
         this.api = api;
@@ -155,6 +272,86 @@ class Server {
 
     /** ----------SENDING-REQUESTS---------- */
 
+    setEndPointMap(v= 1) {
+        const map = new Map<string, string>()
+        .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
+        .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
+        .set(REQUEST_KEYWORDS.CLOSE_CONTENT, REQUEST_ENDPOINTS.CLOSE_CONTENT)
+        .set(REQUEST_KEYWORDS.REOPEN_SCREEN, REQUEST_ENDPOINTS.REOPEN_SCREEN)
+        .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS_V2.EXIT)
+        .set(REQUEST_KEYWORDS.LOGIN, REQUEST_ENDPOINTS.LOGIN)
+        .set(REQUEST_KEYWORDS.LOGOUT, REQUEST_ENDPOINTS.LOGOUT)
+        .set(REQUEST_KEYWORDS.CHANGE_PASSWORD, REQUEST_ENDPOINTS.CHANGE_PASSWORD)
+        .set(REQUEST_KEYWORDS.RESET_PASSWORD, REQUEST_ENDPOINTS.RESET_PASSWORD)
+        .set(REQUEST_KEYWORDS.UPLOAD, REQUEST_ENDPOINTS.UPLOAD)
+        .set(REQUEST_KEYWORDS.BOUNDS, REQUEST_ENDPOINTS_V2.BOUNDS)
+        .set(REQUEST_KEYWORDS.SAVE, REQUEST_ENDPOINTS.SAVE)
+        .set(REQUEST_KEYWORDS.SET_SCREEN_PARAMETER, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER)
+        .set(REQUEST_KEYWORDS.RELOAD, REQUEST_ENDPOINTS.RELOAD)
+        .set(REQUEST_KEYWORDS.ROLLBACK, REQUEST_ENDPOINTS.ROLLBACK)
+        .set(REQUEST_KEYWORDS.CHANGES, REQUEST_ENDPOINTS.CHANGES)
+        if (v === 1) {
+            map
+            .set(REQUEST_KEYWORDS.STARTUP, REQUEST_ENDPOINTS.STARTUP)
+            .set(REQUEST_KEYWORDS.UI_REFRESH, REQUEST_ENDPOINTS.UI_REFRESH)
+            .set(REQUEST_KEYWORDS.DEVICE_STATUS, REQUEST_ENDPOINTS.DEVICE_STATUS)
+            .set(REQUEST_KEYWORDS.CLOSE_FRAME, REQUEST_ENDPOINTS.CLOSE_FRAME)
+            .set(REQUEST_KEYWORDS.PRESS_BUTTON, REQUEST_ENDPOINTS.PRESS_BUTTON)
+            .set(REQUEST_KEYWORDS.MOUSE_CLICKED, REQUEST_ENDPOINTS.MOUSE_CLICKED)
+            .set(REQUEST_KEYWORDS.MOUSE_PRESSED, REQUEST_ENDPOINTS.MOUSE_PRESSED)
+            .set(REQUEST_KEYWORDS.MOUSE_RELEASED, REQUEST_ENDPOINTS.MOUSE_RELEASED)
+            .set(REQUEST_KEYWORDS.FOCUS_GAINED, REQUEST_ENDPOINTS.FOCUS_GAINED)
+            .set(REQUEST_KEYWORDS.FOCUS_LOST, REQUEST_ENDPOINTS.FOCUS_LOST)
+            .set(REQUEST_KEYWORDS.METADATA, REQUEST_ENDPOINTS.METADATA)
+            .set(REQUEST_KEYWORDS.FETCH, REQUEST_ENDPOINTS.FETCH)
+            .set(REQUEST_KEYWORDS.SELECT_ROW, REQUEST_ENDPOINTS.SELECT_ROW)
+            .set(REQUEST_KEYWORDS.SELECT_TREE, REQUEST_ENDPOINTS.SELECT_TREE)
+            .set(REQUEST_KEYWORDS.SELECT_COLUMN, REQUEST_ENDPOINTS.SELECT_COLUMN)
+            .set(REQUEST_KEYWORDS.DELETE_RECORD, REQUEST_ENDPOINTS.DELETE_RECORD)
+            .set(REQUEST_KEYWORDS.INSERT_RECORD, REQUEST_ENDPOINTS.INSERT_RECORD)
+            .set(REQUEST_KEYWORDS.SET_VALUES, REQUEST_ENDPOINTS.SET_VALUES)
+            .set(REQUEST_KEYWORDS.FILTER, REQUEST_ENDPOINTS.FILTER)
+            .set(REQUEST_KEYWORDS.DAL_SAVE, REQUEST_ENDPOINTS.DAL_SAVE)
+            .set(REQUEST_KEYWORDS.SORT, REQUEST_ENDPOINTS.SORT)
+            .set(REQUEST_KEYWORDS.SET_VALUE, REQUEST_ENDPOINTS.SET_VALUE)
+            .set(REQUEST_KEYWORDS.SELECT_TAB, REQUEST_ENDPOINTS.SELECT_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
+        }
+        else {
+            map
+            .set(REQUEST_KEYWORDS.STARTUP, REQUEST_ENDPOINTS_V2.STARTUP)
+            .set(REQUEST_KEYWORDS.UI_REFRESH, REQUEST_ENDPOINTS_V2.UI_REFRESH)
+            .set(REQUEST_KEYWORDS.DEVICE_STATUS, REQUEST_ENDPOINTS_V2.DEVICE_STATUS)
+            .set(REQUEST_KEYWORDS.CLOSE_FRAME, REQUEST_ENDPOINTS_V2.CLOSE_FRAME)
+            .set(REQUEST_KEYWORDS.PRESS_BUTTON, REQUEST_ENDPOINTS_V2.DISPATCH_ACTION)
+            .set(REQUEST_KEYWORDS.MOUSE_CLICKED, REQUEST_ENDPOINTS_V2.MOUSE_CLICKED)
+            .set(REQUEST_KEYWORDS.MOUSE_PRESSED, REQUEST_ENDPOINTS_V2.MOUSE_PRESSED)
+            .set(REQUEST_KEYWORDS.MOUSE_RELEASED, REQUEST_ENDPOINTS_V2.MOUSE_RELEASED)
+            .set(REQUEST_KEYWORDS.FOCUS_GAINED, REQUEST_ENDPOINTS_V2.FOCUS_GAINED)
+            .set(REQUEST_KEYWORDS.FOCUS_LOST, REQUEST_ENDPOINTS_V2.FOCUS_LOST)
+            .set(REQUEST_KEYWORDS.METADATA, REQUEST_ENDPOINTS_V2.METADATA)
+            .set(REQUEST_KEYWORDS.FETCH, REQUEST_ENDPOINTS_V2.FETCH)
+            .set(REQUEST_KEYWORDS.SELECT_ROW, REQUEST_ENDPOINTS_V2.SELECT_ROW)
+            .set(REQUEST_KEYWORDS.SELECT_TREE, REQUEST_ENDPOINTS_V2.SELECT_TREE)
+            .set(REQUEST_KEYWORDS.SELECT_COLUMN, REQUEST_ENDPOINTS_V2.SELECT_COLUMN)
+            .set(REQUEST_KEYWORDS.DELETE_RECORD, REQUEST_ENDPOINTS_V2.DELETE_RECORD)
+            .set(REQUEST_KEYWORDS.INSERT_RECORD, REQUEST_ENDPOINTS_V2.INSERT_RECORD)
+            .set(REQUEST_KEYWORDS.SET_VALUES, REQUEST_ENDPOINTS_V2.SET_VALUES)
+            .set(REQUEST_KEYWORDS.FILTER, REQUEST_ENDPOINTS_V2.FILTER)
+            .set(REQUEST_KEYWORDS.DAL_SAVE, REQUEST_ENDPOINTS_V2.DAL_SAVE)
+            .set(REQUEST_KEYWORDS.SORT, REQUEST_ENDPOINTS_V2.SORT)
+            .set(REQUEST_KEYWORDS.SET_VALUE, REQUEST_ENDPOINTS_V2.SET_VALUE)
+            .set(REQUEST_KEYWORDS.SELECT_TAB, REQUEST_ENDPOINTS_V2.SELECT_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS_V2.CLOSE_TAB)
+            .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS_V2.CLOSE_POPUP_MENU)
+        }
+        return map
+    }
+
+    endpointMap = this.setEndPointMap(appVersion.version);
+
+
     /**
      * Sends a request to the server and handles its response, if there are jobs in the
      * SubscriptionManagers JobQueue, call them after the response handling is complete
@@ -178,31 +375,32 @@ class Server {
         let promise = new Promise<any>((resolve, reject) => {
             if (
                 request.componentId 
-                && endpoint !== REQUEST_ENDPOINTS.OPEN_SCREEN 
-                && endpoint !== REQUEST_ENDPOINTS.CLOSE_FRAME 
+                && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
+                && endpoint !== REQUEST_KEYWORDS.CLOSE_FRAME 
                 && !this.componentExists(request.componentId)
             ) {
                 reject("Component doesn't exist");
             } else {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
+                    let finalEndpoint = this.endpointMap.get(endpoint)
                     this.timeoutRequest(
-                        fetch(this.BASE_URL + endpoint, this.buildReqOpts(request)), 
-                        10000, 
+                        fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
+                        this.timeoutMs, 
                         () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
                     )
-                        .then((response: any) => response.json())
+                        .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
                             if (this.appSettings.applicationMetaData.aliveInterval) {
                                 this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
                             }
                             
                             if (result.code) {
-                                if (400 >= result.code && result.code <= 599) {
+                                if (400 <= result.code && result.code <= 599) {
                                     return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
                                 }
                             }
                             return result;
-                        })
+                        }, (err) => Promise.reject(err))
                         .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
                         .then(results => {
                             if (fn) {
@@ -223,13 +421,22 @@ class Server {
                         .catch(error => {
                             if (typeof error === "string") {
                                 const splitErr = error.split(".");
-                                this.subManager.emitDialog("server", false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                const code = error.substring(0, 3);
+                                if (code === "410") {
+                                    this.subManager.emitDialog("server", false, true, splitErr[0], splitErr[1] + ". <u>Click here!</u> or press Escape to retry!");
+                                }
+                                else {
+                                    this.subManager.emitDialog("server", false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                }
                             }
                             else {
-                                this.subManager.emitDialog("server", false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitDialog("server", false, false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                             }
-                            this.subManager.emitErrorDialogVisible(true);
-                            console.error(error)
+                            if (error !== "no valid json") {
+                                this.subManager.emitErrorDialogVisible(true);
+                            }
+                            reject(error);
+                            console.error(error);
                         }).finally(() => {
                             this.openRequests.delete(request);
                         });
@@ -267,7 +474,7 @@ class Server {
             const request = this.requestQueue.shift();
             if (request) {
                 this.requestInProgress = true;
-                request().finally(() => {
+                request().catch(() => {}).finally(() => {
                     this.requestInProgress = false;
                     this.advanceRequestQueue();
                 });
@@ -283,7 +490,7 @@ class Server {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here to retry!</u> or press Escape to retry!", retry);
+                this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here!</u> or press Escape to retry!", retry);
                 this.subManager.emitErrorDialogVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
@@ -292,7 +499,7 @@ class Server {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitDialog("server", false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
+                    this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds. <u>Click here</u> or press Escape to retry!", retry);
                     this.subManager.emitErrorDialogVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
@@ -329,7 +536,8 @@ class Server {
         .set(RESPONSE_NAMES.DIALOG, this.showMessageDialog.bind(this))
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
-        .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this));
+        .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
+        .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this));
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -340,11 +548,19 @@ class Server {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses)) {
-            responses.forEach((response, idx) => {
-                if (response.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
-                    responses.splice(0, 0, responses.splice(idx, 1)[0]);
-                }
-                else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
+            // responses.sort((a, b) => {
+            //     if (a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+            //         return -1;
+            //     }
+            //     else if (b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
+            //         return 1;
+            //     }
+            //     else {
+            //         return 0;
+            //     }
+            // });
+            responses.forEach((response) => {
+                if (response.name === RESPONSE_NAMES.SCREEN_GENERIC && !(response as GenericResponse).update) {
                     isOpen = true;
                 }
             });
@@ -361,7 +577,9 @@ class Server {
                     
                 }
             }
-            this.routingDecider(responses);
+            if (this.appSettings.version !== 2) {
+                this.routingDecider(responses);
+            }
         }
 
         return responses;
@@ -426,10 +644,30 @@ class Server {
         if (!genericData.update) {
             let workScreen:IPanel|undefined
             if(genericData.changedComponents && genericData.changedComponents.length) {
-                workScreen = genericData.changedComponents[0] as IPanel;
-                this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
-                if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
-                    this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
+                    workScreen = genericData.changedComponents[0] as IPanel;
+
+                    /** 
+                     * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
+                     * to the navigation-name, if not, don't add anything, and call setNavigationName
+                     */
+                    if (workScreen.screen_navigationName_) {
+                        let increment: number | string = 0;
+                        for (let value of this.contentStore.navigationNames.values()) {
+                            if (value.replace(/\s\d+$/, '') === workScreen.screen_navigationName_)
+                                increment++
+                        }
+                        if (increment === 0 || (increment === 1 && this.contentStore.navigationNames.has(workScreen.name))) {
+                            increment = '';
+                        }
+                        this.contentStore.navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
+                        this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
+                    }
+                    this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+
+                    if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
+                        this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                    }
                 }
             }
             this.onOpenScreenFunction();
@@ -482,33 +720,49 @@ class Server {
     }
 
     //Dal
+
+    getScreenName(dataProvider:string) {
+        if (appVersion.version === 2) {
+            return dataProvider.split("/")[1];
+        }
+        else {
+            const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
+            if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
+                return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+            }
+            else {
+                return dataProvider.split("/")[1];
+            }
+        }
+    }
+
     /**
      * Sets the selectedRow, if selectedRowIndex === -1 clear selectedRow and trigger selectedRow update
      * @param selectedRowIndex - the index of the selectedRow
      * @param dataProvider - the dataprovider
      */
     processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const screenName = this.getScreenName(dataProvider);
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
-            const selectedRow = this.contentStore.getDataRow(compId, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
+            const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
+            this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
         } 
         else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
-                const selectedRow = this.contentStore.getDataRow(compId, dataProvider, treePath.getLast());
-                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
+                const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, treePath.getLast());
+                this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, treePath.getLast(), treePath.getParentPath(), selectedColumn)
             }
             else {
-                //this.contentStore.clearSelectedRow(compId, dataProvider);
-                this.contentStore.setSelectedRow(compId, dataProvider, {}, -1, undefined, selectedColumn)
+                //this.contentStore.clearSelectedRow(screenName, dataProvider);
+                this.contentStore.setSelectedRow(screenName, dataProvider, {}, -1, undefined, selectedColumn)
             }
         }
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
-            if(this.contentStore.getDataBook(compId, dataProvider)?.selectedRow) {
-                const selectedRow = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.dataRow;
-                const idx = this.contentStore.getDataBook(compId, dataProvider)!.selectedRow!.index;
-                this.contentStore.setSelectedRow(compId, dataProvider, selectedRow, idx, treePath, selectedColumn);
+            if(this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow) {
+                const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)!.selectedRow!.dataRow;
+                const idx = this.contentStore.getDataBook(screenName, dataProvider)!.selectedRow!.index;
+                this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, idx, treePath, selectedColumn);
             }
         }
     }
@@ -559,13 +813,13 @@ class Server {
      */
     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const screenName = this.getScreenName(fetchData.dataProvider);
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
                 
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
-            compId, 
+            screenName, 
             fetchData.dataProvider, 
             builtData, 
             fetchData.to, 
@@ -573,16 +827,21 @@ class Server {
             fetchData.treePath,
             detailMapKey,
             fetchData.recordFormat,
+            fetchData.clear
         );
 
-        if (this.contentStore.getDataBook(compId, fetchData.dataProvider)) {
-            this.contentStore.getDataBook(compId, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
+        if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
+            this.contentStore.getDataBook(screenName, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
         }
         
-        this.contentStore.setSortDefinition(compId, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
+        this.contentStore.setSortDefinition(screenName, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
-        const selectedColumn = this.contentStore.getDataBook(compId, fetchData.dataProvider)?.selectedRow?.selectedColumn;
+        const selectedColumn = this.contentStore.getDataBook(screenName, fetchData.dataProvider)?.selectedRow?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
+
+        if (this.missingDataFetches.includes(fetchData.dataProvider)) {
+            this.missingDataFetches.splice(this.missingDataFetches.indexOf(fetchData.dataProvider), 1);
+        }
     }
 
     /**
@@ -592,43 +851,43 @@ class Server {
      * @param changedProvider - the dataProviderChangedResponse
      */
     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        const screenName = this.getScreenName(changedProvider.dataProvider);
 
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
-            this.contentStore.updateDataProviderData(compId, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
-            const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn
+            this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
+            const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
         else {
             if(changedProvider.reload === -1) {
-                this.contentStore.clearDataFromProvider(compId, changedProvider.dataProvider);
+                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
+                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
             } 
             else if(changedProvider.reload !== undefined) {
                 const fetchReq = createFetchRequest();
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
+                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
             }
             else {
-                const selectedColumn = this.contentStore.getDataBook(compId, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
+                const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
                 this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
             }
         }
     }
 
     /**
-     * Checks if some metaData already exists for this compId and either sets new/updated metaData in existing map or creates new map for metadata
+     * Checks if some metaData already exists for this screenName and either sets new/updated metaData in existing map or creates new map for metadata
      * @param metaData - the metaDataResponse
      */
     processMetaData(metaData: MetaDataResponse) {
-        const compId = this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
-        const compPanel = this.contentStore.getComponentByName(compId) as IPanel;
-        const existingMap = this.contentStore.getScreenDataproviderMap(compId);
+        const screenName = this.getScreenName(metaData.dataProvider);
+        const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
+        const existingMap = this.contentStore.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {
                 (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
@@ -640,9 +899,9 @@ class Server {
         else {
             const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
             tempMap.set(metaData.dataProvider, {metaData: metaData})
-            this.contentStore.dataBooks.set(compId, tempMap);
+            this.contentStore.dataBooks.set(screenName, tempMap);
         }
-        this.subManager.notifyMetaDataChange(compId, metaData.dataProvider);
+        this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
         if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
             this.subManager.notifyMetaDataChange(metaData.dataProvider.split('/')[1], metaData.dataProvider);
         }
@@ -670,7 +929,7 @@ class Server {
                 credentials:"include",
             };
 
-            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_ENDPOINTS.UPLOAD, reqOpt), 10000)
+            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_KEYWORDS.UPLOAD, reqOpt), 10000)
                 .then((response: any) => response.json())
                 .then(this.responseHandler.bind(this))
                 .catch(error => console.error(error));
@@ -708,7 +967,7 @@ class Server {
      * @param expData - the sessionExpiredResponse
      */
     sessionExpired(expData: SessionExpiredResponse) {
-        this.subManager.emitDialog("server", true, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
+        this.subManager.emitDialog("server", true, false, this.contentStore.translation.get("Session expired!"), this.contentStore.translation.get("Take note of any unsaved data, and <u>click here</u> or press ESC to continue."));
         this.subManager.emitErrorDialogVisible(true);
         this.contentStore.reset();
         sessionStorage.clear();
@@ -761,7 +1020,7 @@ class Server {
      * @param langData - the language data
      */
     language(langData:LanguageResponse) {
-        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), 2000)
+        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
         .then((response:any) => response.text())
         .then(value => parseString(value, (err, result) => { 
             if (result) {
@@ -808,17 +1067,23 @@ class Server {
     }
 
     closeFrame(closeFrameData:CloseFrameResponse) {
-        this.subManager.emitCloseFrame(closeFrameData.componentId);
+        this.subManager.emitCloseFrame();
     }
 
     content(contentData:ContentResponse) {
+        let workScreen:IPanel|undefined
         if (contentData.changedComponents && contentData.changedComponents.length) {
             this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
-            let workScreen:IPanel|undefined
             if(contentData.changedComponents && contentData.changedComponents.length) {
                 workScreen = contentData.changedComponents[0] as IPanel
+                this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+            }
+        }
+        else {
+            workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
+            if (workScreen.content_modal_) {
                 this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
         }
@@ -846,8 +1111,8 @@ class Server {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "home";
-                    this.appSettings.setAppReadyParam("userOrLogin");
                 }
+                this.appSettings.setAppReadyParam("userOrLogin");
             }
             else if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
                 const GResponse = (response as GenericResponse);
@@ -896,15 +1161,23 @@ class Server {
                     this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }
-            //    else if (response.name === "settings") {
-            //        routeTo = "home/settings";
-            //    }
         });
-
-
         if (routeTo) {
             //window.location.hash = "/"+routeTo
             this.history?.push(`/${routeTo}`);
+        }
+    }
+
+    /// V2
+
+    handleUIResponse(uiData:UIResponse) {
+        let firstComp:IPanel|undefined
+        if(uiData.changedComponents && uiData.changedComponents.length) {
+            this.contentStore.updateContent(uiData.changedComponents, false);
+            firstComp = uiData.changedComponents[0] as IPanel;
+            if (firstComp.className === COMPONENT_CLASSNAMES.MOBILELAUNCHER) {
+                this.contentStore.setActiveScreen({ name: firstComp.name, className: firstComp.className });
+            }
         }
     }
 }

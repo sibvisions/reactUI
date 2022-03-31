@@ -1,20 +1,10 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { RadioButton } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
-
-/** Other imports */
+import { useButtonStyling, useComponentConstants, useMouseListener } from "../../../hooks";
 import { IButtonSelectable } from "..";
-import { createSetValueRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize} from "../../util";
-import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled} from "../../../util";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 
 /**
  * This component displays a RadioButton and its label
@@ -34,7 +24,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current);
+    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -48,12 +38,12 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <span
-                id={props.name}
+                id={checkComponentName(props.name)}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-radiobutton",
@@ -83,22 +73,27 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
-                    onChange={() => {
-                        let checked = props.selected === undefined ? true : !props.selected;
-                        const req = createSetValueRequest();
-                        req.componentId = props.name;
-                        req.value = checked;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
-                    }}
+                    onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
+                    disabled={isCompDisabled(props)}
+                    tabIndex={btnStyle.tabIndex}
+                    className={props.focusable === false ? "no-focus-rect" : ""}
                 />
                 <label 
                     ref={labelRef} 
                     className={concatClassnames(
                         "p-radiobutton-label",
                         btnStyle.style.color ? 'textcolor-set' : '',
-                        btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
+                        btnStyle.style.background !== "transparent" 
+                        ? 
+                            btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() 
+                            ? 
+                                "bright-button" 
+                            : 
+                                "dark-button"
+                        :
+                            "",
                         props.eventMousePressed ? "mouse-pressed-event" : ""
                         )} 
                     htmlFor={props.id} 

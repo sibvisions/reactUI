@@ -1,12 +1,7 @@
-/** React imports */
 import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-
-/** 3rd Party imports */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import _ from "underscore";
-
-/** Hook imports */
 import { useDataProviderData, 
          useRowSelect, 
          useMultipleEventHandler, 
@@ -15,18 +10,15 @@ import { useDataProviderData,
          useMouseListener,
          useMetaData,
          usePopupMenu,
-         useComponentConstants} from "../zhooks";
-
-/** Other imports */
-import BaseComponent from "../BaseComponent";
+         useComponentConstants} from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, SortDefinition, SelectFilter } from "../../request";
+import { SortDefinition, SelectFilter, REQUEST_KEYWORDS } from "../../request";
 import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent } from "../util";
-import { createEditor } from "../../factories/UIFactory";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
@@ -35,7 +27,7 @@ import { RequestQueueMode } from "../../Server";
 
 
 /** Interface for Table */
-export interface TableProps extends BaseComponent{
+export interface TableProps extends BaseComponent {
     classNameComponentRef: string,
     columnLabels: Array<string>,
     columnNames: Array<string>,
@@ -44,8 +36,8 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
-    enabled?: boolean,
-    startEditing?:boolean
+    startEditing?: boolean
+    editable?: boolean
 }
 
 enum Navigation {
@@ -69,6 +61,7 @@ interface ISelectedCell {
 /** A Context which contains the currently selected cell */
 export const SelectedCellContext = createContext<ISelectedCell>({});
 
+/** Returns the columnMetaData */
 export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
     return metaData?.columns.find(column => column.name === colName);
 }
@@ -152,14 +145,14 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<TableProps>(baseProps);
 
-    /** ComponentId of the screen */
-    const compId = useMemo(() => context.contentStore.getComponentId(props.id) as string, [context.contentStore, props.id]);
+    /** Name of the screen */
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
 
     /** Metadata of the databook */
-    const metaData = useMetaData(compId, props.dataBook, undefined);
+    const metaData = useMetaData(screenName, props.dataBook, undefined);
 
     /** The data provided by the databook */
-    const [providerData] = useDataProviderData(compId, props.dataBook);
+    const [providerData] = useDataProviderData(screenName, props.dataBook);
 
     /** The amount of virtual rows loaded */
     const rows = 40;
@@ -171,10 +164,11 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** The virtual rows filled with data */
     const [virtualRows, setVirtualRows] = useState<any[]>((() => { 
-        const out = Array.from({ length: providerData.length }); 
-        out.splice(0, rows, ...providerData.slice(0, rows + 1)); 
+        const out = Array.from({ length: providerData.length });
+        out.splice(0, rows, ...providerData.slice(0, rows)); 
         return out;
     })());
+
 
     /** the list row height */
     const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
@@ -183,13 +177,13 @@ const UITable: FC<TableProps> = (baseProps) => {
     const firstRowIndex = useRef(0);
 
     /** The current sort-definitions */
-    const [sortDefinitions] = useSortDefinitions(compId, props.dataBook);
+    const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
 
     /** The current order of the columns */
     const [columnOrder, setColumnOrder] = useState<string[]|undefined>(metaData?.columnView_table_);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(compId, props.dataBook, undefined, true);
+    const [selectedRow] = useRowSelect(screenName, props.dataBook, undefined, true);
 
     /** Reference if the page up/down key was pressed */
     const pageKeyPressed = useRef<boolean>(false);
@@ -199,6 +193,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     const focusIsClicked = useRef<boolean>(false);
 
+    /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
     /** The primary keys of a table */
@@ -225,7 +220,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
-    useFetchMissingData(compId, props.dataBook);
+    // Fetches Data if dataprovider has not been fetched yet
+    useFetchMissingData(screenName, props.dataBook);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
@@ -251,13 +247,14 @@ const UITable: FC<TableProps> = (baseProps) => {
      * @param selectedColumn - the selected column
      * @param filter - if a new row is selected, the filter to send to the server
      */
-    const sendSelectRequest = useCallback(async (selectedColumn?:string, filter?:SelectFilter) => {
+    const sendSelectRequest = useCallback(async (selectedColumn:string|undefined, filter:SelectFilter|undefined, rowIndex:number) => {
         const selectReq = createSelectRowRequest();
         selectReq.dataProvider = props.dataBook;
         selectReq.componentId = props.name;
+        selectReq.rowNumber = rowIndex;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_ENDPOINTS.SELECT_ROW : REQUEST_ENDPOINTS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
     }, [props.dataBook, props.name, context.server])
 
     /**
@@ -332,7 +329,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 return newCell
             }
             else {
-                sendSelectRequest(columnOrder[0]);
+                sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
         return undefined
@@ -350,6 +347,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps
 
+    //Returns navtable classname
     const getNavTableClassName = (parent?:string) => {
         if (parent) {
             const parentProps = context.contentStore.getComponentById(parent);
@@ -380,12 +378,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) : 410, width: estTableWidth+4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) + (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number) ? 17 : 0) : 410, width: estTableWidth + 4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
+    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, layoutStyle?.width]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
@@ -418,6 +416,18 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
             setTimeout(() => {
+                function getTextWidth(text?:string) {
+                    if (text) {
+                        const canvas = document.createElement('canvas');
+                        const x = canvas.getContext('2d') as CanvasRenderingContext2D;
+                        
+                        x.font = getComputedStyle(document.body).font;
+                      
+                        return x.measureText(text).width;
+                    }
+                    return 0;
+                }
+
                 //@ts-ignore
                 const currentTable:HTMLTableElement = tableRef?.current?.table;
                 if (currentTable) {
@@ -435,7 +445,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                         else {
                             const title = theader[i].querySelector('.p-column-title');
-                            newCellWidth.width = title ? title.getBoundingClientRect().width + 34 : 0;
+                            newCellWidth.width = title ? (title.getBoundingClientRect().width + 34) : 0;
                         }
                         cellDataWidthList.push(newCellWidth);
                     }
@@ -449,7 +459,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList.forEach(cellDataWidth => {
                         tempWidth += cellDataWidth.width
                     });
-
                     /** set EstTableWidth for size reporting */
                     setEstTableWidth(tempWidth);
                 }
@@ -458,8 +467,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }, 0);
         }
-    }, []);
+    }, [metaData]);
 
+    // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
         if (tableRef.current) {
             //@ts-ignore
@@ -483,7 +493,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     useLayoutEffect(() => {
         setVirtualRows((() => { 
             const out = Array.from({ length: providerData.length });
-            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows + 1));
+            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows));
             return out;
         })());
     }, [providerData]);
@@ -516,26 +526,26 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [sortDefinitions]);
 
     /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
-    useEffect(() => {
-        if (tableRef.current) {
-            const table = (tableRef.current as any).el
-            const selectedTds = DomHandler.find(table, 'tbody > tr td.p-highlight');
-            if (selectedTds) {
-                for (const elem of selectedTds) {
-                    elem.classList.remove("p-highlight");
-                }
-            }
+    // useEffect(() => {
+    //     if (tableRef.current) {
+    //         const table = (tableRef.current as any).el
+    //         const selectedTds = DomHandler.find(table, 'tbody > tr td.p-highlight');
+    //         if (selectedTds) {
+    //             for (const elem of selectedTds) {
+    //                 elem.classList.remove("p-highlight");
+    //             }
+    //         }
     
-            const highlightedRow = DomHandler.findSingle(table, 'tbody > tr.p-highlight');
-            if (selectedRow && columnOrder) {
-                const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
-                if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
-                    highlightedRow.children[colIdx].classList.add("p-highlight");
-                }
-            }
-        }
+    //         const highlightedRow = DomHandler.findSingle(table, 'tbody > tr.p-highlight');
+    //         if (selectedRow && columnOrder) {
+    //             const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
+    //             if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
+    //                 highlightedRow.children[colIdx].classList.add("p-highlight");
+    //             }
+    //         }
+    //     }
 
-    }, [virtualRows, selectedRow, columnOrder]);
+    // }, [virtualRows, selectedRow, columnOrder]);
 
     /**
      * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
@@ -546,7 +556,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -566,7 +576,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -589,7 +599,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -612,7 +622,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, prevSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -633,14 +643,14 @@ const UITable: FC<TableProps> = (baseProps) => {
             const nextSelectedRowIndex = selectedRow.index + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (nextSelectedRowIndex < providerData.length) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[0], filter);
+                await sendSelectRequest(columnOrder[0], filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -661,14 +671,14 @@ const UITable: FC<TableProps> = (baseProps) => {
             const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[prevSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn);
+                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
             }
             else if (prevSelectedRowIndex >= 0) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[columnOrder.length - 1], filter);
+                await sendSelectRequest(columnOrder[columnOrder.length - 1], filter, prevSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -695,7 +705,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
@@ -719,7 +729,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter);
+                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
@@ -798,7 +808,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                 body={(rowData: any, tableInfo: any) => {
                     if (!rowData) { return <div></div> }
                     if (columnMetaData?.cellEditor.directCellEditor) {
-                        return createEditor({
+                        return <CellEditorWrapper
+                        {...{
                             id: "",
                             ...columnMetaData,
                             name: props.name,
@@ -817,13 +828,14 @@ const UITable: FC<TableProps> = (baseProps) => {
                             },
                             readonly: columnMetaData?.readonly,
                             isCellEditor: true,
-                            cellCompId: props.dataBook.split("/")[1]
-                        })
+                            cellScreenName: props.dataBook.split("/")[1]
+                        }} 
+                        />
                     }
                     else {
                         return <CellEditor
                             pk={_.pick(rowData, primaryKeys)}
-                            compId={compId}
+                            screenName={screenName}
                             name={props.name as string}
                             colName={colName}
                             dataProvider={props.dataBook}
@@ -840,16 +852,19 @@ const UITable: FC<TableProps> = (baseProps) => {
                             className={className}
                             readonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
+                            editable={props.editable}
                             startEditing={props.startEditing}
                             stopEditing={() => {
-                                const test = context.contentStore.flatContent.get(id);
-                                (test as TableProps).startEditing = false;
-                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                                const table = context.contentStore.flatContent.get(id);
+                                if (table) {
+                                    (table as TableProps).startEditing = false;
+                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                                }
                             }} />
                     }
                 }
                 }
-                style={{ whiteSpace: 'nowrap', lineHeight: '14px' }}
+                style={{ whiteSpace: 'nowrap' }}
                 bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
@@ -863,7 +878,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         })
     }, [
         props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
-        context.server.RESOURCE_URL, props.name, compId, props.tableHeaderVisible, sortDefinitions,
+        context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, 
         props.startEditing
     ])
@@ -879,7 +894,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     values: primaryKeys.map(pk => event.value.rowData[pk])
                 }
             }
-            await sendSelectRequest(event.value.field, filter)
+            await sendSelectRequest(event.value.field, filter, event.value.rowIndex)
         }
     }
 
@@ -895,16 +910,16 @@ const UITable: FC<TableProps> = (baseProps) => {
             const length = last - first + 1;
             setListLoading(true);
             firstRowIndex.current = first;
-            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(compId, props.dataBook)?.allFetched) {
+            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
                 fetchReq.rowCount = length * 4;
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_ENDPOINTS.FETCH), topbar).then(() => {
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then(() => {
                     setListLoading(false);
                 });
             } else {
-                const slicedProviderData = providerData.slice(first, last + 1);
+                const slicedProviderData = providerData.slice(first, last);
                 const data = [...virtualRows];
                 data.splice(first, slicedProviderData.length, ...slicedProviderData);
                 setVirtualRows(data);
@@ -927,7 +942,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 //reverse prime fit sizing
                 let newColumnWidth = e.element.offsetWidth - e.delta;
                 let nextColumn = e.element.nextElementSibling;
-                let nextColumnWidth = nextColumn.offsetWidth + e.delta;
+                let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
 
                 if (newColumnWidth > 15 && nextColumnWidth > 15) {
                     table.resizeTableCells(newColumnWidth, nextColumnWidth);
@@ -1042,19 +1057,19 @@ const UITable: FC<TableProps> = (baseProps) => {
                 break;
             case "Insert":
                 if (metaData?.insertEnabled) {
-                    context.contentStore.insertDataProviderData(compId, props.dataBook);
+                    context.contentStore.insertDataProviderData(screenName, props.dataBook);
                     const insertReq = createInsertRecordRequest();
                     insertReq.dataProvider = props.dataBook;
-                    showTopBar(context.server.sendRequest(insertReq, REQUEST_ENDPOINTS.INSERT_RECORD), topbar);
+                    showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
                 }
                 break;
             case "Delete":
                 if (metaData?.deleteEnabled) {
-                    context.contentStore.deleteDataProviderData(compId, props.dataBook);
+                    context.contentStore.deleteDataProviderData(screenName, props.dataBook);
                     const selectReq = createSelectRowRequest();
                     selectReq.dataProvider = props.dataBook;
                     selectReq.componentId = props.name;
-                    showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.DELETE_RECORD), topbar)
+                    showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
                 }
         }
     }
@@ -1080,7 +1095,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
         }
         sortReq.sortDefinition = sortDefToSend;
-        showTopBar(context.server.sendRequest(sortReq, REQUEST_ENDPOINTS.SORT), topbar);
+        showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
     }
 
     /** Column-resize handler */
@@ -1112,11 +1127,9 @@ const UITable: FC<TableProps> = (baseProps) => {
 
                 table.destroyStyleElement();
                 table.createStyleElement();
-
                 let innerHTML = '';
                 widths.forEach((width, index) => {
                     let colWidth = (width / totalWidth) * tableWidth;
-
                     let style = table.props.scrollable 
                         ? `flex: 0 0 ${colWidth}px !important` 
                         : `width: ${colWidth}px !important`;
@@ -1132,7 +1145,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;              
             }
         }
-    }, [layoutStyle?.width])
+    }, []);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
@@ -1145,7 +1158,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     outline: "none",
                     caretColor: "transparent"
                 } as any}
-                tabIndex={props.tabIndex ? props.tabIndex : 0}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
                 onClick={() => { 
                     if (!focused.current) {
                         focusIsClicked.current = true 
@@ -1162,10 +1175,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
                                 if (relatedTarget === getFocusComponent(props.name + "-wrapper", false)) {
-                                    sendSelectRequest(columnOrder[0]);
+                                    sendSelectRequest(columnOrder[0], undefined, selectedRow.index || 0);
                                 }
                                 else if (relatedTarget === getFocusComponent(props.name + "-wrapper", true)) {
-                                    sendSelectRequest(columnOrder[columnOrder.length - 1])
+                                    sendSelectRequest(columnOrder[columnOrder.length - 1], undefined, selectedRow.index || providerData.length - 1)
                                 }
                             }
                             focusIsClicked.current = false;
@@ -1187,14 +1200,14 @@ const UITable: FC<TableProps> = (baseProps) => {
             >
                 <DataTable
                     key="table"
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent)
                     )}
-                    value={virtualRows}
+                    value={virtualEnabled ? virtualRows : providerData}
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
@@ -1225,7 +1238,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                         return cn
                     }}
-                    tabIndex={props.tabIndex}
                     emptyMessage={""}
                     breakpoint="0px" >
                     {columns}

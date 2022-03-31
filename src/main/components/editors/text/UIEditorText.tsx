@@ -1,32 +1,26 @@
-/** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
-
-/** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks"
-
-/** Other imports */
+import { useMouseListener, usePopupMenu } from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
-import { getTextAlignment } from "../../compprops";
+import { getTextAlignment } from "../../comp-props";
 import { sendSetValues, 
          handleEnterKey, 
-         onBlurCallback, 
          sendOnLoadCallback, 
          parsePrefSize, 
          parseMinSize, 
          parseMaxSize, 
-         concatClassnames} from "../../util";
+         concatClassnames,
+         getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for TextCellEditor */
-export interface IEditorText extends IEditor {
+export interface IEditorText extends IRCCellEditor {
     cellEditor: ICellEditor
     borderVisible?: boolean
     length:number
@@ -181,18 +175,24 @@ function transformHTMLToQuill(html: string = ''):string {
 }
 
 /**
+ * Returns true, if the CellEditor is read-only
+ * @param props
+ */
+export function isCellEditorReadOnly(props:IRCCellEditor) {
+    return (props.isCellEditor && props.readonly) || !props.cellEditor_editable_ || props.enabled === false;
+}
+
+/**
  * TextCellEditor is an inputfield which allows to enter text. Based on the contentType the server sends it is decided wether
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText> = (baseProps) => {
+const UIEditorText: FC<IEditorText> = (props) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorText>(baseProps, baseProps.editorStyle);
-
     /** Current state value of input element */
-    const [text, setText] = useState(selectedRow);
+    const [text, setText] = useState(props.selectedRow);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -201,7 +201,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
 
     /** Returns the maximum length for the TextCellEditor */
-    const length = useMemo(() => columnMetaData?.length, [columnMetaData]);
+    const length = useMemo(() => props.columnMetaData?.length, [props.columnMetaData]);
 
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
@@ -209,15 +209,16 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
     /** Reference if escape has been pressed */
     const escapePressed = useRef<boolean>(false)
 
+    /** True, if HTML-Editor should display source */
     const [showSource, setShowSource] = useState<boolean>(false);
 
-    useFetchMissingData(compId, props.dataRow);
-
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Returns the field-type of the TextCellEditor */
     const getFieldType = useCallback(() => {
         const contentType = props.cellEditor.contentType
         if (contentType?.includes("multiline")) {
@@ -234,8 +235,13 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [props.cellEditor.contentType])
 
+    //FieldType value of the TextCellEditor
     const fieldType = useMemo(() => getFieldType(), [getFieldType]) 
 
+    /**
+     * Returns the className of the field-type
+     * @param fieldType - the field-type of the TextCellEditor
+     */
     const getClassName = (fieldType:FieldTypes) => {
         if (fieldType === FieldTypes.TEXTAREA) {
             return "rc-editor-textarea";
@@ -258,18 +264,20 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** When selectedRow changes set the state of inputfield value to selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setText(selectedRow);
-        lastValue.current = selectedRow;
-    },[selectedRow]);
+        setText(props.selectedRow);
+        lastValue.current = props.selectedRow;
+    },[props.selectedRow]);
 
+    // If the CellEditor is in a table and a button was pressed to open it, set "" as value
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
             setText("");
         }
     }, [])
 
+    // Textfield onkeydown handling, Saving on "enter" and "tab" not saving on "esc"
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         handleEnterKey(event, event.target, name, stopCellEditing);
@@ -285,6 +293,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     }, [name, stopCellEditing, props.isCellEditor]);
 
+    // TextArea onkeydown handling, Saving on "enter + shift" and "tab" not saving on "esc". Normal enter is next line
     const taOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (event.key === "Enter" && event.shiftKey) {
@@ -302,11 +311,12 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         }
     },[name, stopCellEditing, props.isCellEditor])
 
+    // Similar to tfOnKeyDown but blurring doesn't work like in textfield
     const pwOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(dataRow, name, columnName, text, context.server), topbar));
+                sendSetValues(dataRow, name, columnName, text, props.context.server, lastValue.current, props.topbar);
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -314,10 +324,9 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                 stopCellEditing(event);
             }
         }
-    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, context.server]);
+    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
 
-    const disabled = !props.cellEditor_editable_;
-
+    // Returns PrimeReact properties for each fieldtypes have in common.
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
@@ -325,7 +334,7 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
                     sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
                 }
             },
-            onTextChange: showSource || disabled ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
+            onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
             value: transformHTMLToQuill(text) || "",
             formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script", "divider"],
             modules: {
@@ -401,36 +410,39 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
             id: props.isCellEditor ? undefined : props.name,
             className: concatClassnames(
                 getClassName(fieldType), 
-                columnMetaData?.nullable === false ? "required-field" : "",
-                props.isCellEditor ? "open-cell-editor" : undefined
+                props.columnMetaData?.nullable === false ? "required-field" : "",
+                props.isCellEditor ? "open-cell-editor" : undefined,
+                props.focusable === false ? "no-focus-rect" : "",
+                props.isReadOnly ? "rc-input-readonly" : ""
             ),
             style: { 
-                ...layoutStyle, 
+                ...props.layoutStyle, 
                 ...textAlign, 
-                ...cellStyle
+                ...props.cellStyle
             },
             maxLength: length,
-            disabled,
+            readOnly: props.isReadOnly,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
             value: text || "",
             "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
-            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined,
+            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
             onBlur: () => {
                 if (!escapePressed.current) {
-                    onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                    sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
                 }
                 if (props.eventFocusLost) {
-                    showTopBar(onFocusLost(props.name, context.server), topbar)
+                    showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
             tooltip: props.toolTipText,
             tooltipOptions:{ position: "left" },
-            placeholder: props.cellEditor_placeholder_
+            placeholder: props.cellEditor_placeholder_,
+            tabIndex: props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)
         }
-    }, [props, context.server, fieldType, props.isCellEditor, layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
-        length, props.autoFocus, props.cellEditor_background_, disabled, 
+    }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+        length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 
     /** Return either a textarea, password or normal textfield based on fieldtype */
@@ -438,21 +450,21 @@ const UIEditorText: FC<IEditorText> = (baseProps) => {
         fieldType === FieldTypes.HTML ?
             <div 
                 ref={textRef} 
-                style={{ ...layoutStyle, background: props.cellEditor_background_ }} 
+                style={{ ...props.layoutStyle, background: props.cellEditor_background_ }} 
                 id={props.isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}
                 className={[
                     getClassName(fieldType), 
-                    disabled ? 'rc-editor-html--disabled' : null
+                    props.isReadOnly ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
-                tabIndex={props.tabIndex ? props.tabIndex : 0}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
                     if (!escapePressed.current) {
-                        onBlurCallback(props, text, lastValue.current, () => showTopBar(sendSetValues(props.dataRow, props.name, props.columnName, text, context.server), topbar))
+                        sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
                     }
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server)
+                        onFocusLost(props.name, props.context.server)
                     }
                 }}
                 {...popupMenu}

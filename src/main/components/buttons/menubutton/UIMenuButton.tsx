@@ -1,23 +1,16 @@
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../zhooks";
-
-/** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../../hooks";
+import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButton } from "..";
-import { parseIconData } from "../../compprops";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent } from "../../util";
-import BaseComponent from "../../BaseComponent";
+import { parseIconData } from "../../comp-props";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -89,9 +82,9 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: () => {
-                        const req = createPressButtonRequest();
+                        const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
                     }
                 });
             });
@@ -102,6 +95,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         }
     }, [context.contentStore, context.server, props]);
 
+    // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
     useEventHandler(buttonRef.current ? buttonRef.current.defaultButton : undefined, "blur", (e) => {
@@ -113,7 +107,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
 
     return (
         <span
-            className="rc-popupmenubutton-wrapper"
+            className={concatClassnames("rc-popupmenubutton-wrapper", props.focusable === false ? "no-focus-rect" : "")}
             id={props.name + "-wrapper"}
             ref={buttonWrapperRef}
             style={{ position: 'absolute', ...layoutStyle }}
@@ -132,7 +126,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
         >
             <SplitButton
                 ref={buttonRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',
@@ -159,7 +153,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 }}
                 label={props.text}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
-                disabled={props.enabled === false}
+                disabled={isCompDisabled(props)}
                 tabIndex={-1}
                 model={items}
                 onClick={() => buttonRef.current.show()}

@@ -1,15 +1,8 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { Password } from "primereact/password";
-
-/** Hook imports */
-import { useComponentConstants, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames} from "../util";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../../hooks";
+import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex} from "../../util";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
 /**
@@ -24,7 +17,10 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of password value */
-    const [pwValue, setPwValue] = useState(props.text);
+    const [pwValue, setPwValue] = useState(props.text || "");
+
+    /** Reference to last value so that sendSetValue only sends when value actually changed */
+    const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -42,18 +38,32 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     return (
         <Password
             inputRef={passwordRef}
-            id={props.name}
-            className="rc-input"
+            id={checkComponentName(props.name)}
+            className={concatClassnames(
+                "rc-input", 
+                props.focusable === false ? "no-focus-rect" : "",
+                isCompDisabled(props) ? "rc-input-readonly" : ""
+            )}
             value={pwValue||""} 
             feedback={false} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={() => {
+                sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
+                lastValue.current = pwValue;
+
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }}
             tooltip={props.toolTipText}
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
-            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15} />
+            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
+            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
+            readOnly={isCompDisabled(props)}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
     )
 }
 export default UIPassword

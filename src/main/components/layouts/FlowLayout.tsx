@@ -1,14 +1,11 @@
-/** React imports */
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-
-/** Other imports */
 import {appContext} from "../../AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from ".";
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 import Margins from "./models/Margins";
-import BaseComponent from "../BaseComponent";
-import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
+import BaseComponent from "../../util/types/BaseComponent";
+import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
@@ -27,7 +24,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         alignChildrenIfOverflow = true,
         isToolBar,
         parent,
-        className
+        className,
+        panelType
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -61,31 +59,43 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** If the orientation is horizontal */
         const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL;
 
-        const children = context.contentStore.getChildren(id, className)
-
-        /** Sorts the Childcomponent based on indexOf property */
-        const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
-
         const toolBarsFiltered:[string, BaseComponent][]|undefined = parent ? 
             id.includes("-tbMain") ? 
                 [...context.contentStore.getChildren(id, className)] 
             : 
-                [...context.contentStore.getChildren(parent, className)].filter(child => child[1].className === COMPONENT_CLASSNAMES.TOOLBAR ) 
+                [...context.contentStore.getChildren(panelType === "Frame-Toolbar" ? id : parent, className)].filter(child => child[1].className === COMPONENT_CLASSNAMES.TOOLBAR) 
         : undefined;
+
+        const children = panelType === "Frame-Toolbar" ? new Map(toolBarsFiltered) : context.contentStore.getChildren(id, className);
+
+        /** Sorts the Childcomponent based on indexOf property */
+        const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
 
         const toolbarGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-button-gap')) : 0;
 
         /**
-         * Checks whether the bar is either the first or the last toolbar depending on "first" parameter
+         * Checks if the bar is first toolbar
          * @param id - the id of the toolbar
-         * @param first - whether to check if the toolbar is the first or the last
          * @returns 
          */
-        const checkFirstOrLastToolBar = (id:string, first:boolean) => {
+         const isFirstToolBar = (id:string) => {
             if (toolBarsFiltered && !id.includes("-tbMain")) {
-                return toolBarsFiltered.findIndex(entry => entry[1].id === id) !== (first ? 0 : toolBarsFiltered.length - 1) ? true : false;
+                return toolBarsFiltered.findIndex(entry => entry[1].id === id) === 0 ? true : false;
             }
             return true;
+        }
+
+
+        /**
+         * Checks if the bar is last toolbar
+         * @param id - the id of the toolbar
+         * @returns 
+         */
+        const isLastToolBar = (id:string) => {
+            if (toolBarsFiltered && !id.includes("-tbMain")) {
+                return toolBarsFiltered.findIndex(entry => entry[1].id === id) === toolBarsFiltered.length - 1 ? true : false;
+            }
+            return false;
         }
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
@@ -131,9 +141,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
-                
-
-                let tbExtraWidth = toolBarsFiltered ? checkFirstOrLastToolBar(id, false) ? 5 : 0 : 0;
+                let tbExtraSize = toolBarsFiltered ? !isLastToolBar(id) ? 5 : 0 : 0;
 
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
@@ -180,8 +188,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
                 });
-                if (tbExtraWidth !== 0) {
-                    isRowOrientation ? width += tbExtraWidth : height += tbExtraWidth;
+                if (tbExtraSize !== 0) {
+                    isRowOrientation ? width += tbExtraSize : height += tbExtraSize;
                 }
                 const grid:FlowGrid = {columns: anzCols, rows: anzRows, gridWidth: width, gridHeight: height}
                 return grid;
@@ -198,7 +206,12 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 width = (style.width as number);
             }
             else {
-                left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
+                if (style.width) {
+                    left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
+                }
+                else {
+                    left = 0;
+                }
                 width = prefSize.width;
             }
 
@@ -210,7 +223,12 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 height = (style.height as number);
             }
             else {
-                top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa) + margins.marginTop;
+                if (style.height) {
+                    top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa) + margins.marginTop;
+                }
+                else {
+                    top = 0;
+                }
                 height = prefSize.height;
             }
 
@@ -255,7 +273,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
+                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
                         else {
@@ -265,7 +287,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderRight: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, false) ? "1px solid #bbb" : ""
+                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
 
@@ -288,7 +314,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
+                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
                         else {
@@ -298,7 +328,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: id.includes("-tbMain") && !checkFirstOrLastToolBar(component.id, true) ? "1px solid #bbb" : ""
+                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
+                                ? 
+                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
+                                : 
+                                    ""
                             });
                         }
 
@@ -318,10 +352,22 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 });
             }
             if (baseProps.popupSize) {
-                setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative', left: toolBarsFiltered?.length ? (checkFirstOrLastToolBar(id, true) && isRowOrientation) ? 5 : 0 : 0 });
+                setCalculatedStyle({ 
+                    height: baseProps.popupSize.height, 
+                    width: baseProps.popupSize.width, 
+                    position: 'relative', 
+                    left: toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0,
+                    top: toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                });
             }
             else {
-                setCalculatedStyle({ height: prefSize.height, width: prefSize.width, position: 'relative', left: toolBarsFiltered?.length ? (checkFirstOrLastToolBar(id, true) && isRowOrientation) ? 5 : 0 : 0 })
+                setCalculatedStyle({ 
+                    height: prefSize.height, 
+                    width: prefSize.width, 
+                    position: 'relative', 
+                    left: toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
+                    top: toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                });
             }
         }
         return sizeMap;

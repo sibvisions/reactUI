@@ -1,6 +1,5 @@
 import { CSSProperties } from "react";
-import { SelectFilter } from "../../request";
-import BaseComponent from "../BaseComponent";
+import BaseComponent from "../../util/types/BaseComponent";
 
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
@@ -23,20 +22,10 @@ export interface IEditor extends BaseComponent{
     cellEditor_foreground_?:string
     cellEditor_font_?:string
     cellEditor_placeholder_?:string
-    enabled: boolean,
     columnName: string,
     dataRow: string,
     text:string,
-    onSubmit?: Function,
-    editorStyle?: CSSProperties,
     autoFocus?: boolean,
     nullable?: boolean,
     readonly?: boolean,
-    stopCellEditing?: Function,
-    clicked?: boolean,
-    passedKey?: string,
-    rowIndex?: Function,
-    filter?: Function
-    isCellEditor: boolean,
-    cellCompId: string
 }

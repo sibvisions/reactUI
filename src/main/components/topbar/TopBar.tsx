@@ -1,7 +1,6 @@
-import React, { FC, useState, createContext, useContext, useMemo, useEffect } from "react";
+import React, { FC, useState, createContext } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
-import { appContext } from "../../AppProvider";
-import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
+import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
 export interface TopBarContextType {
     show: Function
@@ -20,8 +19,6 @@ export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
 
 const TopBar:FC = ({children}) => {
     const [show, setShow] = useState(false);
-
-    const context = useContext(appContext)
 
     const { barColors, shadowBlur, barThickness, shadowColor } = getSettingsFromCSSVar({
         barColors: {

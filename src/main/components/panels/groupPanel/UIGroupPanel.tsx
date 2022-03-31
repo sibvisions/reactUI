@@ -1,17 +1,11 @@
-/** React imports */
-import React, { CSSProperties, FC, useCallback, useEffect, useRef } from "react";
-
-/** 3rd Party imports */
+import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-
-/** Hook imports */
-import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
+import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../../hooks";
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle } from "../../util";
-
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
+import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -22,7 +16,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -52,15 +46,15 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }, [onLoadCallback])
+    }, [onLoadCallback]);
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
                 className="rc-panel-group"
-                id={props.name}
+                id={checkComponentName(props.name)}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
@@ -69,7 +63,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 data-pr-position="left" >
                 <div
                     className="rc-panel-group-caption"
-                    style={{ fontFamily: compStyle.fontFamily, fontWeight: compStyle.fontWeight, fontStyle: compStyle.fontStyle, fontSize: compStyle.fontSize }}>
+                    style={{ ...compStyle }}>
                     <span>
                         {props.text}
                     </span>
@@ -94,7 +88,8 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                             layoutStyle,
                             prefSize,
                             props.screen_modal_ || props.content_modal_,
-                            props.screen_size_
+                            props.screen_size_,
+                            appVersion.version
                         )}
                         parent={props.parent} />
                 </div>

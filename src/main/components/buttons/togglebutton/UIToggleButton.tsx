@@ -1,20 +1,13 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../zhooks";
-
-/** Other imports */
-import { createPressButtonRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
+import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../../hooks";
+import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { REQUEST_KEYWORDS } from "../../../request";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -52,9 +45,9 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = () => {
-        const req = createPressButtonRequest();
+        const req = createDispatchActionRequest();
         req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.PRESS_BUTTON), topbar);
+        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
     }
 
     return (
@@ -66,7 +59,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         >
             <ToggleButton
                 ref={buttonRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',
@@ -74,7 +67,9 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     props.borderOnMouseEntered ? "mouse-border" : '',
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
-                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : ""
+                    props.parent?.includes("TB") ? "rc-toolbar-button" : "",
+                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                    props.focusable === false ? "no-focus-rect" : ""
                 )}
                 style={{
                     ...btnStyle.style,

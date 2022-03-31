@@ -26,6 +26,11 @@ enum COMPONENT_CLASSNAMES {
     BROWSER = "MobileBrowser",
     TOOLBAR = "ToolBar",
     TOOLBARHELPERMAIN = "ToolBarHelperMain",
-    TOOLBARHELPERCENTER = "ToolBarHelperCenter"
+    TOOLBARHELPERCENTER = "ToolBarHelperCenter",
+    MOBILELAUNCHER = "MobileLauncher",
+    MENUBAR = "MenuBar",
+    MENU = "Menu",
+    INTERNAL_FRAME = "InternalFrame",
+    CUSTOM_CONTAINER = "CustomContainer"
 }
 export default COMPONENT_CLASSNAMES;

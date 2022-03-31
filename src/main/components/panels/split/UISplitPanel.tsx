@@ -1,15 +1,9 @@
-/** React imports */
-import React, { CSSProperties, FC, ReactElement, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** Hook imports */
-import { useProperties, useComponents, useLayoutValue, useMouseListener, usePopupMenu, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
+import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import SplitPanel from "./SplitPanel";
-import { appContext } from "../../../AppProvider";
 import {LayoutContext} from "../../../LayoutContext";
-import BaseComponent from "../../BaseComponent";
-import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension} from "../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
+import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../../util";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{
@@ -26,10 +20,8 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
 
-    /** The Childcomponents of this SplitPanel */
-    const children = useMemo(() => {
-        return context.contentStore.getChildren(props.id, props.className);
-    }, [context.contentStore, props.id])
+    /** Current state of all Childcomponents as react children */
+    const [children, components, compSizes] = useComponents(props.id, props.className);
 
     /**
      * Returns the child based on its constraint
@@ -38,16 +30,13 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
      */
     const getChildByConstraint = (constraint: string): ReactElement | undefined => {
         return components.find((component) => {
-            const compProp = children.get(component.props.id);
-            if(compProp)
+            const compProp = children.find(comp => comp.id === component.props.id);
+            if(compProp) {
                 return compProp.constraints === constraint;
-
+            }
             return false;
         });
     }
-
-    /** Current state of all Childcomponents as react children */
-    const [components] = useComponents(props.id, props.className);
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
@@ -70,12 +59,13 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (splitRef.current) {
-            if(onLoadCallback) {
+            if(onLoadCallback && compSizes && compSizes.size) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes])
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes])
 
+    // Callback which is passed to splitpanel and called initially
     const sendLoadCallback = () => {
         const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
         if (onLoadCallback) {
@@ -109,7 +99,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={layoutStyle}
                 forwardedRef={splitRef}
                 trigger={layoutStyle}

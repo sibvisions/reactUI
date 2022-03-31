@@ -1,20 +1,10 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** 3rd Party imports */
 import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useButtonStyling, useComponentConstants, useMouseListener } from "../../zhooks";
-
-/** Other imports */
+import { useButtonStyling, useComponentConstants, useMouseListener } from "../../../hooks";
 import { IButtonSelectable } from "..";
-import { createSetValueRequest } from "../../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../../request";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../../util";
-import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../../util";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 
 /**
  * This component displays a CheckBox and its label
@@ -34,7 +24,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, cbRef.current);
+    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, cbRef.current ? cbRef.current.element : undefined);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -53,7 +43,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <span
-                id={props.name}
+                id={checkComponentName(props.name)}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-checkbox",
@@ -82,23 +72,29 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
-                    onChange={() => {
-                        const req = createSetValueRequest();
-                        req.componentId = props.name;
-                        req.value = props.selected === undefined ? true : !props.selected;;
-                        showTopBar(context.server.sendRequest(req, REQUEST_ENDPOINTS.SET_VALUE), topbar);
-                    }}
+                    onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
+                    disabled={isCompDisabled(props)}
+                    tabIndex={btnStyle.tabIndex}
+                    className={props.focusable === false ? "no-focus-rect" : ""}
                 />
                 <label 
                     ref={labelRef} 
                     className={concatClassnames(
                         "p-radiobutton-label",
                         btnStyle.style.color ? 'textcolor-set' : '',
-                        btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
+                        btnStyle.style.background !== "transparent" 
+                        ? 
+                            btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() 
+                            ? 
+                                "bright-button" 
+                            : 
+                                "dark-button"
+                        :
+                            "",
                         props.eventMousePressed ? "mouse-pressed-event" : ""
-                        )} 
+                    )}
                     htmlFor={props.id} 
                     style={{ order: btnStyle.iconPos === 'left' ? 2 : 1, caretColor: "transparent" }}>
                     {btnStyle.iconProps.icon !== undefined &&

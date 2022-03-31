@@ -4,8 +4,8 @@ import { BorderLayout,
          FormLayout, 
          GridLayout, 
          NullLayout } from './index';
-import { ComponentSizes } from "../zhooks";
-import { Dimension } from "../util";
+import { ComponentSizes } from "../../hooks";
+import { Dimension } from "../../util";
 
 /**
  * General information for layouts:

@@ -1,16 +1,13 @@
-/** React imports */
 import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
-
-/** Hook imports */
-import { useProperties, useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../zhooks";
-
-/** Other imports */
+import { useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, panelReportSize, panelGetStyle, concatClassnames } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
 import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
+import { appVersion } from "../../../AppSettings";
+import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {
@@ -25,7 +22,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     const layoutStyle = useLayoutValue(props.id, { visibility: "hidden" });
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(props.id, props.className);
+    const [children, components, componentSizes] = useComponents(props.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
@@ -39,10 +36,16 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Filters the components to only have the additional components when toolbarhelper is main, and not additional when toolbarhelper is center */
     const filteredComponents = useMemo(() => {
         return props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? components.filter(comp => comp.props["~additional"] && !comp.props.id.includes("-tb")) : components.filter(comp => !comp.props["~additional"] && !comp.props.id.includes("-tb"))
     }, [props.className, components]);
 
+    /**
+     * Returns the className of a ToolbarPanel
+     * @param constraint - the constraint of the toolbar
+     * @param isNavTable - true, if the toolbar is a navtable
+     */
     const getTBPosClassName = useCallback((constraint:string, isNavTable:boolean) => {
         if (isNavTable) {
             switch(constraint) {
@@ -94,14 +97,14 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 className={concatClassnames(
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? getTBPosClassName(props.constraints, props.isNavTable) : ""
                 )}
                 ref={panelRef}
-                id={props.name}
+                id={checkComponentName(props.name)}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
@@ -132,7 +135,8 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                         layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
-                        props.screen_size_
+                        props.screen_size_,
+                        appVersion.version
                     )}
                     parent={props.parent} />
             </div>
@@ -144,6 +148,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
 
+    /** Reports itself to the layout */
     useLayoutEffect(() => {
         const reportFunc = () => panelReportSize(
             props.id,

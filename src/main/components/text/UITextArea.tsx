@@ -1,16 +1,8 @@
-/** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
-
-/** Hook imports */
-import { useComponentConstants, useLayoutValue, useMouseListener, usePopupMenu, useProperties } from "../zhooks";
-
-/** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames } from "../util";
-import { appContext } from "../../AppProvider";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { useComponentConstants, useMouseListener, usePopupMenu } from "../../hooks";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, sendSetValue, handleEnterKey, isCompDisabled, getTabIndex, concatClassnames } from "../../util";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
 
 interface ITextArea extends ITextField {
@@ -29,7 +21,10 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextArea>(baseProps);
 
     /** Current state of the textarea value */
-    const [text, setText] = useState(props.text);
+    const [text, setText] = useState(props.text || "");
+    
+    /** Reference to last value so that sendSetValue only sends when value actually changed */
+    const lastValue = useRef<any>();
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -47,18 +42,37 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     return (
         <InputTextarea 
             ref={inputRef} 
-            id={props.name}
-            className="rc-input"
+            id={checkComponentName(props.name)}
+            className={concatClassnames(
+                "rc-input", 
+                props.focusable === false ? 
+                "no-focus-rect" : "",
+                isCompDisabled(props) ? "rc-input-readonly" : ""
+            )}
             value={text||""}
-            style={{...layoutStyle, resize: 'none'}} 
+            style={{...layoutStyle, ...compStyle, resize: 'none'}} 
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={() => {
+                sendSetValue(props.name, text, context.server, lastValue.current, topbar);
+                lastValue.current = text;
+
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }}
             tooltip={props.toolTipText}
             tooltipOptions={{ position: "left" }}
             {...usePopupMenu(props)}
             cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
-            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5} />
+            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" && e.shiftKey) {
+                    handleEnterKey(e, e.target, props.name);
+                }
+            }}
+            readOnly={isCompDisabled(props)}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
     )
 }
 export default UITextArea

@@ -1,18 +1,12 @@
-/** React imports */
-import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party imports */
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Checkbox } from 'primereact/checkbox';
-
-/** Hook imports */
-import { useEditorConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../zhooks";
-
-/** Other imports */
+import { useMouseListener, usePopupMenu } from "../../../hooks";
 import { ICellEditor, IEditor } from "..";
-import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent } from "../../util";
-import { getAlignments } from "../../compprops";
-import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/SendFocusRequests";
+import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent, getTabIndex } from "../../../util";
+import { getAlignments } from "../../comp-props";
+import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { isCellEditorReadOnly } from "../text/UIEditorText";
+import { IRCCellEditor } from "../CellEditorWrapper";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -22,35 +16,28 @@ export interface ICellEditorCheckBox extends ICellEditor {
 }
 
 /** Interface for CheckBoxCellEditor */
-export interface IEditorCheckBox extends IEditor {
+export interface IEditorCheckBox extends IRCCellEditor {
     cellEditor: ICellEditorCheckBox
 }
 
 /**
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
- * @param baseProps - Initial properties sent by the server for this component
+ * @param props - Initial properties sent by the server for this component
  */
-const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
+const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
-    const [context, topbar, [props], layoutStyle, translations, compId, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<IEditorCheckBox>(baseProps, baseProps.editorStyle);
-
-    /** If the CellEditor is read-only */
-    const isReadOnly = (baseProps.isCellEditor && props.readonly) || !props.cellEditor_editable_
-
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
-
-    useFetchMissingData(compId, props.dataRow);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(selectedRow ? selectedRow.data : undefined);
+    const [checked, setChecked] = useState(props.selectedRow ? props.selectedRow.data : undefined);
 
-    /** Extracting onLoadCallback and id from baseProps */
+    /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -60,62 +47,67 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(selectedRow ? selectedRow.data : undefined)
-    }, [selectedRow]);
+        setChecked(props.selectedRow ? props.selectedRow.data : undefined)
+    }, [props.selectedRow]);
 
+    // Sends a setValues Request to the server when the checkbox is clicked
     const handleOnChange = () => {
-        showTopBar(sendSetValues(
+        sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
-            checked !== props.cellEditor.selectedValue ? 
-                props.cellEditor.selectedValue ? 
+            // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
+            (checked !== props.cellEditor.selectedValue || !checked) ? 
+                props.cellEditor.selectedValue !== undefined ? 
                     props.cellEditor.selectedValue 
                 : 
                     true
             : 
-                props.cellEditor.deselectedValue ? 
+                props.cellEditor.deselectedValue !== undefined ? 
                     props.cellEditor.deselectedValue 
                 : 
                     false,
-            context.server,
+            props.context.server,
+            undefined,
+            props.topbar,
             props.rowIndex ? props.rowIndex() : undefined,
-            selectedRow.index,
+            props.selectedRow.index,
             props.filter ? props.filter() : undefined
-        ), topbar);
+        );
     }
 
     return (
         <span
             ref={wrapRef}
-            id={!baseProps.isCellEditor ? props.name : undefined}
+            id={!props.isCellEditor ? props.name : undefined}
             aria-label={props.ariaLabel}
             className={concatClassnames(
                 "rc-editor-checkbox",
-                columnMetaData?.nullable === false ? "required-field" : "",
+                props.columnMetaData?.nullable === false ? "required-field" : "",
             )}
             style={
-                baseProps.isCellEditor ?
+                props.isCellEditor ?
                     { justifyContent: alignments.ha, alignItems: alignments.va }
                     :
                     {
-                        ...layoutStyle,
-                        background: cellStyle.background,
+                        ...props.layoutStyle,
+                        background: props.cellStyle?.background,
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}
             onFocus={(event) => {
                 if (props.eventFocusGained) {
-                    onFocusGained(props.name, context.server);
+                    onFocusGained(props.name, props.context.server);
                 }
                 else {
-                    if (baseProps.isCellEditor) {
+                    if (props.isCellEditor) {
                         event.preventDefault();
                     }
                 }
             }}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             onKeyDown={(event) => {
                 event.preventDefault();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
@@ -123,7 +115,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                     handleOnChange()
                 }
                 if (event.key === "Tab") {
-                    if (baseProps.isCellEditor && props.stopCellEditing) {
+                    if (props.isCellEditor && props.stopCellEditing) {
                         props.stopCellEditing(event)
                     }
                     else {
@@ -143,12 +135,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                 falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
                 onChange={() => handleOnChange()}
-                disabled={isReadOnly}
-                tabIndex={baseProps.isCellEditor ? -1 : props.tabIndex ? props.tabIndex : 0}
+                disabled={props.isReadOnly}
+                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
+                className={props.focusable === false ? "no-focus-rect" : ""}
             />
-            {!baseProps.isCellEditor &&
+            {!props.isCellEditor &&
                 <label
                     className={concatClassnames(
                         "rc-editor-checkbox-label",
@@ -156,11 +149,11 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (baseProps) => {
                     )}
                     style={{ 
                         caretColor: "transparent", 
-                        color: cellStyle.color,
-                        fontFamily: cellStyle.fontFamily,
-                        fontWeight: cellStyle.fontWeight,
-                        fontStyle: cellStyle.fontStyle,
-                        fontSize: cellStyle.fontSize
+                        color: props.cellStyle?.color,
+                        fontFamily: props.cellStyle?.fontFamily,
+                        fontWeight: props.cellStyle?.fontWeight,
+                        fontStyle: props.cellStyle?.fontStyle,
+                        fontSize: props.cellStyle?.fontSize
                     }}
                     htmlFor={id}>
                     {props.cellEditor?.text}

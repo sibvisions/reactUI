@@ -1,10 +1,7 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** Other imports */
-import BaseComponent from "./BaseComponent";
-import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "./util";
-import { useLayoutValue } from "./zhooks";
+import BaseComponent from "../util/types/BaseComponent";
+import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
+import { useLayoutValue } from "../hooks";
 
 /**
  * This component gets rendered when there is a component sent by the server which is not yet implemented on the client
@@ -18,6 +15,7 @@ const Dummy: FC<BaseComponent> = (props) => {
     /** Reference for the dummy */
     const ref = useRef<HTMLSpanElement>(null);
 
+    // Logs the missing components properties
     useLayoutEffect(() => {
         console.log(props.id, props)
     },[])

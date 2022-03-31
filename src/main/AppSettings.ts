@@ -1,9 +1,11 @@
-import BaseComponent from "./components/BaseComponent";
-import { addCSSDynamically } from "./components/util";
+import BaseComponent from "./util/types/BaseComponent";
+import { addCSSDynamically } from "./util";
 import ContentStore from "./ContentStore";
 import { ApplicationMetaDataResponse, LoginModeType } from "./response";
-import { DeviceStatus } from "./response/DeviceStatusResponse";
+import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
+
+export const appVersion = { version: 1 }
 
 type ApplicationMetaData = {
     version: string,
@@ -37,9 +39,10 @@ type AppReadyType = {
     appCSSLoaded: boolean
     schemeCSSLoaded: boolean
     themeCSSLoaded: boolean
+    appMetaData: boolean
+    designCSSLoaded: boolean
     userOrLoginLoaded: boolean
     translationLoaded: boolean
-    designCSSLoaded: boolean
 }
 
 /** The AppSettings stores settings and flags for the application */
@@ -131,14 +134,17 @@ export default class AppSettings {
         appCSSLoaded: false, 
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
+        appMetaData: false,
+        designCSSLoaded: false,
         userOrLoginLoaded: false,
-        translationLoaded: false,
-        designCSSLoaded: false
+        translationLoaded: false
     }
     
     appReady:boolean = false;
 
     cssToAddWhenReady:Array<any> = [];
+
+    version:number = 1;
 
     /**
      * Sets the menu-mode
@@ -159,7 +165,7 @@ export default class AppSettings {
      setLoginMode(mode:LoginModeType) {
         this.loginMode = mode;
         if (mode === "changePassword" || mode === "changeOneTimePassword") {
-            this.#subManager.emitDialog("change-password", false);
+            this.#subManager.emitDialog("change-password", false, false);
         }
     }
 
@@ -214,6 +220,8 @@ export default class AppSettings {
         else if (!this.applicationMetaData.applicationDesign) {
             this.appReadyParams.designCSSLoaded = true;
         }
+
+        this.setAppReadyParam("appMetaData");
     }
 
     setApplicationThemeByURL(pTheme:string) {
@@ -282,7 +290,7 @@ export default class AppSettings {
         }
     }
 
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"userOrLogin"|"translation"|"designCSS") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"appMetaData"|"designCSS"|"userOrLogin"|"translation") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -293,23 +301,36 @@ export default class AppSettings {
             case "themeCSS":
                 this.appReadyParams.themeCSSLoaded = true;
                 break;
+            case "appMetaData":
+                this.appReadyParams.appMetaData = true;
+                break;
+            case "designCSS":
+                this.appReadyParams.designCSSLoaded = true;
+                break;
             case "userOrLogin":
                 this.appReadyParams.userOrLoginLoaded = true;
                 break;
             case "translation":
                 this.appReadyParams.translationLoaded = true;
                 break;
-            case "designCSS":
-                this.appReadyParams.designCSSLoaded = true;
-                break;
             default:
                 break;
         }
-        if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-            && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
-            this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
-            this.appReady = true;
-            this.#subManager.emitAppReady(true);
+
+        if (this.version === 2) {
+            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
+                this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+                this.appReady = true;
+                this.#subManager.emitAppReady(true);
+            }
+        }
+        else {
+            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
+                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+                    this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
+                    this.appReady = true;
+                    this.#subManager.emitAppReady(true);
+            }
         }
     }
 
@@ -318,10 +339,11 @@ export default class AppSettings {
         this.appReadyParams = { 
             appCSSLoaded: false,
             schemeCSSLoaded: false, 
-            themeCSSLoaded: false, 
-            translationLoaded: false, 
+            themeCSSLoaded: false,
+            appMetaData: false,
+            designCSSLoaded: false,
             userOrLoginLoaded: false,
-            designCSSLoaded: false
+            translationLoaded: false
         };
     }
 }

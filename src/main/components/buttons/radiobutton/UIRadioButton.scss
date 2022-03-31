@@ -8,7 +8,7 @@
         //--radioPadding: 0.563rem 0rem;
     }
     
-    display: inline-flex;
+    display: flex;
     justify-content: var(--radioJustify);
     align-items: var(--radioAlign);
     padding: var(--radioPadding);
@@ -20,30 +20,46 @@
     }
 
     .p-radiobutton {
-        align-self: center;
         justify-content: center;
         align-items: center;
         height: unset;
         width: unset;
-    
-        .gap-top & {
-            margin-top: var(--iconTextGap);
-        }
-        .gap-left & {
-            margin-left: var(--iconTextGap);
-        }
-        .gap-right & {
-            margin-right: var(--iconTextGap);
-        }
-        .gap-bottom & {
-            margin-bottom: var(--iconTextGap);
-        }
-        .icon-center-left & {
-            margin-left: var(--iconCenterGap)
-        }
-        .icon-center-right & {
-            margin-right: var(--iconCenterGap)
-        }
+    }
+}
+
+.gap-top {
+    .p-radiobutton {
+        margin-top: var(--iconTextGap);
+    }
+}
+
+.gap-left {
+    .p-radiobutton {
+        margin-left: var(--iconTextGap);
+    }
+}
+
+.gap-right {
+    .p-radiobutton {
+        margin-right: var(--iconTextGap);
+    }
+}
+
+.gap-bottom {
+    .p-radiobutton {
+        margin-bottom: var(--iconTextGap);
+    }
+}
+
+.icon-center-left {
+    .p-radiobutton {
+        margin-left: var(--iconCenterGap);
+    }
+}
+
+.icon-center-right {
+    .p-radiobutton {
+        margin-right: var(--iconCenterGap);
     }
 }
 

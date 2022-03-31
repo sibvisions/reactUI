@@ -4,22 +4,25 @@ import React, { ReactElement } from "react";
 /** Other imports */
 import { SubscriptionManager } from "./SubscriptionManager";
 import { ServerMenuButtons, MetaDataResponse, MetaDataReference, BaseMenuButton } from "./response";
-import BaseComponent from "./components/BaseComponent";
+import BaseComponent from "./util/types/BaseComponent";
 import UserData from "./model/UserData";
 import TreePath from "./model/TreePath";
 import { componentHandler } from "./factories/UIFactory";
 import { IPanel } from './components/panels'
-import { CustomStartupProps, ScreenWrapperOptions } from "./customTypes";
-import { getMetaData, Timer } from "./components/util";
+import { CustomStartupProps, ScreenWrapperOptions } from "./util/types/custom-types";
+import { getMetaData, isWorkScreen, Timer } from "./util";
 import { RecordFormat, SortDefinition } from "./request"
 import { History } from "history";
 import { IToolBarPanel } from "./components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "./components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import AppSettings from "./AppSettings";
+import SignaturePad from "./components/custom-comp/custom-container-components/SignaturePad";
 
 export type ActiveScreen = {
     name: string,
     className?: string
+    popup?: boolean
 }
 
 export interface ISelectedRow {
@@ -86,6 +89,9 @@ export default class ContentStore{
     /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
     navigationNames = new Map<string, string>();
 
+    /** A Map which stores a workscreens nav-name as key and the componentId of the menu as value to open screens when navigating */
+    navOpenScreenMap = new Map<string, string>();
+
     /** A Map which stores the translation values, the key is the original text and the value is the translated text */
     translation = new Map<string, string>();
 
@@ -109,15 +115,17 @@ export default class ContentStore{
     /** the react routers history object */
     history?:History<any>;
 
-    globalComponents:Map<string, Function> = new Map<string, Function>();
+    globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: BaseComponent) => <SignaturePad {...props} />);
 
     dialogButtons:Array<string> = new Array<string>();
-
-    missingDataCalls: Map<string, Map<string, Function>> = new Map<string, Map<string, Function>>();
 
     ws:WebSocket|undefined;
 
     timer:Timer|undefined;
+
+    mobileLauncher:ActiveScreen[] = [];
+
+    version:number = 1;
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -139,10 +147,17 @@ export default class ContentStore{
     setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean) {
         if (screenInfo) {
             if (popup) {
-                this.activeScreens.push(screenInfo);
+                const popupScreen:ActiveScreen = {...screenInfo};
+                popupScreen.popup = true 
+                this.activeScreens.push(popupScreen);
             }
             else {
-                this.activeScreens = [screenInfo];
+                if (this.activeScreens[0] && this.activeScreens[0].popup) {
+                    this.activeScreens.unshift(screenInfo);
+                }
+                else {
+                    this.activeScreens = [screenInfo];
+                }
             }
         }
         else {
@@ -157,6 +172,186 @@ export default class ContentStore{
 
     //Content
     /**
+     * Returns the component if it already exists in the contentstore
+     * @param id - the id of the component
+     */
+    getExistingComponent(id:string) {
+        return this.flatContent.get(id) || this.replacedContent.get(id) || this.desktopContent.get(id) || 
+               this.removedContent.get(id) || this.removedCustomComponents.get(id) ||this.removedDesktopContent.get(id);
+    }
+
+    /**
+     * Returns true if the component is in one of the "removed" maps in the contentstore
+     * @param id 
+     * @returns 
+     */
+    isRemovedComponent(id:string) {
+        return this.removedContent.has(id) || this.removedCustomComponents.has(id) || this.removedDesktopContent.has(id);
+    }
+
+    /**
+     * Returns the constraint of the toolbar-main sub-panel.
+     * @param tba - the toolbararea property
+     */
+    getToolBarMainConstraint(tba: 0 | 1 | 2 | 3) {
+        switch (tba) {
+            case 0:
+                return "North";
+            case 1:
+                return "West";
+            case 2:
+                return "South";
+            case 3:
+                return "East";
+            default:
+                return "North";
+        }
+    }
+
+    /**
+     * Updates a components properties when the server sends new properties
+     * @param existingComp - the existing component already in contentstore
+     * @param newComp - the new component of changedcomponents
+     */
+    updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent) {
+        if (existingComp) {
+            for (let newPropName in newComp) {
+                // @ts-ignore
+                existingComp[newPropName] = newComp[newPropName];
+
+                if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && !(existingComp.parent?.includes("TBP") || newComp.parent?.includes("TBP"))) {
+                    existingComp[newPropName] = newComp[newPropName] + "-frame-toolbar";
+                }
+
+                if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                    this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates a toolbars properties when the server sends new ones
+     * @param existingComp - the existing component already in contentstore
+     * @param newComp - the new component of changedcomponents
+     * @param newProp - the property name to update
+     */
+    updateToolBarProperties(existingComp:IToolBarPanel, newComp:IToolBarPanel, newProp:string) {
+        const tbMain = this.getExistingComponent(existingComp.id + "-tbMain") as IToolBarHelper;
+        const tbCenter = this.getExistingComponent(existingComp.id + "-tbCenter") as IToolBarHelper;
+        //When the layout for the toolbar-panel changes, don't overwrite the borderlayout of the outer, instead update the layout of the inner sub-panel.
+        if (newProp === "layout") {
+            existingComp[newProp] = "BorderLayout,0,0,0,0,0,0";
+            if (tbCenter) {
+                tbCenter[newProp] = newComp[newProp];
+            }
+        }
+        //When the toolbar-panel's toolBarArea changes, update the toolbar sub-panels constraints
+        else if (newProp === "toolBarArea" && tbMain) {
+            tbMain.constraints = this.getToolBarMainConstraint(existingComp.toolBarArea);
+        }
+    }
+
+    /**
+     * Handles adding removing of the toolbar sub elements
+     * @param existingComp - the existing component already in contentstore
+     * @param newComp - the new component of changedcomponents
+     */
+    handleToolBarComponent(existingComp:IToolBarPanel|undefined, newComp:IToolBarPanel) {
+        if (existingComp) {
+            const tbMain = this.getExistingComponent(existingComp.id + "-tbMain");
+            const tbCenter = this.getExistingComponent(existingComp.id + "-tbCenter");
+            if (newComp["~remove"] !== true) {
+                if (this.isRemovedComponent(existingComp.id)) {
+                    if (tbMain && tbCenter) {
+                        this.removedContent.delete(existingComp.id + "-tbMain");
+                        this.removedContent.delete(existingComp.id + "-tbCenter");
+                        this.flatContent.set(existingComp.id + "-tbMain", tbMain);
+                        this.flatContent.set(existingComp.id + "tbCenter", tbCenter);
+                    }
+                }
+            }
+            else {
+                // When the toolbar-panel gets removed, also add the sub-panels to removedContent
+                if (tbMain && tbCenter) {
+                    this.flatContent.delete(existingComp.id + "-tbMain");
+                    this.removedContent.set(existingComp.id + "-tbMain", tbMain);
+
+                    this.flatContent.delete(existingComp.id + "-tbCenter");
+                    this.removedContent.set(existingComp.id + "-tbCenter", tbCenter);
+                }
+            }
+
+            if (newComp["~destroy"]) {
+                this.flatContent.delete(existingComp.id + "-tbMain");
+                this.flatContent.delete(existingComp.id + "-tbCenter");
+
+                this.removedContent.delete(existingComp.id + "-tbMain");
+                this.removedContent.delete(existingComp.id + "tb-Center");
+                
+            }
+        }
+        else {
+            //if the new component is a toolbar-panel add 2 sub-panels, one for the toolbar and one for the toolbar-panel's content.
+            const innerLayout = newComp.layout;
+            const constraint = this.getToolBarMainConstraint(newComp.toolBarArea);
+            const flowOrientation = ["North", "South"].indexOf(constraint) !== -1 ? "0" : "1";
+            newComp.layout = "BorderLayout,0,0,0,0,0,0";
+
+            const tbMain:IToolBarHelper = {
+                id: newComp.id + "-tbMain",
+                parent: newComp.id,
+                constraints: this.getToolBarMainConstraint(newComp.toolBarArea),
+                name: newComp.name + "-tbMain",
+                className: "ToolBarHelperMain",
+                layout: "FlowLayout,5,5,5,5,0,0," + flowOrientation + ",0,0,3,true",
+                layoutData: "",
+                isNavTable: newComp.classNameEventSourceRef === "NavigationTable",
+                toolBarVisible: newComp.toolBarVisible
+            }
+
+            const tbCenter:IToolBarHelper = {
+                id: newComp.id + "-tbCenter",
+                parent: newComp.id,
+                constraints: "Center",
+                name: newComp.name + "-tbCenter",
+                className: "ToolBarHelperCenter",
+                layout: innerLayout,
+                layoutData: newComp.layoutData,
+                preferredSize: newComp.preferredSize, 
+                minimumSize: newComp.minimumSize, 
+                maximumSize: newComp.maximumSize,
+                isNavTable: newComp.classNameEventSourceRef === "NavigationTable"
+            }
+
+            this.flatContent.set(tbMain.id, tbMain);
+            this.flatContent.set(tbCenter.id, tbCenter);
+        }
+    }
+
+    /**
+     * Adds the components parent to a list so it gets notified that its components changed
+     * @param comp - the component which is currently being changed (not the parent!)
+     * @param notifyList - the list of components which need to be notified (parents)
+     */
+    addToNotifyList(comp:BaseComponent, notifyList:string[]) {
+        if (comp.parent) {
+            // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
+            if (this.getParent(comp.parent)?.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                if (comp["~additional"]) {
+                    notifyList.push(comp.parent + "-tbMain");
+                }
+                else {
+                    notifyList.push(comp.parent + "-tbCenter");
+                }
+            }
+            else {
+                notifyList.push(comp.parent);
+            }
+        }
+    }
+
+    /**
      * Sets or updates flatContent, removedContent, replacedContent, updates properties and notifies subscriber
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
@@ -170,62 +365,87 @@ export default class ContentStore{
          */
         let existingComponent: BaseComponent | undefined;
 
-        /**
-         * Returns the constraint of the toolbar-main sub-panel.
-         * @param tba - the toolbararea property
-         */
-        const getToolBarMainConstraint = (tba: 0 | 1 | 2 | 3) => {
-            switch (tba) {
-                case 0:
-                    return "North";
-                case 1:
-                    return "West";
-                case 2:
-                    return "South";
-                case 3:
-                    return "East";
-                default:
-                    return "North";
-            }
-        }
+
 
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
             const isCustom:boolean = this.customComponents.has(newComponent.name as string);
-            existingComponent = this.flatContent.get(newComponent.id) || 
-                                this.replacedContent.get(newComponent.id) ||
-                                this.desktopContent.get(newComponent.id) || 
-                                this.removedContent.get(newComponent.id) || 
-                                this.removedCustomComponents.get(newComponent.id) ||
-                                this.removedDesktopContent.get(newComponent.id);
+            existingComponent = this.getExistingComponent(newComponent.id);
 
-            /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
-            if(existingComponent && (this.removedContent.has(newComponent.id) || this.removedCustomComponents.has(newComponent.id) || this.removedDesktopContent.has(newComponent.id))) {
-                if (!isCustom) {
-                    if (desktop) {
-                        this.removedDesktopContent.delete(newComponent.id);
-                        this.desktopContent.set(newComponent.id, existingComponent);
+            this.updateExistingComponent(existingComponent, newComponent);
+
+            if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
+                this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
+            }
+
+            /** Cast newComponent as Panel */
+            const newCompAsPanel = (newComponent as IPanel);
+            
+            if (existingComponent) {
+                if (newComponent["~remove"] !== true) {
+                    /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
+                    if (this.isRemovedComponent(newComponent.id)) {
+                        if (!isCustom) {
+                            if (desktop) {
+                                this.removedDesktopContent.delete(newComponent.id);
+                                this.desktopContent.set(newComponent.id, existingComponent);
+                            }
+                            else {
+                                this.removedContent.delete(newComponent.id);
+                                this.flatContent.set(newComponent.id, existingComponent);
+                            }
+                        }
+                        else {
+                            this.removedCustomComponents.delete(newComponent.id);
+                            this.replacedContent.set(newComponent.id, existingComponent);
+                        }
                     }
-                    else {
-                        this.removedContent.delete(newComponent.id);
-                        this.flatContent.set(newComponent.id, existingComponent);
-                        // If the new component is a toolbarpanel, also add the sub-tb-panels to flatcontent
-                        if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                            const tbMain = this.removedContent.get(newComponent.id + "-tbMain");
-                            const tbCenter = this.removedContent.get(newComponent.id + "-tbCenter");
-                            if (tbMain && tbCenter) {
-                                this.removedContent.delete(newComponent.id + "-tbMain");
-                                this.removedContent.delete(newComponent.id + "-tbCenter");
-                                this.flatContent.set(newComponent.id + "-tbMain", tbMain);
-                                this.flatContent.set(newComponent.id + "tbCenter", tbCenter);
+                }
+                /** 
+                 * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
+                 * and add it to removedContent/removedCustomContent.
+                 */
+
+                if (newComponent["~remove"]) {
+                    if (!isCustom) {
+                        if (desktop) {
+                            this.desktopContent.delete(newComponent.id);
+                            this.removedDesktopContent.set(newComponent.id, existingComponent);
+                        }
+                        else {
+                            if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                                // Close screen when InternalFrame is a workscreen
+                                if (isWorkScreen(existingComponent as IPanel)) {
+                                    this.closeScreen(existingComponent.name);
+                                }
+                                else {
+                                    // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
+                                    const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && 
+                                        (isWorkScreen(comp as IPanel) || comp.classNameEventSourceRef === "Login"));
+                                    if (foundWorkScreen) {
+                                        this.flatContent.delete(newComponent.id);
+                                        this.closeScreen(foundWorkScreen.name);
+                                    }   
+                                }
+                            }
+                            else {
+                                this.flatContent.delete(newComponent.id);
+                                this.removedContent.set(newComponent.id, existingComponent);
                             }
                         }
                     }
-                    
+                    else {
+                        this.replacedContent.delete(newComponent.id);
+                        this.removedCustomComponents.set(newComponent.id, existingComponent);
+                    }
                 }
-                else {
+
+                if (newComponent["~destroy"]) {
+                    this.flatContent.delete(newComponent.id);
+                    this.desktopContent.delete(newComponent.id);
+                    this.removedContent.delete(newComponent.id);
+                    this.removedDesktopContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
-                    this.replacedContent.set(newComponent.id, existingComponent);
                 }
             }
 
@@ -237,216 +457,61 @@ export default class ContentStore{
                 newComponent.visible !== undefined || 
                 newComponent.constraints
             ) {
-                const addToNotifyList = (comp:BaseComponent) => {
-                    if (comp.parent) {
-                        // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
-                        if (comp.parent.includes("TBP")) {
-                            if (comp["~additional"]) {
-                                notifyList.push(comp.parent + "-tbMain");
-                            }
-                            else {
-                                notifyList.push(comp.parent + "-tbCenter");
-                            }
-                        }
-                        else {
-                            notifyList.push(comp.parent);
-                        }
-                    }
-                }
                 if (existingComponent) {
-                    addToNotifyList(existingComponent);
+                    this.addToNotifyList(existingComponent, notifyList);
                 }
                 else if(newComponent.parent) {
-                    addToNotifyList(newComponent);
+                    this.addToNotifyList(newComponent, notifyList);
                 }
             }
 
-            /** Add new component or updated properties */
-            if(existingComponent) {
-                for (let newPropName in newComponent) {
-                    // @ts-ignore
-                    existingComponent[newPropName] = newComponent[newPropName];
-                    if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                        //When the layout for the toolbar-panel changes, don't overwrite the borderlayout of the outer, instead update the layout of the inner sub-panel.
-                        if (newPropName === "layout") {                   
-                            const tbCenter = this.flatContent.get(existingComponent.id + "-tbCenter");
-                            // @ts-ignore
-                            existingComponent[newPropName] = "BorderLayout,0,0,0,0,0,0";
-                            if (tbCenter) {
-                                //@ts-ignore
-                                tbCenter[newPropName] = newComponent[newPropName];
-                            }
-                        }
-                        //When the toolbar-panel's toolBarArea changes, update the toolbar sub-panels constraints
-                        else if (newPropName === "toolBarArea") {
-                            const tbMain = this.flatContent.get(existingComponent.id + "-tbMain");
-                            if (tbMain) {
-                                tbMain.constraints = getToolBarMainConstraint((existingComponent as IToolBarPanel).toolBarArea);
-                            }
-                        }
-                    }
-                }
-            } 
-            else if (!isCustom) {
-                if (desktop) {
-                    this.desktopContent.set(newComponent.id, newComponent);
-                }
-                else {
-                    //if the new component is a toolbar-panel add 2 sub-panels, one for the toolbar and one for the toolbar-panel's content.
-                    if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                        const castedNewComp = newComponent as IToolBarPanel;
-                        const innerLayout = castedNewComp.layout;
-                        const constraint = getToolBarMainConstraint(castedNewComp.toolBarArea);
-                        const flowOrientation = ["North", "South"].indexOf(constraint) !== -1 ? "0" : "1";
-                        castedNewComp.layout = "BorderLayout,0,0,0,0,0,0";
-
-                        const tbMain:IToolBarHelper = {
-                            id: newComponent.id + "-tbMain",
-                            parent: newComponent.id,
-                            constraints: getToolBarMainConstraint(castedNewComp.toolBarArea),
-                            name: newComponent.name + "-tbMain",
-                            className: "ToolBarHelperMain",
-                            layout: "FlowLayout,5,5,5,5,0,0," + flowOrientation + ",0,0,3,true",
-                            layoutData: "",
-                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable",
-                            toolBarVisible: castedNewComp.toolBarVisible
-                        }
-
-                        const tbCenter:IToolBarHelper = {
-                            id: newComponent.id + "-tbCenter",
-                            parent: newComponent.id,
-                            constraints: "Center",
-                            name: newComponent.name + "-tbCenter",
-                            className: "ToolBarHelperCenter",
-                            layout: innerLayout,
-                            layoutData: castedNewComp.layoutData,
-                            preferredSize: newComponent.preferredSize, 
-                            minimumSize: newComponent.minimumSize, 
-                            maximumSize: newComponent.maximumSize,
-                            isNavTable: castedNewComp.classNameEventSourceRef === "NavigationTable"
-                        }
-
-                        this.flatContent.set(tbMain.id, tbMain);
-                        this.flatContent.set(tbCenter.id, tbCenter);
-                    }
-                    this.flatContent.set(newComponent.id, newComponent);
-                }
-            }
-            else {
-                const newComp:BaseComponent = {
-                    id: newComponent.id, 
-                    parent: newComponent.parent, 
-                    constraints: newComponent.constraints, 
-                    name: newComponent.name,
-                    preferredSize: newComponent.preferredSize, 
-                    minimumSize: newComponent.minimumSize, 
-                    maximumSize: newComponent.maximumSize,
-                    className: ""
-                };
-                this.replacedContent.set(newComponent.id, newComp)
-            }
-
-            /** 
-             * If newComponent already exists and has "remove", delete it from flatContent/replacedContent 
-             * and add it to removedContent/removedCustomContent, if newComponent has "destroy", delete it from all maps
-             */
-            if (newComponent["~remove"] && existingComponent) {
+            if (!existingComponent) {
                 if (!isCustom) {
                     if (desktop) {
-                        this.desktopContent.delete(newComponent.id);
-                        this.removedDesktopContent.set(newComponent.id, existingComponent);
+                        this.desktopContent.set(newComponent.id, newComponent);
                     }
                     else {
-                        const compToRemove = this.flatContent.get(newComponent.id);
-                        this.flatContent.delete(newComponent.id);
-                        this.removedContent.set(newComponent.id, existingComponent);
-                        // When the toolbar-panel gets removed, also add the sub-panels to removedContent
-                        if (compToRemove && compToRemove.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                            const tbMain = this.flatContent.get(compToRemove.id + "-tbMain");
-                            const tbCenter = this.flatContent.get(compToRemove.id + "-tbCenter");
-                            if (tbMain && tbCenter) {
-                                this.flatContent.delete(compToRemove.id + "-tbMain");
-                                this.flatContent.delete(compToRemove.id + "-tbCenter");
-                                this.removedContent.set(compToRemove.id + "-tbMain", tbMain);
-                                this.removedContent.set(compToRemove.id + "-tbCenter", tbCenter);
-                            }
+                        if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
+                            newComponent.parent = newComponent.parent + "-frame-toolbar";
                         }
+                        this.flatContent.set(newComponent.id, newComponent);
                     }
                 }
                 else {
-                    this.replacedContent.delete(newComponent.id);
-                    this.removedCustomComponents.set(newComponent.id, existingComponent);
-                }
-            }
-
-            if (newComponent["~destroy"]) {
-                const compToDestroy = this.flatContent.get(newComponent.id);
-                if (desktop) {
-                    this.desktopContent.delete(newComponent.id)
-                }
-                else {
-                    this.flatContent.delete(newComponent.id);
-                    if (compToDestroy && compToDestroy.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                        this.flatContent.delete(compToDestroy.id + "-tbMain");
-                        this.flatContent.delete(compToDestroy.id + "-tbCenter");
-                    }
-                }
-
-                if (!isCustom) {
-                    this.removedContent.delete(newComponent.id);
-                    if (compToDestroy && compToDestroy.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                        this.removedContent.delete(compToDestroy.id + "-tbMain");
-                        this.removedContent.delete(compToDestroy.id + "-tbCenter");
-                    }
-                    this.removedDesktopContent.delete(newComponent.id);
-                }
-                else {
-                    this.removedCustomComponents.delete(newComponent.id);
+                    // Add the basic properties to the custom component
+                    const newComp:BaseComponent = {
+                        id: newComponent.id, 
+                        parent: newComponent.parent, 
+                        constraints: newComponent.constraints, 
+                        name: newComponent.name,
+                        preferredSize: newComponent.preferredSize, 
+                        minimumSize: newComponent.minimumSize, 
+                        maximumSize: newComponent.maximumSize,
+                        className: ""
+                    };
+                    this.replacedContent.set(newComponent.id, newComp)
                 }
             }
             
-            /** Cast newComponent as Panel */
-            const newCompAsPanel = (newComponent as IPanel);
 
-            /** 
-             * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
-             * to the navigation-name, if not, don't add anything, and call setNavigationName
-             */
-            if (newCompAsPanel.screen_navigationName_) {
-                let increment:number|string = 0;
-                for (let value of this.navigationNames.values()) {
-                    if (value.replace(/\s\d+$/, '') === newCompAsPanel.screen_navigationName_)
-                        increment++
-                }
-                if (increment === 0 || (increment === 1 && this.navigationNames.has(newCompAsPanel.name)))
-                    increment = ''
-                this.setNavigationName(newCompAsPanel.name, newCompAsPanel.screen_navigationName_ + increment.toString())
-            }
 
+            // Set a new selected menuitem to display the menuitem-text in a different color
             if (newCompAsPanel.screen_className_) {
                 this.selectedMenuItem = newCompAsPanel.screen_className_
                 this.subManager.emitSelectedMenuItem(newCompAsPanel.screen_className_);
             }
-
-            if (newCompAsPanel.className === COMPONENT_CLASSNAMES.PANEL && newCompAsPanel.parent === undefined) {
-                this.missingDataCalls.set(newCompAsPanel.name, new Map<string, Function>());
-            }
         });
 
         /** If the component already exists and it is subscribed to properties update the state */
-        componentsToUpdate.forEach(value => {
-            const existingComp = this.flatContent.get(value.id)
-                || this.replacedContent.get(value.id)
-                || this.removedContent.get(value.id)
-                || this.desktopContent.get(value.id)
-                || this.removedDesktopContent.get(value.id);
+        componentsToUpdate.forEach(newComponent => {
+            existingComponent = this.getExistingComponent(newComponent.id)
 
-            const updateFunction = this.subManager.propertiesSubscriber.get(value.id);
+            const updateFunction = this.subManager.propertiesSubscriber.get(newComponent.id);
 
-            if (existingComp) {
-                if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                    const existingTbMain = this.flatContent.get(existingComp.id + "-tbMain") || this.removedContent.get(existingComp.id + "-tbMain");
-                    const existingTbCenter = this.flatContent.get(existingComp.id + "-tbCenter") || this.removedContent.get(existingComp.id + "-tbCenter");
+            if (existingComponent) {
+                if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                    const existingTbMain = this.flatContent.get(existingComponent.id + "-tbMain") || this.removedContent.get(existingComponent.id + "-tbMain");
+                    const existingTbCenter = this.flatContent.get(existingComponent.id + "-tbCenter") || this.removedContent.get(existingComponent.id + "-tbCenter");
                     if (existingTbMain && existingTbCenter) {
                         const updateMain = this.subManager.propertiesSubscriber.get(existingTbMain.id);
                         const updateCenter = this.subManager.propertiesSubscriber.get(existingTbCenter.id);
@@ -457,7 +522,7 @@ export default class ContentStore{
                     }
                 }
                 if (updateFunction) {
-                    updateFunction(existingComp);
+                    updateFunction(existingComponent);
                 }
             }
         });
@@ -475,6 +540,12 @@ export default class ContentStore{
      * @param windowName - the name of the window to close
      */
     closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
+        let window = this.getComponentByName(windowName);
+
+        if (window && !closeContent) {
+            this.cleanUp(window.id, window.name, window.className);
+        }
+
         this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
         this.subManager.emitActiveScreens();
         if (this.activeScreens.length) {
@@ -483,22 +554,22 @@ export default class ContentStore{
         else if (!opensAnother) {
             this.subManager.emitSelectedMenuItem("");
         }
-        const window = this.getComponentByName(windowName);
-        if(window && !closeContent){
-            this.cleanUp(window.id, window.name, window.className);
-        }
+        
+
     }
 
     /**
      * Deletes all children of a parent from flatContent, a child with children also deletes their children from flatContent
-     * @param parentId - the id of the parent
+     * @param id - the id of the parent
      */
-    deleteChildren(parentId:string, className: string) {
-        const children = this.getChildren(parentId, className);
+    deleteChildren(id:string, className: string) {
+        const children = this.getChildren(id, className);
         children.forEach(child => {
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
         });
+
+        this.subManager.parentSubscriber.get(id)?.apply(undefined, []);
     }
 
     /**
@@ -508,8 +579,12 @@ export default class ContentStore{
      */
     cleanUp(id:string, name:string|undefined, className: string) {
         if (name) {
+            const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
+            if (parentId) {
+                this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
+            }
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
@@ -541,15 +616,15 @@ export default class ContentStore{
 
     /**
      * Sets or updates the navigation-name for a screen
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param navName - the navigation name of a screen
      */
-    setNavigationName(compId:string, navName:string) {
-        let existingMap = this.navigationNames.get(compId);
+    setNavigationName(screenName:string, navName:string) {
+        let existingMap = this.navigationNames.get(screenName);
         if (existingMap)
             existingMap = navName;
         else
-            this.navigationNames.set(compId, navName);
+            this.navigationNames.set(screenName, navName);
     }
 
     /**
@@ -614,15 +689,29 @@ export default class ContentStore{
     }
 
     /**
+     * Returns the parent of a component as BaseComponent Object or undefined if the parent wasn't found
+     * @param parentId - the parent you wish to find
+     */
+    getParent(parentId:string): BaseComponent|undefined {
+        let parent:BaseComponent|undefined = undefined
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+        if (parentId) {
+            parent = mergedContent.get(parentId);
+        }
+        return parent;
+    }
+
+    /**
      * Returns all visible children of a parent, if tabsetpanel also return invisible
-     * @param parentId - the id of the parent
+     * @param id - the id of the component
      * @returns all visible children of a parent, if tabsetpanel also return invisible
      */
-    getChildren(parentId: string, className?: string): Map<string, BaseComponent> {
+    getChildren(id: string, className?: string): Map<string, BaseComponent> {
         const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
+        let parentId = id;
 
         if (className) {
             if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
@@ -631,13 +720,19 @@ export default class ContentStore{
         }
 
         while (!entry.done) {
-            if (parentId.includes("TP")) {
-                if (entry.value[1].parent === parentId && !this.removedCustomComponents.has(entry.value[1].name)) {
-                    children.set(entry.value[1].id, entry.value[1]);
-                }
+            const value = entry.value[1];
+
+            if (parentId && parentId.includes("-frame-tb")) {
+                parentId = parentId.substring(0, parentId.indexOf("-"));
             }
-            else if (entry.value[1].parent === parentId && entry.value[1].visible !== false && !this.removedCustomComponents.has(entry.value[1].name)) {
-                children.set(entry.value[1].id, entry.value[1]);
+
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
+                if (parentId.includes("TP")) {
+                    children.set(value.id, value);
+                }
+                else if (value.visible !== false) {
+                    children.set(value.id, value);
+                }
             }
             entry = componentEntries.next();
         }
@@ -651,22 +746,54 @@ export default class ContentStore{
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
+            else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER || className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"]));
+            }
         }
         return children;
     }
+
+    /**
+     * Returns true if the frame has toolbars
+     * @param id - the id of the frame
+     */
+    hasToolBars(id:string) {
+        const toolbars = this.getChildren(id + "-frame-toolbar");
+        if (toolbars.size > 0) {
+            return true;
+        } 
+        return false;
+    }
+
+    /**
+     * Returns the menubar if there is one
+     * @param id - the id of the frame
+     */
+    getMenuBar(id:string) {
+        const mergedContent = [...this.flatContent, ...this.replacedContent, ...this.desktopContent];
+        const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES.MENUBAR);
+        if (foundMenu) {
+            return foundMenu[1];
+        }
+        return undefined;
+    } 
 
     /**
      * Returns the component id of a screen for a component
      * @param id - the id of the component
      * @returns the component id of a screen for a component
      */
-    getComponentId(id: string) {
+    getScreenName(id: string, dataProvider?:string) {
         let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
-                if ((comp as IPanel).content_modal_ || (comp as IPanel).screen_modal_) {
+                if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
                     break;
                 }
+                else if ((comp as IPanel).content_className_) {
+                    return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                }
+
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }
@@ -701,7 +828,7 @@ export default class ContentStore{
      * for the data of its master and the value is the data. Additionally there is a key "current" which holds data of the
      * current selected row of the master.
      * If there is no master-reference, it saves the data in a Map with one entry key: "current" value: data 
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param newDataSet - the new data
      * @param to - to which row will be set/updated
@@ -710,7 +837,7 @@ export default class ContentStore{
      * @param selectedRow - the currently selected row of the master-reference
      */
     updateDataProviderData(
-        compId:string, 
+        screenName:string, 
         dataProvider:string, 
         newDataSet: Array<any>, 
         to:number, 
@@ -718,8 +845,9 @@ export default class ContentStore{
         treePath?:number[], 
         referenceKey?:string,
         recordFormat?: RecordFormat,
+        clear?:boolean
     ) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
+        const compPanel = this.getComponentByName(screenName) as IPanel;
         
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             if (referenceKey !== undefined) {
@@ -736,14 +864,18 @@ export default class ContentStore{
                 }
                 
                 if (addDPD) {
-                    this.dataBooks.set(compId, mapScreen);
+                    this.dataBooks.set(screenName, mapScreen);
                 }
             }
         }
 
-        const existingMap = this.getScreenDataproviderMap(compId);
+        if (clear) {
+            this.clearDataFromProvider(screenName, dataProvider);
+        }
+
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
@@ -754,7 +886,7 @@ export default class ContentStore{
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
                             if (newDataSet[newDataSetIndex].recordStatus === "I") {
-                                this.insertDataProviderData(compId, dataProvider)
+                                this.insertDataProviderData(screenName, dataProvider)
                             }
                             existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
@@ -785,8 +917,8 @@ export default class ContentStore{
                 fillDataMap(providerMap, dataMap, true);
             }
         }
-        this.subManager.notifyDataChange(compId, dataProvider);
-        this.subManager.notifyScreenDataChange(compId);
+        this.subManager.notifyDataChange(screenName, dataProvider);
+        this.subManager.notifyScreenDataChange(screenName);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
             this.subManager.notifyScreenDataChange(dataProvider.split('/')[1]);
@@ -796,18 +928,18 @@ export default class ContentStore{
     /**
      * Inserts a new datarow into an existing dataset. Always inserts the datarow into the next row of the selected-row.
      * If there is no row selected, the row is inserted at index 0.
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider 
      * @param referenceKey - the primary key value of the master-reference
      */
-    insertDataProviderData(compId:string, dataProvider:string, referenceKey?:string) {
-        const existingMap = this.getScreenDataproviderMap(compId);
+    insertDataProviderData(screenName:string, dataProvider:string, referenceKey?:string) {
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
-                    const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
+                    const selectedRow = this.getDataBook(screenName, dataProvider)?.selectedRow;
                     if (selectedRow) {
                         existingData.splice(selectedRow.index + 1, 0, {});
                     }
@@ -821,14 +953,14 @@ export default class ContentStore{
 
     /**
      * Deletes a datarow from an existing dataset. Deletes the selected-row
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider 
      * @param referenceKey - the primary key value of the master-reference
      */
-    deleteDataProviderData(compId:string, dataProvider:string, index?:number, referenceKey?:string) {
-        const existingMap = this.getScreenDataproviderMap(compId);
+    deleteDataProviderData(screenName:string, dataProvider:string, index?:number, referenceKey?:string) {
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
-            const existingProvider = this.getDataBook(compId, dataProvider);
+            const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (existingData) {
@@ -836,7 +968,7 @@ export default class ContentStore{
                         existingData.splice(index, 1);
                     }
                     else {
-                        const selectedRow = this.getDataBook(compId, dataProvider)?.selectedRow;
+                        const selectedRow = this.getDataBook(screenName, dataProvider)?.selectedRow;
                         if (selectedRow) {
                             existingData.splice(selectedRow.index, 1);
                         }
@@ -848,14 +980,14 @@ export default class ContentStore{
 
     /**
      * Returns either a part of the data of a dataprovider specified by "from" and "to" or all data
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param from - from which row to return
      * @param to - to which row to return
      * @returns either a part of the data of a dataprovider specified by "from" and "to" or all data
      */
-    getData(compId:string, dataProvider: string, from?: number, to?: number): Array<any>{
-        let dataArray:any = this.getDataBook(compId, dataProvider)?.data;
+    getData(screenName:string, dataProvider: string, from?: number, to?: number): Array<any>{
+        let dataArray:any = this.getDataBook(screenName, dataProvider)?.data;
         if (dataArray) {
             dataArray = dataArray.get("current")
             if(from !== undefined && to !== undefined) {
@@ -867,13 +999,13 @@ export default class ContentStore{
 
     /**
      * Returns either the dataRow of a dataprovider with the given index or undefined if row has not been found
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param indexOfRow - the index of the row to get
      * @returns either the dataRow of a dataprovider with the given index or undefined if row has not been found
      */
-    getDataRow(compId:string, dataProvider: string, indexOfRow: number) : any{
-        const data = this.getData(compId, dataProvider);
+    getDataRow(screenName:string, dataProvider: string, indexOfRow: number) : any{
+        const data = this.getData(screenName, dataProvider);
         const dataRow = data[indexOfRow];
         if(dataRow)
             return dataRow;
@@ -883,13 +1015,13 @@ export default class ContentStore{
 
     /**
      * Sets or updates the currently selectedRow of a dataprovider
-     * @param compId - the component id of a screen
+     * @param screenName - the name of a screen
      * @param dataProvider - the dataprovider
      * @param dataRow - the selectedDataRow
      */
-    setSelectedRow(compId:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        const existingMap = this.getScreenDataproviderMap(compId);
+    setSelectedRow(screenName:string, dataProvider: string, dataRow: any, index:number, treePath?:TreePath, selectedColumn?:string) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
                 (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
@@ -915,9 +1047,9 @@ export default class ContentStore{
             else {
                 tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
             }
-            this.dataBooks.set(compId, tempMapRow);
+            this.dataBooks.set(screenName, tempMapRow);
         }
-        this.subManager.emitRowSelect(compId, dataProvider);
+        this.subManager.emitRowSelect(screenName, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }
@@ -925,27 +1057,32 @@ export default class ContentStore{
 
     /**
      * Clears the selectedRow of a dataProvider
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      */
-    clearSelectedRow(compId:string, dataProvider: string) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        if (this.getDataBook(compId, dataProvider)) {
-            this.getDataBook(compId, dataProvider)!.selectedRow = undefined;
-            this.subManager.emitRowSelect(compId, dataProvider);
+    clearSelectedRow(screenName:string, dataProvider: string) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        if (this.getDataBook(screenName, dataProvider)) {
+            this.getDataBook(screenName, dataProvider)!.selectedRow = undefined;
+            this.subManager.emitRowSelect(screenName, dataProvider);
             if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
                 this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
             }
         }
     }
 
-    clearDataFromSubPage(compId:string, detailReferences?:MetaDataReference[]) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
+    /**
+     * Clears the data from every subpage of a dataprovider
+     * @param screenName - the name of the screen 
+     * @param detailReferences - the detail references of a master reference
+     */
+    clearDataFromSubPage(screenName:string, detailReferences?:MetaDataReference[]) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
         if (detailReferences !== undefined) {
             detailReferences.forEach(reference => {
                 const referencedDataBook = reference.referencedDataBook;
-                const metaData = getMetaData(compId, referencedDataBook, this, undefined);
-                const dataBookData = this.getDataBook(compId, referencedDataBook)?.data;
+                const metaData = getMetaData(screenName, referencedDataBook, this, undefined);
+                const dataBookData = this.getDataBook(screenName, referencedDataBook)?.data;
                 if (dataBookData) {
                     for (let [key] of dataBookData) {
                         if (key !== "current") {
@@ -954,10 +1091,10 @@ export default class ContentStore{
                     }
                 }
                 if (metaData && metaData.detailReferences) {
-                    this.clearDataFromSubPage(compId, metaData.detailReferences);
+                    this.clearDataFromSubPage(screenName, metaData.detailReferences);
                 }
-                this.subManager.notifyDataChange(compId, referencedDataBook);
-                this.subManager.notifyScreenDataChange(compId);
+                this.subManager.notifyDataChange(screenName, referencedDataBook);
+                this.subManager.notifyScreenDataChange(screenName);
                 if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(referencedDataBook.split('/')[1])) {
                     this.subManager.notifyDataChange(referencedDataBook.split('/')[1], referencedDataBook);
                     this.subManager.notifyScreenDataChange(referencedDataBook.split('/')[1]);
@@ -968,31 +1105,31 @@ export default class ContentStore{
 
     /**
      * Clears the data of a dataProvider
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      */
-    clearDataFromProvider(compId:string, dataProvider: string) {
-        const data = this.getDataBook(compId, dataProvider)?.data;
-        const metaData = getMetaData(compId, dataProvider, this, undefined);
+    clearDataFromProvider(screenName:string, dataProvider: string) {
+        const data = this.getDataBook(screenName, dataProvider)?.data;
+        const metaData = getMetaData(screenName, dataProvider, this, undefined);
         if (data) {
             data.delete("current");
         }
         
         if (metaData && metaData.masterReference === undefined) {
-            this.clearDataFromSubPage(compId, metaData.detailReferences);
+            this.clearDataFromSubPage(screenName, metaData.detailReferences);
         }
     }
 
     /**
      * Sets or updates the sort-definitions of a dataprovider in a map and then notifies the
      * components which use the useSortDefinitions hook to update their state.
-     * @param compId - the component id of the screen
+     * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param sortDefinitions - the sort-definitions
      */
-    setSortDefinition(compId: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
-        const compPanel = this.getComponentByName(compId) as IPanel;
-        const existingMap = this.getScreenDataproviderMap(compId);
+    setSortDefinition(screenName: string, dataProvider: string, sortDefinitions: SortDefinition[]) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(screenName);
 
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
@@ -1009,7 +1146,7 @@ export default class ContentStore{
                 }
             }
         }
-        this.subManager.notifySortDefinitionChange(compId, dataProvider);
+        this.subManager.notifySortDefinitionChange(screenName, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifySortDefinitionChange(dataProvider.split('/')[1], dataProvider);
         }

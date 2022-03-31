@@ -10,7 +10,7 @@ import { HashRouter } from 'react-router-dom';
 /** Other imports */
 import ReactUI from './ReactUI';
 import AppProvider from "./main/AppProvider";
-import { IUIManagerProps } from './frontmask/UIManager';
+import { IUIManagerProps } from './application-frame/screen-management/ui-manager/UIManager';
 import ReactUIEmbedded from './ReactUIEmbedded';
 
 export interface ICustomContent {
@@ -38,7 +38,7 @@ const MiddleMan: FC<ICustomContent> = (props) => {
 
     return (
         <HashRouter>
-            <AppProvider>
+            <AppProvider {...props}>
                 <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>
                     {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
                 </EmbeddedContext.Provider>

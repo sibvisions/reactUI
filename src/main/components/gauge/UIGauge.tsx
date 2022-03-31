@@ -1,12 +1,7 @@
-/** React imports */
 import React, { FC, useLayoutEffect, useRef } from "react";
-
-/** Hook imports */
-import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../zhooks";
-
-/** Other imports */
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
-import BaseComponent from "../BaseComponent";
+import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../hooks";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex } from "../../util";
+import BaseComponent from "../../util/types/BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
 
@@ -66,14 +61,16 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
 
+    /** Reference for the gauge */
     const gauge = useRef<any>(null);
 
-    useFetchMissingData(compId, props.dataBook);
+    // Fetches Data if dataprovider has not been fetched yet
+    useFetchMissingData(screenName, props.dataBook);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -93,6 +90,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
+    // Sets the gauge properties on render
     useLayoutEffect(() => {
         if(wrapperRef.current && !gauge.current) {
             switch(gaugeStyle) {
@@ -157,15 +155,16 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             <span 
-                id={props.name} 
+                id={checkComponentName(props.name)} 
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
                 className="ui-gauge" 
                 style={layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
-                data-pr-position="left">
+                data-pr-position="left"
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             </span>
         </>
     )

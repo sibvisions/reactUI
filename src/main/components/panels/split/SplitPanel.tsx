@@ -1,10 +1,7 @@
-/** React import */
 import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
-
-/** 3rd Party import */
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
-import { Dimension } from "../../util";
+import { checkComponentName, Dimension } from "../../../util";
 import { Tooltip } from "primereact/tooltip";
 
 /** Type for ResizeEvent */
@@ -49,16 +46,28 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** The absolute position */
     let absolutePosition = 0;
 
+    const timer = useRef<any>(null)
+
     const [initial, setInitial] = useState<boolean>(true);
 
     /** Measures the sizes of the first and seconds components and then calls the onResize function given by props*/
-    const callOnResize = (isInitial?:boolean) => {
+    const callOnResize = (isInitial?: boolean) => {
         if (props.onResize && secondRef.current && firstRef.current) {
             const firstDom = firstRef.current.getBoundingClientRect();
             const secondDom = secondRef.current.getBoundingClientRect();
+
+            // clearTimeout(timer.current);
+            // timer.current = setTimeout(() => {
+            //     if (props.onResize) {
+            //         props.onResize(
+            //             { width: firstDom.width, height: firstDom.height },
+            //             { width: secondDom.width, height: secondDom.height }
+            //         )
+            //     }
+            // }, 50)
             props.onResize(
-                {width: firstDom.width, height: firstDom.height},
-                {width: secondDom.width, height: secondDom.height}
+                { width: firstDom.width, height: firstDom.height },
+                { width: secondDom.width, height: secondDom.height }
             );
             if (isInitial) {
                 props.onInitial();
@@ -74,7 +83,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         else
             newSeparatorPosition = event.clientY - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            _.throttle(callOnResize, 30)()
+            _.throttle(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
     }
@@ -110,7 +119,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     const touchDragging = (event: TouchEvent) => {
          const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            _.throttle(callOnResize, 30)()
+            _.throttle(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
     }
@@ -143,7 +152,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     return (
         <>
-            <Tooltip target={"#" + props.id}  />
+            <Tooltip target={"#" + checkComponentName(props.id)}  />
             <div
                 id={props.id}
                 className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")}

@@ -1,20 +1,13 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
 // https://github.com/chartjs/Chart.js/issues/5224
 
-/** React imports */
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
-
-/** 3rd Party imports */
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
-
-/** Hook imports */
-import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
-import BaseComponent from "../BaseComponent";
-import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize } from "../util";
-import getSettingsFromCSSVar from "../util/GetSettingsFromCSSVar";
+import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, getTabIndex } from "../../util";
+import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -167,13 +160,13 @@ const UIChart: FC<IChart> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
     /** The data provided by the databook */
-    const [providerData]:any[][] = useDataProviderData(compId, props.dataBook);
+    const [providerData]:any[][] = useDataProviderData(screenName, props.dataBook);
 
     /** get the currently selected row */
-    const [selectedRow] = useRowSelect(compId, props.dataBook);
+    const [selectedRow] = useRowSelect(screenName, props.dataBook);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -552,7 +545,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }, [props.chartStyle, providerData]);
 
-    useFetchMissingData(compId, props.dataBook);
+    useFetchMissingData(screenName, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -570,9 +563,9 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={chartRef} style={layoutStyle}>
+        <span ref={chartRef} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
-                id={props.name}
+                id={checkComponentName(props.name)}
                 type={chartType}
                 data={chartData}
                 options={options}

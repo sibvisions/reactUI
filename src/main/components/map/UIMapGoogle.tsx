@@ -1,16 +1,8 @@
 /* global google */
-/** React imports */
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-/** 3rd Party imports */
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
-
-/** Hook imports */
-import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../zhooks";
-
-/** Other imports */
-import { appContext } from "../../AppProvider";
+import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../../hooks";
 import { getMarkerIcon, 
          parseMapLocation, 
          parsePrefSize, 
@@ -19,13 +11,14 @@ import { getMarkerIcon,
          sendOnLoadCallback, 
          sendSetValues, 
          sortGroupDataGoogle, 
-         sendSaveRequest } from "../util";
+         sendSaveRequest, 
+         checkComponentName,
+         getTabIndex} from "../../util";
 import { IMap } from ".";
-import { IconProps } from "../compprops";
+import { IconProps } from "../comp-props";
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS } from "../../request";
-import { FetchResponse } from "../../response";
+import { REQUEST_KEYWORDS } from "../../request";
 
 /**
  * This component displays a map view with Google Maps
@@ -54,13 +47,13 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
-    const [providedGroupData] = useDataProviderData(compId, props.groupDataBook);
+    const [providedGroupData] = useDataProviderData(screenName, props.groupDataBook);
 
     /** The provided data for points/markers */
-    const [providedPointData] = useDataProviderData(compId, props.pointsDataBook);
+    const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
 
     const markerArray = useRef<Array<google.maps.Marker>>(new Array<google.maps.Marker>());
 
@@ -89,6 +82,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         fillColor: props.fillColor ? props.fillColor : tinycolor("rgba (202, 39, 41, 41)").toHexString(),
     }
 
+    /** The popup-menu of the Map */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -105,6 +99,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }, props.apiKey as string);
     },[props.apiKey]);
 
+    // Fetches the point and the group databook
     useEffect(() => {
         const fetchP = createFetchRequest();
         fetchP.dataProvider = props.pointsDataBook;
@@ -113,11 +108,11 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         fetchG.dataProvider = props.groupDataBook;
         fetchG.fromRow = 0;
         if (props.pointsDataBook) {
-            context.server.sendRequest(fetchP, REQUEST_ENDPOINTS.FETCH);
+            context.server.sendRequest(fetchP, REQUEST_KEYWORDS.FETCH);
         }
 
         if (props.groupDataBook) {
-            context.server.sendRequest(fetchG, REQUEST_ENDPOINTS.FETCH);
+            context.server.sendRequest(fetchG, REQUEST_KEYWORDS.FETCH);
         }
     }, []);
 
@@ -145,6 +140,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, [providedPointData, mapReady]);
 
+    // Creates google maps polygons based on the groupdatas
     useEffect(() => {
         if (mapInnerRef.current && providedGroupData) {
             //@ts-ignore
@@ -185,6 +181,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, []);
 
+    // pans to the centerposition, initially or when the centerposition changes
     useEffect(() => {
         if (centerPosition && mapInnerRef.current) {
             //@ts-ignore
@@ -206,7 +203,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             const onClick = (e:any) => {
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
-                    showTopBar(sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latLng.lat(), e.latLng.lng()], context.server), topbar);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latLng.lat(), e.latLng.lng()], context.server, undefined, topbar);
                     showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar)
                 }
             }
@@ -220,7 +217,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
             const onDragEnd = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, undefined, topbar);
                     setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
                 }
             }
@@ -229,7 +226,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             const onZoomChanged = () => {
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, undefined, topbar);
                     setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
                 }
             }
@@ -250,9 +247,9 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
+        return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle}>
+        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

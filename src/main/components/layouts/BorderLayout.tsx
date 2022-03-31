@@ -1,15 +1,13 @@
-/** React imports */
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-
-/** Other imports */
 import { LayoutContext } from "../../LayoutContext"
 import { appContext } from "../../AppProvider";
 import { ILayout } from "./Layout";
 import { Margins } from ".";
-import { Dimension } from "../util";
+import { Dimension } from "../../util";
 import Gaps from "./models/Gaps";
-import { getMinimumSize, getPreferredSize } from "../util/SizeUtil";
-import { useRunAfterLayout } from "../zhooks/useRunAfterLayout";
+import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
+import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
+import { appVersion } from "../../AppSettings";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -33,7 +31,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         id,
         layout,
-        className
+        className,
+        panelType
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -57,7 +56,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     const componentSizes = useMemo(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
-
         const children = context.contentStore.getChildren(id, className);
 
         let northUsed = false;
@@ -280,6 +278,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     }
                     else if (component.constraints === "East") {
                         sizeMap.set(component.id, eastCSS);
+                    }
+                    else if (panelType === "DesktopPanel" && appVersion.version === 2) {
+                        sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
                 }
             });

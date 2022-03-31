@@ -1,23 +1,17 @@
 /** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-
-/** 3rd Party imports */
 import { Tree, TreeEventNodeParams, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
 import * as _ from 'underscore'
-
-/** Hook imports */
-import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
-import BaseComponent from "../BaseComponent";
-import { getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback } from "../util";
+import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import BaseComponent from "../../util/types/BaseComponent";
+import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
-import { REQUEST_ENDPOINTS, SelectFilter } from "../../request";
+import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../util/SendFocusRequests";
+import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { appVersion } from "../../AppSettings";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -37,13 +31,13 @@ const UITree: FC<ITree> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
 
     /** ComponentId of the screen */
-    const compId = context.contentStore.getComponentId(props.id) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBooks[0]) as string;
 
     /** The data provided by the databooks */
-    const providedData = useAllDataProviderData(compId, props.dataBooks);
+    const providedData = useAllDataProviderData(screenName, props.dataBooks);
 
     /** The selected rows of each databook */
-    const selectedRows = useAllRowSelect(compId, props.dataBooks);
+    const selectedRows = useAllRowSelect(screenName, props.dataBooks);
 
     /** State flag which gets switched, if the Tree is supposed to rebuild itself from scratch */
     const [rebuildTree, setRebuildTree] = useState<boolean>(false);
@@ -112,7 +106,7 @@ const UITree: FC<ITree> = (baseProps) => {
      * @returns true if the given databook is self-joined false if it isn't
      */
     const isSelfJoined = useCallback((dataBook:string) => {
-        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined);
         if (metaData?.masterReference) {
             return metaData.masterReference.referencedDataBook === dataBook;
         } else {
@@ -120,7 +114,7 @@ const UITree: FC<ITree> = (baseProps) => {
         }
     }, [
         context.contentStore, 
-        compId
+        screenName
     ])
 
     /**
@@ -153,7 +147,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
         const dataBook = getDataBook(path.length() - 1);
-        const metaData = getMetaData(compId, dataBook, context.contentStore, undefined)
+        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined)
         const dataPage = providedData.get(dataBook);
         if (dataPage) {
             if (path.length() === 1) {
@@ -186,7 +180,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(nodeReference.key))
         const fetchDataPage = getDataBook(parentPath.length());
-        const metaData = getMetaData(compId, fetchDataPage, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, fetchDataPage, context.contentStore, undefined);
 
         /**
          * Adds the child nodes to the referenced Node, if they are't already added
@@ -223,7 +217,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         values: Object.values(pkObj)
                     }
                     //TODO: try sendRequest with optional parameter
-                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 5000)
+                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 5000)
                         .then((response:any) => response.json())
                         .then((fetchResponse:FetchResponse[]) => {
                             const builtData = context.server.buildDatasets(fetchResponse[0]);
@@ -247,7 +241,7 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [
         context.contentStore, 
         context.server, 
-        compId, 
+        screenName, 
         getDataBook, 
         props.dataBooks.length, 
         providedData
@@ -293,7 +287,7 @@ const UITree: FC<ITree> = (baseProps) => {
             while (path.length() !== 0) {
                 const dataBook = getDataBook(path.length()-1)
                 const dataRow = getDataRow(path, treeData.get(path.getParentPath().toString()));
-                const primaryKeys = getMetaData(compId, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
+                const primaryKeys = getMetaData(screenName, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
                 selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => dataRow[pk])
@@ -314,7 +308,7 @@ const UITree: FC<ITree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = props.dataBooks
             selectReq.filter = selectedFilters;
-            showTopBar(context.server.sendRequest(selectReq, REQUEST_ENDPOINTS.SELECT_TREE), topbar);
+            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), topbar);
         }
     }
 
@@ -382,7 +376,7 @@ const UITree: FC<ITree> = (baseProps) => {
         //If the last databook is self-joined, some additional fetches need to be performed
         if (isSelfJoined(lastDatabook)) {
             const responseValue = sortedSR.get(lastDatabook);
-            const metaData = getMetaData(compId, lastDatabook, context.contentStore, undefined);
+            const metaData = getMetaData(screenName, lastDatabook, context.contentStore, undefined);
             const selfJoinedPath = responseValue?.treePath?.getChildPath(responseValue.index);
             //init the previous row with the root reference
             let prevRow = getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames);
@@ -433,7 +427,7 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     useEffect(() => {
         const firstLvlDataBook = props.dataBooks[0];
-        const metaData = getMetaData(compId, firstLvlDataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
@@ -450,7 +444,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 columnNames: metaData!.masterReference!.referencedColumnNames,
                 values: [null]
             }
-            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + REQUEST_ENDPOINTS.FETCH, context.server.buildReqOpts(fetchReq)), 10000), topbar)
+            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 10000), topbar)
             const fetchResponse = await response.json();
             context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
             const builtData = context.server.buildDatasets(fetchResponse[0])
@@ -545,7 +539,7 @@ const UITree: FC<ITree> = (baseProps) => {
             {...usePopupMenu(props)}
         >
             <Tree
-                id={props.name}
+                id={checkComponentName(props.name)}
                 className="rc-tree"
                 value={nodes}
                 selectionMode="single"

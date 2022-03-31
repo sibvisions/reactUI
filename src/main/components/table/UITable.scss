@@ -3,9 +3,9 @@
     height: 100%;
     border-collapse: collapse;
 
-    .p-datatable-table {
-        position: relative;
-    }
+    // .p-datatable-table {
+    //     position: relative;
+    // }
 
     &:not(.no-auto-resize) {
         .p-datatable-table {
@@ -90,6 +90,7 @@
                 border-width: 0px 0px 1px 0px !important;
                 user-select: none;
                 outline: none;
+                caret-color: auto;
 
                 &:not(.ChoiceCellEditor):not(.CheckBoxCellEditor) {
                     .cell-data.cancel-padding {
@@ -173,6 +174,10 @@
 
     .p-datatable-emptymessage {
         display: none;
+    }
+
+    .p-virtualscroller-content {
+        contain: unset;
     }
 }
 

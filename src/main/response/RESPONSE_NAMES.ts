@@ -25,6 +25,7 @@ enum RESPONSE_NAMES {
     WELCOME_DATA="welcomeData",
     CLOSE_FRAME="closeFrame",
     CONTENT="content",
-    CLOSE_CONTENT="closeContent"
+    CLOSE_CONTENT="closeContent",
+    UI="UI"
 }
 export default RESPONSE_NAMES

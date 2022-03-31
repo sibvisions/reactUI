@@ -1,13 +1,9 @@
-/** React imports */
 import React, { FC, useRef } from "react";
-
-/** Hook imports */
-import { useComponents, useMouseListener, useComponentConstants } from "../../zhooks";
-
-/** Other imports */
+import { useComponents, useMouseListener, useComponentConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, panelGetStyle } from "../../util";
-import BaseComponent from "../../BaseComponent";
+import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../../util";
+import BaseComponent from "../../../util/types/BaseComponent";
+import { panelGetStyle } from "../panel/UIPanel";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -16,14 +12,20 @@ export interface IDesktopPanel extends BaseComponent {
     layoutData: string,
 }
 
+/**
+ * This component generally is displayed when no other screen is opened, it is also rendered on login if available.
+ * @param baseProps - the base propertie sent by the server
+ */
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
+    /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -31,7 +33,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
         <div
             className="rc-desktop-panel"
             ref={panelRef}
-            id={props.name}
+            id={checkComponentName(props.name)}
             style={{...layoutStyle, backgroundColor: props.background}} >
             <Layout
                 id={props.id}

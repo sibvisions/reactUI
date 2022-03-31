@@ -1,16 +1,19 @@
-/** React imports */
-import React from "react"
-
-/** 3rd Party imports */
+import React, { CSSProperties } from "react"
 import { format, formatISO, isValid } from 'date-fns'
-
-/** Other imports */
-import { CELLEDITOR_CLASSNAMES, ICellEditorDate, 
+import { CellEditorWrapper, CELLEDITOR_CLASSNAMES, ICellEditorDate, 
          ICellEditorImage, 
          ICellEditorNumber } from "../editors";
-import { createEditor } from "../../factories/UIFactory";
-import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../util";
+import { getDateLocale, getGrouping, getMinimumIntDigits, getScaleDigits } from "../../util";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
+
+/** An interface which contains properties used for CellEditors in tables */
+export interface IInTableEditor {
+    stopCellEditing?: Function
+    passedKey?: string,
+    isCellEditor: boolean,
+    cellScreenName: string,
+    editorStyle?: CSSProperties
+}
 
 /** 
  * Returns an in-cell editor for the column 
@@ -21,7 +24,8 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
 export function displayEditor(metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, props:any, stopCellEditing:Function, passedValues:string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
-        editor = createEditor({
+        editor = <CellEditorWrapper
+        {...{
             ...metaData,
             name: props.name,
             dataRow: props.dataProvider,
@@ -33,8 +37,7 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             stopCellEditing: stopCellEditing,
             passedKey: passedValues,
             isCellEditor: true,
-            cellCompId: props.dataProvider.split("/")[1]
-        }) || editor;
+            cellScreenName: props.dataProvider.split("/")[1]}} />
     }
     return editor
 }
@@ -51,8 +54,7 @@ export function cellRenderer(
     metaData:LengthBasedColumnDescription|NumericColumnDescription|undefined, 
     cellData:any, 
     resource:string, 
-    locale:string, 
-    stateFunc?:Function,
+    locale:string
 ) {
     if (cellData !== undefined) {
         if (metaData && metaData.cellEditor) {

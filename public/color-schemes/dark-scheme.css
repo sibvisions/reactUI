@@ -23,12 +23,12 @@
   --std-menu-activeitem-color: #2196F3;
   --std-menu-border: 1px solid rgba(120,130,140,.13);
   --std-menu-fadeout-background: linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
-  --corp-menu-background: #3f4b5b;
-  --corp-menu-hover-background: #2a323d;
-  --corp-menu-text-color: #ffffff;
-  --corp-menu-submenu-background: #3f4b5b;
-  --corp-menu-item-hover-background: #303a48;
-  --corp-menu-item-hover-text-color: #ffffff;
+  --menubar-background: var(--topbar-background);
+  --menubar-hover-background: var(--topbar-button-hover-background);
+  --menubar-text-color: var(--topbar-text-color);
+  --menubar-submenu-background: #3f4b5b;
+  --menubar-item-hover-background: #303a48;
+  --menubar-item-hover-text-color: #ffffff;
   --corp-menu-speeddial-background: #ffffff;
   --corp-menu-speeddial-color: #495057;
   --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
@@ -48,6 +48,7 @@
   --radiobutton-inner-color: #151515;
   --toolbar-background: #303a48;
   --toolbar-border-color:#3f4b5b;
+  --toolbar-separator-color: #bbbbbb;
   --table-header-background: #20262e;
   --table-header-border: 1px solid #3f4b5b;
   --table-header-hover-background: #1c283a;
@@ -79,7 +80,7 @@
   --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
   --dialog-content-background: #20262e;
   --tab-navbar-background: #3f4b5b;
-  --tab-navbar-border: 1px solid #3f4b5b;
+  --tab-navbar-border-color: #3f4b5b;
   --tab-selected-color: #2196fe;
   --tab-hover-background: #20262e;
   --tab-border-color: var(--text-color);
@@ -127,7 +128,32 @@
   --topbar-colors: #2196F3, #2196F3;
   --mandatory-background: rgb(255, 244, 210);
   --readonly-background: #2a323d;
-  --invalid-background: rgb(209, 51, 51); }
+  --invalid-background: rgb(209, 51, 51);
+  --gone-background: #b69425bb;
+  --launcher-toolbar-background: var(--topbar-background);
+  --launcher-toolbar-separator-color: #303a48;
+  --launcher-toolbar-button-text-color: var(--topbar-text-color);
+  --launcher-toolbar-button-hover-background: var(--topbar-button-hover-background);
+  --launcher-toolbar-button-hover-text-color: var(--topbar-text-color);
+  --frame-menubar-background: var(--topbar-background);
+  --frame-menubar-hover-background: var(--topbar-button-hover-background);
+  --frame-menubar-text-color: var(--topbar-text-color);
+  --frame-menubar-submenu-background: #3f4b5b;
+  --frame-menubar-item-hover-background: #303a48;
+  --frame-menubar-item-hover-text-color: #ffffff;
+  --frame-toolbar-background: var(--topbar-background);
+  --frame-toolbar-separator-color: #303a48;
+  --frame-toolbar-button-text-color: var(--topbar-text-color);
+  --frame-toolbar-button-hover-background: var(--topbar-button-hover-background);
+  --frame-toolbar-button-hover-text-color: var(--topbar-text-color);
+  --frame-header-background: #4f4f4f;
+  --frame-header-color: var(--topbar-text-color);
+  --frame-header-border: 1px solid #616161;
+  --frame-header-button-hover-background: #e3f2fd;
+  --frame-header-button-hover-color: #495057;
+  --frame-border-radius: 9px;
+  --frame-shadow: 0 22px 70px 4px rgb(0 0 0 / 56%);
+  --frame-border-width: 4px; }
 
 body {
   background: var(--screen-background);
@@ -242,27 +268,27 @@ body {
   box-shadow: var(--corp-menu-speeddial-shadow); }
 
 .p-menubar {
-  background: var(--corp-menu-background); }
+  background: var(--menubar-background); }
   .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-    background: var(--corp-menu-background);
-    color: var(--corp-menu-text-color); }
+    background: var(--menubar-background);
+    color: var(--menubar-text-color); }
     .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) .p-submenu-icon, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) .p-submenu-icon {
-      color: var(--corp-menu-text-color); }
+      color: var(--menubar-text-color); }
     .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover {
-      background: var(--corp-menu-hover-background);
-      color: var(--corp-menu-text-color); }
+      background: var(--menubar-hover-background);
+      color: var(--menubar-text-color); }
       .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover .p-submenu-icon, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover .p-submenu-icon {
-        color: var(--corp-menu-text-color); }
+        color: var(--menubar-text-color); }
   .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list {
-    background: var(--corp-menu-submenu-background); }
+    background: var(--menubar-submenu-background); }
     .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link {
-      background: var(--corp-menu-submenu-background); }
+      background: var(--menubar-submenu-background); }
       .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-icon, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-icon {
         color: var(--text-color); }
       .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover {
-        background: var(--corp-menu-item-hover-background); }
+        background: var(--menubar-item-hover-background); }
         .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-icon, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-text, .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-icon {
-          color: var(--corp-menu-item-hover-text-color); }
+          color: var(--menubar-item-hover-text-color); }
 
 .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-autocomplete-dropdown, .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-datepicker-trigger {
   border-color: var(--primary-color);
@@ -710,6 +736,8 @@ body {
 .rc-error-dialog {
   background: var(--error-dialog-background);
   color: var(--text-color); }
+  .rc-error-dialog.app-gone {
+    background: var(--gone-background); }
 
 .tag-panel {
   color: #495057; }
@@ -722,7 +750,7 @@ body {
 .p-tabview .p-tabview-nav {
   background: var(--tab-navbar-background);
   color: var(--text-color);
-  border: var(--tab-navbar-border);
+  border-color: var(--tab-navbar-border-color);
   border-radius: var(--tab-border-radius);
   padding: 0 var(--tab-border-radius); }
   .p-tabview .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link {
@@ -784,3 +812,68 @@ body {
   80%,
   90% {
     stroke: var(--loading-spinner-color-4); } }
+
+.mobile-launcher-menu .rc-frame-toolbar {
+  background: var(--launcher-toolbar-background);
+  border-top: 1px solid;
+  border-color: var(--launcher-toolbar-separator-color); }
+  .mobile-launcher-menu .rc-frame-toolbar .rc-button.mouse-border {
+    color: var(--launcher-toolbar-button-text-color); }
+    .mobile-launcher-menu .rc-frame-toolbar .rc-button.mouse-border:not(a):not(.p-disabled):not(.border-notpainted):hover {
+      background: var(--launcher-toolbar-button-hover-background);
+      border-color: var(--launcher-toolbar-button-hover-background);
+      color: var(--launcher-toolbar-button-hover-text-color); }
+
+.rc-frame {
+  box-shadow: var(--frame-shadow);
+  border-radius: var(--frame-border-radius); }
+  .rc-frame .rc-frame-header {
+    background: var(--frame-header-background);
+    color: var(--frame-header-color);
+    border-bottom: var(--frame-header-border); }
+    .rc-frame .rc-frame-header .rc-frame-header-close-button {
+      color: var(--text-color);
+      background: transparent;
+      font-size: 12px; }
+      .rc-frame .rc-frame-header .rc-frame-header-close-button:hover {
+        background: var(--frame-header-button-hover-background);
+        font-weight: bold;
+        color: var(--frame-header-button-hover-color); }
+  .rc-frame .p-menubar {
+    background: var(--frame-menubar-background); }
+    .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
+      background: var(--frame-menubar-background);
+      color: var(--frame-menubar-text-color); }
+      .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) .p-submenu-icon, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled) .p-submenu-icon {
+        color: var(--frame-menubar-text-color); }
+      .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover {
+        background: var(--frame-menubar-hover-background);
+        color: var(--frame-menubar-text-color); }
+        .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover .p-submenu-icon, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-menuitem-link:not(.p-disabled):hover .p-submenu-icon {
+          color: var(--frame-menubar-text-color); }
+    .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list {
+      background: var(--frame-menubar-submenu-background); }
+      .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link {
+        background: var(--frame-menubar-submenu-background); }
+        .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-icon, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link .p-menuitem-icon {
+          color: var(--text-color); }
+        .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover {
+          background: var(--frame-menubar-item-hover-background); }
+          .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-icon, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-text, .rc-frame .p-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active > .p-submenu-list .p-menuitem .p-menuitem-link:hover .p-menuitem-icon {
+            color: var(--frame-menubar-item-hover-text-color); }
+  .rc-frame .rc-frame-toolbar {
+    background: var(--frame-toolbar-background);
+    border-top: 1px solid;
+    border-color: var(--frame-toolbar-separator-color); }
+    .rc-frame .rc-frame-toolbar .rc-button.mouse-border {
+      color: var(--frame-toolbar-button-text-color); }
+      .rc-frame .rc-frame-toolbar .rc-button.mouse-border:not(a):not(.p-disabled):not(.border-notpainted):hover {
+        background: var(--frame-toolbar-button-hover-background);
+        border-color: var(--frame-toolbar-button-hover-background);
+        color: var(--frame-toolbar-button-hover-text-color); }
+  .rc-frame .rc-frame-menu {
+    border-width: 0 var(--frame-border-width) 0 var(--frame-border-width); }
+  .rc-frame .rc-frame-content {
+    border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width); }
+  .rc-frame .rc-frame-content, .rc-frame .rc-frame-menu {
+    border-color: var(--frame-header-background); }

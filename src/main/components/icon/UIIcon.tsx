@@ -1,14 +1,10 @@
-/** React imports */
-import React, { FC, useContext, useLayoutEffect, useRef, useState } from "react";
-
-/** Hook imports */
-import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../zhooks";
-
-/** Other imports */
-import { parseIconData } from "../compprops";
-import BaseComponent from "../BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames } from "../util";
+import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
+import { getAlignments, parseIconData } from "../comp-props";
+import BaseComponent from "../../util/types/BaseComponent";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { Tooltip } from "primereact/tooltip";
+import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
@@ -20,8 +16,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
 
     /** Component constants */
     const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
-
-    const [preferredSize, setPreferredSize] = useState<Dimension>();
 
     /** Properties for icon */
     const iconProps = parseIconData(props.foreground, props.image);
@@ -35,9 +29,14 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** True, if the icon is loaded */
     const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
 
+    /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
+
+    /** The alignment of the component */
+    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment])
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -50,7 +49,6 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             const parsedSize = parsePrefSize(props.preferredSize) as Dimension
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
-            setPreferredSize(prefSize)
         } 
         else {
             prefSize.height = event.currentTarget.height;
@@ -78,17 +76,16 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     */
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
-            if(props.image?.includes('FontAwesome'))
-                return <i id={props.name} {...popupMenu} className={icon} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
+            if(isFAIcon(icon))
+                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
-                    id={props.name}
+                    id={checkComponentName(props.name)}
                     {...popupMenu}
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
-                    //style={{height: preferredSize?.height, width: preferredSize?.width }}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText}
@@ -106,13 +103,11 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
-            className={concatClassnames(
-                "rc-icon",
-                props.name === "Validator" ? " rc-validator" : ""
-            )} 
-            style={{...layoutStyle, ...compStyle, overflow: "hidden"}}
+            className={concatClassnames("rc-icon", props.focusable === false ? "no-focus-rect" : "")}
+            style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
+            tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
-            <Tooltip target={"#" + props.name} />
+            <Tooltip target={"#" + checkComponentName(props.name)} />
             {iconOrImage(iconProps.icon)}
         </span>
     )

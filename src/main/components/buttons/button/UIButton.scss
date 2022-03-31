@@ -1,4 +1,4 @@
-@import '../../../../frontmask/scssutil/buttonColors.scss';
+@import '../../../../application-frame/styling/scssutil/buttonColors.scss';
 
 /// Inherit height and width from parent who has set it by the layout
 .rc-button {
@@ -31,16 +31,18 @@
     @include btnHover
 }
 
-.rc-button.p-button.p-button-icon-only {
-    width: unset;
-    padding: var(--btnPadding, 0.5rem 0.5rem);
-
-    .rc-button-icon {
-        align-self: center;
-    }
-
-    &.rc-toolbar-button {
-        padding: 0;
+.rc-button, .rc-togglebutton {
+    &.p-button.p-button-icon-only {
+        width: unset;
+        padding: var(--btnPadding, 0.5rem 0.5rem);
+    
+        .rc-button-icon {
+            align-self: center;
+        }
+    
+        &.rc-toolbar-button {
+            padding: 0;
+        }
     }
 }
 
@@ -82,6 +84,7 @@
 .reactUI {
     .p-button-label {
         flex: unset;
+        white-space: nowrap;
     }
 }
 

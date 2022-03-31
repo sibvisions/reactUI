@@ -5,11 +5,11 @@
 @import '~primeflex/primeflex.css';
 @import '~@fortawesome/fontawesome-free/css/all.css';
 @import '~ui-gauges/dist/bundle.min.css';
-@import './frontmask/loading/loadingscreen.scss';
-@import './frontmask/login/login.scss';
-@import './frontmask/menu/menu.scss';
-@import './frontmask/menu/corporateMenu.scss';
-@import './frontmask/UIManager.scss';
+@import './application-frame/loading/loadingscreen.scss';
+@import './application-frame/login/login.scss';
+@import './application-frame/menu/menu.scss';
+@import './application-frame/menu/corporateMenu.scss';
+@import './application-frame/screen-management/ui-manager/UIManager.scss';
 @import './main/components/buttons/button/UIButton.scss';
 @import './main/components/buttons/menubutton/UIMenuButton.scss';
 @import './main/components/buttons/radiobutton/UIRadioButton.scss';
@@ -36,11 +36,13 @@
 @import './main/components/tree/UITree.scss';
 @import './main/components/topbar/TopBar.scss';
 @import './main/components/toast/UIToast.scss';
-@import './frontmask/changePassword/ChangePasswordDialog.scss';
+@import './application-frame/change-password/ChangePasswordDialog.scss';
 @import './main/components/browser/UIBrowser.scss';
 @import './main/components/panels/toolbarPanel/UIToolBarPanel.scss';
-@import './frontmask/errorDialog/ErrorDialog.scss';
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import './application-frame/error-dialog/ErrorDialog.scss';
+@import './main/components/menubar/UIMenuBar.scss';
+@import './main/components/frame/UIFrame.scss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital@0;1&display=swap');
 
 :root {
     --main-height: 100vh;
@@ -167,4 +169,8 @@ body {
 
 .p-tooltip {
     pointer-events: none;
+}
+
+.no-focus-rect {
+    box-shadow: none !important;
 }
