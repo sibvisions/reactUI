@@ -54,7 +54,7 @@
             }
         }
 
-        &.bright-button, &:not(.p-disabled):not(.p-highlight).bright-button:hover, &.p-highlight.bright-button:hover {
+        &.bright-button:not(.rc-toolbar-button), &:not(.p-disabled):not(.p-highlight).bright-button:hover, &.p-highlight.bright-button:hover {
             color: var(--button-color-bright);
 
             .p-button-icon-left, .p-button-icon-right {
@@ -62,7 +62,7 @@
             }
         }
 
-        &.dark-button, &:not(.p-disabled):not(.p-highlight).dark-button:hover, &.p-highlight.dark-button:hover {
+        &.dark-button:not(.rc-toolbar-button), &:not(.p-disabled):not(.p-highlight).dark-button:hover, &.p-highlight.dark-button:hover {
             color: var(--button-color-dark);
 
             .p-button-icon-left, .p-button-icon-right {

@@ -27,7 +27,7 @@ import { RequestQueueMode } from "../../Server";
 
 
 /** Interface for Table */
-export interface TableProps extends BaseComponent{
+export interface TableProps extends BaseComponent {
     classNameComponentRef: string,
     columnLabels: Array<string>,
     columnNames: Array<string>,
@@ -36,7 +36,8 @@ export interface TableProps extends BaseComponent{
     autoResize?: boolean,
     enterNavigationMode?: number,
     tabNavigationMode?: number
-    startEditing?:boolean
+    startEditing?: boolean
+    editable?: boolean
 }
 
 enum Navigation {
@@ -851,6 +852,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             className={className}
                             readonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
+                            editable={props.editable}
                             startEditing={props.startEditing}
                             stopEditing={() => {
                                 const table = context.contentStore.flatContent.get(id);

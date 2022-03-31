@@ -119,7 +119,8 @@ interface CellEditor {
     tableEnabled?: boolean
     cellFormatting?: CellFormatting,
     startEditing?:boolean,
-    stopEditing:Function
+    stopEditing:Function,
+    editable?: boolean
 }
 
 /**
@@ -290,12 +291,12 @@ export const CellEditor: FC<CellEditor> = (props) => {
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
     const isEditable = useMemo(() => {
-        if (metaData && !props.readonly && !metaData.readOnly && metaData.updateEnabled && props.tableEnabled !== false) {
+        if (metaData && !props.readonly && !metaData.readOnly && metaData.updateEnabled && props.tableEnabled !== false && props.editable !== false) {
             return true;
         }
         return false;
         
-    }, [metaData, props.readonly, props.tableEnabled]);
+    }, [metaData, props.readonly, props.tableEnabled, props.editable]);
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (

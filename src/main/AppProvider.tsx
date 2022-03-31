@@ -1,15 +1,16 @@
-import React, { createContext, FC, useEffect, useRef, useState } from "react";
+import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import Server from "./Server";
 import ContentStore from "./ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import API from "./API";
 import AppSettings, { appVersion } from "./AppSettings";
-import { createStartupRequest, createUIRefreshRequest, getClientId } from "../moduleIndex";
-import { addCSSDynamically } from "./util";
+import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "../moduleIndex";
+import { addCSSDynamically, Timer } from "./util";
 import { ICustomContent } from "../MiddleMan";
 import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
 import { BaseResponse, RESPONSE_NAMES } from "./response";
+import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
 
 /** Type for AppContext */
 export type AppContextType={
@@ -19,9 +20,9 @@ export type AppContextType={
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
+    appReady: boolean
 }
 
-console.log('initialising cs, server etc')
 /** Contentstore instance */
 const contentStore = new ContentStore();
 /** SubscriptionManager instance */
@@ -44,6 +45,7 @@ const initValue: AppContextType = {
     appSettings: appSettings,
     subscriptions: subscriptions,
     ctrlPressed: false,
+    appReady: false
 }
 
 /** Context containing the server and contentstore */
@@ -67,21 +69,80 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     }
 
-    //const ws = useRef<WebSocket|null>(null);
+    const ws = useRef<WebSocket|null>(null);
 
-    //const relaunchArguments = useRef<any>(null);
+    const relaunchArguments = useRef<any>(null);
 
     /** Current State of the context */
     const [contextState, setContextState] = useState<AppContextType>(initState());
+
+    /** Flag to retrigger Startup if session expires */
+    const [restart, setRestart] = useState<boolean>(false);
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
+
+    /**
+     * Subscribes to session-expired notification and app-ready
+     * @returns unsubscribes from session and app-ready
+     */
+    //  useEffect(() => {
+    //     contextState.subscriptions.subscribeToAppReady((ready:boolean) => setContextState(prevState => ({ ...prevState, appReady: true })));
+    //     contextState.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
+
+    //     return () => {
+    //         contextState.subscriptions.unsubscribeFromAppReady();
+    //         contextState.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+    //     }
+    // },[contextState.subscriptions]);
+
+    // /** Default values for translation */
+    // useEffect(() => {
+    //     contextState.contentStore.translation
+    //     .set("Username", "Username")
+    //     .set("Password", "Password")
+    //     .set("Login", "Login")
+    //     .set("Logout", "Logout")
+    //     .set("Settings", "Settings")
+    //     .set("Change password", "Change password")
+    //     .set("Please enter and confirm the new password.", "Please enter and confirm the new password.")
+    //     .set("New Password", "New Password")
+    //     .set("Confirm Password", "Confirm Password")
+    //     .set("The new Password is empty", "The new Password is empty")
+    //     .set("The passwords are different!", "The passwords are different!")
+    //     .set("The old and new password are the same", "The old and new password are the same")
+    //     .set("Change password", "Change password")
+    //     .set("Reset password", "Reset password")
+    //     .set("Lost password", "Lost password")
+    //     .set("Remember me?", "Remember me?")
+    //     .set("Email", "Email")
+    //     .set("Request", "Request")
+    //     .set("Please enter your e-mail address.", "Please enter your e-mail address.")
+    //     .set("The email is required", "The email is required")
+    //     .set("One-time password", "One-time password")
+    //     .set("Please enter your one-time password and set a new password", "Please enter your one-time password and set a new password")
+    //     .set("Please enter your e-mail address.", "Please enter your e-mail address.")
+    //     .set("Save", "Save")
+    //     .set("Reload", "Reload")
+    //     .set("Rollback", "Rollback")
+    //     .set("Information", "Information")
+    //     .set("Error", "Error")
+    //     .set("Warning", "Warning")
+    //     .set("Question", "Question")
+    //     .set("OK", "OK")
+    //     .set("Cancel", "Cancel")
+    //     .set("Yes", "Yes")
+    //     .set("No", "No")
+    //     .set("Change", "Change")
+    //     .set("Session expired!", "Session expired!")
+    //     .set("Take note of any unsaved data, and <u>click here</u> or press ESC to continue.", "Take note of any unsaved data, and <u>click here</u> or press ESC to continue.");
+    // },[contextState.contentStore]);
 
     // useEffect(() => {
     //     const startUpRequest = createStartupRequest();
     //     const urlParams = new URLSearchParams(window.location.search);
     //     const authKey = localStorage.getItem("authKey");
     //     const newServer = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
-    //     const appSettingsCopy = Object.assign({}, contextState.appSettings);
-    //     const subCopy = Object.assign({}, contextState.subscriptions);
-    //     const csCopy = Object.assign({}, contextState.contentStore)
     //     let themeToSet = "";
     //     let schemeToSet = "";
     //     let designToSet = "";
@@ -101,31 +162,31 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //                     let jscmd = JSON.parse(String(reader.result)); 
             
     //                     if (jscmd.command === "relaunch") {
-    //                         csCopy.reset();
+    //                         contextState.contentStore.reset();
     //                         relaunchArguments.current = jscmd.arguments;
     //                         setRestart(prevState => !prevState);
     //                     }
     //                     else if (jscmd.command === "api/reopenScreen") {
     //                         const openReq = createOpenScreenRequest();
     //                         openReq.className = jscmd.arguments.className;
-    //                         context.server.lastOpenedScreen = jscmd.arguments.className;
-    //                         showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+    //                         contextState.server.lastOpenedScreen = jscmd.arguments.className;
+    //                         showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
     //                     }
     //                     else if (jscmd.command === "reloadCss") {
-    //                         context.subscriptions.emitCssVersion(jscmd.arguments.version);
+    //                         contextState.subscriptions.emitCssVersion(jscmd.arguments.version);
     //                     }
     //                 }
     //                 reader.readAsText(e.data);
     //             }
     //             else {
     //                 if (e.data === "api/changes") {
-    //                     context.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+    //                     contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
     //                 }
     //             }
     //         }
 
-    //         if (context.appSettings.applicationMetaData.aliveInterval) {
-    //             context.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), context.appSettings.applicationMetaData.aliveInterval));
+    //         if (contextState.appSettings.applicationMetaData.aliveInterval) {
+    //             contextState.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), contextState.appSettings.applicationMetaData.aliveInterval));
     //         }
             
     //         // setInterval(() => {
@@ -181,7 +242,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
     //     const afterStartup = (results:BaseResponse[]) => {
     //         if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
-    //             subCopy.emitErrorDialogVisible(false);
+    //             contextState.subscriptions.emitErrorDialogVisible(false);
     //         }
 
     //         initWS(newServer.BASE_URL);
@@ -205,7 +266,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //             fetch('assets/version/app_version.json').then((r) => r.json())
     //             .then((data) => {
     //                 if (data.version) {
-    //                     appSettingsCopy.version = parseInt(data.version);
+    //                     contextState.appSettings.version = parseInt(data.version);
     //                     newServer.endpointMap = newServer.setEndPointMap(parseInt(data.version));
     //                     appVersion.version = parseInt(data.version)
     //                 }
@@ -232,29 +293,29 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //                 newServer.BASE_URL = data.baseUrl;
         
     //                 if (data.logoBig) {
-    //                     appSettingsCopy.LOGO_BIG = data.logoBig;
+    //                     contextState.appSettings.LOGO_BIG = data.logoBig;
     //                 }
         
     //                 if (data.logoSmall) {
-    //                     appSettingsCopy.LOGO_SMALL = data.logoSmall;
+    //                     contextState.appSettings.LOGO_SMALL = data.logoSmall;
     //                 } 
     //                 else if (data.logoBig) {
-    //                     appSettingsCopy.LOGO_SMALL = data.logoBig;
+    //                     contextState.appSettings.LOGO_SMALL = data.logoBig;
     //                 }
                         
     //                 if (data.logoLogin) {
-    //                     appSettingsCopy.LOGO_LOGIN = data.logoLogin;
+    //                     contextState.appSettings.LOGO_LOGIN = data.logoLogin;
     //                 }
     //                 else if (data.logoBig) {
-    //                     appSettingsCopy.LOGO_LOGIN = data.logoBig;
+    //                     contextState.appSettings.LOGO_LOGIN = data.logoBig;
     //                 }
     
     //                 if (data.langCode) {
-    //                     appSettingsCopy.language = data.langCode;
+    //                     contextState.appSettings.language = data.langCode;
     //                 }
     
     //                 if (data.timezone) {
-    //                     appSettingsCopy.timezone = data.timezone;
+    //                     contextState.appSettings.timezone = data.timezone;
     //                 }
     
     //                 if (data.colorScheme) {
@@ -316,19 +377,19 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //         }
 
     //         if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {
-    //             appSettingsCopy.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
+    //             contextState.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
     //         }
 
     //         if (convertedOptions.has("langCode")) {
-    //             appSettingsCopy.language = convertedOptions.get("langCode");
+    //             contextState.appSettings.language = convertedOptions.get("langCode");
     //         }
 
     //         if (convertedOptions.has("timezone")) {
-    //             appSettingsCopy.timezone = convertedOptions.get("timezone");
+    //             contextState.appSettings.timezone = convertedOptions.get("timezone");
     //         }
 
     //         if (convertedOptions.has("deviceMode")) {
-    //             appSettingsCopy.deviceMode = convertedOptions.get("deviceMode");
+    //             contextState.appSettings.deviceMode = convertedOptions.get("deviceMode");
     //         }
 
     //         if (convertedOptions.has("colorScheme")) {
@@ -341,8 +402,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //         }
 
     //         if (schemeToSet) {
-    //             appSettingsCopy.setApplicationColorSchemeByURL(schemeToSet);
-    //             addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", appSettingsCopy);
+    //             contextState.appSettings.setApplicationColorSchemeByURL(schemeToSet);
+    //             addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", contextState.appSettings);
     //         }
 
     //         if (convertedOptions.has("theme")) {
@@ -355,9 +416,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //         }
 
     //         if (themeToSet) {
-    //             appSettingsCopy.setApplicationThemeByURL(themeToSet);
-    //             addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", appSettingsCopy);
-    //             subCopy.emitThemeChanged(themeToSet);
+    //             contextState.appSettings.setApplicationThemeByURL(themeToSet);
+    //             addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", contextState.appSettings);
+    //             contextState.subscriptions.emitThemeChanged(themeToSet);
     //         }
 
     //         if (convertedOptions.has("design")) {
@@ -370,12 +431,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //         }
 
     //         if (designToSet) {
-    //             appSettingsCopy.setApplicationDesign(designToSet);
-    //             addCSSDynamically('design/' + designToSet + ".css", "designCSS", appSettingsCopy);
+    //             contextState.appSettings.setApplicationDesign(designToSet);
+    //             addCSSDynamically('design/' + designToSet + ".css", "designCSS", contextState.appSettings);
     //         }
 
     //         if (convertedOptions.has("version")) {
-    //             appSettingsCopy.version = parseInt(convertedOptions.get("version"));
+    //             contextState.appSettings.version = parseInt(convertedOptions.get("version"));
     //             newServer.endpointMap = newServer.setEndPointMap(parseInt(convertedOptions.get("version")));
     //             appVersion.version = parseInt(convertedOptions.get("version"));
     //         }
@@ -393,11 +454,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //         if(authKey) {
     //             startUpRequest.authKey = authKey;
     //         }
-    //         startUpRequest.deviceMode = appSettingsCopy.deviceMode;
+    //         startUpRequest.deviceMode = contextState.appSettings.deviceMode;
     //         startUpRequest.screenHeight = window.innerHeight;
     //         startUpRequest.screenWidth = window.innerWidth;
-    //         if (csCopy.customStartUpProperties.length) {
-    //             csCopy.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
+    //         if (contextState.contentStore.customStartUpProperties.length) {
+    //             contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
     //         }
 
     //         const startupRequestHash = [
@@ -422,24 +483,26 @@ const AppProvider: FC<ICustomContent> = (props) => {
     //                 }
     //                 newServer.subManager.jobQueue.clear();
     //             }
+    //             setContextState(prevState => ({ ...prevState, server: newServer }))
     //             sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload, startupRequestHash);
     //         } 
     //         else {
+    //             setContextState(prevState => ({ ...prevState, server: newServer }))
     //             sendStartup(startUpRequest, false, startupRequestHash, relaunchArguments.current);
     //         }
     //     } 
 
     //     if (process.env.NODE_ENV === "development") {
     //         Promise.all([fetchConfig(), fetchAppConfig(), fetchVersionConfig()])
-    //         .then(() => checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams))
-    //         .catch(() => checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams))
+    //         .then(() => afterConfigFetch())
+    //         .catch(() => afterConfigFetch())
     //     }
     //     else {
     //         Promise.all([fetchAppConfig(), fetchVersionConfig()])
-    //         .then(() => checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams))
-    //         .catch(() => checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams))
+    //         .then(() => afterConfigFetch())
+    //         .catch(() => afterConfigFetch())
     //     }
-    // }, [])
+    // }, [restart])
 
     return (
         <appContext.Provider value={contextState}>
