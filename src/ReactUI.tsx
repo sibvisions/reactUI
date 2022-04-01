@@ -1,19 +1,9 @@
-/** React imports */
-import React, { FC, useContext, useLayoutEffect } from 'react';
-
-/** 3rd Party imports */
+import React, { FC, useContext } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
-
-/** UI imports */
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
 import Login from "./application-frame/login/login";
 import LoadingScreen from './application-frame/loading/loadingscreen';
-
-/** Hook imports */
-import { useStartup } from './main/hooks';
-
-/** Other imports */
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
 import UIManagerV2 from './application-frame/screen-management/ui-manager/UIManagerV2';
@@ -27,8 +17,6 @@ import { appContext } from './main/AppProvider';
 const ReactUI: FC<ICustomContent> = (props) => {
     const context = useContext(appContext);
 
-    const appReady = useStartup(props);
-
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
     
@@ -36,7 +24,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     if (context.appSettings.version === 2) {
         return (
             <AppWrapper>
-                {appReady ?
+                {context.appReady ?
                     <Switch>
                         <Route path={""} render={() => <UIManagerV2 />} />
                     </Switch>
@@ -49,7 +37,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     else {
         return (
             <AppWrapper>
-                {appReady ?
+                {context.appReady ?
                     <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />

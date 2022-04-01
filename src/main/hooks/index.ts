@@ -26,7 +26,6 @@ export { default as useAPI } from './api-hooks/useAPI';
 export { default as useDeviceStatus } from './event-hooks/useDeviceStatus';
 export { default as useScreen } from './api-hooks/useScreen';
 export { default as useMetaData } from './data-hooks/useMetaData';
-export { default as useStartup } from './app-hooks/useStartup';
 export { default as useConfirmDialogProps } from './components-hooks/useConfirmDialogProps';
 export { default as usePopupMenu } from './data-hooks/usePopupMenu'
 export { default as useConstants } from './components-hooks/useConstants';
