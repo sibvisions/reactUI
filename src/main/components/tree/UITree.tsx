@@ -30,7 +30,7 @@ const UITree: FC<ITree> = (baseProps) => {
     /** Component constants */
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
 
-    /** ComponentId of the screen */
+    /** Name of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBooks[0]) as string;
 
     /** The data provided by the databooks */
@@ -87,6 +87,7 @@ const UITree: FC<ITree> = (baseProps) => {
     useEffect(() => {
         const updateRebuildTree = () => {
             setInitRender(false);
+            console.log('clear');
             setExpandedKeys({});
             setNodes([]);
             setTreeData(new Map());
@@ -176,7 +177,7 @@ const UITree: FC<ITree> = (baseProps) => {
      * @param fetchObj - the datarow which childrens are to be fetched
      * @param nodeReference - the reference to the node to add the children
      */
-    const sendTreeFetch = useCallback((fetchObj:any, nodeReference:any) => {
+    const sendTreeFetch = useCallback((fetchObj:any, nodeReference) => {
         const tempTreeMap:Map<string, any> = new Map<string, any>();
         const parentPath = new TreePath(JSON.parse(nodeReference.key))
         const fetchDataPage = getDataBook(parentPath.length());
@@ -216,9 +217,7 @@ const UITree: FC<ITree> = (baseProps) => {
                         columnNames: metaData.masterReference.columnNames,
                         values: Object.values(pkObj)
                     }
-                    //TODO: try sendRequest with optional parameter
-                    showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 5000)
-                        .then((response:any) => response.json())
+                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false)
                         .then((fetchResponse:FetchResponse[]) => {
                             const builtData = context.server.buildDatasets(fetchResponse[0]);
                             //stringify the pkObj to create the key for the datapages in dataprovider map
@@ -296,6 +295,7 @@ const UITree: FC<ITree> = (baseProps) => {
             }
             //array needs to be reversed so server can process them
             selectedFilters.reverse();
+
             //for databooks below, which are not selected/deselected add null to the filters
             while (selectedFilters.length < selectedDatabooks.length) {
                 selectedFilters.push(null)
@@ -429,6 +429,8 @@ const UITree: FC<ITree> = (baseProps) => {
         const firstLvlDataBook = props.dataBooks[0];
         const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
+        console.log('rebuild tree', firstLvlDataBook, metaData);
+
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
 
@@ -444,15 +446,17 @@ const UITree: FC<ITree> = (baseProps) => {
                 columnNames: metaData!.masterReference!.referencedColumnNames,
                 values: [null]
             }
-            const response:any = await showTopBar(context.server.timeoutRequest(fetch(context.server.BASE_URL + (appVersion.version === 2 ? "v2/api/dal/fetch" : "/api/dal/fetch"), context.server.buildReqOpts(fetchReq)), 10000), topbar)
-            const fetchResponse = await response.json();
+            const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false), topbar)
             context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
             const builtData = context.server.buildDatasets(fetchResponse[0])
             return builtData;
         }
 
         const fetchAndBuildNodes = (data:any[]) => {
-            const newNodes = [...nodes];
+            const newNodes:any[] = [];
+
+            console.log('fetchAndBuildNodes', data, newNodes, nodes);
+
             //allSettled so the tree waits for all fetches to be finished and then it sets the treedata
             Promise.allSettled(data.map((data, i) => {
                 const path = new TreePath(i);
@@ -469,6 +473,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 //and potential selected rows below
                 const dataBook = props.dataBooks[0];
                 const selectedRow = selectedRows.get(dataBook);
+                                
                 if (selectedRow && (
                     data === selectedRow.dataRow 
                     || 

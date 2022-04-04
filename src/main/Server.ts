@@ -371,6 +371,7 @@ class Server {
         job?: boolean, 
         waitForOpenRequests?: boolean,
         queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
+        handleResponse: boolean = true,
     ) {
         let promise = new Promise<any>((resolve, reject) => {
             if (
@@ -386,7 +387,7 @@ class Server {
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
-                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
+                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode, handleResponse)
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
@@ -401,7 +402,7 @@ class Server {
                             }
                             return result;
                         }, (err) => Promise.reject(err))
-                        .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
+                        .then((results) => handleResponse ? this.responseHandler.bind(this)(results) : results, (err) => Promise.reject(err))
                         .then(results => {
                             if (fn) {
                                 fn.forEach(func => func.apply(undefined, []))
@@ -426,11 +427,11 @@ class Server {
                                     this.subManager.emitDialog("server", false, true, splitErr[0], splitErr[1] + ". <u>Click here!</u> or press Escape to retry!");
                                 }
                                 else {
-                                    this.subManager.emitDialog("server", false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                    this.subManager.emitDialog("server", false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, undefined, handleResponse));
                                 }
                             }
                             else {
-                                this.subManager.emitDialog("server", false, false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitDialog("server", false, false, "Error occured!", "Check the console for more info.", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, undefined, handleResponse));
                             }
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorDialogVisible(true);
@@ -447,7 +448,8 @@ class Server {
                         fn,
                         job,
                         waitForOpenRequests,
-                        RequestQueueMode.IMMEDIATE
+                        RequestQueueMode.IMMEDIATE,
+                        handleResponse
                     ).then(results => {
                         resolve(results)
                     }))
