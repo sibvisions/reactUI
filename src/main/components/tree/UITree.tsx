@@ -57,9 +57,6 @@ const UITree: FC<ITree> = (baseProps) => {
     /** State of the key of a single node that is selected */
     const [selectedKey, setSelectedKey] = useState<any>();
 
-    /** Helper state so the second useEffect doesn't trigger on the first render */
-    const [initRender, setInitRender] = useState<boolean>(false);
-
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = baseProps;
 
@@ -96,11 +93,9 @@ const UITree: FC<ITree> = (baseProps) => {
      */
     useEffect(() => {
         const updateRebuildTree = () => {
-            setInitRender(false);
-            console.log('clear');
-            setExpandedKeys({});
-            nodes.current = []
-            setTreeData(new Map());
+            //setExpandedKeys({});
+            //nodes.current = []
+            //setTreeData(new Map());
             setRebuildTree(prevState => !prevState);        
         }
 
@@ -353,9 +348,9 @@ const UITree: FC<ITree> = (baseProps) => {
          * @returns the referenced node based on the given path
          */
         const getReferencedNode = (path: TreePath) => {
-            let tempNode: any = nodes.current[path.get(0)];
+            let tempNode = nodes.current[path.get(0)];
             for (let i = 1; i < path.length(); i++) {
-                tempNode = tempNode.children[path.get(i)]
+                tempNode = (tempNode?.children ?? [])[path.get(i)];
             }
             return tempNode
         }
@@ -396,7 +391,6 @@ const UITree: FC<ITree> = (baseProps) => {
 
             if (selfJoinedPath) {
                 for (let i = 0; i < selfJoinedPath.length() ?? 0; i++) {
-                    selectedIndices.push(selfJoinedPath.get(i));
                     const path = new TreePath(selectedIndices);
                     if (path.getParentPath().length() > 0) {
                         expKeys[path.getParentPath().toString()] = true;
@@ -420,9 +414,10 @@ const UITree: FC<ITree> = (baseProps) => {
                     }
                 }
             }
-        }
-        setSelectedKey(new TreePath(selectedIndices).toString());
-        setExpandedKeys((prevState:any) => Object.assign(prevState, expKeys));
+        } 
+        
+        //setSelectedKey(new TreePath(selectedIndices).toString());
+        //setExpandedKeys(prevState => ({...prevState, ...expKeys}));
         setTreeData(prevState => new Map([...prevState, ...tempTreeMap]));
     }, [
         getDataBook, 
@@ -476,7 +471,8 @@ const UITree: FC<ITree> = (baseProps) => {
                     leaf: props.detectEndNode !== false
                 };
 
-                nodes.current.push(addedNode);
+                nodes.current[i] = addedNode;
+
                 tempTreeMap.set(path.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));
 
                 //if the current row is selected, call the recursive callback to fetch the row
@@ -502,7 +498,6 @@ const UITree: FC<ITree> = (baseProps) => {
             })).then(() => {
                 setTreeData(prevState => new Map([...prevState, ...tempTreeMap]))
             });
-            setInitRender(true)
         }
 
         //if the first databook is self-joined fetch the root page else fetch build up the tree as usual
@@ -516,11 +511,19 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [rebuildTree]);
 
     /**
-     * If the selectedRows change, call recursiveCallback.
+     * If the selectedRows change, generate the tree selectedKey and expandedKey
      */
-    useEffect(() => {
-        if (initRender) {
-            recursiveCallback();
+     useEffect(() => {
+        const selected = selectedRows.get(props.dataBooks[0]);
+        if (selected) {
+            if (isSelfJoined(props.dataBooks[0])) {
+                setSelectedKey(new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]).toString());
+                setExpandedKeys(prevState => {
+                    return ({...prevState, ...selected.treePath?.toArray().reduce((a, n) => ({...a, [`[${n}]`]: true}) , {})})
+                });
+            } else {
+                setSelectedKey(new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1)).toString());
+            }
         }
     }, [selectedRows]);
 
@@ -550,7 +553,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 }
             }}
             {...usePopupMenu(props)}
-        >
+        >  
             <Tree
                 id={checkComponentName(props.name)}
                 className="rc-tree"
