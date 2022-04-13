@@ -327,8 +327,6 @@ const UITree: FC<ITree> = (baseProps) => {
     const recursiveCallback = useCallback(async () => {
         //An array which is used to get the current path and at the end the selected key of the node
         const selectedIndices:number[] = [];
-        //Object which stores which keys are currently extended
-        const expKeys:any = {};
         let tempTreeMap:Map<string, any> = new Map([...treeData]);
         const sortedSR = new Map([...selectedRows.entries()].sort((a ,b) => {
             if (props.dataBooks.findIndex(dataBook => dataBook === a[0]) > props.dataBooks.findIndex(dataBook => dataBook === b[0])) {
@@ -359,9 +357,6 @@ const UITree: FC<ITree> = (baseProps) => {
             if (data && !isSelfJoined(key)) {
                 selectedIndices.push(data.index);
                 const path = new TreePath(selectedIndices);
-                if (path.getParentPath().length() > 0) {
-                    expKeys[path.getParentPath().toString()] = true;
-                }
                 if (path.array[0] !== -1 && getDataBook(path.length())) {
                     if (props.detectEndNode !== false) {
                         const currData = providedData.get(getDataBook(path.length() - 1)).get("current");
@@ -390,11 +385,8 @@ const UITree: FC<ITree> = (baseProps) => {
             let prevRow = getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames);
 
             if (selfJoinedPath) {
+                const path = new TreePath(selectedIndices);
                 for (let i = 0; i < selfJoinedPath.length() ?? 0; i++) {
-                    const path = new TreePath(selectedIndices);
-                    if (path.getParentPath().length() > 0) {
-                        expKeys[path.getParentPath().toString()] = true;
-                    }
                     if (props.detectEndNode !== false) {
                         const dataRowChildren = providedData.get(lastDatabook).get(prevRow);
                         for (let [i, value] of dataRowChildren.entries()) {
@@ -416,8 +408,6 @@ const UITree: FC<ITree> = (baseProps) => {
             }
         } 
         
-        //setSelectedKey(new TreePath(selectedIndices).toString());
-        //setExpandedKeys(prevState => ({...prevState, ...expKeys}));
         setTreeData(prevState => new Map([...prevState, ...tempTreeMap]));
     }, [
         getDataBook, 
@@ -437,9 +427,6 @@ const UITree: FC<ITree> = (baseProps) => {
         const firstLvlDataBook = props.dataBooks[0];
         const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
-        console.log('rebuild tree', firstLvlDataBook, metaData, providedData);
-
-        //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
 
         /**
@@ -460,7 +447,7 @@ const UITree: FC<ITree> = (baseProps) => {
             return builtData;
         }
 
-        const fetchAndBuildNodes = (data:any[]) => {
+        const fetchAndBuildNodes = (data:any[] = []) => {
 
             //allSettled so the tree waits for all fetches to be finished and then it sets the treedata
             Promise.allSettled(data.map((data, i) => {
@@ -504,11 +491,11 @@ const UITree: FC<ITree> = (baseProps) => {
         if (isSelfJoined(firstLvlDataBook)) {
             fetchSelfJoinedRoot().then((res:any) => fetchAndBuildNodes(res))   
         } else {
-            fetchAndBuildNodes(providedData.get(firstLvlDataBook).get("current"))
+            fetchAndBuildNodes(providedData?.get(firstLvlDataBook)?.get("current"))
         }
         
         // eslint-disable-next-line
-    }, [rebuildTree]);
+    }, [rebuildTree, providedData.size ]);
 
     /**
      * If the selectedRows change, generate the tree selectedKey and expandedKey
@@ -531,8 +518,6 @@ const UITree: FC<ITree> = (baseProps) => {
     }, [selectedRows]);
 
     const focused = useRef<boolean>(false);
-
-    console.log('rndr', nodes, selectedKey, expandedKeys);
 
     return (
         <span 
