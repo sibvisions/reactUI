@@ -1,13 +1,15 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
-import ContentStore from "./ContentStore"
+import BaseContentStore from "./contentstore/BaseContentStore";
+import ContentStore from "./contentstore/ContentStore"
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
     /** Contentstore instance */
-    contentStore: ContentStore;
+    contentStore: BaseContentStore|ContentStore|ContentStoreV2;
 
     /** AppSettings instance */
     appSettings: AppSettings;
@@ -146,7 +148,7 @@ export class SubscriptionManager {
      * @constructor constructs server instance
      * @param store - contentstore instance
      */
-    constructor(store: ContentStore) {
+    constructor(store: BaseContentStore|ContentStore|ContentStoreV2) {
         this.contentStore = store;
         this.appSettings = new AppSettings(store, this);
     }
@@ -709,7 +711,7 @@ export class SubscriptionManager {
 
     /** When the menu-items change, call the function of the menu-subscriber */
     emitMenuUpdate(){
-        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.menuItems]));
+        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [(this.contentStore as ContentStore).menuItems]));
     }
 
     /**
@@ -761,7 +763,7 @@ export class SubscriptionManager {
 
     /** Tell the toolbar-subscribers that their items changed */
     emitToolBarUpdate() {
-        this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.toolbarItems]));
+        this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [(this.contentStore as ContentStore).toolbarItems]));
     }
 
     /** Tell app that session has expired */

@@ -21,7 +21,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     PrimeReact.ripple = true;
     
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
-    if (context.appSettings.version === 2) {
+    if (context.version === 2) {
         return (
             <AppWrapper>
                 {context.appReady ?

@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import Server from "./Server";
-import ContentStore from "./ContentStore";
+import ContentStore from "./contentstore/ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import API from "./API";
 import AppSettings, { appVersion } from "./AppSettings";
@@ -11,11 +11,28 @@ import { ICustomContent } from "../MiddleMan";
 import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
 import { BaseResponse, RESPONSE_NAMES } from "./response";
 import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import ServerV2 from "./server/ServerV2";
+
+export function isV2ContentStore(contentStore: ContentStore | ContentStoreV2): contentStore is ContentStore {
+    return (contentStore as ContentStore).menuItems !== undefined;
+}
 
 /** Type for AppContext */
-export type AppContextType={
+export type AppContextType = {
+    version: 1,
     server: Server,
     contentStore: ContentStore,
+    subscriptions: SubscriptionManager,
+    api: API,
+    appSettings: AppSettings,
+    ctrlPressed: boolean,
+    appReady: boolean
+} |
+{
+    version: 2,
+    server: ServerV2,
+    contentStore: ContentStoreV2,
     subscriptions: SubscriptionManager,
     api: API,
     appSettings: AppSettings,
@@ -39,6 +56,7 @@ contentStore.setSubscriptionManager(subscriptions);
 server.setAPI(api);
 /** Initial value for state */
 const initValue: AppContextType = {
+    version: 1,
     contentStore: contentStore,
     server: server,
     api: api,
@@ -142,13 +160,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
         const startUpRequest = createStartupRequest();
         const urlParams = new URLSearchParams(window.location.search);
         const authKey = localStorage.getItem("authKey");
-        const newServer = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
         let themeToSet = "";
         let schemeToSet = "";
         let designToSet = "";
+        let baseUrlToSet = "";
+        let timeoutToSet = 10000;
 
         const initWS = (baseURL:string) => {
-            const urlSubstr = baseURL.substring(newServer.BASE_URL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
+            const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
             
             ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
             ws.current.onopen = () => console.log("ws opened");
@@ -231,7 +250,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
-            newServer.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
+            contextState.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
@@ -245,7 +264,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.subscriptions.emitErrorDialogVisible(false);
             }
 
-            initWS(newServer.BASE_URL);
+            initWS(contextState.server.BASE_URL);
         }
 
         const fetchAppConfig = () => {
@@ -253,7 +272,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
                     if (data.timeout) {
-                        newServer.timeoutMs = parseInt(data.timeout)
+                        timeoutToSet = parseInt(data.timeout);
                     }
                     resolve({});
                 })
@@ -266,9 +285,15 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 fetch('assets/version/app_version.json').then((r) => r.json())
                 .then((data) => {
                     if (data.version) {
-                        contextState.appSettings.version = parseInt(data.version);
-                        newServer.endpointMap = newServer.setEndPointMap(parseInt(data.version));
-                        appVersion.version = parseInt(data.version)
+                        if (parseInt(data.version) === 2) {
+                            contextState.version = 2
+                            appVersion.version = 2
+                        }
+                        else {
+                            contextState.version = 1
+                            appVersion.version = 1
+                        }
+
                     }
                     resolve({});
                 })
@@ -290,7 +315,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             startUpRequest[k] = v;
                         }
                     });
-                    newServer.BASE_URL = data.baseUrl;
+                    baseUrlToSet = data.baseUrl;
         
                     if (data.logoBig) {
                         contextState.appSettings.LOGO_BIG = data.logoBig;
@@ -344,7 +369,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions = new Map(options);
             }
             else {
-                newServer.embedOptions = options;
                 convertedOptions = new Map(Object.entries(options));
             }
 
@@ -362,17 +386,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 if (baseUrl.charAt(baseUrl.length - 1) === "/") {
                     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
                 }
-                newServer.BASE_URL = baseUrl;
+                baseUrlToSet = baseUrl;
                 convertedOptions.delete("baseUrl");
             }
             else if (process.env.NODE_ENV === "production") {
                 const splitURLPath = window.location.pathname.split("/");
 
                 if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
-                    newServer.BASE_URL = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
                 }
                 else if (splitURLPath[1]) {
-                    newServer.BASE_URL = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
                 }
             }
 
@@ -436,9 +460,18 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
 
             if (convertedOptions.has("version")) {
-                contextState.appSettings.version = parseInt(convertedOptions.get("version"));
-                newServer.endpointMap = newServer.setEndPointMap(parseInt(convertedOptions.get("version")));
-                appVersion.version = parseInt(convertedOptions.get("version"));
+                const parsedValue = parseInt(convertedOptions.get("version"))
+                if (parsedValue === 1 || parsedValue === 2) {
+                    contextState.version = parsedValue;
+                   // newServer.endpointMap = newServer.setEndPointMap(parsedValue);
+                    appVersion.version = parsedValue;
+                }
+                else {
+                    contextState.version = 1;
+                    //newServer.endpointMap = newServer.setEndPointMap(1);
+                    appVersion.version = 1;
+                }
+
             }
 
             convertedOptions.forEach((v, k) => {
@@ -448,18 +481,28 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
         const afterConfigFetch = () => {
             checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams);
+            if (contextState.version === 2) {
+                contextState.contentStore = new ContentStoreV2(history);
+                contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
+                contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+            }
+            else {
+                contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
 
-            if (props.onMenu) {
-                contextState.server.setOnMenuFunction(props.onMenu);
+                if (props.onMenu) {
+                    contextState.server.setOnMenuFunction(props.onMenu);
+                }
+        
+                if (props.onOpenScreen) {
+                    contextState.server.setOnOpenScreenFunction(props.onOpenScreen);
+                }
+        
+                if (props.onLogin) {
+                    contextState.server.setOnLoginFunction(props.onLogin);
+                }
             }
-    
-            if (props.onOpenScreen) {
-                contextState.server.setOnOpenScreenFunction(props.onOpenScreen);
-            }
-    
-            if (props.onLogin) {
-                contextState.server.setOnLoginFunction(props.onLogin);
-            }
+            contextState.server.BASE_URL = baseUrlToSet;
+            contextState.server.timeoutMs = timeoutToSet
 
             startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2);
 
@@ -490,16 +533,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                 });
                 if (preserveOnReload) {
-                    for (let [, value] of newServer.subManager.jobQueue.entries()) {
+                    for (let [, value] of contextState.server.subManager.jobQueue.entries()) {
                         value();
                     }
-                    newServer.subManager.jobQueue.clear();
+                    contextState.server.subManager.jobQueue.clear();
                 }
-                contextState.server = newServer;
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload, startupRequestHash);
             } 
             else {
-                contextState.server = newServer;
                 sendStartup(startUpRequest, false, startupRequestHash, relaunchArguments.current);
             }
         }

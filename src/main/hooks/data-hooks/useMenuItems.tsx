@@ -10,6 +10,7 @@ import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
 import { REQUEST_KEYWORDS } from "../../request";
 import { concatClassnames } from "../../util";
+import ContentStoreV2 from "../../contentstore/ContentStoreV2";
 
 const useMenuItems = (menus?:string[]) => {
     /** Use context to gain access for contentstore and server methods */
@@ -107,40 +108,43 @@ const useMenuItems = (menus?:string[]) => {
                 return arr.map(menuItem => getMenuItem(menuItem))
             }
 
-                const menuGroup = context.contentStore.getComponentById(menuId);
-                if (menuGroup) {
-                    const menuItems = Array.from(context.contentStore.getChildren(menuId).values()).filter(item => item.visible !== false);
-                    const iconData = parseIconData(undefined, menuGroup.image);
-                    primeMenu = {
-                        label: menuGroup.text,
-                        icon: iconData.icon,
-                        items: menuItems.length ? getSubItems(menuItems) : []
-                    }
+            const menuGroup = context.contentStore.getComponentById(menuId);
+            if (menuGroup) {
+                const menuItems = Array.from((context.contentStore as ContentStoreV2).getChildren(menuId).values()).filter(item => item.visible !== false);
+                const iconData = parseIconData(undefined, menuGroup.image);
+                primeMenu = {
+                    label: menuGroup.text,
+                    icon: iconData.icon,
+                    items: menuItems.length ? getSubItems(menuItems) : []
                 }
-                return primeMenu
+            }
+            return primeMenu
         }
 
-        if (menus) {
-            const tempMenuItems:MenuItem[] = []
-            menus.forEach((menu) => {
-                tempMenuItems.push(receiveNewMenuItemsV2(menu));
-            });
-            setMenuItems(tempMenuItems);
-    
-            menus.forEach(menu => {
-                context.subscriptions.subscribeToParentChange(menu, () => setMenuItems(prevState => {
-                    const menuCopy = prevState
-                    const newMenu = receiveNewMenuItemsV2(menu);
-                    const foundIndex = prevState.findIndex(oldMenu => oldMenu.label === newMenu.label);
-                    if (foundIndex !== -1) {
-                        menuCopy[foundIndex] = newMenu
-                    }
-                    else {
-                        menuCopy.push(newMenu);
-                    }
-                    return menuCopy;
-                }))   
-            });
+        if (context.version === 2) {
+            if (menus) {
+                const tempMenuItems:MenuItem[] = []
+                menus.forEach((menu) => {
+                    tempMenuItems.push(receiveNewMenuItemsV2(menu));
+                });
+                setMenuItems(tempMenuItems);
+        
+                menus.forEach(menu => {
+                    context.subscriptions.subscribeToParentChange(menu, () => setMenuItems(prevState => {
+                        const menuCopy = prevState
+                        const newMenu = receiveNewMenuItemsV2(menu);
+                        const foundIndex = prevState.findIndex(oldMenu => oldMenu.label === newMenu.label);
+                        if (foundIndex !== -1) {
+                            menuCopy[foundIndex] = newMenu
+                        }
+                        else {
+                            menuCopy.push(newMenu);
+                        }
+                        return menuCopy;
+                    }))   
+                });
+            }
+
         }
         else {
             receiveNewMenuItems(context.contentStore.menuItems);

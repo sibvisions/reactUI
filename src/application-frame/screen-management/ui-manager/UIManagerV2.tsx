@@ -3,7 +3,6 @@ import { appContext } from "../../../main/AppProvider";
 import { MenuVisibility } from "../../../main/AppSettings";
 import { concatClassnames } from "../../../main/util";
 import { ApplicationSettingsResponse } from "../../../main/response";
-import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import ScreenManager from "../ScreenManager";
 import { isCorporation, ResizeContext } from "./UIManager";
 
@@ -56,7 +55,6 @@ const UIManagerV2: FC<any> = () => {
             sessionExpired ? "reactUI-expired" : "",
             appTheme
         )}>
-            <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
             <div id="reactUI-main" className={concatClassnames(
                     "main",
                     menuVisibility.toolBar ? "toolbar-visible" : "",

@@ -25,7 +25,9 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             csRequest.componentId = baseProps.name;
             context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
-                    context.server.lastClosedWasPopUp = true;
+                    if (context.version !== 2) {
+                        context.server.lastClosedWasPopUp = true;
+                    }
                     context.contentStore.closeScreen(baseProps.name);
                 }
             });
@@ -35,8 +37,10 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             ccRequest.componentId = baseProps.name;
             context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
-                    context.server.lastClosedWasPopUp = true;
-                    context.contentStore.closeScreen(baseProps.name, undefined, true);
+                    if (context.version !== 2) {
+                        context.server.lastClosedWasPopUp = true;
+                    }
+                    context.contentStore.closeScreen(baseProps.name, true);
                 }
             });
         }

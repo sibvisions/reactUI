@@ -14,6 +14,8 @@ import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
 import { EmbeddedContext } from "../../MiddleMan";
 import { ApplicationSettingsResponse } from "../../main/response";
 import { REQUEST_KEYWORDS } from "../../main/request";
+import ContentStore from "../../main/contentstore/ContentStore";
+import Server from "../../main/Server";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -91,7 +93,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
 
                     // If a screen is opened, close it, and redirect to home or welcome-screen
                     if (context.contentStore.activeScreens.length) {
-                        context.subscriptions.emitSelectedMenuItem("");
+                        //context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
@@ -99,7 +101,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
-                                    context.server.lastClosedWasPopUp = false;
+                                    (context.server as Server).lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(screenName, context.appSettings.welcomeScreen ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
@@ -136,7 +138,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
             <div className="profile-menu">
                 <Menubar
-                    style={context.contentStore.currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${context.contentStore.currentUser.profileImage})` } : {}}
+                    style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
                     model={profileMenu} />
             </div>
         </>
@@ -176,7 +178,8 @@ const Menu: FC<IMenu> = (props) => {
     const panelMenu = useRef<PanelMenu>(null);
 
     /** The currently selected-menuitem */
-    const [selectedMenuItem, setSelectedMenuItem] = useState<string>(context.contentStore.selectedMenuItem);
+    const [selectedMenuItem, setSelectedMenuItem] = useState<string>((context.contentStore as ContentStore).activeScreens.length ? 
+    (context.contentStore as ContentStore).activeScreens.slice(-1).pop()!.className as string : "");
 
     /** get menu items */
     const menuItems = useMenuItems()

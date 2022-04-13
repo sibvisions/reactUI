@@ -11,7 +11,9 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
 import Server from "../../../Server";
-import ContentStore from "../../../ContentStore";
+import ContentStore from "../../../contentstore/ContentStore";
+import BaseContentStore from "../../../contentstore/BaseContentStore";
+import ServerV2 from "../../../server/ServerV2";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -35,7 +37,7 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
-export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server, contentStore: ContentStore) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerV2, contentStore: BaseContentStore) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook)
     if (currentData
         && displayCol

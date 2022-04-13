@@ -10,6 +10,7 @@ import CorporateMenu from "../../menu/corporateMenu";
 import { MenuVisibility } from "../../../main/AppSettings";
 import { ApplicationSettingsResponse } from "../../../main/response";
 import { useParams } from "react-router";
+import ContentStore from "../../../main/contentstore/ContentStore";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -148,7 +149,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     sessionExpired ? "reactUI-expired" : "",
                     appTheme
                 )}>
-                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.name} password="" />
+                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
                 <CustomWrapper>
                     <div id="reactUI-main" className="main">
                         <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
@@ -163,7 +164,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 sessionExpired ? "reactUI-expired" : "",
                 appTheme
             )} >
-                <ChangePasswordDialog loggedIn username={context.contentStore.currentUser.userName} password="" />
+                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
                 {isCorporation(appLayout, appTheme) ?
                     <CorporateMenu
                         menuVisibility={menuVisibility} />

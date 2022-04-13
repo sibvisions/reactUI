@@ -1,6 +1,6 @@
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import { appContext } from "../../../main/AppProvider";
-import { ActiveScreen } from "../../../main/ContentStore";
+import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 import { DesktopPanelHandler } from "../../login/login";
 import ResizeHandler from "../ResizeHandler";
 
@@ -24,7 +24,15 @@ const WorkScreen: FC = () => {
     }, [context.contentStore]);
 
     /** The screens which need to be rendered */
-    const renderedScreens = useMemo(() => buildWindow(activeScreens), [activeScreens]);
+    const renderedScreens = useMemo(() => {
+        if (activeScreens.length) {
+            context.subscriptions.emitSelectedMenuItem(activeScreens.slice(-1).pop()!.className as string);
+        }
+        else {
+            context.subscriptions.emitSelectedMenuItem("");
+        }
+        return buildWindow(activeScreens)
+    }, [activeScreens]);
 
     // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
     useEffect(() => {

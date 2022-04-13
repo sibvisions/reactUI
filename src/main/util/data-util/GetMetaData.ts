@@ -1,4 +1,5 @@
-import ContentStore from "../../ContentStore";
+import BaseContentStore from "../../contentstore/BaseContentStore";
+import ContentStore from "../../contentstore/ContentStore";
 import { FullOrColumn } from "../../hooks/data-hooks/useMetaData";
 
 /**
@@ -8,7 +9,7 @@ import { FullOrColumn } from "../../hooks/data-hooks/useMetaData";
  * @param contentStore - the contentstore instance
  * @returns the metadata of the given dataprovider
  */
-export function getMetaData<T extends string|undefined, U extends "numeric"|undefined>(screenName:string, dataProvider:string, contentStore:ContentStore, column?:T):FullOrColumn<T, U>|undefined {
+export function getMetaData<T extends string|undefined, U extends "numeric"|undefined>(screenName:string, dataProvider:string, contentStore:BaseContentStore, column?:T):FullOrColumn<T, U>|undefined {
     const fullMetaData = contentStore.getDataBook(screenName, dataProvider)?.metaData;
     if (fullMetaData) {
         if (column) {

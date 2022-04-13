@@ -16,6 +16,7 @@ import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { REQUEST_KEYWORDS } from "./main/request";
 import { appContext } from "./main/AppProvider";
+import { appVersion } from "./main/AppSettings";
 
 export type IServerFailMessage = {
     headerMessage:string,
@@ -102,43 +103,45 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     }, [context.subscriptions]);
 
     useEffect(() => {
-        history.listen(() => {
-            if (history.action === "POP") {
-                let currentlyOpening = false;
-                if (!openedWithHistory.current) {
-                    const pathName = history.location.pathname;
-                    const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
-                    if (navName) {
-                        const openId = context.contentStore.navOpenScreenMap.get(navName)
-                        if (openId) {
-                            const openReq = createOpenScreenRequest();
-                            openReq.componentId = openId;
-    
-                            context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
-                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
-    
-                            currentlyOpening = true;
-                            openedWithHistory.current = true;
+        if (context.version !== 2) {
+            history.listen(() => {
+                if (history.action === "POP") {
+                    let currentlyOpening = false;
+                    if (!openedWithHistory.current) {
+                        const pathName = history.location.pathname;
+                        const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
+                        if (navName) {
+                            const openId = context.contentStore.navOpenScreenMap.get(navName)
+                            if (openId) {
+                                const openReq = createOpenScreenRequest();
+                                openReq.componentId = openId;
+        
+                                context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
+                                showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
+        
+                                currentlyOpening = true;
+                                openedWithHistory.current = true;
+                            }
+                        }
+                        else {
+                            if (context.contentStore.activeScreens.length) {
+                                context.contentStore.activeScreens.forEach(active => {
+                                    const comp = context.contentStore.getComponentByName(active.name) as IPanel;
+                                    if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
+                                        context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true);
+                                    }
+                                    
+                                })
+                            }
                         }
                     }
-                    else {
-                        if (context.contentStore.activeScreens.length) {
-                            context.contentStore.activeScreens.forEach(active => {
-                                const comp = context.contentStore.getComponentByName(active.name) as IPanel;
-                                if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
-                                    context.contentStore.closeScreen(comp.name, undefined, comp.screen_modal_ === true);
-                                }
-                                
-                            })
-                        }
+    
+                    if (!currentlyOpening) {
+                        openedWithHistory.current = false;
                     }
                 }
-
-                if (!currentlyOpening) {
-                    openedWithHistory.current = false;
-                }
-            }
-        });
+            });
+        }
       }, []);
 
     return (

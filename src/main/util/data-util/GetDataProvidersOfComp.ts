@@ -1,4 +1,4 @@
-import { IDataBook } from "../../ContentStore";
+import { IDataBook } from "../../contentstore/BaseContentStore";
 
 /**
  * Returns dataProviders and their data in a Map of a component. If there are no dataproviders
