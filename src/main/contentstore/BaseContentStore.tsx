@@ -33,7 +33,10 @@ export interface IDataBook {
     allFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
-    missingDataFetched?: boolean
+    readOnly?: boolean,
+    updateEnabled?: boolean,
+    insertEnabled?: boolean,
+    deleteEnabled?: boolean
 }
 
 export default abstract class BaseContentStore {
