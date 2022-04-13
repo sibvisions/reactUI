@@ -484,7 +484,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
             if (contextState.version === 2) {
                 contextState.contentStore = new ContentStoreV2(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
+                contextState.subscriptions.setContentStore(contextState.contentStore);
+                contextState.api.setContentStore(contextState.contentStore);
+                contextState.appSettings.setContentStore(contextState.contentStore);
+
                 contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.api.setServer(contextState.server);
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);

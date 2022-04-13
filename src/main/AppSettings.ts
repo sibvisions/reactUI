@@ -5,6 +5,7 @@ import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 import BaseContentStore from "./contentstore/BaseContentStore";
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
 
 export const appVersion = { version: 1 }
 
@@ -55,6 +56,10 @@ export default class AppSettings {
     constructor(store:BaseContentStore, subManager:SubscriptionManager) {
         this.#contentStore = store
         this.#subManager = subManager
+    }
+
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.#contentStore = store;
     }
 
     /** The logo to display when the menu is expanded */

@@ -40,6 +40,14 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.#contentStore = store;
+    }
+
+    setServer(server: BaseServer|Server|ServerV2) {
+        this.#server = server;
+    }
+
     sendRequest(req: any, endpoint: string) {
         this.#server.sendRequest(req, endpoint);
     }

@@ -145,12 +145,16 @@ export class SubscriptionManager {
     jobQueue:Map<string, any> = new Map();
 
     /**
-     * @constructor constructs server instance
+     * @constructor constructs submanager instance
      * @param store - contentstore instance
      */
     constructor(store: BaseContentStore|ContentStore|ContentStoreV2) {
         this.contentStore = store;
         this.appSettings = new AppSettings(store, this);
+    }
+
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.contentStore = store;
     }
 
     setAppSettings(appSettings:AppSettings) {
