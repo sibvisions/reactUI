@@ -437,7 +437,7 @@ const UITree: FC<ITree> = (baseProps) => {
         const firstLvlDataBook = props.dataBooks[0];
         const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
-        console.log('rebuild tree', firstLvlDataBook, metaData);
+        console.log('rebuild tree', firstLvlDataBook, metaData, providedData);
 
         //let firstLvlData:any[] = providedData.get(firstLvlDataBook).get("current");
         let tempTreeMap: Map<string, any> = treeData;
@@ -516,14 +516,17 @@ const UITree: FC<ITree> = (baseProps) => {
      useEffect(() => {
         const selected = selectedRows.get(props.dataBooks[0]);
         if (selected) {
+            let treePath: TreePath;
             if (isSelfJoined(props.dataBooks[0])) {
-                setSelectedKey(new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]).toString());
-                setExpandedKeys(prevState => {
-                    return ({...prevState, ...selected.treePath?.toArray().reduce((a, n) => ({...a, [`[${n}]`]: true}) , {})})
-                });
+                treePath = new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]);
             } else {
-                setSelectedKey(new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1)).toString());
+                treePath = new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1));
             }
+
+            setSelectedKey(treePath.toString());
+            setExpandedKeys(prevState => {
+                return ({...prevState, ...treePath.toArray().slice(0, -1).reduce((a, n, i, arr) => ({...a, [`[${arr.slice(0, i + 1).join(',')}]`]: true}) , {})})
+            });
         }
     }, [selectedRows]);
 
