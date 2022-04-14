@@ -129,12 +129,14 @@ export default class ServerV2 extends BaseServer {
     .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU);
 
+    dataResponseMap: Map<string, Function> = new Map()
+    .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
+    .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
+    .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this));
+
     /** A Map which checks which function needs to be called when a response is received */
     responseMap = new Map<string, Function>()
     .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
-    .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
-    .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
-    .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
     // .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
     // .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
     //.set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))

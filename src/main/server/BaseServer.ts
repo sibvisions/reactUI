@@ -128,7 +128,7 @@ export default abstract class BaseServer {
                 reject("Component doesn't exist");
             } else {
                 if (queueMode == RequestQueueMode.IMMEDIATE) {
-                    let finalEndpoint = this.endpointMap.get(endpoint)
+                    let finalEndpoint = this.endpointMap.get(endpoint);
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
@@ -255,6 +255,8 @@ export default abstract class BaseServer {
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    abstract dataResponseMap: Map<string, Function>;
+
     /** A Map which checks which function needs to be called when a response is received */
     abstract responseMap: Map<string, Function>;
 
@@ -273,6 +275,13 @@ export default abstract class BaseServer {
             //         return 0;
             //     }
             // });
+
+            for (const [, response] of responses.entries()) {
+                const mapper = this.dataResponseMap.get(response.name);
+                if (mapper) {
+                    await mapper(response);
+                }
+            }
 
             for (const [, response] of responses.entries()) {
                 const mapper = this.responseMap.get(response.name);
@@ -376,7 +385,6 @@ export default abstract class BaseServer {
         const screenName = this.getScreenName(fetchData.dataProvider);
         const tempMap: Map<string, boolean> = new Map<string, boolean>();
         tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
-                
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
             screenName, 
@@ -413,6 +421,20 @@ export default abstract class BaseServer {
      async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
 
+        if (changedProvider.insertEnabled !== undefined || changedProvider.updateEnabled !== undefined || changedProvider.deleteEnabled !== undefined || changedProvider.readOnly) {
+            this.contentStore.updateMetaData(screenName, changedProvider.dataProvider, changedProvider.insertEnabled, changedProvider.updateEnabled, changedProvider.deleteEnabled, changedProvider.readOnly);
+        }
+        if (changedProvider.deletedRow !== undefined) {
+            const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
+            this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
+            this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
+            this.subManager.notifyScreenDataChange(screenName);
+            if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
+                this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
+                this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
+            }
+        }
+
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
             this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
@@ -445,26 +467,7 @@ export default abstract class BaseServer {
      * @param metaData - the metaDataResponse
      */
      processMetaData(metaData: MetaDataResponse) {
-        const screenName = this.getScreenName(metaData.dataProvider);
-        const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
-        const existingMap = this.contentStore.getScreenDataproviderMap(screenName);
-        if (existingMap) {
-            if (existingMap.has(metaData.dataProvider)) {
-                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
-            }
-            else {
-                existingMap.set(metaData.dataProvider, {metaData: metaData});
-            }
-        }
-        else {
-            const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMap.set(metaData.dataProvider, {metaData: metaData})
-            this.contentStore.dataBooks.set(screenName, tempMap);
-        }
-        this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
-        if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
-            this.subManager.notifyMetaDataChange(metaData.dataProvider.split('/')[1], metaData.dataProvider);
-        }
+        this.contentStore.setMetaData(this.getScreenName(metaData.dataProvider), metaData);
     }
 
     /**

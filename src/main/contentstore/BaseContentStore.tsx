@@ -33,10 +33,7 @@ export interface IDataBook {
     allFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
-    readOnly?: boolean,
-    updateEnabled?: boolean,
-    insertEnabled?: boolean,
-    deleteEnabled?: boolean
+    readOnly?: boolean
 }
 
 export default abstract class BaseContentStore {
@@ -659,6 +656,71 @@ export default abstract class BaseContentStore {
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
             this.subManager.notifyScreenDataChange(dataProvider.split('/')[1]);
+        }
+    }
+
+    setMetaData(screenName: string, metaData: MetaDataResponse) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMap = this.getScreenDataproviderMap(screenName);
+        if (existingMap) {
+            if (existingMap.has(metaData.dataProvider)) {
+                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
+            }
+            else {
+                existingMap.set(metaData.dataProvider, {metaData: metaData});
+            }
+        }
+        else {
+            const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
+            tempMap.set(metaData.dataProvider, {metaData: metaData})
+            this.dataBooks.set(screenName, tempMap);
+        }
+        this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
+        if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
+            this.subManager.notifyMetaDataChange(metaData.dataProvider.split('/')[1], metaData.dataProvider);
+        }
+    }
+
+    /**
+     * Updates the metadata of a dataprovider, currently used during dataproviderchanged
+     * @param screenName - the name of the screen
+     * @param dataProvider - the name of the dataprovider
+     * @param insertEnabled - true, if insert is enabled on the dataprovider
+     * @param updateEnabled - true, if update is enabled on the dataprovider
+     * @param deleteEnabled - true, if delete is enabled on the dataprovider
+     */
+    updateMetaData(screenName: string, dataProvider: string, insertEnabled?: boolean, updateEnabled?: boolean, deleteEnabled?: boolean, readOnly?: boolean) {
+        const compPanel = this.getComponentByName(screenName) as IPanel;
+        const metaData = getMetaData(screenName, dataProvider, this, undefined);
+        let changed = false;
+
+        if (metaData) {
+            if (insertEnabled !== undefined && metaData.insertEnabled !== insertEnabled) {
+                metaData.insertEnabled = insertEnabled;
+                changed = true;
+            }
+
+            if (updateEnabled !== undefined && metaData.updateEnabled !== updateEnabled) {
+                metaData.updateEnabled = updateEnabled;
+                changed = true;
+            }
+
+            if (deleteEnabled !== undefined && metaData.deleteEnabled !== deleteEnabled) {
+                metaData.deleteEnabled = deleteEnabled;
+                changed = true;
+            }
+
+            if (readOnly !== undefined && metaData.readOnly !== readOnly) {
+                metaData.readOnly = readOnly;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            this.subManager.notifyMetaDataChange(screenName, dataProvider);
+            if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
+                this.subManager.notifyMetaDataChange(dataProvider.split('/')[1], dataProvider);
+            }
         }
     }
 

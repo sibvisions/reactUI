@@ -103,9 +103,6 @@ export default class ContentStore extends BaseContentStore {
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
             }
-
-            /** Cast newComponent as Panel */
-            const newCompAsPanel = (newComponent as IPanel);
             
             if (existingComponent) {
                 if (newComponent["~remove"] !== true) {
@@ -122,12 +119,30 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
 
+                const removeChildren = (id: string, className: string, isCustom?:boolean) => {
+                    const children = this.getChildren(id, className);
+                    children.forEach(child => {
+                        removeChildren(child.id, child.className);
+
+                        if (isCustom) {
+                            this.replacedContent.delete(newComponent.id);
+                            this.removedCustomComponents.set(child.id, child);
+                        }
+                        else {
+                            this.flatContent.delete(child.id);
+                            this.removedContent.set(child.id, child);
+                        }
+                    });
+                }
+
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
+                        removeChildren(newComponent.id, existingComponent.className);
                         this.flatContent.delete(newComponent.id);
                         this.removedContent.set(newComponent.id, existingComponent);
                     }
                     else {
+                        removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }

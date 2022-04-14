@@ -282,7 +282,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
         const fetchVersionConfig = () => {
             return new Promise<any>((resolve, reject) => {
-                fetch('assets/version/app_version.json').then((r) => r.json())
+                fetch('assets/config/app_version.json').then((r) => r.json())
                 .then((data) => {
                     if (data.version) {
                         if (parseInt(data.version) === 2) {

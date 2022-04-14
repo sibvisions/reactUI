@@ -88,6 +88,22 @@ export default class ContentStoreV2 extends BaseContentStore {
                     }
                 }
 
+                const removeChildren = (id: string, className: string, isCustom?:boolean) => {
+                    const children = this.getChildren(id, className);
+                    children.forEach(child => {
+                        removeChildren(child.id, child.className);
+
+                        if (isCustom) {
+                            this.replacedContent.delete(newComponent.id);
+                            this.removedCustomComponents.set(child.id, child);
+                        }
+                        else {
+                            this.flatContent.delete(child.id);
+                            this.removedContent.set(child.id, child);
+                        }
+                    });
+                }
+
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
                         if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
@@ -106,11 +122,13 @@ export default class ContentStoreV2 extends BaseContentStore {
                             }
                         }
                         else {
+                            removeChildren(newComponent.id, existingComponent.className);
                             this.flatContent.delete(newComponent.id);
                             this.removedContent.set(newComponent.id, existingComponent);
                         }
                     }
                     else {
+                        removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }

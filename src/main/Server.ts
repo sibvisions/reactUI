@@ -215,18 +215,21 @@ class Server extends BaseServer {
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    dataResponseMap = new Map<string, Function>()
+    .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
+    .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
+    .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
+
+
     /** A Map which checks which function needs to be called when a response is received */
     responseMap = new Map<string, Function>()
-        .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
         .set(RESPONSE_NAMES.USER_DATA, this.userData.bind(this))
+        .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
+        .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
         .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
-        .set(RESPONSE_NAMES.AUTHENTICATION_DATA, this.authenticationData.bind(this))
-        .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
-        .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
-        .set(RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED, this.processDataProviderChanged.bind(this))
-        .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))
+        .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))        
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
         .set(RESPONSE_NAMES.SHOW_DOCUMENT, this.showDocument.bind(this))
@@ -393,13 +396,13 @@ class Server extends BaseServer {
     //Dal
 
     getScreenName(dataProvider:string) {
-        const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
-        if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
-            return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
+            const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
+            if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
+                return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+            }
         }
-        else {
-            return dataProvider.split("/")[1];
-        }
+        return dataProvider.split("/")[1];
     }
 
     //Down- & UpLoad

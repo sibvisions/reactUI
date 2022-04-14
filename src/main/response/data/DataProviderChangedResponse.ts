@@ -7,11 +7,13 @@ interface DataProviderChangedResponse extends BaseResponse{
     insertEnabled?: boolean,
     deleteEnabled?: boolean,
     updateEnabled?: boolean,
+    readOnly?: boolean,
     reload?: -1 | 0 | 1,
     selectedRow?: number,
     treePath?: number[],
     selectedColumn?: string,
     changedValues?: any[],
-    changedColumnNames?: string[]
+    changedColumnNames?: string[],
+    deletedRow?: number
 }
 export default DataProviderChangedResponse
