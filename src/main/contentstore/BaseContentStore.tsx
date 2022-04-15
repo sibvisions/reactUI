@@ -619,7 +619,7 @@ export default abstract class BaseContentStore {
                     else {
                         let newDataSetIndex = 0;
                         for(let i = from; i <= to; i++) {
-                            if (newDataSet[newDataSetIndex].recordStatus === "I") {
+                            if (newDataSet[newDataSetIndex] && newDataSet[newDataSetIndex].recordStatus === "I") {
                                 this.insertDataProviderData(screenName, dataProvider)
                             }
                             existingData[i] = newDataSet[newDataSetIndex];

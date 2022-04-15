@@ -16,7 +16,8 @@ const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDes
                 && !ref.current.contains(event.target) 
                 && !event.target.classList.contains('p-autocomplete-item') 
                 && !event.target.classList.contains('celleditor-dropdown-virtual-scroller') 
-                && !event.target.closest(".p-datepicker")) {
+                && !event.target.closest(".p-datepicker")
+                && !event.target.closest(".celleditor-dropdown-virtual-scroller")) {
                 if (metaData?.cellEditor.contentType?.includes("multiline") || metaData?.cellEditor.contentType?.includes("singleline")) {
                     ref.current.children[0].blur();
                 }

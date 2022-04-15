@@ -93,7 +93,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                     :
                     {
                         ...props.layoutStyle,
-                        background: props.cellStyle?.background,
+                        //background: props.cellStyle?.background,
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}

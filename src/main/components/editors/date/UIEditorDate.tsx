@@ -314,15 +314,17 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                 }}
                 onBlur={event => {
-                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
-                    //@ts-ignore
-                    if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
-                        if (props.eventFocusLost) {
-                            onFocusLost(props.name, props.context.server);
+                    if (!props.isReadOnly) {
+                        // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
+                        //@ts-ignore
+                        if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
+                            if (props.eventFocusLost) {
+                                onFocusLost(props.name, props.context.server);
+                            }
+                            focused.current = false;
                         }
-                        focused.current = false;
+                        !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                     }
-                    !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 disabled={props.isReadOnly}

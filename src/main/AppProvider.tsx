@@ -105,7 +105,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
      * @returns unsubscribes from session and app-ready
      */
      useEffect(() => {
-        contextState.subscriptions.subscribeToAppReady((ready:boolean) => setContextState(prevState => ({ ...prevState, appReady: true })));
+        contextState.subscriptions.subscribeToAppReady((ready:boolean) => setContextState(prevState => ({ ...prevState, appReady: ready })));
         contextState.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
 
         return () => {

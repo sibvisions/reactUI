@@ -158,7 +158,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 :
                 { 
                     ...props.layoutStyle, 
-                    ...props.cellStyle,
+                    //...props.cellStyle,
                     justifyContent: alignments.ha, 
                     alignItems: alignments.va,
                 }

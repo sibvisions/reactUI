@@ -72,7 +72,7 @@ export default class AppSettings {
     LOGO_LOGIN:string = "/assets/logo_login.png";
 
     /** The current region */
-    locale:string = "de-DE";
+    locale:string = "en-US";
 
     /** The language of the app */
     language:string = "de";

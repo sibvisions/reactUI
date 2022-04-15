@@ -238,33 +238,33 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has an entry exact of inputVal
         let foundData = 
-        // providedData.some((data: any) => {
-        //     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-        //         if (data[props.cellEditor.displayReferencedColumnName]) {
-        //             return data[props.cellEditor.displayReferencedColumnName] === inputVal;
-        //         }
-        //         else {
-        //             return false;
-        //         }
-        //     }
-        //     else {
-        //         return data[refColNames[index]] === inputVal
-        //     }
-        // }) ?
-        //     // If yes get it
-        //     providedData.find((data: any) => {
-        //         if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-        //             if (data[props.cellEditor.displayReferencedColumnName]) {
-        //                 return data[props.cellEditor.displayReferencedColumnName] === inputVal;
-        //             }
-        //             else {
-        //                 return false;
-        //             }
-        //         }
-        //         else {
-        //             return data[refColNames[index]] === inputVal
-        //         }
-        //     }) :
+        providedData.some((data: any) => {
+            if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                if (data[props.cellEditor.displayReferencedColumnName]) {
+                    return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return data[refColNames[index]] === inputVal
+            }
+        }) ?
+            // If yes get it
+            providedData.find((data: any) => {
+                if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                    if (data[props.cellEditor.displayReferencedColumnName]) {
+                        return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    return data[refColNames[index]] === inputVal
+                }
+            }) :
             providedData.filter((data: any) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
@@ -433,33 +433,36 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}
                 value={text}
-                onChange={event => setText(unpackValue(event.target.value))}
+                onChange={event => { console.log(event); setText(unpackValue(event.target.value))}}
                 onFocus={() => {
                     if (!focused.current) {
                         focused.current = true
                     }
                 }}
                 onBlur={event => {
-                    handleInput();
-                    const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
-                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
-                    if (dropDownElem) {
-                        if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                    console.log('blur', props.isReadOnly)
+                    if (!props.isReadOnly) {
+                        handleInput();
+                        const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
+                        // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
+                        if (dropDownElem) {
+                            if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                                if (props.eventFocusLost) {
+                                    onFocusLost(props.name, props.context.server);
+                                }
+                                focused.current = false
+                            }
+                        }
+                        else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
                             focused.current = false
                         }
                     }
-                    else if (!linkedRef.current.container.contains(event.relatedTarget)) {
-                        if (props.eventFocusLost) {
-                            onFocusLost(props.name, props.context.server);
-                        }
-                        focused.current = false
-                    }
                 }}
                 virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
-                onSelect={(event) => handleInput(event.value)}
+                onSelect={(event) => { console.log(event); handleInput(event.value)}}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}
