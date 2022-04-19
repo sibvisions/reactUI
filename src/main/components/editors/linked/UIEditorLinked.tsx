@@ -433,14 +433,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}
                 value={text}
-                onChange={event => { console.log(event); setText(unpackValue(event.target.value))}}
+                onChange={event => setText(unpackValue(event.target.value))}
                 onFocus={() => {
                     if (!focused.current) {
                         focused.current = true
                     }
                 }}
                 onBlur={event => {
-                    console.log('blur', props.isReadOnly)
                     if (!props.isReadOnly) {
                         handleInput();
                         const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
@@ -462,7 +461,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     }
                 }}
                 virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
-                onSelect={(event) => { console.log(event); handleInput(event.value)}}
+                onSelect={(event) => handleInput(event.value)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}

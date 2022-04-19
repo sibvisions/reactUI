@@ -400,20 +400,38 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
             }
 
+            if (convertedOptions.has("username")) {
+                startUpRequest.username = convertedOptions.get("username");
+                convertedOptions.delete("username");
+            }
+
+            if (convertedOptions.has("password")) {
+                startUpRequest.password = convertedOptions.get("password");
+                convertedOptions.delete("password");
+            }
+
             if (convertedOptions.has("layout") && ["standard", "corporation", "modern"].indexOf(convertedOptions.get("layout") as string) !== -1) {
                 contextState.appSettings.setApplicationLayoutByURL(convertedOptions.get("layout") as "standard" | "corporation" | "modern");
+                startUpRequest.layout = convertedOptions.get("layout");
+                convertedOptions.delete("layout");
             }
 
             if (convertedOptions.has("langCode")) {
                 contextState.appSettings.language = convertedOptions.get("langCode");
+                startUpRequest.langCode = convertedOptions.get("langCode");
+                convertedOptions.delete("langCode");
             }
 
             if (convertedOptions.has("timezone")) {
                 contextState.appSettings.timezone = convertedOptions.get("timezone");
+                startUpRequest.timezone = convertedOptions.get("timezone");
+                convertedOptions.delete("timezone");
             }
 
             if (convertedOptions.has("deviceMode")) {
                 contextState.appSettings.deviceMode = convertedOptions.get("deviceMode");
+                startUpRequest.deviceMode = convertedOptions.get("deviceMode");
+                convertedOptions.delete("deviceMode");
             }
 
             if (convertedOptions.has("colorScheme")) {
@@ -475,7 +493,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
 
             convertedOptions.forEach((v, k) => {
-                startUpRequest[k] = v;
+                startUpRequest["custom_" + k] = v;
             });
         }
 

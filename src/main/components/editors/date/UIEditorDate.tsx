@@ -17,7 +17,6 @@ import { sendSetValues,
 import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
-import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -172,9 +171,17 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
         setDateValue(props.selectedRow ? new Date(props.selectedRow) : undefined);
-        lastValue.current = props.selectedRow;
         setViewDate(props.selectedRow ? new Date(props.selectedRow) : new Date());
-    },[props.selectedRow])
+        lastValue.current = props.selectedRow;
+        
+    },[props.selectedRow]);
+
+    const timeChanged = (date1: Date, date2: Date) => {
+        if (date1.getHours() !== date2.getHours() || date1.getMinutes() !== date2.getMinutes() || date1.getSeconds() !== date2.getSeconds()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call sendSetValues
@@ -301,6 +308,11 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 appendTo={document.body}
                 onChange={event => {
                     setDateValue(event.value ? (event.value as Date) : null);
+
+                    if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
+                        (calendar.current as any).hideOverlay();
+                    }
+
                     if (calendarInput.current) {
                         calendarInput.current.focus();
                     }
