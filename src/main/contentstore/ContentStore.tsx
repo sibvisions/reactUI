@@ -123,7 +123,6 @@ export default class ContentStore extends BaseContentStore {
                     const children = this.getChildren(id, className);
                     children.forEach(child => {
                         removeChildren(child.id, child.className);
-
                         if (isCustom) {
                             this.replacedContent.delete(newComponent.id);
                             this.removedCustomComponents.set(child.id, child);
@@ -132,6 +131,7 @@ export default class ContentStore extends BaseContentStore {
                             this.flatContent.delete(child.id);
                             this.removedContent.set(child.id, child);
                         }
+                        
                     });
                 }
 
@@ -173,7 +173,9 @@ export default class ContentStore extends BaseContentStore {
 
             if (!existingComponent) {
                 if (!isCustom) {
-                    this.flatContent.set(newComponent.id, newComponent);
+                    if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
+                        this.flatContent.set(newComponent.id, newComponent);
+                    }
                 }
                 else {
                     // Add the basic properties to the custom component

@@ -2,7 +2,7 @@ import React, { FC, useContext } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
-import Login from "./application-frame/login/login";
+import { Login } from "./application-frame/login/";
 import LoadingScreen from './application-frame/loading/loadingscreen';
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';

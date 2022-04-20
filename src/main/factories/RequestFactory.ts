@@ -120,7 +120,8 @@ export const createLoginRequest = (values?: LoginRequest): LoginRequest => {
         username: values?.username,
         password: values?.password,
         newPassword: values?.newPassword,
-        mode: values?.mode
+        mode: values?.mode,
+        confirmationCode: values?.confirmationCode
     }
     return req;
 }
@@ -279,7 +280,8 @@ export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequ
         componentId: values?.componentId,
         dataProvider: values?.dataProvider,
         values: values?.values,
-        filter: values?.filter
+        filter: values?.filter,
+        rowNumber: values?.rowNumber
     };
     return req;
 }

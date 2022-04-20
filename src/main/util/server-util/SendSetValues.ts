@@ -34,8 +34,11 @@ export async function sendSetValues(
         tempValues = Object.values(value)
     }
 
-    if (rowIndex !== undefined && selectedIndex !== undefined && rowIndex !== selectedIndex) {
-        req.filter = filter
+    if (rowIndex !== undefined) {
+        if (selectedIndex !== undefined && rowIndex !== selectedIndex) {
+            req.filter = filter
+        }
+        req.rowNumber = rowIndex;
     }
     /** Send as array if its not already an array */
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];

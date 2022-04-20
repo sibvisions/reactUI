@@ -125,6 +125,7 @@ interface CellEditor {
     updateEnabled?: boolean,
     deleteEnabled?: boolean,
     dataProviderReadOnly?: boolean
+    rowNumber: number
 }
 
 /**

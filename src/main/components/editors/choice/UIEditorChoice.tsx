@@ -136,8 +136,11 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 setValReq.values = [props.cellEditor.allowedValues[0]];
             }
     
-            if (props.rowIndex !== undefined && props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
-                setValReq.filter = props.filter()
+            if (props.rowIndex !== undefined) {
+                if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
+                    setValReq.filter = props.filter()
+                }
+                setValReq.rowNumber = props.rowIndex()
             }
             showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }

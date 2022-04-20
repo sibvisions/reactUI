@@ -219,7 +219,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
-                            sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar);
+                            sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
                     disabled={props.isReadOnly}
@@ -248,7 +248,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => setValue(event.value) }
-                onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar)}
+                onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
                 disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}

@@ -148,6 +148,8 @@ export default class AppSettings {
 
     cssToAddWhenReady:Array<any> = [];
 
+    loginConfCode:string = "";
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
@@ -169,6 +171,10 @@ export default class AppSettings {
         if (mode === "changePassword" || mode === "changeOneTimePassword") {
             this.#subManager.emitDialog("change-password", false, false);
         }
+        else {
+            this.#subManager.emitLoginModeChanged(mode);
+        }
+        
     }
 
     /**

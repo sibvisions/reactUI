@@ -159,10 +159,12 @@ export default class ContentStoreV2 extends BaseContentStore {
 
             if (!existingComponent) {
                 if (!isCustom) {
-                    if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
-                        newComponent.parent = newComponent.parent + "-frame-toolbar";
+                    if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
+                        if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
+                            newComponent.parent = newComponent.parent + "-frame-toolbar";
+                        }
+                        this.flatContent.set(newComponent.id, newComponent);
                     }
-                    this.flatContent.set(newComponent.id, newComponent);
                 }
                 else {
                     // Add the basic properties to the custom component

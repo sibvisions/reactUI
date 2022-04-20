@@ -294,7 +294,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
         /** If the text is empty, send null to the server */
         if (!inputVal) {
-            sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar);
+            sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar, props.rowNumber);
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {
@@ -310,15 +310,15 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar);
+                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
                     if (props.cellEditor.displayReferencedColumnName) {
-                        sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar);
+                        sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar, props.rowNumber);
                     }
                     else {
-                        sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar);
+                        sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                     }
                 }
 

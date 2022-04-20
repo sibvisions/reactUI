@@ -21,6 +21,7 @@ export interface ICellEditorWrapperProps {
     rowIndex?: Function,
     filter?: Function
     isReadOnly: boolean
+    rowNumber: number
 }
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */

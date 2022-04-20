@@ -6,7 +6,7 @@ import { useConstants } from "../../main/hooks";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
-import { ILoginCredentials } from "../login/login";
+import { ILoginCredentials } from "../login";
 import { REQUEST_KEYWORDS } from "../../main/request";
 
 // Interface for the ChangePasswordDialog

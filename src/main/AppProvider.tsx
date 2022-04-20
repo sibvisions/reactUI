@@ -153,7 +153,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
         .set("No", "No")
         .set("Change", "Change")
         .set("Session expired!", "Session expired!")
-        .set("Take note of any unsaved data, and <u>click here</u> or press ESC to continue.", "Take note of any unsaved data, and <u>click here</u> or press ESC to continue.");
+        .set("Take note of any unsaved data, and <u>click here</u> or press ESC to continue.", "Take note of any unsaved data, and <u>click here</u> or press ESC to continue.")
+        .set("The authentication code is required", "The authentication code is required")
+        .set("Code", "Code")
+        .set("Verification", "Verification")
+        .set("Please enter your confirmation code.", "Please enter your confirmation code.")
+        .set("Waiting for varification.", "Waiting for varification.")
+        .set("Matching code", "Matching code");
     },[contextState.contentStore]);
 
     useEffect(() => {

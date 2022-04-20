@@ -303,6 +303,11 @@ class Server extends BaseServer {
      */
     login(login: LoginResponse){
         this.appSettings.setLoginMode(login.mode);
+
+        if (login.confirmatinCode) {
+            this.subManager.emitLoginConfCodeChanged(login.confirmatinCode)
+        }
+
         this.contentStore.reset();
     }
 

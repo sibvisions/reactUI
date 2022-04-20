@@ -3,7 +3,7 @@ import AppSettings from "./AppSettings";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore"
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
-import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
+import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, LoginModeType, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
@@ -137,6 +137,10 @@ export class SubscriptionManager {
     cssVersionSubscriber:Function = () => {};
 
     themeSubscriber = new Map<string, Function>();
+
+    loginModeSubscriber:Function = () => {};
+
+    loginConfCodeSubscriber: Function = () => {};
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -423,6 +427,14 @@ export class SubscriptionManager {
         this.themeSubscriber.set(id, fn);
     }
 
+    subscribeToLoginMode(fn:Function) {
+        this.loginModeSubscriber = fn;
+    }
+
+    subscribeToLoginConfCode(fn:Function) {
+        this.loginConfCodeSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -629,6 +641,14 @@ export class SubscriptionManager {
         this.themeSubscriber.delete(id);
     }
 
+    unsubscribeFromLoginMode() {
+        this.loginModeSubscriber = () => {};
+    }
+
+    unsubscribeFromLoginConfCode() {
+        this.loginConfCodeSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param screenName 
@@ -805,5 +825,13 @@ export class SubscriptionManager {
 
     emitThemeChanged(theme:string) {
         this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
+    }
+
+    emitLoginModeChanged(loginMode:LoginModeType) {
+        this.loginModeSubscriber.apply(undefined, [loginMode]);
+    }
+
+    emitLoginConfCodeChanged(confCode:string) {
+        this.loginConfCodeSubscriber.apply(undefined, [confCode]);
     }
 }

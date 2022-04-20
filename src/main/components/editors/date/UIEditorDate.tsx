@@ -3,7 +3,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
 import { useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../../hooks";
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { sendSetValues,
          sendOnLoadCallback, 
          parsePrefSize, 
@@ -223,7 +223,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
             inputDate.getTime(),
             props.context.server, 
             lastValue.current,
-            props.topbar)
+            props.topbar,
+            props.rowNumber)
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
