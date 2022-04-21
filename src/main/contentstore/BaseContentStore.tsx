@@ -16,6 +16,7 @@ import { IPanel } from "../../moduleIndex";
 
 export type ActiveScreen = {
     name: string,
+    id: string,
     className?: string
     popup?: boolean
 }
@@ -420,17 +421,26 @@ export default abstract class BaseContentStore {
      * @param windowName - the name of the window
      * @returns the built window
      */
-     getWindow(windowName: string) {
-        const windowData = this.getComponentByName(windowName);
-        if (this.replaceScreens.has(windowName)) {
-            return this.replaceScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+     getWindow(window: ActiveScreen) {
+         let windowData: BaseComponent | undefined;
+        if (window.popup) {
+            windowData = this.getComponentById(window.id);
+
+        }
+        else {
+            windowData = this.getComponentByName(window.name);
+        }
+
+        if (this.replaceScreens.has(window.name)) {
+            return this.replaceScreens.get(window.name)?.apply(undefined, [{ screenName: window.name }]);
         }
         else if (windowData) {
             return componentHandler(windowData, this);
         }
-        else if (this.customScreens.has(windowName)) {
-            return this.customScreens.get(windowName)?.apply(undefined, [{ screenName: windowName }]);
+        else if (this.customScreens.has(window.name)) {
+            return this.customScreens.get(window.name)?.apply(undefined, [{ screenName: window.name }]);
         }
+
     }
 
     /**

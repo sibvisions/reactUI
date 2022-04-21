@@ -181,7 +181,7 @@ class API {
         if (this.#contentStore.customScreens.has(menuItem.id)) {
             const menuGroup = (this.#contentStore as ContentStore).menuItems.get(menuItem.menuGroup);
             const itemAction = () => {
-                this.#contentStore.setActiveScreen({ name: menuItem.id, className: undefined });
+                this.#contentStore.setActiveScreen({ name: menuItem.id, id: "", className: undefined });
                 this.history?.push("/home/" + menuItem.id);
                 return Promise.resolve(true);
             };
@@ -257,7 +257,7 @@ class API {
     addToolbarItem(toolbarItem: CustomToolbarItem) {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
-                this.#contentStore.setActiveScreen({name: toolbarItem.id, className: undefined });
+                this.#contentStore.setActiveScreen({name: toolbarItem.id, id: "", className: undefined });
                 this.history?.push("/home/" + toolbarItem.id);
                 return Promise.resolve(true);
             }

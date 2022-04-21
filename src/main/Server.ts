@@ -344,7 +344,7 @@ class Server extends BaseServer {
                         (this.contentStore as ContentStore).navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
                         this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
                     }
-                    this.contentStore.setActiveScreen({ name: genericData.componentId, className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
 
                     if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
                         this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
@@ -564,13 +564,13 @@ class Server extends BaseServer {
         if (!contentData.update) {
             if(contentData.changedComponents && contentData.changedComponents.length) {
                 workScreen = contentData.changedComponents[0] as IPanel
-                this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
         }
         else {
             workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
             if (workScreen.content_modal_) {
-                this.contentStore.setActiveScreen({ name: workScreen.name, className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
         }
     }

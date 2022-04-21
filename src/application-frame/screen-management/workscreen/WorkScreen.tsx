@@ -16,8 +16,8 @@ const WorkScreen: FC = () => {
     const buildWindow = useCallback((screens:ActiveScreen[]):Array<ReactElement> => {
         let tempArray: Array<ReactElement> = [];
         screens.forEach(screen => {
-            if (context.contentStore.getWindow(screen.name)) {
-                tempArray.push(context.contentStore.getWindow(screen.name));
+            if (context.contentStore.getWindow(screen)) {
+                tempArray.push(context.contentStore.getWindow(screen));
             }
         });
         return tempArray
