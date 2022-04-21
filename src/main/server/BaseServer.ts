@@ -421,8 +421,20 @@ export default abstract class BaseServer {
      async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
 
-        if (changedProvider.insertEnabled !== undefined || changedProvider.updateEnabled !== undefined || changedProvider.deleteEnabled !== undefined || changedProvider.readOnly) {
-            this.contentStore.updateMetaData(screenName, changedProvider.dataProvider, changedProvider.insertEnabled, changedProvider.updateEnabled, changedProvider.deleteEnabled, changedProvider.readOnly);
+        if (changedProvider.insertEnabled !== undefined 
+            || changedProvider.updateEnabled !== undefined 
+            || changedProvider.deleteEnabled !== undefined 
+            || changedProvider.readOnly !== undefined
+            || changedProvider.changedColumns !== undefined) {
+            this.contentStore.updateMetaData(
+                screenName, 
+                changedProvider.dataProvider, 
+                changedProvider.insertEnabled, 
+                changedProvider.updateEnabled, 
+                changedProvider.deleteEnabled, 
+                changedProvider.readOnly,
+                changedProvider.changedColumns
+            );
         }
         if (changedProvider.deletedRow !== undefined) {
             const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;

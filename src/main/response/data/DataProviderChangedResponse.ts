@@ -1,6 +1,14 @@
 /** Other imports */
 import { BaseResponse } from "..";
 
+export type IChangedColumns = {
+    name: string
+    label?: string
+    readonly?: boolean
+    movable?: boolean
+    sortable?: boolean
+}
+
 /** Interface for DataProviderChangedResponse */
 interface DataProviderChangedResponse extends BaseResponse{
     dataProvider: string,
@@ -14,6 +22,7 @@ interface DataProviderChangedResponse extends BaseResponse{
     selectedColumn?: string,
     changedValues?: any[],
     changedColumnNames?: string[],
+    changedColumns?: IChangedColumns[]
     deletedRow?: number
 }
 export default DataProviderChangedResponse

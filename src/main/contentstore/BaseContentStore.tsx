@@ -13,6 +13,7 @@ import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelpe
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { componentHandler } from "../factories/UIFactory";
 import { IPanel } from "../../moduleIndex";
+import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
 
 export type ActiveScreen = {
     name: string,
@@ -699,7 +700,7 @@ export default abstract class BaseContentStore {
      * @param updateEnabled - true, if update is enabled on the dataprovider
      * @param deleteEnabled - true, if delete is enabled on the dataprovider
      */
-    updateMetaData(screenName: string, dataProvider: string, insertEnabled?: boolean, updateEnabled?: boolean, deleteEnabled?: boolean, readOnly?: boolean) {
+    updateMetaData(screenName: string, dataProvider: string, insertEnabled?: boolean, updateEnabled?: boolean, deleteEnabled?: boolean, readOnly?: boolean, changedColumns?:IChangedColumns[]) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const metaData = getMetaData(screenName, dataProvider, this, undefined);
         let changed = false;
@@ -723,6 +724,33 @@ export default abstract class BaseContentStore {
             if (readOnly !== undefined && metaData.readOnly !== readOnly) {
                 metaData.readOnly = readOnly;
                 changed = true;
+            }
+
+            if (changedColumns) {
+                changedColumns.forEach(changedColumn => {
+                    const currentCol = metaData.columns.find(col => col.name === changedColumn.name);
+                    if (currentCol) {
+                        if (changedColumn.label !== undefined) {
+                            currentCol.label = changedColumn.label;
+                            changed = true;
+                        }
+
+                        if (changedColumn.readonly !== undefined) {
+                            currentCol.readonly = changedColumn.readonly;
+                            changed = true;
+                        }
+
+                        if (changedColumn.movable !== undefined) {
+                            currentCol.movable = changedColumn.movable;
+                            changed = true;
+                        }
+
+                        if (changedColumn.sortable !== undefined) {
+                            currentCol.sortable = changedColumn.sortable;
+                            changed = true;
+                        }
+                    } 
+                })
             }
         }
 
