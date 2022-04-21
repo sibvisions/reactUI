@@ -1,12 +1,12 @@
 import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as _ from 'underscore'
-import Menu from "../../menu/menu";
+import Menu from "../../menu/Menu";
 import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../../../main/hooks";
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../../../main/util";
 import { appContext } from "../../../main/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
-import CorporateMenu from "../../menu/corporateMenu";
+import CorporateMenu from "../../menu/CorporateMenu";
 import { MenuVisibility } from "../../../main/AppSettings";
 import { ApplicationSettingsResponse } from "../../../main/response";
 import { useParams } from "react-router";
