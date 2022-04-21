@@ -4,7 +4,7 @@ import React, { CSSProperties, FC, useContext, useState } from "react";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";
-import { createLoginRequest, useConstants } from "../../moduleIndex";
+import { createCancelLoginRequest, createLoginRequest, useConstants } from "../../moduleIndex";
 import { LoginContext } from "./Login";
 import { ILoginForm } from "./LoginForm";
 
@@ -70,7 +70,10 @@ const MFAText:FC<ILoginForm> = (props) => {
                         } as CSSProperties}
                         label={translations.get("Cancel")} 
                         icon="pi pi-times" 
-                        onClick={() => props.changeLoginMode("default")} />
+                        onClick={() => {
+                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
+                            props.changeLoginMode("default")
+                        }} />
                     <Button 
                         type="submit" 
                         className="lost-password-button rc-button"

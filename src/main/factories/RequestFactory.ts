@@ -35,6 +35,7 @@ import { StartupRequest,
          CloseContentRequest,
          DispatchActionRequest,
          BoundsRequest} from "../request";
+import CancelLoginRequest from "../request/login/CancelLoginRequest";
 
 /**
  * Returns the ClientId from the local storage
@@ -555,6 +556,13 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
         height: values?.height,
         x: values?.x,
         y: values?.y,
+    }
+    return req;
+}
+
+export const createCancelLoginRequest = (values?: CancelLoginRequest) => {
+    const req:CancelLoginRequest = {
+        clientId: values?.clientId || getClientId()
     }
     return req;
 }

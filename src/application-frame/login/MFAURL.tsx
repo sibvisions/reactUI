@@ -1,9 +1,10 @@
-import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { CSSProperties, FC, useLayoutEffect, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
-import { useConstants } from "../../moduleIndex";
-import { LoginContext } from "./Login";
+import { createCancelLoginRequest, useConstants } from "../../moduleIndex";
 import { ILoginForm } from "./LoginForm";
+import { showTopBar } from "../../main/components/topbar/TopBar";
+import { REQUEST_KEYWORDS } from "../../main/request";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication
@@ -50,7 +51,10 @@ const MFAURL:FC<ILoginForm> = (props) => {
                         } as CSSProperties}
                         label={translations.get("Cancel")} 
                         icon="pi pi-times" 
-                        onClick={() => props.changeLoginMode("default")} />
+                        onClick={() => {
+                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
+                            props.changeLoginMode("default")
+                        }} />
                 </div>
             </div>
         </div>

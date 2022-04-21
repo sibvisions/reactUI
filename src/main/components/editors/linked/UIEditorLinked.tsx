@@ -146,7 +146,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 setText("");
             }
         }
-        else {
+        else if (lastValue.current !== props.selectedRow) {
             setText(props.selectedRow);
         }
         lastValue.current = props.selectedRow;
@@ -306,7 +306,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                      *          foundData = ID, ACADEMIC_TITLE
                      * foundData columnNames have to be adjusted to linkReference
                      */
-                    linkReference.referencedColumnNames.forEach((refCol, i) => newVal[linkReference.columnNames[i]] = foundData[0][refCol])
+                    linkReference.referencedColumnNames.forEach((refCol, i) => newVal[linkReference.columnNames[i]] = foundData[0][refCol]);
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
@@ -336,7 +336,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      * @returns the suggestions to display at the dropdownlist
      */
     const buildSuggestions = (values:any) => {
-        let suggestions:any = []
+        let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
                 let text : string | string[] = ""

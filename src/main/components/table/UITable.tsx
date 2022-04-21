@@ -835,7 +835,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                         />
                     }
                     else {
-                        //console.log(rowData)
                         return <CellEditor
                             pk={_.pick(rowData, primaryKeys)}
                             screenName={screenName}
