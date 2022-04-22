@@ -1,7 +1,7 @@
 {
   "name": "reactUI",
   "homepage": ".",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "main": "dist/moduleIndex.js",
   "types": "dist/src/moduleIndex.d.ts",
