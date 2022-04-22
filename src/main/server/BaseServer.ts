@@ -9,7 +9,7 @@ import ContentStoreV2 from "../contentstore/ContentStoreV2";
 import { createFetchRequest } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
 import { REQUEST_KEYWORDS } from "../request";
-import { ApplicationMetaDataResponse, BaseResponse, DataProviderChangedResponse, DeviceStatusResponse, FetchResponse, MetaDataResponse, SessionExpiredResponse } from "../response";
+import { ApplicationMetaDataResponse, BaseResponse, CloseScreenResponse, DataProviderChangedResponse, DeviceStatusResponse, FetchResponse, MetaDataResponse, RESPONSE_NAMES, SessionExpiredResponse } from "../response";
 import { RequestQueueMode } from "../Server";
 import { SubscriptionManager } from "../SubscriptionManager";
 
@@ -255,6 +255,8 @@ export default abstract class BaseServer {
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    abstract closeScreen(closeScreenData: CloseScreenResponse):void
+
     abstract dataResponseMap: Map<string, Function>;
 
     /** A Map which checks which function needs to be called when a response is received */
@@ -264,17 +266,21 @@ export default abstract class BaseServer {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses)) {
-            // responses.sort((a, b) => {
-            //     if (a.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && b.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
-            //         return -1;
-            //     }
-            //     else if (b.name === RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED && a.name !== RESPONSE_NAMES.DAL_DATA_PROVIDER_CHANGED) {
-            //         return 1;
-            //     }
-            //     else {
-            //         return 0;
-            //     }
-            // });
+            responses.sort((a, b) => {
+                if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
+                    return -1;
+                }
+                else if (b.name === RESPONSE_NAMES.CLOSE_SCREEN && a.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            });
+
+            if (responses.length && responses[0].name === RESPONSE_NAMES.CLOSE_SCREEN) {
+                this.closeScreen(responses[0] as CloseScreenResponse)
+            }
 
             for (const [, response] of responses.entries()) {
                 const mapper = this.dataResponseMap.get(response.name);

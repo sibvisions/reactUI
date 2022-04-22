@@ -230,7 +230,7 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
-        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        //.set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))        
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))

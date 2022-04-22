@@ -6,7 +6,7 @@ import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreV2 from "../contentstore/ContentStoreV2";
 import { REQUEST_KEYWORDS } from "../request";
-import { RESPONSE_NAMES } from "../response";
+import { CloseScreenResponse, RESPONSE_NAMES } from "../response";
 import UIResponse from "../response/ui/UIResponse";
 import { SubscriptionManager } from "../SubscriptionManager";
 import BaseServer from "./BaseServer";
@@ -166,5 +166,9 @@ export default class ServerV2 extends BaseServer {
                 this.subManager.emitActiveScreens();
             }
         }
+    }
+
+    closeScreen(closeScreenData: CloseScreenResponse): void {
+        
     }
 }
