@@ -269,7 +269,12 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
                         if (data[props.cellEditor.displayReferencedColumnName]) {
-                            return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                            if (typeof data[props.cellEditor.displayReferencedColumnName] !== "string") {
+                                data[props.cellEditor.displayReferencedColumnName].toString().includes(inputVal);
+                            }
+                            else {
+                                return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                            }
                         }
                         else {
                             return false;
@@ -277,7 +282,12 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     }
                     else {
                         if (data[refColNames[index]]) {
-                            return data[refColNames[index]].includes(inputVal);
+                            if (typeof data[refColNames[index]] !== "string") {
+                                data[refColNames[index]].toString().includes(inputVal);
+                            }
+                            else {
+                                return data[refColNames[index]].includes(inputVal);
+                            }
                         }
                         else {
                             return false;

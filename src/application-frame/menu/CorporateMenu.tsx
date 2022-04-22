@@ -4,7 +4,7 @@ import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
 import { MenuItem } from "primereact/menuitem";
 import { useConstants, useMenuItems, useScreenTitle } from "../../main/hooks";
-import { IMenu, ProfileMenu } from "./menu";
+import { IMenu, ProfileMenu } from "./Menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/comp-props";
 import { showTopBar } from "../../main/components/topbar/TopBar";
