@@ -5,6 +5,7 @@ import ContentStore from "./contentstore/ContentStore"
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, LoginModeType, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
+import { MFAURLType } from "./response/login/LoginResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
@@ -140,7 +141,9 @@ export class SubscriptionManager {
 
     loginModeSubscriber:Function = () => {};
 
-    loginConfCodeSubscriber: Function = () => {};
+    MFAWaitSubscriber: Function = () => {};
+
+    MFAURLSubscriber: Function = () => {};
 
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
@@ -431,8 +434,12 @@ export class SubscriptionManager {
         this.loginModeSubscriber = fn;
     }
 
-    subscribeToLoginConfCode(fn:Function) {
-        this.loginConfCodeSubscriber = fn;
+    subscribeToMFAWait(fn:Function) {
+        this.MFAWaitSubscriber = fn;
+    }
+
+    subscribeToMFAURL(fn:Function) {
+        this.MFAURLSubscriber = fn;
     }
 
     /**
@@ -645,8 +652,12 @@ export class SubscriptionManager {
         this.loginModeSubscriber = () => {};
     }
 
-    unsubscribeFromLoginConfCode() {
-        this.loginConfCodeSubscriber = () => {};
+    unsubscribeFromMFAWait() {
+        this.MFAWaitSubscriber = () => {};
+    }
+
+    unsubscribeFromMFAURL() {
+        this.MFAURLSubscriber = () => {};
     }
 
     /**
@@ -831,7 +842,11 @@ export class SubscriptionManager {
         this.loginModeSubscriber.apply(undefined, [loginMode]);
     }
 
-    emitLoginConfCodeChanged(confCode:string) {
-        this.loginConfCodeSubscriber.apply(undefined, [confCode]);
+    emitMFAWaitChanged(code: string, timeout: number) {
+        this.MFAWaitSubscriber.apply(undefined, [code, timeout]);
+    }
+
+    emitMFAURLChanged(link: string|MFAURLType, timeout:number) {
+        this.MFAURLSubscriber.apply(undefined, [link, timeout]);
     }
 }

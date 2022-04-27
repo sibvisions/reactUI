@@ -1,7 +1,7 @@
 :root {
   --font-family: 'Roboto', sans-serif;
   --font-size: 14px;
-  --login-form-top-bottom-padding: 30px;
+  --login-form-top-bottom-padding: 40px;
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
   --std-header-height: 70px;

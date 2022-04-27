@@ -22,7 +22,7 @@ export interface IGauge extends BaseComponent {
 /** 
  * enum for different gauge styles 
  */
-enum GAUGE_STYLES {
+export enum GAUGE_STYLES {
     STYLE_SPEEDOMETER = 0,
     STYLE_METER = 1,
     STYLE_RING = 2,
@@ -142,7 +142,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         } else if(gauge.current) {
             gauge.current.update({
                 id: name,
-                value: data, 
+                value: props.id === "login-gauge" ? baseProps.data : data, 
                 title,
                 label: columnLabel, 
                 max: maxValue,
@@ -150,8 +150,6 @@ const UIGauge: FC<IGauge> = (baseProps) => {
             })
         }
     });
-
-
 
     return (
         <>
@@ -161,7 +159,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
                 className="ui-gauge" 
-                style={layoutStyle} 
+                style={props.id === "login-gauge" ? { height: "120px", width: "120px" } : layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
                 data-pr-position="left"
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}>

@@ -6,6 +6,7 @@ import { LoginContext } from "./Login";
 import { ILoginForm } from "./LoginForm";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";
+import UIGauge, { GAUGE_STYLES } from "../../main/components/gauge/UIGauge";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication
@@ -18,14 +19,31 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** State of the email field */
     const [code, setCode] = useState<string>("");
 
+    /** State of the timeout until the wait is invalid */
+    const [loginTimeout, setLoginTimeout] = useState<number>(300);
+
+    /** State of the lapsed time during the wait */
+    const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToLoginConfCode((confCode:string) => setCode(confCode));
+        context.subscriptions.subscribeToMFAWait((code:string, timeout:number) => {
+            setCode(code);
+            setLoginTimeout(timeout / 1000);
+            setRemainingTime(timeout / 1000);
+        });
 
-        return () => context.subscriptions.unsubscribeFromLoginConfCode();
-    }, [])
+        const intervalId = setInterval(() => {
+            setRemainingTime(prevTime => prevTime - 1);
+          }, 1000);
+
+        return () => {
+            context.subscriptions.unsubscribeFromMFAWait()
+            clearInterval(intervalId);
+        };
+    }, []);
 
     return (
         <div className="login-form">
@@ -33,18 +51,35 @@ const MFAWait:FC<ILoginForm> = (props) => {
                 <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
             </div>
             <div className="p-fluid">
-                <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
-                    {translations.get("Verification")}
+                <div className="p-field" style={{ fontSize: "1.5rem", fontWeight: "bold" }} >
+                    {translations.get("Waiting for verification.")}
                 </div>
-                <div className="p-field" style={{ marginBottom: "2rem" }} >
-                    {translations.get("Waiting for varification.")}
+                <div className="p-field wait-code-container" >
+                    <UIGauge
+                        id="login-gauge"
+                        name="login-gauge-wait"
+                        className="ui-gauge"
+                        constraints=""
+                        title=""
+                        gaugeStyle={GAUGE_STYLES.STYLE_RING}
+                        minWarningValue={loginTimeout * 0.375}
+                        maxWarningValue={loginTimeout + 1}
+                        minErrorValue={loginTimeout * 0.125}
+                        maxErrorValue={loginTimeout + 2}
+                        maxValue={loginTimeout}
+                        data={remainingTime}
+                        dataBook=""
+                        columnLabel={remainingTime.toString()} />
+                    <div className="wait-code-display">
+                        <div className="p-field" style={{ textAlign: "center" }} >
+                            {translations.get("Matching code")}
+                        </div>
+                        <div style={{ fontSize: "1rem", fontWeight: "bold", textAlign: "center" }} >
+                            {code}
+                        </div>
+                    </div>
                 </div>
-                <div className="p-field" style={{ textAlign: "center" }} >
-                    {translations.get("Matching code")}
-                </div>
-                <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold", textAlign: "center", marginBottom: "2rem" }} >
-                    {code}
-                </div>
+
                 <div className="change-password-button-wrapper" style={{ justifyContent: "flex-end" }}>
                     <Button 
                         type="button" 

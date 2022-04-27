@@ -97,7 +97,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
                                 <Button
                                     type="button"
-                                    className="lost-password-button rc-button"
+                                    className="lost-password-button rc-button mouse-border"
                                     style={{
                                         '--background': btnBgd,
                                         '--hoverBackground': tinycolor(btnBgd).darken(5).toString()

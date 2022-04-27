@@ -306,8 +306,16 @@ class Server extends BaseServer {
     login(login: LoginResponse){
         this.appSettings.setLoginMode(login.mode);
 
-        if (login.confirmatinCode) {
-            this.subManager.emitLoginConfCodeChanged(login.confirmatinCode)
+        if (login.mode === "mFWait") {
+            if (login.confirmationCode && login.timeout) {
+                this.subManager.emitMFAWaitChanged(login.confirmationCode, login.timeout);
+            }
+        }
+
+        if (login.mode === "mFURL") {
+            if (login.link && login.timeout) {
+                this.subManager.emitMFAURLChanged(login.link, login.timeout)
+            }
         }
 
         this.contentStore.reset();
@@ -320,7 +328,7 @@ class Server extends BaseServer {
      */
     generic(genericData: GenericResponse) {
         if (genericData.changedComponents && genericData.changedComponents.length) {
-            this.contentStore.updateContent(genericData.changedComponents);
+            this.contentStore.updateContent(genericData.changedComponents, false);
         }
         if (!genericData.update) {
             let workScreen:IPanel|undefined
@@ -536,7 +544,7 @@ class Server extends BaseServer {
             if (appSettings.desktop[0].className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
                 this.appSettings.setDesktopPanel(appSettings.desktop[0]);
             }
-            this.contentStore.updateContent(appSettings.desktop);
+            this.contentStore.updateContent(appSettings.desktop, true);
         }
         this.subManager.emitAppSettings(appSettings);
     }
@@ -559,7 +567,7 @@ class Server extends BaseServer {
     content(contentData:ContentResponse) {
         let workScreen:IPanel|undefined
         if (contentData.changedComponents && contentData.changedComponents.length) {
-            this.contentStore.updateContent(contentData.changedComponents);
+            this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
             if(contentData.changedComponents && contentData.changedComponents.length) {

@@ -158,8 +158,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
         .set("Code", "Code")
         .set("Verification", "Verification")
         .set("Please enter your confirmation code.", "Please enter your confirmation code.")
-        .set("Waiting for varification.", "Waiting for varification.")
-        .set("Matching code", "Matching code");
+        .set("Waiting for verification.", "Waiting for verification.")
+        .set("Matching code", "Matching code")
+        .set("Confirm", "Confirm");
     },[contextState.contentStore]);
 
     useEffect(() => {

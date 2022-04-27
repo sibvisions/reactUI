@@ -159,7 +159,7 @@ export default class ServerV2 extends BaseServer {
     handleUIResponse(uiData:UIResponse) {
         let firstComp:IPanel|undefined
         if(uiData.changedComponents && uiData.changedComponents.length) {
-            this.contentStore.updateContent(uiData.changedComponents);
+            this.contentStore.updateContent(uiData.changedComponents, false);
             firstComp = uiData.changedComponents[0] as IPanel;
             if (firstComp.className === COMPONENT_CLASSNAMES.MOBILELAUNCHER) {
                 this.contentStore.activeScreens = [{ name: firstComp.name, id: firstComp.id, className: firstComp.className }]

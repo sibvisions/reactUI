@@ -44,10 +44,10 @@ const MFAText:FC<ILoginForm> = (props) => {
                 <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
             </div>
             <div className="p-fluid">
-                <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
+                <div className="p-field" style={{ fontSize: "1.5rem", fontWeight: "bold" }} >
                     {translations.get("Verification")}
                 </div>
-                <div className="p-field" style={{ marginBottom: "2rem" }}>
+                <div className="p-field" style={{ marginBottom: "1rem" }}>
                     {translations.get("Please enter your confirmation code.")}
                 </div>
                 <div className="p-field p-float-label p-input-icon-left" style={{ marginBottom: "2rem" }}>
@@ -81,7 +81,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Request")} 
+                        label={translations.get("Confirm")} 
                         icon="pi pi-send" />
                 </div>
             </div>

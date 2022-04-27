@@ -45,8 +45,14 @@ export default abstract class BaseContentStore {
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
 
+    /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
+    desktopContent = new Map<string, BaseComponent>();
+
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
     removedContent = new Map<string, BaseComponent>();
+
+    /** A Map which stores removed, but not deleted components of the desktop-panel, the key is the components id and the value the component */
+    removedDesktopContent = new Map<string, BaseComponent>();
 
     /** A Map which stores custom-screens made by the user, the key is the components title and the value a function to build the custom-screen*/
     customScreens = new Map<string, Function>();
@@ -115,7 +121,7 @@ export default abstract class BaseContentStore {
      * @returns the data/properties of a component based on the name
      */
      getComponentByName(componentName: string): BaseComponent | undefined {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         const componentEntries = mergedContent.entries();
         let foundEntry:BaseComponent|undefined;
         let entry = componentEntries.next();
@@ -135,7 +141,7 @@ export default abstract class BaseContentStore {
      */
     getComponentById(componentId?: string): BaseComponent | undefined {
         if (componentId) {
-            const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+            const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
             const componentEntries = mergedContent.entries();
             let foundEntry: BaseComponent | undefined;
             let entry = componentEntries.next();
@@ -158,7 +164,7 @@ export default abstract class BaseContentStore {
      */
     getParent(parentId:string): BaseComponent|undefined {
         let parent:BaseComponent|undefined = undefined
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         if (parentId) {
             parent = mergedContent.get(parentId);
         }
@@ -170,8 +176,8 @@ export default abstract class BaseContentStore {
      * @param id - the id of the component
      */
      getExistingComponent(id:string) {
-        return this.flatContent.get(id) || this.replacedContent.get(id) || 
-               this.removedContent.get(id) || this.removedCustomComponents.get(id);
+        return this.flatContent.get(id) || this.replacedContent.get(id) || this.desktopContent.get(id) || 
+               this.removedContent.get(id) || this.removedCustomComponents.get(id) ||this.removedDesktopContent.get(id);
     }
 
     /**
@@ -179,7 +185,7 @@ export default abstract class BaseContentStore {
      * @param id - the id of the component
      */
      isRemovedComponent(id:string) {
-        return this.removedContent.has(id) || this.removedCustomComponents.has(id);
+        return this.removedContent.has(id) || this.removedCustomComponents.has(id) || this.removedDesktopContent.has(id);
     }
 
     /**
@@ -334,7 +340,7 @@ export default abstract class BaseContentStore {
         return self.indexOf(value) === index;
     }
 
-    abstract updateContent(componentsToUpdate: Array<BaseComponent>): void;
+    abstract updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean): void;
 
     abstract setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean): void;
 
@@ -456,7 +462,7 @@ export default abstract class BaseContentStore {
      * @returns the component id of a screen for a component
      */
      getScreenName(id: string, dataProvider?:string) {
-        let comp: BaseComponent | undefined = this.flatContent.get(id);
+        let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
         if (comp) {
             while (comp?.parent) {
                 if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
@@ -466,7 +472,7 @@ export default abstract class BaseContentStore {
                     return dataProvider ? dataProvider.split("/")[1] : comp.name;
                 }
 
-                comp = this.flatContent.get(comp.parent);
+                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }
         return comp?.name

@@ -84,7 +84,7 @@ export default class ContentStore extends BaseContentStore {
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
      */
-    updateContent(componentsToUpdate: Array<BaseComponent>) {
+    updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
         /** 
@@ -109,8 +109,14 @@ export default class ContentStore extends BaseContentStore {
                     /** If the new component is in removedContent, either add it to flatContent or replacedContent if it is custom or not*/
                     if (this.isRemovedComponent(newComponent.id)) {
                         if (!isCustom) {
-                            this.removedContent.delete(newComponent.id);
-                            this.flatContent.set(newComponent.id, existingComponent);
+                            if (desktop) {
+                                this.removedDesktopContent.delete(newComponent.id);
+                                this.desktopContent.set(newComponent.id, existingComponent);
+                            }
+                            else {
+                                this.removedContent.delete(newComponent.id);
+                                this.flatContent.set(newComponent.id, existingComponent);
+                            }
                         }
                         else {
                             this.removedCustomComponents.delete(newComponent.id);
@@ -138,8 +144,14 @@ export default class ContentStore extends BaseContentStore {
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
                         removeChildren(newComponent.id, existingComponent.className);
-                        this.flatContent.delete(newComponent.id);
-                        this.removedContent.set(newComponent.id, existingComponent);
+                        if (desktop) {
+                            this.desktopContent.delete(newComponent.id);
+                            this.removedDesktopContent.set(newComponent.id, existingComponent);
+                        }
+                        else {
+                            this.flatContent.delete(newComponent.id);
+                            this.removedContent.set(newComponent.id, existingComponent);
+                        }
                     }
                     else {
                         removeChildren(newComponent.id, existingComponent.className, true);
@@ -150,7 +162,9 @@ export default class ContentStore extends BaseContentStore {
 
                 if (newComponent["~destroy"]) {
                     this.flatContent.delete(newComponent.id);
+                    this.desktopContent.delete(newComponent.id);
                     this.removedContent.delete(newComponent.id);
+                    this.removedDesktopContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
                 }
             }
@@ -174,7 +188,12 @@ export default class ContentStore extends BaseContentStore {
             if (!existingComponent) {
                 if (!isCustom) {
                     if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
-                        this.flatContent.set(newComponent.id, newComponent);
+                        if (desktop) {
+                            this.desktopContent.set(newComponent.id, newComponent);
+                        }
+                        else {
+                            this.flatContent.set(newComponent.id, newComponent);
+                        }
                     }
                 }
                 else {
@@ -253,7 +272,7 @@ export default class ContentStore extends BaseContentStore {
      * @param id - the id of the component
      */
     getChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
