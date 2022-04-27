@@ -362,6 +362,12 @@ export default abstract class BaseServer {
                     formattedRecords[index] = formattedRecords[index] || {};
                     formattedRecords[index][componentId] = r.reduce<Record<string, any>>((agg, c, index) => {
                         agg[fetchData.columnNames[index]] = format[Math.max(0, Math.min(c, format.length - 1))];
+
+                        if (index === r.length - 1 && fetchData.columnNames.length > r.length) {
+                            for (let i =  index; i < fetchData.columnNames.length; i++) {
+                                agg[fetchData.columnNames[i]] = format[Math.max(0, Math.min(c, format.length - 1))];
+                            }
+                        }
                         return agg;
                     }, {})
                 });

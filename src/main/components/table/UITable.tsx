@@ -817,6 +817,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             dataRow: props.dataBook,
                             columnName: colName,
                             cellEditor_editable_: true,
+                            cellFormatting: rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName],
                             editorStyle: { width: "100%", height: "100%" },
                             autoFocus: true,
                             rowIndex: () => tableInfo.rowIndex,

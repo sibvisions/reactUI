@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef } from "react";
+import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { useMouseListener, usePopupMenu } from "../../../hooks";
 import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../comp-props";
@@ -48,6 +48,14 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
+
+    useLayoutEffect(() => {
+        if (props.isCellEditor && wrapRef.current) {
+            if (props.cellFormatting?.background) {
+                (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting.background
+            }
+        }
+    }, [props.cellFormatting])
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value

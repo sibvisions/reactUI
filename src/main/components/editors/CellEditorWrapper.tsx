@@ -7,6 +7,7 @@ import { TopBarContextType } from "../topbar/TopBar";
 import { useEditorConstants, useFetchMissingData } from "../../hooks";
 import { IEditor } from "./IEditor";
 import { isCellEditorReadOnly } from "./text/UIEditorText";
+import { CellFormatting } from "../table/CellEditor";
 
 /** Interface which contains values the CellEditorWrapper passes down to the CellEditor it renders */
 export interface ICellEditorWrapperProps {
@@ -22,6 +23,7 @@ export interface ICellEditorWrapperProps {
     filter?: Function
     isReadOnly: boolean
     rowNumber: number
+    cellFormatting?: CellFormatting
 }
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */
@@ -54,7 +56,8 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             columnMetaData: columnMetaData,
             selectedRow: selectedRow,
             cellStyle: cellStyle,
-            isReadOnly: isReadOnly
+            isReadOnly: isReadOnly,
+            cellFormatting: baseProps.cellFormatting
         }
     );
 }
