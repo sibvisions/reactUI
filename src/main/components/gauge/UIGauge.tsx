@@ -124,7 +124,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                         label: columnLabel, 
                         max: maxValue,
                         size: 300,
-                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                        steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue],
+                        formatValue: props.id === "login-gauge" ? (x) => new Date(x).toISOString().substring(14, 19) : undefined 
                     });
                     break;
                 default:
@@ -146,7 +147,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 title,
                 label: columnLabel, 
                 max: maxValue,
-                steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
+                steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue],
             })
         }
     });

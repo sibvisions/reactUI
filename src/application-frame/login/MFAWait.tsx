@@ -20,7 +20,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     const [code, setCode] = useState<string>("");
 
     /** State of the timeout until the wait is invalid */
-    const [loginTimeout, setLoginTimeout] = useState<number>(300);
+    const [loginTimeout, setLoginTimeout] = useState<number>(300000);
 
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
@@ -31,12 +31,12 @@ const MFAWait:FC<ILoginForm> = (props) => {
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAWait((code:string, timeout:number) => {
             setCode(code);
-            setLoginTimeout(timeout / 1000);
-            setRemainingTime(timeout / 1000);
+            setLoginTimeout(timeout);
+            setRemainingTime(timeout);
         });
 
         const intervalId = setInterval(() => {
-            setRemainingTime(prevTime => prevTime - 1);
+            setRemainingTime(prevTime => prevTime - 1000);
           }, 1000);
 
         return () => {
@@ -69,7 +69,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
                         maxValue={loginTimeout}
                         data={remainingTime}
                         dataBook=""
-                        columnLabel={remainingTime.toString()} />
+                        columnLabel="" />
                     <div className="wait-code-display">
                         <div className="p-field" style={{ textAlign: "center" }} >
                             {translations.get("Matching code")}

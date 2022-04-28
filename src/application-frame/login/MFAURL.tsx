@@ -20,13 +20,13 @@ const MFAURL: FC<ILoginForm> = (props) => {
     const [link, setLink] = useState<MFAURLType | string>({ width: 500, height: 300, url: "", target: "_self" });
 
     /** State of the timeout until the wait is invalid */
-    const [loginTimeout, setLoginTimeout] = useState<number>(300);
+    const [loginTimeout, setLoginTimeout] = useState<number>(300000);
 
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
 
     const iFrameStyle: CSSProperties = useMemo(() => {
-        const style:CSSProperties = {};
+        const style:CSSProperties = { border: "1px solid" };
         if (typeof link === "object") {
             if (link.width) {
                 style.width = link.width + "px";
@@ -55,12 +55,12 @@ const MFAURL: FC<ILoginForm> = (props) => {
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAURL((link: string | MFAURLType, timeout: number) => {
             setLink(link);
-            setLoginTimeout(timeout / 1000);
-            setRemainingTime(timeout / 1000)
+            setLoginTimeout(timeout);
+            setRemainingTime(timeout)
         });
 
         const intervalId = setInterval(() => {
-            setRemainingTime(prevTime => prevTime - 1);
+            setRemainingTime(prevTime => prevTime - 1000);
         }, 1000);
 
         return () => {
@@ -76,7 +76,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
             </div>
             <div className="p-fluid">
                 <div className="p-field url-topper">
-                    <div style={{ fontSize: "1.5rem", fontWeight: "bold" }} >
+                    <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginRight: "2rem" }} >
                         {translations.get("Waiting for verification.")}
                     </div>
                     <UIGauge

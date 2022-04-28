@@ -84,7 +84,7 @@
 }
 
 .login-form-position-wrapper {
-  z-index: 1001;
+  z-index: 1003;
   position: absolute;
 }
 
@@ -102,4 +102,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.rc-glasspane.login-glass {
+  z-index: 1002;
 }

@@ -11,7 +11,6 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
 import Server from "../../../Server";
-import ContentStore from "../../../contentstore/ContentStore";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
 import ServerV2 from "../../../server/ServerV2";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
