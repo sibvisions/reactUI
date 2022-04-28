@@ -254,7 +254,8 @@ const UITable: FC<TableProps> = (baseProps) => {
         selectReq.rowNumber = rowIndex;
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
+        //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
     }, [props.dataBook, props.name, context.server])
 
     /**
@@ -312,7 +313,7 @@ const UITable: FC<TableProps> = (baseProps) => {
 
     /** Creates and returns the selectedCell object */
     const selectedCell = useMemo(() => {
-        if (selectedRow && columnOrder) {
+        if (selectedRow && selectedRow.data && columnOrder) {
             if (selectedRow.selectedColumn) {
                 const newCell = {
                     cellIndex: columnOrder.findIndex(column => column === selectedRow.selectedColumn),
@@ -816,11 +817,12 @@ const UITable: FC<TableProps> = (baseProps) => {
                             dataRow: props.dataBook,
                             columnName: colName,
                             cellEditor_editable_: true,
+                            cellFormatting: rowData.__recordFormats && rowData.__recordFormats[props.name],
                             editorStyle: { width: "100%", height: "100%" },
                             autoFocus: true,
-                            rowIndex: () => tableInfo.rowIndex + firstRowIndex.current,
+                            rowIndex: () => tableInfo.rowIndex,
                             filter: () => {
-                                const currDataRow = providerData[tableInfo.rowIndex + firstRowIndex.current]
+                                const currDataRow = providerData[tableInfo.rowIndex]
                                 return {
                                     columnNames: primaryKeys,
                                     values: primaryKeys.map(pk => currDataRow[pk])
@@ -828,7 +830,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                             },
                             readonly: columnMetaData?.readonly,
                             isCellEditor: true,
-                            cellScreenName: props.dataBook.split("/")[1]
+                            cellScreenName: props.dataBook.split("/")[1],
+                            rowNumber: tableInfo.rowIndex,
+                            colIndex: colIndex
                         }} 
                         />
                     }
@@ -840,9 +844,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
-                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName]}
+                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                             resource={context.server.RESOURCE_URL}
-                            cellId={() => { return { selectedCellId: props.id + "-" + (tableInfo.rowIndex + firstRowIndex.current).toString() + "-" + colIndex.toString() } }}
+                            cellId={() => { return { selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() } }}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
                             selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
                             selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
@@ -850,17 +854,23 @@ const UITable: FC<TableProps> = (baseProps) => {
                             tabNavigationMode={tabNavigationMode}
                             selectedRow={selectedRow}
                             className={className}
-                            readonly={columnMetaData?.readonly}
+                            colReadonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
                             editable={props.editable}
                             startEditing={props.startEditing}
+                            insertEnabled={metaData?.insertEnabled}
+                            updateEnabled={metaData?.updateEnabled}
+                            deleteEnabled={metaData?.deleteEnabled}
+                            dataProviderReadOnly={metaData?.readOnly}
                             stopEditing={() => {
                                 const table = context.contentStore.flatContent.get(id);
                                 if (table) {
                                     (table as TableProps).startEditing = false;
-                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [test]);
+                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
                                 }
-                            }} />
+                            }}
+                            rowNumber={tableInfo.rowIndex}
+                            colIndex={colIndex} />
                     }
                 }
                 }
@@ -1069,6 +1079,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     const selectReq = createSelectRowRequest();
                     selectReq.dataProvider = props.dataBook;
                     selectReq.componentId = props.name;
+                    selectReq.rowNumber = selectedRow && selectedRow.index !== undefined ? selectedRow.index : undefined;
                     showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
                 }
         }

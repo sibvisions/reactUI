@@ -1,4 +1,4 @@
-import ContentStore from "../../ContentStore";
+import BaseContentStore from "../../contentstore/BaseContentStore";
 
 /**
  * Returns the screenId from the navigation-name
@@ -6,7 +6,7 @@ import ContentStore from "../../ContentStore";
  * @param contentStore - the content-store
  * @returns the screenId from the navigation-name
  */
-export function getScreenIdFromNavigation(navigationName:string, contentStore:ContentStore) {
+export function getScreenIdFromNavigation(navigationName:string, contentStore:BaseContentStore) {
     let screenId:string = navigationName;
     for (let [key, value] of contentStore.navigationNames.entries()) {
         if (value === navigationName)

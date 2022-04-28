@@ -1,14 +1,15 @@
 import BaseComponent from "./util/types/BaseComponent";
 import { addCSSDynamically } from "./util";
-import ContentStore from "./ContentStore";
+import ContentStore from "./contentstore/ContentStore";
 import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
+import BaseContentStore from "./contentstore/BaseContentStore";
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
 
 export const appVersion = { version: 1 }
 
 type ApplicationMetaData = {
-    version: string,
     clientId: string,
     langCode: string,
     languageResource: string,
@@ -48,13 +49,17 @@ type AppReadyType = {
 /** The AppSettings stores settings and flags for the application */
 export default class AppSettings {
     /** Contentstore instance */
-    #contentStore:ContentStore
+    #contentStore:BaseContentStore
     /** SubscriptionManager instance */
     #subManager:SubscriptionManager
 
-    constructor(store:ContentStore, subManager:SubscriptionManager) {
+    constructor(store:BaseContentStore, subManager:SubscriptionManager) {
         this.#contentStore = store
         this.#subManager = subManager
+    }
+
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.#contentStore = store;
     }
 
     /** The logo to display when the menu is expanded */
@@ -67,7 +72,7 @@ export default class AppSettings {
     LOGO_LOGIN:string = "/assets/logo_login.png";
 
     /** The current region */
-    locale:string = "de-DE";
+    locale:string = "en-US";
 
     /** The language of the app */
     language:string = "de";
@@ -92,7 +97,6 @@ export default class AppSettings {
 
     /** The application-metadata object */
     applicationMetaData:ApplicationMetaData = { 
-        version: "", 
         clientId: "", 
         langCode: "", 
         languageResource: "", 
@@ -144,7 +148,7 @@ export default class AppSettings {
 
     cssToAddWhenReady:Array<any> = [];
 
-    version:number = 1;
+    loginConfCode:string = "";
 
     /**
      * Sets the menu-mode
@@ -167,6 +171,10 @@ export default class AppSettings {
         if (mode === "changePassword" || mode === "changeOneTimePassword") {
             this.#subManager.emitDialog("change-password", false, false);
         }
+        else {
+            this.#subManager.emitLoginModeChanged(mode);
+        }
+        
     }
 
     /**
@@ -174,7 +182,6 @@ export default class AppSettings {
      * @param appMetaData - The application-metadata
      */
      setApplicationMetaData(appMetaData:ApplicationMetaDataResponse) {
-        this.applicationMetaData.version = appMetaData.version;
         this.applicationMetaData.clientId = appMetaData.clientId;
         this.applicationMetaData.langCode = appMetaData.langCode;
         this.applicationMetaData.languageResource = appMetaData.languageResource;
@@ -317,7 +324,7 @@ export default class AppSettings {
                 break;
         }
 
-        if (this.version === 2) {
+        if (appVersion.version === 2) {
             if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
                 this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                 this.appReady = true;

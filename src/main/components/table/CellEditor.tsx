@@ -115,12 +115,18 @@ interface CellEditor {
     tabNavigationMode: number,
     selectedRow: any,
     className?: string,
-    readonly?: boolean,
+    colReadonly?: boolean,
     tableEnabled?: boolean
-    cellFormatting?: CellFormatting,
+    cellFormatting?: CellFormatting[],
     startEditing?:boolean,
     stopEditing:Function,
-    editable?: boolean
+    editable?: boolean,
+    insertEnabled?: boolean,
+    updateEnabled?: boolean,
+    deleteEnabled?: boolean,
+    dataProviderReadOnly?: boolean
+    rowNumber: number
+    colIndex: number
 }
 
 /**
@@ -147,8 +153,6 @@ export const CellEditor: FC<CellEditor> = (props) => {
 
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
-
-    const metaData = useMetaData(props.screenName, props.dataProvider) as MetaDataResponse|undefined;
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -246,20 +250,33 @@ export const CellEditor: FC<CellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
+    const isEditable = useMemo(() => {
+        if (!props.colReadonly
+            && !props.dataProviderReadOnly 
+            && props.updateEnabled 
+            && props.tableEnabled !== false 
+            && props.editable !== false) {
+            return true;
+        }
+        return false;
+        
+    }, [props.dataProviderReadOnly, props.updateEnabled, props.colReadonly, props.tableEnabled, props.editable, props.cellData]);
+
     let cellStyle:any = { };
     const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
     let cellIcon: IconProps | null = null;
 
-    if (props.cellFormatting) {
-        if(props.cellFormatting.background) {
-            cellStyle.backgroundColor = props.cellFormatting.background;
+    if (props.cellFormatting && props.cellFormatting[props.colIndex]) {
+        console.log(props.cellFormatting)
+        if(props.cellFormatting[props.colIndex].background) {
+            cellStyle.backgroundColor = props.cellFormatting[props.colIndex].background;
             cellClassNames.push('cancel-padding');
         }
-        if(props.cellFormatting.foreground) {
-            cellStyle.color = props.cellFormatting.foreground;
+        if(props.cellFormatting[props.colIndex].foreground) {
+            cellStyle.color = props.cellFormatting[props.colIndex].foreground;
         }
-        if(props.cellFormatting.font) {
-            const font = getFont(props.cellFormatting.font);
+        if(props.cellFormatting[props.colIndex].font) {
+            const font = getFont(props.cellFormatting[props.colIndex].font);
             cellStyle = {
                 ...cellStyle,
                 fontFamily: font ? font.fontFamily : undefined,
@@ -268,8 +285,8 @@ export const CellEditor: FC<CellEditor> = (props) => {
                 fontSize: font ? font.fontSize : undefined
             }
         }
-        if(props.cellFormatting.image) {
-            cellIcon = parseIconData(props.cellFormatting.foreground, props.cellFormatting.image);
+        if(props.cellFormatting[props.colIndex].image) {
+            cellIcon = parseIconData(props.cellFormatting[props.colIndex].foreground, props.cellFormatting[props.colIndex].image);
         }
     }
 
@@ -290,14 +307,6 @@ export const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
-    const isEditable = useMemo(() => {
-        if (metaData && !props.readonly && !metaData.readOnly && metaData.updateEnabled && props.tableEnabled !== false && props.editable !== false) {
-            return true;
-        }
-        return false;
-        
-    }, [metaData, props.readonly, props.tableEnabled, props.editable]);
-
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
         (isEditable) ?
@@ -309,7 +318,7 @@ export const CellEditor: FC<CellEditor> = (props) => {
                     :
                     <div
                         style={cellStyle}
-                        className={cellClassNames.join(' ')}
+                        className={cellClassNames.join(' ') + " " + isEditable}
                         onClick={() => {
                             if (columnMetaData?.cellEditor?.className !== "ImageViewer") {
                                 setWaiting(true);
@@ -329,7 +338,11 @@ export const CellEditor: FC<CellEditor> = (props) => {
                     <div
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
-                        onDoubleClick={() => columnMetaData?.cellEditor?.className !== "ImageViewer" ? setEdit(true) : undefined}>
+                        onDoubleClick={() => {
+                            if (columnMetaData?.cellEditor?.className !== "ImageViewer") {
+                                setEdit(true)
+                            }
+                        }}>
                         {columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED ?
                             <LinkedTableCell {...props} columnMetaData={columnMetaData} icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} />
                             :

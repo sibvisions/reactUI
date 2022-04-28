@@ -1,7 +1,7 @@
 {
   "name": "reactUI",
   "homepage": ".",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "private": true,
   "main": "dist/moduleIndex.js",
   "types": "dist/src/moduleIndex.d.ts",
@@ -41,7 +41,7 @@
     "node-sass": "^6.0.1",
     "primeflex": "^2.0.0-rc.1",
     "primeicons": "^5.0.0",
-    "primereact": "^7.1.0",
+    "primereact": "^7.2.1",
     "query-string": "^6.13.1",
     "quill": "^1.3.7",
     "react": "^17.0.1",
@@ -67,7 +67,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build": "npm version patch && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "noversionbuild": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
     "bundle": "webpack -c ./webpack.config.js",
     "devbundle": "webpack -c ./webpack.config-dev.js",
     "test": "react-scripts test",

@@ -50,11 +50,13 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={() => {
-                sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
-                lastValue.current = pwValue;
-
-                if (props.eventFocusLost) {
-                    onFocusLost(props.name, context.server)
+                if (isCompDisabled(props)) {
+                    sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
+                    lastValue.current = pwValue;
+    
+                    if (props.eventFocusLost) {
+                        onFocusLost(props.name, context.server)
+                    }
                 }
             }}
             tooltip={props.toolTipText}

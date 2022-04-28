@@ -47,6 +47,16 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    useLayoutEffect(() => {
+        if (props.isCellEditor && wrapRef.current) {
+            if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
+                if (props.cellFormatting[props.colIndex].background) {
+                    (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
+                }
+            }
+        }
+    }, [props.cellFormatting])
+
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
         setChecked(props.selectedRow ? props.selectedRow.data : undefined)
@@ -93,7 +103,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                     :
                     {
                         ...props.layoutStyle,
-                        background: props.cellStyle?.background,
+                        //background: props.cellStyle?.background,
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}

@@ -1,7 +1,7 @@
 :root {
   --font-family: 'Roboto', sans-serif;
   --font-size: 18px;
-  --login-form-top-bottom-padding: 30px;
+  --login-form-top-bottom-padding: 40px;
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
   --std-header-height: 70px;
@@ -51,7 +51,8 @@
   --table-header-padding: 0.6rem 1rem;
   --table-data-height: 27px;
   --label-padding: 9px;
-  --menubar-height: 40px; }
+  --menubar-height: 40px;
+  --menuicon-size: 14px; }
 
 body {
   font-size: var(--font-size);
@@ -110,6 +111,9 @@ body {
       width: calc(100% - var(--std-profile-separator-margin));
       margin-left: var(--std-profile-separator-margin); }
 
+.basti_mobile .std-menu .vl {
+  height: var(--std-profile-height); }
+
 .basti_mobile .std-menu .profile-image, .basti_mobile .std-menu .profile-image-null {
   width: var(--std-profile-pic);
   height: var(--std-profile-pic); }
@@ -135,6 +139,10 @@ body {
 
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-icon {
   left: calc(var(--std-menu-width) - 30px); }
+
+.basti_mobile .std-menu .p-menuitem-icon:not(.profile-image) {
+  max-width: var(--menuicon-size);
+  font-size: var(--menuicon-size); }
 
 .basti_mobile .std-menu .fadeout {
   left: var(--std-fadeout-left);
@@ -165,6 +173,9 @@ body {
 .basti_mobile .corp-menu .profile-menu .p-menubar .p-submenu-list {
   width: calc(100% - var(--corp-profile-separator-margin));
   margin-left: var(--corp-profile-separator-margin); }
+
+.basti_mobile .corp-menu .vl {
+  height: var(--corp-profile-height); }
 
 .basti_mobile .corp-menu .profile-image, .basti_mobile .corp-menu .profile-image-null {
   width: var(--corp-profile-pic);

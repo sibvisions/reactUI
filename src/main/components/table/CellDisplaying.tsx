@@ -37,7 +37,8 @@ export function displayEditor(metaData:LengthBasedColumnDescription|NumericColum
             stopCellEditing: stopCellEditing,
             passedKey: passedValues,
             isCellEditor: true,
-            cellScreenName: props.dataProvider.split("/")[1]}} />
+            cellScreenName: props.dataProvider.split("/")[1],
+            rowNumber: props.rowNumber}} />
     }
     return editor
 }

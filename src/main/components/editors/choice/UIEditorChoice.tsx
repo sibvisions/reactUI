@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef } from "react";
+import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { useMouseListener, usePopupMenu } from "../../../hooks";
 import { ICellEditor, IEditor } from "..";
 import { getAlignments } from "../../comp-props";
@@ -48,6 +48,16 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
+
+    useLayoutEffect(() => {
+        if (props.isCellEditor && wrapRef.current) {
+            if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
+                if (props.cellFormatting[props.colIndex].background) {
+                    (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
+                }
+            }
+        }
+    }, [props.cellFormatting])
 
     /**
      * Returns an object of the allowed values as key and the corresponding image as value
@@ -136,8 +146,11 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 setValReq.values = [props.cellEditor.allowedValues[0]];
             }
     
-            if (props.rowIndex !== undefined && props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
-                setValReq.filter = props.filter()
+            if (props.rowIndex !== undefined) {
+                if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
+                    setValReq.filter = props.filter()
+                }
+                setValReq.rowNumber = props.rowIndex()
             }
             showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }
@@ -158,7 +171,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                 :
                 { 
                     ...props.layoutStyle, 
-                    ...props.cellStyle,
+                    //...props.cellStyle,
                     justifyContent: alignments.ha, 
                     alignItems: alignments.va,
                 }

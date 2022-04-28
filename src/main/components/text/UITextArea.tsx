@@ -54,11 +54,13 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
             onChange={event => setText(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={() => {
-                sendSetValue(props.name, text, context.server, lastValue.current, topbar);
-                lastValue.current = text;
-
-                if (props.eventFocusLost) {
-                    onFocusLost(props.name, context.server)
+                if (!isCompDisabled(props)) {
+                    sendSetValue(props.name, text, context.server, lastValue.current, topbar);
+                    lastValue.current = text;
+    
+                    if (props.eventFocusLost) {
+                        onFocusLost(props.name, context.server)
+                    }
                 }
             }}
             tooltip={props.toolTipText}

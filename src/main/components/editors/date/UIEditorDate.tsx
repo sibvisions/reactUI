@@ -3,7 +3,7 @@ import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
 import { useMouseListener, useMultipleEventHandler, usePopupMenu } from "../../../hooks";
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { sendSetValues,
          sendOnLoadCallback, 
          parsePrefSize, 
@@ -17,7 +17,6 @@ import { sendSetValues,
 import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
-import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -172,9 +171,17 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
         setDateValue(props.selectedRow ? new Date(props.selectedRow) : undefined);
-        lastValue.current = props.selectedRow;
         setViewDate(props.selectedRow ? new Date(props.selectedRow) : new Date());
-    },[props.selectedRow])
+        lastValue.current = props.selectedRow;
+        
+    },[props.selectedRow]);
+
+    const timeChanged = (date1: Date, date2: Date) => {
+        if (date1.getHours() !== date2.getHours() || date1.getMinutes() !== date2.getMinutes() || date1.getSeconds() !== date2.getSeconds()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * When a date is entered in the inputfield in some possible formats, use date-fns parse to get its date object, then call sendSetValues
@@ -216,7 +223,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
             inputDate.getTime(),
             props.context.server, 
             lastValue.current,
-            props.topbar)
+            props.topbar,
+            props.rowNumber)
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
@@ -301,6 +309,11 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 appendTo={document.body}
                 onChange={event => {
                     setDateValue(event.value ? (event.value as Date) : null);
+
+                    if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
+                        (calendar.current as any).hideOverlay();
+                    }
+
                     if (calendarInput.current) {
                         calendarInput.current.focus();
                     }
@@ -314,15 +327,17 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     }
                 }}
                 onBlur={event => {
-                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
-                    //@ts-ignore
-                    if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
-                        if (props.eventFocusLost) {
-                            onFocusLost(props.name, props.context.server);
+                    if (!props.isReadOnly) {
+                        // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
+                        //@ts-ignore
+                        if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
+                            if (props.eventFocusLost) {
+                                onFocusLost(props.name, props.context.server);
+                            }
+                            focused.current = false;
                         }
-                        focused.current = false;
+                        !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                     }
-                    !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 disabled={props.isReadOnly}

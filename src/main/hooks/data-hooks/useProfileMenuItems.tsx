@@ -7,6 +7,7 @@ import { useTranslation } from "..";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
 import { version } from "../../../../package.json";
+import ContentStore from "../../contentstore/ContentStore";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -38,7 +39,7 @@ const useProfileMenuItems = () => {
     },[])
     
     useEffect(() => {
-        const currUser = context.contentStore.currentUser;
+        const currUser = (context.contentStore as ContentStore).currentUser;
         const profileMenuItems = changePwEnabled ? 
             [
                 {
@@ -79,7 +80,7 @@ const useProfileMenuItems = () => {
                 items: profileMenuItems
             }
         ])
-    }, [context.contentStore.currentUser, translations, changePwEnabled])
+    }, [(context.contentStore as ContentStore).currentUser, translations, changePwEnabled])
 
     return slideOptions;
 }

@@ -316,7 +316,7 @@ const UIEditorText: FC<IEditorText> = (props) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                sendSetValues(dataRow, name, columnName, text, props.context.server, lastValue.current, props.topbar);
+                sendSetValues(dataRow, name, columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -428,11 +428,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
             onBlur: () => {
-                if (!escapePressed.current) {
-                    sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
-                }
-                if (props.eventFocusLost) {
-                    showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
+                if (!props.isReadOnly) {
+                    if (!escapePressed.current) {
+                        sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                    }
+                    if (props.eventFocusLost) {
+                        showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
+                    }
                 }
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
@@ -460,11 +462,13 @@ const UIEditorText: FC<IEditorText> = (props) => {
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
-                    if (!escapePressed.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar)
-                    }
-                    if (props.eventFocusLost) {
-                        onFocusLost(props.name, props.context.server)
+                    if (!props.isReadOnly) {
+                        if (!escapePressed.current) {
+                            sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                        }
+                        if (props.eventFocusLost) {
+                            onFocusLost(props.name, props.context.server)
+                        }
                     }
                 }}
                 {...popupMenu}

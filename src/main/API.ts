@@ -1,15 +1,19 @@
 /** Other imports */
 import Server from "./Server";
-import ContentStore from "./ContentStore";
+import ContentStore from "./contentstore/ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { ServerMenuButtons } from "./response";
-import AppSettings from "./AppSettings";
+import AppSettings, { appVersion } from "./AppSettings";
 import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./util/types/custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./util/types/BaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { REQUEST_KEYWORDS } from "./request";
+import BaseServer from "./server/BaseServer";
+import ServerV2 from "./server/ServerV2";
+import BaseContentStore from "./contentstore/BaseContentStore";
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
 
 /** Contains the API functions */
 class API {
@@ -17,7 +21,7 @@ class API {
      * @constructor constructs api instance
      * @param server - server instance
      */
-    constructor (server: Server, store:ContentStore, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
+    constructor (server: BaseServer|Server|ServerV2, store:BaseContentStore|ContentStore|ContentStoreV2, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
         this.#server = server;
         this.#contentStore = store;
         this.#appSettings = appSettings;
@@ -26,15 +30,23 @@ class API {
     }
 
     /** Server instance */
-    #server: Server;
+    #server: BaseServer|Server|ServerV2;
     /** Contentstore instance */
-    #contentStore: ContentStore
+    #contentStore: BaseContentStore|ContentStore|ContentStoreV2
     /** AppSettings instance */
     #appSettings: AppSettings
     /** the react routers history object */
     history?: History<any>;
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
+
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.#contentStore = store;
+    }
+
+    setServer(server: BaseServer|Server|ServerV2) {
+        this.#server = server;
+    }
 
     sendRequest(req: any, endpoint: string) {
         this.#server.sendRequest(req, endpoint);
@@ -84,24 +96,27 @@ class API {
      * @param screenName - the screen to be closed
      */
     sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }, popup?:boolean) {
-        const csRequest = createCloseScreenRequest();
-        csRequest.componentId = id;
-        if (parameter) {
-            csRequest.parameter = parameter;
-        }
-        //TODO topbar
-        this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-            if (res[0] === undefined || res[0].name !== "message.error") {
-                if (popup) {
-                    this.#server.lastClosedWasPopUp = true;
-                }
-                else {
-                    this.#server.lastClosedWasPopUp = false;
-                }
-                this.#contentStore.closeScreen(id, false);
-                this.history?.push("/home")
+        if (appVersion.version !== 2) {
+            const csRequest = createCloseScreenRequest();
+            csRequest.componentId = id;
+            if (parameter) {
+                csRequest.parameter = parameter;
             }
-        });
+            //TODO topbar
+            this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
+                if (res[0] === undefined || res[0].name !== "message.error") {
+                    if (popup) {
+                        (this.#server as Server).lastClosedWasPopUp = true;
+                    }
+                    else {
+                        (this.#server as Server).lastClosedWasPopUp = false;
+                    }
+                    this.#contentStore.closeScreen(id, false);
+                    this.history?.push("/home")
+                }
+            });
+        }
+
     }
 
     /**
@@ -164,9 +179,9 @@ class API {
      */
     addMenuItem(menuItem: CustomMenuItem) {
         if (this.#contentStore.customScreens.has(menuItem.id)) {
-            const menuGroup = this.#contentStore.menuItems.get(menuItem.menuGroup);
+            const menuGroup = (this.#contentStore as ContentStore).menuItems.get(menuItem.menuGroup);
             const itemAction = () => {
-                this.#contentStore.setActiveScreen({ name: menuItem.id, className: undefined });
+                this.#contentStore.setActiveScreen({ name: menuItem.id, id: "", className: undefined });
                 this.history?.push("/home/" + menuItem.id);
                 return Promise.resolve(true);
             };
@@ -181,7 +196,7 @@ class API {
                 menuGroup.push(newItem);
             }
             else {
-                this.#contentStore.menuItems.set(menuItem.menuGroup, [newItem]);
+                (this.#contentStore as ContentStore).menuItems.set(menuItem.menuGroup, [newItem]);
             }
         }
         else {
@@ -196,8 +211,8 @@ class API {
      */
     editMenuItem(editItem: EditableMenuItem) {
         let itemToEdit: ServerMenuButtons | undefined;
-        let itemFound: boolean = false
-        this.#contentStore.menuItems.forEach(menuGroup => {
+        let itemFound: boolean = false;
+        (this.#contentStore as ContentStore).menuItems.forEach(menuGroup => {
             itemToEdit = menuGroup.find(menuItem => menuItem.componentId.split(':')[0] === editItem.id);
             if (itemToEdit) {
                 itemFound = true;
@@ -221,8 +236,8 @@ class API {
      */
     removeMenuItem(id:string) {
         let itemToRemoveIndex:number = -1;
-        let itemFound: boolean = false
-        this.#contentStore.menuItems.forEach(menuGroup => {
+        let itemFound: boolean = false;
+        (this.#contentStore as ContentStore).menuItems.forEach(menuGroup => {
             itemToRemoveIndex = menuGroup.findIndex(menuItem => menuItem.componentId.split(':')[0] === id);
             if (itemToRemoveIndex !== -1) {
                 itemFound = true;
@@ -242,7 +257,7 @@ class API {
     addToolbarItem(toolbarItem: CustomToolbarItem) {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
-                this.#contentStore.setActiveScreen({name: toolbarItem.id, className: undefined });
+                this.#contentStore.setActiveScreen({name: toolbarItem.id, id: "", className: undefined });
                 this.history?.push("/home/" + toolbarItem.id);
                 return Promise.resolve(true);
             }
@@ -250,7 +265,7 @@ class API {
                 return this.sendOpenScreenRequest(toolbarItem.id);
             }
         }
-        this.#contentStore.addToolbarItem({ 
+        (this.#contentStore as ContentStore).addToolbarItem({ 
             componentId: toolbarItem.id, 
             text: toolbarItem.title, 
             image: toolbarItem.icon.substring(0, 2) + " " + toolbarItem.icon, 
@@ -263,7 +278,7 @@ class API {
      * @param editItem - the EditableMenuItem object which holds the new toolbar-item info
      */
     editToolbarItem(editItem:EditableMenuItem) {
-        let itemToEdit = this.#contentStore.toolbarItems.find(item => item.componentId.split(':')[0] === editItem.id);
+        let itemToEdit = (this.#contentStore as ContentStore).toolbarItems.find(item => item.componentId.split(':')[0] === editItem.id);
         if (itemToEdit) {
             if (editItem.newTitle) {
                 itemToEdit.text = editItem.newTitle;
@@ -283,9 +298,9 @@ class API {
      * @param id 
      */
     removeToolbarItem(id:string) {
-        let itemToRemoveIndex:number = this.#contentStore.toolbarItems.findIndex(item => item.componentId.split(':')[0] === id);
+        let itemToRemoveIndex:number = (this.#contentStore as ContentStore).toolbarItems.findIndex(item => item.componentId.split(':')[0] === id);
         if (itemToRemoveIndex !== -1) {
-            this.#contentStore.toolbarItems.splice(itemToRemoveIndex, 1);
+            (this.#contentStore as ContentStore).toolbarItems.splice(itemToRemoveIndex, 1);
         }
         else {
             this.#subManager.emitMessage({ message: "Error while removing the toolbar-item. Could not find id: " + id + "!", name: "" }, "error");
@@ -346,7 +361,7 @@ class API {
      * Returns the data of the current user.
      */
     getUser() {
-        return this.#contentStore.currentUser;
+        return (this.#contentStore as ContentStore).currentUser;
     }
 
     addGlobalComponent(name:string, comp:ReactElement) {

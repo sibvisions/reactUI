@@ -1,13 +1,16 @@
 /** Other imports */
 import AppSettings from "./AppSettings";
-import ContentStore from "./ContentStore"
-import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, MessageResponse } from "./response";
+import BaseContentStore from "./contentstore/BaseContentStore";
+import ContentStore from "./contentstore/ContentStore"
+import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, LoginModeType, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
+import { MFAURLType } from "./response/login/LoginResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
     /** Contentstore instance */
-    contentStore: ContentStore;
+    contentStore: BaseContentStore|ContentStore|ContentStoreV2;
 
     /** AppSettings instance */
     appSettings: AppSettings;
@@ -136,6 +139,12 @@ export class SubscriptionManager {
 
     themeSubscriber = new Map<string, Function>();
 
+    loginModeSubscriber:Function = () => {};
+
+    MFAWaitSubscriber: Function = () => {};
+
+    MFAURLSubscriber: Function = () => {};
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -143,12 +152,16 @@ export class SubscriptionManager {
     jobQueue:Map<string, any> = new Map();
 
     /**
-     * @constructor constructs server instance
+     * @constructor constructs submanager instance
      * @param store - contentstore instance
      */
-    constructor(store: ContentStore) {
+    constructor(store: BaseContentStore|ContentStore|ContentStoreV2) {
         this.contentStore = store;
         this.appSettings = new AppSettings(store, this);
+    }
+
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+        this.contentStore = store;
     }
 
     setAppSettings(appSettings:AppSettings) {
@@ -417,6 +430,18 @@ export class SubscriptionManager {
         this.themeSubscriber.set(id, fn);
     }
 
+    subscribeToLoginMode(fn:Function) {
+        this.loginModeSubscriber = fn;
+    }
+
+    subscribeToMFAWait(fn:Function) {
+        this.MFAWaitSubscriber = fn;
+    }
+
+    subscribeToMFAURL(fn:Function) {
+        this.MFAURLSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -623,6 +648,18 @@ export class SubscriptionManager {
         this.themeSubscriber.delete(id);
     }
 
+    unsubscribeFromLoginMode() {
+        this.loginModeSubscriber = () => {};
+    }
+
+    unsubscribeFromMFAWait() {
+        this.MFAWaitSubscriber = () => {};
+    }
+
+    unsubscribeFromMFAURL() {
+        this.MFAURLSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param screenName 
@@ -709,7 +746,7 @@ export class SubscriptionManager {
 
     /** When the menu-items change, call the function of the menu-subscriber */
     emitMenuUpdate(){
-        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.menuItems]));
+        this.menuSubscriber.forEach(subFunction => subFunction.apply(undefined, [(this.contentStore as ContentStore).menuItems]));
     }
 
     /**
@@ -761,7 +798,7 @@ export class SubscriptionManager {
 
     /** Tell the toolbar-subscribers that their items changed */
     emitToolBarUpdate() {
-        this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.toolbarItems]));
+        this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [(this.contentStore as ContentStore).toolbarItems]));
     }
 
     /** Tell app that session has expired */
@@ -799,5 +836,17 @@ export class SubscriptionManager {
 
     emitThemeChanged(theme:string) {
         this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
+    }
+
+    emitLoginModeChanged(loginMode:LoginModeType) {
+        this.loginModeSubscriber.apply(undefined, [loginMode]);
+    }
+
+    emitMFAWaitChanged(code: string, timeout: number) {
+        this.MFAWaitSubscriber.apply(undefined, [code, timeout]);
+    }
+
+    emitMFAURLChanged(link: string|MFAURLType, timeout:number) {
+        this.MFAURLSubscriber.apply(undefined, [link, timeout]);
     }
 }

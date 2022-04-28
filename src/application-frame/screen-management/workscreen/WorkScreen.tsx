@@ -1,7 +1,7 @@
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import { appContext } from "../../../main/AppProvider";
-import { ActiveScreen } from "../../../main/ContentStore";
-import { DesktopPanelHandler } from "../../login/login";
+import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
+import { DesktopPanelHandler } from "../../login";
 import ResizeHandler from "../ResizeHandler";
 
 /** This component defines where the workscreen should be displayed */
@@ -16,15 +16,23 @@ const WorkScreen: FC = () => {
     const buildWindow = useCallback((screens:ActiveScreen[]):Array<ReactElement> => {
         let tempArray: Array<ReactElement> = [];
         screens.forEach(screen => {
-            if (context.contentStore.getWindow(screen.name)) {
-                tempArray.push(context.contentStore.getWindow(screen.name));
+            if (context.contentStore.getWindow(screen)) {
+                tempArray.push(context.contentStore.getWindow(screen));
             }
         });
         return tempArray
     }, [context.contentStore]);
 
     /** The screens which need to be rendered */
-    const renderedScreens = useMemo(() => buildWindow(activeScreens), [activeScreens]);
+    const renderedScreens = useMemo(() => {
+        if (activeScreens.length) {
+            context.subscriptions.emitSelectedMenuItem(activeScreens.slice(-1).pop()!.className as string);
+        }
+        else {
+            context.subscriptions.emitSelectedMenuItem("");
+        }
+        return buildWindow(activeScreens)
+    }, [activeScreens]);
 
     // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
     useEffect(() => {

@@ -6,7 +6,7 @@
     --font-size: 18px;
 
     /// Login form top bottom padding
-    --login-form-top-bottom-padding: 30px;
+    --login-form-top-bottom-padding: 40px;
   
     /// Login form left right padding
     --login-form-left-right-padding: 40px;
@@ -156,6 +156,8 @@
     --label-padding: 9px;
 
     --menubar-height: 40px;
+
+    --menuicon-size: 14px;
 }
 
 body {
@@ -230,6 +232,7 @@ body {
 
         .profile-menu {
             height: var(--std-profile-height);
+
             .p-menubar {
                 height: 100%;
                 .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
@@ -242,6 +245,10 @@ body {
                     margin-left: var(--std-profile-separator-margin);
                 }
             }
+        }
+
+        .vl {
+            height: var(--std-profile-height);
         }
 
         .profile-image, .profile-image-null {
@@ -280,6 +287,11 @@ body {
             }
         }
 
+        .p-menuitem-icon:not(.profile-image) {
+            max-width: var(--menuicon-size);
+            font-size: var(--menuicon-size);
+        }
+
         .fadeout {
             left: var(--std-fadeout-left);
             width: var(--std-fadeout-width);
@@ -312,16 +324,22 @@ body {
             height: var(--corp-topbar-buttons);
         }
 
-        .profile-menu .p-menubar {
-            .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-                height: var(--corp-profile-height);
-                padding: var(--corp-profile-padding);
+        .profile-menu {
+            .p-menubar {
+                .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+                    height: var(--corp-profile-height);
+                    padding: var(--corp-profile-padding);
+                }
+    
+                .p-submenu-list {
+                    width: calc(100% - var(--corp-profile-separator-margin));
+                    margin-left: var(--corp-profile-separator-margin);
+                }
             }
+        } 
 
-            .p-submenu-list {
-                width: calc(100% - var(--corp-profile-separator-margin));
-                margin-left: var(--corp-profile-separator-margin);
-            }
+        .vl {
+            height: var(--corp-profile-height);
         }
 
         .profile-image, .profile-image-null {

@@ -33,14 +33,13 @@ import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIBrowser from "../components/browser/UIBrowser";
 import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
-import ContentStore from "../ContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
 import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
 import { appVersion } from "../AppSettings";
-import SignaturePad from "../components/custom-comp/custom-container-components/SignaturePad";
+import BaseContentStore from "../contentstore/BaseContentStore";
 
 
 /**
@@ -155,7 +154,7 @@ const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseCompon
  * @param baseComponent - the basecomponent to build
  * @returns the resulting JSXElement
  */
-export const componentHandler = (baseComponent: BaseComponent, contentStore:ContentStore) => {
+export const componentHandler = (baseComponent: BaseComponent, contentStore:BaseContentStore) => {
     let Comp:Function|undefined;
 
     if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
@@ -179,6 +178,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Cont
     }
     else {
         Comp = appVersion.version === 2 ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+
         if (Comp) {
             return <Comp {...baseComponent} key={baseComponent.id} />;
         }

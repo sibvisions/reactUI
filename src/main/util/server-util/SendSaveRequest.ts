@@ -1,6 +1,7 @@
 import { createDALSaveRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import Server from "../../Server";
+import ServerV2 from "../../server/ServerV2";
 
 /**
  * Sends a saveRequest to the server
@@ -8,7 +9,7 @@ import Server from "../../Server";
  * @param onlySelected - onlyselected
  * @param server - server instance
  */
-export function sendSaveRequest(dataProvider:string, onlySelected:boolean, server:Server) {
+export function sendSaveRequest(dataProvider:string, onlySelected:boolean, server:Server|ServerV2) {
     const req = createDALSaveRequest();
     req.dataProvider = dataProvider;
     req.onlySelected = onlySelected;

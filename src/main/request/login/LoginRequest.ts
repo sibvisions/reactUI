@@ -7,6 +7,7 @@ interface LoginRequest extends BaseRequest {
     password: string | undefined,
     newPassword: string | undefined,
     mode:LoginModeType | undefined,
-    createAuthKey: boolean
+    createAuthKey: boolean,
+    confirmationCode: string | undefined
 }
 export default LoginRequest;

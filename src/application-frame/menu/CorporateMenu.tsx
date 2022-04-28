@@ -4,11 +4,12 @@ import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
 import { MenuItem } from "primereact/menuitem";
 import { useConstants, useMenuItems, useScreenTitle } from "../../main/hooks";
-import { IMenu, ProfileMenu } from "./menu";
+import { IMenu, ProfileMenu } from "./Menu";
 import { BaseMenuButton } from "../../main/response";
 import { parseIconData } from "../../main/components/comp-props";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { EmbeddedContext } from "../../MiddleMan";
+import ContentStore from "../../main/contentstore/ContentStore";
 
 /**
  * Renders the menu as a topbar and a menubar below, when the application-layout is corporation
@@ -47,7 +48,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
     }, [topbar])
 
     /** State of the toolbar-items */
-    const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems(context.contentStore.toolbarItems));
+    const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems((context.contentStore as ContentStore).toolbarItems));
 
     /** 
      * The corporate-menu subscribes to the screen name and app-settings, so everytime these properties change the state

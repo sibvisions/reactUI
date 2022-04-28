@@ -16,6 +16,7 @@ enum REQUEST_KEYWORDS {
     LOGOUT = "logout",
     CHANGE_PASSWORD = "change_password",
     RESET_PASSWORD = "reset_password",
+    CANCEL_LOGIN = "cancel_login",
 
     //events
     PRESS_BUTTON = "press_button",

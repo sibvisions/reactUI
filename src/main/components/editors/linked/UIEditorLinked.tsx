@@ -4,14 +4,16 @@ import tinycolor from "tinycolor2";
 import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
-import { getTextAlignment } from "../../comp-props";
+import { getFont, getTextAlignment, parseIconData } from "../../comp-props";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
 import Server from "../../../Server";
-import ContentStore from "../../../ContentStore";
+import BaseContentStore from "../../../contentstore/BaseContentStore";
+import ServerV2 from "../../../server/ServerV2";
+import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -35,7 +37,7 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
-export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server, contentStore: ContentStore) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerV2, contentStore: BaseContentStore) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook)
     if (currentData
         && displayCol
@@ -144,7 +146,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 setText("");
             }
         }
-        else {
+        else if (lastValue.current !== props.selectedRow) {
             setText(props.selectedRow);
         }
         lastValue.current = props.selectedRow;
@@ -236,38 +238,43 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has an entry exact of inputVal
         let foundData = 
-        // providedData.some((data: any) => {
-        //     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-        //         if (data[props.cellEditor.displayReferencedColumnName]) {
-        //             return data[props.cellEditor.displayReferencedColumnName] === inputVal;
-        //         }
-        //         else {
-        //             return false;
-        //         }
-        //     }
-        //     else {
-        //         return data[refColNames[index]] === inputVal
-        //     }
-        // }) ?
-        //     // If yes get it
-        //     providedData.find((data: any) => {
-        //         if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
-        //             if (data[props.cellEditor.displayReferencedColumnName]) {
-        //                 return data[props.cellEditor.displayReferencedColumnName] === inputVal;
-        //             }
-        //             else {
-        //                 return false;
-        //             }
-        //         }
-        //         else {
-        //             return data[refColNames[index]] === inputVal
-        //         }
-        //     }) :
+        providedData.some((data: any) => {
+            if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                if (data[props.cellEditor.displayReferencedColumnName]) {
+                    return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return data[refColNames[index]] === inputVal
+            }
+        }) ?
+            // If yes get it
+            providedData.find((data: any) => {
+                if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
+                    if (data[props.cellEditor.displayReferencedColumnName]) {
+                        return data[props.cellEditor.displayReferencedColumnName] === inputVal;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    return data[refColNames[index]] === inputVal
+                }
+            }) :
             providedData.filter((data: any) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {
                         if (data[props.cellEditor.displayReferencedColumnName]) {
-                            return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                            if (typeof data[props.cellEditor.displayReferencedColumnName] !== "string") {
+                                data[props.cellEditor.displayReferencedColumnName].toString().includes(inputVal);
+                            }
+                            else {
+                                return data[props.cellEditor.displayReferencedColumnName].includes(inputVal);
+                            }
                         }
                         else {
                             return false;
@@ -275,7 +282,12 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     }
                     else {
                         if (data[refColNames[index]]) {
-                            return data[refColNames[index]].includes(inputVal);
+                            if (typeof data[refColNames[index]] !== "string") {
+                                data[refColNames[index]].toString().includes(inputVal);
+                            }
+                            else {
+                                return data[refColNames[index]].includes(inputVal);
+                            }
                         }
                         else {
                             return false;
@@ -292,7 +304,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
         /** If the text is empty, send null to the server */
         if (!inputVal) {
-            sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar);
+            sendSetValues(props.dataRow, props.name, columnNames, null, props.context.server, lastValue.current, props.topbar, props.rowNumber);
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {
@@ -304,19 +316,19 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                      *          foundData = ID, ACADEMIC_TITLE
                      * foundData columnNames have to be adjusted to linkReference
                      */
-                    linkReference.referencedColumnNames.forEach((refCol, i) => newVal[linkReference.columnNames[i]] = foundData[0][refCol])
+                    linkReference.referencedColumnNames.forEach((refCol, i) => newVal[linkReference.columnNames[i]] = foundData[0][refCol]);
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar);
+                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
                     if (props.cellEditor.displayReferencedColumnName) {
-                        sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar);
+                        sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar, props.rowNumber);
                     }
                     else {
-                        sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar);
+                        sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                     }
                 }
 
@@ -334,7 +346,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
      * @returns the suggestions to display at the dropdownlist
      */
     const buildSuggestions = (values:any) => {
-        let suggestions:any = []
+        let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
                 let text : string | string[] = ""
@@ -376,9 +388,55 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }
 
     // Creates an item-template when linked-overlay is displayed as table
-    const itemTemplate = useCallback(d => {
-        if(Array.isArray(d)) {
-            return d.map((d, i) => <div key={i}>{d}</div>)
+    const itemTemplate = useCallback((d, index) => {
+        if (Array.isArray(d)) {
+            //console.log(d, providedData)
+            return d.map((d, i) => {
+                const cellStyle: CSSProperties = {}
+                let icon:JSX.Element | null = null;
+
+                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name][i]) {
+                    const format = providedData[index].__recordFormats[props.name][i]
+
+                    if (format.background) {
+                        cellStyle.background = format.background;
+                    }
+
+                    if (format.foreground) {
+                        cellStyle.color = format.foreground;
+                    }
+
+                    if (format.font) {
+                        const font = getFont(format.font);
+                        if (font) {
+                            cellStyle.fontFamily = font.fontFamily;
+                            cellStyle.fontWeight = font.fontWeight;
+                            cellStyle.fontStyle = font.fontStyle;
+                            cellStyle.fontSize = font.fontSize;
+                        }
+                    }
+
+                    if (format.image) {
+                        const iconData = parseIconData(format.foreground, format.image);
+                        if (iconData.icon) {
+                            if (isFAIcon(iconData.icon)) {
+                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                            }
+                            else {
+                                icon = <img
+                                alt="icon"
+                                src={props.context.server.RESOURCE_URL + iconData.icon}
+                                style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                            }
+                        }
+                        else {
+                            icon = null;
+                        }
+                    }
+                }
+
+                return <div style={cellStyle} key={i}>{icon ?? d}</div>
+            })
         } else {
             return d;
         }
@@ -438,22 +496,24 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     }
                 }}
                 onBlur={event => {
-                    handleInput();
-                    const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
-                    // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
-                    if (dropDownElem) {
-                        if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                    if (!props.isReadOnly) {
+                        handleInput();
+                        const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
+                        // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
+                        if (dropDownElem) {
+                            if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                                if (props.eventFocusLost) {
+                                    onFocusLost(props.name, props.context.server);
+                                }
+                                focused.current = false
+                            }
+                        }
+                        else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
                             focused.current = false
                         }
-                    }
-                    else if (!linkedRef.current.container.contains(event.relatedTarget)) {
-                        if (props.eventFocusLost) {
-                            onFocusLost(props.name, props.context.server);
-                        }
-                        focused.current = false
                     }
                 }}
                 virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}

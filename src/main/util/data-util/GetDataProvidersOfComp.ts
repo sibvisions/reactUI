@@ -1,3 +1,4 @@
+import { IDataBook } from "../../contentstore/BaseContentStore";
 import { IDataBook, ISelectedRow } from "../../ContentStore";
 
 /**

@@ -49,7 +49,8 @@
   --table-header-padding: 0.3rem 0.5rem;
   --table-data-height: 18px;
   --label-padding: 2.25px;
-  --menubar-height: 40px; }
+  --menubar-height: 40px;
+  --menuicon-size: 14px; }
 
 body {
   font-size: var(--font-size);
@@ -108,6 +109,9 @@ body {
       width: calc(100% - var(--std-profile-separator-margin));
       margin-left: var(--std-profile-separator-margin); }
 
+.basti_small .std-menu .vl {
+  height: var(--std-profile-height); }
+
 .basti_small .std-menu .profile-image, .basti_small .std-menu .profile-image-null {
   width: var(--std-profile-pic);
   height: var(--std-profile-pic); }
@@ -124,6 +128,10 @@ body {
 
 .basti_small .std-menu .menu-logo-mini {
   width: var(--std-logo-width); }
+
+.basti_small .std-menu .p-menuitem-icon:not(.profile-image) {
+  max-width: var(--menuicon-size);
+  font-size: var(--menuicon-size); }
 
 .basti_small .std-menu .p-panelmenu .p-panelmenu-header > a {
   padding: var(--std-menu-header-padding); }
@@ -163,6 +171,9 @@ body {
 .basti_small .corp-menu .profile-menu .p-menubar .p-submenu-list {
   width: calc(100% - var(--corp-profile-separator-margin));
   margin-left: var(--corp-profile-separator-margin); }
+
+.basti_small .corp-menu .vl {
+  height: var(--corp-profile-height); }
 
 .basti_small .corp-menu .profile-image, .basti_small .corp-menu .profile-image-null {
   width: var(--corp-profile-pic);

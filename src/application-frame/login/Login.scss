@@ -41,8 +41,9 @@
 .login-button {
   padding: 0.5rem;
   justify-content: center;
-  .p-button-icon-left {
-    margin-right: -1rem;
+
+  .p-button-label {
+    flex: none;
   }
 }
 
@@ -58,7 +59,7 @@
     margin-bottom: 1.4rem;
 
     .login-cbx-container {
-      margin-right: 0.5rem;
+      margin-right: 1rem;
     }
   }
   &:not(.lost-password-enabled) {
@@ -83,6 +84,26 @@
 }
 
 .login-form-position-wrapper {
-  z-index: 1001;
+  z-index: 1003;
   position: absolute;
+}
+
+.wait-code-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wait-code-display {
+  margin-left: 4rem;
+}
+
+.url-topper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rc-glasspane.login-glass {
+  z-index: 1002;
 }
