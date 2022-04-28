@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
-import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../../hooks"
+import { useDataProviderData, useEventHandler, useMetaData, useMouseListener, usePopupMenu} from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
 import { getFont, getTextAlignment, parseIconData } from "../../comp-props";
@@ -14,6 +14,7 @@ import Server from "../../../Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
 import ServerV2 from "../../../server/ServerV2";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
+import { MetaDataResponse } from "src/main/response";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -102,6 +103,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     /** Button background */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+
+    const metaData:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -444,8 +447,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
     // Creates a header for the table when linked-overlay is in table-mode
     const groupedItemTemplate = useCallback(d => {
-        return (d.label as string[]).map((d, i) => <div key={i}>{props.columnMetaData?.label ?? d}</div>)
-    }, [props.columnMetaData, providedData]);
+        return (d.label as string[]).map((d, i) => <div key={i}>{metaData?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
+    }, [props.columnMetaData, providedData, metaData]);
 
     return (
         <span 
