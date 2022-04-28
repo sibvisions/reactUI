@@ -508,8 +508,6 @@ body {
 
 /// *----------Profile-Menu----------*
 .profile-menu {
-    border-left: var(--profile-separator);
-
     .p-menubar {
         background: var(--profile-background);
 
@@ -554,6 +552,10 @@ body {
             }
         }
     }
+}
+
+.vl {
+    border-left: var(--profile-separator);
 }
 
 /// *----------Standard-Menu----------*

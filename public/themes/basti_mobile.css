@@ -111,6 +111,9 @@ body {
       width: calc(100% - var(--std-profile-separator-margin));
       margin-left: var(--std-profile-separator-margin); }
 
+.basti_mobile .std-menu .vl {
+  height: var(--std-profile-height); }
+
 .basti_mobile .std-menu .profile-image, .basti_mobile .std-menu .profile-image-null {
   width: var(--std-profile-pic);
   height: var(--std-profile-pic); }
@@ -170,6 +173,9 @@ body {
 .basti_mobile .corp-menu .profile-menu .p-menubar .p-submenu-list {
   width: calc(100% - var(--corp-profile-separator-margin));
   margin-left: var(--corp-profile-separator-margin); }
+
+.basti_mobile .corp-menu .vl {
+  height: var(--corp-profile-height); }
 
 .basti_mobile .corp-menu .profile-image, .basti_mobile .corp-menu .profile-image-null {
   width: var(--corp-profile-pic);

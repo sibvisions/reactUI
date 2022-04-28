@@ -136,6 +136,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     }}
                     tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
+            <div className="vl" />
             <div className="profile-menu">
                 <Menubar
                     style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
