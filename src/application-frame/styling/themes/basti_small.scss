@@ -151,6 +151,8 @@
     --label-padding: 2.25px;
 
     --menubar-height: 40px;
+
+    --menuicon-size: 14px;
 }
 
 body {
@@ -259,6 +261,11 @@ body {
 
         .menu-logo-mini {
             width: var(--std-logo-width);
+        }
+
+        .p-menuitem-icon {
+            max-width: var(--menuicon-size);
+            font-size: var(--menuicon-size);
         }
 
         .p-panelmenu {

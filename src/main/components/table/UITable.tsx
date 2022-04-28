@@ -817,7 +817,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             dataRow: props.dataBook,
                             columnName: colName,
                             cellEditor_editable_: true,
-                            cellFormatting: rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName],
+                            cellFormatting: rowData.__recordFormats && rowData.__recordFormats[props.name],
                             editorStyle: { width: "100%", height: "100%" },
                             autoFocus: true,
                             rowIndex: () => tableInfo.rowIndex,
@@ -831,7 +831,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                             readonly: columnMetaData?.readonly,
                             isCellEditor: true,
                             cellScreenName: props.dataBook.split("/")[1],
-                            rowNumber: tableInfo.rowIndex
+                            rowNumber: tableInfo.rowIndex,
+                            colIndex: colIndex
                         }} 
                         />
                     }
@@ -843,7 +844,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
-                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name] && rowData.__recordFormats[props.name][colName]}
+                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                             resource={context.server.RESOURCE_URL}
                             cellId={() => { return { selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() } }}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
@@ -868,7 +869,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                                     context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
                                 }
                             }}
-                            rowNumber={tableInfo.rowIndex} />
+                            rowNumber={tableInfo.rowIndex}
+                            colIndex={colIndex} />
                     }
                 }
                 }

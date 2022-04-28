@@ -4,7 +4,7 @@ import tinycolor from "tinycolor2";
 import { useDataProviderData, useEventHandler, useMouseListener, usePopupMenu} from "../../../hooks"
 import { ICellEditor, IEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
-import { getTextAlignment } from "../../comp-props";
+import { getFont, getTextAlignment, parseIconData } from "../../comp-props";
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -14,6 +14,7 @@ import Server from "../../../Server";
 import ContentStore from "../../../contentstore/ContentStore";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
 import ServerV2 from "../../../server/ServerV2";
+import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{
@@ -388,9 +389,55 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     }
 
     // Creates an item-template when linked-overlay is displayed as table
-    const itemTemplate = useCallback(d => {
-        if(Array.isArray(d)) {
-            return d.map((d, i) => <div key={i}>{d}</div>)
+    const itemTemplate = useCallback((d, index) => {
+        if (Array.isArray(d)) {
+            //console.log(d, providedData)
+            return d.map((d, i) => {
+                const cellStyle: CSSProperties = {}
+                let icon:JSX.Element | null = null;
+
+                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name][i]) {
+                    const format = providedData[index].__recordFormats[props.name][i]
+
+                    if (format.background) {
+                        cellStyle.background = format.background;
+                    }
+
+                    if (format.foreground) {
+                        cellStyle.color = format.foreground;
+                    }
+
+                    if (format.font) {
+                        const font = getFont(format.font);
+                        if (font) {
+                            cellStyle.fontFamily = font.fontFamily;
+                            cellStyle.fontWeight = font.fontWeight;
+                            cellStyle.fontStyle = font.fontStyle;
+                            cellStyle.fontSize = font.fontSize;
+                        }
+                    }
+
+                    if (format.image) {
+                        const iconData = parseIconData(format.foreground, format.image);
+                        if (iconData.icon) {
+                            if (isFAIcon(iconData.icon)) {
+                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                            }
+                            else {
+                                icon = <img
+                                alt="icon"
+                                src={props.context.server.RESOURCE_URL + iconData.icon}
+                                style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                            }
+                        }
+                        else {
+                            icon = null;
+                        }
+                    }
+                }
+
+                return <div style={cellStyle} key={i}>{icon ?? d}</div>
+            })
         } else {
             return d;
         }

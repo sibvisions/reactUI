@@ -151,6 +151,8 @@
     --label-padding: 9px;
 
     --menubar-height: 40px;
+
+    --menuicon-size: 14px;
 }
 
 body {
@@ -274,6 +276,11 @@ body {
             .p-panelmenu-icon {
                 left: calc(var(--std-menu-width) - 30px)
             }
+        }
+
+        .p-menuitem-icon {
+            max-width: var(--menuicon-size);
+            font-size: var(--menuicon-size);
         }
 
         .fadeout {

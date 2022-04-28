@@ -23,7 +23,8 @@ export interface ICellEditorWrapperProps {
     filter?: Function
     isReadOnly: boolean
     rowNumber: number
-    cellFormatting?: CellFormatting
+    cellFormatting?: CellFormatting[]
+    colIndex?: number
 }
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */
@@ -57,7 +58,8 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             selectedRow: selectedRow,
             cellStyle: cellStyle,
             isReadOnly: isReadOnly,
-            cellFormatting: baseProps.cellFormatting
+            cellFormatting: baseProps.cellFormatting,
+            colIndex: baseProps.colIndex
         }
     );
 }

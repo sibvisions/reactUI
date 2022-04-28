@@ -49,7 +49,8 @@
   --table-header-padding: 0.3rem 0.5rem;
   --table-data-height: 18px;
   --label-padding: 2.25px;
-  --menubar-height: 40px; }
+  --menubar-height: 40px;
+  --menuicon-size: 14px; }
 
 body {
   font-size: var(--font-size);
@@ -124,6 +125,10 @@ body {
 
 .basti_small .std-menu .menu-logo-mini {
   width: var(--std-logo-width); }
+
+.basti_small .std-menu .p-menuitem-icon {
+  max-width: var(--menuicon-size);
+  font-size: var(--menuicon-size); }
 
 .basti_small .std-menu .p-panelmenu .p-panelmenu-header > a {
   padding: var(--std-menu-header-padding); }

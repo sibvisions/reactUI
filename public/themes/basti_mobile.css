@@ -51,7 +51,8 @@
   --table-header-padding: 0.6rem 1rem;
   --table-data-height: 27px;
   --label-padding: 9px;
-  --menubar-height: 40px; }
+  --menubar-height: 40px;
+  --menuicon-size: 14px; }
 
 body {
   font-size: var(--font-size);
@@ -135,6 +136,10 @@ body {
 
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-icon {
   left: calc(var(--std-menu-width) - 30px); }
+
+.basti_mobile .std-menu .p-menuitem-icon {
+  max-width: var(--menuicon-size);
+  font-size: var(--menuicon-size); }
 
 .basti_mobile .std-menu .fadeout {
   left: var(--std-fadeout-left);

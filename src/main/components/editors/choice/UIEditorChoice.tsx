@@ -51,8 +51,10 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
 
     useLayoutEffect(() => {
         if (props.isCellEditor && wrapRef.current) {
-            if (props.cellFormatting?.background) {
-                (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting.background
+            if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
+                if (props.cellFormatting[props.colIndex].background) {
+                    (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
+                }
             }
         }
     }, [props.cellFormatting])
