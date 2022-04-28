@@ -278,7 +278,7 @@ body {
             }
         }
 
-        .p-menuitem-icon {
+        .p-menuitem-icon:not(.profile-image) {
             max-width: var(--menuicon-size);
             font-size: var(--menuicon-size);
         }
@@ -440,6 +440,12 @@ body {
     
     .rc-label >span {
         padding: var(--label-padding) 0px;
+    }
+}
+
+.p-autocomplete-panel.dropdown-table {
+    .p-autocomplete-item {
+        height: calc(8px + var(--table-data-height));
     }
 }
 

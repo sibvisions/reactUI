@@ -282,7 +282,7 @@ body {
             }
         }
 
-        .p-menuitem-icon {
+        .p-menuitem-icon:not(.profile-image) {
             max-width: var(--menuicon-size);
             font-size: var(--menuicon-size);
         }

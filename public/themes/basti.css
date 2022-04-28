@@ -136,7 +136,7 @@ body {
 .basti .std-menu .p-panelmenu .p-panelmenu-icon {
   left: calc(var(--std-menu-width) - 30px); }
 
-.basti .std-menu .p-menuitem-icon {
+.basti .std-menu .p-menuitem-icon:not(.profile-image) {
   max-width: var(--menuicon-size);
   font-size: var(--menuicon-size); }
 
@@ -247,6 +247,9 @@ body {
 
 .basti .rc-label > span {
   padding: var(--label-padding) 0px; }
+
+.p-autocomplete-panel.dropdown-table .p-autocomplete-item {
+  height: calc(8px + var(--table-data-height)); }
 
 @media screen and (max-width: 960px) {
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {

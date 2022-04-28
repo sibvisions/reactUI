@@ -137,7 +137,7 @@ body {
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-icon {
   left: calc(var(--std-menu-width) - 30px); }
 
-.basti_mobile .std-menu .p-menuitem-icon {
+.basti_mobile .std-menu .p-menuitem-icon:not(.profile-image) {
   max-width: var(--menuicon-size);
   font-size: var(--menuicon-size); }
 

@@ -126,7 +126,7 @@ body {
 .basti_small .std-menu .menu-logo-mini {
   width: var(--std-logo-width); }
 
-.basti_small .std-menu .p-menuitem-icon {
+.basti_small .std-menu .p-menuitem-icon:not(.profile-image) {
   max-width: var(--menuicon-size);
   font-size: var(--menuicon-size); }
 
