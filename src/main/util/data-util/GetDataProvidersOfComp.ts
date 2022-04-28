@@ -1,5 +1,4 @@
-import { IDataBook } from "../../contentstore/BaseContentStore";
-import { IDataBook, ISelectedRow } from "../../ContentStore";
+import { IDataBook, ISelectedRow } from "../../contentstore/BaseContentStore";
 
 /**
  * Returns dataProviders and their data in a Map of a component. If there are no dataproviders

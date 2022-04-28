@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { ISelectedRow } from "src/main/ContentStore";
 import { appContext } from "../../AppProvider";
 import { getScreenSelectedRows } from "../../util";
 

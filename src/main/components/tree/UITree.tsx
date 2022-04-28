@@ -297,7 +297,7 @@ const UITree: FC<ITree> = (baseProps) => {
                 const primaryKeys = getMetaData(screenName, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
                 selectedFilters.push({
                     columnNames: primaryKeys,
-                    values: primaryKeys.map(pk => dataRow[pk])
+                    values: primaryKeys.map((pk: string) => dataRow[pk])
                 });
                 path = path.getParentPath();
             }
