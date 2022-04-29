@@ -157,7 +157,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
+    const [context,, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -345,7 +345,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         //get the actual x-values from the provided data
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         //if pie chart & multiple y-Axes use the y column labels otherwise generate labels based on x-values
-        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
+        //const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
         const hasStringLabels = someNaN(rows);
         const {colors, points, overlapOpacity} = getSettingsFromCSSVar({
             colors: {

@@ -18,10 +18,10 @@ export interface IDesktopPanel extends BaseComponent {
  */
 const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [,, [props], layoutStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Reference for the DesktopPanel element */
     const panelRef = useRef<any>(null);

@@ -1,5 +1,4 @@
 import BaseContentStore from "../../contentstore/BaseContentStore";
-import ContentStore from "../../contentstore/ContentStore";
 import { FullOrColumn } from "../../hooks/data-hooks/useMetaData";
 
 /**

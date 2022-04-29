@@ -1,8 +1,7 @@
-import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { CSSProperties, FC, useLayoutEffect, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { createCancelLoginRequest, useConstants } from "../../moduleIndex";
-import { LoginContext } from "./Login";
 import { ILoginForm } from "./LoginForm";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";

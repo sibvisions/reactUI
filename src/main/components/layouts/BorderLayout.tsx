@@ -62,7 +62,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         let westUsed = false;
         let eastUsed = false;
         let southUsed = false;
-        let centerUsed = false;
         let hCompCount = 0;
         let vCompCount = 0;
 
@@ -118,7 +117,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     else if(component.constraints === "Center") {
                         prefConstraintSizes.center = preferredSize;
                         minConstraintSizes.center = minimumSize;
-                        centerUsed = true
                         vCompCount++;
                         hCompCount++;
                     }

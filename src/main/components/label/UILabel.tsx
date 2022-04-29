@@ -15,7 +15,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

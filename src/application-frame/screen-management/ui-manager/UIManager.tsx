@@ -1,5 +1,4 @@
 import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
-import * as _ from 'underscore'
 import Menu from "../../menu/Menu";
 import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../../../main/hooks";
 import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../../../main/util";

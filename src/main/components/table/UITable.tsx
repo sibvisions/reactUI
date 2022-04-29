@@ -23,7 +23,6 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import { CellEditor } from "./CellEditor";
-import { RequestQueueMode } from "../../Server";
 
 
 /** Interface for Table */
@@ -143,7 +142,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<TableProps>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<TableProps>(baseProps);
 
     /** Name of the screen */
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
@@ -417,18 +416,6 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }
             }
             setTimeout(() => {
-                function getTextWidth(text?:string) {
-                    if (text) {
-                        const canvas = document.createElement('canvas');
-                        const x = canvas.getContext('2d') as CanvasRenderingContext2D;
-                        
-                        x.font = getComputedStyle(document.body).font;
-                      
-                        return x.measureText(text).width;
-                    }
-                    return 0;
-                }
-
                 //@ts-ignore
                 const currentTable:HTMLTableElement = tableRef?.current?.table;
                 if (currentTable) {

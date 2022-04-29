@@ -16,7 +16,6 @@ import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { REQUEST_KEYWORDS } from "./main/request";
 import { appContext } from "./main/AppProvider";
-import { appVersion } from "./main/AppSettings";
 
 export type IServerFailMessage = {
     headerMessage:string,
@@ -65,7 +64,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             path = path + "?version=" + cssVersion;
         }
         addCSSDynamically(path, "appCSS", context.appSettings)
-    }, [cssVersion, restart]);
+    }, [cssVersion, restart, context.appSettings]);
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -115,10 +114,10 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                             if (openId) {
                                 const openReq = createOpenScreenRequest();
                                 openReq.componentId = openId;
-        
+
                                 context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
                                 showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
-        
+
                                 currentlyOpening = true;
                                 openedWithHistory.current = true;
                             }
@@ -130,19 +129,19 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                                     if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
                                         context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true);
                                     }
-                                    
+
                                 })
                             }
                         }
                     }
-    
+
                     if (!currentlyOpening) {
                         openedWithHistory.current = false;
                     }
                 }
             });
         }
-      }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>

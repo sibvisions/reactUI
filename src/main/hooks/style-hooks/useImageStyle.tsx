@@ -56,7 +56,7 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         }
 
         return imgClassNames.filter(Boolean).join(' ')
-    }, [ha, va, cha, cva]);
+    }, [ha, va, cha, cva, aspectRatio]);
 
     return imageAlignments
 }

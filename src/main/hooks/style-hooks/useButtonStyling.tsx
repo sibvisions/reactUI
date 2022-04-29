@@ -1,5 +1,4 @@
-import { CSSProperties, useContext, useMemo } from "react";
-import { appContext } from "../../AppProvider";
+import { CSSProperties, useMemo } from "react";
 import { IButton } from "../../components/buttons";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import { getAlignments, getMargins, IconProps, parseIconData } from "../../components/comp-props";
@@ -27,9 +26,6 @@ interface IButtonStyle {
  * @returns style properties used by all button components
  */
 const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 

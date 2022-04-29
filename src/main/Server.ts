@@ -1,5 +1,4 @@
 import {parseString} from "xml2js"
-import * as _ from 'underscore'
 import ContentStore from "./contentstore/ContentStore"
 import { ApplicationMetaDataResponse,
          BaseResponse,
@@ -9,13 +8,9 @@ import { ApplicationMetaDataResponse,
          RESPONSE_NAMES,
          AuthenticationDataResponse,
          UserDataResponse,
-         FetchResponse,
-         MetaDataResponse,
-         DataProviderChangedResponse,
          ShowDocumentResponse,
          UploadResponse,
          DownloadResponse,
-         SessionExpiredResponse,
          ErrorResponse,
          RestartResponse,
          ApplicationParametersResponse,
@@ -23,21 +18,13 @@ import { ApplicationMetaDataResponse,
          MessageResponse,
          LoginResponse,
          ApplicationSettingsResponse,
-         DeviceStatusResponse,
          WelcomeDataResponse,
          DialogResponse,
          CloseFrameResponse,
          ContentResponse,
          CloseContentResponse} from "./response";
-import { createFetchRequest } from "./factories/RequestFactory";
 import { IPanel } from "./components/panels"
-import { SubscriptionManager } from "./SubscriptionManager";
-import { History } from "history";
-import TreePath from "./model/TreePath";
-import AppSettings, { appVersion } from "./AppSettings";
-import API from "./API";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import UIResponse from "./response/ui/UIResponse";
 import { REQUEST_KEYWORDS } from "./request";
 import { IDataBook } from "./contentstore/BaseContentStore";
 import BaseServer from "./server/BaseServer";
@@ -114,16 +101,6 @@ class Server extends BaseServer {
     onLoginFunction:Function = () => {};
 
     lastClosedWasPopUp = false;
-
-    /**
-     * @constructor constructs server instance
-     * @param store - contentstore instance
-     * @param subManager - subscription-manager instance
-     * @param history - the history
-     */
-     constructor(store: ContentStore, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
-        super(store, subManager, appSettings, history)
-    }
 
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;

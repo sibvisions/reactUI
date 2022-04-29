@@ -22,7 +22,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
         if (props.style && props.style.height) {
             document.documentElement.style.setProperty("--main-height", props.style.height as string)
         }
-    },[]);
+    },[props.style]);
 
     return (
         <AppWrapper embedOptions={props.embedOptions}>

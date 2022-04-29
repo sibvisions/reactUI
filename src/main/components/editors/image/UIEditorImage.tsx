@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from "react";
 import { useImageStyle, useMouseListener, usePopupMenu } from "../../../hooks";
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex } from "../../../util";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";

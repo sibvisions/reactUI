@@ -26,10 +26,10 @@ export type TabProperties = {
  */
 const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, compSizes] = useComponents(baseProps.id, props.className);
+    const [, components, compSizes] = useComponents(baseProps.id, props.className);
 
     /** Reference value if there is currently a tab closing action */
     const closing = useRef(false);

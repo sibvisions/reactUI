@@ -15,7 +15,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent>(baseProps);
 
     /** Properties for icon */
     const iconProps = parseIconData(props.foreground, props.image);

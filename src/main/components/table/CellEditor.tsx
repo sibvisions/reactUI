@@ -19,8 +19,8 @@ import { getFont, IconProps, parseIconData } from "../comp-props";
 import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { SelectedCellContext } from "./UITable";
 import { checkComponentName } from "../../util";
-import { ColumnDescription, MetaDataResponse } from "../../response";
-import { fetchLinkedRefDatabook, ICellEditorLinked, IEditorLinked } from "../editors/linked/UIEditorLinked";
+import { ColumnDescription } from "../../response";
+import { fetchLinkedRefDatabook, ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 
 export interface CellFormatting {
     foreground?: string;

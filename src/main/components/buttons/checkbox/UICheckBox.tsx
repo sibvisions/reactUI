@@ -21,7 +21,7 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, cbRef.current ? cbRef.current.element : undefined);

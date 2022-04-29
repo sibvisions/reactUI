@@ -3,7 +3,7 @@ import _ from "underscore";
 import API from "../API";
 import AppSettings from "../AppSettings";
 import { IPanel } from "../components/panels";
-import BaseContentStore, { IDataBook } from "../contentstore/BaseContentStore";
+import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreV2 from "../contentstore/ContentStoreV2";
 import { createFetchRequest } from "../factories/RequestFactory";
@@ -127,7 +127,7 @@ export default abstract class BaseServer {
             ) {
                 reject("Component doesn't exist");
             } else {
-                if (queueMode == RequestQueueMode.IMMEDIATE) {
+                if (queueMode === RequestQueueMode.IMMEDIATE) {
                     let finalEndpoint = this.endpointMap.get(endpoint);
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
@@ -202,7 +202,7 @@ export default abstract class BaseServer {
             }
         })
 
-        if (queueMode == RequestQueueMode.IMMEDIATE) {
+        if (queueMode === RequestQueueMode.IMMEDIATE) {
             if (waitForOpenRequests && this.openRequests.size) {
                 const singlePromise = promise;
                 promise = Promise.all(this.openRequests.values()).then(() => singlePromise);

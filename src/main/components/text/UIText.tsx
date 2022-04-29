@@ -19,7 +19,7 @@ const UIText: FC<ITextField> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text || "");

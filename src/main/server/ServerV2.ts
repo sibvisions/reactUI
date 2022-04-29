@@ -1,14 +1,8 @@
-import { History } from "history";
-import AppSettings from "../AppSettings";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { IPanel } from "../components/panels";
-import BaseContentStore from "../contentstore/BaseContentStore";
-import ContentStore from "../contentstore/ContentStore";
-import ContentStoreV2 from "../contentstore/ContentStoreV2";
 import { REQUEST_KEYWORDS } from "../request";
 import { CloseScreenResponse, RESPONSE_NAMES } from "../response";
 import UIResponse from "../response/ui/UIResponse";
-import { SubscriptionManager } from "../SubscriptionManager";
 import BaseServer from "./BaseServer";
 
 /** Enum for server request endpoints version 2 */
@@ -66,10 +60,6 @@ enum REQUEST_ENDPOINTS{
 }
 
 export default class ServerV2 extends BaseServer {
-    constructor(store: ContentStoreV2, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
-        super(store, subManager, appSettings, history)
-    }
-
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
             if (value.name === name) {

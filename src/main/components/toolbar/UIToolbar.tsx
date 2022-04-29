@@ -9,7 +9,7 @@ import { useComponents } from "../../hooks";
  */
 const UIToolbar: FC<any> = (props) => {
 
-    const [children, components, componentSizes] = useComponents(props.id, props.className);
+    const [, components, componentSizes] = useComponents(props.id, props.className);
 
     const reportSize = (size:Dimension) => {
         props.sizeCallback({ height: size.height + 1, width: size.width });

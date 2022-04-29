@@ -3,9 +3,7 @@ import { SubscriptionManager } from "../SubscriptionManager";
 import { ServerMenuButtons, BaseMenuButton } from "../response";
 import BaseComponent from "../util/types/BaseComponent";
 import UserData from "../model/UserData";
-import { IPanel } from '../components/panels'
 import { ScreenWrapperOptions } from "../util/types/custom-types";
-import { History } from "history";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
@@ -27,10 +25,6 @@ export default class ContentStore extends BaseContentStore {
     navOpenScreenMap = new Map<string, string>();
 
     dialogButtons:Array<string> = new Array<string>();
-
-    constructor(history?:History<any>) {
-        super(history)
-    }
 
     /**
      * Sets the currently active screens or clears the array

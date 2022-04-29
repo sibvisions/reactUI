@@ -5,7 +5,7 @@ import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
 import { useMouseListener, usePopupMenu } from "../../../hooks"
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { getTextAlignment } from "../../comp-props";
 import { sendSetValues, 
          handleEnterKey, 

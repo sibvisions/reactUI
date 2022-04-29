@@ -40,7 +40,7 @@ const Login: FC = () => {
 
     const [loginMode, setLoginMode] = useState<LoginMode>("default")
 
-    const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
+    const [loginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
     useEffect(() => {
         context.subscriptions.subscribeToLoginMode((mode:LoginModeType) => {

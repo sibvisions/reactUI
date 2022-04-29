@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useRef, useState } from "react";
 import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import SplitPanel from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
@@ -18,7 +18,7 @@ export interface ISplit extends BaseComponent{
  */
 const UISplitPanel: FC<ISplit> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
+    const [,, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children */
     const [children, components, compSizes] = useComponents(props.id, props.className);

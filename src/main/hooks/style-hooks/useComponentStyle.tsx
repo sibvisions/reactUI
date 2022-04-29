@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useLayoutEffect, useState } from "react"
+import { CSSProperties, useLayoutEffect, useState } from "react"
 import BaseComponent from "../../util/types/BaseComponent";
 
 const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "invalid-background"]])
@@ -88,50 +88,18 @@ export function getFontProperties(font?:string) {
  * Returns the style as CSSProperties and if its initially set
  * @param props - the properties of the components
  */
-const useComponentStyle = (props: BaseComponent):[CSSProperties, boolean] => {
+const useComponentStyle = (props: BaseComponent):CSSProperties => {
     /** The componentstyle state */
     const [componentStyle, setComponentStyle] = useState<CSSProperties>({});
 
-    /** An initial flag optimization so when initial is true we set everything at once and not setState multiple times */
-    const [initial, setInitial] = useState<boolean>(true);
-
-    // Initially set the component-styles
     useLayoutEffect(() => {
-        if (initial) {
             const fontProps = getFontProperties(props.font);
             const bgdProps = getColorProperties(props.background, true);
             const fgdProps = getColorProperties(props.foreground, false);
 
             setComponentStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps, ...fgdProps }));
-            setInitial(false);
-        }
-    },[])
+    },[props.font, props.background, props.foreground])
 
-    // If the font changes, parse it again and set the state
-    useEffect(() => {
-        if (!initial) {
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...getFontProperties(props.font) }));
-        }
-    }, [props.font]);
-
-    // If the background changes, parse it again and set the state
-    useEffect(() => {
-        if (props.background && !initial) {
-            const bgdProps = getColorProperties(props.background, true);
-
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...bgdProps }));
-        }
-    }, [props.background]);
-
-    // If the foreground changes, parse it again and set the state
-    useEffect(() => {
-        if (props.foreground && !initial) {
-            const fgdProps = getColorProperties(props.foreground, false);
-
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...fgdProps }));
-        }
-    }, [props.foreground]);
-
-    return [componentStyle, initial]
+    return componentStyle
 }
 export default useComponentStyle

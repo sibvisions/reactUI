@@ -25,7 +25,9 @@ export default function getSettingsFromCSSVar(mapping: Record<string, string | C
         if(typeof m === "string") {
             cssVar = m;
         } else {
-            var { cssVar, transform, defaultValue } = m;
+            cssVar = m.cssVar;
+            transform = m.transform
+            defaultValue = m.defaultValue
         }
         const v = style.getPropertyValue(cssVar).trim();
         if (transform) {

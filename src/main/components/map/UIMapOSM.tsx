@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "r
 import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
-import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue, useRowSelect } from "../../hooks";
+import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue } from "../../hooks";
 import { appContext } from "../../AppProvider";
 import { getMarkerIcon, 
          parseMapLocation, 

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { useEventHandler, useMouseListener, usePopupMenu } from "../../../hooks"
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { getDecimalLength, 
          getGrouping,
          getPrimePrefix, 
@@ -19,7 +19,6 @@ import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";
-import { isCellEditorReadOnly } from "../text/UIEditorText";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor{

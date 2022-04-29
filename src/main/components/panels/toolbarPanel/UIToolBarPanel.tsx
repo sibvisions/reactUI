@@ -19,10 +19,10 @@ export interface IToolBarPanel extends IPanel {
  */
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

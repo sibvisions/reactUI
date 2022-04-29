@@ -30,7 +30,6 @@ import { UIMapGoogle, UIMapOSM } from "../components/map"
 import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/custom-comp/index'
 import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
-import UIBrowser from "../components/browser/UIBrowser";
 import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";

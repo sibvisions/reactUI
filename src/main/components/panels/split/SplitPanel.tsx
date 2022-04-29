@@ -46,7 +46,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** The absolute position */
     let absolutePosition = 0;
 
-    const timer = useRef<any>(null)
+    //const timer = useRef<any>(null)
 
     const [initial, setInitial] = useState<boolean>(true);
 

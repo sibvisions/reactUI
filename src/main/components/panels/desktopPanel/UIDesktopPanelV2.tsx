@@ -1,4 +1,4 @@
-import React, { createContext, CSSProperties, FC, useCallback, useContext, useMemo, useRef, useState } from "react";
+import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
 import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension } from "../../../util";
@@ -58,7 +58,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
 
 const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { useMouseListener, usePopupMenu } from "../../../hooks";
-import { ICellEditor, IEditor } from "..";
+import { ICellEditor } from "..";
 import { getAlignments } from "../../comp-props";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName, getTabIndex } from "../../../util";

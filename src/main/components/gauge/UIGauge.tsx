@@ -29,26 +29,6 @@ export enum GAUGE_STYLES {
     STYLE_FLAT = 3,
 }
 
-/** Color for ok value. */
-const colorOK = "var(--gauge-color__ok)"; //"#55BF3B"
-/** Color for warning value. */
-const colorWarning = "var(--gauge-color__warning)"; //"#DDDF0D"
-/** Color for error value. */
-const colorError = "var(--gauge-color__error)"; //"#DF5353"
-
-function getColor(value: number, steps?: [number, number, number, number]) {
-    if(!steps) {
-        return colorOK;
-    }
-    if(value <= steps[0] || value >= steps[3]) {
-        return colorError;
-    } else if (value <= steps[1] || value >= steps[2]) {
-        return colorWarning;
-    } else {
-        return colorOK;
-    }
-}
-
 /**
  * This component displays gauges with various styles
  * @param baseProps - Initial properties sent by the server for this component
@@ -58,7 +38,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
+    const [context,, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;

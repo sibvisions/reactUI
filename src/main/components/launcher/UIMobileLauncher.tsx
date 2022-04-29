@@ -14,7 +14,7 @@ export interface IWindow extends IPanel {
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);

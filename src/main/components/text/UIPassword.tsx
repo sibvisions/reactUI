@@ -14,7 +14,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, translation, compStyle] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextField>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");
