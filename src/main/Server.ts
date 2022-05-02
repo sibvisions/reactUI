@@ -134,20 +134,6 @@ class Server extends BaseServer {
         return false;
     }
 
-    /**
-     * Builds a request to send to the server
-     * @param request - the request to send
-     * @returns - a request to send to the server
-     */
-    buildReqOpts(request:any) {
-        let reqOpt: RequestInit = {
-            method: 'POST',
-            body: JSON.stringify(request),
-            credentials:"include",
-        };
-        return reqOpt;
-    }
-
     /** ----------SENDING-REQUESTS---------- */
 
     endpointMap = new Map<string, string>()
@@ -413,16 +399,7 @@ class Server extends BaseServer {
             formData.set("fileId", uploadData.fileId)
             // @ts-ignore
             formData.set("data", e.target.files[0])
-            let reqOpt: RequestInit = {
-                method: 'POST',
-                body: formData,
-                credentials:"include",
-            };
-
-            this.timeoutRequest(fetch(this.BASE_URL + REQUEST_KEYWORDS.UPLOAD, reqOpt), 10000)
-                .then((response: any) => response.json())
-                .then(this.responseHandler.bind(this))
-                .catch(error => console.error(error));
+            this.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
         }
     }
 
@@ -497,16 +474,23 @@ class Server extends BaseServer {
      * Fetches the languageResource and fills the translation map
      * @param langData - the language data
      */
-    language(langData:LanguageResponse) {
-        this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
-        .then((response:any) => response.text())
-        .then(value => parseString(value, (err, result) => { 
-            if (result) {
-                result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-                this.appSettings.setAppReadyParam("translation");
-                this.subManager.emitTranslation();
-            }
-        }));
+    async language(langData:LanguageResponse) {
+        if (langData.languageResource && !this.errorIsDisplayed) {
+            await this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
+            .then((response:any) => response.text())
+            .then(value => parseString(value, (err, result) => { 
+                if (result) {
+                    result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                    this.appSettings.setAppReadyParam("translation");
+                    this.subManager.emitTranslation();
+                }
+            }));
+        }
+        else {
+            this.subManager.emitDialog("server", true, false, "Could not load translation", "There was a problem when fetching the translation. <u>Click here!</u> or press Escape to retry!");
+            this.subManager.emitErrorDialogVisible(true);
+        }
+
     }
 
     /** 

@@ -267,7 +267,6 @@ export const CellEditor: FC<CellEditor> = (props) => {
     let cellIcon: IconProps | null = null;
 
     if (props.cellFormatting && props.cellFormatting[props.colIndex]) {
-        console.log(props.cellFormatting)
         if(props.cellFormatting[props.colIndex].background) {
             cellStyle.backgroundColor = props.cellFormatting[props.colIndex].background;
             cellClassNames.push('cancel-padding');

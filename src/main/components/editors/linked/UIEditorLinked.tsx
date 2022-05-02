@@ -393,7 +393,6 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     // Creates an item-template when linked-overlay is displayed as table
     const itemTemplate = useCallback((d, index) => {
         if (Array.isArray(d)) {
-            //console.log(d, providedData)
             return d.map((d, i) => {
                 const cellStyle: CSSProperties = {}
                 let icon:JSX.Element | null = null;

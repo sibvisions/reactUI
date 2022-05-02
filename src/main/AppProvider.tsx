@@ -53,7 +53,11 @@ const api = new API(server, contentStore, appSettings, subscriptions);
 
 
 contentStore.setSubscriptionManager(subscriptions);
+
 server.setAPI(api);
+
+subscriptions.setServer(server);
+
 /** Initial value for state */
 const initValue: AppContextType = {
     version: 1,
@@ -262,16 +266,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 if (!preserve) {
                     sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
                 }
-                afterStartup(result)
+                initWS(contextState.server.BASE_URL);
             });
-        }
-
-        const afterStartup = (results:BaseResponse[]) => {
-            if (!(results.length === 1 && results[0].name === RESPONSE_NAMES.SESSION_EXPIRED)) {
-                contextState.subscriptions.emitErrorDialogVisible(false);
-            }
-
-            initWS(contextState.server.BASE_URL);
         }
 
         const fetchAppConfig = () => {
@@ -515,9 +511,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                 contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.api.setServer(contextState.server);
+                contextState.subscriptions.setServer(contextState.server);
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.api.setServer(contextState.server);
+                contextState.subscriptions.setServer(contextState.server);
 
                 if (props.onMenu) {
                     contextState.server.setOnMenuFunction(props.onMenu);

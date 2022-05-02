@@ -38,6 +38,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      */
     const handleRetry = () => {
         if (!alreadySent.current) {
+            context.subscriptions.emitErrorDialogVisible(false);
             if (props.sessionExpired || props.gone) {
                 alreadySent.current = true;
                 handleRestart();
@@ -54,7 +55,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
      */
     useEventHandler(props.sessionExpired ||props.gone || props.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
-            handleRestart()
+            handleRetry()
         }
     });
     
@@ -75,7 +76,7 @@ const ErrorDialog:FC<IServerFailMessage> = (props) => {
                     <span className="rc-error-dialog-header-text">{props.headerMessage}</span>
                 </div>
                 <div className="rc-error-dialog-content">
-                    <span dangerouslySetInnerHTML={{ __html: props.bodyMessage }} />
+                    <span dangerouslySetInnerHTML={{ __html: props.bodyMessage ? props.bodyMessage + ". <u>Click here!</u> or press Escape to retry!" : "<u>Click here!</u> or press Escape to retry!" }} />
                 </div>
             </div>
         </>

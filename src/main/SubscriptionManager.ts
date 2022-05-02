@@ -6,6 +6,9 @@ import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import { ApplicationSettingsResponse, DialogResponse, ErrorResponse, LoginModeType, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { MFAURLType } from "./response/login/LoginResponse";
+import Server from "./Server";
+import BaseServer from "./server/BaseServer";
+import ServerV2 from "./server/ServerV2";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
@@ -14,6 +17,8 @@ export class SubscriptionManager {
 
     /** AppSettings instance */
     appSettings: AppSettings;
+
+    server: BaseServer|Server|ServerV2;
 
     /** 
      * A Map which stores components which want to subscribe to their properties, 
@@ -158,6 +163,7 @@ export class SubscriptionManager {
     constructor(store: BaseContentStore|ContentStore|ContentStoreV2) {
         this.contentStore = store;
         this.appSettings = new AppSettings(store, this);
+        this.server = new Server(store as ContentStore, this, this.appSettings);
     }
 
     setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
@@ -165,7 +171,11 @@ export class SubscriptionManager {
     }
 
     setAppSettings(appSettings:AppSettings) {
-        this.appSettings = appSettings
+        this.appSettings = appSettings;
+    }
+
+    setServer(server:Server|ServerV2) {
+        this.server = server;
     }
 
     handleScreenDataProviderSubscriptions(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
@@ -803,6 +813,12 @@ export class SubscriptionManager {
 
     /** Tell app that session has expired */
     emitErrorDialogVisible(show:boolean) {
+        if (show) {
+            this.server.errorIsDisplayed = true;
+        }
+        else {
+            this.server.errorIsDisplayed = false;
+        }
         this.errorDialogSubscriber.forEach((subFunc) => subFunc.apply(undefined, [show]));
     }
 
