@@ -178,6 +178,9 @@ const Menu: FC<IMenu> = (props) => {
     /** a reference to the current panelmenu reactelement */
     const panelMenu = useRef<PanelMenu>(null);
 
+    /** True, if the menu should close on collapse */
+    const foldOnCollapse = false;
+
     /** The currently selected-menuitem */
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>((context.contentStore as ContentStore).activeScreens.length ? 
     (context.contentStore as ContentStore).activeScreens.slice(-1).pop()!.className as string : "");
@@ -217,7 +220,9 @@ const Menu: FC<IMenu> = (props) => {
             }
             else {
                 if (deviceStatus === "Small" || deviceStatus === "Mini") {
-                    closeOpenedMenuPanel();
+                    if (foldOnCollapse) {
+                        closeOpenedMenuPanel();
+                    }
                     context.subscriptions.emitMenuCollapse(0);
                 }
                 else {
@@ -288,7 +293,9 @@ const Menu: FC<IMenu> = (props) => {
                             (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
                             fadeRef.current.style.removeProperty('display');
                         }
-                        closeOpenedMenuPanel();
+                        if (foldOnCollapse) {
+                            closeOpenedMenuPanel();
+                        }
                     }
                 }
         
@@ -329,7 +336,9 @@ const Menu: FC<IMenu> = (props) => {
      */
     const handleToggleClick = () => {
         if (props.menuVisibility.menuBar) {
-            closeOpenedMenuPanel();
+            if (foldOnCollapse) {
+                closeOpenedMenuPanel();
+            }
             context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
             context.subscriptions.emitMenuCollapse(2);
         }
