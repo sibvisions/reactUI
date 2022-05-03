@@ -50,7 +50,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
                 <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
             </div>
             <div className="p-fluid">
-                <div className="p-field" style={{ fontSize: "1.5rem", fontWeight: "bold" }} >
+                <div className="p-field" style={{ fontSize: "1.125rem", fontWeight: "bold" }} >
                     {translations.get("Waiting for verification.")}
                 </div>
                 <div className="p-field wait-code-container" >

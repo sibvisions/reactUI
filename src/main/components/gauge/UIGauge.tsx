@@ -140,7 +140,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
                 className="ui-gauge" 
-                style={props.id === "login-gauge" ? { height: "120px", width: "120px" } : layoutStyle} 
+                style={props.id === "login-gauge" ? props.name === "login-gauge-wait" ? { height: "100px", width: "100px" } : { height: "75px", width: "75px" } : layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
                 data-pr-position="left"
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}>

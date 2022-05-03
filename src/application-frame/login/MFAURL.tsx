@@ -76,12 +76,12 @@ const MFAURL: FC<ILoginForm> = (props) => {
             </div>
             <div className="p-fluid">
                 <div className="p-field url-topper">
-                    <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginRight: "2rem" }} >
+                    <div style={{ fontSize: "1.125rem", fontWeight: "bold", marginRight: "2rem" }} >
                         {translations.get("Waiting for verification.")}
                     </div>
                     <UIGauge
                         id="login-gauge"
-                        name="login-gauge-wait"
+                        name="login-gauge-url"
                         className="ui-gauge"
                         constraints=""
                         title=""
