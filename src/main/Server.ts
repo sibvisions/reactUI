@@ -487,7 +487,7 @@ class Server extends BaseServer {
             }));
         }
         else {
-            this.subManager.emitDialog("server", true, false, "Could not load translation", "There was a problem when fetching the translation. <u>Click here!</u> or press Escape to retry!");
+            this.subManager.emitDialog("server", true, false, "Could not load translation", "There was a problem when fetching the translation");
             this.subManager.emitErrorDialogVisible(true);
         }
 
