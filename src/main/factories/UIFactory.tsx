@@ -21,7 +21,7 @@ import { CellEditorWrapper, UIEditorCheckBox,
         UIEditorNumber,
         UIEditorText,
         CELLEDITOR_CLASSNAMES } from "../components/editors"
-import UITable from "../components/table/UITable";
+import { UITable } from "../components/table";
 import UIIcon from "../components/icon/UIIcon";
 import { UIPassword, UIText, UITextArea } from "../components/text"
 import UIChart from "../components/chart/UIChart";

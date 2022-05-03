@@ -1,5 +1,5 @@
 /** React imports */
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 /** 3rd Party imports */
 import _ from "underscore";
@@ -9,18 +9,32 @@ import {
     useOutsideClick, 
     useEventHandler,
     useMetaData,
-    useDataProviderData,
 } from "../../hooks";
 
 /** Other imports */
 import { appContext } from "../../AppProvider";
-import { cellRenderer, displayEditor } from "./CellDisplaying";
 import { getFont, IconProps, parseIconData } from "../comp-props";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
-import { SelectedCellContext } from "./UITable";
+import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
 import { checkComponentName } from "../../util";
-import { ColumnDescription } from "../../response";
-import { fetchLinkedRefDatabook, ICellEditorLinked } from "../editors/linked/UIEditorLinked";
+import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
+import { 
+    DateCellRenderer, 
+    DirectCellRenderer, 
+    ImageCellRenderer, 
+    LinkedCellRenderer, 
+    NumberCellRenderer, 
+    TextCellRenderer,
+    SelectedCellContext
+} from "./";
+
+
+export interface IInTableEditor {
+    stopCellEditing?: Function
+    passedKey?: string,
+    isCellEditor: boolean,
+    cellScreenName: string,
+    editorStyle?: CSSProperties
+}
 
 export interface CellFormatting {
     foreground?: string;
@@ -29,77 +43,14 @@ export interface CellFormatting {
     image?: string;
 }
 
-interface ILinkedTableCell extends CellEditor {
+export interface ICellRender extends ICellEditor {
     columnMetaData: ColumnDescription,
     icon: JSX.Element|null,
     stateCallback?: Function
 }
 
-const LinkedTableCell: FC<ILinkedTableCell> = (props) => {
-    const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorLinked
-
-    /** The data provided by the databook */
-    const [providedData] = useDataProviderData(props.screenName, castedCellEditor.linkReference.referencedDataBook||"");
-
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
-
-    /** True if the linkRef has already been fetched */
-    const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
-
-    
-
-    useEffect(() => {
-        if (props.cellData) {
-            fetchLinkedRefDatabook(
-                props.screenName, 
-                castedCellEditor.linkReference.referencedDataBook, 
-                props.cellData, 
-                castedCellEditor.displayReferencedColumnName,
-                context.server,
-                context.contentStore
-            );
-        }
-    }, []);
-
-    /** A map which stores the referenced-column-values as keys and the display-values as value */
-    const displayValueMap = useMemo(() => {
-        const map = new Map<string, string>();
-        if (providedData.length && castedCellEditor.displayReferencedColumnName) {
-            providedData.forEach((data:any) => map.set(
-                data[castedCellEditor.linkReference.referencedColumnNames[0]], 
-                data[castedCellEditor.displayReferencedColumnName as string]
-            ))
-        }
-        return map;
-    }, [linkRefFetchFlag]);
-
-    const linkedDisplayValue = useMemo(() => {
-        if (castedCellEditor.displayReferencedColumnName) {
-            if (displayValueMap.has(props.cellData)) {
-                return displayValueMap.get(props.cellData);
-            }
-            else {
-                return "";
-            }
-        }
-        return props.cellData
-    }, [props.cellData, linkRefFetchFlag])
-
-    return (
-        <>
-            <div className="cell-data-content">
-                {props.icon ?? cellRenderer(props.columnMetaData as any, linkedDisplayValue, props.resource, context.appSettings.locale)}
-            </div>
-            <div style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} >
-                <i className="pi pi-chevron-down cell-editor-arrow" />
-            </div>
-        </>
-    )
-}
-
 /** Type for CellEditor */
-interface CellEditor {
+export interface ICellEditor {
     pk: any,
     screenName: string,
     name: string,
@@ -127,13 +78,43 @@ interface CellEditor {
     dataProviderReadOnly?: boolean
     rowNumber: number
     colIndex: number
+    filter?: Function
+}
+
+/** 
+ * Returns an in-cell editor for the column 
+ * @param metaData - the metaData of the CellEditor
+ * @param props - properties of the cell
+ * @returns in-cell editor for the column
+ */
+function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
+    let editor = <div>{props.cellData}</div>
+    if (metaData) {
+        editor = <CellEditorWrapper
+            {...{
+                ...metaData,
+                name: props.name,
+                dataRow: props.dataProvider,
+                columnName: props.colName,
+                id: "",
+                cellEditor_editable_: true,
+                editorStyle: { width: "100%", height: "100%" },
+                autoFocus: true,
+                stopCellEditing: stopCellEditing,
+                passedKey: passedValues,
+                isCellEditor: true,
+                cellScreenName: props.dataProvider.split("/")[1],
+                rowNumber: props.rowNumber
+            }} />
+    }
+    return editor
 }
 
 /**
  * This component displays either just the value of the cell or an in-cell editor
  * @param props - props received by Table
  */
-export const CellEditor: FC<CellEditor> = (props) => {
+export const CellEditor: FC<ICellEditor> = (props) => {
     const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
     
     /** State if editing is currently possible */
@@ -156,14 +137,6 @@ export const CellEditor: FC<CellEditor> = (props) => {
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
-
-    const showDropDownArrow = useCallback(() => {
-        if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-            || columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
-            return true;
-        }
-        return false;
-    }, [columnMetaData]);
 
     /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
     useEffect(() => {
@@ -306,12 +279,32 @@ export const CellEditor: FC<CellEditor> = (props) => {
         }
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
+    const getRenderer = () => {
+        switch (columnMetaData?.cellEditor.className) {
+            case CELLEDITOR_CLASSNAMES.CHECKBOX:
+            case CELLEDITOR_CLASSNAMES.CHOICE:
+                return <DirectCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+            case CELLEDITOR_CLASSNAMES.DATE:
+                return <DateCellRenderer icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} columnMetaData={columnMetaData} {...props} />
+            case CELLEDITOR_CLASSNAMES.IMAGE:
+                return <ImageCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+            case CELLEDITOR_CLASSNAMES.LINKED:
+                return <LinkedCellRenderer icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} columnMetaData={columnMetaData} {...props} />
+            case CELLEDITOR_CLASSNAMES.NUMBER:
+                return <NumberCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+            case CELLEDITOR_CLASSNAMES.TEXT:
+                return <TextCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+            default:
+                return props.cellData
+        }
+    }
+
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
         (isEditable) ?
             (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
-                    <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>
+                    <div style={{ width: "100%", height: "100%" }} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>
                     :
@@ -319,54 +312,33 @@ export const CellEditor: FC<CellEditor> = (props) => {
                         style={cellStyle}
                         className={cellClassNames.join(' ') + " " + isEditable}
                         onClick={() => {
-                            if (columnMetaData?.cellEditor?.className !== "ImageViewer") {
+                            if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
                                 setWaiting(true);
                                 setEdit(true);
                             }
                         }}>
-                        {columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED ?
-                            <LinkedTableCell {...props} columnMetaData={columnMetaData} icon={icon} />
-                            :
-                            <>
-                                {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
-                            </>
-                        }
+                        {getRenderer()}
                     </div>
                 ) : (!edit ?
                     <div
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
                         onDoubleClick={() => {
-                            if (columnMetaData?.cellEditor?.className !== "ImageViewer") {
+                            if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
+                                setWaiting(true);
                                 setEdit(true)
                             }
                         }}>
-                        {columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED ?
-                            <LinkedTableCell {...props} columnMetaData={columnMetaData} icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} />
-                            :
-                            <>
-                                {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                                {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
-                            </>
-                        }
+                        {getRenderer()}
                     </div>
                     :
-                    <div style={{width: "100%", height: "100%"}} ref={wrapperRef}>
+                    <div style={{ width: "100%", height: "100%" }} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>)
             : <div
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
-                {columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED ?
-                    <LinkedTableCell {...props} columnMetaData={columnMetaData} icon={icon} />
-                    :
-                    <>
-                        {icon ?? cellRenderer(columnMetaData, props.cellData, props.resource, context.appSettings.locale)}
-                        {showDropDownArrow() && <i className="pi pi-chevron-down cell-editor-arrow" style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} />}
-                    </>
-                }
-
+                {getRenderer()}
             </div>
     )
 }

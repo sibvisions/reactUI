@@ -176,8 +176,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         
     },[props.selectedRow]);
 
-    const timeChanged = (date1: Date, date2: Date) => {
-        if (date1.getHours() !== date2.getHours() || date1.getMinutes() !== date2.getMinutes() || date1.getSeconds() !== date2.getSeconds()) {
+    const timeChanged = (newDate: Date, oldDate: Date) => {
+        if (!oldDate || newDate.getHours() !== oldDate.getHours() || newDate.getMinutes() !== oldDate.getMinutes() || newDate.getSeconds() !== oldDate.getSeconds()) {
             return true;
         }
         return false;

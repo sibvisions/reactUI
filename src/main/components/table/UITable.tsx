@@ -18,11 +18,11 @@ import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescriptio
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
-import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
+import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
-import { CellEditor } from "./CellEditor";
+import { CellEditor } from "./";
 
 
 /** Interface for Table */
@@ -762,7 +762,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow])
 
     /** Building the columns */
-    const columns = useMemo(() => {        
+    const columns = useMemo(() => {
         const createColumnHeader = (colName: string, colIndex: number) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
@@ -795,70 +795,47 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }}
                 body={(rowData: any, tableInfo: any) => {
                     if (!rowData) { return <div></div> }
-                    if (columnMetaData?.cellEditor.directCellEditor) {
-                        return <CellEditorWrapper
-                        {...{
-                            id: "",
-                            ...columnMetaData,
-                            name: props.name,
-                            dataRow: props.dataBook,
-                            columnName: colName,
-                            cellEditor_editable_: true,
-                            cellFormatting: rowData.__recordFormats && rowData.__recordFormats[props.name],
-                            editorStyle: { width: "100%", height: "100%" },
-                            autoFocus: true,
-                            rowIndex: () => tableInfo.rowIndex,
-                            filter: () => {
-                                const currDataRow = providerData[tableInfo.rowIndex]
-                                return {
-                                    columnNames: primaryKeys,
-                                    values: primaryKeys.map(pk => currDataRow[pk])
-                                }
-                            },
-                            readonly: columnMetaData?.readonly,
-                            isCellEditor: true,
-                            cellScreenName: props.dataBook.split("/")[1],
-                            rowNumber: tableInfo.rowIndex,
-                            colIndex: colIndex
-                        }} 
-                        />
-                    }
-                    else {
-                        return <CellEditor
-                            pk={_.pick(rowData, primaryKeys)}
-                            screenName={screenName}
-                            name={props.name as string}
-                            colName={colName}
-                            dataProvider={props.dataBook}
-                            cellData={rowData[colName]}
-                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
-                            resource={context.server.RESOURCE_URL}
-                            cellId={() => { return { selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() } }}
-                            tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                            selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
-                            selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
-                            enterNavigationMode={enterNavigationMode}
-                            tabNavigationMode={tabNavigationMode}
-                            selectedRow={selectedRow}
-                            className={className}
-                            colReadonly={columnMetaData?.readonly}
-                            tableEnabled={props.enabled}
-                            editable={props.editable}
-                            startEditing={props.startEditing}
-                            insertEnabled={metaData?.insertEnabled}
-                            updateEnabled={metaData?.updateEnabled}
-                            deleteEnabled={metaData?.deleteEnabled}
-                            dataProviderReadOnly={metaData?.readOnly}
-                            stopEditing={() => {
-                                const table = context.contentStore.flatContent.get(id);
-                                if (table) {
-                                    (table as TableProps).startEditing = false;
-                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
-                                }
-                            }}
-                            rowNumber={tableInfo.rowIndex}
-                            colIndex={colIndex} />
-                    }
+                    return <CellEditor
+                        pk={_.pick(rowData, primaryKeys)}
+                        screenName={screenName}
+                        name={props.name as string}
+                        colName={colName}
+                        dataProvider={props.dataBook}
+                        cellData={rowData[colName]}
+                        cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                        resource={context.server.RESOURCE_URL}
+                        cellId={() => { return { selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() } }}
+                        tableContainer={wrapRef.current ? wrapRef.current : undefined}
+                        selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
+                        selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
+                        enterNavigationMode={enterNavigationMode}
+                        tabNavigationMode={tabNavigationMode}
+                        selectedRow={selectedRow}
+                        className={className}
+                        colReadonly={columnMetaData?.readonly}
+                        tableEnabled={props.enabled}
+                        editable={props.editable}
+                        startEditing={props.startEditing}
+                        insertEnabled={metaData?.insertEnabled}
+                        updateEnabled={metaData?.updateEnabled}
+                        deleteEnabled={metaData?.deleteEnabled}
+                        dataProviderReadOnly={metaData?.readOnly}
+                        stopEditing={() => {
+                            const table = context.contentStore.flatContent.get(id);
+                            if (table) {
+                                (table as TableProps).startEditing = false;
+                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
+                            }
+                        }}
+                        rowNumber={tableInfo.rowIndex}
+                        colIndex={colIndex}
+                        filter={() => {
+                            const currDataRow = providerData[tableInfo.rowIndex]
+                            return {
+                                columnNames: primaryKeys,
+                                values: primaryKeys.map(pk => currDataRow[pk])
+                            }
+                        }} />
                 }
                 }
                 style={{ whiteSpace: 'nowrap' }}
@@ -876,7 +853,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     }, [
         props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
         context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
-        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData, 
+        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
         props.startEditing
     ])
 

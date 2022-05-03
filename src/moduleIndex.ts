@@ -7,7 +7,7 @@ export { default as UILabel } from './main/components/label/UILabel';
 export { BorderLayout, FlowLayout, FormLayout, GridLayout, NullLayout } from './main/components/layouts'
 export { UIMapGoogle, UIMapOSM } from './main/components/map';
 export * from './main/components/panels'
-export { default as UITable } from './main/components/table/UITable';
+export { UITable } from './main/components/table';
 export * from './main/components/text'
 export { ScreenWrapper } from './main/components/custom-comp/index';
 export * from './main/hooks'
