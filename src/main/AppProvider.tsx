@@ -12,6 +12,7 @@ import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
 import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import ServerV2 from "./server/ServerV2";
+import { RESPONSE_NAMES } from "./response";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreV2): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
@@ -561,12 +562,20 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         preserveOnReload = true;
                     }
 
+                    if (response.applicationName) {
+                        contextState.server.RESOURCE_URL = contextState.server.BASE_URL + "/resource/" + response.applicationName;
+                    }
+
                     if (response.applicationColorScheme && !schemeToSet) {
                         addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", contextState.appSettings);
                     }
 
                     if (response.applicationTheme && !themeToSet) {
                         addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", contextState.appSettings);
+                    }
+
+                    if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.version === 1) {
+                        contextState.server.language({ name: "", langCode: response.langCode, languageResource: response.languageResource });
                     }
                 });
                 if (preserveOnReload) {

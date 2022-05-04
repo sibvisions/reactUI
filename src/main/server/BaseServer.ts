@@ -55,6 +55,8 @@ export default abstract class BaseServer {
 
     errorIsDisplayed:boolean = false;
 
+    translationFetched:boolean = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance

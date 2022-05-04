@@ -476,15 +476,18 @@ class Server extends BaseServer {
      */
     async language(langData:LanguageResponse) {
         if (langData.languageResource && !this.errorIsDisplayed) {
-            await this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
-            .then((response:any) => response.text())
-            .then(value => parseString(value, (err, result) => { 
-                if (result) {
-                    result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
-                    this.appSettings.setAppReadyParam("translation");
-                    this.subManager.emitTranslation();
-                }
-            }));
+            if (!this.translationFetched) {
+                await this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
+                .then((response:any) => response.text())
+                .then(value => parseString(value, (err, result) => { 
+                    if (result) {
+                        result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                        this.appSettings.setAppReadyParam("translation");
+                        this.translationFetched = true;
+                        this.subManager.emitTranslation();
+                    }
+                }));
+            }
         }
         else {
             this.subManager.emitDialog("server", true, false, "Could not load translation", "There was a problem when fetching the translation");
