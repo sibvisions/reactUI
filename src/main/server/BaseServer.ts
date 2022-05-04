@@ -1,7 +1,7 @@
 import { History } from "history";
 import _ from "underscore";
 import API from "../API";
-import AppSettings from "../AppSettings";
+import AppSettings, { appVersion } from "../AppSettings";
 import { IPanel } from "../components/panels";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
@@ -53,9 +53,11 @@ export default abstract class BaseServer {
     /** How long before a timeout occurs */
     timeoutMs = 10000;
 
-    errorIsDisplayed:boolean = false;
+    errorIsDisplayed: boolean = false;
 
-    translationFetched:boolean = false;
+    translationFetched: boolean = false;
+
+    uiRefreshInProgress: boolean = false;
 
     /**
      * @constructor constructs server instance
@@ -144,6 +146,11 @@ export default abstract class BaseServer {
             } else {
                 if (queueMode === RequestQueueMode.IMMEDIATE) {
                     let finalEndpoint = this.endpointMap.get(endpoint);
+
+                    if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
+                        this.uiRefreshInProgress = true;
+                    }
+
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
@@ -199,6 +206,10 @@ export default abstract class BaseServer {
                             reject(error);
                             console.error(error);
                         }).finally(() => {
+                            if (this.uiRefreshInProgress) {
+                                this.uiRefreshInProgress = false;
+                            }
+
                             this.openRequests.delete(request);
                         });
                 } else {
@@ -514,8 +525,18 @@ export default abstract class BaseServer {
      * @param expData - the sessionExpiredResponse
      */
      sessionExpired(expData: SessionExpiredResponse) {
-        this.subManager.emitDialog("server", true, false, this.contentStore.translation.get("Session expired!"));
-        this.subManager.emitErrorDialogVisible(true);
+        if (this.uiRefreshInProgress) {
+            if (appVersion.version !== 2) {
+                this.history?.push("/login");
+            }
+            this.appSettings.setAppReadyParamFalse();
+            this.subManager.emitAppReady(false);
+            this.subManager.emitRestart();
+        }
+        else {
+            this.subManager.emitDialog("server", true, false, this.contentStore.translation.get("Session expired!"));
+            this.subManager.emitErrorDialogVisible(true);
+        }
         this.contentStore.reset();
         sessionStorage.clear();
         console.error(expData.title);
