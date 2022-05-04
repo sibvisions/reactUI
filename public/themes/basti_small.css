@@ -129,7 +129,7 @@ body {
 .basti_small .std-menu .menu-logo-mini {
   width: var(--std-logo-width); }
 
-.basti_small .std-menu .p-menuitem-icon:not(.profile-image) {
+.basti_small .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
   min-width: var(--menuicon-size);
   max-width: var(--menuicon-size);
   font-size: var(--menuicon-size); }

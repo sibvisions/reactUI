@@ -268,7 +268,7 @@ body {
             width: var(--std-logo-width);
         }
 
-        .p-menuitem-icon:not(.profile-image) {
+        .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
             min-width: var(--menuicon-size);
             max-width: var(--menuicon-size);
             font-size: var(--menuicon-size);

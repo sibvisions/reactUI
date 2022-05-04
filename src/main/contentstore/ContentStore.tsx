@@ -137,7 +137,7 @@ export default class ContentStore extends BaseContentStore {
 
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
-                        removeChildren(newComponent.id, existingComponent.className);
+                        //removeChildren(newComponent.id, existingComponent.className);
                         if (desktop) {
                             this.desktopContent.delete(newComponent.id);
                             this.removedDesktopContent.set(newComponent.id, existingComponent);
@@ -148,7 +148,7 @@ export default class ContentStore extends BaseContentStore {
                         }
                     }
                     else {
-                        removeChildren(newComponent.id, existingComponent.className, true);
+                        //removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }

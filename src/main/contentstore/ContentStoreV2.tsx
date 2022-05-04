@@ -122,13 +122,13 @@ export default class ContentStoreV2 extends BaseContentStore {
                             }
                         }
                         else {
-                            removeChildren(newComponent.id, existingComponent.className);
+                            //removeChildren(newComponent.id, existingComponent.className);
                             this.flatContent.delete(newComponent.id);
                             this.removedContent.set(newComponent.id, existingComponent);
                         }
                     }
                     else {
-                        removeChildren(newComponent.id, existingComponent.className, true);
+                        //removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }

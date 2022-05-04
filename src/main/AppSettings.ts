@@ -254,9 +254,17 @@ export default class AppSettings {
      * @param save - whether the save button is visible or not
      */
      setVisibleButtons(reload:boolean, rollback:boolean, save:boolean) {
-        this.visibleButtons.reload = reload;
-        this.visibleButtons.rollback = rollback;
-        this.visibleButtons.save = save;
+        if (reload !== undefined) {
+            this.visibleButtons.reload = reload;
+        }
+        
+        if (rollback !== undefined) {
+            this.visibleButtons.rollback = rollback;
+        }
+        
+        if (save !== undefined) {
+            this.visibleButtons.save = save;
+        }
     }
 
     /**
