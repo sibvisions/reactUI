@@ -9,7 +9,6 @@ import { createChangesRequest, createOpenScreenRequest, createStartupRequest, cr
 import { addCSSDynamically, Timer } from "./util";
 import { ICustomContent } from "../MiddleMan";
 import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
-import { BaseResponse, RESPONSE_NAMES } from "./response";
 import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import ServerV2 from "./server/ServerV2";
@@ -51,10 +50,11 @@ const server = new Server(contentStore, subscriptions, appSettings);
 /** API instance */
 const api = new API(server, contentStore, appSettings, subscriptions);
 
-
 contentStore.setSubscriptionManager(subscriptions);
 
 server.setAPI(api);
+
+subscriptions.setAppSettings(appSettings);
 
 subscriptions.setServer(server);
 

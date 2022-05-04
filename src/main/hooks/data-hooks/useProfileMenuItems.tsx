@@ -8,6 +8,7 @@ import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
 import { version } from "../../../../package.json";
 import ContentStore from "../../contentstore/ContentStore";
+import { MenuVisibility, VisibleButtons } from "../../AppSettings";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -33,7 +34,7 @@ const useProfileMenuItems = () => {
     }, [context.server, context.contentStore]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
+        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
 
         return () => context.subscriptions.unsubscribeFromAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
     },[])

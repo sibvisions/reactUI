@@ -118,8 +118,8 @@ export default class AppSettings {
 
     /** The menu-visibility object */
     menuVisibility:MenuVisibility = {
-        menuBar: false,
-        toolBar: false
+        menuBar: true,
+        toolBar: true
     }
 
     /** True, if change password enabled */
@@ -273,8 +273,13 @@ export default class AppSettings {
      * @param toolBar - True, if the toolbar is visible
      */
     setMenuVisibility(menuBar:boolean, toolBar:boolean) {
-        this.menuVisibility.menuBar = menuBar;
-        this.menuVisibility.toolBar = toolBar;
+        if (menuBar !== undefined) {
+            this.menuVisibility.menuBar = menuBar;
+        }
+
+        if (toolBar !== undefined) {
+            this.menuVisibility.toolBar = toolBar;
+        }
     }
 
     setDeviceStatus(deviceStatus:DeviceStatus) {

@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../main/AppProvider";
-import { MenuVisibility } from "../../../main/AppSettings";
+import { MenuVisibility, VisibleButtons } from "../../../main/AppSettings";
 import { concatClassnames } from "../../../main/util";
 import { ApplicationSettingsResponse } from "../../../main/response";
 import ScreenManager from "../ScreenManager";
@@ -25,10 +25,10 @@ const UIManagerV2: FC<any> = () => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
             setMenuVisibility({
-                menuBar: appSettings.menuBar,
-                toolBar: appSettings.toolBar
+                menuBar: menuVisibility.menuBar,
+                toolBar: menuVisibility.toolBar
             });
         });
 

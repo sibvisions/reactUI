@@ -797,8 +797,12 @@ export class SubscriptionManager {
     }
 
     /** Tell the subscribers to update their app-settings */
-    emitAppSettings(appSettings:ApplicationSettingsResponse) {
-        this.appSettingsSubscriber.forEach((subFunc) => subFunc.apply(undefined, [appSettings]));
+    emitAppSettings() {
+        this.appSettingsSubscriber.forEach((subFunc) => subFunc.apply(undefined, [{ 
+            menuVisibility: this.appSettings.menuVisibility,
+            visibleButtons: this.appSettings.visibleButtons, 
+            changePasswordEnabled: this.appSettings.changePasswordEnabled 
+        }]));
     }
 
     /** Tell the subscribers to update their app-settings */

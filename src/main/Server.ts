@@ -507,7 +507,7 @@ class Server extends BaseServer {
             }
             this.contentStore.updateContent(appSettings.desktop, true);
         }
-        this.subManager.emitAppSettings(appSettings);
+        this.subManager.emitAppSettings();
     }
 
     /**

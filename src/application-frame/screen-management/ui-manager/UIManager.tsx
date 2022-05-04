@@ -6,7 +6,7 @@ import { appContext } from "../../../main/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import CorporateMenu from "../../menu/CorporateMenu";
-import { MenuVisibility } from "../../../main/AppSettings";
+import { MenuVisibility, VisibleButtons } from "../../../main/AppSettings";
 import { ApplicationSettingsResponse } from "../../../main/response";
 import { useParams } from "react-router";
 import ContentStore from "../../../main/contentstore/ContentStore";
@@ -103,10 +103,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     // Subscribes to the menu-visibility, error-dialog and theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((appSettings: ApplicationSettingsResponse) => {
+        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
             setMenuVisibility({
-                menuBar: appSettings.menuBar,
-                toolBar: appSettings.toolBar
+                menuBar: menuVisibility.menuBar,
+                toolBar: menuVisibility.toolBar
             });
         });
 

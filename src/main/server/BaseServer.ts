@@ -88,7 +88,6 @@ export default abstract class BaseServer {
      */
      buildReqOpts(request:any):RequestInit {
         if (request && request.upload) {
-            console.log(request.formData)
             return {
                 method: 'POST',
                 body: request.formData,
