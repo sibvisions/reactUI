@@ -560,6 +560,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (response.preserveOnReload) {
                         preserveOnReload = true;
                     }
+
+                    if (response.applicationColorScheme && !schemeToSet) {
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", contextState.appSettings);
+                    }
+
+                    if (response.applicationTheme && !themeToSet) {
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", contextState.appSettings);
+                    }
                 });
                 if (preserveOnReload) {
                     for (let [, value] of contextState.server.subManager.jobQueue.entries()) {
