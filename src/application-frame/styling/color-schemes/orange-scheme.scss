@@ -1238,10 +1238,6 @@ body {
                 color: var(--text-color);
             }
 
-            &:hover {
-                color: var(--table-cell-hover-color);
-            }
-
             &.cell-required {
                 background: var(--table-required-even-background);
                 color: var(--table-required-color);
@@ -1307,6 +1303,11 @@ body {
         background: var(--table-row-hover-background);
         color: var(--text-color);
     }
+}
+
+.p-datatable.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row > td.p-selectable-cell:not(.p-highlight):hover {
+    background: initial;
+    color: var(--table-cell-hover-color);
 }
 
 /// Toolbar

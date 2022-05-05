@@ -1,4 +1,4 @@
-.rc-table.p-datatable {
+.rc-table.p-datatable-selectable-cell {
     width: 100%;
     height: 100%;
     border-collapse: collapse;
@@ -81,6 +81,11 @@
                 width: 100%;
             }
 
+            &.p-selectable-row > td.p-selectable-cell.p-highlight, &.p-selectable-row > td.p-selectable-cell:focus {
+                outline: 2px solid #7f7f7f;
+                outline-offset: -2px;
+            }
+
             >td {
                 position: relative;
                 height: 35px;
@@ -151,8 +156,7 @@
                 }
 
                 &.p-highlight {
-                    outline: 2px solid #7f7f7f;
-                    outline-offset: -2px;
+
                     &:not(.cell-readonly):not(.cell-required) {
                         background: unset;
                     }
