@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from "react"
+import React, { FC, useContext } from "react"
 import SignatureCanvas from 'react-signature-canvas'
 import { appContext } from "../../../AppProvider"
 import { concatClassnames } from "../../../util"

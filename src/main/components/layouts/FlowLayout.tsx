@@ -71,7 +71,19 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** Sorts the Childcomponent based on indexOf property */
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
 
-        const toolbarGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-button-gap')) : 0;
+        const toolbarGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-gap')) : 0;
+
+        const toolbarCompExtraGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-comp-gap')) : 0;
+
+        // Adding an extra gap between components in a toolbar for styling reasons
+        if (isToolBar) {
+            if (isRowOrientation) {
+                gaps.horizontalGap += toolbarCompExtraGap;
+            }
+            else {
+                gaps.verticalGap += toolbarCompExtraGap
+            }
+        }
 
         /**
          * Checks if the bar is first toolbar
