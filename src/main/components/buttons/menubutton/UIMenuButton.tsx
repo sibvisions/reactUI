@@ -131,7 +131,8 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
-                    `gap-${btnStyle.iconGapPos}`
+                    `gap-${btnStyle.iconGapPos}`,
+                    props.style
                 )}
                 style={{
                     ...btnStyle.style,

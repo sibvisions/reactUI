@@ -42,7 +42,8 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             className={concatClassnames(
                 "rc-input", 
                 props.focusable === false ? "no-focus-rect" : "",
-                isCompDisabled(props) ? "rc-input-readonly" : ""
+                isCompDisabled(props) ? "rc-input-readonly" : "",
+                props.style
             )}
             value={pwValue||""} 
             feedback={false} 

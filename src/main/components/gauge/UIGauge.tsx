@@ -1,6 +1,6 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../hooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex } from "../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex, concatClassnames } from "../../util";
 import BaseComponent from "../../util/types/BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
@@ -139,7 +139,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 id={checkComponentName(props.name)} 
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
-                className="ui-gauge" 
+                className={concatClassnames("ui-gauge", props.style)}
                 style={props.id === "login-gauge" ? props.name === "login-gauge-wait" ? { height: "100px", width: "100px" } : { height: "75px", width: "75px" } : layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
                 data-pr-position="left"

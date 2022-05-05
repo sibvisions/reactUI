@@ -4,6 +4,7 @@ import { IPanel } from "..";
 import { appContext } from "../../../AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../../request";
+import { concatClassnames } from "../../../util";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -48,7 +49,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
 
     return (
         <Dialog
-            className="rc-popup"
+            className={concatClassnames("rc-popup", baseProps.style)}
             header={baseProps.screen_title_ || baseProps.content_title_}
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
             onHide={handleOnHide} 

@@ -69,7 +69,8 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
                     btnStyle.iconDirection,
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
-                    props.focusable === false ? "no-focus-rect" : ""
+                    props.focusable === false ? "no-focus-rect" : "",
+                    props.style
                 )}
                 style={{
                     ...btnStyle.style,

@@ -85,7 +85,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             className={concatClassnames(
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
-                props.focusable === false ? "no-focus-rect" : ""
+                props.focusable === false ? "no-focus-rect" : "",
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
@@ -97,7 +97,7 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
             {(props.selectedRow || props.cellEditor.defaultImageName) &&
                 <img
                     id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
-                    className={imageStyle}
+                    className={concatClassnames(imageStyle, props.style)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}

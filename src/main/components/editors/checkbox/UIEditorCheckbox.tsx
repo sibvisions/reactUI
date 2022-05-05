@@ -154,7 +154,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 <label
                     className={concatClassnames(
                         "rc-editor-checkbox-label",
-                        props.eventMousePressed ? "mouse-pressed-event" : ""
+                        props.eventMousePressed ? "mouse-pressed-event" : "",
+                        props.style
                     )}
                     style={{ 
                         caretColor: "transparent", 

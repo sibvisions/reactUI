@@ -59,6 +59,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
+                className={props.style}
                 id={checkComponentName(props.name)}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,

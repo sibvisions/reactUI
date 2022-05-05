@@ -202,7 +202,11 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             <img
                 ref={imgRef}
                 id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
-                className={concatClassnames("rc-editor-choice-img", props.isReadOnly ? "choice-read-only" : "")}
+                className={concatClassnames(
+                    "rc-editor-choice-img", 
+                    props.isReadOnly ? "choice-read-only" : "",
+                    props.style
+                )}
                 alt=""
                 onClick={setNextValue}
                 src={currentImageValue !== "invalid" ?

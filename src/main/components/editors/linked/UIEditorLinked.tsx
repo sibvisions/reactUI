@@ -472,7 +472,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     "rc-editor-linked", 
                     props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined,
-                    props.focusable === false ? "no-focus-rect" : ""
+                    props.focusable === false ? "no-focus-rect" : "",
+                    props.style
                 )}
                 panelClassName={concatClassnames(
                     "rc-editor-linked-dropdown",

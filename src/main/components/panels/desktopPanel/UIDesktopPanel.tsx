@@ -1,7 +1,7 @@
 import React, { FC, useRef } from "react";
 import { useComponents, useMouseListener, useComponentConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, concatClassnames } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import { panelGetStyle } from "../panel/UIPanel";
 
@@ -31,7 +31,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
 
     return (
         <div
-            className="rc-desktop-panel"
+            className={concatClassnames("rc-desktop-panel", props.style)}
             ref={panelRef}
             id={checkComponentName(props.name)}
             style={{...layoutStyle, backgroundColor: props.background}} >

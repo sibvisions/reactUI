@@ -112,6 +112,7 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
                 onInitial={sendLoadCallback}
                 toolTipText={props.toolTipText}
                 popupMenu={{...usePopupMenu(props)}}
+                styleClassName={props.style}
             />
         </LayoutContext.Provider>
     )

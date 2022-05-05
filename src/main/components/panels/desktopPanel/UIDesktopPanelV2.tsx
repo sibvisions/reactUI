@@ -1,7 +1,7 @@
 import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../../hooks";
 import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension } from "../../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension, concatClassnames } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
@@ -120,7 +120,7 @@ const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
     return (
         <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback, tabMode: props.tabMode === true }}>
             <div
-                className="rc-desktop-panel"
+                className={concatClassnames("rc-desktop-panel", props.style)}
                 ref={panelRef}
                 id={checkComponentName(props.name)}
                 style={{ ...layoutStyle, backgroundColor: props.background }} >

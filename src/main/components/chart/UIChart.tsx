@@ -563,7 +563,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={chartRef} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={chartRef} className={props.style} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={checkComponentName(props.name)}
                 type={chartType}

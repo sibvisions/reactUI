@@ -1180,7 +1180,8 @@ const UITable: FC<TableProps> = (baseProps) => {
                     className={concatClassnames(
                         "rc-table",
                         props.autoResize === false ? "no-auto-resize" : "",
-                        getNavTableClassName(props.parent)
+                        getNavTableClassName(props.parent),
+                        props.style
                     )}
                     value={virtualEnabled ? virtualRows : providerData}
                     selection={selectedCell}

@@ -3,7 +3,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import BaseComponent from "../../util/types/BaseComponent";
-import { checkComponentName, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
+import { checkComponentName, concatClassnames, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
 
 // Interface for the browser component
 export interface IBrowser extends BaseComponent {
@@ -40,7 +40,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
             <Tooltip target={"#" + checkComponentName(props.name)} />
             <iframe
                 id={checkComponentName(props.name)} 
-                className="rc-mobile-browser"
+                className={concatClassnames("rc-mobile-browser", props.style)}
                 style={{...compStyle}}
                 src={props.url}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}

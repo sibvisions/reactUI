@@ -25,7 +25,7 @@ const UIMenuBar: FC<any> = (baseProps) => {
     }, [menuItems]);
 
     return (
-        <div ref={menuRef} id={props.name}>
+        <div ref={menuRef} className={props.style} id={props.name}>
             <Menubar  model={menuItems} />
         </div>
     )

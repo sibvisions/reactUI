@@ -742,9 +742,9 @@ body {
   .rc-error-dialog.app-gone {
     background: var(--gone-background); }
 
-.tag-panel {
+.tagpanel {
   color: #495057; }
-  .tag-panel .rc-button.mouse-border {
+  .tagpanel .rc-button.mouse-border {
     color: #495057; }
 
 .rc-panel-group-caption {

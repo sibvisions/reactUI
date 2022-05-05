@@ -48,7 +48,8 @@ const UICheckBox: FC<IButtonSelectable> = (baseProps) => {
                 className={concatClassnames(
                     "rc-checkbox",
                     `gap-${btnStyle.iconGapPos}`,
-                    btnStyle.iconDirection
+                    btnStyle.iconDirection,
+                    props.style
                 )}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

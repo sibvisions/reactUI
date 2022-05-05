@@ -2,6 +2,7 @@ import React, { FC, useRef } from "react";
 import UIFrame from "../frame/UIFrame";
 import { IPanel } from "../panels";
 import { useComponentConstants, useComponents, useMouseListener } from "../../hooks";
+import { concatClassnames } from "../../util";
 
 export interface IWindow extends IPanel {
     title:string
@@ -26,7 +27,7 @@ const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     return (
-        <div id={props.name} ref={panelRef} className="rc-mobile-launcher" style={{...layoutStyle, ...compStyle}}>
+        <div id={props.name} ref={panelRef} className={concatClassnames(props.style, "rc-mobile-launcher")} style={{...layoutStyle, ...compStyle}}>
             <UIFrame 
                 {...props} 
                 frameStyle={layoutStyle} 

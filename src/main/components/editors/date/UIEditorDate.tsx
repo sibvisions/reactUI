@@ -282,7 +282,8 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                     "rc-editor-date",
                     props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined,
-                    props.focusable === false ? "no-focus-rect" : ""
+                    props.focusable === false ? "no-focus-rect" : "",
+                    props.style
                 )}
                 panelClassName="rc-editor-date-panel"
                 style={{

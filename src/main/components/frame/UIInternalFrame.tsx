@@ -6,7 +6,7 @@ import { REQUEST_KEYWORDS } from "../../request";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
-import { Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
+import { concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
 import { checkSizes } from "../../util/server-util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../../hooks";
 import UIFrame from "./UIFrame";
@@ -255,7 +255,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                         height: 200
                     }}
                     dragHandleClassName="rc-frame-header"
-                    className="rc-frame"
+                    className={concatClassnames("rc-frame", props.style)}
                     enableResizing={props.resizable !== false}
                 >
                     <UIFrame

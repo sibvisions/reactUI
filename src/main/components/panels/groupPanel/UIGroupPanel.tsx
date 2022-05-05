@@ -3,7 +3,7 @@ import { Tooltip } from "primereact/tooltip";
 import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../../hooks";
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
+import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName, concatClassnames } from "../../../util";
 import { appVersion } from "../../../AppSettings";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
@@ -53,7 +53,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             <Tooltip target={"#" + checkComponentName(props.name)} />
             <div
                 ref={panelRef}
-                className="rc-panel-group"
+                className={concatClassnames("rc-panel-group", props.style)}
                 id={checkComponentName(props.name)}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?

@@ -108,7 +108,8 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 ref={panelRef}
                 id={checkComponentName(props.name)}
                 className={concatClassnames(
-                    "rc-scrollpanel"
+                    "rc-scrollpanel",
+                    props.style
                 )}
                 style={props.screen_modal_ || props.content_modal_
                     ? {

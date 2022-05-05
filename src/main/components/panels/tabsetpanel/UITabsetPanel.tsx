@@ -64,7 +64,8 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
             compStyle={compStyle}
             layoutStyle={layoutStyle}
             onTabChange={handleSelect}
-            onTabClose={handleClose} />
+            onTabClose={handleClose}
+            style={props.style} />
     )
 }
 export default UITabsetPanel

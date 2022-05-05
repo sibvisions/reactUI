@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Layout } from "../layouts";
-import { Dimension } from "../../util";
+import { concatClassnames, Dimension } from "../../util";
 import { useComponents } from "../../hooks";
 
 /**
@@ -16,7 +16,7 @@ const UIToolbar: FC<any> = (props) => {
     };
 
     return (
-        <div id={props.name} className="rc-frame-toolbar">
+        <div id={props.name} className={concatClassnames("rc-frame-toolbar", props.style)}>
             <Layout
                 id={props.id}
                 className="Frame-Toolbar"

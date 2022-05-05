@@ -47,7 +47,8 @@ const UIText: FC<ITextField> = (baseProps) => {
             className={concatClassnames(
                 "rc-input", 
                 props.focusable === false ? "no-focus-rect" : "",
-                isCompDisabled(props) ? "rc-input-readonly" : ""
+                isCompDisabled(props) ? "rc-input-readonly" : "",
+                props.style
             )}
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 

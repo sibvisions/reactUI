@@ -50,6 +50,7 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
                 props.eventMousePressed ? "mouse-pressed-event" : "",
+                props.style
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped

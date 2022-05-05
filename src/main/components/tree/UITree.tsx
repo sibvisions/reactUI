@@ -4,7 +4,7 @@ import { Tree } from 'primereact/tree';
 import * as _ from 'underscore'
 import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
-import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName} from "../../util";
+import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, concatClassnames} from "../../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import { FetchResponse } from "../../response";
@@ -493,7 +493,7 @@ const UITree: FC<ITree> = (baseProps) => {
         >
             <Tree
                 id={checkComponentName(props.name)}
-                className="rc-tree"
+                className={concatClassnames("rc-tree", props.style)}
                 value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}

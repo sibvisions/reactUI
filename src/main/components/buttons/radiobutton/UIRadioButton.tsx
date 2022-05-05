@@ -49,7 +49,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     "rc-radiobutton",
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
-                    props.style?.includes("actiongroup") ? "radio-action-group" : "",
+                    props.style
                     )}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

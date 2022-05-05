@@ -75,7 +75,8 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             "rc-editor-number",
             props.columnMetaData?.nullable === false ? "required-field" : "",
             props.isCellEditor ? "open-cell-editor" : undefined,
-            props.focusable === false ? "no-focus-rect" : ""
+            props.focusable === false ? "no-focus-rect" : "",
+            props.style
         )
     }, [props.columnMetaData?.nullable]);
 

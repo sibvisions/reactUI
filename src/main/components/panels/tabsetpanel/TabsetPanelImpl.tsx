@@ -4,7 +4,7 @@ import { appContext } from "../../../AppProvider";
 import { LayoutContext } from "../../../LayoutContext";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { IconProps, parseIconData } from "../../comp-props";
-import { checkComponentName, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../../util";
+import { checkComponentName, concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../../util";
 import { ComponentSizes, useMouseListener, usePopupMenu } from "../../../hooks";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import { ITabsetPanel, TabProperties } from "./UITabsetPanel";
@@ -15,7 +15,8 @@ interface ITabsetImpl extends ITabsetPanel {
     compStyle: CSSProperties
     layoutStyle: CSSProperties|undefined
     onTabChange: Function
-    onTabClose: Function
+    onTabClose: Function,
+    style?: string
 }
 
 /**
@@ -154,7 +155,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
     return (
         <LayoutContext.Provider value={componentSizes}>
             <div 
-                className="rc-tabset"
+                className={concatClassnames("rc-tabset", props.style)}
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>
                 <TabView
                     ref={panelRef}

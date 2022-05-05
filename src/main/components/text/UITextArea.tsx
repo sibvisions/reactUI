@@ -47,7 +47,8 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
                 "rc-input", 
                 props.focusable === false ? 
                 "no-focus-rect" : "",
-                isCompDisabled(props) ? "rc-input-readonly" : ""
+                isCompDisabled(props) ? "rc-input-readonly" : "",
+                props.style
             )}
             value={text||""}
             style={{...layoutStyle, ...compStyle, resize: 'none'}} 

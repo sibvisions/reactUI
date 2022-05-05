@@ -162,7 +162,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             <div
                 className={concatClassnames(
                     "rc-panel",
-                    props.style === "tagpanel" ? "tag-panel" : ""
+                    props.style
                 )}
                 ref={panelRef}
                 id={checkComponentName(props.name)}

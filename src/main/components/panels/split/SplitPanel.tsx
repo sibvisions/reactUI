@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
-import { checkComponentName, Dimension } from "../../../util";
+import { checkComponentName, concatClassnames, Dimension } from "../../../util";
 import { Tooltip } from "primereact/tooltip";
 
 /** Type for ResizeEvent */
@@ -29,7 +29,8 @@ interface ISplitPanel extends IForwardRef {
     style?: CSSProperties
     onInitial: Function
     toolTipText?:string,
-    popupMenu?:any
+    popupMenu?:any,
+    styleClassName?: string
 }
 
 /**
@@ -155,7 +156,11 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             <Tooltip target={"#" + checkComponentName(props.id)}  />
             <div
                 id={props.id}
-                className={"rc-panel-split" + (props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split")}
+                className={concatClassnames(
+                    "rc-panel-split",
+                    props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? " h-split" : " v-split",
+                    props.styleClassName
+                )}
                 ref={props.forwardedRef}
                 style={props.style}
                 data-pr-tooltip={props.toolTipText}

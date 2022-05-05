@@ -103,7 +103,11 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
-            className={concatClassnames("rc-icon", props.focusable === false ? "no-focus-rect" : "")}
+            className={concatClassnames(
+                "rc-icon", 
+                props.focusable === false ? "no-focus-rect" : "",
+                props.style
+            )}
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >

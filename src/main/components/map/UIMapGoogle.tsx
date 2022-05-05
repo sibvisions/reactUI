@@ -250,7 +250,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
     return (
         <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
-            <GMap ref={mapInnerRef} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
+            <GMap ref={mapInnerRef} className={props.style} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )
 }

@@ -223,6 +223,7 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
     return (
         <>
             <TileLayer
+                className={props.style}
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {
