@@ -392,6 +392,8 @@
 
     --gone-background: #ffcf40bb;
 
+    --signature-pad-background: var(--screen-background);
+
     //V2 Variables
 
     /// The background color of the launcher toolbar
@@ -1730,4 +1732,8 @@ body {
     .rc-frame-content, .rc-frame-menu {
         border-color: var(--frame-header-background);
     }
+}
+
+.rc-signature-pad {
+    background: var(--signature-pad-background);
 }
