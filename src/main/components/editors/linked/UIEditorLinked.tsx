@@ -355,7 +355,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 let text : string | string[] = ""
                 if (props.cellEditor) {
                     if (props.cellEditor.displayReferencedColumnName) {
-                        text = value[props.cellEditor.displayReferencedColumnName]
+                        text = value[props.cellEditor.displayReferencedColumnName];
                     }
                     else if(props.cellEditor.columnView?.columnCount > 1) {
                         text = props.cellEditor.columnView.columnNames.map(c => value[c]);

@@ -13,9 +13,6 @@ const UIManagerV2: FC<any> = () => {
     /** State of menu-visibility */
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
-    /** True, if the session is expired */
-    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
-
     /** True, if the standard menu for mobile is active IF corporation applayout is set */
     const [mobileStandard, setMobileStandard] = useState<boolean>(false);
 
@@ -32,8 +29,6 @@ const UIManagerV2: FC<any> = () => {
             });
         });
 
-        context.subscriptions.subscribeToErrorDialog((show:boolean) => setSessionExpired(show));
-
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
@@ -43,7 +38,6 @@ const UIManagerV2: FC<any> = () => {
                     toolBar: appSettings.toolBar
                 });
             });
-            context.subscriptions.unsubscribeFromErrorDialog((show:boolean) => setSessionExpired(show));
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }
     }, [context.subscriptions]);
@@ -52,7 +46,6 @@ const UIManagerV2: FC<any> = () => {
         <div className={concatClassnames(
             "reactUI",
             isCorporation(appLayout, appTheme) ? "corporation" : "",
-            sessionExpired ? "reactUI-expired" : "",
             appTheme
         )}>
             <div id="reactUI-main" className={concatClassnames(

@@ -191,17 +191,17 @@ export default abstract class BaseServer {
                                 const splitErr = error.split(".");
                                 const code = error.substring(0, 3);
                                 if (code === "410") {
-                                    this.subManager.emitDialog("server", false, true, splitErr[0], splitErr[1]);
+                                    this.subManager.emitErrorBarProperties(false, true, splitErr[0], splitErr[1]);
                                 }
                                 else {
-                                    this.subManager.emitDialog("server", false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                                 }
                             }
                             else {
-                                this.subManager.emitDialog("server", false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
                             }
                             if (error !== "no valid json") {
-                                this.subManager.emitErrorDialogVisible(true);
+                                this.subManager.emitErrorBarVisible(true);
                             }
                             reject(error);
                             console.error(error);
@@ -262,8 +262,8 @@ export default abstract class BaseServer {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
-                this.subManager.emitErrorDialogVisible(true);
+                this.subManager.emitErrorBarProperties(false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
+                this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
             promise.then(res => {
@@ -271,8 +271,8 @@ export default abstract class BaseServer {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitDialog("server", false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
-                    this.subManager.emitErrorDialogVisible(true);
+                    this.subManager.emitErrorBarProperties(false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
+                    this.subManager.emitErrorBarVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
             });
@@ -534,8 +534,8 @@ export default abstract class BaseServer {
             this.subManager.emitRestart();
         }
         else {
-            this.subManager.emitDialog("server", true, false, this.contentStore.translation.get("Session expired!"));
-            this.subManager.emitErrorDialogVisible(true);
+            this.subManager.emitErrorBarProperties(true, false, this.contentStore.translation.get("Session expired!"));
+            this.subManager.emitErrorBarVisible(true);
         }
         this.contentStore.reset();
         sessionStorage.clear();

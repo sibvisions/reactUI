@@ -10,21 +10,13 @@ import UIToast from './main/components/toast/UIToast';
 import { createOpenScreenRequest, IPanel, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
-import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
+import ErrorBar from "./application-frame/error-bar/ErrorBar";
 import { addCSSDynamically } from "./main/util";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { REQUEST_KEYWORDS } from "./main/request";
 import { appContext } from "./main/AppProvider";
-
-export type IServerFailMessage = {
-    headerMessage:string,
-    bodyMessage:string,
-    sessionExpired:boolean,
-    gone:boolean
-    retry:Function
-}
-
+import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
 interface IAppWrapper {
     embedOptions?: { [key:string]:any }
     theme?:string
@@ -36,14 +28,9 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    const [dialogVisible, setDialogVisible] = useState<boolean>(false);
-
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
     const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
-
-    /** Reference for the dialog which shows the timeout error message */
-    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {} });
 
     const [cssVersion, setCssVersion] = useState<string>("");
 
@@ -71,21 +58,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from session and app-ready
      */
     useEffect(() => {
-        context.subscriptions.subscribeToDialog("server", (header: string,
-            body: string,
-            sessionExp: boolean,
-            gone: boolean,
-            retry: Function
-        ) => setErrorProps({
-            headerMessage: header,
-            bodyMessage: body,
-            sessionExpired: sessionExp,
-            gone: gone,
-            retry: retry
-        }));
-
-        context.subscriptions.subscribeToErrorDialog((show: boolean) => setDialogVisible(show));
-
         context.subscriptions.subscribeToAppName((newAppName: string) => setAppName(newAppName));
 
         context.subscriptions.subscribeToCssVersion((version: string) => setCssVersion(version));
@@ -93,8 +65,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
 
         return () => {
-            context.subscriptions.unsubscribeFromDialog("server");
-            context.subscriptions.unsubscribeFromErrorDialog((show: boolean) => setDialogVisible(show));
             context.subscriptions.unsubscribeFromAppName((newAppName: string) => setAppName(newAppName));
             context.subscriptions.unsubscribeFromCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
@@ -148,9 +118,10 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             <Helmet>
                 <title>{appName ? appName : "<App-Name>"}</title>
             </Helmet>
+            <ErrorDialog />
             <UIToast />
             <ConfirmDialog visible={messageVisible} {...messageProps} />
-            {dialogVisible && <ErrorDialog headerMessage={errorProps.headerMessage} bodyMessage={errorProps.bodyMessage} sessionExpired={errorProps.sessionExpired} gone={errorProps.gone} retry={errorProps.retry} />}
+            <ErrorBar />
             <PopupContextProvider>
                 <TopBar>
                     {props.children}

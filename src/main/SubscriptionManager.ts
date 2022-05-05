@@ -102,13 +102,23 @@ export class SubscriptionManager {
     /** A function to change the appReady state to true */
     appReadySubscriber:Function = () => {};
 
-    /** A Map which stores functions to set the dialog-visibility of certain dialogs */
-    dialogSubscriber = new Map<string, Function>();
+    /** A function to change the visible state of the error-bar */
+    errorBarVisibleSubscriber:Function = () => {};
+
+    /** A function to change the properties of the error-bar */
+    errorBarPropertiesSubscriber:Function = () => {};
+
+    /** A function to change the visible state of the change password dialog */
+    changePasswordVisibleSubscriber:Function = () => {};
+
+    /** A function to change the message-dialog properties */
+    messageDialogPropsSubscriber:Function = () => {};
+
+    /** A function to update the properties of the error-dialog */
+    errorDialogPropsSubscriber:Function = () => {};
 
     /** A function to update the selectedMenuItem */
     selectedMenuItemSubscriber:Function = () => {};
-
-    errorDialogSubscriber:Array<Function> = new Array<Function>();
 
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
@@ -127,8 +137,8 @@ export class SubscriptionManager {
     /** An array of functions to update the toolbar items */
     toolbarSubscriber = new Array<Function>();
 
-    /** A function to update the message-subscriber */
-    messageSubscriber:Function = () => {};
+    /** A function to update the toast-subscriber */
+    toastSubscriber:Function = () => {};
 
     /** A function to update the close-frame-subscriber */
     closeFrameSubscriber:Function = () => {};
@@ -349,12 +359,43 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes the login to change-dialog, to change the change-dialog state, to show the
-     * change-password-dialog
-     * @param fn - the function to change the change-dialog state
+     * Subscribes the error-bar component, to change its visible state
+     * @param fn - the function to update the state
      */
-    subscribeToDialog(id:string, fn:Function) {
-        this.dialogSubscriber.set(id, fn);
+    subscribeToErrorBarVisible(fn:Function) {
+        this.errorBarVisibleSubscriber = fn
+    }
+
+    /**
+     * Subscribes the error-bar component, to change its property state
+     * @param fn - the function to update the state
+     */
+    subscribeToErrorBarProps(fn:Function) {
+        this.errorBarPropertiesSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the change-password dialog, to change its visible state
+     * @param fn - the function to update the state
+     */
+    subscribeToChangePasswordVisible(fn:Function) {
+        this.changePasswordVisibleSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the message-dialog hook, to change its property state
+     * @param fn 
+     */
+    subscribeToMessageDialogProps(fn:Function) {
+        this.messageDialogPropsSubscriber = fn;
+    }
+
+    /**
+     * Subscribes the error-dialog component, to change its property state
+     * @param fn 
+     */
+    subscribeToErrorDialogProps(fn:Function) {
+        this.errorDialogPropsSubscriber = fn;
     }
 
     /**
@@ -391,20 +432,12 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes the app to session-expired to flip the flag and reinitiate
-     * @param fn - the function to flip the session-expired-state
-     */
-    subscribeToErrorDialog(fn:Function) {
-        this.errorDialogSubscriber.push(fn);
-    }
-
-    /**
      * Subscribes the UIToast to message-responses, to change the dialog-response state, to show the
      * UIToast
      * @param fn - the function to change the dialog-response state
      */
-     subscribeToMessage(fn:Function) {
-        this.messageSubscriber = fn;
+     subscribeToToast(fn:Function) {
+        this.toastSubscriber = fn;
     }
 
     /**
@@ -571,14 +604,39 @@ export class SubscriptionManager {
      * Unsubscribes app from app-ready
      */
     unsubscribeFromAppReady() {
-        this.appReadySubscriber = () => {}
+        this.appReadySubscriber = () => {};
     }
 
     /**
-     * Unsubscribes login from change-dialog
+     * Unsubscribe error-bar from visible
      */
-    unsubscribeFromDialog(id:string) {
-        this.dialogSubscriber.delete(id);
+    unsubscribeFromErrorBarProps() {
+        this.errorBarPropertiesSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribe error-bar from visible
+     */
+    unsubscribeFromErrorBarVisible() {
+        this.errorBarVisibleSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribe change-password dialog from visible
+     */
+     unsubscribeFromChangePasswordVisible() {
+        this.changePasswordVisibleSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribe change-password dialog from visible
+     */
+     unsubscribeFromMessageDialogProps() {
+        this.messageDialogPropsSubscriber = () => {};
+    }
+
+    unsubscribeFromErrorDialogProps() {
+        this.errorDialogPropsSubscriber = () => {};
     }
 
     /**
@@ -620,14 +678,9 @@ export class SubscriptionManager {
         this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
-    /** Unsubscribes app from session-expired */
-    unsubscribeFromErrorDialog(fn:Function) {
-        this.errorDialogSubscriber.splice(this.errorDialogSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
     /** Unsubscribes UIToast from message-responses */
-    unsubscribeFromMessage() {
-        this.messageSubscriber = () => {};
+    unsubscribeFromToast() {
+        this.toastSubscriber = () => {};
     }
 
     /** Unsubscribes UIToast from close-frame-responses */
@@ -783,12 +836,29 @@ export class SubscriptionManager {
         this.appReadySubscriber.apply(undefined, [ready]);
     }
 
-    /** Tell the subscribers to show the change-password-dialog */
-    emitDialog(id:string, sessionExpired:boolean, gone:boolean, header?:string, body?:string, retryFunc?:Function) {
-        const func = this.dialogSubscriber.get(id);
-        if (func) {
-            func.apply(undefined, [header, body, sessionExpired, gone, retryFunc]);
+    /** Notify that change-password dialog is visible */
+    emitChangePasswordVisible() {
+        this.changePasswordVisibleSubscriber.apply(undefined, []);
+    }
+
+    /** Tell the error-bar that it should be displayed or not */
+    emitErrorBarVisible(visible:boolean) {
+        if (visible) {
+            this.server.errorIsDisplayed = true;
         }
+        else {
+            this.server.errorIsDisplayed = false;
+        }
+        this.errorBarVisibleSubscriber.apply(undefined, [visible]);
+    }
+
+    /** Notify the error-bar about its properties */
+    emitErrorBarProperties(sessionExpired:boolean, gone:boolean, header?:string, body?:string, retryFunc?:Function) {
+        this.errorBarPropertiesSubscriber.apply(undefined, [header, body, sessionExpired, gone, retryFunc]);
+    }
+
+    emitErrorDialogProperties(errData: ErrorResponse) {
+        this.errorDialogPropsSubscriber(errData)
     }
 
     /** Tell the subscribers to change their selectedmenuitem */
@@ -815,24 +885,13 @@ export class SubscriptionManager {
         this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [(this.contentStore as ContentStore).toolbarItems]));
     }
 
-    /** Tell app that session has expired */
-    emitErrorDialogVisible(show:boolean) {
-        if (show) {
-            this.server.errorIsDisplayed = true;
-        }
-        else {
-            this.server.errorIsDisplayed = false;
-        }
-        this.errorDialogSubscriber.forEach((subFunc) => subFunc.apply(undefined, [show]));
-    }
-
     emitRestart() {
         this.restartSubscriber.forEach((subFunc) => subFunc.apply(undefined, []));
     }
 
     /** Tell UIToast that there is a new message */
-    emitMessage(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info"|"warn"|"success") {
-        this.messageSubscriber.apply(undefined, [messageResponse, err]);
+    emitToast(messageResponse:MessageResponse|ErrorResponse, err?:"error"|"info"|"warn"|"success") {
+        this.toastSubscriber.apply(undefined, [messageResponse, err]);
     }
 
     emitCloseFrame() {
@@ -843,11 +902,8 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.activeScreens]));
     }
 
-    emitMessageDialog(id:string, dialog:DialogResponse) {
-        const func = this.dialogSubscriber.get(id);
-        if (func) {
-            func.apply(undefined, [dialog]);
-        }
+    emitMessageDialog(dialog:DialogResponse) {
+        this.messageDialogPropsSubscriber.apply(undefined, [dialog])
     }
 
     emitCssVersion(version:string) {

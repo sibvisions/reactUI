@@ -105,7 +105,7 @@
   --message-question-header-background: #018786;
   --message-question-header-close-hover: #017372;
   --message-question-header-color: #ffffff;
-  --error-dialog-background: rgba(66, 73, 82, 0.8);
+  --error-bar-background: rgba(66, 73, 82, 0.8);
   --loading-screen-left-background: #20262e;
   --loading-screen-right-background: #3f4b5b;
   --loading-spinner-color-1: #b3ec23;
@@ -737,10 +737,10 @@ body {
       #toast-info .toast-header.info .toast-header-close:hover {
         background: var(--message-info-header-close-hover); }
 
-.rc-error-dialog {
-  background: var(--error-dialog-background);
+.rc-error-bar {
+  background: var(--error-bar-background);
   color: var(--text-color); }
-  .rc-error-dialog.app-gone {
+  .rc-error-bar.app-gone {
     background: var(--gone-background); }
 
 .tagpanel {

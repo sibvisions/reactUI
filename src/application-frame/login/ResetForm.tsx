@@ -26,7 +26,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
      */
      const sendResetPassword = () => {
         if (!email) {
-            context.subscriptions.emitMessage({ message: translations.get("The email is required"), name: "" });
+            context.subscriptions.emitToast({ message: translations.get("The email is required"), name: "" });
         }
         else {
             const resetReq = createResetPasswordRequest();

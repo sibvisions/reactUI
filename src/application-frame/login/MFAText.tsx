@@ -26,7 +26,7 @@ const MFAText:FC<ILoginForm> = (props) => {
 
     const sendAuthCode = () => {
         if (!code) {
-            context.subscriptions.emitMessage({ message: translations.get("The authentication code is required"), name: "" });
+            context.subscriptions.emitToast({ message: translations.get("The authentication code is required"), name: "" });
         }
         else {
             const codeReq = createLoginRequest();

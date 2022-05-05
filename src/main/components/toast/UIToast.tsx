@@ -50,9 +50,9 @@ const UIToast: FC = () => {
 
     /** Subscribes the toast components to messages */
     useEffect(() => {
-        context.subscriptions.subscribeToMessage((dialog:MessageResponse|ErrorResponse, err:"error"|"info"|"warn"|"success") => setToastProps({dialog: dialog, severity: err}));
+        context.subscriptions.subscribeToToast((dialog:MessageResponse|ErrorResponse, err:"error"|"info"|"warn"|"success") => setToastProps({dialog: dialog, severity: err}));
         return () => {
-            context.subscriptions.unsubscribeFromMessage();
+            context.subscriptions.unsubscribeFromToast();
         }
     },[context.subscriptions]);
 

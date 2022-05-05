@@ -165,7 +165,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
         .set("Please enter your confirmation code.", "Please enter your confirmation code.")
         .set("Waiting for verification.", "Waiting for verification.")
         .set("Matching code", "Matching code")
-        .set("Confirm", "Confirm");
+        .set("Confirm", "Confirm")
+        .set("Details", "Details");
     },[contextState.contentStore]);
 
     useEffect(() => {
@@ -219,42 +220,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
             if (contextState.appSettings.applicationMetaData.aliveInterval) {
                 contextState.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), contextState.appSettings.applicationMetaData.aliveInterval));
             }
-            
-            // setInterval(() => {
-            //     if (!maxTriesExceeded.current) {
-            //         if (retryCounter.current < maxRetries) {
-            //             ws.current?.send("ALIVE");
-            //             if (aliveSent.current) {
-            //                 retryCounter.current++;
-            //                 context.subscriptions.emitDialog(
-            //                     "server", 
-            //                     false, 
-            //                     "Alive Check failed.", 
-            //                     "The server did not respond to the alive check. The client is retrying to reach the server. Retry: " + retryCounter.current + " out of " + maxRetries)
-            //                 if (retryCounter.current === 1) {
-            //                     context.subscriptions.emitErrorDialogVisible(true);
-            //                     errorDialogVisible.current = true;
-            //                 }
-            //             }
-            //             else {
-            //                 aliveSent.current = true;
-            //                 retryCounter.current = 0;
-            //             }
-            //         }
-            //         else {
-            //             context.subscriptions.emitDialog("server", false, "Alive Check exceeded Max-Retries!", "The server did not respond after " + maxRetries + " tries to send the alive-check.");
-            //             context.subscriptions.emitErrorDialogVisible(true);
-            //             maxTriesExceeded.current = true;
-            //         }
-            //     }
-            // }, 5000);
-            
-
-            // ws2.current = new WebSocket("ws://localhost:666");
-            // ws2.current.onopen = () => {
-            //     console.log('ws2 opened')
-            //     ws2.current!.send("test")
-            // };
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {

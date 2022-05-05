@@ -35,11 +35,11 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     // Subscribes the message dialog to its props and to closing-frame
     useEffect(() => {
-        context.subscriptions.subscribeToDialog("message-dialog", (dialog:DialogResponse) => setMessageProps(dialog));
-        context.subscriptions.subscribeToCloseFrame((screenName:string) => setClosingFrame(prevState => !prevState));
+        context.subscriptions.subscribeToMessageDialogProps((dialog:DialogResponse) => setMessageProps(dialog));
+        context.subscriptions.subscribeToCloseFrame(() => setClosingFrame(prevState => !prevState));
 
         return () => {
-            context.subscriptions.unsubscribeFromDialog("message-dialog");
+            context.subscriptions.unsubscribeFromMessageDialogProps();
             context.subscriptions.unsubscribeFromCloseFrame();
         }
     },[context.subscriptions]);

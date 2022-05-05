@@ -9,7 +9,7 @@
     opacity: 0.35;
 }
 
-.rc-error-dialog {
+.rc-error-bar {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -31,18 +31,18 @@
     }
 }
 
-.rc-error-dialog-header {
+.rc-error-bar-header {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.rc-error-dialog-header-text, .rc-error-dialog-header-icon {
+.rc-error-bar-header-text, .rc-error-bar-header-icon {
     font-size: 2em;
     font-weight: bold;
     margin-bottom: 1rem;
 }
 
-.rc-error-dialog-header-icon {
+.rc-error-bar-header-icon {
     margin-right: 8px;
 }

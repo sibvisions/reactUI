@@ -319,8 +319,8 @@
     /// Orange Message question header color
     --message-question-header-color: #ffffff;
 
-    /// Orange error-dialog background
-    --error-dialog-background: rgba(255, 255, 255, 0.8);
+    /// Orange error-bar background
+    --error-bar-background: rgba(255, 255, 255, 0.8);
 
     /// Orange loading-screen background left
     --loading-screen-left-background: #ffffff;
@@ -1491,8 +1491,8 @@ body {
 }
 
 /// Error Dialog
-.rc-error-dialog {
-    background: var(--error-dialog-background);
+.rc-error-bar {
+    background: var(--error-bar-background);
     color: var(--text-color);
 
     &.app-gone {

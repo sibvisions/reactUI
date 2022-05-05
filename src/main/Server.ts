@@ -435,13 +435,13 @@ class Server extends BaseServer {
      */
     showError(errData: ErrorResponse) {
         if (!errData.silentAbort) {
-            this.subManager.emitMessage(errData, "error");
+            this.subManager.emitErrorDialogProperties(errData);
         }
         console.error(errData.details)
     }
 
     showInfo(infoData: MessageResponse) {
-        this.subManager.emitMessage(infoData, "error");
+        this.subManager.emitToast(infoData, "error");
     }
 
     showMessageDialog(dialogData:DialogResponse) {
@@ -458,7 +458,7 @@ class Server extends BaseServer {
             (this.contentStore as ContentStore).dialogButtons.push(dialogData.notOkComponentId);
         }
 
-        this.subManager.emitMessageDialog("message-dialog", dialogData);
+        this.subManager.emitMessageDialog(dialogData);
     }
  
     /**
@@ -466,7 +466,7 @@ class Server extends BaseServer {
      * @param reData - the restartResponse
      */
     showRestart(reData:RestartResponse) {
-        this.subManager.emitMessage({ message: 'Reload Page: ' + reData.info, name: "" }, "error")
+        this.subManager.emitToast({ message: 'Reload Page: ' + reData.info, name: "" }, "error")
         console.warn(reData.info);
     }
 
@@ -490,8 +490,8 @@ class Server extends BaseServer {
             }
         }
         else {
-            this.subManager.emitDialog("server", true, false, "Could not load translation", "There was a problem when fetching the translation");
-            this.subManager.emitErrorDialogVisible(true);
+            this.subManager.emitErrorBarProperties(true, false, "Could not load translation", "There was a problem when fetching the translation");
+            this.subManager.emitErrorBarVisible(true);
         }
 
     }

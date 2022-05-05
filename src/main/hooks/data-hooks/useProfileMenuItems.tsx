@@ -47,7 +47,7 @@ const useProfileMenuItems = () => {
                     label: translations.get("Change password"),
                     icon: "pi pi-lock-open",
                     command(e: MenuItemCommandParams) {
-                        context.subscriptions.emitDialog("change-password", false, false)
+                        context.subscriptions.emitChangePasswordVisible()
                     }
                 },
                 {
@@ -61,7 +61,7 @@ const useProfileMenuItems = () => {
                     label: "Info",
                     icon: "pi pi-info-circle",
                     command(e: MenuItemCommandParams) {
-                        context.subscriptions.emitMessage({ name: "", message: "ReactUI Version: " + version }, "info");
+                        context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + version }, "info");
                     }
                 }
             ] :

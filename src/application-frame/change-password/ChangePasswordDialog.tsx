@@ -34,16 +34,16 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
 
     /** Whether to show the change password dialog */
-    const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+    const [visible, setVisible] = useState<boolean>(false);
 
     /** True, if the password is resetting and not changing */
     const isReset = context.appSettings.loginMode === "changeOneTimePassword";
 
     // Subscribes to the dialog state, sets visible true when called
     useEffect(() => {
-        context.subscriptions.subscribeToDialog("change-password", () => setDialogVisible(true));
+        context.subscriptions.subscribeToChangePasswordVisible(() => setVisible(true));
     
-        return () => context.subscriptions.unsubscribeFromDialog("change-password");
+        return () => context.subscriptions.unsubscribeFromChangePasswordVisible();
     }, [context.subscriptions]);
 
     /**
@@ -54,13 +54,13 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!changePWData.newPassword) {
-            context.subscriptions.emitMessage({ message: translations.get("The new password is empty"), name: "" });
+            context.subscriptions.emitToast({ message: translations.get("The new password is empty"), name: "" });
         }
         else if (changePWData.newPassword !== changePWData.confirmPassword) {
-            context.subscriptions.emitMessage({ message: translations.get("The passwords are different!"), name: "" });
+            context.subscriptions.emitToast({ message: translations.get("The passwords are different!"), name: "" });
         }
         else if (changePWData.newPassword === props.password) {
-            context.subscriptions.emitMessage({ message: translations.get("The old and new password are the same"), name: "" });
+            context.subscriptions.emitToast({ message: translations.get("The old and new password are the same"), name: "" });
         }
         else {
             if (props.loggedIn) {
@@ -70,7 +70,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 showTopBar(context.server.sendRequest(changeReq, REQUEST_KEYWORDS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
                     results.forEach(result => {
                         if (result.name === RESPONSE_NAMES.DIALOG) {
-                            setDialogVisible(false);
+                            setVisible(false);
                         }
                     })
                 });
@@ -95,8 +95,8 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         <Dialog
             className="rc-popup change-dialog"
             header={isReset ? translations.get("Reset password") : translations.get("Change password")}
-            visible={dialogVisible} 
-            onHide={() => setDialogVisible(false)}
+            visible={visible} 
+            onHide={() => setVisible(false)}
             draggable={false}
             baseZIndex={1005} >
             <div className="change-dialog-container">
@@ -149,7 +149,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                         <label className="change-password-label" htmlFor="change-password-confirm">{translations.get("Confirm Password")} </label>
                     </div>
                     <div className="change-password-button-wrapper">
-                        <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setDialogVisible(false)} />
+                        <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setVisible(false)} />
                         <Button type="submit" label={translations.get(!isReset ? "Change" : "Login")} icon="pi pi-lock-open" />
                     </div>
                 </form>

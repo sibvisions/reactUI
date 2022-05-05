@@ -319,8 +319,8 @@
     /// Darkmode Message question header color
     --message-question-header-color: #ffffff;
 
-    /// Darkmode error-dialog background
-    --error-dialog-background: rgba(66, 73, 82, 0.8);
+    /// Darkmode error-bar background
+    --error-bar-background: rgba(66, 73, 82, 0.8);
 
     /// Darkmode loading-screen background left
     --loading-screen-left-background: #20262e;
@@ -1491,8 +1491,8 @@ body {
 }
 
 /// Error Dialog
-.rc-error-dialog {
-    background: var(--error-dialog-background);
+.rc-error-bar {
+    background: var(--error-bar-background);
     color: var(--text-color);
 
     &.app-gone {
