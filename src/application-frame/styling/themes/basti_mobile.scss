@@ -158,6 +158,14 @@
     --menubar-height: 40px;
 
     --menuicon-size: 14px;
+
+    --error-dialog-details-gap: 1rem;
+
+    --error-dialog-textarea-width: 30rem;
+
+    --error-dialog-textarea-height: 8rem;
+
+    --error-dialog-icon-size: 2rem;
 }
 
 body {
@@ -525,6 +533,27 @@ body {
 
     .rc-label >span {
         padding: var(--label-padding) 0px;
+    }
+}
+
+.error-dialog {
+    .error-dialog-details-caption {
+        margin-top: var(--error-dialog-details-gap);
+        text-align: "left";
+    }
+
+    .error-dialog-listbox {
+        margin-top: var(--error-dialog-details-gap);
+    }
+
+    .error-dialog-textarea {
+        margin-top: var(--error-dialog-details-gap);
+        width: var(--error-dialog-textarea-width);
+        height: var(--error-dialog-textarea-height);
+    }
+
+    .error-dialog-icon {
+        font-size: var(--error-dialog-icon-size);
     }
 }
 

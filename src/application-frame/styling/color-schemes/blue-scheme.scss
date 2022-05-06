@@ -1357,7 +1357,7 @@ body {
 }
 
 /// Dialogs
-.rc-popup {
+.rc-popup, .error-dialog {
     .p-dialog-header {
         background: var(--dialog-header-background);
         color: var(--dialog-header-text-color);

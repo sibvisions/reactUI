@@ -1,19 +1,18 @@
-import React, { CSSProperties, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
-import { appContext } from "../../AppProvider";
-import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
-import { useTranslation } from "..";
+import { showTopBar } from "../../components/topbar/TopBar";
 import { DialogResponse } from "../../response";
 import { createCloseFrameRequest, createDispatchActionRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import { concatClassnames } from "../../util";
 import tinycolor from "tinycolor2";
+import useConstants from "./useConstants";
 
 /** Returns the ConfirmDialog properties and if the ConfirmDialog is visible */
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** Returns utility variables */
+    const [context, topbar, translations] = useConstants();
 
     /** The properties of the message */
     const [messageProps, setMessageProps] = useState<DialogResponse>();
@@ -26,12 +25,6 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
     /** State which frame is closing */
     const [closingFrame, setClosingFrame] = useState<boolean>(false);
-
-    /** The topbar component */
-    const topbar = useContext(TopBarContext);
-
-    /** The translation */
-    const translation = useTranslation();
 
     // Subscribes the message dialog to its props and to closing-frame
     useEffect(() => {
@@ -54,16 +47,16 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
         if (messageProps) {
             const headerContent = (iconType: 0 | 1 | 2 | 3 | 9 | -1): { icon: string, text: string } => {
                 if (iconType === 0) {
-                    return { text: translation.get("Information") as string, icon: "pi pi-info-circle" };
+                    return { text: translations.get("Information") as string, icon: "pi pi-info-circle" };
                 }
                 else if (iconType === 1) {
-                    return { text: translation.get("Warning") as string, icon: "pi pi-exclamation-circle" };
+                    return { text: translations.get("Warning") as string, icon: "pi pi-exclamation-circle" };
                 }
                 else if (iconType === 2) {
-                    return { text: translation.get("Error") as string, icon: "pi pi-times-circle" };
+                    return { text: translations.get("Error") as string, icon: "pi pi-times-circle" };
                 }
                 else if (iconType === 3) {
-                    return { text: translation.get("Question") as string, icon: "pi pi-question-circle" };
+                    return { text: translations.get("Question") as string, icon: "pi pi-question-circle" };
                 }
                 else {
                     return { text: "", icon: "" };
@@ -93,7 +86,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")}
+                                label={buttonType === 4 ? translations.get("Cancel") : translations.get("No")}
                                 onClick={() => {
                                     sendPressButton(cancelCompId);
                                 }} />
@@ -104,7 +97,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")}
+                                label={buttonType === 4 ? translations.get("OK") : translations.get("Yes")}
                                 onClick={() => {
                                     sendPressButton(okCompId);
                                 }} />
@@ -120,7 +113,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                 '--background': getButtonBackground(),
                                 '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                             } as CSSProperties}
-                            label={translation.get("OK")}
+                            label={translations.get("OK")}
                             onClick={() => {
                                 sendPressButton(okCompId);
                             }} />
@@ -137,14 +130,14 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                         '--background': getButtonBackground(),
                                         '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                     } as CSSProperties}
-                                    label={translation.get("Cancel")}
+                                    label={translations.get("Cancel")}
                                     onClick={() => {
                                         sendPressButton(cancelCompId);
                                     }} />
                                 <Button
                                     type="button"
                                     className="rc-button"
-                                    label={translation.get("No")}
+                                    label={translations.get("No")}
                                     style={{
                                         marginLeft: '0.5rem',
                                         '--background': getButtonBackground(),
@@ -162,7 +155,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={translation.get("Yes")}
+                                label={translations.get("Yes")}
                                 onClick={() => {
                                     sendPressButton(okCompId);
                                 }} />

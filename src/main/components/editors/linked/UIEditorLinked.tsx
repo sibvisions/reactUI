@@ -72,6 +72,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
+    const lastDisplayValue = useRef<any>();
+
     /** Current state of text value of input element */
     const [text, setText] = useState(props.selectedRow);
 
@@ -144,10 +146,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         if (props.cellEditor.displayReferencedColumnName) {
             if (displayValueMap.has(props.selectedRow)) {
                 setText(displayValueMap.get(props.selectedRow));
+                lastDisplayValue.current = displayValueMap.get(props.selectedRow)
             }
-            else {
-                setText("");
-            }
+            // else {
+            //     setText("");
+            // }
         }
         else if (lastValue.current !== props.selectedRow) {
             setText(props.selectedRow);
@@ -329,6 +332,9 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 else {
                     if (props.cellEditor.displayReferencedColumnName) {
                         sendSetValues(props.dataRow, props.name, columnNames, foundData[0][linkReference.referencedColumnNames[0]], props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                        if (foundData[0][linkReference.referencedColumnNames[0]] === lastValue.current) {
+                            setText(foundData[0][props.cellEditor.displayReferencedColumnName])
+                        }
                     }
                     else {
                         sendSetValues(props.dataRow, props.name, columnNames, inputVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
@@ -339,7 +345,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         }
         /** If there is no match found set the old value */
         else {
-            setText(lastValue.current)
+            if (props.cellEditor.displayReferencedColumnName) {
+                setText(lastDisplayValue.current);
+            }
+            else {
+                setText(lastValue.current)
+            }
+            
         }
     }
 

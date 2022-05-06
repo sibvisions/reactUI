@@ -1,0 +1,16 @@
+.error-dialog {
+    .p-dialog-content {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 2rem 1.5rem 2rem 1.5rem;
+
+        .error-dialog-icon {
+            margin-right: 4px;
+        }
+    }
+
+    .p-listbox {
+        text-align: left;
+    }
+}
