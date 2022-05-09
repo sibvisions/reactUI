@@ -423,8 +423,6 @@ export default abstract class BaseServer {
      processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
         const screenName = this.getScreenName(fetchData.dataProvider);
-        const tempMap: Map<string, boolean> = new Map<string, boolean>();
-        tempMap.set(fetchData.dataProvider, fetchData.isAllFetched);
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
             screenName, 
