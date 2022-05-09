@@ -886,9 +886,9 @@ export default abstract class BaseContentStore {
             data.delete("current");
         }
         
-        if (metaData && metaData.masterReference === undefined) {
-            this.clearDataFromSubPage(screenName, metaData.detailReferences);
-        }
+        // if (metaData && metaData.masterReference === undefined) {
+        //     this.clearDataFromSubPage(screenName, metaData.detailReferences);
+        // }
     }
 
     /**
