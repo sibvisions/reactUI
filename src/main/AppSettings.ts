@@ -166,15 +166,15 @@ export default class AppSettings {
      * Sets the current login-mode
      * @param mode - the login-mode
      */
-     setLoginMode(mode:LoginModeType) {
+     setLoginProperties(mode:LoginModeType, errorMessage?:string) {
         this.loginMode = mode;
         if (mode === "changePassword" || mode === "changeOneTimePassword") {
             this.#subManager.emitChangePasswordVisible();
         }
         else {
-            this.#subManager.emitLoginModeChanged(mode);
+            this.#subManager.emitLoginChanged(mode, errorMessage);
         }
-        
+    
     }
 
     /**

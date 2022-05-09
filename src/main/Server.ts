@@ -267,7 +267,8 @@ class Server extends BaseServer {
      * @param login - the loginDataResponse
      */
     login(login: LoginResponse){
-        this.appSettings.setLoginMode(login.mode);
+        this.loginError = login.errorMessage;
+        this.appSettings.setLoginProperties(login.mode, login.errorMessage);
 
         if (login.mode === "mFWait") {
             if (login.confirmationCode && login.timeout) {

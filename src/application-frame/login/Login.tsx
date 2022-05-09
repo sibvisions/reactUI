@@ -38,22 +38,31 @@ const Login: FC = () => {
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
 
-    const [loginMode, setLoginMode] = useState<LoginMode>("default")
+    const [loginMode, setLoginMode] = useState<LoginMode>("default");
+
+    const [loginError, setLoginError] = useState<string|undefined>(context.server.loginError);
 
     const [loginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
     useEffect(() => {
-        context.subscriptions.subscribeToLoginMode((mode:LoginModeType) => {
-            if (mode === "automatic" || mode === "manual") {
-                setLoginMode("default")
+        context.subscriptions.subscribeToLogin((mode?:LoginModeType, error?:string) => {
+            if (mode) {
+                if (mode === "automatic" || mode === "manual") {
+                    setLoginMode("default")
+                }
+                else {
+                    setLoginMode(mode as LoginMode)
+                }
+    
             }
-            else {
-                setLoginMode(mode as LoginMode)
+
+            if (error) {
+                setLoginError(error);
             }
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromLoginMode();
+            context.subscriptions.unsubscribeFromLogin();
         }
     }, []);
 
@@ -62,7 +71,7 @@ const Login: FC = () => {
 
         switch (loginMode) {
             case "default":
-                return <LoginForm changeLoginMode={modeFunc} />;
+                return <LoginForm changeLoginMode={modeFunc} errorMessage={loginError} />;
             case "reset":
                 return <ResetForm changeLoginMode={modeFunc} />;
             case "mFTextInput":
@@ -72,7 +81,7 @@ const Login: FC = () => {
             case "mFURL":
                 return <MFAURL changeLoginMode={modeFunc} />;
             default:
-                return <LoginForm changeLoginMode={modeFunc} />;
+                return <LoginForm changeLoginMode={modeFunc} errorMessage={loginError} />;
 
         }
     }

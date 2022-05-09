@@ -16,6 +16,7 @@ interface LoginResponse extends BaseResponse {
     mode: LoginModeType;
     confirmationCode?: string;
     link?:string | MFAURLType;
-    timeout?:number
+    timeout?:number;
+    errorMessage?: string
 }
 export default LoginResponse;

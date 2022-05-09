@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useContext, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useContext, useEffect, useState } from "react";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";
@@ -12,6 +12,7 @@ import { LoginContext } from "./Login";
 
 export interface ILoginForm {
     changeLoginMode: Function
+    errorMessage?: string
 }
 
 /**
@@ -48,6 +49,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
         loginReq.password = password;
         loginReq.mode = "manual";
         loginReq.createAuthKey = rememberMe;
+        context.server.loginError = undefined;
+        context.subscriptions.emitLoginChanged(undefined, undefined)
         showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
         context.subscriptions.emitMenuUpdate();
     }
@@ -63,6 +66,11 @@ const LoginForm:FC<ILoginForm> = (props) => {
                     <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
                 </div>
                 <div className="p-fluid">
+                        {props.errorMessage && 
+                        <div className="login-error-message p-field">
+                            { translations.has(props.errorMessage) ? translations.get(props.errorMessage) : props.errorMessage}
+                        </div>
+                        }
                         <div className="p-field p-float-label p-input-icon-left">
                             <i className="pi pi-user" />
                             <InputText

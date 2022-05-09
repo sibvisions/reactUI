@@ -59,6 +59,8 @@ export default abstract class BaseServer {
 
     uiRefreshInProgress: boolean = false;
 
+    loginError:string|undefined = undefined
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance

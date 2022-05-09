@@ -154,7 +154,7 @@ export class SubscriptionManager {
 
     themeSubscriber = new Map<string, Function>();
 
-    loginModeSubscriber:Function = () => {};
+    loginSubscriber:Function = () => {};
 
     MFAWaitSubscriber: Function = () => {};
 
@@ -473,8 +473,8 @@ export class SubscriptionManager {
         this.themeSubscriber.set(id, fn);
     }
 
-    subscribeToLoginMode(fn:Function) {
-        this.loginModeSubscriber = fn;
+    subscribeToLogin(fn:Function) {
+        this.loginSubscriber = fn;
     }
 
     subscribeToMFAWait(fn:Function) {
@@ -711,8 +711,8 @@ export class SubscriptionManager {
         this.themeSubscriber.delete(id);
     }
 
-    unsubscribeFromLoginMode() {
-        this.loginModeSubscriber = () => {};
+    unsubscribeFromLogin() {
+        this.loginSubscriber = () => {};
     }
 
     unsubscribeFromMFAWait() {
@@ -914,8 +914,8 @@ export class SubscriptionManager {
         this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
     }
 
-    emitLoginModeChanged(loginMode:LoginModeType) {
-        this.loginModeSubscriber.apply(undefined, [loginMode]);
+    emitLoginChanged(loginMode?:LoginModeType, errorMessage?: string) {
+        this.loginSubscriber.apply(undefined, [loginMode, errorMessage]);
     }
 
     emitMFAWaitChanged(code: string, timeout: number) {
