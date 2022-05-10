@@ -1569,6 +1569,19 @@ body {
             color: var(--text-color);
         }
 
+        .p-tree-toggler {
+            color: var(--text-color);
+
+            &:enabled {
+                color: var(--text-color);
+
+                &:hover {
+                    color: var(--text-color);
+                    background: var(--tree-selected-item-background);
+                }
+            }
+        }
+
         &.p-highlight {
             background: var(--tree-selected-item-background);
             color: var(--text-color);

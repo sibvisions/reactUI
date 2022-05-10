@@ -114,7 +114,7 @@
   --loading-spinner-color-4: #80a818;
   --tab-close-color: #cdcfd1;
   --tab-close-hover-color: #6f757a;
-  --focus-box-shadow: 0 0 0 0.2rem #93cbf9;
+  --focus-box-shadow: 0 0 0 0.2rem rgb(147 197 253 / 70%);
   --border-color-hover: #2196fe;
   --login-border-radius: 6px;
   --button-border-radius: 3px;
@@ -784,6 +784,13 @@ body {
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover {
     background: var(--tree-item-hover-background);
     color: var(--text-color); }
+  .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+    color: var(--text-color); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled {
+      color: var(--text-color); }
+      .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
+        color: var(--text-color);
+        background: var(--tree-selected-item-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
     background: var(--tree-selected-item-background);
     color: var(--text-color); }

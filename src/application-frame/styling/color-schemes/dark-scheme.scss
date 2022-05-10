@@ -344,7 +344,7 @@
     --tab-close-hover-color: #6f757a;
 
     /// Darkmode focus border/shadow
-    --focus-box-shadow: 0 0 0 0.2rem #93cbf9;
+    --focus-box-shadow: 0 0 0 0.2rem rgb(147 197 253 / 70%);
 
     /// Darkmode hover border-color
     --border-color-hover: #2196fe;
@@ -1567,6 +1567,19 @@ body {
         &.p-treenode-selectable:not(.p-highlight):hover {
             background: var(--tree-item-hover-background);
             color: var(--text-color);
+        }
+
+        .p-tree-toggler {
+            color: var(--text-color);
+
+            &:enabled {
+                color: var(--text-color);
+
+                &:hover {
+                    color: var(--text-color);
+                    background: var(--tree-selected-item-background);
+                }
+            }
         }
 
         &.p-highlight {

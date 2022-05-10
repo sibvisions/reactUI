@@ -786,6 +786,13 @@ body {
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover {
     background: var(--tree-item-hover-background);
     color: var(--text-color); }
+  .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+    color: var(--text-color); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled {
+      color: var(--text-color); }
+      .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
+        color: var(--text-color);
+        background: var(--tree-selected-item-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
     background: var(--tree-selected-item-background);
     color: var(--text-color); }
