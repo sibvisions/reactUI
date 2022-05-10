@@ -666,17 +666,24 @@ body {
   border-top-left-radius: var(--dialog-border-radius);
   border-top-right-radius: var(--dialog-border-radius);
   border-bottom: var(--dialog-header-border); }
-  .rc-popup .p-dialog-header .p-dialog-header-icon, .error-dialog .p-dialog-header .p-dialog-header-icon {
-    color: var(--text-color); }
-    .rc-popup .p-dialog-header .p-dialog-header-icon:enabled:hover, .error-dialog .p-dialog-header .p-dialog-header-icon:enabled:hover {
-      background: #e9ecef;
-      color: var(--dialog-icon-hover-color); }
 
 .rc-popup .p-dialog-content, .error-dialog .p-dialog-content {
   background: var(--dialog-content-background);
   color: var(--text-color);
   border-bottom-left-radius: var(--dialog-border-radius);
   border-bottom-right-radius: var(--dialog-border-radius); }
+
+.error-dialog .p-dialog-header {
+  background: var(--message-error-header-background);
+  color: var(--message-error-header-color); }
+  .error-dialog .p-dialog-header .p-dialog-header-icon:enabled:hover {
+    background: var(--message-error-header-close-hover); }
+
+.error-dialog .p-dialog-footer {
+  border-bottom-left-radius: var(--dialog-border-radius);
+  border-bottom-right-radius: var(--dialog-border-radius);
+  background: var(--dialog-content-background);
+  color: var(--text-color); }
 
 .rc-message-dialog .p-dialog-header {
   border-top-left-radius: var(--dialog-border-radius);

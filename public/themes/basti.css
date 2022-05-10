@@ -268,10 +268,12 @@ body {
 
 .error-dialog .error-dialog-textarea {
   margin-top: var(--error-dialog-details-gap);
-  width: var(--error-dialog-textarea-width);
+  min-width: var(--error-dialog-textarea-width);
+  width: 100%;
   height: var(--error-dialog-textarea-height); }
 
 .error-dialog .error-dialog-icon {
+  min-width: var(--error-dialog-icon-size);
   font-size: var(--error-dialog-icon-size); }
 
 .p-autocomplete-panel.dropdown-table .p-autocomplete-item {

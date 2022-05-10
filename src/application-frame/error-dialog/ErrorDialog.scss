@@ -1,4 +1,6 @@
 .error-dialog {
+    max-width: 600px;
+
     .p-dialog-content {
         display: flex;
         justify-content: flex-start;
@@ -12,5 +14,13 @@
 
     .p-listbox {
         text-align: left;
+
+        .p-listbox-list {
+            .p-listbox-item {
+                white-space: nowrap;
+                display: inline-block;
+                min-width: 100%;
+            }
+        }
     }
 }

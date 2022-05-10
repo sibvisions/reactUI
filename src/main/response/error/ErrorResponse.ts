@@ -5,5 +5,6 @@ import { MessageResponse } from "..";
 interface ErrorResponse extends MessageResponse {
     details?: string,
     silentAbort?: boolean
+    exceptions?: { message:string, exception:string }[]
 }
 export default ErrorResponse

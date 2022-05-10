@@ -26,19 +26,32 @@ const ErrorDialog:FC = () => {
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     /** The currently selected error when details is expanded */
-    const [selectedError, setSelectedError] = useState<{label: string, details: string} | null>(null)
+    const [selectedError, setSelectedError] = useState<{label: string, exception: string} | null>(null)
 
     const errorItems = useMemo(() => {
-        if (errorProps && errorProps.message && errorProps.details) {
+        if (errorProps && errorProps.exceptions) {
             return [{
                 label: translations.get("Cause(s) of failure") as string,
-                items: [{ label: errorProps.message, details: errorProps.details}]
-            }];
+                items: errorProps.exceptions.map(ex => {
+                    return { label: ex.message, exception: ex.exception }
+                })
+            }]
         }
-        return[ { 
-            label: translations.get("Cause(s) of failure") as string, 
-            items: [] 
+        return [{
+            label: translations.get("Cause(s) of failure") as string,
+            items: []
         }]
+
+        // if (errorProps && errorProps.message && errorProps.details) {
+        //     return [{
+        //         label: translations.get("Cause(s) of failure") as string,
+        //         items: [{ label: errorProps.message, details: errorProps.details}]
+        //     }];
+        // }
+        // return[ { 
+        //     label: translations.get("Cause(s) of failure") as string, 
+        //     items: [] 
+        // }]
     }, [errorProps]);
 
     useEffect(() => {
@@ -58,8 +71,8 @@ const ErrorDialog:FC = () => {
     const errorFooter = useCallback(() => {
         return (
             <>
-                <div>
-                    <Button
+                <div className="error-dialog-footer">
+                    {errorProps?.exceptions && errorProps.exceptions.length && <Button
                         type="button"
                         className="rc-button"
                         style={{
@@ -70,7 +83,7 @@ const ErrorDialog:FC = () => {
                         onClick={() => {
                             setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
                             setShowDetails(prevState => !prevState)
-                        }} />
+                        }} />}
                     <Button
                         type="button"
                         className="rc-button"
@@ -88,13 +101,13 @@ const ErrorDialog:FC = () => {
                             style={{ marginTop: "1rem", textAlign: "left" }}>
                             <span>Details</span>
                         </div>
-                        <ListBox 
-                            className="error-dialog-listbox" 
-                            value={selectedError} 
-                            optionGroupLabel="label" 
-                            optionGroupChildren="items" 
-                            optionLabel="label" 
-                            options={errorItems} 
+                        <ListBox
+                            className="error-dialog-listbox"
+                            value={selectedError}
+                            optionGroupLabel="label"
+                            optionGroupChildren="items"
+                            optionLabel="label"
+                            options={errorItems}
                             onChange={(e) => {
                                 if (e.value !== null) {
                                     setSelectedError(e.value)
@@ -102,7 +115,7 @@ const ErrorDialog:FC = () => {
                             }} />
                         <InputTextarea
                             className={concatClassnames("rc-input", "error-dialog-textarea")}
-                            value={selectedError?.details}
+                            value={selectedError?.exception}
                             style={{ resize: 'none' }}
                             readOnly />
                     </>

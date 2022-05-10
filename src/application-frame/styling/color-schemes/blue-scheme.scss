@@ -1383,6 +1383,26 @@ body {
     }
 }
 
+.error-dialog {
+    .p-dialog-header {
+        background: var(--message-error-header-background);
+        color: var(--message-error-header-color);
+
+        .p-dialog-header-icon {
+            &:enabled:hover {
+                background: var(--message-error-header-close-hover);
+            }
+        }
+    }
+    
+    .p-dialog-footer {
+        border-bottom-left-radius: var(--dialog-border-radius);
+        border-bottom-right-radius: var(--dialog-border-radius);
+        background: var(--dialog-content-background);
+        color: var(--text-color);
+    }
+}
+
 /// Messages
 .rc-message-dialog {
     .p-dialog-header {
