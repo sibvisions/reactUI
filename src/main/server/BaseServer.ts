@@ -133,6 +133,7 @@ export default abstract class BaseServer {
         job?: boolean, 
         waitForOpenRequests?: boolean,
         queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
+        handleResponse: boolean = true,
     ) {
         let promise = new Promise<any>((resolve, reject) => {
             if (
@@ -156,7 +157,7 @@ export default abstract class BaseServer {
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
-                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode)
+                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode, handleResponse)
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
@@ -171,7 +172,7 @@ export default abstract class BaseServer {
                             }
                             return result;
                         }, (err) => Promise.reject(err))
-                        .then(this.responseHandler.bind(this), (err) => Promise.reject(err))
+                        .then((results) => handleResponse ? this.responseHandler.bind(this)(results) : results, (err) => Promise.reject(err))
                         .then(results => {
                             if (fn) {
                                 fn.forEach(func => func.apply(undefined, []))
@@ -221,7 +222,8 @@ export default abstract class BaseServer {
                         fn,
                         job,
                         waitForOpenRequests,
-                        RequestQueueMode.IMMEDIATE
+                        RequestQueueMode.IMMEDIATE,
+                        handleResponse
                     ).then(results => {
                         resolve(results)
                     }))

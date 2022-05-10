@@ -1,4 +1,4 @@
-import { IDataBook } from "../../contentstore/BaseContentStore";
+import { IDataBook, ISelectedRow } from "../../contentstore/BaseContentStore";
 
 /**
  * Returns dataProviders and their data in a Map of a component. If there are no dataproviders
@@ -25,7 +25,7 @@ export function getScreensData(dataProviderMap:Map<string, IDataBook>|undefined,
     return new Map();
 }
 
-export function getScreenSelectedRows(pMap:Map<string, IDataBook>|undefined, dataBooks:string[]) {
+export function getScreenSelectedRows(pMap:Map<string, IDataBook>|undefined, dataBooks:string[]): Map<string, ISelectedRow | undefined> {
     if (pMap !== undefined) {
         const tempMap = new Map();
         for (let [key, value] of pMap.entries()) {

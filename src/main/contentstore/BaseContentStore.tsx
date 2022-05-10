@@ -22,7 +22,7 @@ export type ActiveScreen = {
     popup?: boolean
 }
 
-interface ISelectedRow {
+export interface ISelectedRow {
     dataRow: any,
     index: number,
     treePath?: TreePath,

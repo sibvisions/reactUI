@@ -14,7 +14,7 @@ const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:numbe
     const observer = useMemo(() => {
         /** Returns the nearest break point */
         const findBreakPoint = (width:number):number => {
-            if (elRef.current.classList.contains("collapsed"))
+            if (elRef.current?.classList.contains("collapsed"))
                 return Math.ceil(width/10)*10;
             else
                 return Math.floor(width/10)*10;

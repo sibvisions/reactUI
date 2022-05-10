@@ -13,7 +13,7 @@ const useAllRowSelect = (screenName:string, dataBooks:string[]) => {
     const context = useContext(appContext);
 
     /** Current state of dataMap */
-    const [selectedRowMap, setSelectedRowMap] = useState<Map<string, any>>(getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(screenName), dataBooks));
+    const [selectedRowMap, setSelectedRowMap] = useState(getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(screenName), dataBooks));
 
     // Subscribes to ScreenRowChange
     useEffect(() => {
