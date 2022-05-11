@@ -135,7 +135,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
             const rndStyle:CSSStyleDeclaration = rndFrame.style;
 
             if (props.modal) {
-                rndStyle.setProperty("z-index", (1000 + frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString())
+                rndStyle.setProperty("z-index", (1005 + frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString())
             }
             else {
                 rndStyle.setProperty("z-index", (frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString());
@@ -235,7 +235,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     const style = {
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
         overflow: "hidden",
-        zIndex: props.modal ? 1001 : 1,
+        zIndex: props.modal ? 1005 : 1,
         visibility: centerFlag ? "hidden" : undefined
     };
 

@@ -88,6 +88,7 @@
   --tree-border: 1px solid #dee2e6;
   --tree-item-hover-background: #e9ecef;
   --tree-selected-item-background: #E3F2FD;
+  --tree-even-background: var(--table-row-odd-background);
   --html-toolbar-background: #f8f9fa;
   --html-toolbar-border: 1px solid #dee2e6;
   --html-toolbar-button-hover-background: #000000;
@@ -795,6 +796,14 @@ body {
   border: var(--tree-border);
   color: var(--text-color);
   border-radius: var(--table-border-radius); }
+  .p-tree .p-tree-container > .p-treenode:nth-child(odd) {
+    background: var(--tree-background); }
+  .p-tree .p-tree-container > .p-treenode:nth-child(even) {
+    background: var(--tree-even-background); }
+  .p-tree .p-tree-container .p-treenode .p-treenode-children .p-treenode:nth-child(odd) {
+    background: var(--tree-background); }
+  .p-tree .p-tree-container .p-treenode .p-treenode-children .p-treenode:nth-child(even) {
+    background: var(--tree-even-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover {
     background: var(--tree-item-hover-background);
     color: var(--text-color); }

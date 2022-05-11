@@ -9,7 +9,7 @@ const SignaturePad:FC<BaseComponent> = (props) => {
     const context = useContext(appContext);
 
     return (
-        <div className={concatClassnames("rc-signature-pad", props.style)} style={{ height: 200, width: 400, border: "1px solid #000" }}>
+        <div className={concatClassnames("rc-signature-pad", props.style)} style={{ height: 200, width: 400, border: "1px solid #ced4da" }}>
             <SignatureCanvas penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} canvasProps={{height: 200, width: 400, className: 'sigCanvas'}} />
         </div>
     )

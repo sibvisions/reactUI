@@ -125,7 +125,7 @@ const ErrorDialog:FC = () => {
     }, [showDetails, selectedError, errorProps])
 
     return (
-        <Dialog className="error-dialog" header={errorProps?.title} footer={errorFooter} visible={visible} onHide={handleOnHide} baseZIndex={1005}>
+        <Dialog className="error-dialog" header={translations.get(errorProps?.title as string) || translations.get("Error")} footer={errorFooter} visible={visible} onHide={handleOnHide} baseZIndex={1005}>
             <i className="error-dialog-icon pi pi-times-circle" />
             {errorProps?.message}
         </Dialog>

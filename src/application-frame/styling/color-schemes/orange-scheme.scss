@@ -268,6 +268,8 @@
     /// Orange Tree selected item background
     --tree-selected-item-background: #fdefd4;
 
+    --tree-even-background: var(--table-row-odd-background);
+
     /// Orange HTMLEditor toolbar background
     --html-toolbar-background: #f8f9fa;
 
@@ -1583,32 +1585,56 @@ body {
     color: var(--text-color);
     border-radius: var(--table-border-radius);
 
-    .p-tree-container .p-treenode .p-treenode-content {
-        &.p-treenode-selectable:not(.p-highlight):hover {
-            background: var(--tree-item-hover-background);
-            color: var(--text-color);
-        }
-
-        .p-tree-toggler {
-            color: var(--text-color);
-
-            &:enabled {
-                color: var(--text-color);
-
-                &:hover {
-                    color: var(--text-color);
-                    background: var(--tree-selected-item-background);
-                }
+    .p-tree-container {
+        >.p-treenode {
+            &:nth-child(odd) {
+                background: var(--tree-background);
+            }
+    
+            &:nth-child(even) {
+                background: var(--tree-even-background);
             }
         }
 
-        &.p-highlight {
-            background: var(--tree-selected-item-background);
-            color: var(--text-color);
-        }
-
-        &:focus {
-            box-shadow: var(--focus-box-shadow);
+        .p-treenode {
+            .p-treenode-children {
+                & .p-treenode:nth-child(odd) {
+                    background: var(--tree-background);
+                }
+        
+                & .p-treenode:nth-child(even) {
+                    background: var(--tree-even-background);
+                }
+            }
+    
+            .p-treenode-content {
+                &.p-treenode-selectable:not(.p-highlight):hover {
+                    background: var(--tree-item-hover-background);
+                    color: var(--text-color);
+                }
+        
+                .p-tree-toggler {
+                    color: var(--text-color);
+        
+                    &:enabled {
+                        color: var(--text-color);
+        
+                        &:hover {
+                            color: var(--text-color);
+                            background: var(--tree-selected-item-background);
+                        }
+                    }
+                }
+        
+                &.p-highlight {
+                    background: var(--tree-selected-item-background);
+                    color: var(--text-color);
+                }
+        
+                &:focus {
+                    box-shadow: var(--focus-box-shadow);
+                }
+            }
         }
     }
 }
