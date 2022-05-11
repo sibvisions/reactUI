@@ -39,6 +39,16 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
+    useLayoutEffect(() => {
+        if (wrapperRef.current) {
+            const ref = wrapperRef.current
+            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
+            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
+            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
+            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
+        }
+    }, [layoutStyle])
+
     return (
         <span ref={wrapperRef} style={layoutStyle}>
             {baseProps.isGlobal ? context.contentStore.globalComponents.get(props.className)!.apply(undefined, [{...props}]) : baseProps.component}
