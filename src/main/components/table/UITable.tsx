@@ -447,6 +447,18 @@ const UITable: FC<TableProps> = (baseProps) => {
                     cellDataWidthList.forEach(cellDataWidth => {
                         tempWidth += cellDataWidth.width
                     });
+
+                    /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
+                    for (let i = 0; i < theader.length; i++) {
+                        let w = cellDataWidthList[i].width as any;
+                        if (props.autoResize === false) {
+                            w = `${w}px`;
+                        } else {
+                            w = `${100 * w / tempWidth}%`;
+                        }
+                        theader[i].style.setProperty('width', w);
+                    }
+
                     /** set EstTableWidth for size reporting */
                     setEstTableWidth(tempWidth);
                 }
@@ -922,7 +934,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                     table.resizeTableCells(newColumnWidth, nextColumnWidth);
                 }
                 
-                newColumnWidth = e.element.offsetWidth + e.delta;
+                newColumnWidth = e.element.offsetWidth + (nextColumn ? e.delta : 0);
 
                 //custom sizing based on primes original column sizing code
                 let widths:number[] = [];
@@ -936,6 +948,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 let innerHTML = '';
                 const dp = Math.round(e.delta / (widths.length - colIndex - 1));
                 const dpr = e.delta - dp * (widths.length - colIndex - 2);
+                const totalWidth = widths.reduce((agg, w) => agg + w, 0);
                 widths.forEach((width, index) => {
                     let colWidth = index === colIndex 
                         ? newColumnWidth 
@@ -948,9 +961,9 @@ const UITable: FC<TableProps> = (baseProps) => {
                         : `width: ${colWidth}px !important`;
                     
                     innerHTML += `
-                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
                             ${style}
                         }
                     `
@@ -1110,17 +1123,17 @@ const UITable: FC<TableProps> = (baseProps) => {
                         : `width: ${colWidth}px !important`;
                     
                     innerHTML += `
-                        .p-datatable[${table.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                        .p-datatable[${table.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                        .p-datatable[${table.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
                             ${style}
                         }
                     `
                 });
-                table.styleElement.innerHTML = innerHTML;              
+                table.styleElement.innerHTML = innerHTML;
             }
         }
-    }, []);
+    }, [layoutStyle?.width]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

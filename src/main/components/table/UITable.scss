@@ -13,11 +13,15 @@
             max-width: 100%;
         }
 
-        table {
-            //margin-right: 100%;
-        }
+        // table {
+        //     margin-right: 100%;
+        // }
     }
     &.read-size {
+        .p-datatable-table {
+            table-layout: auto;
+        }
+
         td > * {
             display: inline-block !important;
         }
