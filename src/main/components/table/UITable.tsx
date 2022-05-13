@@ -153,13 +153,31 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(screenName, props.dataBook);
 
+    /**
+     * Returns the number of records visible based on row height.
+     * @returns the number of records visible based on row height.
+     */
+     const getNumberOfRowsPerPage = useCallback(() => {
+        return Math.floor((layoutStyle?.height as number - 40) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
+    }, [layoutStyle?.height])
+
     /** The amount of virtual rows loaded */
-    const rows = 40;
+    const rows = useMemo(() => {
+        if (metaData && metaData.columnView_table_.length > 20) {
+            if (getNumberOfRowsPerPage()) {
+                return getNumberOfRowsPerPage() + 3
+            }
+            else {
+                return 5;
+            }
+        }
+        return 40;
+    }, [metaData?.columnView_table_, getNumberOfRowsPerPage])
 
     /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
         return providerData.length > rows * 2
-    }, [providerData.length]);
+    }, [providerData.length, rows]);
 
     /** The virtual rows filled with data */
     const [virtualRows, setVirtualRows] = useState<any[]>((() => { 
@@ -257,13 +275,7 @@ const UITable: FC<TableProps> = (baseProps) => {
         await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
     }, [props.dataBook, props.name, context.server])
 
-    /**
-     * Returns the number of records visible based on row height.
-     * @returns the number of records visible based on row height.
-     */
-    const getNumberOfRowsPerPage = () => {
-        return Math.floor((layoutStyle?.height as number - 40) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
-    }
+
 
     /**
      * Scrolls the table to the selected cell
@@ -438,7 +450,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                         cellDataWidthList.push(newCellWidth);
                     }
                     (tableRef.current as any).el.classList.add("read-size");
-                    for (let i = 0; i < Math.min(trows.length, 100); i++) {
+                    for (let i = 0; i < Math.min(trows.length, 10); i++) {
                         goThroughCellData(trows, i);
                     }
                     (tableRef.current as any).el.classList.remove("read-size");
@@ -496,33 +508,33 @@ const UITable: FC<TableProps> = (baseProps) => {
             out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows));
             return out;
         })());
-    }, [providerData]);
+    }, [providerData, rows]);
 
     /** Adds the sort classnames to the headers for styling */
     useEffect(() => {
         if (tableRef.current) {
             const table = tableRef.current as any;
             const allTableColumns = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-            for (const col of allTableColumns) {
-                const sortIcon = col.querySelector('.p-sortable-column-icon');
-                col.classList.remove("sort-asc", "sort-des");
-                sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
-                const columnName = window.getComputedStyle(col).getPropertyValue('--columnName');
-                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-                if (sortDef !== undefined) {
-                    if (sortDef.mode === "Ascending") {
-                        col.classList.add("sort-asc");
-                        sortIcon.classList.add("pi-sort-amount-up-alt");
+            if (sortDefinitions && sortDefinitions.length) {
+                sortDefinitions.forEach(sort => {
+                    const el = allTableColumns.find(col => col.classList.contains(sort.columnName));
+                    if (el) {
+                        const sortIcon = el.querySelector('.p-sortable-column-icon');
+                        el.classList.remove("sort-asc", "sort-des");
+                        sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                        if (sort.mode === "Ascending") {
+                            el.classList.add("sort-asc");
+                            sortIcon.classList.add("pi-sort-amount-up-alt");
+                        }
+                        else if (sort.mode === "Descending") {
+                            el.classList.add("sort-des");
+                            sortIcon.classList.add("pi-sort-amount-down");
+                        }
                     }
-                    else if (sortDef.mode === "Descending") {
-                        col.classList.add("sort-des");
-                        sortIcon.classList.add("pi-sort-amount-down");
-                    }
-                }
-            }
-            
-        }
 
+                })
+            }
+        }
     }, [sortDefinitions]);
 
     /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
@@ -798,6 +810,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
                 key={colName}
+                headerClassName={colName}
                 headerStyle={{
                     overflowX: "hidden",
                     whiteSpace: 'nowrap',

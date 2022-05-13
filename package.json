@@ -1,8 +1,7 @@
 {
-  "name": "reactUI",
+  "name": "@sibvisions/reactui",
   "homepage": ".",
   "version": "1.0.8",
-  "private": true,
   "main": "dist/moduleIndex.js",
   "types": "dist/src/moduleIndex.d.ts",
   "dependencies": {
@@ -67,8 +66,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "npm version patch && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
-    "noversionbuild": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build-patch": "npm version patch && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build-minor": "npm version minor && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build-major": "npm version major && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
     "bundle": "webpack -c ./webpack.config.js",
     "devbundle": "webpack -c ./webpack.config-dev.js",
     "test": "react-scripts test",
