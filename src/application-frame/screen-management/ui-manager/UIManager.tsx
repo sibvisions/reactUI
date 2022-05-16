@@ -101,20 +101,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     // Subscribes to the menu-visibility, error-dialog and theme
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setMenuVisibility({
-                menuBar: menuVisibility.menuBar,
-                toolBar: menuVisibility.toolBar
-            });
+            setMenuVisibility(menuVisibility);
         });
 
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setMenuVisibility({
-                    menuBar: appSettings.menuBar,
-                    toolBar: appSettings.toolBar
-                });
+            context.subscriptions.unsubscribeFromAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+                setMenuVisibility(menuVisibility);
             });
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }

@@ -13,14 +13,14 @@ import { MenuVisibility, VisibleButtons } from "../../AppSettings";
 /**
  * Returns the profile-menu-options and handles the actions of each option.
  */
-const useProfileMenuItems = () => {
+const useProfileMenuItems = (logoutVisible?: boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of translations */
     const translations = useTranslation();
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
-    
+
     const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
 
     const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.appSettings.changePasswordEnabled);
@@ -34,46 +34,48 @@ const useProfileMenuItems = () => {
     }, [context.server, context.contentStore]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
+        context.subscriptions.subscribeToAppSettings((menuVisibility: MenuVisibility, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings:ApplicationSettingsResponse) => setChangePwEnabled(appSettings.changePassword));
-    },[])
-    
+        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
+            if (appSettings.changePassword !== undefined) {
+                setChangePwEnabled(appSettings.changePassword)
+            }
+        });
+    }, [])
+
     useEffect(() => {
         const currUser = (context.contentStore as ContentStore).currentUser;
-        const profileMenuItems = changePwEnabled ? 
-            [
+        const profileMenuItems: MenuItem[] = []
+
+        if (changePwEnabled) {
+            profileMenuItems.push(
                 {
                     label: translations.get("Change password"),
                     icon: "pi pi-lock-open",
                     command(e: MenuItemCommandParams) {
                         context.subscriptions.emitChangePasswordVisible()
                     }
-                },
-                {
-                    label: translations.get("Logout"),
-                    icon: "pi pi-power-off",
-                    command(e: MenuItemCommandParams) {
-                        sendLogout()
-                    }
-                },
-                {
-                    label: "Info",
-                    icon: "pi pi-info-circle",
-                    command(e: MenuItemCommandParams) {
-                        context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + version }, "info");
-                    }
                 }
-            ] :
-            [
-                {
-                    label: translations.get("Logout"),
-                    icon: "pi pi-power-off",
-                    command(e: MenuItemCommandParams) {
-                        sendLogout()
-                    }
+            )
+        }
+
+        if (logoutVisible !== false) {
+            profileMenuItems.push({
+                label: translations.get("Logout"),
+                icon: "pi pi-power-off",
+                command(e: MenuItemCommandParams) {
+                    sendLogout()
                 }
-            ]
+            })
+        }
+
+        profileMenuItems.push({
+            label: "Info",
+            icon: "pi pi-info-circle",
+            command(e: MenuItemCommandParams) {
+                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + version }, "info");
+            }
+        })
         setSlideOptions([
             {
                 label: currUser.displayName,

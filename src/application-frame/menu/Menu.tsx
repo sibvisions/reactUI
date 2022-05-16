@@ -44,11 +44,13 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
 
-    /** The profile-menu options */
-    const profileMenu = useProfileMenuItems();
-
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
+
+    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
+
+    /** The profile-menu options */
+    const profileMenu = useProfileMenuItems(menuVisibility.logout);
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -56,27 +58,23 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setVisibleButtons({
-                reload: visibleButtons.reload,
-                rollback: visibleButtons.rollback,
-                save: visibleButtons.save
-            });
+            setMenuVisibility(menuVisibility)
+
+            setVisibleButtons(visibleButtons);
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-                setVisibleButtons({
-                    reload: appSettings.reload,
-                    rollback: appSettings.rollback,
-                    save: appSettings.save
-                });
+            context.subscriptions.unsubscribeFromAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+                setMenuVisibility(menuVisibility)
+
+                setVisibleButtons(visibleButtons);
             });
         }
     }, [context.subscriptions])
     
     return (
         <>
-            {props.showButtons && <Button
+            {props.showButtons && visibleButtons.home && <Button
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
@@ -136,12 +134,12 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     }}
                     tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
-            <div className="vl" />
-            <div className="profile-menu">
+            {props.showButtons && menuVisibility.userSettings && <div className="vl" />}
+            {menuVisibility.userSettings && <div className="profile-menu">
                 <Menubar
                     style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
                     model={profileMenu} />
-            </div>
+            </div>}
         </>
     )
 }
@@ -366,7 +364,7 @@ const Menu: FC<IMenu> = (props) => {
                                 <span className="menu-screen-title">{screenTitle}</span>
                             </div>
                             <div className="menu-topbar-right">
-                                <ProfileMenu showButtons />
+                                <ProfileMenu showButtons  />
                             </div>
                         </div>
                     </div>

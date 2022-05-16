@@ -502,9 +502,9 @@ class Server extends BaseServer {
      * @param appSettings
      */
     applicationSettings(appSettings:ApplicationSettingsResponse) {
-        this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save);
+        this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save, appSettings.home);
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
-        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar);
+        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar, appSettings.userSettings);
         if (appSettings.desktop && appSettings.desktop.length) {
             if (appSettings.desktop[0].className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
                 this.appSettings.setDesktopPanel(appSettings.desktop[0]);

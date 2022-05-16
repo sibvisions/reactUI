@@ -28,12 +28,15 @@ export type VisibleButtons = {
     reload:boolean
     rollback:boolean
     save:boolean
+    home:boolean
 }
 
 /** Interface if the toolbar or the menubar should be visible or not */
 export type MenuVisibility = {
     toolBar:boolean
     menuBar:boolean
+    userSettings:boolean
+    logout:boolean
 }
 
 type AppReadyType = {
@@ -113,13 +116,16 @@ export default class AppSettings {
     visibleButtons:VisibleButtons = { 
         reload: false, 
         rollback: false, 
-        save: false 
+        save: false,
+        home: true
     }
 
     /** The menu-visibility object */
     menuVisibility:MenuVisibility = {
         menuBar: true,
-        toolBar: true
+        toolBar: true,
+        userSettings: true,
+        logout: true
     }
 
     /** True, if change password enabled */
@@ -253,7 +259,7 @@ export default class AppSettings {
      * @param rollback - whether the rollback button is visible or not
      * @param save - whether the save button is visible or not
      */
-     setVisibleButtons(reload:boolean, rollback:boolean, save:boolean) {
+     setVisibleButtons(reload?:boolean, rollback?:boolean, save?:boolean, home?:boolean) {
         if (reload !== undefined) {
             this.visibleButtons.reload = reload;
         }
@@ -265,14 +271,20 @@ export default class AppSettings {
         if (save !== undefined) {
             this.visibleButtons.save = save;
         }
+
+        if (home !== undefined) {
+            this.visibleButtons.home = home;
+        }
     }
 
     /**
      * Sets if change-password is enabled
      * @param cpe - changed-password enabled value
      */
-    setChangePasswordEnabled(cpe:boolean) {
-        this.changePasswordEnabled = cpe;
+    setChangePasswordEnabled(cpe?:boolean) {
+        if (cpe !== undefined) {
+            this.changePasswordEnabled = cpe;
+        }
     }
 
     /**
@@ -280,13 +292,17 @@ export default class AppSettings {
      * @param menuBar - True, if the menubar is visible
      * @param toolBar - True, if the toolbar is visible
      */
-    setMenuVisibility(menuBar:boolean, toolBar:boolean) {
+    setMenuVisibility(menuBar?:boolean, toolBar?:boolean, userSettings?:boolean) {
         if (menuBar !== undefined) {
             this.menuVisibility.menuBar = menuBar;
         }
 
         if (toolBar !== undefined) {
             this.menuVisibility.toolBar = toolBar;
+        }
+
+        if (userSettings !== undefined) {
+            this.menuVisibility.userSettings = userSettings
         }
     }
 
