@@ -213,6 +213,8 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
+    const sortDefinitionCache = useRef<SortDefinition[]>();
+
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {
         let pks:(LengthBasedColumnDescription | NumericColumnDescription)[] | undefined;
@@ -532,8 +534,26 @@ const UITable: FC<TableProps> = (baseProps) => {
                         }
                     }
 
+                });
+            }
+
+            if (sortDefinitionCache.current && sortDefinitionCache.current.length && sortDefinitions) {
+                sortDefinitionCache.current?.forEach(sort => {
+                    const foundSort = sortDefinitions.findIndex(sortDef => sortDef.columnName === sort.columnName);
+
+                    if (foundSort === -1) {
+                        const el = allTableColumns.find(col => col.classList.contains(sort.columnName));
+
+                        if (el) {
+                            const sortIcon = el.querySelector('.p-sortable-column-icon');
+                            el.classList.remove("sort-asc", "sort-des");
+                            sortIcon.classList.remove("pi-sort-amount-up-alt", "pi-sort-amount-down");
+                        }
+                    }
                 })
             }
+
+            sortDefinitionCache.current = sortDefinitions;
         }
     }, [sortDefinitions]);
 
