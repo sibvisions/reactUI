@@ -36,6 +36,8 @@ export const EmbeddedContext = createContext<boolean>(false)
  */
 const MiddleMan: FC<ICustomContent> = (props) => {
 
+    console.log('MIDDLEMAN')
+
     return (
         <HashRouter>
             <AppProvider {...props}>
