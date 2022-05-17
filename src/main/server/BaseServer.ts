@@ -61,6 +61,8 @@ export default abstract class BaseServer {
 
     loginError:string|undefined = undefined
 
+    preserveOnReload:boolean = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance

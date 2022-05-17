@@ -13,7 +13,7 @@ import { MenuVisibility, VisibleButtons } from "../../AppSettings";
 /**
  * Returns the profile-menu-options and handles the actions of each option.
  */
-const useProfileMenuItems = (logoutVisible?: boolean) => {
+const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of translations */
@@ -65,6 +65,27 @@ const useProfileMenuItems = (logoutVisible?: boolean) => {
                 icon: "pi pi-power-off",
                 command(e: MenuItemCommandParams) {
                     sendLogout()
+                }
+            })
+        }
+
+        if (restartVisible && context.server.preserveOnReload) {
+            profileMenuItems.push({
+                label: translations.get("Restart"),
+                icon: "pi pi-refresh",
+                command(e: MenuItemCommandParams) {
+                    const startupRequestCache = sessionStorage.getItem("startup");
+                    if (startupRequestCache) {
+                        const parsedCache = (JSON.parse(startupRequestCache) as Array<any>)
+                        parsedCache.forEach((response) => {
+                            if (response.preserveOnReload) {
+                                response.preserveOnReload = false;
+                            }
+                        });
+                        sessionStorage.setItem("startup", JSON.stringify(parsedCache));
+                    }
+
+                    window.location.reload();
                 }
             })
         }

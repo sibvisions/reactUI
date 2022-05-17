@@ -231,6 +231,7 @@ class Server extends BaseServer {
     applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
         this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
+        this.preserveOnReload = metaData.preserveOnReload;
         this.appSettings.setApplicationMetaData(metaData);
     }
 

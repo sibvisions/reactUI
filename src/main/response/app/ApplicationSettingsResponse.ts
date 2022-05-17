@@ -11,7 +11,8 @@ interface ApplicationSettingsResponse extends BaseResponse {
     toolBar?:boolean,
     home?:boolean,
     logout?:boolean,
-    userSettings?:boolean
+    userSettings?:boolean,
+    restart?:boolean
     desktop?: Array<BaseComponent>
 }
 export default ApplicationSettingsResponse;

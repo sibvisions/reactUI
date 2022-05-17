@@ -167,7 +167,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
         .set("Matching code", "Matching code")
         .set("Confirm", "Confirm")
         .set("Details", "Details")
-        .set("Cause(s) of failure", "Cause(s) of failure");
+        .set("Cause(s) of failure", "Cause(s) of failure")
+        .set("Restart", "Restart");
     },[contextState.contentStore]);
 
     useEffect(() => {
@@ -223,16 +224,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
         }
 
-        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, startupRequestHash:string, restartArgs?:any) => {
+        const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
             if (restartArgs) {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
-            contextState.server.sendRequest(req, (preserve && startupRequestHash && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
+            contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
                 if (!preserve) {
-                    sessionStorage.setItem(startupRequestHash, JSON.stringify(result));
+                    sessionStorage.setItem("startup", JSON.stringify(result));
                 }
+
                 initWS(contextState.server.BASE_URL);
             });
         }
@@ -511,16 +513,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
-
-            const startupRequestHash = [
-                'startup', 
-                startUpRequest.appMode,
-                startUpRequest.applicationName,
-                startUpRequest.userName,
-                startUpRequest.technology,
-                startUpRequest.deviceMode,
-            ].join('::');
-            const startupRequestCache = sessionStorage.getItem(startupRequestHash);
+            
+            const startupRequestCache = sessionStorage.getItem("startup");
             if (startupRequestCache && !relaunchArguments.current) {
                 let preserveOnReload = false;
                 (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
@@ -550,10 +544,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                     contextState.server.subManager.jobQueue.clear();
                 }
-                sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload, startupRequestHash);
+                sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
             } 
             else {
-                sendStartup(startUpRequest, false, startupRequestHash, relaunchArguments.current);
+                sendStartup(startUpRequest, false, relaunchArguments.current);
             }
         }
 

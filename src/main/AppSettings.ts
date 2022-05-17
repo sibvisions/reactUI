@@ -37,6 +37,7 @@ export type MenuVisibility = {
     menuBar:boolean
     userSettings:boolean
     logout:boolean
+    restart:boolean
 }
 
 type AppReadyType = {
@@ -125,7 +126,8 @@ export default class AppSettings {
         menuBar: true,
         toolBar: true,
         userSettings: true,
-        logout: true
+        logout: true,
+        restart: true
     }
 
     /** True, if change password enabled */
@@ -292,7 +294,7 @@ export default class AppSettings {
      * @param menuBar - True, if the menubar is visible
      * @param toolBar - True, if the toolbar is visible
      */
-    setMenuVisibility(menuBar?:boolean, toolBar?:boolean, userSettings?:boolean) {
+    setMenuVisibility(menuBar?:boolean, toolBar?:boolean, userSettings?:boolean, logout?:boolean, restart?:boolean) {
         if (menuBar !== undefined) {
             this.menuVisibility.menuBar = menuBar;
         }
@@ -303,6 +305,14 @@ export default class AppSettings {
 
         if (userSettings !== undefined) {
             this.menuVisibility.userSettings = userSettings
+        }
+
+        if (logout !== undefined) {
+            this.menuVisibility.logout = logout;
+        }
+
+        if (restart !== undefined) {
+            this.menuVisibility.restart = restart;
         }
     }
 
