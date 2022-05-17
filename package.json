@@ -1,7 +1,7 @@
 {
   "name": "@sibvisions/reactui",
   "homepage": ".",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "main": "dist/moduleIndex.js",
   "types": "dist/src/moduleIndex.d.ts",
   "dependencies": {
