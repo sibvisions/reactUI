@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useLayoutEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { createCancelLoginRequest, useConstants } from "../../moduleIndex";
@@ -53,10 +53,33 @@ const MFAURL: FC<ILoginForm> = (props) => {
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMFAURL((link: string | MFAURLType, timeout: number) => {
-            setLink(link);
-            setLoginTimeout(timeout);
-            setRemainingTime(timeout)
+        context.subscriptions.subscribeToMFAURL((pLink: string | MFAURLType, timeout: number) => {
+            if (typeof link === "object") {
+                const newLink:MFAURLType = {...link};
+                const castedParameter = pLink as MFAURLType
+
+                if (castedParameter.height !== undefined) {
+                    newLink.height = castedParameter.height;
+                }
+                if (castedParameter.width !== undefined) {
+                    newLink.width = castedParameter.width
+                }
+                if (castedParameter.target !== undefined) {
+                    newLink.target = castedParameter.target;
+                }
+                if (castedParameter.url !== undefined) {
+                    newLink.url = castedParameter.url
+                }
+                setLink(newLink);
+            }
+            else {
+                setLink(pLink);
+            }
+            
+            if (timeout !== loginTimeout) {
+                setLoginTimeout(timeout);
+                setRemainingTime(timeout);
+            }
         });
 
         const intervalId = setInterval(() => {
@@ -67,7 +90,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
             context.subscriptions.unsubscribeFromMFAURL();
             clearInterval(intervalId);
         }
-    }, [])
+    }, []);
 
     return (
         <div className="login-form">
@@ -96,9 +119,8 @@ const MFAURL: FC<ILoginForm> = (props) => {
                         columnLabel="" />
                 </div>
                 <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold", textAlign: "center", marginBottom: "2rem" }} >
-                    {typeof link === "object" && link.target === "_self" ? <iframe 
-                        src={typeof link === "string" ? link : link.url} 
-                        style={iFrameStyle} /> : <a href={link as string} />}
+                    {typeof link === "object" && link.target === "_self" ? 
+                    <iframe src={link.url} style={iFrameStyle} /> : <a href={link as string} />}
                 </div>
                 <div className="change-password-button-wrapper" style={{ justifyContent: "flex-end" }}>
                     <Button

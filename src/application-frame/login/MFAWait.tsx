@@ -30,8 +30,11 @@ const MFAWait:FC<ILoginForm> = (props) => {
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAWait((code:string, timeout:number) => {
             setCode(code);
-            setLoginTimeout(timeout);
-            setRemainingTime(timeout);
+
+            if (timeout !== loginTimeout) {
+                setLoginTimeout(timeout);
+                setRemainingTime(timeout);
+            }
         });
 
         const intervalId = setInterval(() => {
