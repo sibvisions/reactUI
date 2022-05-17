@@ -407,7 +407,6 @@ export default abstract class BaseContentStore {
         this.navigationNames.clear();
         this.screenWrappers.clear();
         this.dataBooks.clear();
-        this.translation.clear();
         this.activeScreens = [];
     }
 
