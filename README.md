@@ -60,4 +60,4 @@ If everything works out as planned, you will be redirected to the login:
 
 After you logged in or if you have a valid username, password combination you will be redirected to home:
 
-![connected-home](./src/readme-imgs/connected.png)
+![connected-home](https://github.com/sibvisions/reactUI/blob/master/src/readme-imgs/connected.png)
