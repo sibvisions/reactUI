@@ -1,3 +1,18 @@
+/* Copyright 2022 SIB Visions GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
@@ -10,7 +25,7 @@ import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { REQUEST_KEYWORDS } from "../../../request";
-import Server from "../../../Server";
+import Server from "../../../server/Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
 import ServerV2 from "../../../server/ServerV2";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
