@@ -56,7 +56,7 @@ run `npm run devbundle` to create a development bundle. URL configuration is pos
 
 If everything works out as planned, you will be redirected to the login:
 
-![connected-login](./src/readme-imgs/connected-login.PNG)
+![connected-login](https://github.com/sibvisions/reactUI/blob/master/src/readme-imgs/connected-login.PNG)
 
 After you logged in or if you have a valid username, password combination you will be redirected to home:
 
