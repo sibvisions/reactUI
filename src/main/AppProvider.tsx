@@ -233,10 +233,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                 }
             }
-
-            if (contextState.appSettings.applicationMetaData.aliveInterval) {
-                contextState.contentStore.setWsAndTimer(ws.current, new Timer(() => ws.current?.send("ALIVE"), contextState.appSettings.applicationMetaData.aliveInterval));
-            }
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
@@ -563,6 +559,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                     contextState.server.subManager.jobQueue.clear();
                 }
+                else {
+                    contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
+                }
+                
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
             } 
             else {

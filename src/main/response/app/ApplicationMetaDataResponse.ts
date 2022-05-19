@@ -29,5 +29,6 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationColorScheme: string
     applicationDesign?:string
     aliveInterval?: number
+    userRestart?:boolean
 }
 export default ApplicationMetaDataResponse;

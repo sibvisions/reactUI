@@ -105,7 +105,8 @@ enum REQUEST_ENDPOINTS {
     RELOAD = "/api/reload",
     ROLLBACK = "/api/rollback",
     CHANGES = "/api/changes",
-    ALIVE = "/api/alive"
+    ALIVE = "/api/alive",
+    EXIT = "/api/exit"
 }
 
 /** Server class sends requests and handles responses */
@@ -193,7 +194,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.CANCEL_LOGIN, REQUEST_ENDPOINTS.CANCEL_LOGIN)
-    .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE);
+    .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
+    .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT);
 
     /** ----------HANDLING-RESPONSES---------- */
 
@@ -249,6 +251,13 @@ class Server extends BaseServer {
         sessionStorage.setItem("clientId", metaData.clientId);
         this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
         this.preserveOnReload = metaData.preserveOnReload;
+
+        if (metaData.aliveInterval !== undefined) {
+            this.aliveInterval = metaData.aliveInterval;
+        }
+
+        this.appSettings.setMenuVisibility(undefined, undefined, undefined, undefined, metaData.userRestart);
+
         this.appSettings.setApplicationMetaData(metaData);
     }
 
@@ -522,7 +531,7 @@ class Server extends BaseServer {
     applicationSettings(appSettings:ApplicationSettingsResponse) {
         this.appSettings.setVisibleButtons(appSettings.reload, appSettings.rollback, appSettings.save, appSettings.home);
         this.appSettings.setChangePasswordEnabled(appSettings.changePassword);
-        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar, appSettings.userSettings);
+        this.appSettings.setMenuVisibility(appSettings.menuBar, appSettings.toolBar, appSettings.userSettings, appSettings.logout);
         if (appSettings.desktop && appSettings.desktop.length) {
             if (appSettings.desktop[0].className === COMPONENT_CLASSNAMES.DESKTOPPANEL) {
                 this.appSettings.setDesktopPanel(appSettings.desktop[0]);

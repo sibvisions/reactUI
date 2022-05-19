@@ -183,9 +183,6 @@ export default abstract class BaseServer {
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
                             this.lastRequestTimeStamp = Date.now();
-                            if (this.appSettings.applicationMetaData.aliveInterval) {
-                                this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
-                            }
                             
                             if (result.code) {
                                 if (400 <= result.code && result.code <= 599) {
@@ -317,7 +314,7 @@ export default abstract class BaseServer {
     async responseHandler(responses: Array<BaseResponse>) {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
-        if (Array.isArray(responses)) {
+        if (Array.isArray(responses) && responses.length) {
             responses.sort((a, b) => {
                 if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
                     return -1;
@@ -358,10 +355,11 @@ export default abstract class BaseServer {
      applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
         this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
-
         if (metaData.aliveInterval !== undefined) {
             this.aliveInterval = metaData.aliveInterval;
         }
+
+        this.appSettings.setMenuVisibility(undefined, undefined, undefined, undefined, metaData.userRestart);
 
         this.appSettings.setApplicationMetaData(metaData);
     }

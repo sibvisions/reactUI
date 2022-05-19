@@ -937,16 +937,4 @@ export default abstract class BaseContentStore {
             this.subManager.notifySortDefinitionChange(dataProvider.split('/')[1], dataProvider);
         }
     }
-
-    // Other
-    setWsAndTimer(ws:WebSocket, timer:Timer) {
-        this.ws = ws;
-        this.timer = timer
-    }
-
-    restartAliveSending(newMs:number) {
-        if (this.ws && this.timer) {
-            this.timer.reset(newMs);
-        }
-    }
 }

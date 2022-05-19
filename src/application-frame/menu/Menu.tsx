@@ -65,7 +65,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
 
     /** The profile-menu options */
-    const profileMenu = useProfileMenuItems(menuVisibility.logout, menuVisibility.restart);
+    const profileMenu = useProfileMenuItems(menuVisibility.logout, menuVisibility.userRestart);
 
     /** History of react-router-dom */
     const history = useHistory();
