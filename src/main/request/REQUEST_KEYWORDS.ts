@@ -69,6 +69,7 @@ enum REQUEST_KEYWORDS {
     SET_SCREEN_PARAMETER = "set_screen_parameter",
     RELOAD = "reload",
     ROLLBACK = "rollback",
-    CHANGES = "changes"
+    CHANGES = "changes",
+    ALIVE = "alive"
 }
 export default REQUEST_KEYWORDS

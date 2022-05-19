@@ -78,6 +78,10 @@ export default abstract class BaseServer {
 
     preserveOnReload:boolean = false;
 
+    aliveInterval:number = 30000;
+
+    lastRequestTimeStamp: number = Date.now();
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -178,6 +182,7 @@ export default abstract class BaseServer {
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
+                            this.lastRequestTimeStamp = Date.now();
                             if (this.appSettings.applicationMetaData.aliveInterval) {
                                 this.contentStore.restartAliveSending(this.appSettings.applicationMetaData.aliveInterval);
                             }
@@ -353,6 +358,11 @@ export default abstract class BaseServer {
      applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
         this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
+
+        if (metaData.aliveInterval !== undefined) {
+            this.aliveInterval = metaData.aliveInterval;
+        }
+
         this.appSettings.setApplicationMetaData(metaData);
     }
 

@@ -20,7 +20,7 @@ import ContentStore from "./contentstore/ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import API from "./API";
 import AppSettings, { appVersion } from "./AppSettings";
-import { createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId, useEventHandler } from "../moduleIndex";
+import { createAliveRequest, createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId, useEventHandler } from "../moduleIndex";
 import { addCSSDynamically, Timer } from "./util";
 import { ICustomContent } from "../MiddleMan";
 import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
@@ -250,6 +250,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     sessionStorage.setItem("startup", JSON.stringify(result));
                 }
 
+                setInterval(() => {
+                    if ((Math.floor(Date.now() / 1000) - Math.floor(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
+                        contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                    }
+                }, contextState.server.aliveInterval)
+
                 initWS(contextState.server.BASE_URL);
             });
         }
@@ -468,12 +474,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 const parsedValue = parseInt(convertedOptions.get("version"))
                 if (parsedValue === 1 || parsedValue === 2) {
                     contextState.version = parsedValue;
-                   // newServer.endpointMap = newServer.setEndPointMap(parsedValue);
                     appVersion.version = parsedValue;
                 }
                 else {
                     contextState.version = 1;
-                    //newServer.endpointMap = newServer.setEndPointMap(1);
                     appVersion.version = 1;
                 }
 

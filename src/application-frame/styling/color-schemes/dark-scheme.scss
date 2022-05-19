@@ -1674,15 +1674,15 @@ body {
                             background: var(--tree-selected-item-background);
                         }
                     }
+
+                    &:focus {
+                        box-shadow: none;
+                    }
                 }
         
                 &.p-highlight {
                     background: var(--tree-selected-item-background);
                     color: var(--text-color);
-                }
-        
-                &:focus {
-                    box-shadow: var(--focus-box-shadow);
                 }
             }
         }

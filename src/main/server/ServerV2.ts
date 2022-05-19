@@ -57,6 +57,9 @@ enum REQUEST_ENDPOINTS{
     CLOSE_POPUP_MENU = "/v2/api/comp/closePopupMenu ",
     BOUNDS = "/v2/api/comp/bounds",
 
+    //other
+    ALIVE = "/v2/api/alive",
+
     //remaining v1
     LOGIN = "/api/v2/login",
     LOGOUT = "/api/logout",

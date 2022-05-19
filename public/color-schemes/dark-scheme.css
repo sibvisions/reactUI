@@ -862,11 +862,11 @@ body {
       .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
         color: var(--text-color);
         background: var(--tree-selected-item-background); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:focus {
+      box-shadow: none; }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
     background: var(--tree-selected-item-background);
     color: var(--text-color); }
-  .p-tree .p-tree-container .p-treenode .p-treenode-content:focus {
-    box-shadow: var(--focus-box-shadow); }
 
 .loading-screen {
   background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);

@@ -53,4 +53,5 @@ export type { default as CloseFrameRequest } from './application-ui/CloseFrameRe
 export type { default as CloseContentRequest } from './application-ui/CloseContentRequest';
 export type { default as DispatchActionRequest } from './events/DispatchActionRequest';
 export type { default as BoundsRequest } from './comp/BoundsRequest';
+export type { default as AliveRequest } from './other/AliveRequest';
 export { default as REQUEST_KEYWORDS } from './REQUEST_KEYWORDS';

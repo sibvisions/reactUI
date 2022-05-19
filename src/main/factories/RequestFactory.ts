@@ -49,7 +49,8 @@ import { StartupRequest,
          CloseFrameRequest,
          CloseContentRequest,
          DispatchActionRequest,
-         BoundsRequest} from "../request";
+         BoundsRequest,
+         AliveRequest} from "../request";
 import CancelLoginRequest from "../request/login/CancelLoginRequest";
 
 /**
@@ -579,5 +580,13 @@ export const createCancelLoginRequest = (values?: CancelLoginRequest) => {
     const req:CancelLoginRequest = {
         clientId: values?.clientId || getClientId()
     }
+    return req;
+}
+
+export const createAliveRequest = (values?: AliveRequest): AliveRequest => {
+    const req:AliveRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+
     return req;
 }
