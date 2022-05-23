@@ -128,8 +128,8 @@
   --message-warning-header-background: #b69425;
   --message-warning-header-close-hover: #978138;
   --message-warning-header-color: #ffffff;
-  --message-error-header-background: #B00020;
-  --message-error-header-close-hover: #860f1b;
+  --message-error-header-background: #CC0C39;
+  --message-error-header-close-hover: #a92230;
   --message-error-header-color: #ffffff;
   --message-question-header-background: #018786;
   --message-question-header-close-hover: #017372;
@@ -730,8 +730,13 @@ body {
 .error-dialog .p-dialog-header {
   background: var(--message-error-header-background);
   color: var(--message-error-header-color); }
-  .error-dialog .p-dialog-header .p-dialog-header-icon:enabled:hover {
-    background: var(--message-error-header-close-hover); }
+  .error-dialog .p-dialog-header .p-dialog-header-icon:focus {
+    box-shadow: none; }
+  .error-dialog .p-dialog-header .p-dialog-header-icon:enabled {
+    color: var(--message-error-header-color); }
+    .error-dialog .p-dialog-header .p-dialog-header-icon:enabled:hover {
+      background: var(--message-error-header-close-hover);
+      color: var(--message-error-header-color); }
 
 .error-dialog .p-dialog-footer {
   border-bottom-left-radius: var(--dialog-border-radius);

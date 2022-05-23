@@ -319,10 +319,10 @@
     --message-warning-header-color: #ffffff;
 
     /// Default Message error background
-    --message-error-header-background: #ff364a;
+    --message-error-header-background: #CC0C39;
 
     /// Default Message error hover background of closing element
-    --message-error-header-close-hover: #db2739;
+    --message-error-header-close-hover: #a92230;
 
     /// Default Message error header text color
     --message-error-header-color: #ffffff;
@@ -1432,9 +1432,18 @@ body {
         color: var(--message-error-header-color);
 
         .p-dialog-header-icon {
-            &:enabled:hover {
-                background: var(--message-error-header-close-hover);
+            &:focus {
+                box-shadow: none;
             }
+
+            &:enabled {
+                color: var(--message-error-header-color);
+
+                &:hover {
+                    background: var(--message-error-header-close-hover);
+                    color: var(--message-error-header-color);
+                }
+            } 
         }
     }
 
@@ -1443,6 +1452,26 @@ body {
         border-bottom-right-radius: var(--dialog-border-radius);
         background: var(--dialog-content-background);
         color: var(--text-color);
+    }
+
+    .p-listbox {
+        .p-listbox-list {
+            .p-listbox-item {
+                border: var(--table-row-border);
+                
+                &:nth-child(odd) {
+                    background: var(--table-row-odd-background);
+                }
+
+                &:nth-child(even) {
+                    background: var(--table-row-even-background);
+                }
+
+                &.p-highlight {
+                    background: var(--table-selected-row-background);
+                }
+            }
+        }
     }
 }
 

@@ -169,9 +169,11 @@
 
     --menuicon-size: 14px;
 
-    --error-dialog-details-gap: 1rem;
+    --dialog-header-padding: 1rem;
 
-    --error-dialog-textarea-width: 20rem;
+    --error-dialog-min-width: 205px;
+
+    --error-dialog-details-gap: 1rem;
 
     --error-dialog-textarea-height: 6rem;
 
@@ -477,7 +479,13 @@ body {
     }
 }
 
+.p-dialog .p-dialog-header {
+    padding: var(--dialog-header-padding);
+}
+
 .error-dialog {
+    min-width: var(--error-dialog-min-width);
+    
     .error-dialog-details-caption {
         margin-top: var(--error-dialog-details-gap);
         text-align: "left";
@@ -489,7 +497,6 @@ body {
 
     .error-dialog-textarea {
         margin-top: var(--error-dialog-details-gap);
-        min-width: var(--error-dialog-textarea-width);
         width: 100%;
         height: var(--error-dialog-textarea-height);
     }

@@ -14,7 +14,7 @@
  */
 
 .error-dialog {
-    max-width: 600px;
+    width: 600px;
 
     .p-dialog-content {
         display: flex;
@@ -31,10 +31,23 @@
         text-align: left;
 
         .p-listbox-list {
+            padding: 0;
+            font-size: 0px;
+
+            .p-listbox-item-group {
+                font-size: 16px;
+            }
+
             .p-listbox-item {
                 white-space: nowrap;
                 display: inline-block;
                 min-width: 100%;
+                font-size: 16px;
+
+                &.p-highlight {
+                    outline: 2px solid #7f7f7f;
+                    outline-offset: -2px;
+                }
             }
         }
     }

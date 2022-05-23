@@ -319,10 +319,10 @@
     --message-warning-header-color: #ffffff;
 
     /// Orange Message error background
-    --message-error-header-background: #ff364a;
+    --message-error-header-background: #CC0C39;
 
     /// Orange Message error hover background of closing element
-    --message-error-header-close-hover: #db2739;
+    --message-error-header-close-hover: #a92230;
 
     /// Orange Message error header color
     --message-error-header-color: #ffffff;
@@ -1441,9 +1441,18 @@ body {
         color: var(--message-error-header-color);
 
         .p-dialog-header-icon {
-            &:enabled:hover {
-                background: var(--message-error-header-close-hover);
+            &:focus {
+                box-shadow: none;
             }
+            
+            &:enabled {
+                color: var(--message-error-header-color);
+
+                &:hover {
+                    background: var(--message-error-header-close-hover);
+                    color: var(--message-error-header-color);
+                }
+            } 
         }
     }
 

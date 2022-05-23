@@ -56,17 +56,6 @@ const ErrorDialog:FC = () => {
             label: translations.get("Cause(s) of failure") as string,
             items: []
         }]
-
-        // if (errorProps && errorProps.message && errorProps.details) {
-        //     return [{
-        //         label: translations.get("Cause(s) of failure") as string,
-        //         items: [{ label: errorProps.message, details: errorProps.details}]
-        //     }];
-        // }
-        // return[ { 
-        //     label: translations.get("Cause(s) of failure") as string, 
-        //     items: [] 
-        // }]
     }, [errorProps]);
 
     useEffect(() => {
@@ -81,7 +70,15 @@ const ErrorDialog:FC = () => {
         }
     }, [errorProps]);
 
-    const handleOnHide = () => setVisible(false)
+    useEffect(() => {
+        const elem = document.getElementById("error-dialog");
+        if (!showDetails && elem) {
+            elem.style.removeProperty("width");
+            elem.style.removeProperty("height");
+        }
+    }, [showDetails]);
+
+    const handleOnHide = () => setVisible(false)    
 
     const errorFooter = useCallback(() => {
         return (
@@ -140,7 +137,15 @@ const ErrorDialog:FC = () => {
     }, [showDetails, selectedError, errorProps])
 
     return (
-        <Dialog className="error-dialog" header={translations.get(errorProps?.title as string) || translations.get("Error")} footer={errorFooter} visible={visible} onHide={handleOnHide} baseZIndex={1005}>
+        <Dialog
+            id="error-dialog"
+            className="error-dialog" 
+            header={translations.get(errorProps?.title as string) || translations.get("Error")} 
+            footer={errorFooter} 
+            visible={visible} 
+            onHide={handleOnHide} 
+            baseZIndex={1005}
+            resizable >
             <i className="error-dialog-icon pi pi-times-circle" />
             {errorProps?.message}
         </Dialog>

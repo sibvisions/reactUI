@@ -65,8 +65,9 @@
   --label-padding: 9px;
   --menubar-height: 40px;
   --menuicon-size: 14px;
+  --dialog-header-padding: 1rem;
+  --error-dialog-min-width: 205px;
   --error-dialog-details-gap: 1rem;
-  --error-dialog-textarea-width: 30rem;
   --error-dialog-textarea-height: 8rem;
   --error-dialog-icon-size: 2rem; }
 
@@ -273,22 +274,23 @@ body {
 .basti .rc-label > span {
   padding: var(--label-padding) 0px; }
 
-.error-dialog .error-dialog-details-caption {
-  margin-top: var(--error-dialog-details-gap);
-  text-align: "left"; }
+.p-dialog .p-dialog-header {
+  padding: var(--dialog-header-padding); }
 
-.error-dialog .error-dialog-listbox {
-  margin-top: var(--error-dialog-details-gap); }
-
-.error-dialog .error-dialog-textarea {
-  margin-top: var(--error-dialog-details-gap);
-  min-width: var(--error-dialog-textarea-width);
-  width: 100%;
-  height: var(--error-dialog-textarea-height); }
-
-.error-dialog .error-dialog-icon {
-  min-width: var(--error-dialog-icon-size);
-  font-size: var(--error-dialog-icon-size); }
+.error-dialog {
+  min-width: var(--error-dialog-min-width); }
+  .error-dialog .error-dialog-details-caption {
+    margin-top: var(--error-dialog-details-gap);
+    text-align: "left"; }
+  .error-dialog .error-dialog-listbox {
+    margin-top: var(--error-dialog-details-gap); }
+  .error-dialog .error-dialog-textarea {
+    margin-top: var(--error-dialog-details-gap);
+    width: 100%;
+    height: var(--error-dialog-textarea-height); }
+  .error-dialog .error-dialog-icon {
+    min-width: var(--error-dialog-icon-size);
+    font-size: var(--error-dialog-icon-size); }
 
 .p-autocomplete-panel.dropdown-table .p-autocomplete-item {
   height: calc(8px + var(--table-data-height)); }
