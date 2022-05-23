@@ -159,6 +159,12 @@
     /// Padding of table headers
     --table-header-padding: 0.3rem 0.5rem;
 
+    /// Padding of table cells
+    --table-cell-padding-top-bottom: 0.2rem;
+
+    /// Padding of table cells
+    --table-cell-padding-left-right: 0.4rem;
+
     ///Height of cell data in a table
     --table-data-height: 18px;
 
@@ -424,6 +430,12 @@ body {
         }
     }
 
+    .open-cell-editor {
+        .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
+            padding: 0px;
+        }
+    }
+
     .p-checkbox {
         width: var(--checkbox-size);
         height: var(--checkbox-size);
@@ -470,6 +482,7 @@ body {
         }
 
         .p-datatable-tbody > tr > td {
+            padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);;
             height: calc(8px + var(--table-data-height));
         }
     }
@@ -485,7 +498,7 @@ body {
 
 .error-dialog {
     min-width: var(--error-dialog-min-width);
-    
+
     .error-dialog-details-caption {
         margin-top: var(--error-dialog-details-gap);
         text-align: "left";

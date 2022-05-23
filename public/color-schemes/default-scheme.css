@@ -633,7 +633,10 @@ body {
       color: var(--text-color);
       background: var(--table-selected-row-background) !important; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor {
+        box-shadow: none;
         color: var(--text-color); }
+        .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor .p-inputtext:enabled:focus {
+          box-shadow: none; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-required {
         background: var(--table-required-even-background);
         opacity: 0.8; }

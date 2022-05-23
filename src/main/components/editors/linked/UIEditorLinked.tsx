@@ -476,6 +476,8 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         return (d.label as string[]).map((d, i) => <div key={i}>{metaData?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
     }, [props.columnMetaData, providedData, metaData]);
 
+    console.log(props.id, props.layoutStyle)
+
     return (
         <span 
             aria-label={props.ariaLabel} 

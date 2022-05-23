@@ -1271,7 +1271,12 @@ body {
 
             > td {
                 .open-cell-editor {
+                    box-shadow: none;
                     color: var(--text-color);
+
+                    .p-inputtext:enabled:focus {
+                        box-shadow: none;
+                    }
                 }
 
                 &.cell-required {
@@ -1458,7 +1463,7 @@ body {
         .p-listbox-list {
             .p-listbox-item {
                 border: var(--table-row-border);
-                
+
                 &:nth-child(odd) {
                     background: var(--table-row-odd-background);
                 }

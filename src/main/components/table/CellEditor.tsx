@@ -98,6 +98,9 @@ export interface ICellEditor {
 function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
+        const calcWidth = "calc(100% + " + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-left-right') + " + 0.1rem)";
+        const calcHeight = "calc(100% + " + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-top-bottom') + ")";
+
         editor = <CellEditorWrapper
             {...{
                 ...metaData,
@@ -106,7 +109,12 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 columnName: props.colName,
                 id: "",
                 cellEditor_editable_: true,
-                editorStyle: { width: "100%", height: "100%" },
+                editorStyle: { 
+                    width: calcWidth, 
+                    height: calcHeight, 
+                    //marginLeft: calcMarginLeft, 
+                    //marginTop: calcMarginTop 
+                },
                 autoFocus: true,
                 stopCellEditing: stopCellEditing,
                 passedKey: passedValues,
@@ -142,6 +150,10 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
+
+    const calcMarginLeft = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)";
+
+    const calcMarginTop = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)";
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -312,7 +324,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         (isEditable) ?
             (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
-                    <div style={{ width: "100%", height: "100%" }} ref={wrapperRef}>
+                    <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>
                     :
@@ -340,7 +352,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                         {getRenderer()}
                     </div>
                     :
-                    <div style={{ width: "100%", height: "100%" }} ref={wrapperRef}>
+                    <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
                         {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
                     </div>)
             : <div

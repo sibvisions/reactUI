@@ -63,6 +63,8 @@
   --radiobutton-size: 20px;
   --tab-padding: 0rem 1rem;
   --table-header-padding: 0.6rem 1rem;
+  --table-cell-padding-top-bottom: 0.2rem;
+  --table-cell-padding-left-right: 0.4rem;
   --table-data-height: 27px;
   --label-padding: 9px;
   --menubar-height: 40px;
@@ -283,6 +285,9 @@ body {
   .basti_mobile .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti_mobile .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
     font-size: var(--input-button-icon-size); }
 
+.basti_mobile .open-cell-editor .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
+  padding: 0px; }
+
 .basti_mobile .p-checkbox {
   width: var(--checkbox-size);
   height: var(--checkbox-size); }
@@ -315,6 +320,7 @@ body {
   padding: var(--table-header-padding); }
 
 .basti_mobile .rc-table .p-datatable-tbody > tr > td {
+  padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
   height: calc(8px + var(--table-data-height)); }
 
 .basti_mobile .rc-label > span {
