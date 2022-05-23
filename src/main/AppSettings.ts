@@ -47,12 +47,13 @@ export type VisibleButtons = {
 }
 
 /** Interface if the toolbar or the menubar should be visible or not */
-export type MenuVisibility = {
+export type MenuOptions = {
     toolBar:boolean
     menuBar:boolean
     userSettings:boolean
     logout:boolean
     userRestart:boolean
+    foldMenuOnCollapse:boolean
 }
 
 type AppReadyType = {
@@ -137,12 +138,13 @@ export default class AppSettings {
     }
 
     /** The menu-visibility object */
-    menuVisibility:MenuVisibility = {
+    menuOptions:MenuOptions = {
         menuBar: true,
         toolBar: true,
         userSettings: true,
         logout: true,
-        userRestart: true
+        userRestart: true,
+        foldMenuOnCollapse: false
     }
 
     /** True, if change password enabled */
@@ -309,25 +311,29 @@ export default class AppSettings {
      * @param menuBar - True, if the menubar is visible
      * @param toolBar - True, if the toolbar is visible
      */
-    setMenuVisibility(menuBar?:boolean, toolBar?:boolean, userSettings?:boolean, logout?:boolean, userRestart?:boolean) {
+    setMenuOptions(menuBar?:boolean, toolBar?:boolean, userSettings?:boolean, logout?:boolean, userRestart?:boolean, foldMenuOnCollapse?:boolean) {
         if (menuBar !== undefined) {
-            this.menuVisibility.menuBar = menuBar;
+            this.menuOptions.menuBar = menuBar;
         }
 
         if (toolBar !== undefined) {
-            this.menuVisibility.toolBar = toolBar;
+            this.menuOptions.toolBar = toolBar;
         }
 
         if (userSettings !== undefined) {
-            this.menuVisibility.userSettings = userSettings
+            this.menuOptions.userSettings = userSettings
         }
 
         if (logout !== undefined) {
-            this.menuVisibility.logout = logout;
+            this.menuOptions.logout = logout;
         }
 
         if (userRestart !== undefined) {
-            this.menuVisibility.userRestart = userRestart;
+            this.menuOptions.userRestart = userRestart;
+        }
+
+        if (foldMenuOnCollapse !== undefined) {
+            this.menuOptions.foldMenuOnCollapse = foldMenuOnCollapse;
         }
     }
 

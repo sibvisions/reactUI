@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
@@ -25,7 +25,7 @@ import { IForwardRef } from "../../main/IForwardRef";
 import { concatClassnames } from "../../main/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { MenuVisibility, VisibleButtons } from "../../main/AppSettings";
+import { MenuOptions, VisibleButtons } from "../../main/AppSettings";
 import { EmbeddedContext } from "../../MiddleMan";
 import { ApplicationSettingsResponse } from "../../main/response";
 import { REQUEST_KEYWORDS } from "../../main/request";
@@ -42,7 +42,7 @@ export interface MenuItemCustom extends MenuItem {
 /** Interface for menu */
 export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
-    menuVisibility:MenuVisibility,
+    menuOptions:MenuOptions,
 }
 
 /** Interface for profile-menu */
@@ -62,25 +62,25 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
-    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
+    const [menuOptions, setMenuOptions] = useState<MenuOptions>(context.appSettings.menuOptions);
 
     /** The profile-menu options */
-    const profileMenu = useProfileMenuItems(menuVisibility.logout, menuVisibility.userRestart);
+    const profileMenu = useProfileMenuItems(menuOptions.logout, menuOptions.userRestart);
 
     /** History of react-router-dom */
     const history = useHistory();
 
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setMenuVisibility(menuVisibility)
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            setMenuOptions(menuOptions)
 
             setVisibleButtons(visibleButtons);
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-                setMenuVisibility(menuVisibility)
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+                setMenuOptions(menuOptions)
 
                 setVisibleButtons(visibleButtons);
             });
@@ -149,8 +149,8 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     }}
                     tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
-            {props.showButtons && menuVisibility.userSettings && <div className="vl" />}
-            {menuVisibility.userSettings && <div className="profile-menu">
+            {props.showButtons && menuOptions.userSettings && <div className="vl" />}
+            {menuOptions.userSettings && <div className="profile-menu">
                 <Menubar
                     style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
                     model={profileMenu} />
@@ -192,7 +192,7 @@ const Menu: FC<IMenu> = (props) => {
     const panelMenu = useRef<PanelMenu>(null);
 
     /** True, if the menu should close on collapse */
-    const foldOnCollapse = false;
+    const foldMenuOnCollapse = useMemo(() => context.appSettings.menuOptions.foldMenuOnCollapse, [context.appSettings.menuOptions]);
 
     /** The currently selected-menuitem */
     const [selectedMenuItem, setSelectedMenuItem] = useState<string>((context.contentStore as ContentStore).activeScreens.length ? 
@@ -206,7 +206,7 @@ const Menu: FC<IMenu> = (props) => {
      * when hovering out of expanded menu, closing expanded menu, collapsing menu etc.
      */
     const closeOpenedMenuPanel = useCallback(() => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
                 props.forwardedRef.current.scrollTop = 0;
                 props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
@@ -227,13 +227,13 @@ const Menu: FC<IMenu> = (props) => {
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             if (!context.appSettings.menuModeAuto) {
                 context.appSettings.setMenuModeAuto(true)
             }
             else {
                 if (deviceStatus === "Small" || deviceStatus === "Mini") {
-                    if (foldOnCollapse) {
+                    if (foldMenuOnCollapse) {
                         closeOpenedMenuPanel();
                     }
                     context.subscriptions.emitMenuCollapse(0);
@@ -246,7 +246,7 @@ const Menu: FC<IMenu> = (props) => {
     }, [context.contentStore, context.subscriptions, deviceStatus])
 
     useEffect(() => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             if (menuItems) {
                 let foundMenuItem:MenuItem = {}
                 menuItems.forEach(m => {
@@ -268,7 +268,7 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
             const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
             if (menuElem) {
@@ -284,7 +284,7 @@ const Menu: FC<IMenu> = (props) => {
      * @returns removing eventlisteners on unmount
      */
     useEffect(() => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             const menuOuter = document.getElementsByClassName("std-menu")[0] as HTMLElement;
             if (props.forwardedRef.current) {
                 const menuRef = props.forwardedRef.current;
@@ -306,7 +306,7 @@ const Menu: FC<IMenu> = (props) => {
                             (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
                             fadeRef.current.style.removeProperty('display');
                         }
-                        if (foldOnCollapse) {
+                        if (foldMenuOnCollapse) {
                             closeOpenedMenuPanel();
                         }
                     }
@@ -331,7 +331,7 @@ const Menu: FC<IMenu> = (props) => {
 
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
-        if (props.menuVisibility.menuBar) {
+        if (props.menuOptions.menuBar) {
             if ((event as any).propertyName === "max-height") {
                 const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
                 if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
@@ -348,8 +348,8 @@ const Menu: FC<IMenu> = (props) => {
      * It also notifies the contentstore that the menu has been collapsed
      */
     const handleToggleClick = () => {
-        if (props.menuVisibility.menuBar) {
-            if (foldOnCollapse) {
+        if (props.menuOptions.menuBar) {
+            if (foldMenuOnCollapse) {
                 closeOpenedMenuPanel();
             }
             context.appSettings.setMenuModeAuto(!context.appSettings.menuModeAuto)
@@ -359,7 +359,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuVisibility.menuBar && !embeddedContext) &&
+            {(props.menuOptions.menuBar && !embeddedContext) &&
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",
@@ -383,7 +383,7 @@ const Menu: FC<IMenu> = (props) => {
                             </div>
                         </div>
                     </div>
-                    {props.menuVisibility.menuBar &&
+                    {props.menuOptions.menuBar &&
                         <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                                 <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />

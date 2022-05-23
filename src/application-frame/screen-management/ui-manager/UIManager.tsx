@@ -21,7 +21,7 @@ import { appContext } from "../../../main/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import CorporateMenu from "../../menu/CorporateMenu";
-import { MenuVisibility, VisibleButtons } from "../../../main/AppSettings";
+import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
 import { useParams } from "react-router";
 import ContentStore from "../../../main/contentstore/ContentStore";
 
@@ -72,7 +72,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const menuCollapsed = useMenuCollapser('reactUI');
 
     /** State of menu-visibility */
-    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
+    const [menuOptions, setMenuOptions] = useState<MenuOptions>(context.appSettings.menuOptions);
 
     /** True, if the standard menu for mobile is active IF corporation applayout is set */
     const [mobileStandard, setMobileStandard] = useState<boolean>(false);
@@ -114,15 +114,15 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     // Subscribes to the menu-visibility, error-dialog and theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setMenuVisibility(menuVisibility);
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            setMenuOptions(menuOptions);
         });
 
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-                setMenuVisibility(menuVisibility);
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+                setMenuOptions(menuOptions);
             });
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }
@@ -166,19 +166,19 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
                 {isCorporation(appLayout, appTheme) ?
                     <CorporateMenu
-                        menuVisibility={menuVisibility} />
+                        menuOptions={menuOptions} />
                     :
                     <Menu
                         forwardedRef={menuRef}
                         showMenuMini={menuMini}
-                        menuVisibility={menuVisibility} />}
+                        menuOptions={menuOptions} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
                     isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
                     ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
-                    menuVisibility.toolBar ? "toolbar-visible" : "",
-                    !menuVisibility.menuBar ? "menu-not-visible" : "",
+                    menuOptions.toolBar ? "toolbar-visible" : "",
+                    !menuOptions.menuBar ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>

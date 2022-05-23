@@ -359,7 +359,7 @@ export default abstract class BaseServer {
             this.aliveInterval = metaData.aliveInterval;
         }
 
-        this.appSettings.setMenuVisibility(undefined, undefined, undefined, undefined, metaData.userRestart);
+        this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart);
 
         this.appSettings.setApplicationMetaData(metaData);
     }

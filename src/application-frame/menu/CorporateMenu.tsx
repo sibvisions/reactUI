@@ -93,9 +93,9 @@ const CorporateMenu:FC<IMenu> = (props) => {
                                 <ProfileMenu showButtons />
                             </div>
                         </div>
-                        {props.menuVisibility.menuBar &&
+                        {props.menuOptions.menuBar &&
                             <div className="corp-menu-menubar">
-                                {props.menuVisibility.toolBar && toolbarItems && toolbarItems.length > 0 &&
+                                {props.menuOptions.toolBar && toolbarItems && toolbarItems.length > 0 &&
                                     <div style={{ maxHeight: "32px", minWidth: "32px" }}>
                                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right" />
                                         <SpeedDial model={toolbarItems} direction="down" />

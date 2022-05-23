@@ -23,7 +23,7 @@ import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
 import { version } from "../../../../package.json";
 import ContentStore from "../../contentstore/ContentStore";
-import { MenuVisibility, VisibleButtons } from "../../AppSettings";
+import { MenuOptions, VisibleButtons } from "../../AppSettings";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -49,7 +49,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
     }, [context.server, context.contentStore]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuVisibility: MenuVisibility, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
+        context.subscriptions.subscribeToAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
 
         return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
             if (appSettings.changePassword !== undefined) {

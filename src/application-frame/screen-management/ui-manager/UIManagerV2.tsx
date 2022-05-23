@@ -15,7 +15,7 @@
 
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../main/AppProvider";
-import { MenuVisibility, VisibleButtons } from "../../../main/AppSettings";
+import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
 import { concatClassnames } from "../../../main/util";
 import ScreenManager from "../ScreenManager";
 import { isCorporation, ResizeContext } from "./UIManager";
@@ -25,7 +25,7 @@ const UIManagerV2: FC<any> = () => {
     const context = useContext(appContext);
 
     /** State of menu-visibility */
-    const [menuVisibility, setMenuVisibility] = useState<MenuVisibility>(context.appSettings.menuVisibility);
+    const [menuOptions, setMenuOptions] = useState<MenuOptions>(context.appSettings.menuOptions);
 
     /** True, if the standard menu for mobile is active IF corporation applayout is set */
     const [mobileStandard, setMobileStandard] = useState<boolean>(false);
@@ -36,15 +36,15 @@ const UIManagerV2: FC<any> = () => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setMenuVisibility(menuVisibility);
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            setMenuOptions(menuOptions);
         });
 
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuVisibility:MenuVisibility, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-                setMenuVisibility(menuVisibility);
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+                setMenuOptions(menuOptions);
             });
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }
@@ -58,8 +58,8 @@ const UIManagerV2: FC<any> = () => {
         )}>
             <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    menuVisibility.toolBar ? "toolbar-visible" : "",
-                    !menuVisibility.menuBar ? "menu-not-visible" : "",
+                    menuOptions.toolBar ? "toolbar-visible" : "",
+                    !menuOptions.menuBar ? "menu-not-visible" : "",
                 )}>
                     <ResizeContext.Provider value={{ login: false, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>
                         <ScreenManager />

@@ -30,5 +30,6 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationDesign?:string
     aliveInterval?: number
     userRestart?:boolean
+    foldMenuOnCollapse?:boolean
 }
 export default ApplicationMetaDataResponse;
