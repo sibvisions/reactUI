@@ -15,20 +15,25 @@
 
 .error-dialog {
     width: 600px;
+    min-height: 230px;
 
     .p-dialog-content {
         display: flex;
         justify-content: flex-start;
-        align-items: center;
+        align-items: flex-start;
         padding: 2rem 1.5rem 2rem 1.5rem;
 
         .error-dialog-icon {
-            margin-right: 4px;
+            margin-right: 0.5rem;
         }
     }
 
     .p-listbox {
         text-align: left;
+
+        .p-listbox-list-wrapper {
+            height: 100%;
+        }
 
         .p-listbox-list {
             padding: 0;
@@ -48,6 +53,46 @@
                     outline: 2px solid #7f7f7f;
                     outline-offset: -2px;
                 }
+            }
+        }
+    }
+
+    &.error-details-enabled {
+        .p-dialog-content {
+            flex: 0 0 100px;
+        }
+
+        .p-dialog-footer {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+
+            .error-dialog-footer {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow: hidden;
+
+                .rc-panel-group-caption {
+                    border-bottom: none;
+                    min-height: 30px;
+
+                    > span {
+                        border-bottom: var(--input-border);
+                        display: block;
+                        width: 100%;
+                    }
+                }
+
+                .error-dialog-footer-details {
+                    display: flex;
+                    flex-direction: column;
+                    flex: 1;
+                }
+            }
+
+            .error-dialog-textarea {
+                flex: 1 1 150px;
             }
         }
     }

@@ -82,8 +82,8 @@ const ErrorDialog:FC = () => {
 
     const errorFooter = useCallback(() => {
         return (
-            <>
-                <div className="error-dialog-footer">
+            <div className="error-dialog-footer">
+                <div className="error-dialog-footer-buttons">
                     {errorProps?.exceptions && errorProps.exceptions.length && <Button
                         type="button"
                         className="rc-button"
@@ -107,7 +107,7 @@ const ErrorDialog:FC = () => {
                         onClick={() => handleOnHide()} />
                 </div>
                 {showDetails &&
-                    <>
+                    <div className="error-dialog-footer-details">
                         <div
                             className="rc-panel-group-caption error-dialog-details-caption"
                             style={{ marginTop: "1rem", textAlign: "left" }}>
@@ -130,16 +130,16 @@ const ErrorDialog:FC = () => {
                             value={selectedError?.exception}
                             style={{ resize: 'none' }}
                             readOnly />
-                    </>
+                    </div>
                 }
-            </>
+            </div>
         )
     }, [showDetails, selectedError, errorProps])
 
     return (
         <Dialog
             id="error-dialog"
-            className="error-dialog" 
+            className={concatClassnames("error-dialog", showDetails ? "error-details-enabled" : "") }
             header={translations.get(errorProps?.title as string) || translations.get("Error")} 
             footer={errorFooter} 
             visible={visible} 

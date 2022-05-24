@@ -412,7 +412,7 @@ const UITable: FC<TableProps> = (baseProps) => {
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, providerData.length, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, layoutStyle?.width]);
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
@@ -571,28 +571,6 @@ const UITable: FC<TableProps> = (baseProps) => {
             sortDefinitionCache.current = sortDefinitions;
         }
     }, [sortDefinitions]);
-
-    /** Removes the highlight classname from the previous selected cell and adds it to the current, needed because PrimeReact selection with virtual tables doesn't work properly */
-    // useEffect(() => {
-    //     if (tableRef.current) {
-    //         const table = (tableRef.current as any).el
-    //         const selectedTds = DomHandler.find(table, 'tbody > tr td.p-highlight');
-    //         if (selectedTds) {
-    //             for (const elem of selectedTds) {
-    //                 elem.classList.remove("p-highlight");
-    //             }
-    //         }
-    
-    //         const highlightedRow = DomHandler.findSingle(table, 'tbody > tr.p-highlight');
-    //         if (selectedRow && columnOrder) {
-    //             const colIdx = columnOrder.findIndex(col => col === selectedRow.selectedColumn);
-    //             if (highlightedRow && colIdx >= 0 && !highlightedRow.children[colIdx].classList.contains(".p-highlight")) {
-    //                 highlightedRow.children[colIdx].classList.add("p-highlight");
-    //             }
-    //         }
-    //     }
-
-    // }, [virtualRows, selectedRow, columnOrder]);
 
     /**
      * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
