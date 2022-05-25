@@ -24,7 +24,18 @@
         padding: 2rem 1.5rem 2rem 1.5rem;
 
         .error-dialog-icon {
-            margin-right: 0.5rem;
+            margin-right: 0.75rem;
+        }
+    }
+
+    .error-dialog-footer-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: 50px;
+
+        .error-dialog-footer-button {
+            height: auto;
         }
     }
 
@@ -58,8 +69,9 @@
     }
 
     &.error-details-enabled {
+        min-height: 260px;
         .p-dialog-content {
-            flex: 0 0 100px;
+            flex: 0 0 125px;
         }
 
         .p-dialog-footer {

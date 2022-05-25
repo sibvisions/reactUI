@@ -290,6 +290,10 @@ body {
     text-align: "left"; }
   .error-dialog .error-dialog-listbox {
     margin-top: var(--error-dialog-details-gap); }
+    .error-dialog .error-dialog-listbox .p-listbox-item {
+      height: calc(8px + var(--table-data-height));
+      padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
+      line-height: var(--table-data-height); }
   .error-dialog .error-dialog-textarea {
     margin-top: var(--error-dialog-details-gap);
     width: 100%;

@@ -483,7 +483,7 @@ body {
         }
     
         .p-datatable-tbody > tr > td {
-            padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);;
+            padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
             height: calc(8px + var(--table-data-height));
         }
     }
@@ -507,6 +507,12 @@ body {
 
     .error-dialog-listbox {
         margin-top: var(--error-dialog-details-gap);
+
+        .p-listbox-item {
+            height: calc(8px + var(--table-data-height));
+            padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
+            line-height: var(--table-data-height);
+        }
     }
 
     .error-dialog-textarea {

@@ -86,7 +86,7 @@ const ErrorDialog:FC = () => {
                 <div className="error-dialog-footer-buttons">
                     {errorProps?.exceptions && errorProps.exceptions.length && <Button
                         type="button"
-                        className="rc-button"
+                        className="rc-button error-dialog-footer-button"
                         style={{
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
@@ -98,7 +98,7 @@ const ErrorDialog:FC = () => {
                         }} />}
                     <Button
                         type="button"
-                        className="rc-button"
+                        className="rc-button error-dialog-footer-button"
                         style={{
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
@@ -147,7 +147,7 @@ const ErrorDialog:FC = () => {
             baseZIndex={1005}
             resizable >
             <i className="error-dialog-icon pi pi-times-circle" />
-            {errorProps?.message}
+            <span style={{paddingTop: "4px"}}>{errorProps?.message}</span>
         </Dialog>
     )
 }
