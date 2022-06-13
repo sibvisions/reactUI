@@ -1,3 +1,5 @@
 {
-    "timeout": "20000"
+    "timeout": "20000",
+    "aliveInterval": "30000",
+    "loadInterval": "10000"
 }

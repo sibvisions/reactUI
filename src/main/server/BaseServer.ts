@@ -80,6 +80,8 @@ export default abstract class BaseServer {
 
     aliveInterval:number = 30000;
 
+    loadInterval:number = 10000;
+
     lastRequestTimeStamp: number = Date.now();
 
     /**

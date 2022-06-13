@@ -195,6 +195,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let designToSet = "";
         let baseUrlToSet = "";
         let timeoutToSet = 10000;
+        let aliveIntervalToSet:number|undefined = undefined;
+        let loadIntervalToSet:number|undefined = undefined;
 
         const initWS = (baseURL:string) => {
             const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -233,6 +235,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                 }
             }
+
+            setInterval(() => ws.current?.send("PING"), contextState.server.loadInterval);
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
@@ -262,6 +266,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 .then((data) => {
                     if (data.timeout) {
                         timeoutToSet = parseInt(data.timeout);
+                    }
+
+                    if (data.aliveInterval) {
+                        aliveIntervalToSet = parseInt(data.aliveInterval);
+                    }
+
+                    if (data.loadInterval) {
+                        loadIntervalToSet = parseInt(data.loadInterval);
                     }
                     resolve({});
                 })
@@ -467,7 +479,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
 
             if (convertedOptions.has("version")) {
-                const parsedValue = parseInt(convertedOptions.get("version"))
+                const parsedValue = parseInt(convertedOptions.get("version"));
                 if (parsedValue === 1 || parsedValue === 2) {
                     contextState.version = parsedValue;
                     appVersion.version = parsedValue;
@@ -477,6 +489,33 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     appVersion.version = 1;
                 }
 
+            }
+
+            if (convertedOptions.has("timeout")) {
+                const parsedValue = parseInt(convertedOptions.get("timeout"));
+                if (!isNaN(parsedValue)) {
+                    timeoutToSet = parsedValue;
+                }
+
+                convertedOptions.delete("timeout");
+            }
+
+            if (convertedOptions.has("aliveInterval")) {
+                const parsedValue = parseInt(convertedOptions.get("aliveInterval"));
+                if (!isNaN(parsedValue)) {
+                    aliveIntervalToSet = parsedValue;
+                }
+
+                convertedOptions.delete("aliveInterval");
+            }
+
+            if (convertedOptions.has("loadInterval")) {
+                const parsedValue = parseInt(convertedOptions.get("loadInterval"));
+                if (!isNaN(parsedValue)) {
+                    loadIntervalToSet = parsedValue;
+                }
+
+                convertedOptions.delete("loadInterval");
             }
 
             convertedOptions.forEach((v, k) => {
