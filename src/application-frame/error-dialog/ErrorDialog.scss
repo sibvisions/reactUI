@@ -40,7 +40,9 @@
     }
 
     .p-listbox {
+        flex: 1 0 82px;
         text-align: left;
+        max-height: 155px;
 
         .p-listbox-list-wrapper {
             height: 100%;
@@ -104,7 +106,7 @@
             }
 
             .error-dialog-textarea {
-                flex: 1 1 150px;
+                flex: 1 0 100px;
             }
         }
     }
