@@ -63,8 +63,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build-patch": "npm version patch && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
-    "build-minor": "npm version minor && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
-    "build-major": "npm version major && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build-minor": "npm version minor && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "build-major": "npm version major && npm publish && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
     "bundle": "webpack -c ./webpack.config.js",
     "devbundle": "webpack -c ./webpack.config-dev.js",
