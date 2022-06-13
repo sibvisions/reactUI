@@ -37,7 +37,7 @@ export interface IEditorImage extends IRCCellEditor {
  *  This component displays an image
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorImage: FC<IEditorImage> = (props) => {
+export const UIEditorImage: FC<IEditorImage> = (props) => {
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
@@ -128,4 +128,4 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
 
     )
 }
-export default UIEditorImage
+//export default UIEditorImage

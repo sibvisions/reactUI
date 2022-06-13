@@ -17,9 +17,10 @@ import { CSSProperties, useMemo } from "react";
 import { useCellEditorStyle, useComponentConstants, useMetaData, useRowSelect } from "..";
 import { AppContextType } from "../../AppProvider";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
-import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
+//import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
 import { IRCCellEditor } from "../../components/editors/CellEditorWrapper";
 import { TopBarContextType } from "../../components/topbar/TopBar";
+import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
 
 /**
  * This hook returns constants for cell-editors

@@ -31,11 +31,12 @@ import Dummy from "../components/dummy";
 import { CellEditorWrapper, UIEditorCheckBox,
         UIEditorChoice,
         UIEditorDate,
-        UIEditorImage,
+        //UIEditorImage,
         UIEditorLinked,
         UIEditorNumber,
         UIEditorText,
-        CELLEDITOR_CLASSNAMES } from "../components/editors"
+        //CELLEDITOR_CLASSNAMES 
+    } from "../components/editors"
 import { UITable } from "../components/table";
 import UIIcon from "../components/icon/UIIcon";
 import { UIPassword, UIText, UITextArea } from "../components/text"
@@ -54,6 +55,8 @@ import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
 import { appVersion } from "../AppSettings";
 import BaseContentStore from "../contentstore/BaseContentStore";
+import { UIEditorImage } from "../components/editors/image/UIEditorImage";
+import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 
 
 /**

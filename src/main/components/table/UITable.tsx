@@ -33,11 +33,12 @@ import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescriptio
 import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
+//import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import { CellEditor } from "./";
+import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
 
 
 /** Interface for Table */

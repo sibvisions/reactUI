@@ -22,7 +22,10 @@ import {
 } from "../../hooks";
 import { appContext } from "../../AppProvider";
 import { getFont, IconProps, parseIconData } from "../comp-props";
-import { CellEditorWrapper, CELLEDITOR_CLASSNAMES } from "../editors";
+import { 
+    CellEditorWrapper, 
+    //CELLEDITOR_CLASSNAMES 
+} from "../editors";
 import { checkComponentName } from "../../util";
 import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 import { 
@@ -34,6 +37,7 @@ import {
     TextCellRenderer,
     SelectedCellContext
 } from "./";
+import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
 
 
 export interface IInTableEditor {
