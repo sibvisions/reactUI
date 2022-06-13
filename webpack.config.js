@@ -20,10 +20,10 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = () => {
     return {
+        mode: 'production',
         entry: './src/moduleIndex.ts',
         output: {
             filename: 'moduleIndex.js',
-            path: path.resolve(__dirname, 'dist'),
             library: 'JVxReactUI',
             libraryTarget: 'umd'
         },
@@ -31,7 +31,7 @@ module.exports = () => {
         plugins: [
             new MiniCssExtractPlugin({
                 filename: '[name].css',
-                chunkFilename: '[id].css'
+                chunkFilename: '[id].css',
             }),
             new CircularDependencyPlugin({
                 exclude: /a\.js|node_modules/,
@@ -71,21 +71,26 @@ module.exports = () => {
                 },
                 {
                     test: /\.(png|svg|jpg|gif|webP)$/,
-                    use: {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'resources/assets/[name].[ext]',
-                        }
-                    },
+                    type: 'asset/resource',
+                    // use: {
+                    //     loader: 'file-loader',
+                    //     options: {
+                    //         name: 'resources/assets/[name].[ext]',
+                    //     }
+                    // },
                 },
                 {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                    use: {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'resources/fonts/[name].[ext]',
-                        }
+                    type: 'asset/resource',
+                    generator: {
+                        filename: 'resources/fonts/[name].[ext]'
                     },
+                    // use: {
+                    //     loader: 'file-loader',
+                    //     options: {
+                    //         name: 'resources/fonts/[name].[ext]',
+                    //     }
+                    // },
                 },
                 {
                     test: /\.tsx?$/,
