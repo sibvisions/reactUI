@@ -106,7 +106,18 @@ module.exports = () => {
             alias: {
                 react: path.resolve('./node_modules/react'),
                 assets: path.resolve('./src/assets')
-            }
+            },
+            fallback: {
+                "fs": false,
+                "tls": false,
+                "net": false,
+                "path": false,
+                "zlib": false,
+                "http": false,
+                "https": false,
+                "stream": false,
+                "crypto": false,
+              } 
         },
         externals: {
             react: "react",
