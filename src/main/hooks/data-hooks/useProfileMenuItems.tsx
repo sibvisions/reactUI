@@ -21,7 +21,7 @@ import { REQUEST_KEYWORDS } from "../../request";
 import { useTranslation } from "..";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
-import { LIB_VERSION } from "../../../version";
+import { version } from "../../../../package.json";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 
@@ -109,7 +109,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: "Info",
             icon: "pi pi-info-circle",
             command(e: MenuItemCommandParams) {
-                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
+                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + version }, "info");
             }
         })
         setSlideOptions([
