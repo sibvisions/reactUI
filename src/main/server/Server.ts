@@ -256,8 +256,8 @@ class Server extends BaseServer {
             this.aliveInterval = metaData.aliveInterval;
         }
 
-        if (metaData.loadInterval !== undefined) {
-            this.loadInterval = metaData.loadInterval;
+        if (metaData.wsPingInterval !== undefined) {
+            this.wsPingInterval = metaData.wsPingInterval;
         }
 
         this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart, metaData.foldMenuOnCollapse);
