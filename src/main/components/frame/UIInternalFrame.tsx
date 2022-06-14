@@ -69,7 +69,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                if (relativeComp.parent?.includes("IF") || relativeComp.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                if (relativeComp.parent?.includes("IF")) {
                     return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
                 }
                 else {
@@ -120,7 +120,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
 
     // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
     useEffect(() => {
-        if (!initFrame.current && rndRef.current && props.pack && packSize) {
+        if (!initFrame.current && rndRef.current && props.pack && packSize && context.contentStore.getComponentById(props.id)) {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
             sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
             setFrameStyle(packSize);
@@ -211,14 +211,17 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                     : 
                         0;
                     // The centerRelative Component only has the right size when its parent no longer has visibility hidden
-                    if (relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
+                    if (relativeComp && relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
                         const boundingRect = relativeElem.getBoundingClientRect();
                         // Calculate the center position of the frame and then add left respectively top of the relative component. 
                         // Take away the launcher menu height because top takes entire window 
                         let centerX = boundingRect.left + boundingRect.width / 2 - (frameStyle.width as number + 8) / 2;
                         let centerY = (boundingRect.top - launcherMenuHeight) + boundingRect.height / 2 - (frameStyle.height as number + 35) / 2;
                         rndRef.current.updatePosition({ x: centerX, y: centerY });
-                        setCenterFlag(false);
+                        /// XXX: When id of relative comp is the desktoppanel and height or width is small then it doesnt have the correct size yet.
+                        if (!(relativeComp.id.includes("DP") && (boundingRect.height < 10 || boundingRect.width < 10))) {
+                            setCenterFlag(false);
+                        }
                         return
                     }
                 }
@@ -259,6 +262,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
             <>
                 {props.modal && <div className="rc-glasspane" />}
                 {children.length && <Rnd
+                    id={props.name}
                     ref={rndRef}
                     style={style as CSSProperties}
                     onResize={handleResize}
