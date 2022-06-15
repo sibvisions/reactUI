@@ -14,14 +14,16 @@
  */
 
 /** React imports */
-import { ReactElement, useContext } from "react";
+import React, { ReactElement, useContext } from "react";
 /** Other imports */
 import { appContext } from "../../AppProvider";
+import { ExtendableComponent } from "../../util/types/custom-types";
 
 type ScreenAPIType = {
     sendScreenParameter: (parameter: {[key:string]: any}) => void,
     sendCloseScreenRequest: (parameter?: {[key:string]: any}) => void,
     addCustomComponent: (name: string, customComp: ReactElement) => void,
+    extendComponent: (name:string, component: React.FC<ExtendableComponent>) => void,
     removeComponent: (name:string) => void
 }
 
@@ -45,6 +47,10 @@ const useScreen = (screenName: string): ScreenAPIType => {
         context.api.addCustomComponent(name, customComp);
     }
 
+    const extendComponent = (name:string, component: React.FC<ExtendableComponent>) => {
+        context.api.extendComponent(name, component);
+    }
+
     const removeComponent = (name: string) => {
         context.api.removeComponent(name);
     }
@@ -53,6 +59,7 @@ const useScreen = (screenName: string): ScreenAPIType => {
         sendScreenParameter: sendScreenParameter,
         sendCloseScreenRequest: sendCloseScreenRequest,
         addCustomComponent: addCustomComponent,
+        extendComponent: extendComponent,
         removeComponent: removeComponent
     }
 }

@@ -14,12 +14,13 @@
  */
 
 /** Other imports */
+import FC from 'react';
 import Server from "./server/Server";
 import ContentStore from "./contentstore/ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { ServerMenuButtons } from "./response";
 import AppSettings, { appVersion } from "./AppSettings";
-import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./util/types/custom-types";
+import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ExtendableComponent, ScreenWrapperOptions } from "./util/types/custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./util/types/BaseComponent";
@@ -349,6 +350,13 @@ class API {
         else {
             this.#subManager.emitToast({ message: "Error while adding custom-component. Could not find name: " + name + "!", name: "" }, "error");
             console.error("Error while adding custom-component. Could not find name: " + name + "!");
+        }
+    }
+
+    extendComponent(name:string, component:React.FC<ExtendableComponent>) {
+        if (this.#contentStore.getComponentByName(name)) {
+            const comp = this.#contentStore.getComponentByName(name) as ExtendableComponent;
+            console.log(component)
         }
     }
 

@@ -13,10 +13,10 @@
  * the License.
  */
 
-import BaseComponent from "../../util/types/BaseComponent";
+import { ExtendableComponent } from "../../util/types/custom-types";
 
 /** Interface for Buttons contains properties which are sent by the server */
-export interface IButton extends BaseComponent {
+export interface IButton extends ExtendableComponent {
     accelerator: string,
     horizontalTextPosition?:number,
     verticalTextPosition?:number,
