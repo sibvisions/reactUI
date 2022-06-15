@@ -29,6 +29,7 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationColorScheme: string
     applicationDesign?:string
     aliveInterval?: number
+    wsPingInterval?:number
     userRestart?:boolean
     foldMenuOnCollapse?:boolean
 }
