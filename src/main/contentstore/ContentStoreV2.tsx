@@ -20,6 +20,7 @@ import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel"
 import { SubscriptionManager } from "../SubscriptionManager";
 import { isWorkScreen } from "../util";
 import BaseComponent from "../util/types/BaseComponent";
+import { IFrame } from "../components/frame/UIFrame";
 
 export default class ContentStoreV2 extends BaseContentStore {
     /** subscriptionManager instance */
@@ -128,12 +129,14 @@ export default class ContentStoreV2 extends BaseContentStore {
                             }
                             else {
                                 // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
-                                const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && 
-                                    (isWorkScreen(comp as IPanel) || comp.classNameEventSourceRef === "Login"));
-                                if (foundWorkScreen) {
+                                const foundChild = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id)
+                                if (foundChild) {
                                     this.flatContent.delete(newComponent.id);
-                                    this.closeScreen(foundWorkScreen.name);
-                                }   
+                                    this.removedContent.set(newComponent.id, existingComponent);
+                                    if (isWorkScreen(foundChild as IPanel)) {
+                                        this.closeScreen(foundChild.name);
+                                    }
+                                }
                             }
                         }
                         else {
@@ -300,5 +303,11 @@ export default class ContentStoreV2 extends BaseContentStore {
             }
         }
         return children;
+    }
+
+    closeInternalFrame(props: IFrame) {
+        this.flatContent.delete(props.id)
+        this.removedContent.set(props.id, {...props})
+        this.subManager.parentSubscriber.get(props.parent as string)?.apply(undefined, []);
     }
 }
