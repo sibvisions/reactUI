@@ -196,7 +196,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let baseUrlToSet = "";
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
-        let loadIntervalToSet:number|undefined = undefined;
+        let wsPingIntervalToSet:number|undefined = undefined;
 
         const initWS = (baseURL:string) => {
             const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -275,8 +275,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         aliveIntervalToSet = parseInt(data.aliveInterval);
                     }
 
-                    if (data.loadInterval) {
-                        loadIntervalToSet = parseInt(data.loadInterval);
+                    if (data.wsPingInterval) {
+                        wsPingIntervalToSet = parseInt(data.wsPingInterval);
                     }
                     resolve({});
                 })
@@ -512,13 +512,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
-            if (convertedOptions.has("loadInterval")) {
-                const parsedValue = parseInt(convertedOptions.get("loadInterval"));
+            if (convertedOptions.has("wsPingInterval")) {
+                const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
-                    loadIntervalToSet = parsedValue;
+                    wsPingIntervalToSet = parsedValue;
                 }
 
-                convertedOptions.delete("loadInterval");
+                convertedOptions.delete("wsPingInterval");
             }
 
             convertedOptions.forEach((v, k) => {
@@ -557,7 +557,15 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
             }
             contextState.server.BASE_URL = baseUrlToSet;
-            contextState.server.timeoutMs = timeoutToSet
+            contextState.server.timeoutMs = timeoutToSet;
+
+            if (aliveIntervalToSet !== undefined) {
+                contextState.server.aliveInterval = aliveIntervalToSet;
+            }
+            
+            if (wsPingIntervalToSet !== undefined) {
+                contextState.server.wsPingInterval = wsPingIntervalToSet;
+            }
 
             startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2);
 
